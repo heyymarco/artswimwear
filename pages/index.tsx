@@ -5,6 +5,7 @@ import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { Section } from '@/components/sections/Section'
+import { Container } from '@reusable-ui/components'
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -17,12 +18,15 @@ export default function Home() {
             </Head>
             <Main nude={true}>
                 <HeroSection theme='primary' className={styles.hero}>
-                    <h1 className='display-4'>Reusable-UI</h1>
-                    <p className='display-6'>Reuse the components,<br />save your time now and next</p>
-                    <div className='actions'>
-                    </div>
+                    {/* <Image alt='ART Etcnic Swimwear' src='/artswimwear.svg' width={48*4} height={40*4} /> */}
+                    <Container tag='footer' className='fill' theme='primary' mild={false} gradient={true}>
+                        blah
+                    </Container>
                 </HeroSection>
                 <Section className={styles.features}>
+                    <p>
+                        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Eaque saepe vitae nemo, veniam quos voluptates ducimus dolorem et incidunt odio possimus sint illum excepturi maxime quisquam ratione ut facere sed?
+                    </p>
                 </Section>
             </Main>
         </>

@@ -1,0 +1,26 @@
+* {
+    padding: 0;
+    margin: 0;
+    border: none;
+    appearance: none;
+}
+
+:root {
+    --site-header: 4rem;
+    --site-footer: 4rem;
+}
+
+.siteFooter:nth-child(n) {
+    box-sizing: border-box;
+    block-size: var(--site-footer);
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+main {
+    min-block-size: calc(100vh - var(--site-header) - var(--site-footer));
+    min-block-size: calc(100dvh - var(--site-header) - var(--site-footer));
+    min-block-size: calc(100svh - var(--site-header) - var(--site-footer));
+}

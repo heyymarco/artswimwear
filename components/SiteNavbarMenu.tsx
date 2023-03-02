@@ -6,7 +6,7 @@ import { Collapse, HamburgerMenuButton, Icon, Nav, NavbarParams, NavItem } from 
 const SiteLogo = () => {
     return (
         <Link href='/'>
-            <Icon icon='reusable-ui' size='lg' />
+            <Icon icon='artswimwear' size='xl' />
         </Link>
     );
 }

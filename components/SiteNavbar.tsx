@@ -6,7 +6,7 @@ import SiteNavbarMenu from './SiteNavbarMenu';
 
 
 navbarValues.boxSizing = 'border-box';
-navbarValues.blockSize = '3.25rem';
+navbarValues.blockSize = '4rem';
 
 
 

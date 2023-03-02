@@ -48,7 +48,7 @@ export const Section = (props: SectionProps) => {
             {...restGenericSectionProps}
         >
             {/* a built-in <article> as the content */}
-            <Container tag='article' className='fill-self'>
+            <Container tag='article' className='fill-self' mild='inherit'>
                 {/* the article title (if provided) */}
                 {title && <Generic tag={titleTag}>
                     {title}
