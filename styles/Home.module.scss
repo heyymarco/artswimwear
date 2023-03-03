@@ -88,9 +88,35 @@
         font-size: 3rem;
     }
     & [class~='illus'] {
-        display: block;
-        width: 100%;
         object-fit: contain;
         margin-block-end: 3rem;
+    }
+}
+
+
+.ethic>article {
+    display: flex;
+    flex-direction: column;
+    &>:is(h1, h2) {
+        font-size: 4rem;
+    }
+    &>[class~='paragraphs'] {
+        columns: 2;
+        margin-block-end: 3rem;
+    }
+    & [class~='illus'] {
+        object-fit: cover;
+    }
+}
+
+
+.community>article {
+    display: flex;
+    flex-direction: column;
+    &>:is(h1, h2) {
+        font-size: 4rem;
+    }
+    & [class~='illus'] {
+        object-fit: cover;
     }
 }

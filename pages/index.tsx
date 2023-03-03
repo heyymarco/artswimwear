@@ -67,7 +67,7 @@ export default function Home() {
                         can be “<strong>At one with ART and nature.</strong>”
                     </p>
                 </Section>
-                <Section className={styles.fabrics} title='Eco-friendly fabrics' theme='primary'>
+                <Section className={styles.fabrics} title='Eco-friendly fabrics' theme='secondary' mild={false}>
                     <p>
                         Sustainability and being eco-friendly is fully integrated into our strategy.
                     </p>
@@ -78,7 +78,7 @@ export default function Home() {
                         REPREVE® made from recycled plastic in
                         our swimwear production.
                     </p>
-                    <Section className={styles.howWorks} title='How does it work?'>
+                    <Section className={styles.howWorks} title='How does it work?' mild={false}>
                         <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary'>
                             <AccordionItem label='Collecting'>
                                 <div className='how-work-item'>
@@ -113,7 +113,7 @@ export default function Home() {
                     </Section>
                 </Section>
                 <Section className={styles.regeneration} title='THE ECONYL® REGENERATION SYSTEM' theme='secondary' mild={true}>
-                    <Image className='illus' src='/illus/product-cycle.jpg' alt='product regeneration' width={800*0.5} height={590*0.5} />
+                    <Image className='illus fill' src='/illus/product-cycle.jpg' alt='product regeneration' width={800*0.5} height={590*0.5} />
                     <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary' listStyle='numbered'>
                         <AccordionItem label='Rescue'>
                             <p>
@@ -154,6 +154,68 @@ export default function Home() {
                             </p>
                         </AccordionItem>
                     </ExclusiveAccordion>
+                </Section>
+                <Section className={styles.ethic} title='Ethically Manufactured' theme='secondary' mild={false}>
+                    <div className='paragraphs'>
+                        <p>
+                            Our swimwear is made in a local
+                            factories in Bali, Indonesia We wanted
+                            to ensure that the factories we chose to
+                            produce our swimwear matched with
+                            our values.
+                        </p>
+                        <p>
+                            We researched numerous different
+                            options throughout Indonesia and
+                            hand selected our factories due to their
+                            morals, ethical responsibilities and
+                            sustainable practices.
+                        </p>
+                        <p>
+                            A talented crew of well paid, Indonesian
+                            tailors produce our swimwear in good,
+                            clean and modern factory conditions.
+                        </p>
+                        <p>
+                            We feel privileged to be able to support
+                            local Balinese businesses. They in
+                            turn, help us to make our dreams
+                            become reality by supplying you with
+                            our beautiful eco-friendly, sustainable
+                            pieces of ART.
+                        </p>
+                        <p>
+                            We also commit to being totally
+                            transparent with our customers and are
+                            very happy to share behind the scenes
+                            images and videos on our Instagram
+                            page @art_ethnicswim
+                        </p>
+                        <p>
+                            Here you can see our models and
+                            the other beautiful souls who are
+                            all working together, helping us to
+                            produce beautiful works or ART.
+                        </p>
+                    </div>
+                    <Image className='illus fill' src='/illus/factory.jpg' alt='Factory' width={2490*0.5} height={1483*0.5} />
+                </Section>
+                <Section className={styles.community} title='Give Back to The Community and Planet' theme='primary' mild={false}>
+                    <p>
+                        More than 12 million Indonesians lack education and creative skills. They are paid 50% less
+                        than the minimum salary. We believe it’s time for change.
+                    </p>
+                    <p>
+                        We have chosen to team up with Art and Nature community. Organization leads an art
+                        and eco-friendly campaign whose aim is to educate the less fortunate people of Indonesia,
+                        teaching them skills which will enable them to develop sustainable communities
+                        throughout Indonesia.
+                    </p>
+                    <p>
+                        Organization that carry out a great field job by providing education facilities, professional
+                        training, accommodation, and creating job opportunities
+                    </p>
+                    <Image className='illus fill' src='/illus/community.jpg' alt='Community' width={1852*0.5} height={1410*0.5} />
                 </Section>
             </Main>
         </>
