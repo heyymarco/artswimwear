@@ -7,30 +7,75 @@
     background-repeat: no-repeat;
     background-position: center;
     background-size: contain;
+    box-sizing: border-box;
     height: calc(100vh  - var(--site-header));
     height: calc(100dvh - var(--site-header));
     height: calc(100svh - var(--site-header));
 
-    >footer {
+    &>footer {
         align-self: end;
+
+        display: grid;
+        grid-template:
+            "left center right" auto
+            /
+            1fr auto 1fr;
         padding: 0;
         block-size: var(--site-footer);
+        
+        justify-items: center;
+        align-items: center;
+        gap: 1rem;
+        &>[class~='scroller'] {
+            grid-area: center;
+        }
+        &>[class~='hint']{
+            grid-area: right;
+            justify-self: start;
+        }
     }
 }
 
 
 
 .features>article {
-    display: grid;
-    grid-auto-flow: row;
-    grid-auto-rows: auto;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
-    justify-items: stretch;
-    align-items: stretch;
-    
-    gap: 2rem;
-    
-    &>section {
-        padding: 0;
+    &>:is(h1, h2) {
+        font-size: 4rem;
+    }
+    &>[class~='figures'] {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 4rem;
+        >figure {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            >img {
+                clip-path: circle(50%);
+            }
+            >figcaption {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                >h3 {
+                    font-size: 1.25rem;
+                    margin: 0;
+                }
+            }
+        }
+    }
+}
+.fabrics>article {
+    &>:is(h1, h2) {
+        font-size: 3rem;
+    }
+}
+.howWorks>article {
+    & [class~='how-work-item'] {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 2rem;
     }
 }
