@@ -1,15 +1,20 @@
 import Head from 'next/head'
 import Image from 'next/image'
 // import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.scss'
+// import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { Section } from '@/components/sections/Section'
 import { AccordionItem, Button, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
+import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 
 // const inter = Inter({ subsets: ['latin'] })
+const useHomeStyleSheet = dynamicStyleSheets(
+    () => import(/* webpackPrefetch: true */'@/styles/home')
+, { id: 'home' });
 
 export default function Home() {
+    const styles = useHomeStyleSheet();
     return (
         <>
             <Head>
@@ -79,8 +84,8 @@ export default function Home() {
                         our swimwear production.
                     </p>
                     <Section className={styles.howWorks} title='How does it work?' mild={false}>
-                        <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary'>
-                            <AccordionItem label='Collecting'>
+                        <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary' listStyle='content'>
+                            <AccordionItem label={<><Icon icon='search' size='xl' /> Collecting</>}>
                                 <div className='how-work-item'>
                                     <p>
                                         Ghost fishing nets and plastic waste
@@ -93,7 +98,7 @@ export default function Home() {
                                     <Image alt='' src='/illus/turtle.jpg' width={200*1.5} height={200} />
                                 </div>
                             </AccordionItem>
-                            <AccordionItem label='Recycling'>
+                            <AccordionItem label={<><Icon icon='refresh' size='xl' /> Recycling</>}>
                                 <div className='how-work-item'>
                                     <p>
                                         The material is then transformed back
@@ -114,8 +119,8 @@ export default function Home() {
                 </Section>
                 <Section className={styles.regeneration} title='THE ECONYL® REGENERATION SYSTEM' theme='secondary' mild={true}>
                     <Image className='illus fill' src='/illus/product-cycle.jpg' alt='product regeneration' width={800*0.5} height={590*0.5} />
-                    <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary' listStyle='numbered'>
-                        <AccordionItem label='Rescue'>
+                    <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary' listStyle='content'>
+                        <AccordionItem label={<><Icon icon='medical_services' size='xl' /> Rescue</>}>
                             <p>
                                 The ECONYL® Regeneration System
                                 starts with rescuing waste, like fishing
@@ -126,7 +131,7 @@ export default function Home() {
                                 all of the nylon possible.
                             </p>
                         </AccordionItem>
-                        <AccordionItem label='Regenerate'>
+                        <AccordionItem label={<><Icon icon='refresh' size='xl' /> Regenerate</>}>
                             <p>
                                 Through a radical regeneration
                                 and purification process, the nylon
@@ -135,7 +140,7 @@ export default function Home() {
                                 regenerated nylon is exactly the same as virgin nylon.
                             </p>
                         </AccordionItem>
-                        <AccordionItem label='Remake'>
+                        <AccordionItem label={<><Icon icon='autorenew' size='xl' /> Remake</>}>
                             <p>
                                 ECONYL® regenerated nylon is
                                 processed into
@@ -143,7 +148,7 @@ export default function Home() {
                                 fashion and interior industries.
                             </p>
                         </AccordionItem>
-                        <AccordionItem label='Reimagine'>
+                        <AccordionItem label={<><Icon icon='imagesearch_roller' size='xl' /> Reimagine</>}>
                             <p>
                                 The beauty of ECONYL® regenerated
                                 nylon is that it has the potential to be
