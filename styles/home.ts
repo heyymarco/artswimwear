@@ -122,7 +122,10 @@ export default () => [
                 fontSize: '4rem',
             }),
             ...children('.paragraphs', {
-                columns: 2,
+                columns: 1,
+                ...ifScreenWidthAtLeast('md', {
+                    columns: 2,
+                }),
                 marginBlockEnd: '3rem',
             }),
             ...descendants('.illus', {
