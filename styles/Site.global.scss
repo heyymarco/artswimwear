@@ -10,6 +10,12 @@
     --site-footer: 5rem;
 }
 
+.siteHeader:nth-child(n) {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    // margin-block-end: calc(0px - var(--site-header));
+}
 .siteFooter:nth-child(n) {
     box-sizing: border-box;
     block-size: var(--site-footer);

@@ -5,7 +5,7 @@ import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { Section } from '@/components/sections/Section'
-import { AccordionItem, Button, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
+import { AccordionItem, Button, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
 
 // const inter = Inter({ subsets: ['latin'] })
 
@@ -18,14 +18,18 @@ export default function Home() {
             </Head>
             <Main nude={true}>
                 <HeroSection theme='secondary' className={styles.hero}>
-                    {/* <Image alt='ART Etcnic Swimwear' src='/artswimwear.svg' width={48*4} height={40*4} /> */}
+                    <Carousel className='slides fill' nude={true} size='lg' theme='primary' mild={false}>
+                        {[1,2,3,4,5].map(item =>
+                            <Image alt='' src={`/slides/${item}.jpg`} width={1200} height={1800} />
+                        )}
+                    </Carousel>
                     <Container tag='footer' className='fill' theme='primary' mild={false} gradient={true}>
                         <Icon className='scroller' icon='scrolldown' size='xl' />
                         {/* <span className='hint'>Scroll down to see more.</span> */}
                     </Container>
                 </HeroSection>
                 <Section className={styles.features} title='Our Story' theme='secondary'>
-                    <div className='figures'>
+                    {/* <div className='figures'>
                         <figure>
                             <Image alt='Atika Paramita' src='/figures/atika.jpg' width={200} height={200} />
                             <figcaption>
@@ -44,7 +48,7 @@ export default function Home() {
                                 <Button buttonStyle='link' theme='primary' size='sm' href='https://www.instagram.com/rossaliauran'>@ROSSALIAURAN</Button>
                             </figcaption>
                         </figure>
-                    </div>
+                    </div> */}
                     <p>
                         ART is an acronym for Atika and Rossalia Tomlinson, they are best friends from
                         high school. In 2019, they decided to follow their dreams and launch ART – their
@@ -107,6 +111,49 @@ export default function Home() {
                             </AccordionItem>
                         </ExclusiveAccordion>
                     </Section>
+                </Section>
+                <Section className={styles.regeneration} title='THE ECONYL® REGENERATION SYSTEM' theme='secondary' mild={true}>
+                    <Image className='illus' src='/illus/product-cycle.jpg' alt='product regeneration' width={800*0.5} height={590*0.5} />
+                    <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary' listStyle='numbered'>
+                        <AccordionItem label='Rescue'>
+                            <p>
+                                The ECONYL® Regeneration System
+                                starts with rescuing waste, like fishing
+                                nets, fabric scraps, carpet flooring and
+                                industrial plastic from landfills and
+                                oceans all over the world. That waste
+                                is then sorted and cleaned to recover
+                                all of the nylon possible.
+                            </p>
+                        </AccordionItem>
+                        <AccordionItem label='Regenerate'>
+                            <p>
+                                Through a radical regeneration
+                                and purification process, the nylon
+                                waste is recycled right back to its
+                                original purity. That means ECONYL®
+                                regenerated nylon is exactly the same as virgin nylon.
+                            </p>
+                        </AccordionItem>
+                        <AccordionItem label='Remake'>
+                            <p>
+                                ECONYL® regenerated nylon is
+                                processed into
+                                carpet yarn and textile yarn for the
+                                fashion and interior industries.
+                            </p>
+                        </AccordionItem>
+                        <AccordionItem label='Reimagine'>
+                            <p>
+                                The beauty of ECONYL® regenerated
+                                nylon is that it has the potential to be
+                                recycled infinitely, without ever losing
+                                its quality. We believe circular design
+                                is the future and using ECONYL® is
+                                our first step on that journey.
+                            </p>
+                        </AccordionItem>
+                    </ExclusiveAccordion>
                 </Section>
             </Main>
         </>

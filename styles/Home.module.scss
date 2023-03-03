@@ -1,17 +1,19 @@
-.hero>article {
+.hero>article:nth-child(n) {
     display: grid;
     justify-content: stretch;
     align-items: center;
     
-    background-image: url('/banners/cover.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
+    // background-image: url('/banners/cover.png');
+    // background-repeat: no-repeat;
+    // background-position: center;
+    // background-size: contain;
     box-sizing: border-box;
     height: calc(100vh  - var(--site-header));
     height: calc(100dvh - var(--site-header));
     height: calc(100svh - var(--site-header));
-
+    &>[class~='slides'] {
+        height: calc(100vh  - var(--site-header) - var(--site-footer));
+    }
     &>footer {
         align-self: end;
 
@@ -77,5 +79,18 @@
         flex-direction: row;
         align-items: center;
         gap: 2rem;
+    }
+}
+
+
+.regeneration>article {
+    &>:is(h1, h2) {
+        font-size: 3rem;
+    }
+    & [class~='illus'] {
+        display: block;
+        width: 100%;
+        object-fit: contain;
+        margin-block-end: 3rem;
     }
 }
