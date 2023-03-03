@@ -20,7 +20,7 @@ export default function Home() {
                 <HeroSection theme='secondary' className={styles.hero}>
                     <Carousel className='slides fill' nude={true} size='lg' theme='primary' mild={false}>
                         {[1,2,3,4,5].map(item =>
-                            <Image alt='' src={`/slides/${item}.jpg`} width={1200} height={1800} />
+                            <Image key={item} alt='' src={`/slides/${item}.jpg`} width={1200} height={1800} />
                         )}
                     </Carousel>
                     <Container tag='footer' className='fill' theme='primary' mild={false} gradient={true}>
