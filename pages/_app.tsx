@@ -13,6 +13,9 @@ import { Section } from '@/components/sections/Section';
 import { GenericSection } from '@/components/sections/GenericSection';
 import { Container } from '@reusable-ui/components';
 
+import { store } from '@/store/store'
+import { Provider } from 'react-redux'
+
 const Header = () => {
     return (
         <>
@@ -52,11 +55,11 @@ const Footer = () => {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
-    return (<>
+    return (<Provider store={store}>
         <Header />
         
         <Component {...pageProps} />
         
         <Footer />
-    </>);
+    </Provider>);
 }

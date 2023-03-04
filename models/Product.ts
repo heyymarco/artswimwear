@@ -11,6 +11,7 @@ const productSchema = new Schema({
     name        : { type: String, required: true },
     price       : { type: Number, required: true },
     description : String,
+    images      : [String],
 });
 // type Product = InferSchemaType<typeof productSchema>;
 
