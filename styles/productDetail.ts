@@ -33,8 +33,12 @@ export default () => [
             position: 'relative',
             width: '100%',
             height: '100%',
-            ...children('img', {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            ...children(['img', '.img'], {
                 objectFit: 'contain',
+                fontSize: '3rem',
             })
         }, { specificityWeight: 2 }),
     }),
