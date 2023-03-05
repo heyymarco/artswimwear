@@ -11,6 +11,9 @@ export const apiSlice = createApi({
         getProductList: builder.query<any[], void>({
             query : () => 'product',
         }),
+        getProductDetail: builder.query<any[], string>({
+            query : (productPath: string) => `product?path=${productPath}`,
+        }),
     }),
 });
 
@@ -18,4 +21,5 @@ export const apiSlice = createApi({
 
 export const {
     useGetProductListQuery,
+    useGetProductDetailQuery,
 } = apiSlice;

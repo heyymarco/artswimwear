@@ -19,7 +19,7 @@ const useProductListStyleSheet = dynamicStyleSheets(
 
 
 
-export default function Home() {
+export default function ProductList() {
     const styles = useProductListStyleSheet();
     const {data, error, isLoading} = useGetProductListQuery();
     return (

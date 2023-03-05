@@ -23,24 +23,21 @@ export default async (
 ) => {
     switch(req.method) {
         case 'GET':
-            // await new Promise<void>((resolve) => {
-            //     setTimeout(() => {
-            //         resolve();
-            //     }, 2000);
-            // });
-            // for (const prod of await Product.find({})) {
-            //     if (prod.images.length) continue;
-            //     prod.images = [
-            //         '1.jpg',
-            //         '2.jpg',
-            //         '3.jpg',
-            //         '4.jpg',
-            //         '5.jpg',
-            //         '6.jpg',
-            //     ];
-            //     await prod.save();
-            //     console.log('product updated!');
-            // }
+            await new Promise<void>((resolve) => {
+                setTimeout(() => {
+                    resolve();
+                }, 2000);
+            });
+            
+            
+            
+            if (req.query.path) {
+                const product = await Product.findOne({ path: req.query.path }, { name: true, price: true, images: true });
+                return res.status(200).json(product);
+            } // if
+            
+            
+            
             const products = await Product.find({}, { name: true, price: true, images: true, path: true });
             let productPaths : string[]|undefined = undefined;
             for (const product of products) {
