@@ -33,7 +33,7 @@ export default () => [
         ...children('article', {
             display: 'flex',
             flexDirection: 'column',
-            gap: '1rem',
+            // gap: '1rem',
             ...children('figure', {
                 display: 'flex',
                 justifyContent: 'center',
@@ -47,25 +47,34 @@ export default () => [
                     objectFit: 'contain',
                     transition: [
                         ['scale', '300ms'],
-                    ]
+                    ],
                 }),
             }),
             ...children('header', {
-                ...children(['h2', 'span'], {
+                padding: '0.75rem',
+                ...children(['.name', '.price'], {
                     overflow: 'hidden',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
                 }),
+                ...children('.price', {
+                    textAlign: 'end',
+                }),
             }),
             cursor: 'pointer',
+            boxShadow: '0px 0px 1rem rgba(0, 0, 0, 0.1)',
+            transition: [
+                ['box-shadow', '300ms'],
+            ],
             ...rule(':hover', {
+                boxShadow: '0px 0px 1rem rgba(0, 0, 0, 0.7)',
                 ...children('figure', {
                     ...children(['img', '.img'], {
                         scale: '105%',
                     }),
                 }),
                 ...children('header', {
-                    ...children(['h2', 'span'], {
+                    ...children(['.name', '.price'], {
                         overflow: 'visible',
                     }),
                 }),

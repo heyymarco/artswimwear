@@ -40,10 +40,10 @@ export default function Home() {
                                     <ImageWithFallback alt={product.name ?? ''} src={product.images?.[0] ? `/products/${product.name}/${product.images?.[0]}` : undefined} fill={true} />
                                 </figure>
                                 <header>
-                                    <h2 className='h6'>
+                                    <h2 className='name h6'>
                                         {product.name}
                                     </h2>
-                                    <span className='h6'>
+                                    <span className='price h6'>
                                         {formatCurrency(product.price)}
                                     </span>
                                 </header>
