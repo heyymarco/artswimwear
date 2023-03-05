@@ -8,10 +8,14 @@ import { Section } from '@/components/sections/Section'
 import { AccordionItem, Button, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 
+
+
 // const inter = Inter({ subsets: ['latin'] })
 const useHomeStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'@/styles/home')
 , { id: 'home' });
+
+
 
 export default function Home() {
     const styles = useHomeStyleSheet();
