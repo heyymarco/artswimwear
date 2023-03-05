@@ -13,6 +13,8 @@ import { useRouter } from 'next/router'
 import { Section } from '@/components/sections/Section'
 import ReactMarkdown from 'react-markdown'
 import { useState } from 'react'
+import { addToCart } from '@/store/features/cart/cartSlice'
+import { useDispatch } from 'react-redux'
 
 
 
@@ -28,6 +30,10 @@ export default function ProductDetail() {
     const router = useRouter();
     const {data: product, error, isLoading} = useGetProductDetailQuery(router.query.productPath as any ?? '');
     const [addProductQty, setAddProductQty] = useState(1);
+    const dispatch = useDispatch();
+    
+    
+    
     return (
         <>
             <Head>
@@ -74,7 +80,7 @@ export default function ProductDetail() {
                                     </Group>
                                 </p>
                                 <p>
-                                    <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction'>Add to cart</ButtonIcon>
+                                    <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction' onClick={() => dispatch(addToCart({productId: product._id, quantity: addProductQty}))}>Add to cart</ButtonIcon>
                                 </p>
                             </section>
                             {!!product.description && <section className='desc'>
