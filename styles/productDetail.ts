@@ -48,6 +48,7 @@ export default () => [
             ...children('article', {
                 display: 'grid',
                 gridTemplate: [[
+                    '"nav" auto',
                     '"images" 25rem',
                     '"addToCart" auto',
                     '"desc" auto',
@@ -56,13 +57,15 @@ export default () => [
                 ]],
                 ...ifScreenWidthAtLeast('lg', {
                     gridTemplate: [[
+                        '"nav          nav" auto',
                         '"images addToCart" 25rem',
                         '"desc        desc" auto',
                         '/',
                         '3fr     2fr',
                     ]],
                 }),
-                gap: '4rem',
+                gapInline: '4rem',
+                gapBlock: '2rem',
                 ...children('.images', {
                     gridArea: 'images',
                     ...children('.slides', {

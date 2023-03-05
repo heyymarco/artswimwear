@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Busy, Button, Carousel, Group, Input } from '@reusable-ui/components'
+import { Busy, Button, Carousel, Group, Input, Nav, NavItem } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { GenericSection } from '@/components/sections/GenericSection'
 import { useGetProductDetailQuery } from '@/store/features/api/apiSlice'
@@ -38,6 +38,13 @@ export default function ProductDetail() {
                         isLoading
                         ? <Busy theme='primary' size='lg' />
                         : <>
+                            <section className='nav'>
+                                <Nav orientation='inline' theme='primary' listStyle='breadcrumb'>
+                                    <NavItem end><Link href='/'>Home</Link></NavItem>
+                                    <NavItem end><Link href='/products'>Products</Link></NavItem>
+                                    <NavItem end><Link href={`/products/${product.path}`} >{product.name}</Link></NavItem>
+                                </Nav>
+                            </section>
                             <section className='images'>
                                 <Carousel className='slides' size='lg' theme='primary'>
                                     {product?.images?.map((img: string, index: number) =>

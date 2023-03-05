@@ -32,7 +32,7 @@ export default async (
             
             
             if (req.query.path) {
-                const product = await Product.findOne({ path: req.query.path }, { name: true, price: true, images: true, description: true });
+                const product = await Product.findOne({ path: req.query.path }, { name: true, price: true, images: true, path: true, description: true });
                 return res.status(200).json(product);
             } // if
             
