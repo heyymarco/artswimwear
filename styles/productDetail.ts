@@ -79,7 +79,13 @@ export default () => [
                         width: 'max-content',
                     }),
                     ...descendants('.ctrlAction', {
-                        width: '100%',
+                        width: 'fill-available',
+                        ...fallbacks({
+                            width: '-webkit-fill-available',
+                        }),
+                        ...fallbacks({
+                            width: '100%',
+                        }),
                     }),
                 }),
                 ...children('.desc', {
