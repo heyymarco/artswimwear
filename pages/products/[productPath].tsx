@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Busy, Carousel } from '@reusable-ui/components'
+import { Busy, Button, Carousel, Group, Input } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { GenericSection } from '@/components/sections/GenericSection'
 import { useGetProductDetailQuery } from '@/store/features/api/apiSlice'
@@ -11,6 +11,7 @@ import ImageWithFallback from '@/components/ImageWithFallback'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Section } from '@/components/sections/Section'
+import ReactMarkdown from 'react-markdown'
 
 
 
@@ -37,13 +38,39 @@ export default function ProductDetail() {
                         isLoading
                         ? <Busy theme='primary' size='lg' />
                         : <>
-                            <Carousel size='lg' theme='primary'>
-                                {product?.images?.map((img: string, index: number) =>
-                                    <figure className='img-frame' key={index}>
-                                        <ImageWithFallback src={`/products/${product.name}/${img}`} alt={`image #${index + 1} of ${product.name}`}  fill={true} />
-                                    </figure>
-                                )}
-                            </Carousel>
+                            <section className='images'>
+                                <Carousel className='slides' size='lg' theme='primary'>
+                                    {product?.images?.map((img: string, index: number) =>
+                                        <figure className='img-frame' key={index}>
+                                            <ImageWithFallback src={`/products/${product.name}/${img}`} alt={`image #${index + 1} of ${product.name}`} fill={true} priority={true} sizes='100vw' />
+                                        </figure>
+                                    )}
+                                </Carousel>
+                            </section>
+                            <section className='addToCart'>
+                                <h1 className='name h4'>
+                                    {product.name}
+                                </h1>
+                                <span className='price h5'>
+                                    {formatCurrency(product.price)}
+                                </span>
+                                <p>
+                                    Quantity:
+                                    <Group theme='primary' className='ctrlQty'>
+                                        <Button>-</Button>
+                                        <Input type='number' min={1} max={9} defaultValue={1} />
+                                        <Button>+</Button>
+                                    </Group>
+                                </p>
+                                <p>
+                                    <Button theme='primary' className='ctrlAction'>Add to cart</Button>
+                                </p>
+                            </section>
+                            {!!product.description && <section className='desc'>
+                                <ReactMarkdown>
+                                    {product.description}
+                                </ReactMarkdown>
+                            </section>}
                         </>
                     }
                 </Section>

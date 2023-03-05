@@ -36,7 +36,7 @@ export default function ProductList() {
                         : data?.map((product) =>
                             <article key={product._id}>
                                 <figure>
-                                    <ImageWithFallback alt={product.name ?? ''} src={product.images?.[0] ? `/products/${product.name}/${product.images?.[0]}` : undefined} fill={true} />
+                                    <ImageWithFallback alt={product.name ?? ''} src={product.images?.[0] ? `/products/${product.name}/${product.images?.[0]}` : undefined} fill={true} sizes='414px' />
                                 </figure>
                                 <header>
                                     <h2 className='name h6'>

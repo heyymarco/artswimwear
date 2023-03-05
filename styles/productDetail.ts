@@ -1,4 +1,5 @@
 import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
+import { ifScreenWidthAtLeast } from "@reusable-ui/core";
 
 
 
@@ -29,17 +30,59 @@ export default () => [
                 }),
             }),
         }),
-        ...descendants('.img-frame', {
-            position: 'relative',
-            width: '100%',
-            height: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            ...children(['img', '.img'], {
-                objectFit: 'contain',
-                fontSize: '3rem',
-            })
-        }, { specificityWeight: 2 }),
+        ...rule(':not(.loading)', {
+            ...descendants('.img-frame', {
+                position: 'relative',
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                ...children(['img', '.img'], {
+                    objectFit: 'contain',
+                    fontSize: '3rem',
+                })
+            }, { specificityWeight: 2 }),
+            
+            
+            ...children('article', {
+                display: 'grid',
+                gridTemplate: [[
+                    '"images" 25rem',
+                    '"addToCart" auto',
+                    '"desc" auto',
+                    '/',
+                    '1fr',
+                ]],
+                ...ifScreenWidthAtLeast('lg', {
+                    gridTemplate: [[
+                        '"images addToCart" 25rem',
+                        '"desc        desc" auto',
+                        '/',
+                        '3fr     2fr',
+                    ]],
+                }),
+                gap: '4rem',
+                ...children('.images', {
+                    gridArea: 'images',
+                    ...children('.slides', {
+                        height: '100%',
+                    })
+                }),
+                ...children('.addToCart', {
+                    gridArea: 'addToCart',
+                    ...descendants('.ctrlQty', {
+                        display: 'flex',
+                        width: 'max-content',
+                    }),
+                    ...descendants('.ctrlAction', {
+                        width: '100%',
+                    }),
+                }),
+                ...children('.desc', {
+                    gridArea: 'desc',
+                }),
+            }),
+        }),
     }),
 ];
