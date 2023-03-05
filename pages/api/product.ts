@@ -22,11 +22,11 @@ export default async (
 ) => {
     switch(req.method) {
         case 'GET':
-            await new Promise<void>((resolve) => {
-                setTimeout(() => {
-                    resolve();
-                }, 2000);
-            });
+            // await new Promise<void>((resolve) => {
+            //     setTimeout(() => {
+            //         resolve();
+            //     }, 2000);
+            // });
             // for (const prod of await Product.find({})) {
             //     if (prod.images.length) continue;
             //     prod.images = [
