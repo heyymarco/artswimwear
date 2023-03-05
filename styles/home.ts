@@ -130,6 +130,7 @@ export default () => [
             }),
             ...descendants('.illus', {
                 objectFit: 'cover',
+                height: 'auto',
             }),
         }),
     }),
@@ -142,6 +143,7 @@ export default () => [
             }),
             ...descendants('.illus', {
                 objectFit: 'cover',
+                height: 'auto',
             }),
         }),
     }),
