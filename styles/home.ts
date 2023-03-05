@@ -52,7 +52,7 @@ export default () => [
                 }),
             })
         }),
-    }),
+    }, { specificityWeight: 2 }),
     scopeOf('features', {
         ...children('article', {
             ...children(['h1', 'h2'], {
@@ -82,14 +82,14 @@ export default () => [
                 }),
             }),
         }),
-    }),
+    }, { specificityWeight: 2 }),
     scopeOf('fabrics', {
         ...children('article', {
             ...children(['h1', 'h2'], {
                 fontSize: '3rem',
             }),
         }),
-    }),
+    }, { specificityWeight: 2 }),
     scopeOf('howWorks', {
         ...children('article', {
             ...descendants('.how-work-item', {
@@ -102,7 +102,7 @@ export default () => [
                 gap: '2rem',
             }),
         }),
-    }),
+    }, { specificityWeight: 2 }),
     scopeOf('regeneration', {
         ...children('article', {
             ...children(['h1', 'h2'], {
@@ -113,7 +113,7 @@ export default () => [
                 marginBlockEnd: '3rem',
             }),
         }),
-    }),
+    }, { specificityWeight: 2 }),
     scopeOf('ethic', {
         ...children('article', {
             display: 'flex',
@@ -133,7 +133,7 @@ export default () => [
                 height: 'auto',
             }),
         }),
-    }),
+    }, { specificityWeight: 2 }),
     scopeOf('community', {
         ...children('article', {
             display: 'flex',
@@ -146,5 +146,5 @@ export default () => [
                 height: 'auto',
             }),
         }),
-    }),
+    }, { specificityWeight: 2 }),
 ];
