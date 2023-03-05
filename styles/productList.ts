@@ -9,19 +9,41 @@ const minImageSize = 255;  // 255px
 export default () => [
     scopeOf('list', {
         display: 'grid',
-        gridTemplateColumns: `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
+        ...rule('.loading', {
+            justifyContent: 'center',
+            alignContent: 'center',
+            
+            boxSizing: 'border-box',
+            height:     `calc(100svh - var(--site-header) - var(--site-footer))`,
+            ...fallbacks({
+                height: `calc(100dvh - var(--site-header) - var(--site-footer))`,
+            }),
+            ...fallbacks({
+                height: `calc(100vh  - var(--site-header) - var(--site-footer))`,
+            }),
+            
+            ...children('[role="status"]', {
+                fontSize: '4rem',
+            }),
+        }),
+        ...rule(':not(.loading)', {
+            gridTemplateColumns: `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
+        }),
         gap: '4rem',
         ...children('article', {
             display: 'flex',
             flexDirection: 'column',
             gap: '1rem',
             ...children('figure', {
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 position: 'relative',
                 minWidth: `${minImageSize}px`,
                 aspectRatio: '1/1',
                 background: 'white',
                 overflow: 'hidden',
-                ...children('img', {
+                ...children(['img', '.img'], {
                     objectFit: 'contain',
                     transition: [
                         ['scale', '300ms'],
@@ -38,7 +60,7 @@ export default () => [
             cursor: 'pointer',
             ...rule(':hover', {
                 ...children('figure', {
-                    ...children('img', {
+                    ...children(['img', '.img'], {
                         scale: '105%',
                     }),
                 }),
