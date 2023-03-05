@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Busy, Button, Carousel, Group, Input, Nav, NavItem } from '@reusable-ui/components'
+import { Busy, Button, ButtonIcon, Carousel, Group, Input, Nav, NavItem } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { GenericSection } from '@/components/sections/GenericSection'
 import { useGetProductDetailQuery } from '@/store/features/api/apiSlice'
@@ -12,6 +12,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Section } from '@/components/sections/Section'
 import ReactMarkdown from 'react-markdown'
+import { useState } from 'react'
 
 
 
@@ -26,6 +27,7 @@ export default function ProductDetail() {
     const styles = useProductDetailStyleSheet();
     const router = useRouter();
     const {data: product, error, isLoading} = useGetProductDetailQuery(router.query.productPath as any ?? '');
+    const [addProductQty, setAddProductQty] = useState(1);
     return (
         <>
             <Head>
@@ -66,13 +68,13 @@ export default function ProductDetail() {
                                 <p>
                                     Quantity:
                                     <Group theme='primary' className='ctrlQty'>
-                                        <Button>-</Button>
-                                        <Input type='number' min={1} max={9} defaultValue={1} />
-                                        <Button>+</Button>
+                                        <ButtonIcon icon='remove' label='decrease' enabled={addProductQty > 1} onClick={() => setAddProductQty((currentValue) => Math.max(currentValue - 1, 1))} />
+                                        <Input type='number' min={1} max={9} value={addProductQty} onChange={(event) => setAddProductQty(event.currentTarget.valueAsNumber || 1)} />
+                                        <ButtonIcon icon='add' label='increase' enabled={addProductQty < 9} onClick={() => setAddProductQty((currentValue) => Math.min(currentValue + 1, 9))} />
                                     </Group>
                                 </p>
                                 <p>
-                                    <Button theme='primary' className='ctrlAction'>Add to cart</Button>
+                                    <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction'>Add to cart</ButtonIcon>
                                 </p>
                             </section>
                             {!!product.description && <section className='desc'>
