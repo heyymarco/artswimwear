@@ -1,5 +1,4 @@
-import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
-import { ifScreenWidthAtLeast } from "@reusable-ui/core";
+import { children, fallbacks, rule, scopeOf } from "@cssfn/core";
 
 
 
@@ -63,7 +62,6 @@ export default () => [
                     textAlign: 'end',
                 }),
             }),
-            cursor: 'pointer',
             boxShadow: '0px 0px 1rem rgba(0, 0, 0, 0.1)',
             transition: [
                 ['box-shadow', '300ms'],
@@ -80,7 +78,13 @@ export default () => [
                         overflow: 'visible',
                     }),
                 }),
-            })
+            }),
+            
+            position: 'relative',
+            ...children('a', {
+                position: 'absolute',
+                inset: 0,
+            }),
         }),
     }),
 ];

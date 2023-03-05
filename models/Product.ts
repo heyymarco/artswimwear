@@ -12,6 +12,7 @@ const productSchema = new Schema({
     price       : { type: Number, required: true },
     description : String,
     images      : [String],
+    path        : String,
 });
 // type Product = InferSchemaType<typeof productSchema>;
 

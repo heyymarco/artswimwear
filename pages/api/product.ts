@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { connectDB } from '@/libs/dbConn'
 import Product from '@/models/Product'
+import { formatPath } from '@/libs/formatters';
 
 
 
@@ -40,9 +41,27 @@ export default async (
             //     await prod.save();
             //     console.log('product updated!');
             // }
-            return res.status(200).json(
-                await Product.find({}, { name: true, price: true, images: true })
-            );
+            const products = await Product.find({}, { name: true, price: true, images: true, path: true });
+            let productPaths : string[]|undefined = undefined;
+            for (const product of products) {
+                if (!product.path) {
+                    let productPath = formatPath(product.name);
+                    
+                    // check for duplicates:
+                    if (!productPaths) productPaths = products.map((product) => product.path).filter((path) => !!path);
+                    if (productPaths.includes(productPath)) {
+                        let newProductPath = productPath;
+                        for (let counter = 2; counter < 100 && productPaths.includes(newProductPath = `${productPath}-${counter}`); counter++) ;
+                        productPath = newProductPath;
+                    } // if
+                    
+                    // assign new pre-computed path:
+                    product.path = productPath;
+                    await product.save();
+                    console.log('path updated: ', productPath);
+                }
+            }
+            return res.status(200).json(products);
         
         
         

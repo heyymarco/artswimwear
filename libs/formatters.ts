@@ -8,3 +8,9 @@ const currencyFormatter = new Intl.NumberFormat('id-ID', {
 
 
 export const formatCurrency = (value: number) => currencyFormatter.format(value);
+
+
+
+export const formatPath = (productName: string) => {
+    return productName.replace(/(\s|-)+/g, '-').toLowerCase().trim();
+}

@@ -1,17 +1,14 @@
 import Head from 'next/head'
-import Image from 'next/image'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { HeroSection } from '@/components/sections/HeroSection'
-import { Section } from '@/components/sections/Section'
-import { AccordionItem, Busy, Button, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
+import { Busy } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { GenericSection } from '@/components/sections/GenericSection'
 import { useGetProductListQuery } from '@/store/features/api/apiSlice'
-import LoadingBar from '@/components/LoadingBar'
 import { formatCurrency } from '@/libs/formatters'
 import ImageWithFallback from '@/components/ImageWithFallback'
+import Link from 'next/link'
 
 
 
@@ -49,6 +46,7 @@ export default function Home() {
                                         {formatCurrency(product.price)}
                                     </span>
                                 </header>
+                                <Link href={`/products/${product.path}`} />
                             </article>
                         )
                     }
