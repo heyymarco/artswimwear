@@ -18,7 +18,7 @@ import ImageWithFallback from '@/components/ImageWithFallback'
 // const inter = Inter({ subsets: ['latin'] })
 const useProductListStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'@/styles/productList')
-, { id: 'home' });
+, { id: 'prod-list' });
 
 export default function Home() {
     const styles = useProductListStyleSheet();
