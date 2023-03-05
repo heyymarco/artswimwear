@@ -9,6 +9,7 @@ const minImageSize = 255;  // 255px
 export default () => [
     scopeOf('list', {
         display: 'grid',
+        overflow: 'hidden', // workaround for overflowing popup
         ...rule('.loading', {
             justifyContent: 'center',
             alignContent: 'center',
@@ -48,6 +49,7 @@ export default () => [
                     transition: [
                         ['scale', '300ms'],
                     ],
+                    fontSize: '2rem',
                 }),
             }),
             ...children('header', {
