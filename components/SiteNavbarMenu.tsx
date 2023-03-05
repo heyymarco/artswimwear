@@ -3,6 +3,7 @@ import { ButtonIcon, Collapse, HamburgerMenuButton, Icon, List, ListItem, Nav, N
 import { selectCartTotalQuantity, toggleCart } from '@/store/features/cart/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEvent } from '@reusable-ui/core';
+import { useEffect, useInsertionEffect } from 'react';
 
 
 
@@ -24,20 +25,27 @@ const SiteNavbarMenu = ({
     
     
     
-    const cartTotalQuantity = useSelector(selectCartTotalQuantity);
+    const hasCart = !!useSelector(selectCartTotalQuantity);
     const dispatch = useDispatch();
     const handleToggleCart = useEvent(() => {
         dispatch(toggleCart());
     });
     
     
+    
+    useInsertionEffect(() => {
+        navbars.listGridArea = (!hasCart ? '2/1/2/3' : '2/1/2/4') as any;
+    }, [hasCart]);
+    
+    
+    
     return (
         <>
             <SiteLogo />
             
-            {!navbarExpanded && <ButtonIcon icon='shopping_cart' size='lg' onClick={handleToggleCart} />}
+            {!navbarExpanded && hasCart && <ButtonIcon icon='shopping_cart' size='lg' onClick={handleToggleCart} />}
             
-            {!navbarExpanded && !!cartTotalQuantity && <HamburgerMenuButton {...basicVariantProps} className='toggler' active={listExpanded} onClick={handleClickToToggleList} />}
+            {!navbarExpanded && <HamburgerMenuButton {...basicVariantProps} className='toggler' active={listExpanded} onClick={handleClickToToggleList} />}
             
             <Collapse className='list' mainClass={navbarExpanded ? '' : undefined} expanded={listExpanded}>
                 <Nav tag='ul' role='' {...basicVariantProps} orientation={navbarExpanded ? 'inline' : 'block'} listStyle='flat' gradient={navbarExpanded ? 'inherit' : false}>
@@ -47,7 +55,7 @@ const SiteNavbarMenu = ({
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
                     <NavItem href='https://www.instagram.com/'><Icon icon='instagram' size='lg' /></NavItem>
                     
-                    {navbarExpanded && !!cartTotalQuantity && <ListItem className='cartBtn' {...basicVariantProps} actionCtrl={true} onClick={handleToggleCart}>
+                    {navbarExpanded && hasCart && <ListItem className='cartBtn' {...basicVariantProps} actionCtrl={true} onClick={handleToggleCart}>
                         <Icon icon='shopping_cart' size='lg' />
                     </ListItem>}
                 </Nav>
