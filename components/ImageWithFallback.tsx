@@ -9,7 +9,7 @@ type ImageProps = Parameters<typeof Image>[0]
 export interface ImageWithFallbackProps extends Omit<ImageProps, 'src'> {
     src ?: ImageProps['src']
 }
-export default (props: ImageWithFallbackProps) => {
+const ImageWithFallback = (props: ImageWithFallbackProps) => {
     const [isLoaded, setIsLoaded] = useState<boolean|undefined>(undefined);
     const handleError = useEvent(() => {
         setIsLoaded(false); // error => false
@@ -36,4 +36,8 @@ export default (props: ImageWithFallbackProps) => {
             {src && (isLoaded !== false) && <Image {...props} src={src} onError={handleError} onLoadingComplete={handleLoaded} />}
         </>
     );
+}
+export {
+    ImageWithFallback,
+    ImageWithFallback as default,
 }
