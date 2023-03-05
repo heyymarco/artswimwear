@@ -1,4 +1,4 @@
-import { children, fallbacks, rule, scopeOf } from "@cssfn/core";
+import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
 
 
 
@@ -29,7 +29,13 @@ export default () => [
                 }),
             }),
         }),
-        ...rule(':not(.loading)', {
-        }),
+        ...descendants('.img-frame', {
+            position: 'relative',
+            width: '100%',
+            height: '100%',
+            ...children('img', {
+                objectFit: 'contain',
+            })
+        }, { specificityWeight: 2 }),
     }),
 ];

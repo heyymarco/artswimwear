@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Busy } from '@reusable-ui/components'
+import { Busy, Carousel } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { GenericSection } from '@/components/sections/GenericSection'
 import { useGetProductDetailQuery } from '@/store/features/api/apiSlice'
@@ -24,7 +24,7 @@ const useProductDetailStyleSheet = dynamicStyleSheets(
 export default function ProductDetail() {
     const styles = useProductDetailStyleSheet();
     const router = useRouter();
-    const {data, error, isLoading} = useGetProductDetailQuery(router.query.productPath as any ?? '');
+    const {data: product, error, isLoading} = useGetProductDetailQuery(router.query.productPath as any ?? '');
     return (
         <>
             <Head>
@@ -36,7 +36,15 @@ export default function ProductDetail() {
                     {
                         isLoading
                         ? <Busy theme='primary' size='lg' />
-                        : JSON.stringify(data)
+                        : <>
+                            <Carousel size='lg' theme='primary'>
+                                {product?.images?.map((img: string, index: number) =>
+                                    <figure className='img-frame' key={index}>
+                                        <ImageWithFallback src={`/products/${product.name}/${img}`} alt={`image #${index + 1} of ${product.name}`}  fill={true} />
+                                    </figure>
+                                )}
+                            </Carousel>
+                        </>
                     }
                 </Section>
             </Main>
