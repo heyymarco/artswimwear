@@ -217,14 +217,14 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
     
     
     // dom effects:
-    // watchdog for slider change by user:
+    // watchdog for input change by user:
     const prevValueDn = useRef<number>(valueDn);
     useEffect(() => {
         // conditions:
-        if (valueNow === valueDn)            return; // only trigger event of dynamically changes by user interaction, not programatically by controllable [value]
-        
         if (prevValueDn.current === valueDn) return; // no change detected => ignore
         prevValueDn.current = valueDn;
+        
+        if (valueNow === valueDn)            return; // only trigger event of dynamically changes by user interaction, not programatically by controllable [value]
         
         const inputElm = inputRefInternal.current;
         if (!inputElm)                       return; // the <input> element was not initialized => ignore
@@ -237,7 +237,18 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
             
             inputElm.dispatchEvent(new Event('input', { bubbles: true, cancelable: false, composed: true }));
         }, 0); // runs the 'input' event *next after* current event completed
-    }, [valueFn, valueDn]);
+    }, [valueNow, valueDn]);
+    
+    // sync the last (dynamic) changes to (current) `valueNow`:
+    useEffect(() => {
+        // conditions:
+        if (valueNow === valueDn)            return; // only trigger event of dynamically changes by user interaction, not programatically by controllable [value]
+        
+        
+        
+        // re-sync -- can be changed by controllable [value] --or-- can be reverted to previous value if the controllable refuses to apply the changed:
+        setValueDn(valueNow); // causes to re-render and re-run this effect, but will be blocked by the first condition, so *an infinity re-render* is impossible.
+    }, [valueNow, valueDn]);
     
     
     
