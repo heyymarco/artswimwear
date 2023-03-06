@@ -30,3 +30,7 @@ main {
     min-block-size: calc(100dvh - var(--site-header) - var(--site-footer));
     min-block-size: calc(100svh - var(--site-header) - var(--site-footer));
 }
+
+:where(ul, ol) {
+    list-style-position: inside;
+}
