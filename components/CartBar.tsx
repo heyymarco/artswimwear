@@ -24,8 +24,8 @@ export const CartBar = () => {
             </CardHeader>
             <CardBody>
                 <List theme='secondary' mild={false}>
-                    {!hasCart && <ListItem enabled={false}>- the cart is empty -</ListItem>}
-                    {hasCart  && <ListItem theme='primary'>Cart List:</ListItem>}
+                    <ListItem theme='primary'>Cart List:</ListItem>
+                    {!hasCart && <ListItem enabled={false}>--- the cart is empty ---</ListItem>}
                     {cartItems.map((item, index) =>
                         <ListItem key={index}>
                             <h2 className='name h6'>{item.productId}</h2>
