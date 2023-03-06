@@ -2,9 +2,8 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Busy, Button, ButtonIcon, Carousel, Group, Input, Nav, NavItem } from '@reusable-ui/components'
+import { Busy, ButtonIcon, Carousel, Nav, NavItem } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { GenericSection } from '@/components/sections/GenericSection'
 import { useGetProductDetailQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ImageWithFallback from '@/components/ImageWithFallback'
@@ -15,6 +14,7 @@ import ReactMarkdown from 'react-markdown'
 import { useState } from 'react'
 import { addToCart } from '@/store/features/cart/cartSlice'
 import { useDispatch } from 'react-redux'
+import QuantityInput from '@/components/QuantityInput'
 
 
 
@@ -74,11 +74,7 @@ export default function ProductDetail() {
                                 <p style={{marginBlockEnd: 0}}>
                                     Quantity:
                                 </p>
-                                <Group theme='primary' className='ctrlQty'>
-                                    <ButtonIcon icon='remove' label='decrease' enabled={addProductQty > 1} onClick={() => setAddProductQty((currentValue) => Math.max(currentValue - 1, 1))} />
-                                    <Input type='number' min={1} max={9} value={addProductQty} onChange={(event) => setAddProductQty(event.currentTarget.valueAsNumber || 1)} />
-                                    <ButtonIcon icon='add' label='increase' enabled={addProductQty < 9} onClick={() => setAddProductQty((currentValue) => Math.min(currentValue + 1, 9))} />
-                                </Group>
+                                <QuantityInput theme='primary' className='ctrlQty' min={1} />
                                 <p>
                                     <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction' onClick={() => dispatch(addToCart({productId: product._id, quantity: addProductQty}))}>Add to cart</ButtonIcon>
                                 </p>
