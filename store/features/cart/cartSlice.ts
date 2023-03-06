@@ -59,6 +59,9 @@ export const selectCartTotalQuantity = (state: RootState) => {
     for (const item of state.cart.items) counter += item.quantity;
     return counter;
 };
+export const selectCartItems = (state: RootState) => {
+    return state.cart.items;
+};
 export const selectIsCartShown = (state: RootState) => {
     return state.cart.showCart;
 };

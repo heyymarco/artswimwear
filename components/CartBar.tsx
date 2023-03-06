@@ -1,12 +1,15 @@
-import { CardBody, CardHeader, CloseButton, ModalSide } from '@reusable-ui/components';
+import { ButtonIcon, CardBody, CardHeader, CloseButton, Group, List, ListItem, ModalSide } from '@reusable-ui/components';
 
 import { useDispatch, useSelector } from 'react-redux'
-import { selectIsCartShown, showCart } from '@/store/features/cart/cartSlice';
+import { selectCartItems, selectCartTotalQuantity, selectIsCartShown, showCart } from '@/store/features/cart/cartSlice';
+import QuantityInput from './QuantityInput';
 
 
 
 export const CartBar = () => {
     const isCartShown = useSelector(selectIsCartShown);
+    const cartItems   = useSelector(selectCartItems);
+    const hasCart = !!cartItems.length;
     const dispatch = useDispatch();
     
     
@@ -20,16 +23,26 @@ export const CartBar = () => {
                 <CloseButton onClick={() => dispatch(showCart(false))} />
             </CardHeader>
             <CardBody>
-                <p>
-                    Lorem ipsum dolor sit amet
-                    <br />
-                    consectetur adipisicing elit.
-                </p>
-                <p>
-                    Explicabo aut deserunt nulla
-                    <br />
-                    iusto quod a est debitis.
-                </p>
+                <List theme='secondary' mild={false}>
+                    {!hasCart && <ListItem enabled={false}>- the cart is empty -</ListItem>}
+                    {hasCart  && <ListItem theme='primary'>Cart List:</ListItem>}
+                    {cartItems.map((item, index) =>
+                        <ListItem key={index}>
+                            <h2 className='name h6'>{item.productId}</h2>
+                            <p style={{display: 'inline', marginInlineEnd: '1rem'}}>Quantity:</p>
+                            <Group theme='primary' size='sm'>
+                                <ButtonIcon icon='delete' title='remove from cart' />
+                                <QuantityInput min={0} max={99} value={item.quantity} />
+                            </Group>
+                            <p>Subtotal price: $$$.</p>
+                        </ListItem>
+                    )}
+                    {hasCart  && <ListItem theme='primary'>
+                        <p>
+                            Total price: $$$.
+                        </p>
+                    </ListItem>}
+                </List>
             </CardBody>
         </ModalSide>
     )

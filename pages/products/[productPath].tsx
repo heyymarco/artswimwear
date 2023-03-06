@@ -74,7 +74,7 @@ export default function ProductDetail() {
                                 <p style={{marginBlockEnd: 0}}>
                                     Quantity:
                                 </p>
-                                <QuantityInput theme='primary' className='ctrlQty' min={1} />
+                                <QuantityInput theme='primary' className='ctrlQty' min={1} value={addProductQty} onChange={(event) => setAddProductQty(event.target.valueAsNumber)} />
                                 <p>
                                     <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction' onClick={() => dispatch(addToCart({productId: product._id, quantity: addProductQty}))}>Add to cart</ButtonIcon>
                                 </p>

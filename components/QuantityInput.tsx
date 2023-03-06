@@ -224,7 +224,7 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
             // styles:
             style={style}
         >
-            <ButtonIcon icon='remove' label='decrease' enabled={value > min} onClick={handleDecrease} />
+            <ButtonIcon icon='remove' title='decrease quantity' enabled={value > min} onClick={handleDecrease} />
             <Input
                 // rest props:
                 {...restInputProps}
@@ -252,7 +252,7 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
                 // formats:
                 type={type}
             />
-            <ButtonIcon icon='add' label='increase' enabled={value < max} onClick={handleIncrease} />
+            <ButtonIcon icon='add' title='increase quantity' enabled={value < max} onClick={handleIncrease} />
         </Group>
     );
 };
