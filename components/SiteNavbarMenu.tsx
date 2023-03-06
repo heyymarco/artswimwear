@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { ButtonIcon, Collapse, HamburgerMenuButton, Icon, List, ListItem, Nav, NavbarParams, navbars, NavItem } from '@reusable-ui/components';
+import { Badge, ButtonIcon, Collapse, HamburgerMenuButton, Icon, List, ListItem, Nav, NavbarParams, navbars, NavItem } from '@reusable-ui/components';
 import { selectCartTotalQuantity, toggleCart } from '@/store/features/cart/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEvent } from '@reusable-ui/core';
-import { useEffect, useInsertionEffect } from 'react';
+import { useEffect, useInsertionEffect, useRef, useState } from 'react';
 
 
 
@@ -25,7 +25,8 @@ const SiteNavbarMenu = ({
     
     
     
-    const hasCart = !!useSelector(selectCartTotalQuantity);
+    const cartTotalQuantity = useSelector(selectCartTotalQuantity);
+    const hasCart = !!cartTotalQuantity;
     const dispatch = useDispatch();
     const handleToggleCart = useEvent(() => {
         dispatch(toggleCart());
@@ -39,11 +40,40 @@ const SiteNavbarMenu = ({
     
     
     
+    const [cartStatusExcited, setCartStatusExcited] = useState(false);
+    const cartTogglerRef = useRef<any|null>(null);
+    const cartStatusRef = useRef<HTMLElement|null>(null)
+    const CartStatus = () => <Badge elmRef={cartStatusRef} floatingOn={cartTogglerRef} theme='danger' badgeStyle='pill' floatingPlacement='right-start' floatingOffset={!navbarExpanded ? -16 : -24} floatingShift={!navbarExpanded ? 3 : 10}>{cartTotalQuantity}</Badge>
+    useEffect(() => {
+        if (!hasCart) return;
+        const cartStatusElm = cartStatusRef.current;
+        if (!cartStatusElm) return;
+        
+        
+        
+        const cartStatusStyle = cartStatusElm.style;
+        const transitionDuration = 300; // ms
+        cartStatusStyle.transition = `scale ease ${transitionDuration}ms`;
+        setTimeout(() => {
+            cartStatusStyle.scale = '200%';
+            setTimeout(() => {
+                cartStatusStyle.scale = '';
+                setTimeout(() => {
+                    cartStatusStyle.transition = '';
+                    cartStatusStyle.scale = '';
+                }, 300);
+            }, 300);
+        }, 0);
+    }, [hasCart, cartTotalQuantity]); // if the quantity changes => make an animation
+    
+    
     return (
         <>
             <SiteLogo />
             
-            {!navbarExpanded && hasCart && <ButtonIcon icon='shopping_cart' size='lg' onClick={handleToggleCart} />}
+            {!navbarExpanded && hasCart && <ButtonIcon icon='shopping_cart' elmRef={cartTogglerRef} size='lg' onClick={handleToggleCart}>
+                <CartStatus />
+            </ButtonIcon>}
             
             {!navbarExpanded && <HamburgerMenuButton {...basicVariantProps} className='toggler' active={listExpanded} onClick={handleClickToToggleList} />}
             
@@ -55,8 +85,9 @@ const SiteNavbarMenu = ({
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
                     <NavItem href='https://www.instagram.com/'><Icon icon='instagram' size='lg' /></NavItem>
                     
-                    {navbarExpanded && hasCart && <ListItem className='cartBtn' {...basicVariantProps} actionCtrl={true} onClick={handleToggleCart}>
+                    {navbarExpanded && hasCart && <ListItem className='cartBtn' {...basicVariantProps} elmRef={cartTogglerRef} actionCtrl={true} onClick={handleToggleCart}>
                         <Icon icon='shopping_cart' size='lg' />
+                        <CartStatus />
                     </ListItem>}
                 </Nav>
             </Collapse>

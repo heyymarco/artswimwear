@@ -23,11 +23,13 @@ export default async (
 ) => {
     switch(req.method) {
         case 'GET':
-            await new Promise<void>((resolve) => {
-                setTimeout(() => {
-                    resolve();
-                }, 2000);
-            });
+            if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
+                await new Promise<void>((resolve) => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 2000);
+                });
+            } // if
             
             
             
