@@ -40,7 +40,6 @@ const SiteNavbarMenu = ({
     
     
     
-    const [cartStatusExcited, setCartStatusExcited] = useState(false);
     const cartTogglerRef = useRef<any|null>(null);
     const cartStatusRef = useRef<HTMLElement|null>(null)
     const CartStatus = () => <Badge elmRef={cartStatusRef} floatingOn={cartTogglerRef} theme='danger' badgeStyle='pill' floatingPlacement='right-start' floatingOffset={!navbarExpanded ? -16 : -24} floatingShift={!navbarExpanded ? 3 : 10}>{cartTotalQuantity}</Badge>

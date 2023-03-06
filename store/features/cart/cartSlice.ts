@@ -33,11 +33,15 @@ export const cartSlice = createSlice({
             } // if
             console.log('item added!')
         },
-        clearCart: ({items}) => {
-            items.splice(0);
+        clearCart: (state) => {
+            state.items.splice(0);
+            if (!state.items.length) state.showCart = false;
         },
         toggleCart: (state) => {
             state.showCart = !state.showCart;
+        },
+        showCart: (state, {payload: setShown}: PayloadAction<boolean>) => {
+            state.showCart = setShown;
         },
     },
 });
@@ -45,7 +49,7 @@ export const cartSlice = createSlice({
 
 
 export default cartSlice.reducer;
-export const { addToCart, clearCart, toggleCart } = cartSlice.actions;
+export const { addToCart, clearCart, toggleCart, showCart } = cartSlice.actions;
 
 
 
@@ -54,4 +58,7 @@ export const selectCartTotalQuantity = (state: RootState) => {
     let counter = 0;
     for (const item of state.cart.items) counter += item.quantity;
     return counter;
+};
+export const selectIsCartShown = (state: RootState) => {
+    return state.cart.showCart;
 };

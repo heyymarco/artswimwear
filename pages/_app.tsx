@@ -9,12 +9,11 @@ import type { AppProps } from 'next/app'
 import SiteNavbar from '../components/SiteNavbar'
 
 import Head from 'next/head'
-import { Section } from '@/components/sections/Section';
-import { GenericSection } from '@/components/sections/GenericSection';
 import { Container } from '@reusable-ui/components';
 
 import { store } from '@/store/store'
 import { Provider } from 'react-redux'
+import { CartBar } from '@/components/CartBar';
 
 const Header = () => {
     return (
@@ -61,5 +60,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <Component {...pageProps} />
         
         <Footer />
+        
+        <CartBar />
     </Provider>);
 }
