@@ -305,9 +305,11 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
                 
                 
                 // validations:
-                min={min}
-                max={max}
-                step={step}
+                {...{
+                    min  : negativeFn ? maxFn : minFn,
+                    max  : negativeFn ? minFn : maxFn,
+                    step : stepFn,
+                }}
                 
                 
                 
