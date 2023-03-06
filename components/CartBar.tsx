@@ -1,7 +1,7 @@
 import { ButtonIcon, CardBody, CardHeader, CloseButton, Group, List, ListItem, ModalSide } from '@reusable-ui/components';
 
 import { useDispatch, useSelector } from 'react-redux'
-import { selectCartItems, selectCartTotalQuantity, selectIsCartShown, showCart } from '@/store/features/cart/cartSlice';
+import { removeFromCart, selectCartItems, selectCartTotalQuantity, selectIsCartShown, setCartItemQuantity, showCart } from '@/store/features/cart/cartSlice';
 import QuantityInput from './QuantityInput';
 
 
@@ -31,8 +31,8 @@ export const CartBar = () => {
                             <h2 className='name h6'>{item.productId}</h2>
                             <p style={{display: 'inline', marginInlineEnd: '1rem'}}>Quantity:</p>
                             <Group theme='primary' size='sm'>
-                                <ButtonIcon icon='delete' title='remove from cart' />
-                                <QuantityInput min={0} max={99} value={item.quantity} />
+                                <ButtonIcon icon='delete' title='remove from cart' onClick={() => dispatch(removeFromCart({ productId: item.productId }))} />
+                                <QuantityInput min={0} max={99} value={item.quantity} onChange={(event) => dispatch(setCartItemQuantity({ productId: item.productId, quantity: event.target.valueAsNumber}))} />
                             </Group>
                             <p>Subtotal price: $$$.</p>
                         </ListItem>

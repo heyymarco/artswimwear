@@ -23,18 +23,43 @@ export const cartSlice = createSlice({
         addToCart: ({items}, {payload: {productId, quantity = 1}}: PayloadAction<CartEntry>) => {
             const existingEntry = items.find((entry) => entry.productId === productId);
             if (!existingEntry) {
-                items.push({
-                    productId,
-                    quantity,
-                });
+                if (quantity > 0) {
+                    items.push({  // add new
+                        productId,
+                        quantity, // non_zero quantity
+                    });
+                } // if
             }
             else {
                 existingEntry.quantity += quantity;
             } // if
-            console.log('item added!')
+        },
+        removeFromCart: ({items}, {payload: {productId}}: PayloadAction<Pick<CartEntry, 'productId'>>) => {
+            const itemIndex = items.findIndex((entry) => entry.productId === productId);
+            if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
+        },
+        setCartItemQuantity: ({items}, {payload: {productId, quantity}}: PayloadAction<CartEntry>) => {
+            const existingEntry = items.find((entry) => entry.productId === productId);
+            if (!existingEntry) {
+                if (quantity > 0) {
+                    items.push({  // add new
+                        productId,
+                        quantity, // non_zero quantity
+                    });
+                } // if
+            }
+            else {
+                if (quantity > 0) {
+                    existingEntry.quantity = quantity;
+                }
+                else {
+                    const itemIndex = items.findIndex((entry) => (entry === existingEntry));
+                    if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
+                } // if
+            } // if
         },
         clearCart: (state) => {
-            state.items.splice(0);
+            state.items.splice(0); // remove all
             if (!state.items.length) state.showCart = false;
         },
         toggleCart: (state) => {
@@ -49,7 +74,7 @@ export const cartSlice = createSlice({
 
 
 export default cartSlice.reducer;
-export const { addToCart, clearCart, toggleCart, showCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, setCartItemQuantity, clearCart, toggleCart, showCart } = cartSlice.actions;
 
 
 
