@@ -71,14 +71,14 @@ export default function ProductDetail() {
                                 <span className='price h5'>
                                     {formatCurrency(product.price)}
                                 </span>
-                                <p>
+                                <p style={{marginBlockEnd: 0}}>
                                     Quantity:
-                                    <Group theme='primary' className='ctrlQty'>
-                                        <ButtonIcon icon='remove' label='decrease' enabled={addProductQty > 1} onClick={() => setAddProductQty((currentValue) => Math.max(currentValue - 1, 1))} />
-                                        <Input type='number' min={1} max={9} value={addProductQty} onChange={(event) => setAddProductQty(event.currentTarget.valueAsNumber || 1)} />
-                                        <ButtonIcon icon='add' label='increase' enabled={addProductQty < 9} onClick={() => setAddProductQty((currentValue) => Math.min(currentValue + 1, 9))} />
-                                    </Group>
                                 </p>
+                                <Group theme='primary' className='ctrlQty'>
+                                    <ButtonIcon icon='remove' label='decrease' enabled={addProductQty > 1} onClick={() => setAddProductQty((currentValue) => Math.max(currentValue - 1, 1))} />
+                                    <Input type='number' min={1} max={9} value={addProductQty} onChange={(event) => setAddProductQty(event.currentTarget.valueAsNumber || 1)} />
+                                    <ButtonIcon icon='add' label='increase' enabled={addProductQty < 9} onClick={() => setAddProductQty((currentValue) => Math.min(currentValue + 1, 9))} />
+                                </Group>
                                 <p>
                                     <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction' onClick={() => dispatch(addToCart({productId: product._id, quantity: addProductQty}))}>Add to cart</ButtonIcon>
                                 </p>
