@@ -51,20 +51,29 @@ const SiteNavbarMenu = ({
         
         
         
-        const cartStatusStyle = cartStatusElm.style;
         const transitionDuration = 300; // ms
+        const cartStatusStyle = cartStatusElm.style;
         cartStatusStyle.transition = `scale ease ${transitionDuration}ms`;
-        setTimeout(() => {
+        const removeAnimation = () => {
+            cartStatusStyle.transition = '';
+            cartStatusStyle.scale = '';
+        };
+        let cancelAnimation = setTimeout(() => {
             cartStatusStyle.scale = '200%';
-            setTimeout(() => {
+            cancelAnimation = setTimeout(() => {
                 cartStatusStyle.scale = '';
-                setTimeout(() => {
-                    cartStatusStyle.transition = '';
-                    cartStatusStyle.scale = '';
-                }, 300);
-            }, 300);
+                cancelAnimation = setTimeout(removeAnimation, transitionDuration);
+            }, transitionDuration);
         }, 0);
+        
+        
+        
+        return () => {
+            clearTimeout(cancelAnimation);
+            removeAnimation();
+        }
     }, [hasCart, cartTotalQuantity]); // if the quantity changes => make an animation
+    
     
     
     return (
