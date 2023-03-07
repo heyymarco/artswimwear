@@ -38,7 +38,7 @@ export const CartBar = () => {
                     </ListItem>}
                     
                     {cartItems.map((item, index) => {
-                        const productPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                        const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
                         return (
                             <ListItem key={index}>
                                 <h2 className='name h6'>{item.productId}</h2>
@@ -47,7 +47,7 @@ export const CartBar = () => {
                                     <ButtonIcon icon='delete' title='remove from cart' onClick={() => dispatch(removeFromCart({ productId: item.productId }))} />
                                     <QuantityInput min={0} max={99} value={item.quantity} onChange={(event) => dispatch(setCartItemQuantity({ productId: item.productId, quantity: event.target.valueAsNumber}))} />
                                 </Group>
-                                <p>Subtotal price: {productPrice ? formatCurrency(productPrice) : '-'}</p>
+                                <p>Subtotal price: {productUnitPrice ? formatCurrency(productUnitPrice * item.quantity) : '-'}</p>
                             </ListItem>
                         );
                     })}
