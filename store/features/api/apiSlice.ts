@@ -1,4 +1,16 @@
+import type { RootState } from '@/store/store';
+import { createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+
+
+
+export interface PriceEntry {
+    _id: string,
+    price: number,
+}
+const priceListAdapter = createEntityAdapter<PriceEntry>({
+    selectId : (priceEntry) => priceEntry._id,
+});
 
 
 
@@ -14,6 +26,12 @@ export const apiSlice = createApi({
         getProductDetail: builder.query<any, string>({
             query : (productPath: string) => `product?path=${productPath}`,
         }),
+        getPriceList: builder.query<EntityState<PriceEntry>, void>({
+            query : () => 'priceList',
+            transformResponse(response: PriceEntry[]) {
+                return priceListAdapter.addMany(priceListAdapter.getInitialState(), response)
+            },
+        }),
     }),
 });
 
@@ -22,4 +40,14 @@ export const apiSlice = createApi({
 export const {
     useGetProductListQuery,
     useGetProductDetailQuery,
+    useGetPriceListQuery,
 } = apiSlice;
+
+
+
+// // selectors:
+// export const {
+//     selectById : getProductPrice,
+// } = priceListAdapter.getSelectors<RootState>(
+//     (state) => state.api as any
+// );
