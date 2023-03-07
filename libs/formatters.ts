@@ -7,10 +7,14 @@ const currencyFormatter = new Intl.NumberFormat('id-ID', {
 });
 
 
-export const formatCurrency = (value: number) => currencyFormatter.format(value);
+
+export const formatCurrency = (value?: number): string => {
+    if ((value === undefined) || isNaN(value)) return '-';
+    return currencyFormatter.format(value)
+};
 
 
 
-export const formatPath = (productName: string) => {
+export const formatPath = (productName: string): string => {
     return productName.replace(/(\s|-)+/g, '-').toLowerCase().trim();
 }

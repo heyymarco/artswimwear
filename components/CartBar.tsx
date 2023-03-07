@@ -47,14 +47,18 @@ export const CartBar = () => {
                                     <ButtonIcon icon='delete' title='remove from cart' onClick={() => dispatch(removeFromCart({ productId: item.productId }))} />
                                     <QuantityInput min={0} max={99} value={item.quantity} onChange={(event) => dispatch(setCartItemQuantity({ productId: item.productId, quantity: event.target.valueAsNumber}))} />
                                 </Group>
-                                <p>Subtotal price: {productUnitPrice ? formatCurrency(productUnitPrice * item.quantity) : '-'}</p>
+                                <p>Subtotal price: {formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</p>
                             </ListItem>
                         );
                     })}
                     
                     {hasCart  && <ListItem theme='primary'>
                         <p>
-                            Total price: $$$.
+                            Total price: {formatCurrency(cartItems.reduce((accum, item) => {
+                                const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                                if (!productUnitPrice) return accum;
+                                return accum + (productUnitPrice * item.quantity);
+                            }, 0))}
                         </p>
                     </ListItem>}
                 </List>
