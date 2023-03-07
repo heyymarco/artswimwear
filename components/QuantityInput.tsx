@@ -13,6 +13,7 @@ import {
 }                           from 'react'
 import {
     // react helper hooks:
+    useTriggerRender,
     useEvent,
     useMergeEvents,
     useMergeRefs,
@@ -112,15 +113,12 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
     
     
     
-    // fn props:
+    // utilities:
     const minFn      : number  = min ?? 0;
     const maxFn      : number  = max ?? 9;
     const stepFn     : number  = Math.abs(step ?? 1);
     const negativeFn : boolean = (maxFn < minFn);
     
-    
-    
-    // utilities:
     const trimValue = useCallback((value: number): number => {
         // make sure the requested value is between the min value & max value:
         value     = Math.min(Math.max(
@@ -144,9 +142,9 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
         
         return value;
     }, [minFn, maxFn, stepFn, negativeFn]); // (re)create the function on every time the constraints changes
-    const trimValueOpt = (value: number|undefined): number|null => {
+    const trimValueOpt = (value: number|undefined): number|undefined => {
         // conditions:
-        if (value === undefined) return null;
+        if (value === undefined) return undefined;
         
         
         
@@ -156,18 +154,52 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
     
     
     // fn props:
-    const valueFn        : number|null = trimValueOpt(value);
-    const defaultValueFn : number|null = trimValueOpt(defaultValue);
+    const valueFn        : number|undefined = trimValueOpt(value);
+    const defaultValueFn : number|undefined = trimValueOpt(defaultValue);
     
     
     
-    // states:
-    const [valueDn, setValueDn] = useState<number>(/*initialState: */valueFn ?? defaultValueFn ?? minFn);
+    // source of truth:
+    const valueRef         = useRef<number>(/*initialState: */valueFn ?? defaultValueFn ?? minFn);
+    if (valueFn !== undefined) valueRef.current = valueFn;  //   controllable component mode: update the source_of_truth on every_re_render -- on every [value] prop changes
+    const [triggerRender]  = useTriggerRender();            // uncontrollable component mode: update the source_of_truth when modified internally by internal component(s)
     
-    
-    
-    // fn props:
-    const valueNow : number = valueFn /*controllable*/ ?? valueDn /*uncontrollable*/;
+    type ChangeValueAction = 'setValue'|'decrease'|'increase'
+    const changeValue     = useCallback((action: ChangeValueAction, amount: number): void => {
+        let value = valueRef.current;
+        switch (action) {
+            case 'setValue': {
+                value = trimValue(amount);
+            } break;
+            
+            case 'decrease' : {
+                value = trimValue(value - ((stepFn || 1) * (negativeFn ? -1 : 1) * amount));
+            } break;
+            case 'increase' : {
+                value = trimValue(value + ((stepFn || 1) * (negativeFn ? -1 : 1) * amount));
+            } break;
+        } // switch
+        
+        
+        
+        // trigger `onChange` if the value changed:
+        if (valueRef.current !== value) {
+            valueRef.current = value; // update
+            triggerRender();          // sync the UI to `valueRef.current`
+            
+            
+            
+            const inputElm = inputRefInternal.current;
+            if (inputElm) {
+                // *hack*: trigger `onChange` event:
+                setTimeout(() => {
+                    inputElm.valueAsNumber = value; // *hack* set_value before firing input event
+                    
+                    inputElm.dispatchEvent(new Event('input', { bubbles: true, cancelable: false, composed: true }));
+                }, 0); // runs the 'input' event *next after* current event completed
+            } // if
+        } // if
+    }, [minFn, maxFn, stepFn, negativeFn, trimValue]); // (re)create the reducer function on every time the constraints changes
     
     
     
@@ -191,9 +223,10 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
         
         
         
-        // update:
-        const newValue = Math.min(Math.max(event.target.valueAsNumber, minFn), maxFn);
-        setValueDn(newValue);
+        // action:
+        if (event.isTrusted) { // ignores the event emmited by `inputElm.dispatchEvent(new Event('input', { bubbles: true, cancelable: false, composed: true }));`
+            changeValue('setValue', event.target.valueAsNumber);
+        } // if
     });
     const handleChange         = useMergeEvents(
         // preserves the original `onChange`:
@@ -206,49 +239,13 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
     );
     
     const handleDecrease       = useEvent<React.MouseEventHandler<HTMLButtonElement>>((_event) => {
-        // update:
-        setValueDn((currentValue) => Math.max(currentValue - stepFn, minFn));
+        // action:
+        changeValue('decrease', 1);
     });
     const handleIncrease       = useEvent<React.MouseEventHandler<HTMLButtonElement>>((_event) => {
-        // update:
-        setValueDn((currentValue) => Math.min(currentValue + stepFn, maxFn));
+        // action:
+        changeValue('increase', 1);
     });
-    
-    
-    
-    // dom effects:
-    // watchdog for input change by user:
-    const prevValueDn = useRef<number>(valueDn);
-    useEffect(() => {
-        // conditions:
-        if (prevValueDn.current === valueDn) return; // no change detected => ignore
-        prevValueDn.current = valueDn;
-        
-        if (valueNow === valueDn)            return; // only trigger event of dynamically changes by user interaction, not programatically by controllable [value]
-        
-        const inputElm = inputRefInternal.current;
-        if (!inputElm)                       return; // the <input> element was not initialized => ignore
-        
-        
-        
-        // *hack*: trigger `onChange` event:
-        setTimeout(() => {
-            inputElm.valueAsNumber = valueDn; // *hack* set_value before firing input event
-            
-            inputElm.dispatchEvent(new Event('input', { bubbles: true, cancelable: false, composed: true }));
-        }, 0); // runs the 'input' event *next after* current event completed
-    }, [valueNow, valueDn]);
-    
-    // sync the last (dynamic) changes to (current) `valueNow`:
-    useEffect(() => {
-        // conditions:
-        if (valueNow === valueDn)            return; // only trigger event of dynamically changes by user interaction, not programatically by controllable [value]
-        
-        
-        
-        // re-sync -- can be changed by controllable [value] --or-- can be reverted to previous value if the controllable refuses to apply the changed:
-        setValueDn(valueNow); // causes to re-render and re-run this effect, but will be blocked by the first condition, so *an infinity re-render* is impossible.
-    }, [valueNow, valueDn]);
     
     
     
@@ -285,7 +282,7 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
             // styles:
             style={style}
         >
-            <ButtonIcon icon='remove' title='decrease quantity' enabled={valueNow > minFn} onClick={handleDecrease} />
+            <ButtonIcon icon='remove' title='decrease quantity' enabled={valueRef.current > minFn} onClick={handleDecrease} />
             <Input
                 // rest props:
                 {...restInputProps}
@@ -298,9 +295,11 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
                 
                 
                 // values:
-                // defaultValue : defaultValueFn,                 // fully controllable, no defaultValue
-                value={(valueFn !== null) ? valueNow : undefined} // fully controllable -or- *hack*ed controllable
-                onChange={handleChange}
+                {...{
+                 // defaultValue : defaultValueFn,   // fully controllable, no defaultValue
+                    value        : valueRef.current, // fully controllable
+                    onChange     : handleChange,
+                }}
                 
                 
                 
@@ -316,7 +315,7 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
                 // formats:
                 type={type}
             />
-            <ButtonIcon icon='add' title='increase quantity' enabled={valueNow < maxFn} onClick={handleIncrease} />
+            <ButtonIcon icon='add' title='increase quantity' enabled={valueRef.current < maxFn} onClick={handleIncrease} />
         </Group>
     );
 };
