@@ -3,51 +3,64 @@ import { ButtonIcon, CardBody, CardHeader, CloseButton, Group, List, ListItem, M
 import { useDispatch, useSelector } from 'react-redux'
 import { removeFromCart, selectCartItems, selectCartTotalQuantity, selectIsCartShown, setCartItemQuantity, showCart } from '@/store/features/cart/cartSlice';
 import QuantityInput from './QuantityInput';
-import { useGetPriceListQuery } from '@/store/features/api/apiSlice';
+import { useGetPriceListQuery, useGetProductListQuery } from '@/store/features/api/apiSlice';
 import LoadingBar from './LoadingBar';
 import { formatCurrency } from '@/libs/formatters';
+import { dynamicStyleSheets } from '@cssfn/cssfn-react';
+import ImageWithFallback from './ImageWithFallback';
+
+
+
+const useCartBarStyleSheet = dynamicStyleSheets(
+    () => import(/* webpackPrefetch: true */'@/styles/cartBar')
+, { id: 'cart-bar' });
 
 
 
 export const CartBar = () => {
+    const styles = useCartBarStyleSheet();
     const isCartShown = useSelector(selectIsCartShown);
     const cartItems   = useSelector(selectCartItems);
     const hasCart = !!cartItems.length;
     const dispatch = useDispatch();
-    const {data: priceList, isLoading, isError} = useGetPriceListQuery();
+    const {data: priceList, isLoading: isLoading1, isError: isError1} = useGetPriceListQuery();
+    const {data: productList, isLoading: isLoading2, isError: isError2} = useGetProductListQuery();
     
     
     
     return (
-        <ModalSide theme='primary' modalSideStyle='inlineEnd' expanded={isCartShown} onExpandedChange={(event) => dispatch(showCart(event.expanded))}>
+        <ModalSide className={styles.cartWindow} theme='primary' modalSideStyle='inlineEnd' expanded={isCartShown} onExpandedChange={(event) => dispatch(showCart(event.expanded))}>
             <CardHeader>
-                <h1 className='h5' style={{margin: 0}}>
+                <h1 className={`h5 ${styles.cartWindowTitle}`}>
                     My Shopping Cart
                 </h1>
                 <CloseButton onClick={() => dispatch(showCart(false))} />
             </CardHeader>
-            <CardBody>
-                <List theme='secondary' mild={false}>
-                    <ListItem theme='primary'>Cart List:</ListItem>
+            <CardBody className={styles.cartBody}>
+                <List className={styles.cartList} theme='secondary' mild={false}>
+                    <ListItem className={styles.cartTitle} theme='primary'>Cart List:</ListItem>
                     
                     {!hasCart && <ListItem enabled={false}>--- the cart is empty ---</ListItem>}
                     
-                    {hasCart && (isLoading || isError || !priceList) && <ListItem>
-                        {isLoading && <LoadingBar />}
-                        {isError && <p>Oops, an error occured!</p>}
+                    {hasCart && (isLoading1 || isLoading2 || isError1 || isError2 || !priceList || !productList) && <ListItem>
+                        {(isLoading1 || isLoading2) && <LoadingBar />}
+                        {(isError1 || isError2) && <p>Oops, an error occured!</p>}
                     </ListItem>}
                     
-                    {cartItems.map((item, index) => {
+                    {cartItems.map((item) => {
                         const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                        const product = productList?.entities?.[item.productId];
                         return (
-                            <ListItem key={index}>
-                                <h2 className='name h6'>{item.productId}</h2>
-                                <p style={{display: 'inline', marginInlineEnd: '1rem'}}>Quantity:</p>
-                                <Group theme='primary' size='sm'>
+                            <ListItem key={item.productId} className={styles.productEntry}>
+                                <h2 className='title h6'>{product?.name}</h2>
+                                <figure>
+                                    <ImageWithFallback alt={product?.name ?? ''} src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined} fill={true} sizes='64px' />
+                                </figure>
+                                <Group className='quantity' title='Quantity' theme='primary' size='sm'>
                                     <ButtonIcon icon='delete' title='remove from cart' onClick={() => dispatch(removeFromCart({ productId: item.productId }))} />
                                     <QuantityInput min={0} max={99} value={item.quantity} onChange={(event) => dispatch(setCartItemQuantity({ productId: item.productId, quantity: event.target.valueAsNumber}))} />
                                 </Group>
-                                <p>Subtotal price: {formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</p>
+                                <p className='subPrice'>Subtotal price: {formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</p>
                             </ListItem>
                         );
                     })}
@@ -62,6 +75,8 @@ export const CartBar = () => {
                         </p>
                     </ListItem>}
                 </List>
+                <p className={styles.shippingInfo}>Tax included and <u>shipping calculated</u> at checkout.</p>
+                <ButtonIcon icon='shopping_bag' theme='primary' size='lg' gradient={true}>Place My Order</ButtonIcon>
             </CardBody>
         </ModalSide>
     )

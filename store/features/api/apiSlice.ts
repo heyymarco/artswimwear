@@ -4,9 +4,20 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 
 
 
+export interface ProductEntry {
+    _id   : string
+    name  : string
+    price : number
+    image : string
+    path  : string
+}
+const productListAdapter = createEntityAdapter<ProductEntry>({
+    selectId : (productEntry) => productEntry._id,
+});
+
 export interface PriceEntry {
-    _id: string,
-    price: number,
+    _id   : string
+    price : number
 }
 const priceListAdapter = createEntityAdapter<PriceEntry>({
     selectId : (priceEntry) => priceEntry._id,
@@ -20,8 +31,11 @@ export const apiSlice = createApi({
         baseUrl: '/api'
     }),
     endpoints : (builder) => ({
-        getProductList: builder.query<any[], void>({
+        getProductList: builder.query<EntityState<ProductEntry>, void>({
             query : () => 'product',
+            transformResponse(response: ProductEntry[]) {
+                return productListAdapter.addMany(productListAdapter.getInitialState(), response);
+            },
         }),
         getProductDetail: builder.query<any, string>({
             query : (productPath: string) => `product?path=${productPath}`,
@@ -29,7 +43,7 @@ export const apiSlice = createApi({
         getPriceList: builder.query<EntityState<PriceEntry>, void>({
             query : () => 'priceList',
             transformResponse(response: PriceEntry[]) {
-                return priceListAdapter.addMany(priceListAdapter.getInitialState(), response)
+                return priceListAdapter.addMany(priceListAdapter.getInitialState(), response);
             },
         }),
     }),

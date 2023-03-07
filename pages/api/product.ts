@@ -40,7 +40,7 @@ export default async (
             
             
             
-            const products = await Product.find({}, { name: true, price: true, images: true, path: true });
+            const products = await Product.find({}, { name: true, price: true, image: { $first: "$images" }, path: true });
             let productPaths : string[]|undefined = undefined;
             for (const product of products) {
                 if (!product.path) {
