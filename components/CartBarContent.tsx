@@ -24,6 +24,8 @@ export const CartBarContent = () => {
     const dispatch = useDispatch();
     const {data: priceList, isLoading: isLoading1, isError: isError1} = useGetPriceListQuery();
     const {data: productList, isLoading: isLoading2, isError: isError2} = useGetProductListQuery();
+    const isLoading = isLoading1 || isLoading2;
+    const isError = isError1 || isError2;
     const isCartDataReady = hasCart && !!priceList && !!productList;
     
     
@@ -42,9 +44,9 @@ export const CartBarContent = () => {
                     
                     {!hasCart && <ListItem enabled={false}>--- the cart is empty ---</ListItem>}
                     
-                    {hasCart && (isLoading1 || isLoading2 || isError1 || isError2 || !priceList || !productList) && <ListItem>
-                        {(isLoading1 || isLoading2) && <LoadingBar theme='primary' />}
-                        {(isError1 || isError2) && <p>Oops, an error occured!</p>}
+                    {hasCart && (isLoading || isError || !priceList || !productList) && <ListItem>
+                        {isLoading && <LoadingBar theme='primary' />}
+                        {isError && <p>Oops, an error occured!</p>}
                     </ListItem>}
                     
                     {isCartDataReady && cartItems.map((item) => {
