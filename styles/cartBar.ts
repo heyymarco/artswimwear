@@ -5,7 +5,9 @@ import { typos } from "@reusable-ui/core";
 
 const imageSize = 64;  // 64px
 export default () => [
-    scopeOf('cartWindowTitle', {
+    scopeOf('cartWindow', {
+    }),
+    scopeOf('cartListTitle', {
         margin: 0,
     }),
     scopeOf('cartBody', {

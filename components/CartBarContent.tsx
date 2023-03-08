@@ -11,7 +11,7 @@ import ImageWithFallback from './ImageWithFallback';
 
 
 
-const useCartBarStyleSheet = dynamicStyleSheets(
+export const useCartBarStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'@/styles/cartBar')
 , { id: 'cart-bar' });
 
@@ -31,7 +31,7 @@ export const CartBarContent = () => {
     return (
         <>
             <CardHeader>
-                <h1 className={`h5 ${styles.cartWindowTitle}`}>
+                <h1 className={`h5 ${styles.cartListTitle}`}>
                     My Shopping Cart
                 </h1>
                 <CloseButton onClick={() => dispatch(showCart(false))} />
@@ -76,7 +76,7 @@ export const CartBarContent = () => {
                     </ListItem>}
                 </List>
                 <p className={styles.shippingInfo}>Tax included and <u>shipping calculated</u> at checkout.</p>
-                <ButtonIcon enabled={isCartDataReady} icon='shopping_bag' theme='primary' size='lg' gradient={true}>Place My Order</ButtonIcon>
+                <ButtonIcon enabled={isCartDataReady} icon={!isCartDataReady ? 'busy' : 'shopping_bag'} theme='primary' size='lg' gradient={true}>Place My Order</ButtonIcon>
             </CardBody>
         </>
     )
