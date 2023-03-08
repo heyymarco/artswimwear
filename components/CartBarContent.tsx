@@ -8,6 +8,7 @@ import LoadingBar from './LoadingBar';
 import { formatCurrency } from '@/libs/formatters';
 import { dynamicStyleSheets } from '@cssfn/cssfn-react';
 import ImageWithFallback from './ImageWithFallback';
+import { useRouter } from 'next/router';
 
 
 
@@ -27,6 +28,7 @@ export const CartBarContent = () => {
     const isLoading = isLoading1 || isLoading2;
     const isError = isError1 || isError2;
     const isCartDataReady = hasCart && !!priceList && !!productList;
+    const router = useRouter();
     
     
     
@@ -78,7 +80,12 @@ export const CartBarContent = () => {
                     </ListItem>}
                 </List>
                 <p className={styles.shippingInfo}>Tax included and <u>shipping calculated</u> at checkout.</p>
-                <ButtonIcon enabled={isCartDataReady} icon={!isCartDataReady ? 'busy' : 'shopping_bag'} theme='primary' size='lg' gradient={true}>Place My Order</ButtonIcon>
+                <ButtonIcon enabled={isCartDataReady} icon={!isCartDataReady ? 'busy' : 'shopping_bag'} theme='primary' size='lg' gradient={true} onClick={() => {
+                    dispatch(showCart(false));
+                    router.push('/checkout');
+                }}>
+                    Place My Order
+                </ButtonIcon>
             </CardBody>
         </>
     )
