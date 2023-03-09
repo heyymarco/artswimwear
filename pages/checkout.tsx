@@ -30,7 +30,7 @@ interface ProductImageWithStatusProps extends ProductImageProps {
     status : string|number
 }
 const ProductImageWithStatus = (props: ProductImageWithStatusProps) => {
-    const imageRef = useRef<HTMLImageElement|null>(null);
+    const [imageRef, setImageRef] = useState<HTMLElement|null>(null);
     
     const {
         status,
@@ -40,7 +40,7 @@ const ProductImageWithStatus = (props: ProductImageWithStatusProps) => {
         <>
             <ProductImage
                 {...restProductImageProps}
-                elmRef={imageRef}
+                elmRef={setImageRef}
             />
             <Badge theme='danger' badgeStyle='pill' floatingOn={imageRef} floatingPlacement='right-start' floatingOffset={-12} floatingShift={-3}>
                 {status}

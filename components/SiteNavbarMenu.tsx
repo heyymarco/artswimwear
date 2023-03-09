@@ -40,7 +40,7 @@ const SiteNavbarMenu = ({
     
     
     
-    const cartTogglerRef = useRef<any|null>(null);
+    const [cartTogglerRef, setCartTogglerRef] = useState<HTMLElement|null>(null);
     const cartStatusRef = useRef<HTMLElement|null>(null)
     const CartStatus = () => <Badge elmRef={cartStatusRef} floatingOn={cartTogglerRef} theme='danger' badgeStyle='pill' floatingPlacement='right-start' floatingOffset={!navbarExpanded ? -16 : -24} floatingShift={!navbarExpanded ? 3 : 10}>{cartTotalQuantity}</Badge>
     useEffect(() => {
@@ -79,7 +79,7 @@ const SiteNavbarMenu = ({
         <>
             <SiteLogo />
             
-            {!navbarExpanded && hasCart && <ButtonIcon icon='shopping_cart' elmRef={cartTogglerRef} size='lg' onClick={handleToggleCart}>
+            {!navbarExpanded && hasCart && <ButtonIcon icon='shopping_cart' elmRef={setCartTogglerRef} size='lg' onClick={handleToggleCart}>
                 <CartStatus />
             </ButtonIcon>}
             
@@ -93,7 +93,7 @@ const SiteNavbarMenu = ({
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
                     <NavItem href='https://www.instagram.com/'><Icon icon='instagram' size='lg' /></NavItem>
                     
-                    {navbarExpanded && hasCart && <ListItem className='cartBtn' {...basicVariantProps} elmRef={cartTogglerRef} actionCtrl={true} onClick={handleToggleCart}>
+                    {navbarExpanded && hasCart && <ListItem<HTMLElement> className='cartBtn' {...basicVariantProps} elmRef={setCartTogglerRef} actionCtrl={true} onClick={handleToggleCart}>
                         <Icon icon='shopping_cart' size='lg' />
                         <CartStatus />
                     </ListItem>}
