@@ -2,16 +2,16 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Busy, ButtonIcon, Carousel, Check, DropdownListButton, EmailInput, List, ListItem, Nav, NavItem, TelInput, TextInput } from '@reusable-ui/components'
+import { Badge, Busy, ButtonIcon, Carousel, Check, DropdownListButton, EmailInput, List, ListItem, Nav, NavItem, TelInput, TextInput } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetPriceListQuery, useGetProductDetailQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import ProductImage from '@/components/ProductImage'
+import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Section } from '@/components/sections/Section'
 import ReactMarkdown from 'react-markdown'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { addToCart, selectCartItems } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import QuantityInput from '@/components/QuantityInput'
@@ -23,6 +23,31 @@ import { ValidationProvider } from '@reusable-ui/core'
 const useCheckoutStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'@/styles/checkout')
 , { id: 'checkout' });
+
+
+
+interface ProductImageWithStatusProps extends ProductImageProps {
+    status : string|number
+}
+const ProductImageWithStatus = (props: ProductImageWithStatusProps) => {
+    const imageRef = useRef<HTMLImageElement|null>(null);
+    
+    const {
+        status,
+    ...restProductImageProps} = props;
+    
+    return (
+        <>
+            <ProductImage
+                {...restProductImageProps}
+                elmRef={imageRef}
+            />
+            <Badge theme='danger' badgeStyle='pill' floatingOn={imageRef} floatingPlacement='right-start' floatingOffset={-12} floatingShift={-3}>
+                {status}
+            </Badge>
+        </>
+    )
+}
 
 
 
@@ -73,10 +98,12 @@ export default function Checkout() {
                             return (
                                 <ListItem key={item.productId} className={styles.productEntry}>
                                     <h3 className='title h6'>{product?.name}</h3>
-                                    <ProductImage
+                                    <ProductImageWithStatus
                                         alt={product?.name ?? ''}
                                         src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
                                         sizes='64px'
+                                        
+                                        status={item.quantity}
                                     />
                                     <p className='subPrice currencyBlock'><span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span></p>
                                 </ListItem>

@@ -34,7 +34,8 @@ export const useProductImageStyleSheet = dynamicStyleSheet(
 
 type ImageProps = Parameters<typeof Image>[0]
 export interface ProductImageProps extends Omit<ImageProps, 'src'> {
-    src ?: ImageProps['src']
+    src    ?: ImageProps['src'],
+    elmRef ?: React.Ref<HTMLElement> // setter ref
 }
 const ProductImage = (props: ProductImageProps) => {
     // styles:
@@ -57,10 +58,17 @@ const ProductImage = (props: ProductImageProps) => {
     
     
     
+    // rest props:
+    const {
+        elmRef,
+    ...restImageProps} = props;
+    
+    
+    
     // jsx:
     const src = props.src;
     return (
-        <figure className={styleSheet.main}>
+        <figure className={styleSheet.main} ref={elmRef}>
             {/* no image => show default image: */}
             {(!src) && <Icon className='status' icon='image' theme='primary' size='lg' />}
             
@@ -71,8 +79,8 @@ const ProductImage = (props: ProductImageProps) => {
             {(isLoaded === false    ) && <Icon className='status' icon='broken_image' theme='primary' size='lg' />}
             
             {src && (isLoaded !== false) && <Image
-                // other props:
-                {...props}
+                // rest props:
+                {...restImageProps}
                 
                 
                 
