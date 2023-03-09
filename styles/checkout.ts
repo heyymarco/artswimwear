@@ -1,11 +1,9 @@
 import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
-import { ifScreenWidthAtLeast } from "@reusable-ui/core";
+import { ifScreenWidthAtLeast, typos } from "@reusable-ui/core";
 
 
 
-const minImageSize = 255;  // 255px
-// const gapImage     = 4*16; // 4rem
-// const maxImageSize = (minImageSize * 2) - (gapImage * 1.5);
+const imageSize = 64;  // 64px
 export default () => [
     scopeOf('loading', {
         ...children('article', {
@@ -26,6 +24,63 @@ export default () => [
             ...children('[role="status"]', {
                 fontSize: '4rem',
             }),
+        }),
+    }),
+    scopeOf('shoppingList', {
+        ...descendants('.currencyBlock', {
+            display: 'flex',
+        }),
+        ...descendants('.currency', {
+            
+            marginInlineStart: 'auto',
+            fontSize: typos.fontSizeMd,
+            fontWeight: typos.fontWeightSemibold,
+        }),
+    }),
+    scopeOf('productEntry', {
+        display: 'grid',
+        gridTemplate: [[
+            '"image    title" max-content',
+            '"image subPrice" max-content',
+            '/',
+            `${imageSize}px max-content`,
+        ]],
+        gapInline: '2rem',
+        gapBlock: '0.5rem',
+        ...children('figure', {
+            gridArea: 'image',
+            alignSelf: 'center',
+            
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            position: 'relative',
+            width: `${imageSize}px`,
+            aspectRatio: '1/1',
+            background: 'white',
+            overflow: 'hidden',
+            ...children(['img', '.img'], {
+                objectFit: 'contain',
+                transition: [
+                    ['scale', '300ms'],
+                ],
+                fontSize: '2rem',
+            }),
+        }),
+        ...children('.title', {
+            gridArea: 'title',
+            
+            fontWeight: typos.fontWeightNormal,
+            margin: 0,
+            maxInlineSize: '15em',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+        }),
+        ...children('.subPrice', {
+            gridArea: 'subPrice',
+            
+            margin: 0,
         }),
     }),
     scopeOf('expressCheckout', {

@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Busy, ButtonIcon, Carousel, Check, DropdownListButton, EmailInput, ListItem, Nav, NavItem, TelInput, TextInput } from '@reusable-ui/components'
+import { Busy, ButtonIcon, Carousel, Check, DropdownListButton, EmailInput, List, ListItem, Nav, NavItem, TelInput, TextInput } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetPriceListQuery, useGetProductDetailQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -65,10 +65,37 @@ export default function Checkout() {
                     }
                 </Section>}
                 
-                {hasCart && <Section className={styles.expressCheckout} theme='secondary' title='Express Checkout'>
+                {isCartDataReady && <Section className={styles.shoppingList} theme='secondary' title='Shopping List'>
+                    <List listStyle='flat'>
+                        {cartItems.map((item) => {
+                            const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                            const product = productList?.entities?.[item.productId];
+                            return (
+                                <ListItem key={item.productId} className={styles.productEntry}>
+                                    <h3 className='title h6'>{product?.name}</h3>
+                                    <figure>
+                                        <ImageWithFallback alt={product?.name ?? ''} src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined} fill={true} sizes='64px' />
+                                    </figure>
+                                    <p className='subPrice currencyBlock'><span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span></p>
+                                </ListItem>
+                            )
+                        })}
+                    </List>
+                    <hr />
+                    <p className='currencyBlock'>
+                        Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
+                            const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                            if (!productUnitPrice) return accum;
+                            return accum + (productUnitPrice * item.quantity);
+                        }, 0))}</span>
+                    </p>
+                    <hr />
                 </Section>}
                 
-                {hasCart && <Section className={styles.regularCheckout} theme='secondary' title='Regular Checkout'>
+                {isCartDataReady && <Section className={styles.expressCheckout} theme='secondary' title='Express Checkout'>
+                </Section>}
+                
+                {isCartDataReady && <Section className={styles.regularCheckout} theme='secondary' title='Regular Checkout'>
                     <ValidationProvider enableValidation={true}>
                         <Section className='contact' title='Contact Information'>
                             <EmailInput name='email'     placeholder='Email'      required autoComplete='shipping email' />
@@ -93,7 +120,7 @@ export default function Checkout() {
                     </ValidationProvider>
                 </Section>}
                 
-                {hasCart && <Section tag='nav' className={styles.navCheckout} theme='secondary'>
+                {isCartDataReady && <Section tag='nav' className={styles.navCheckout} theme='secondary'>
                     <ButtonIcon className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link'>
                         <Link href='/cart'>
                             Return to cart

@@ -70,12 +70,12 @@ export const CartBarContent = () => {
                     })}
                     
                     {isCartDataReady && <ListItem theme='primary'>
-                        <p>
-                            Total price: {formatCurrency(cartItems.reduce((accum, item) => {
+                        <p className='currencyBlock'>
+                            Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
                                 const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
                                 if (!productUnitPrice) return accum;
                                 return accum + (productUnitPrice * item.quantity);
-                            }, 0))}
+                            }, 0))}</span>
                         </p>
                     </ListItem>}
                 </List>

@@ -1,4 +1,4 @@
-import { children, fallbacks, rule, scopeOf } from "@cssfn/core";
+import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
 import { typos } from "@reusable-ui/core";
 
 
@@ -27,10 +27,16 @@ export default () => [
             '"image quantity" max-content',
             '"image subPrice" max-content',
             '/',
-            '64px max-content',
+            `${imageSize}px max-content`,
         ]],
         gapInline: '2rem',
         gapBlock: '0.5rem',
+        ...descendants('.currencyBlock', {
+            display: 'flex',
+        }),
+        ...descendants('.currency', {
+            marginInlineStart: 'auto',
+        }),
         ...children('figure', {
             gridArea: 'image',
             alignSelf: 'center',
