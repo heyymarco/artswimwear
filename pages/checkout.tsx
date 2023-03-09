@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Busy, ButtonIcon, Carousel, Nav, NavItem } from '@reusable-ui/components'
+import { Busy, ButtonIcon, Carousel, Check, DropdownListButton, EmailInput, ListItem, Nav, NavItem, TelInput, TextInput } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetPriceListQuery, useGetProductDetailQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -64,10 +64,40 @@ export default function Checkout() {
                     }
                 </Section>}
                 
-                {hasCart && <Section className={styles.walletCheckout} theme='secondary' title='Pay with Wallet'>
+                {hasCart && <Section className={styles.expressCheckout} theme='secondary' title='Express Checkout'>
                 </Section>}
                 
-                {hasCart && <Section className={styles.cardCheckout} theme='secondary' title='Pay with Card'>
+                {hasCart && <Section className={styles.regularCheckout} theme='secondary' title='Regular Checkout'>
+                    <Section title='Contact Information'>
+                        <EmailInput name='email'     placeholder='Email'      required autoComplete='shipping email' />
+                        <Check name='marketing_opt_in' defaultActive={true}>Email me with news and offers</Check>
+                    </Section>
+                    <Section title='Shipping Address'>
+                        <DropdownListButton buttonChildren='Country/Region'>
+                            <ListItem>United States</ListItem>
+                            <ListItem>Indonesia</ListItem>
+                        </DropdownListButton>
+                        <input type='text' name='countryCode' required autoComplete='shipping country' />
+                        
+                        <TextInput  name='firstName' placeholder='First Name' required autoComplete='shipping given-name' />
+                        <TextInput  name='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name' />
+                        <TelInput   name='phone'     placeholder='Phone'      required autoComplete='shipping tel' />
+                        <TextInput  name='address'   placeholder='Address'    required autoComplete='shipping street-address' />
+                        <TextInput  name='city'      placeholder='City'       required autoComplete='shipping address-level2' />
+                        <TextInput  name='zone'      placeholder='State'      required autoComplete='shipping address-level1' />
+                        <TextInput  name='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code' />
+                    </Section>
+                </Section>}
+                
+                {hasCart && <Section tag='nav' className={styles.navCheckout} theme='secondary'>
+                    <ButtonIcon className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link'>
+                        <Link href='/cart'>
+                            Return to cart
+                        </Link>
+                    </ButtonIcon>
+                    <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='md' iconPosition='end'>
+                        Continue to shipping
+                    </ButtonIcon>
                 </Section>}
             </Main>
         </>

@@ -28,20 +28,12 @@ export default () => [
             }),
         }),
     }),
-    scopeOf('walletCheckout', {
+    scopeOf('expressCheckout', {
     }),
-    scopeOf('cardCheckout', {
+    scopeOf('regularCheckout', {
         ...children('article', {
-            display: 'grid',
-            
-            boxSizing: 'border-box',
-            minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
-            ...fallbacks({
-                minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
-            }),
-            ...fallbacks({
-                minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
-            }),
         }),
+    }),
+    scopeOf('navCheckout', {
     }),
 ];
