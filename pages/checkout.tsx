@@ -15,6 +15,7 @@ import { useState } from 'react'
 import { addToCart, selectCartItems } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import QuantityInput from '@/components/QuantityInput'
+import { ValidationProvider } from '@reusable-ui/core'
 
 
 
@@ -68,25 +69,28 @@ export default function Checkout() {
                 </Section>}
                 
                 {hasCart && <Section className={styles.regularCheckout} theme='secondary' title='Regular Checkout'>
-                    <Section title='Contact Information'>
-                        <EmailInput name='email'     placeholder='Email'      required autoComplete='shipping email' />
-                        <Check name='marketing_opt_in' defaultActive={true}>Email me with news and offers</Check>
-                    </Section>
-                    <Section title='Shipping Address'>
-                        <DropdownListButton buttonChildren='Country/Region'>
-                            <ListItem>United States</ListItem>
-                            <ListItem>Indonesia</ListItem>
-                        </DropdownListButton>
-                        <input type='text' name='countryCode' required autoComplete='shipping country' />
-                        
-                        <TextInput  name='firstName' placeholder='First Name' required autoComplete='shipping given-name' />
-                        <TextInput  name='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name' />
-                        <TelInput   name='phone'     placeholder='Phone'      required autoComplete='shipping tel' />
-                        <TextInput  name='address'   placeholder='Address'    required autoComplete='shipping street-address' />
-                        <TextInput  name='city'      placeholder='City'       required autoComplete='shipping address-level2' />
-                        <TextInput  name='zone'      placeholder='State'      required autoComplete='shipping address-level1' />
-                        <TextInput  name='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code' />
-                    </Section>
+                    <ValidationProvider enableValidation={true}>
+                        <Section className='contact' title='Contact Information'>
+                            <EmailInput name='email'     placeholder='Email'      required autoComplete='shipping email' />
+                            <Check name='marketing_opt_in' defaultActive={true}>Email me with news and offers</Check>
+                        </Section>
+                        <Section className='shipping' title='Shipping Address'>
+                            <DropdownListButton buttonChildren='Country/Region'>
+                                <ListItem>United States</ListItem>
+                                <ListItem>Indonesia</ListItem>
+                            </DropdownListButton>
+                            
+                            <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name' />
+                            <TextInput  className='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name' />
+                            <TelInput   className='phone'     placeholder='Phone'      required autoComplete='shipping tel' />
+                            <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' />
+                            <TextInput  className='city'      placeholder='City'       required autoComplete='shipping address-level2' />
+                            <TextInput  className='zone'      placeholder='State'      required autoComplete='shipping address-level1' />
+                            <TextInput  className='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code' />
+                            
+                            <input type='text' className='hidden' required autoComplete='shipping country' />
+                        </Section>
+                    </ValidationProvider>
                 </Section>}
                 
                 {hasCart && <Section tag='nav' className={styles.navCheckout} theme='secondary'>
@@ -95,7 +99,7 @@ export default function Checkout() {
                             Return to cart
                         </Link>
                     </ButtonIcon>
-                    <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='md' iconPosition='end'>
+                    <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' iconPosition='end'>
                         Continue to shipping
                     </ButtonIcon>
                 </Section>}

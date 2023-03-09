@@ -32,8 +32,43 @@ export default () => [
     }),
     scopeOf('regularCheckout', {
         ...children('article', {
+            ...children('.contact', {
+                ...children('article', {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                }),
+            }),
+            ...children('.shipping', {
+                ...children('article', {
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(6, 1fr)',
+                    gridAutoRows: 'auto',
+                    gridAutoFlow: 'row',
+                    gap: '1rem',
+                    
+                    ...children('*', {
+                        gridColumnEnd: 'span 6',
+                    }),
+                    ...children(['.firstName', '.lastName'], {
+                        gridColumnEnd: 'span 3',
+                    }),
+                    ...children(['.city', '.zone', '.zip'], {
+                        gridColumnEnd: 'span 2',
+                    }),
+                    ...children('.hidden', {
+                        display: 'none',
+                    }),
+                }),
+            }),
         }),
     }),
     scopeOf('navCheckout', {
+        ...children('article', {
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+        }),
     }),
 ];
