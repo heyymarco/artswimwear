@@ -36,6 +36,7 @@ export default () => [
         }),
         ...descendants('.currency', {
             marginInlineStart: 'auto',
+            fontWeight: typos.fontWeightBold,
         }),
         ...children('figure', {
             gridArea: 'image',
