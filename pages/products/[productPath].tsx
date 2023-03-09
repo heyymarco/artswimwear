@@ -59,6 +59,8 @@ export default function ProductDetail() {
                                 <Carousel className='slides' size='lg' theme='primary'>
                                     {product.images?.map((img: string, index: number) =>
                                         <ProductImage
+                                            key={index}
+                                            
                                             alt={`image #${index + 1} of ${product.name}`}
                                             src={`/products/${product.name}/${img}`}
                                             sizes='100vw'
