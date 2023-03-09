@@ -36,6 +36,11 @@ export default () => [
             fontSize: typos.fontSizeMd,
             fontWeight: typos.fontWeightSemibold,
         }),
+        ...children('article', {
+            ...children(['ul', 'ol'], {
+                gap: '0.5rem',
+            }),
+        }),
     }),
     scopeOf('productEntry', {
         display: 'grid',
@@ -43,10 +48,11 @@ export default () => [
             '"image    title" max-content',
             '"image subPrice" max-content',
             '/',
-            `${imageSize}px max-content`,
+            `${imageSize}px auto`,
         ]],
         gapInline: '2rem',
         gapBlock: '0.5rem',
+        padding: 0,
         ...children('figure', {
             gridArea: 'image',
             alignSelf: 'center',
@@ -58,10 +64,10 @@ export default () => [
             
             fontWeight: typos.fontWeightNormal,
             margin: 0,
-            maxInlineSize: '15em',
+            // maxInlineSize: '15em',
             whiteSpace: 'nowrap',
             textOverflow: 'ellipsis',
-            overflow: 'hidden',
+            // overflow: 'hidden',
         }),
         ...children('.subPrice', {
             gridArea: 'subPrice',

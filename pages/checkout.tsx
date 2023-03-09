@@ -91,7 +91,13 @@ export default function Checkout() {
                             return accum + (productUnitPrice * item.quantity);
                         }, 0))}</span>
                     </p>
+                    <p className='currencyBlock'>
+                        Shipping: <span className='currency'>calculated at next step</span>
+                    </p>
                     <hr />
+                    <p className='currencyBlock'>
+                        Total: <span className='currency'>calculated at next step</span>
+                    </p>
                 </Section>}
                 
                 {isCartDataReady && <Section className={styles.expressCheckout} theme='secondary' title='Express Checkout'>
@@ -128,7 +134,7 @@ export default function Checkout() {
                             Return to cart
                         </Link>
                     </ButtonIcon>
-                    <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' iconPosition='end'>
+                    <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end'>
                         Continue to shipping
                     </ButtonIcon>
                 </Section>}
