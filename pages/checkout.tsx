@@ -6,7 +6,7 @@ import { Busy, ButtonIcon, Carousel, Check, DropdownListButton, EmailInput, List
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetPriceListQuery, useGetProductDetailQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import ImageWithFallback from '@/components/ImageWithFallback'
+import ProductImage from '@/components/ProductImage'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Section } from '@/components/sections/Section'
@@ -73,9 +73,11 @@ export default function Checkout() {
                             return (
                                 <ListItem key={item.productId} className={styles.productEntry}>
                                     <h3 className='title h6'>{product?.name}</h3>
-                                    <figure>
-                                        <ImageWithFallback alt={product?.name ?? ''} src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined} fill={true} sizes='64px' />
-                                    </figure>
+                                    <ProductImage
+                                        alt={product?.name ?? ''}
+                                        src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
+                                        sizes='64px'
+                                    />
                                     <p className='subPrice currencyBlock'><span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span></p>
                                 </ListItem>
                             )

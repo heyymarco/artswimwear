@@ -7,7 +7,7 @@ import { useGetPriceListQuery, useGetProductListQuery } from '@/store/features/a
 import LoadingBar from './LoadingBar';
 import { formatCurrency } from '@/libs/formatters';
 import { dynamicStyleSheets } from '@cssfn/cssfn-react';
-import ImageWithFallback from './ImageWithFallback';
+import ProductImage from '@/components/ProductImage'
 import { useRouter } from 'next/router';
 
 
@@ -57,9 +57,11 @@ export const CartBarContent = () => {
                         return (
                             <ListItem key={item.productId} className={styles.productEntry}>
                                 <h2 className='title h6'>{product?.name}</h2>
-                                <figure>
-                                    <ImageWithFallback alt={product?.name ?? ''} src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined} fill={true} sizes='64px' />
-                                </figure>
+                                <ProductImage
+                                    alt={product?.name ?? ''}
+                                    src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
+                                    sizes='64px'
+                                />
                                 <Group className='quantity' title='Quantity' theme='primary' size='sm'>
                                     <ButtonIcon icon='delete' title='remove from cart' onClick={() => dispatch(removeFromCart({ productId: item.productId }))} />
                                     <QuantityInput min={0} max={99} value={item.quantity} onChange={(event) => dispatch(setCartItemQuantity({ productId: item.productId, quantity: event.target.valueAsNumber}))} />

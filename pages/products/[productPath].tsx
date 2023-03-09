@@ -6,7 +6,7 @@ import { Busy, ButtonIcon, Carousel, Nav, NavItem } from '@reusable-ui/component
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetProductDetailQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import ImageWithFallback from '@/components/ImageWithFallback'
+import ProductImage from '@/components/ProductImage'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Section } from '@/components/sections/Section'
@@ -58,9 +58,12 @@ export default function ProductDetail() {
                             <section className='images'>
                                 <Carousel className='slides' size='lg' theme='primary'>
                                     {product.images?.map((img: string, index: number) =>
-                                        <figure className='img-frame' key={index}>
-                                            <ImageWithFallback src={`/products/${product.name}/${img}`} alt={`image #${index + 1} of ${product.name}`} fill={true} priority={true} sizes='100vw' />
-                                        </figure>
+                                        <ProductImage
+                                            alt={`image #${index + 1} of ${product.name}`}
+                                            src={`/products/${product.name}/${img}`}
+                                            sizes='100vw'
+                                            priority={true}
+                                        />
                                     )}
                                 </Carousel>
                             </section>

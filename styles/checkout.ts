@@ -51,21 +51,7 @@ export default () => [
             gridArea: 'image',
             alignSelf: 'center',
             
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'relative',
             width: `${imageSize}px`,
-            aspectRatio: '1/1',
-            background: 'white',
-            overflow: 'hidden',
-            ...children(['img', '.img'], {
-                objectFit: 'contain',
-                transition: [
-                    ['scale', '300ms'],
-                ],
-                fontSize: '2rem',
-            }),
         }),
         ...children('.title', {
             gridArea: 'title',

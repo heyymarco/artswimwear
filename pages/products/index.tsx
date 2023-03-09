@@ -7,7 +7,7 @@ import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { GenericSection } from '@/components/sections/GenericSection'
 import { useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import ImageWithFallback from '@/components/ImageWithFallback'
+import ProductImage from '@/components/ProductImage'
 import Link from 'next/link'
 
 
@@ -37,9 +37,11 @@ export default function ProductList() {
                         ? <p>Oops, an error occured!</p>
                         : Object.values(productList?.entities).filter((product): product is Exclude<typeof product, undefined> => !!product).map((product) =>
                             <article key={product._id}>
-                                <figure>
-                                    <ImageWithFallback alt={product.name ?? ''} src={product.image ? `/products/${product.name}/${product.image}` : undefined} fill={true} sizes='414px' />
-                                </figure>
+                                <ProductImage
+                                    alt={product.name ?? ''}
+                                    src={product.image ? `/products/${product.name}/${product.image}` : undefined}
+                                    sizes='414px'
+                                />
                                 <header>
                                     <h2 className='name h6'>
                                         {product.name}

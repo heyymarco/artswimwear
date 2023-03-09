@@ -35,20 +35,13 @@ export default () => [
             flexDirection: 'column',
             // gap: '1rem',
             ...children('figure', {
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                position: 'relative',
-                minWidth: `${minImageSize}px`,
-                aspectRatio: '1/1',
-                background: 'white',
-                overflow: 'hidden',
-                ...children(['img', '.img'], {
-                    objectFit: 'contain',
-                    transition: [
+                minWidth : `${minImageSize}px`,
+                width    : 'unset',
+                overflow : 'hidden',
+                ...children(['img', '.status'], {
+                    transition : [
                         ['scale', '300ms'],
                     ],
-                    fontSize: '2rem',
                 }),
             }),
             ...children('header', {
@@ -69,7 +62,7 @@ export default () => [
             ...rule(':hover', {
                 boxShadow: '0px 0px 1rem rgba(0, 0, 0, 0.7)',
                 ...children('figure', {
-                    ...children(['img', '.img'], {
+                    ...children(['img', '.status'], {
                         scale: '105%',
                     }),
                 }),

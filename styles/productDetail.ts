@@ -31,17 +31,12 @@ export default () => [
             }),
         }),
         ...rule(':not(.loading)', {
-            ...descendants('.img-frame', {
-                position: 'relative',
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                ...children(['img', '.img'], {
-                    objectFit: 'contain',
-                    fontSize: '3rem',
-                })
+            ...descendants('figure', {
+                display        : 'flex',
+                justifyContent : 'center',
+                alignItems     : 'center',
+                width          : '100%',
+                height         : '100%',
             }, { specificityWeight: 2 }),
             
             
