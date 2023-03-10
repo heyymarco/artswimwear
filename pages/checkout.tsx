@@ -2,19 +2,16 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Badge, Busy, ButtonIcon, Carousel, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, Nav, NavItem, TelInput, TextInput, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
+import { Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, TelInput, TextInput, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { useGetPriceListQuery, useGetProductDetailQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
+import { useGetPriceListQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
-import { useRouter } from 'next/router'
 import { Section } from '@/components/sections/Section'
-import ReactMarkdown from 'react-markdown'
-import { useRef, useState } from 'react'
-import { addToCart, selectCartItems } from '@/store/features/cart/cartSlice'
-import { useDispatch, useSelector } from 'react-redux'
-import QuantityInput from '@/components/QuantityInput'
+import { useState } from 'react'
+import { selectCartItems } from '@/store/features/cart/cartSlice'
+import { useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
 
 
@@ -56,6 +53,10 @@ interface WithDetailsProps {
     isDesktop : boolean
 }
 const WithDetails = ({isDesktop, children}: WithDetailsProps) => {
+    const [showDetails, setShowDetails] = useState<boolean>(false);
+    
+    
+    
     // jsx:
     if (isDesktop) return (
         <>
@@ -63,7 +64,10 @@ const WithDetails = ({isDesktop, children}: WithDetailsProps) => {
         </>
     );
     return (
-        <Details className='orderCollapse' buttonChildren='Order List' theme='secondary' detailsStyle='content'>
+        <Details className='orderCollapse' buttonChildren={`${showDetails ? 'Hide' : 'Show' } Order List`} theme='secondary' detailsStyle='content'
+            expanded={showDetails}
+            onExpandedChange={(event) => setShowDetails(event.expanded)}
+        >
             {children}
         </Details>
     );
@@ -75,7 +79,6 @@ export default function Checkout() {
     const styles = useCheckoutStyleSheet();
     const cartItems   = useSelector(selectCartItems);
     const hasCart = !!cartItems.length;
-    const dispatch = useDispatch();
     const {data: priceList, isLoading: isLoading1, isError: isError1} = useGetPriceListQuery();
     const {data: productList, isLoading: isLoading2, isError: isError2} = useGetProductListQuery();
     const isLoading = isLoading1 || isLoading2;
@@ -132,7 +135,7 @@ export default function Checkout() {
                 {isCartDataReady && <Container className={styles.layout} theme='secondary'>
                     <Section tag='aside' className={`fill-self ${styles.orderSummary}`} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
                         <WithDetails isDesktop={isDesktop}>
-                            <List listStyle='flat'>
+                            <List className='orderList' listStyle='flat'>
                                 {cartItems.map((item) => {
                                     const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
                                     const product = productList?.entities?.[item.productId];

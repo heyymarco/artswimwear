@@ -42,7 +42,7 @@ export const CartBarContent = () => {
             </CardHeader>
             <CardBody className={styles.cartBody}>
                 <List className={styles.cartList} theme='secondary' mild={false}>
-                    <ListItem className={styles.cartTitle} theme='primary'>Cart List:</ListItem>
+                    <ListItem className={styles.cartTitle} theme='primary'>Order List</ListItem>
                     
                     {!hasCart && <ListItem enabled={false}>--- the cart is empty ---</ListItem>}
                     

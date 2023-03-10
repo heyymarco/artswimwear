@@ -1,5 +1,5 @@
-import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
-import { typos } from "@reusable-ui/core";
+import { children, descendants, scopeOf } from "@cssfn/core";
+import { ifScreenWidthAtLeast, typos } from "@reusable-ui/core";
 
 
 
@@ -23,13 +23,24 @@ export default () => [
     scopeOf('productEntry', {
         display: 'grid',
         gridTemplate: [[
-            '"image    title" max-content',
-            '"image quantity" max-content',
-            '"image subPrice" max-content',
+            '" image  " max-content',
+            '" title  " max-content',
+            '"quantity" max-content',
+            '"subPrice" max-content',
             '/',
-            `${imageSize}px max-content`,
+            `minmax(${imageSize}px, 1fr)`,
         ]],
-        gapInline: '2rem',
+        ...ifScreenWidthAtLeast('sm', {
+            gridTemplate: [[
+                '"image    title" max-content',
+                '"image quantity" max-content',
+                '"image subPrice" max-content',
+                '/',
+                `${imageSize}px max-content`,
+            ]],
+        }),
+        justifyItems: 'center',
+        gapInline: '1rem',
         gapBlock: '0.5rem',
         ...descendants('.currencyBlock', {
             display: 'flex',
@@ -49,14 +60,14 @@ export default () => [
             
             margin: 0,
             maxInlineSize: '15em',
-            whiteSpace: 'nowrap',
+            whiteSpace: 'normal',
             textOverflow: 'ellipsis',
             overflow: 'hidden',
         }),
         ...children('.quantity', {
             gridArea: 'quantity',
             
-            justifySelf: 'start',
+            // justifySelf: 'start',
         }),
         ...children('.subPrice', {
             gridArea: 'subPrice',

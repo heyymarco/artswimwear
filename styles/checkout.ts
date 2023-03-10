@@ -1,4 +1,4 @@
-import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
+import { children, descendants, fallbacks, scopeOf } from "@cssfn/core";
 import { containers } from "@reusable-ui/components";
 import { ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, typos, usesPadding } from "@reusable-ui/core";
 
@@ -84,7 +84,13 @@ export default () => {
                 fontWeight: typos.fontWeightSemibold,
             }),
             ...children('article', {
-                ...descendants(['ul', 'ol'], {
+                ...children('.orderCollapse', {
+                    ...children('[role="button"]', {
+                        textAlign: 'center',
+                        fontSize: typos.fontSizeLg,
+                    }),
+                }),
+                ...descendants(['.orderList'], {
                     gap: '0.5rem',
                 }),
             }),
@@ -99,7 +105,7 @@ export default () => {
                 '/',
                 `${imageSize}px auto`,
             ]],
-            gapInline: '2rem',
+            gapInline: '1rem',
             gapBlock: '0.5rem',
             padding: 0,
             ...children('figure', {
@@ -114,7 +120,7 @@ export default () => {
                 fontWeight: typos.fontWeightNormal,
                 margin: 0,
                 // maxInlineSize: '15em',
-                whiteSpace: 'nowrap',
+                whiteSpace: 'normal',
                 textOverflow: 'ellipsis',
                 // overflow: 'hidden',
             }),
