@@ -60,7 +60,6 @@ export const Section = (props: SectionProps) => {
                 
                 
                 // classes:
-                mainClass={restGenericSectionProps.noContainer ? '' : undefined}
                 className='fill-self'
             >
                 {/* the article title (if provided) */}

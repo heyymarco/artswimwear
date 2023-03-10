@@ -1,182 +1,221 @@
 import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
 import { containers } from "@reusable-ui/components";
-import { ifScreenWidthAtLeast, ifScreenWidthSmallerThan, typos } from "@reusable-ui/core";
+import { ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, typos, usesPadding } from "@reusable-ui/core";
 
 
 
 const imageSize = 64;  // 64px
-export default () => [
-    scopeOf('loading', {
-        ...children('article', {
+export default () => {
+    const {paddingVars} = usesPadding();
+    
+    
+    
+    return [
+        scopeOf('loading', {
+            ...children('article', {
+                display: 'grid',
+                
+                boxSizing: 'border-box',
+                minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
+                ...fallbacks({
+                    minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
+                }),
+                ...fallbacks({
+                    minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
+                }),
+                
+                justifyContent: 'center',
+                alignContent: 'center',
+                
+                ...children('[role="status"]', {
+                    fontSize: '4rem',
+                }),
+            }),
+        }),
+        
+        
+        
+        scopeOf('layout', {
             display: 'grid',
-            
-            boxSizing: 'border-box',
-            minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
-            ...fallbacks({
-                minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
-            }),
-            ...fallbacks({
-                minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
-            }),
-            
-            justifyContent: 'center',
-            alignContent: 'center',
-            
-            ...children('[role="status"]', {
-                fontSize: '4rem',
-            }),
-        }),
-    }),
-    
-    
-    
-    scopeOf('layout', {
-        display: 'grid',
-        gridTemplate: [[
-            '"orderSummary   " auto',
-            '"expressCheckout" auto',
-            '"checkoutAlt    " auto',
-            '"regularCheckout" auto',
-            '"navCheckout    " auto',
-            '/',
-            '1fr'
-        ]],
-        ...ifScreenWidthAtLeast('lg', {
             gridTemplate: [[
-                '"expressCheckout vertLine orderSummary" auto',
-                '"checkoutAlt     vertLine orderSummary" auto',
-                '"regularCheckout vertLine orderSummary" auto',
-                '"navCheckout     vertLine orderSummary" auto',
+                '"orderSummary   " auto',
+                '"expressCheckout" auto',
+                '"checkoutAlt    " auto',
+                '"regularCheckout" auto',
+                '"navCheckout    " auto',
                 '/',
-                '3fr min-content 2fr'
+                '1fr'
             ]],
-        }),
-        gapInline: `calc(${containers.paddingInline} / 2)`,
-        gapBlock : containers.paddingBlock,
-    }),
-    scopeOf('orderSummary', {
-        gridArea: 'orderSummary',
-        
-        ...descendants('.currencyBlock', {
-            display: 'flex',
-        }),
-        ...descendants('.currency', {
-            
-            marginInlineStart: 'auto',
-            fontSize: typos.fontSizeMd,
-            fontWeight: typos.fontWeightSemibold,
-        }),
-        ...children('article', {
-            ...descendants(['ul', 'ol'], {
-                gap: '0.5rem',
+            ...ifScreenWidthAtLeast('lg', {
+                gridTemplate: [[
+                    '"expressCheckout vertLine orderSummary" auto',
+                    '"checkoutAlt     vertLine orderSummary" auto',
+                    '"regularCheckout vertLine orderSummary" auto',
+                    '"navCheckout     vertLine orderSummary" auto',
+                    '/',
+                    '1fr min-content 1fr'
+                ]],
+            }),
+            ...ifScreenWidthAtLeast('xl', {
+                gridTemplateColumns: '3fr min-content 2fr',
+            }),
+            gapInline: `calc(${containers.paddingInline} / 2)`,
+            gapBlock : containers.paddingBlock,
+            ...children(['section', 'aside'], {
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
             }),
         }),
-    }),
-    scopeOf('productEntry', {
-        gridArea: 'orderSummary',
-        
-        display: 'grid',
-        gridTemplate: [[
-            '"image    title" max-content',
-            '"image subPrice" max-content',
-            '/',
-            `${imageSize}px auto`,
-        ]],
-        gapInline: '2rem',
-        gapBlock: '0.5rem',
-        padding: 0,
-        ...children('figure', {
-            gridArea: 'image',
-            alignSelf: 'center',
+        scopeOf('orderSummary', {
+            gridArea: 'orderSummary',
             
-            width: `${imageSize}px`,
-        }),
-        ...children('.title', {
-            gridArea: 'title',
+            ...ifScreenWidthSmallerThan('lg', {
+                [paddingVars.paddingInline] : containers.paddingInline,
+                [paddingVars.paddingBlock ] : containers.paddingBlock,
+            }),
             
-            fontWeight: typos.fontWeightNormal,
-            margin: 0,
-            // maxInlineSize: '15em',
-            whiteSpace: 'nowrap',
-            textOverflow: 'ellipsis',
-            // overflow: 'hidden',
-        }),
-        ...children('.subPrice', {
-            gridArea: 'subPrice',
-            
-            margin: 0,
-        }),
-    }),
-    scopeOf('expressCheckout', {
-        gridArea: 'expressCheckout',
-    }),
-    scopeOf('checkoutAlt', {
-        gridArea: 'checkoutAlt',
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        gap: '1rem',
-        ...children('hr', {
-            flex: [[1, 1]],
-        }),
-        ...children('span', {
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-        }),
-    }),
-    scopeOf('regularCheckout', {
-        gridArea: 'regularCheckout',
-        
-        ...children('article', {
-            ...children('.contact', {
-                ...children('article', {
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '1rem',
+            ...descendants('.currencyBlock', {
+                display: 'flex',
+            }),
+            ...descendants('.currency', {
+                
+                marginInlineStart: 'auto',
+                fontSize: typos.fontSizeMd,
+                fontWeight: typos.fontWeightSemibold,
+            }),
+            ...children('article', {
+                ...descendants(['ul', 'ol'], {
+                    gap: '0.5rem',
                 }),
             }),
-            ...children('.shipping', {
-                ...children('article', {
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(6, 1fr)',
-                    gridAutoRows: 'auto',
-                    gridAutoFlow: 'row',
-                    gap: '1rem',
-                    
-                    ...children('*', {
-                        gridColumnEnd: 'span 6',
-                    }),
-                    ...children(['.firstName', '.lastName'], {
-                        gridColumnEnd: 'span 3',
-                    }),
-                    ...children(['.city', '.zone', '.zip'], {
-                        gridColumnEnd: 'span 2',
-                    }),
-                    ...children('.hidden', {
-                        display: 'none',
-                    }),
-                }),
+        }, {specificityWeight: 2}),
+        scopeOf('productEntry', {
+            gridArea: 'orderSummary',
+            
+            display: 'grid',
+            gridTemplate: [[
+                '"image    title" max-content',
+                '"image subPrice" max-content',
+                '/',
+                `${imageSize}px auto`,
+            ]],
+            gapInline: '2rem',
+            gapBlock: '0.5rem',
+            padding: 0,
+            ...children('figure', {
+                gridArea: 'image',
+                alignSelf: 'center',
+                
+                width: `${imageSize}px`,
+            }),
+            ...children('.title', {
+                gridArea: 'title',
+                
+                fontWeight: typos.fontWeightNormal,
+                margin: 0,
+                // maxInlineSize: '15em',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                // overflow: 'hidden',
+            }),
+            ...children('.subPrice', {
+                gridArea: 'subPrice',
+                
+                margin: 0,
             }),
         }),
-    }),
-    scopeOf('navCheckout', {
-        gridArea: 'navCheckout',
-        
-        ...children('article', {
+        scopeOf('expressCheckout', {
+            gridArea: 'expressCheckout',
+        }),
+        scopeOf('checkoutAlt', {
+            gridArea: 'checkoutAlt',
             display: 'flex',
             flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '1rem',
+            ...children('hr', {
+                flex: [[1, 1]],
+            }),
+            ...children('span', {
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }),
         }),
-    }),
-    scopeOf('vertLine', {
-        gridArea: 'vertLine',
-        
-        writingMode: 'vertical-lr',
-        
-        ...ifScreenWidthSmallerThan('lg', {
-            display: 'none',
+        scopeOf('regularCheckout', {
+            gridArea: 'regularCheckout',
+            
+            ...children('article', {
+                ...children('.contact', {
+                    ...children('article', {
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '1rem',
+                    }),
+                }),
+                ...children('.shipping', {
+                    ...children('article', {
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(6, 1fr)',
+                        gridAutoRows: 'auto',
+                        gridAutoFlow: 'row',
+                        gap: '1rem',
+                        
+                        ...children('*', {
+                            gridColumnEnd: 'span 6',
+                        }),
+                        ...ifScreenWidthAtLeast('sm', {
+                            ...children(['.firstName', '.lastName'], {
+                                gridColumnEnd: 'span 3',
+                            }),
+                        }),
+                        ...ifScreenWidthAtLeast('lg', {
+                            ...children(['.zone', '.zip'], {
+                                gridColumnEnd: 'span 3',
+                            }),
+                        }),
+                        ...ifScreenWidthAtLeast('xl', {
+                            ...children(['.city', '.zone', '.zip'], {
+                                gridColumnEnd: 'span 2',
+                            }),
+                        }),
+                        ...children('.hidden', {
+                            display: 'none',
+                        }),
+                    }),
+                }),
+            }),
         }),
-    }),
-];
+        scopeOf('navCheckout', {
+            gridArea: 'navCheckout',
+            
+            ...children('article', {
+                display: 'flex',
+                flexDirection: 'column-reverse',
+                alignItems: 'stretch',
+                gap: '1rem',
+                
+                ...ifScreenWidthAtLeast('sm', {
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }),
+                ...ifScreenWidthBetween('lg', 'lg', {
+                    flexDirection: 'column-reverse',
+                    alignItems: 'stretch',
+                    gap: '1rem',
+                }),
+            }),
+        }),
+        scopeOf('vertLine', {
+            gridArea: 'vertLine',
+            
+            writingMode: 'vertical-lr',
+            margin: 0,
+            
+            ...ifScreenWidthSmallerThan('lg', {
+                display: 'none',
+            }),
+        }),
+    ];
+};

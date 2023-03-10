@@ -52,25 +52,10 @@ const ProductImageWithStatus = (props: ProductImageWithStatusProps) => {
 
 
 interface WithDetailsProps {
-    children : React.ReactNode
+    children  : React.ReactNode
+    isDesktop : boolean
 }
-const WithDetails = ({children}: WithDetailsProps) => {
-    // states:
-    const [isDesktop, setIsDesktop] = useState<boolean>(false); // mobile first
-    
-    
-    
-    // dom effects:
-    const handleWindowResize = useEvent<WindowResizeCallback>(({inlineSize: mediaCurrentWidth}) => {
-        const breakpoint = breakpoints.lg;
-        const newIsDesktop = (!!breakpoint && (mediaCurrentWidth >= breakpoint));
-        if (isDesktop === newIsDesktop) return;
-        setIsDesktop(newIsDesktop);
-    });
-    useWindowResizeObserver(handleWindowResize);
-    
-    
-    
+const WithDetails = ({isDesktop, children}: WithDetailsProps) => {
     // jsx:
     if (isDesktop) return (
         <>
@@ -78,7 +63,7 @@ const WithDetails = ({children}: WithDetailsProps) => {
         </>
     );
     return (
-        <Details className='orderCollapse' buttonChildren='Order List' theme='primary' detailsStyle='content'>
+        <Details className='orderCollapse' buttonChildren='Order List' theme='secondary' detailsStyle='content'>
             {children}
         </Details>
     );
@@ -99,7 +84,25 @@ export default function Checkout() {
     
     
     
-
+    // states:
+    const [isDesktop, setIsDesktop] = useState<boolean>(false); // mobile first
+    
+    
+    
+    // dom effects:
+    const handleWindowResize = useEvent<WindowResizeCallback>(({inlineSize: mediaCurrentWidth}) => {
+        const breakpoint = breakpoints.lg;
+        const newIsDesktop = (!!breakpoint && (mediaCurrentWidth >= breakpoint));
+        if (isDesktop === newIsDesktop) return;
+        setIsDesktop(newIsDesktop);
+    });
+    useWindowResizeObserver(handleWindowResize);
+    
+    
+    
+    
+    
+    
     return (
         <>
             <Head>
@@ -126,9 +129,9 @@ export default function Checkout() {
                     }
                 </Section>}
                 
-                {isCartDataReady && <Container className={styles.layout}>
-                    <Section noContainer className={styles.orderSummary} theme='secondary' title='Order Summary'>
-                        <WithDetails>
+                {isCartDataReady && <Container className={styles.layout} theme='secondary'>
+                    <Section tag='aside' className={`fill-self ${styles.orderSummary}`} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
+                        <WithDetails isDesktop={isDesktop}>
                             <List listStyle='flat'>
                                 {cartItems.map((item) => {
                                     const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
@@ -173,7 +176,7 @@ export default function Checkout() {
                         </p>
                     </Section>
                     
-                    <Section noContainer className={styles.expressCheckout} theme='secondary' title='Express Checkout'>
+                    <Section className={styles.expressCheckout} title='Express Checkout'>
                     </Section>
                     
                     <div className={styles.checkoutAlt}>
@@ -182,7 +185,7 @@ export default function Checkout() {
                         <hr />
                     </div>
                     
-                    <Section noContainer className={styles.regularCheckout} theme='secondary' title='Regular Checkout'>
+                    <Section className={styles.regularCheckout} title='Regular Checkout'>
                         <ValidationProvider enableValidation={true}>
                             <Section className='contact' title='Contact Information'>
                                 <EmailInput name='email'     placeholder='Email'      required autoComplete='shipping email' />
@@ -207,7 +210,7 @@ export default function Checkout() {
                         </ValidationProvider>
                     </Section>
                     
-                    <Section noContainer tag='nav' className={styles.navCheckout} theme='secondary'>
+                    <Section tag='nav' className={styles.navCheckout}>
                         <ButtonIcon className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link'>
                             <Link href='/cart'>
                                 Return to cart

@@ -4,35 +4,22 @@ import { Container, ContainerProps } from '@reusable-ui/components'
 
 
 export interface GenericSectionProps extends ContainerProps {
-    noContainer ?: boolean
 }
 /**
  * A generic `<section>` without any `<h1-h6>` or `<article>`.
  * You should manually including at least one `<article>` with appropriate `<h1-h6>`.
  */
 export const GenericSection = (props: GenericSectionProps) => {
-    // rest props:
-    const {
-        noContainer = false,
-    ...restContainerProps} = props;
-    
-    
-    
     // jsx:
     return (
         <Container
             // rest props:
-            {...restContainerProps}
+            {...props}
             
             
             
             // semantics:
             tag={props.tag ?? 'section'}
-            
-            
-            
-            // classes:
-            mainClass={noContainer ? '' : undefined}
         />
     );
 }
