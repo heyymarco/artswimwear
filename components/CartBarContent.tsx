@@ -55,7 +55,11 @@ export const CartBarContent = () => {
                         const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
                         const product = productList?.entities?.[item.productId];
                         return (
-                            <ListItem key={item.productId} className={styles.productEntry}>
+                            <ListItem key={item.productId} className={styles.productEntry}
+                                enabled={!!product}
+                                theme={!product ? 'danger' : undefined}
+                                mild={!product ? false : undefined}
+                            >
                                 <h2 className='title h6'>{product?.name}</h2>
                                 <ProductImage
                                     alt={product?.name ?? ''}
@@ -66,7 +70,12 @@ export const CartBarContent = () => {
                                     <ButtonIcon icon='delete' title='remove from cart' onClick={() => dispatch(removeFromCart({ productId: item.productId }))} />
                                     <QuantityInput min={0} max={99} value={item.quantity} onChange={(event) => dispatch(setCartItemQuantity({ productId: item.productId, quantity: event.target.valueAsNumber}))} />
                                 </Group>
-                                <p className='subPrice'>Subtotal price: <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span></p>
+                                <p className='subPrice'>
+                                    {!product && <>This product was removed before you purcase it</>}
+                                    {!!product && <>
+                                        Subtotal price: <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span>
+                                    </>}
+                                </p>
                             </ListItem>
                         );
                     })}

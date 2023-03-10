@@ -97,8 +97,12 @@ export default function Checkout() {
                                 const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
                                 const product = productList?.entities?.[item.productId];
                                 return (
-                                    <ListItem key={item.productId} className={styles.productEntry}>
-                                        <h3 className='title h6'>{product?.name}</h3>
+                                    <ListItem key={item.productId} className={styles.productEntry}
+                                        enabled={!!product}
+                                        theme={!product ? 'danger' : undefined}
+                                        mild={!product ? false : undefined}
+                                    >
+                                        <h3 className='title h6'>{product?.name ?? 'PRODUCT WAS REMOVED'}</h3>
                                         <ProductImageWithStatus
                                             alt={product?.name ?? ''}
                                             src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
@@ -106,7 +110,10 @@ export default function Checkout() {
                                             
                                             status={item.quantity}
                                         />
-                                        <p className='subPrice currencyBlock'><span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span></p>
+                                        <p className='subPrice currencyBlock'>
+                                            {!product && <>This product was removed before you purcase it</>}
+                                            <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span>
+                                        </p>
                                     </ListItem>
                                 )
                             })}
