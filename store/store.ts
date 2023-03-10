@@ -1,4 +1,4 @@
-import { Action, combineReducers, configureStore, ThunkAction } from '@reduxjs/toolkit'
+import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit'
 import { apiSlice } from './features/api/apiSlice';
 import cartReducer from './features/cart/cartSlice';
 import { persistReducer, persistStore } from 'redux-persist';
@@ -8,10 +8,10 @@ import storage from 'redux-persist/lib/storage'
 
 
 export const store = configureStore({
-    reducer    : combineReducers({
-        cart                   : persistReducer({ key: 'cart', storage }, cartReducer),
+    reducer    : {
+        cart                   : persistReducer({ key: 'cart', storage }, cartReducer) as unknown as typeof cartReducer,
         [apiSlice.reducerPath] : apiSlice.reducer,
-    }),
+    },
     middleware : (getDefaultMiddleware) => {
         return (
             getDefaultMiddleware({
