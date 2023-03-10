@@ -1,6 +1,6 @@
 import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
 import { containers } from "@reusable-ui/components";
-import { ifScreenWidthAtLeast, typos } from "@reusable-ui/core";
+import { ifScreenWidthAtLeast, ifScreenWidthSmallerThan, typos } from "@reusable-ui/core";
 
 
 
@@ -33,13 +33,24 @@ export default () => [
     scopeOf('layout', {
         display: 'grid',
         gridTemplate: [[
-            '"expressCheckout vertLine orderSummary" auto',
-            '"checkoutAlt     vertLine orderSummary" auto',
-            '"regularCheckout vertLine orderSummary" auto',
-            '"navCheckout     vertLine orderSummary" auto',
+            '"orderSummary   " auto',
+            '"expressCheckout" auto',
+            '"checkoutAlt    " auto',
+            '"regularCheckout" auto',
+            '"navCheckout    " auto',
             '/',
-            '3fr min-content 1fr'
+            '1fr'
         ]],
+        ...ifScreenWidthAtLeast('lg', {
+            gridTemplate: [[
+                '"expressCheckout vertLine orderSummary" auto',
+                '"checkoutAlt     vertLine orderSummary" auto',
+                '"regularCheckout vertLine orderSummary" auto',
+                '"navCheckout     vertLine orderSummary" auto',
+                '/',
+                '3fr min-content 2fr'
+            ]],
+        }),
         gapInline: `calc(${containers.paddingInline} / 2)`,
         gapBlock : containers.paddingBlock,
     }),
@@ -56,7 +67,7 @@ export default () => [
             fontWeight: typos.fontWeightSemibold,
         }),
         ...children('article', {
-            ...children(['ul', 'ol'], {
+            ...descendants(['ul', 'ol'], {
                 gap: '0.5rem',
             }),
         }),
@@ -163,5 +174,9 @@ export default () => [
         gridArea: 'vertLine',
         
         writingMode: 'vertical-lr',
+        
+        ...ifScreenWidthSmallerThan('lg', {
+            display: 'none',
+        }),
     }),
 ];

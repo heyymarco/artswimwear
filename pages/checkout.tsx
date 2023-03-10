@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Badge, Busy, ButtonIcon, Carousel, Check, Container, DropdownListButton, EmailInput, List, ListItem, Nav, NavItem, TelInput, TextInput } from '@reusable-ui/components'
+import { Badge, Busy, ButtonIcon, Carousel, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, Nav, NavItem, TelInput, TextInput, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetPriceListQuery, useGetProductDetailQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -15,7 +15,7 @@ import { useRef, useState } from 'react'
 import { addToCart, selectCartItems } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import QuantityInput from '@/components/QuantityInput'
-import { ValidationProvider } from '@reusable-ui/core'
+import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
 
 
 
@@ -51,6 +51,41 @@ const ProductImageWithStatus = (props: ProductImageWithStatusProps) => {
 
 
 
+interface WithDetailsProps {
+    children : React.ReactNode
+}
+const WithDetails = ({children}: WithDetailsProps) => {
+    // states:
+    const [isDesktop, setIsDesktop] = useState<boolean>(false); // mobile first
+    
+    
+    
+    // dom effects:
+    const handleWindowResize = useEvent<WindowResizeCallback>(({inlineSize: mediaCurrentWidth}) => {
+        const breakpoint = breakpoints.lg;
+        const newIsDesktop = (!!breakpoint && (mediaCurrentWidth >= breakpoint));
+        if (isDesktop === newIsDesktop) return;
+        setIsDesktop(newIsDesktop);
+    });
+    useWindowResizeObserver(handleWindowResize);
+    
+    
+    
+    // jsx:
+    if (isDesktop) return (
+        <>
+            {children}
+        </>
+    );
+    return (
+        <Details className='orderCollapse' buttonChildren='Order List' theme='primary' detailsStyle='content'>
+            {children}
+        </Details>
+    );
+};
+
+
+
 export default function Checkout() {
     const styles = useCheckoutStyleSheet();
     const cartItems   = useSelector(selectCartItems);
@@ -64,6 +99,7 @@ export default function Checkout() {
     
     
     
+
     return (
         <>
             <Head>
@@ -92,32 +128,34 @@ export default function Checkout() {
                 
                 {isCartDataReady && <Container className={styles.layout}>
                     <Section noContainer className={styles.orderSummary} theme='secondary' title='Order Summary'>
-                        <List listStyle='flat'>
-                            {cartItems.map((item) => {
-                                const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
-                                const product = productList?.entities?.[item.productId];
-                                return (
-                                    <ListItem key={item.productId} className={styles.productEntry}
-                                        enabled={!!product}
-                                        theme={!product ? 'danger' : undefined}
-                                        mild={!product ? false : undefined}
-                                    >
-                                        <h3 className='title h6'>{product?.name ?? 'PRODUCT WAS REMOVED'}</h3>
-                                        <ProductImageWithStatus
-                                            alt={product?.name ?? ''}
-                                            src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
-                                            sizes='64px'
-                                            
-                                            status={item.quantity}
-                                        />
-                                        <p className='subPrice currencyBlock'>
-                                            {!product && <>This product was removed before you purcase it</>}
-                                            <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span>
-                                        </p>
-                                    </ListItem>
-                                )
-                            })}
-                        </List>
+                        <WithDetails>
+                            <List listStyle='flat'>
+                                {cartItems.map((item) => {
+                                    const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                                    const product = productList?.entities?.[item.productId];
+                                    return (
+                                        <ListItem key={item.productId} className={styles.productEntry}
+                                            enabled={!!product}
+                                            theme={!product ? 'danger' : undefined}
+                                            mild={!product ? false : undefined}
+                                        >
+                                            <h3 className='title h6'>{product?.name ?? 'PRODUCT WAS REMOVED'}</h3>
+                                            <ProductImageWithStatus
+                                                alt={product?.name ?? ''}
+                                                src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
+                                                sizes='64px'
+                                                
+                                                status={item.quantity}
+                                            />
+                                            <p className='subPrice currencyBlock'>
+                                                {!product && <>This product was removed before you purcase it</>}
+                                                <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span>
+                                            </p>
+                                        </ListItem>
+                                    )
+                                })}
+                            </List>
+                        </WithDetails>
                         <hr />
                         <p className='currencyBlock'>
                             Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
