@@ -11,9 +11,10 @@ import SiteNavbar from '../components/SiteNavbar'
 import Head from 'next/head'
 import { Container } from '@reusable-ui/components';
 
-import { store } from '@/store/store'
+import { store, persistor } from '@/store/store'
 import { Provider } from 'react-redux'
 import { CartBar } from '@/components/CartBar';
+import { PersistGate } from 'redux-persist/integration/react';
 
 const Header = () => {
     return (
@@ -54,7 +55,7 @@ const Footer = () => {
 }
 
 export default function App({ Component, pageProps }: AppProps) {
-    return (<Provider store={store}>
+    return (<Provider store={store}><PersistGate persistor={persistor}>
         <Header />
         
         <Component {...pageProps} />
@@ -62,5 +63,5 @@ export default function App({ Component, pageProps }: AppProps) {
         <Footer />
         
         <CartBar />
-    </Provider>);
+    </PersistGate></Provider>);
 }
