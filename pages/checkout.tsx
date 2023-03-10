@@ -11,8 +11,9 @@ import Link from 'next/link'
 import { Section } from '@/components/sections/Section'
 import { useState } from 'react'
 import { selectCartItems } from '@/store/features/cart/cartSlice'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
+import { selectShippingData, setMarketingOpt, setShippingAddress, setShippingCity, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
 
 
 
@@ -72,6 +73,54 @@ const WithDetails = ({isDesktop, children}: WithDetailsProps) => {
         </Details>
     );
 };
+
+const RegularCheckoutData = () => {
+    const {
+        firstName,
+        lastName,
+        
+        phone,
+        email,
+        
+        country,
+        address,
+        city,
+        zone,
+        zip,
+        
+        marketingOpt,
+    } = useSelector(selectShippingData);
+    const dispatch = useDispatch();
+    
+    
+    
+    return (
+        <ValidationProvider enableValidation={true}>
+            <Section className='contact' title='Contact Information'>
+                <EmailInput className='email'     placeholder='Email'      required autoComplete='shipping email'          value={email}              onChange={({target:{value}}) => dispatch(setShippingEmail(value))}     />
+                <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})         => dispatch(setMarketingOpt(active))}      >
+                    Email me with news and offers
+                </Check>
+            </Section>
+            <Section className='shipping' title='Shipping Address'>
+                <DropdownListButton buttonChildren='Country/Region'>
+                    <ListItem>United States</ListItem>
+                    <ListItem>Indonesia</ListItem>
+                </DropdownListButton>
+                
+                <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name'     value={firstName}          onChange={({target:{value}}) => dispatch(setShippingFirstName(value))} />
+                <TextInput  className='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name'    value={lastName}           onChange={({target:{value}}) => dispatch(setShippingLastName(value))}  />
+                <TelInput   className='phone'     placeholder='Phone'      required autoComplete='shipping tel'            value={phone}              onChange={({target:{value}}) => dispatch(setShippingPhone(value))}     />
+                <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' value={address}            onChange={({target:{value}}) => dispatch(setShippingAddress(value))}   />
+                <TextInput  className='city'      placeholder='City'       required autoComplete='shipping address-level2' value={city}               onChange={({target:{value}}) => dispatch(setShippingCity(value))}      />
+                <TextInput  className='zone'      placeholder='State'      required autoComplete='shipping address-level1' value={zone}               onChange={({target:{value}}) => dispatch(setShippingZone(value))}      />
+                <TextInput  className='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code'    value={zip}                onChange={({target:{value}}) => dispatch(setShippingZip(value))}       />
+                
+                <input type='text' className='hidden' required autoComplete='shipping country'                             value={country}            onChange={({target:{value}}) => dispatch(setShippingZip(value))}       />
+            </Section>
+        </ValidationProvider>
+    );
+}
 
 
 
@@ -189,28 +238,7 @@ export default function Checkout() {
                     </div>
                     
                     <Section className={styles.regularCheckout} title='Regular Checkout'>
-                        <ValidationProvider enableValidation={true}>
-                            <Section className='contact' title='Contact Information'>
-                                <EmailInput name='email'     placeholder='Email'      required autoComplete='shipping email' />
-                                <Check name='marketing_opt_in' defaultActive={true}>Email me with news and offers</Check>
-                            </Section>
-                            <Section className='shipping' title='Shipping Address'>
-                                <DropdownListButton buttonChildren='Country/Region'>
-                                    <ListItem>United States</ListItem>
-                                    <ListItem>Indonesia</ListItem>
-                                </DropdownListButton>
-                                
-                                <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name' />
-                                <TextInput  className='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name' />
-                                <TelInput   className='phone'     placeholder='Phone'      required autoComplete='shipping tel' />
-                                <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' />
-                                <TextInput  className='city'      placeholder='City'       required autoComplete='shipping address-level2' />
-                                <TextInput  className='zone'      placeholder='State'      required autoComplete='shipping address-level1' />
-                                <TextInput  className='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code' />
-                                
-                                <input type='text' className='hidden' required autoComplete='shipping country' />
-                            </Section>
-                        </ValidationProvider>
+                        <RegularCheckoutData />
                     </Section>
                     
                     <Section tag='nav' className={styles.navCheckout}>

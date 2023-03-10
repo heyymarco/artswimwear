@@ -1,15 +1,17 @@
 import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit'
-import { apiSlice } from './features/api/apiSlice';
-import cartReducer from './features/cart/cartSlice';
-import { persistReducer, persistStore } from 'redux-persist';
-import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
+import { apiSlice } from './features/api/apiSlice'
+import cartReducer from './features/cart/cartSlice'
+import checkoutReducer from './features/checkout/checkoutSlice'
+import { persistReducer, persistStore } from 'redux-persist'
+import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
 
 
 export const store = configureStore({
     reducer    : {
-        cart                   : persistReducer({ key: 'cart', storage }, cartReducer) as unknown as typeof cartReducer,
+        cart                   : persistReducer({ key: 'cart'    , storage }, cartReducer    ) as unknown as typeof cartReducer,
+        checkout               : persistReducer({ key: 'checkout', storage }, checkoutReducer) as unknown as typeof checkoutReducer,
         [apiSlice.reducerPath] : apiSlice.reducer,
     },
     middleware : (getDefaultMiddleware) => {
