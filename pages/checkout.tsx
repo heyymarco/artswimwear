@@ -138,6 +138,12 @@ export default function Checkout() {
                     <Section noContainer className={styles.expressCheckout} theme='secondary' title='Express Checkout'>
                     </Section>
                     
+                    <div className={styles.checkoutAlt}>
+                        <hr />
+                        <span>OR</span>
+                        <hr />
+                    </div>
+                    
                     <Section noContainer className={styles.regularCheckout} theme='secondary' title='Regular Checkout'>
                         <ValidationProvider enableValidation={true}>
                             <Section className='contact' title='Contact Information'>

@@ -34,10 +34,11 @@ export default () => [
         display: 'grid',
         gridTemplate: [[
             '"expressCheckout vertLine orderSummary" auto',
+            '"checkoutAlt     vertLine orderSummary" auto',
             '"regularCheckout vertLine orderSummary" auto',
             '"navCheckout     vertLine orderSummary" auto',
             '/',
-            '3fr min-content 2fr'
+            '3fr min-content 1fr'
         ]],
         gapInline: `calc(${containers.paddingInline} / 2)`,
         gapBlock : containers.paddingBlock,
@@ -97,6 +98,21 @@ export default () => [
     }),
     scopeOf('expressCheckout', {
         gridArea: 'expressCheckout',
+    }),
+    scopeOf('checkoutAlt', {
+        gridArea: 'checkoutAlt',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        gap: '1rem',
+        ...children('hr', {
+            flex: [[1, 1]],
+        }),
+        ...children('span', {
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        }),
     }),
     scopeOf('regularCheckout', {
         gridArea: 'regularCheckout',
