@@ -48,7 +48,21 @@ export const Section = (props: SectionProps) => {
             {...restGenericSectionProps}
         >
             {/* a built-in <article> as the content */}
-            <Container tag='article' className='fill-self' mild='inherit'>
+            <Container
+                // semantics:
+                tag='article'
+                
+                
+                
+                // variants:
+                mild='inherit'
+                
+                
+                
+                // classes:
+                mainClass={restGenericSectionProps.noContainer ? '' : undefined}
+                className='fill-self'
+            >
                 {/* the article title (if provided) */}
                 {title && <Generic tag={titleTag}>
                     {title}

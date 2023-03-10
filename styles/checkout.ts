@@ -1,4 +1,5 @@
 import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
+import { containers } from "@reusable-ui/components";
 import { ifScreenWidthAtLeast, typos } from "@reusable-ui/core";
 
 
@@ -26,7 +27,24 @@ export default () => [
             }),
         }),
     }),
-    scopeOf('shoppingList', {
+    
+    
+    
+    scopeOf('layout', {
+        display: 'grid',
+        gridTemplate: [[
+            '"expressCheckout vertLine orderSummary" auto',
+            '"regularCheckout vertLine orderSummary" auto',
+            '"navCheckout     vertLine orderSummary" auto',
+            '/',
+            '3fr min-content 2fr'
+        ]],
+        gapInline: `calc(${containers.paddingInline} / 2)`,
+        gapBlock : containers.paddingBlock,
+    }),
+    scopeOf('orderSummary', {
+        gridArea: 'orderSummary',
+        
         ...descendants('.currencyBlock', {
             display: 'flex',
         }),
@@ -43,6 +61,8 @@ export default () => [
         }),
     }),
     scopeOf('productEntry', {
+        gridArea: 'orderSummary',
+        
         display: 'grid',
         gridTemplate: [[
             '"image    title" max-content',
@@ -76,8 +96,11 @@ export default () => [
         }),
     }),
     scopeOf('expressCheckout', {
+        gridArea: 'expressCheckout',
     }),
     scopeOf('regularCheckout', {
+        gridArea: 'regularCheckout',
+        
         ...children('article', {
             ...children('.contact', {
                 ...children('article', {
@@ -111,11 +134,18 @@ export default () => [
         }),
     }),
     scopeOf('navCheckout', {
+        gridArea: 'navCheckout',
+        
         ...children('article', {
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'space-between',
             alignItems: 'center',
         }),
+    }),
+    scopeOf('vertLine', {
+        gridArea: 'vertLine',
+        
+        writingMode: 'vertical-lr',
     }),
 ];

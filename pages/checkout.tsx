@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Badge, Busy, ButtonIcon, Carousel, Check, DropdownListButton, EmailInput, List, ListItem, Nav, NavItem, TelInput, TextInput } from '@reusable-ui/components'
+import { Badge, Busy, ButtonIcon, Carousel, Check, Container, DropdownListButton, EmailInput, List, ListItem, Nav, NavItem, TelInput, TextInput } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetPriceListQuery, useGetProductDetailQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -90,81 +90,85 @@ export default function Checkout() {
                     }
                 </Section>}
                 
-                {isCartDataReady && <Section className={styles.shoppingList} theme='secondary' title='Shopping List'>
-                    <List listStyle='flat'>
-                        {cartItems.map((item) => {
-                            const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
-                            const product = productList?.entities?.[item.productId];
-                            return (
-                                <ListItem key={item.productId} className={styles.productEntry}>
-                                    <h3 className='title h6'>{product?.name}</h3>
-                                    <ProductImageWithStatus
-                                        alt={product?.name ?? ''}
-                                        src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
-                                        sizes='64px'
-                                        
-                                        status={item.quantity}
-                                    />
-                                    <p className='subPrice currencyBlock'><span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span></p>
-                                </ListItem>
-                            )
-                        })}
-                    </List>
-                    <hr />
-                    <p className='currencyBlock'>
-                        Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
-                            const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
-                            if (!productUnitPrice) return accum;
-                            return accum + (productUnitPrice * item.quantity);
-                        }, 0))}</span>
-                    </p>
-                    <p className='currencyBlock'>
-                        Shipping: <span className='currency'>calculated at next step</span>
-                    </p>
-                    <hr />
-                    <p className='currencyBlock'>
-                        Total: <span className='currency'>calculated at next step</span>
-                    </p>
-                </Section>}
-                
-                {isCartDataReady && <Section className={styles.expressCheckout} theme='secondary' title='Express Checkout'>
-                </Section>}
-                
-                {isCartDataReady && <Section className={styles.regularCheckout} theme='secondary' title='Regular Checkout'>
-                    <ValidationProvider enableValidation={true}>
-                        <Section className='contact' title='Contact Information'>
-                            <EmailInput name='email'     placeholder='Email'      required autoComplete='shipping email' />
-                            <Check name='marketing_opt_in' defaultActive={true}>Email me with news and offers</Check>
-                        </Section>
-                        <Section className='shipping' title='Shipping Address'>
-                            <DropdownListButton buttonChildren='Country/Region'>
-                                <ListItem>United States</ListItem>
-                                <ListItem>Indonesia</ListItem>
-                            </DropdownListButton>
-                            
-                            <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name' />
-                            <TextInput  className='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name' />
-                            <TelInput   className='phone'     placeholder='Phone'      required autoComplete='shipping tel' />
-                            <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' />
-                            <TextInput  className='city'      placeholder='City'       required autoComplete='shipping address-level2' />
-                            <TextInput  className='zone'      placeholder='State'      required autoComplete='shipping address-level1' />
-                            <TextInput  className='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code' />
-                            
-                            <input type='text' className='hidden' required autoComplete='shipping country' />
-                        </Section>
-                    </ValidationProvider>
-                </Section>}
-                
-                {isCartDataReady && <Section tag='nav' className={styles.navCheckout} theme='secondary'>
-                    <ButtonIcon className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link'>
-                        <Link href='/cart'>
-                            Return to cart
-                        </Link>
-                    </ButtonIcon>
-                    <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end'>
-                        Continue to shipping
-                    </ButtonIcon>
-                </Section>}
+                {isCartDataReady && <Container className={styles.layout}>
+                    <Section noContainer className={styles.orderSummary} theme='secondary' title='Order Summary'>
+                        <List listStyle='flat'>
+                            {cartItems.map((item) => {
+                                const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                                const product = productList?.entities?.[item.productId];
+                                return (
+                                    <ListItem key={item.productId} className={styles.productEntry}>
+                                        <h3 className='title h6'>{product?.name}</h3>
+                                        <ProductImageWithStatus
+                                            alt={product?.name ?? ''}
+                                            src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
+                                            sizes='64px'
+                                            
+                                            status={item.quantity}
+                                        />
+                                        <p className='subPrice currencyBlock'><span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span></p>
+                                    </ListItem>
+                                )
+                            })}
+                        </List>
+                        <hr />
+                        <p className='currencyBlock'>
+                            Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
+                                const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                                if (!productUnitPrice) return accum;
+                                return accum + (productUnitPrice * item.quantity);
+                            }, 0))}</span>
+                        </p>
+                        <p className='currencyBlock'>
+                            Shipping: <span className='currency'>calculated at next step</span>
+                        </p>
+                        <hr />
+                        <p className='currencyBlock'>
+                            Total: <span className='currency'>calculated at next step</span>
+                        </p>
+                    </Section>
+                    
+                    <Section noContainer className={styles.expressCheckout} theme='secondary' title='Express Checkout'>
+                    </Section>
+                    
+                    <Section noContainer className={styles.regularCheckout} theme='secondary' title='Regular Checkout'>
+                        <ValidationProvider enableValidation={true}>
+                            <Section className='contact' title='Contact Information'>
+                                <EmailInput name='email'     placeholder='Email'      required autoComplete='shipping email' />
+                                <Check name='marketing_opt_in' defaultActive={true}>Email me with news and offers</Check>
+                            </Section>
+                            <Section className='shipping' title='Shipping Address'>
+                                <DropdownListButton buttonChildren='Country/Region'>
+                                    <ListItem>United States</ListItem>
+                                    <ListItem>Indonesia</ListItem>
+                                </DropdownListButton>
+                                
+                                <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name' />
+                                <TextInput  className='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name' />
+                                <TelInput   className='phone'     placeholder='Phone'      required autoComplete='shipping tel' />
+                                <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' />
+                                <TextInput  className='city'      placeholder='City'       required autoComplete='shipping address-level2' />
+                                <TextInput  className='zone'      placeholder='State'      required autoComplete='shipping address-level1' />
+                                <TextInput  className='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code' />
+                                
+                                <input type='text' className='hidden' required autoComplete='shipping country' />
+                            </Section>
+                        </ValidationProvider>
+                    </Section>
+                    
+                    <Section noContainer tag='nav' className={styles.navCheckout} theme='secondary'>
+                        <ButtonIcon className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link'>
+                            <Link href='/cart'>
+                                Return to cart
+                            </Link>
+                        </ButtonIcon>
+                        <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end'>
+                            Continue to shipping
+                        </ButtonIcon>
+                    </Section>
+                    
+                    <hr className={styles.vertLine} />
+                </Container>}
             </Main>
         </>
     )
