@@ -97,7 +97,7 @@ const RegularCheckoutData = ({countryList}: RegularCheckoutDataProps) => {
     const dispatch = useDispatch();
     
     
-    console.log('countries: ', Object.values(countryList.entities));
+    
     return (
         <ValidationProvider enableValidation={true}>
             <Section className='contact' title='Contact Information'>
