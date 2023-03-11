@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { Main } from '@/components/sections/Main'
 import { Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, TelInput, TextInput, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { useGetPriceListQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
+import { CountryEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
@@ -14,6 +14,7 @@ import { selectCartItems } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
 import { selectShippingData, setMarketingOpt, setShippingAddress, setShippingCity, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
+import { EntityState } from '@reduxjs/toolkit'
 
 
 
@@ -74,7 +75,10 @@ const WithDetails = ({isDesktop, children}: WithDetailsProps) => {
     );
 };
 
-const RegularCheckoutData = () => {
+interface RegularCheckoutDataProps {
+    countryList : EntityState<CountryEntry>
+}
+const RegularCheckoutData = ({countryList}: RegularCheckoutDataProps) => {
     const {
         firstName,
         lastName,
@@ -93,7 +97,7 @@ const RegularCheckoutData = () => {
     const dispatch = useDispatch();
     
     
-    
+    console.log('countries: ', Object.values(countryList.entities));
     return (
         <ValidationProvider enableValidation={true}>
             <Section className='contact' title='Contact Information'>
@@ -104,8 +108,9 @@ const RegularCheckoutData = () => {
             </Section>
             <Section className='shipping' title='Shipping Address'>
                 <DropdownListButton buttonChildren='Country/Region'>
-                    <ListItem>United States</ListItem>
-                    <ListItem>Indonesia</ListItem>
+                    {Object.values(countryList.entities).filter((country): country is Exclude<typeof country, undefined> => !!country).map((country, index) =>
+                        <ListItem key={index}>{country.name}</ListItem>
+                    )}
                 </DropdownListButton>
                 
                 <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name'     value={firstName}          onChange={({target:{value}}) => dispatch(setShippingFirstName(value))} />
@@ -130,9 +135,10 @@ export default function Checkout() {
     const hasCart = !!cartItems.length;
     const {data: priceList, isLoading: isLoading1, isError: isError1} = useGetPriceListQuery();
     const {data: productList, isLoading: isLoading2, isError: isError2} = useGetProductListQuery();
-    const isLoading = isLoading1 || isLoading2;
-    const isError = isError1 || isError2;
-    const isCartDataReady = hasCart && !!priceList && !!productList;
+    const {data: countryList, isLoading: isLoading3, isError: isError3} = useGetCountryListQuery();
+    const isLoading = isLoading1 || isLoading2 || isLoading3;
+    const isError = isError1 || isError2 || isError3;
+    const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList;
     
     
     
@@ -238,7 +244,7 @@ export default function Checkout() {
                     </div>
                     
                     <Section className={styles.regularCheckout} title='Regular Checkout'>
-                        <RegularCheckoutData />
+                        <RegularCheckoutData countryList={countryList} />
                     </Section>
                     
                     <Section tag='nav' className={styles.navCheckout}>

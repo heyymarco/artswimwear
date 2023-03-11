@@ -23,6 +23,14 @@ const priceListAdapter = createEntityAdapter<PriceEntry>({
     selectId : (priceEntry) => priceEntry._id,
 });
 
+export interface CountryEntry {
+    code : string
+    name : string
+}
+const countryListAdapter = createEntityAdapter<CountryEntry>({
+    selectId : (countryEntry) => countryEntry.code,
+});
+
 
 
 export const apiSlice = createApi({
@@ -40,10 +48,18 @@ export const apiSlice = createApi({
         getProductDetail: builder.query<any, string>({
             query : (productPath: string) => `product?path=${productPath}`,
         }),
+        
         getPriceList: builder.query<EntityState<PriceEntry>, void>({
             query : () => 'priceList',
             transformResponse(response: PriceEntry[]) {
                 return priceListAdapter.addMany(priceListAdapter.getInitialState(), response);
+            },
+        }),
+        
+        getCountryList: builder.query<EntityState<CountryEntry>, void>({
+            query : () => 'countryList',
+            transformResponse(response: CountryEntry[]) {
+                return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
             },
         }),
     }),
@@ -54,7 +70,10 @@ export const apiSlice = createApi({
 export const {
     useGetProductListQuery,
     useGetProductDetailQuery,
+    
     useGetPriceListQuery,
+    
+    useGetCountryListQuery,
 } = apiSlice;
 
 
