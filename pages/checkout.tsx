@@ -145,14 +145,17 @@ const RegularCheckoutData = ({countryList}: RegularCheckoutDataProps) => {
     );
 }
 
-const ProgressCheckout = () => {
+interface ProgressCheckoutProps {
+    isDesktop : boolean
+}
+const ProgressCheckout = ({isDesktop}: ProgressCheckoutProps) => {
     const checkoutProgress = useSelector(selectCheckoutProgress);
     
     
     
     // jsx:
     return (
-        <List theme='primary' listStyle='breadcrumb' orientation='inline' size='sm'>
+        <List theme={!isDesktop ? 'secondary' : 'primary'} outlined={!isDesktop} listStyle='breadcrumb' orientation='inline' size='sm'>
             <ListItem actionCtrl={false} active={true}>Checkout</ListItem>
             <ListItem active={checkoutProgress >= 0}>Information</ListItem>
             <ListItem active={checkoutProgress >= 1}>Shipping</ListItem>
@@ -319,8 +322,8 @@ export default function Checkout() {
                         </p>
                     </Section>
                     
-                    <Section tag='nav' className={styles.progressCheckout}>
-                        <ProgressCheckout />
+                    <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
+                        <ProgressCheckout isDesktop={isDesktop} />
                     </Section>
                     
                     {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <>

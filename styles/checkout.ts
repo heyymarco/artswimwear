@@ -81,6 +81,12 @@ export default () => {
         scopeOf('progressCheckout', {
             gridArea: 'progressCheckout',
             
+            ...ifScreenWidthSmallerThan('lg', {
+                marginInline  : `calc(0px - ${containers.paddingInline})`,
+                marginBlock   : `calc(0px - ${containers.paddingBlock })`,
+                paddingInline : containers.paddingInline,
+                paddingBlock  : containers.paddingBlock,
+            }),
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px !important',
                 [paddingVars.paddingBlock ] : '0px !important',
