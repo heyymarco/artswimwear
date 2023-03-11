@@ -107,7 +107,7 @@ const RegularCheckoutData = ({countryList}: RegularCheckoutDataProps) => {
                 </Check>
             </Section>
             <Section className='shipping' title='Shipping Address'>
-                <DropdownListButton buttonChildren='Country/Region'>
+                <DropdownListButton buttonChildren='Country/Region' theme='secondary'>
                     {Object.values(countryList.entities).filter((country): country is Exclude<typeof country, undefined> => !!country).map((country, index) =>
                         <ListItem key={index}>{country.name}</ListItem>
                     )}
