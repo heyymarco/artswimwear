@@ -3,7 +3,9 @@ import { RootState, AppThunk } from '../../store';
 
 
 
+export type CheckoutStep = 'info'|'shipping'|'payment'
 export interface CheckoutState {
+    checkoutStep         : CheckoutStep
     marketingOpt         : boolean
     
     
@@ -24,6 +26,7 @@ export interface CheckoutState {
 }
 
 const initialState: CheckoutState = {
+    checkoutStep       : 'info',
     marketingOpt       : true,
     shippingValidation : false,
 };
@@ -31,6 +34,9 @@ export const checkoutSlice = createSlice({
     name: 'checkout',
     initialState,
     reducers: {
+        setCheckoutStep: (state, {payload: value}: PayloadAction<CheckoutStep>) => {
+            state.checkoutStep = value;
+        },
         setMarketingOpt: (state, {payload: value}: PayloadAction<boolean>) => {
             state.marketingOpt = value;
         },
@@ -77,6 +83,7 @@ export const checkoutSlice = createSlice({
 
 export default checkoutSlice.reducer;
 export const {
+    setCheckoutStep,
     setMarketingOpt,
     
     
@@ -101,6 +108,7 @@ export const {
 // selectors:
 export const selectShippingData = (state: RootState) => {
     const {
+        checkoutStep,
         marketingOpt,
         
         
@@ -121,6 +129,7 @@ export const selectShippingData = (state: RootState) => {
     } = state.checkout;
     
     return {
+        checkoutStep,
         marketingOpt,
         
         
@@ -139,4 +148,8 @@ export const selectShippingData = (state: RootState) => {
         shippingZone,
         shippingZip,
     };
+};
+
+export const selectCheckoutProgress = ({checkout: {checkoutStep}}: RootState): number => {
+    return ['info', 'shipping', 'payment'].findIndex((progress) => progress === checkoutStep);
 };

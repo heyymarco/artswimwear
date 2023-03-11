@@ -1,6 +1,6 @@
-import { children, descendants, fallbacks, scopeOf } from "@cssfn/core";
+import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
 import { containers } from "@reusable-ui/components";
-import { ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, typos, usesPadding } from "@reusable-ui/core";
+import { ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, typos, usesGroupable, usesPadding } from "@reusable-ui/core";
 
 
 
@@ -37,33 +37,47 @@ export default () => {
         
         scopeOf('layout', {
             display: 'grid',
-            gridTemplate: [[
-                '"orderSummary   " auto',
-                '"expressCheckout" auto',
-                '"checkoutAlt    " auto',
-                '"regularCheckout" auto',
-                '"navCheckout    " auto',
-                '/',
-                '1fr'
-            ]],
-            ...ifScreenWidthAtLeast('lg', {
+            ...rule(['.info', '.shipping', '.payment'], {
                 gridTemplate: [[
-                    '"expressCheckout vertLine orderSummary" auto',
-                    '"checkoutAlt     vertLine orderSummary" auto',
-                    '"regularCheckout vertLine orderSummary" auto',
-                    '"navCheckout     vertLine orderSummary" auto',
+                    '"progressCheckout" auto',
+                    '"orderSummary    " auto',
+                    '"expressCheckout " auto',
+                    '"checkoutAlt     " auto',
+                    '"regularCheckout " auto',
+                    '"navCheckout     " auto',
                     '/',
-                    '1fr min-content 1fr'
+                    '1fr'
                 ]],
-            }),
-            ...ifScreenWidthAtLeast('xl', {
-                gridTemplateColumns: '3fr min-content 2fr',
+                ...ifScreenWidthAtLeast('lg', {
+                    gridTemplate: [[
+                        '"progressCheckout vertLine orderSummary" auto',
+                        '"expressCheckout  vertLine orderSummary" auto',
+                        '"checkoutAlt      vertLine orderSummary" auto',
+                        '"regularCheckout  vertLine orderSummary" auto',
+                        '"navCheckout      vertLine orderSummary" auto',
+                        '/',
+                        '1fr min-content 1fr'
+                    ]],
+                }),
+                ...ifScreenWidthAtLeast('xl', {
+                    gridTemplateColumns: '3fr min-content 2fr',
+                }),
             }),
             gapInline: `calc(${containers.paddingInline} / 2)`,
-            gapBlock : containers.paddingBlock,
+            gapBlock : `calc(${containers.paddingBlock} / 2)`,
             ...children(['section', 'aside'], {
-                [paddingVars.paddingInline] : '0px',
-                [paddingVars.paddingBlock ] : '0px',
+                ...children(['&', 'article'], {
+                    [paddingVars.paddingInline] : '0px !important',
+                    [paddingVars.paddingBlock ] : '0px !important',
+                }),
+            }),
+        }),
+        scopeOf('progressCheckout', {
+            gridArea: 'progressCheckout',
+            
+            ...children(['&', 'article'], {
+                [paddingVars.paddingInline] : '0px !important',
+                [paddingVars.paddingBlock ] : '0px !important',
             }),
         }),
         scopeOf('orderSummary', {

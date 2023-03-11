@@ -9,11 +9,11 @@ import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
 import { Section } from '@/components/sections/Section'
-import { useState } from 'react'
-import { selectCartItems } from '@/store/features/cart/cartSlice'
+import { useRef, useState } from 'react'
+import { selectCartItems, selectIsCartShown, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { selectShippingData, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
+import { selectCheckoutProgress, selectShippingData, setCheckoutStep, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 
 
@@ -145,6 +145,67 @@ const RegularCheckoutData = ({countryList}: RegularCheckoutDataProps) => {
     );
 }
 
+const ProgressCheckout = () => {
+    const checkoutProgress = useSelector(selectCheckoutProgress);
+    
+    
+    
+    // jsx:
+    return (
+        <List theme='primary' listStyle='breadcrumb' orientation='inline' size='sm'>
+            <ListItem actionCtrl={false} active={true}>Checkout</ListItem>
+            <ListItem active={checkoutProgress >= 0}>Information</ListItem>
+            <ListItem active={checkoutProgress >= 1}>Shipping</ListItem>
+            <ListItem active={checkoutProgress >= 2}>Payment</ListItem>
+        </List>
+    );
+}
+
+interface NavCheckoutProps {
+    regularCheckoutSectionRef : React.RefObject<HTMLElement> // getter ref
+}
+const NavCheckout = ({regularCheckoutSectionRef}: NavCheckoutProps) => {
+    const dispatch = useDispatch();
+    const checkoutProgress = useSelector(selectCheckoutProgress);
+    
+    
+    
+    // fn props:
+    const prevAction = [
+        { text: 'Return to cart'       , action: () => dispatch(showCart(true)) },
+        { text: 'Return to information', action: () => dispatch(setCheckoutStep('info')) },
+        { text: 'Return to shipping'   , action: () => dispatch(setCheckoutStep('shipping')) },
+    ][checkoutProgress];
+    
+    const nextAction = [
+        { text: 'Continue to shipping' , action: () => {
+            dispatch(setShippingValidation(true));
+            
+            if (!!regularCheckoutSectionRef.current?.querySelector(':invalid')) return; // there is an invalid field
+            
+            dispatch(setCheckoutStep('shipping'));
+        }},
+        { text: 'Continue to payment'  , action: () => dispatch(setCheckoutStep('payment')) },
+        { text: 'Pay now' , action: () => {
+            // payment action
+        }},
+    ][checkoutProgress];
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <ButtonIcon className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link' onClick={prevAction.action}>
+                {prevAction.text}
+            </ButtonIcon>
+            <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end' onClick={nextAction.action}>
+                {nextAction.text}
+            </ButtonIcon>
+        </>
+    );
+}
+
 
 
 export default function Checkout() {
@@ -157,7 +218,10 @@ export default function Checkout() {
     const isLoading = isLoading1 || isLoading2 || isLoading3;
     const isError = isError1 || isError2 || isError3;
     const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList;
-    const dispatch = useDispatch();
+    
+    const {
+        checkoutStep,
+    } = useSelector(selectShippingData);
     
     
     
@@ -177,6 +241,8 @@ export default function Checkout() {
     
     
     
+    // refs:
+    const regularCheckoutSectionRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -206,7 +272,7 @@ export default function Checkout() {
                     }
                 </Section>}
                 
-                {isCartDataReady && <Container className={styles.layout} theme='secondary'>
+                {isCartDataReady && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
                     <Section tag='aside' className={`fill-self ${styles.orderSummary}`} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
                         <WithDetails isDesktop={isDesktop}>
                             <List className='orderList' listStyle='flat'>
@@ -253,30 +319,27 @@ export default function Checkout() {
                         </p>
                     </Section>
                     
-                    <Section className={styles.expressCheckout} title='Express Checkout'>
+                    <Section tag='nav' className={styles.progressCheckout}>
+                        <ProgressCheckout />
                     </Section>
                     
-                    <div className={styles.checkoutAlt}>
-                        <hr />
-                        <span>OR</span>
-                        <hr />
-                    </div>
-                    
-                    <Section className={styles.regularCheckout} title='Regular Checkout'>
-                        <RegularCheckoutData countryList={countryList} />
-                    </Section>
+                    {(checkoutStep === 'info') && <>
+                        <Section className={styles.expressCheckout} title='Express Checkout'>
+                        </Section>
+                        
+                        <div className={styles.checkoutAlt}>
+                            <hr />
+                            <span>OR</span>
+                            <hr />
+                        </div>
+                        
+                        <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
+                            <RegularCheckoutData countryList={countryList} />
+                        </Section>
+                    </>}
                     
                     <Section tag='nav' className={styles.navCheckout}>
-                        <ButtonIcon className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link'>
-                            <Link href='/cart'>
-                                Return to cart
-                            </Link>
-                        </ButtonIcon>
-                        <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end' onClick={() => {
-                            dispatch(setShippingValidation(true));
-                        }}>
-                            Continue to shipping
-                        </ButtonIcon>
+                        <NavCheckout regularCheckoutSectionRef={regularCheckoutSectionRef} />
                     </Section>
                     
                     <hr className={styles.vertLine} />
