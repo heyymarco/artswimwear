@@ -6,7 +6,8 @@ import { ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, t
 
 const imageSize = 64;  // 64px
 export default () => {
-    const {paddingVars} = usesPadding();
+    const {paddingVars  } = usesPadding();
+    const {groupableVars} = usesGroupable();
     
     
     
@@ -37,38 +38,43 @@ export default () => {
         
         scopeOf('layout', {
             display: 'grid',
-            ...rule(['.info', '.shipping', '.payment'], {
+            gridTemplate: [[
+                '"progressCheckout" auto',
+                '"orderSummary    " auto',
+                '"currentStep     " auto',
+                '"navCheckout     " auto',
+                '/',
+                '1fr'
+            ]],
+            ...ifScreenWidthAtLeast('lg', {
                 gridTemplate: [[
-                    '"progressCheckout" auto',
-                    '"orderSummary    " auto',
-                    '"expressCheckout " auto',
-                    '"checkoutAlt     " auto',
-                    '"regularCheckout " auto',
-                    '"navCheckout     " auto',
+                    '"progressCheckout vertLine orderSummary" auto',
+                    '"currentStep      vertLine orderSummary" auto',
+                    '"navCheckout      vertLine orderSummary" auto',
                     '/',
-                    '1fr'
+                    '1fr min-content 1fr'
                 ]],
-                ...ifScreenWidthAtLeast('lg', {
-                    gridTemplate: [[
-                        '"progressCheckout vertLine orderSummary" auto',
-                        '"expressCheckout  vertLine orderSummary" auto',
-                        '"checkoutAlt      vertLine orderSummary" auto',
-                        '"regularCheckout  vertLine orderSummary" auto',
-                        '"navCheckout      vertLine orderSummary" auto',
-                        '/',
-                        '1fr min-content 1fr'
-                    ]],
-                }),
-                ...ifScreenWidthAtLeast('xl', {
-                    gridTemplateColumns: '3fr min-content 2fr',
-                }),
+            }),
+            ...ifScreenWidthAtLeast('xl', {
+                gridTemplateColumns: '3fr min-content 2fr',
             }),
             gapInline: `calc(${containers.paddingInline} / 2)`,
-            gapBlock : `calc(${containers.paddingBlock} / 2)`,
-            ...children(['section', 'aside'], {
+            gapBlock : containers.paddingBlock,
+            ...children('section', {
                 ...children(['&', 'article'], {
                     [paddingVars.paddingInline] : '0px !important',
                     [paddingVars.paddingBlock ] : '0px !important',
+                }),
+            }),
+            ...children('aside', {
+                ...ifScreenWidthSmallerThan('lg', {
+                    marginInline: `calc(0px - ${groupableVars.paddingInline})`,
+                }),
+                ...ifScreenWidthAtLeast('lg', {
+                    ...children(['&', 'article'], {
+                        [paddingVars.paddingInline] : '0px !important',
+                        // [paddingVars.paddingBlock ] : '0px !important',
+                    }),
                 }),
             }),
         }),
@@ -79,6 +85,9 @@ export default () => {
                 [paddingVars.paddingInline] : '0px !important',
                 [paddingVars.paddingBlock ] : '0px !important',
             }),
+        }),
+        scopeOf('review', {
+            // todo
         }),
         scopeOf('orderSummary', {
             gridArea: 'orderSummary',
@@ -144,11 +153,19 @@ export default () => {
                 margin: 0,
             }),
         }),
+        scopeOf('checkout', {
+            gridArea: 'currentStep',
+            
+            display: 'flex',
+            flexDirection: 'column',
+        }),
         scopeOf('expressCheckout', {
-            gridArea: 'expressCheckout',
+            ...children(['&', 'article'], {
+                [paddingVars.paddingInline] : '0px !important',
+                [paddingVars.paddingBlock ] : '0px !important',
+            }),
         }),
         scopeOf('checkoutAlt', {
-            gridArea: 'checkoutAlt',
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
@@ -163,8 +180,10 @@ export default () => {
             }),
         }),
         scopeOf('regularCheckout', {
-            gridArea: 'regularCheckout',
-            
+            ...children(['&', 'article'], {
+                [paddingVars.paddingInline] : '0px !important',
+                [paddingVars.paddingBlock ] : '0px !important',
+            }),
             ...children('article', {
                 ...children('.contact', {
                     ...children('article', {

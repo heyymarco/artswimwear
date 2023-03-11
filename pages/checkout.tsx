@@ -273,7 +273,7 @@ export default function Checkout() {
                 </Section>}
                 
                 {isCartDataReady && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
-                    <Section tag='aside' className={`fill-self ${styles.orderSummary}`} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
+                    <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
                         <WithDetails isDesktop={isDesktop}>
                             <List className='orderList' listStyle='flat'>
                                 {cartItems.map((item) => {
@@ -323,18 +323,26 @@ export default function Checkout() {
                         <ProgressCheckout />
                     </Section>
                     
-                    {(checkoutStep === 'info') && <>
-                        <Section className={styles.expressCheckout} title='Express Checkout'>
+                    {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <>
+                        <Section tag='aside' className={styles.review} title='Review'>
+                            blah...
                         </Section>
-                        
-                        <div className={styles.checkoutAlt}>
-                            <hr />
-                            <span>OR</span>
-                            <hr />
-                        </div>
-                        
-                        <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
-                            <RegularCheckoutData countryList={countryList} />
+                    </>}
+                    
+                    {(checkoutStep === 'info') && <>
+                        <Section className={styles.checkout}>
+                            <Section className={styles.expressCheckout} title='Express Checkout'>
+                            </Section>
+                            
+                            <div className={styles.checkoutAlt}>
+                                <hr />
+                                <span>OR</span>
+                                <hr />
+                            </div>
+                            
+                            <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
+                                <RegularCheckoutData countryList={countryList} />
+                            </Section>
                         </Section>
                     </>}
                     
