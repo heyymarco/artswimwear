@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, TelInput, TextInput, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
+import { Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, TelInput, TextInput, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { CountryEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -13,7 +13,7 @@ import { useState } from 'react'
 import { selectCartItems } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { selectShippingData, setMarketingOpt, setShippingAddress, setShippingCity, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
+import { selectShippingData, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 
 
@@ -80,48 +80,66 @@ interface RegularCheckoutDataProps {
 }
 const RegularCheckoutData = ({countryList}: RegularCheckoutDataProps) => {
     const {
-        firstName,
-        lastName,
-        
-        phone,
-        email,
-        
-        country,
-        address,
-        city,
-        zone,
-        zip,
-        
         marketingOpt,
+        
+        
+        
+        shippingValidation,
+        
+        shippingFirstName,
+        shippingLastName,
+        
+        shippingPhone,
+        shippingEmail,
+        
+        shippingCountry,
+        shippingAddress,
+        shippingCity,
+        shippingZone,
+        shippingZip,
     } = useSelector(selectShippingData);
     const dispatch = useDispatch();
     
     
     
+    const filteredCountryList = Object.values(countryList.entities).filter((countryEntry): countryEntry is Exclude<typeof countryEntry, undefined> => !!countryEntry);
+    const selectedCountry     = filteredCountryList.find((countryEntry) => countryEntry.code === shippingCountry);
+    
+    
     return (
-        <ValidationProvider enableValidation={true}>
+        <ValidationProvider enableValidation={shippingValidation}>
             <Section className='contact' title='Contact Information'>
-                <EmailInput className='email'     placeholder='Email'      required autoComplete='shipping email'          value={email}              onChange={({target:{value}}) => dispatch(setShippingEmail(value))}     />
-                <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})         => dispatch(setMarketingOpt(active))}      >
+                <EmailInput className='email'     placeholder='Email'      required autoComplete='shipping email'          value={shippingEmail}              onChange={({target:{value}}) => dispatch(setShippingEmail(value))}     />
+                <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})                 => dispatch(setMarketingOpt(active))}      >
                     Email me with news and offers
                 </Check>
             </Section>
             <Section className='shipping' title='Shipping Address'>
-                <DropdownListButton buttonChildren='Country/Region' theme='secondary'>
-                    {Object.values(countryList.entities).filter((country): country is Exclude<typeof country, undefined> => !!country).map((country, index) =>
-                        <ListItem key={index}>{country.name}</ListItem>
+                <DropdownListButton buttonChildren={selectedCountry?.name ?? 'Country/Region'} theme={!shippingValidation ? 'primary' : (selectedCountry ? 'success' : 'danger')} mild={true}>
+                    {filteredCountryList.map((countryEntry, index) =>
+                        <ListItem
+                            // key={countryEntry.code} // the country may be duplicated in several places
+                            key={index}
+                            
+                            active={filteredCountryList?.[index]?.code === shippingCountry}
+                            onClick={() => dispatch(setShippingCountry(filteredCountryList?.[index]?.code ?? ''))}
+                        >
+                            {countryEntry.name}
+                        </ListItem>
                     )}
                 </DropdownListButton>
                 
-                <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name'     value={firstName}          onChange={({target:{value}}) => dispatch(setShippingFirstName(value))} />
-                <TextInput  className='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name'    value={lastName}           onChange={({target:{value}}) => dispatch(setShippingLastName(value))}  />
-                <TelInput   className='phone'     placeholder='Phone'      required autoComplete='shipping tel'            value={phone}              onChange={({target:{value}}) => dispatch(setShippingPhone(value))}     />
-                <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' value={address}            onChange={({target:{value}}) => dispatch(setShippingAddress(value))}   />
-                <TextInput  className='city'      placeholder='City'       required autoComplete='shipping address-level2' value={city}               onChange={({target:{value}}) => dispatch(setShippingCity(value))}      />
-                <TextInput  className='zone'      placeholder='State'      required autoComplete='shipping address-level1' value={zone}               onChange={({target:{value}}) => dispatch(setShippingZone(value))}      />
-                <TextInput  className='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code'    value={zip}                onChange={({target:{value}}) => dispatch(setShippingZip(value))}       />
+                <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name'     value={shippingFirstName}          onChange={({target:{value}}) => dispatch(setShippingFirstName(value))} />
+                <TextInput  className='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name'    value={shippingLastName}           onChange={({target:{value}}) => dispatch(setShippingLastName(value))}  />
+                <TelInput   className='phone'     placeholder='Phone'      required autoComplete='shipping tel'            value={shippingPhone}              onChange={({target:{value}}) => dispatch(setShippingPhone(value))}     />
+                <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' value={shippingAddress}            onChange={({target:{value}}) => dispatch(setShippingAddress(value))}   />
+                <TextInput  className='city'      placeholder='City'       required autoComplete='shipping address-level2' value={shippingCity}               onChange={({target:{value}}) => dispatch(setShippingCity(value))}      />
+                <TextInput  className='zone'      placeholder='State'      required autoComplete='shipping address-level1' value={shippingZone}               onChange={({target:{value}}) => dispatch(setShippingZone(value))}      />
+                <TextInput  className='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code'    value={shippingZip}                onChange={({target:{value}}) => dispatch(setShippingZip(value))}       />
                 
-                <input type='text' className='hidden' required autoComplete='shipping country'                             value={country}            onChange={({target:{value}}) => dispatch(setShippingZip(value))}       />
+                <VisuallyHidden className='hidden'>
+                    <input type='text' tabIndex={-1} role='none'           required autoComplete='shipping country'        value={shippingCountry}            onChange={({target:{value}}) => dispatch(setShippingCountry(value))}   />
+                </VisuallyHidden>
             </Section>
         </ValidationProvider>
     );
@@ -139,6 +157,7 @@ export default function Checkout() {
     const isLoading = isLoading1 || isLoading2 || isLoading3;
     const isError = isError1 || isError2 || isError3;
     const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList;
+    const dispatch = useDispatch();
     
     
     
@@ -253,7 +272,9 @@ export default function Checkout() {
                                 Return to cart
                             </Link>
                         </ButtonIcon>
-                        <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end'>
+                        <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end' onClick={() => {
+                            dispatch(setShippingValidation(true));
+                        }}>
                             Continue to shipping
                         </ButtonIcon>
                     </Section>

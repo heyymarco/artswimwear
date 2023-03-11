@@ -186,7 +186,7 @@ export default () => {
                             }),
                         }),
                         ...children('.hidden', {
-                            display: 'none',
+                            position: 'absolute',
                         }),
                     }),
                 }),

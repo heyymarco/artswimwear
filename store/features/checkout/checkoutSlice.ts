@@ -4,60 +4,71 @@ import { RootState, AppThunk } from '../../store';
 
 
 export interface CheckoutState {
-    firstName   ?: string
-    lastName    ?: string
+    marketingOpt         : boolean
     
-    phone       ?: string
-    email       ?: string
     
-    country     ?: string
-    address     ?: string
-    city        ?: string
-    zone        ?: string
-    zip         ?: string
     
-    marketingOpt : boolean
+    shippingValidation   : boolean
+    
+    shippingFirstName   ?: string
+    shippingLastName    ?: string
+    
+    shippingPhone       ?: string
+    shippingEmail       ?: string
+    
+    shippingCountry     ?: string
+    shippingAddress     ?: string
+    shippingCity        ?: string
+    shippingZone        ?: string
+    shippingZip         ?: string
 }
 
 const initialState: CheckoutState = {
-    marketingOpt : true,
+    marketingOpt       : true,
+    shippingValidation : false,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
     initialState,
     reducers: {
+        setMarketingOpt: (state, {payload: value}: PayloadAction<boolean>) => {
+            state.marketingOpt = value;
+        },
+        
+        
+        
+        setShippingValidation: (state, {payload: value}: PayloadAction<boolean>) => {
+            state.shippingValidation = value;
+        },
+        
         setShippingFirstName: (state, {payload: value}: PayloadAction<string>) => {
-            state.firstName = value;
+            state.shippingFirstName = value;
         },
         setShippingLastName: (state, {payload: value}: PayloadAction<string>) => {
-            state.lastName = value;
+            state.shippingLastName = value;
         },
         
         setShippingPhone: (state, {payload: value}: PayloadAction<string>) => {
-            state.phone = value;
+            state.shippingPhone = value;
         },
         setShippingEmail: (state, {payload: value}: PayloadAction<string>) => {
-            state.email = value;
+            state.shippingEmail = value;
         },
         
         setShippingCountry: (state, {payload: value}: PayloadAction<string>) => {
-            state.country = value;
+            state.shippingCountry = value;
         },
         setShippingAddress: (state, {payload: value}: PayloadAction<string>) => {
-            state.address = value;
+            state.shippingAddress = value;
         },
         setShippingCity: (state, {payload: value}: PayloadAction<string>) => {
-            state.city = value;
+            state.shippingCity = value;
         },
         setShippingZone: (state, {payload: value}: PayloadAction<string>) => {
-            state.zone = value;
+            state.shippingZone = value;
         },
         setShippingZip: (state, {payload: value}: PayloadAction<string>) => {
-            state.zip = value;
-        },
-        
-        setMarketingOpt: (state, {payload: value}: PayloadAction<boolean>) => {
-            state.marketingOpt = value;
+            state.shippingZip = value;
         },
     },
 });
@@ -66,6 +77,12 @@ export const checkoutSlice = createSlice({
 
 export default checkoutSlice.reducer;
 export const {
+    setMarketingOpt,
+    
+    
+    
+    setShippingValidation,
+    
     setShippingFirstName,
     setShippingLastName,
     
@@ -77,8 +94,6 @@ export const {
     setShippingCity,
     setShippingZone,
     setShippingZip,
-    
-    setMarketingOpt,
 } = checkoutSlice.actions;
 
 
@@ -86,34 +101,42 @@ export const {
 // selectors:
 export const selectShippingData = (state: RootState) => {
     const {
-        firstName,
-        lastName,
-        
-        phone,
-        email,
-        
-        country,
-        address,
-        city,
-        zone,
-        zip,
-        
         marketingOpt,
+        
+        
+        
+        shippingValidation,
+        
+        shippingFirstName,
+        shippingLastName,
+        
+        shippingPhone,
+        shippingEmail,
+        
+        shippingCountry,
+        shippingAddress,
+        shippingCity,
+        shippingZone,
+        shippingZip,
     } = state.checkout;
     
     return {
-        firstName,
-        lastName,
-        
-        phone,
-        email,
-        
-        country,
-        address,
-        city,
-        zone,
-        zip,
-        
         marketingOpt,
+        
+        
+        
+        shippingValidation,
+        
+        shippingFirstName,
+        shippingLastName,
+        
+        shippingPhone,
+        shippingEmail,
+        
+        shippingCountry,
+        shippingAddress,
+        shippingCity,
+        shippingZone,
+        shippingZip,
     };
 };
