@@ -156,7 +156,6 @@ const ProgressCheckout = ({isDesktop}: ProgressCheckoutProps) => {
     // jsx:
     return (
         <List theme={!isDesktop ? 'secondary' : 'primary'} outlined={!isDesktop} listStyle='breadcrumb' orientation='inline' size='sm'>
-            <ListItem actionCtrl={false} active={true}>Checkout</ListItem>
             <ListItem active={checkoutProgress >= 0}>Information</ListItem>
             <ListItem active={checkoutProgress >= 1}>Shipping</ListItem>
             <ListItem active={checkoutProgress >= 2}>Payment</ListItem>
