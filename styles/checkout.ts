@@ -49,6 +49,7 @@ export default () => {
                     '"progressCheckout vertLine orderSummary" auto',
                     '"currentStep      vertLine orderSummary" auto',
                     '"navCheckout      vertLine orderSummary" auto',
+                    '"...........      vertLine orderSummary" auto',
                     '/',
                     '1fr min-content 1fr'
                 ]],
