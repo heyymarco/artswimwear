@@ -296,9 +296,10 @@ const OrderSummary = ({cartItems, priceList, productList, shippingList, isDeskto
 }
 
 interface OrderReviewProps {
-    countryList: EntityState<CountryEntry>
+    countryList  : EntityState<CountryEntry>
+    shippingList : EntityState<ShippingEntry>
 }
-const OrderReview = ({countryList}: OrderReviewProps) => {
+const OrderReview = ({countryList, shippingList}: OrderReviewProps) => {
     const {
         shippingEmail,
         
@@ -307,8 +308,17 @@ const OrderReview = ({countryList}: OrderReviewProps) => {
         shippingZone,
         shippingZip,
         shippingCountry,
+        
+        shippingProvider,
+    } = useSelector(selectShippingData);
+    const {
+        checkoutStep,
     } = useSelector(selectShippingData);
     const dispatch = useDispatch();
+    
+    
+    
+    const selectedShipping = shippingList.entities[shippingProvider ?? ''];
     
     
     
@@ -330,6 +340,13 @@ const OrderReview = ({countryList}: OrderReviewProps) => {
                         <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('info'))}>Change</ButtonIcon>
                     </td>
                 </tr>
+                {(checkoutStep !== 'shipping') && <tr>
+                    <td>Method</td>
+                    <td>{`${selectedShipping?.name}${!selectedShipping?.estimate ? '' : ` - ${selectedShipping?.estimate}`}`}</td>
+                    <td>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('shipping'))}>Change</ButtonIcon>
+                    </td>
+                </tr>}
             </tbody>
         </table>
     );
@@ -492,7 +509,7 @@ export default function Checkout() {
                     <div className={styles.currentStepLayout}>
                         {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <>
                             <Section tag='aside' className={styles.orderReview}>
-                                <OrderReview countryList={countryList} />
+                                <OrderReview countryList={countryList} shippingList={shippingList} />
                             </Section>
                         </>}
                         
