@@ -31,6 +31,19 @@ const countryListAdapter = createEntityAdapter<CountryEntry>({
     selectId : (countryEntry) => countryEntry.code,
 });
 
+export interface ShippingEntry {
+    _id                : string
+    name               : string
+    weightStep         : number
+    shippingRate       : Array<{
+        startingWeight : number
+        rate           : number
+    }>
+}
+const shippingListAdapter = createEntityAdapter<ShippingEntry>({
+    selectId : (shippingEntry) => shippingEntry._id,
+});
+
 
 
 export const apiSlice = createApi({
@@ -62,6 +75,13 @@ export const apiSlice = createApi({
                 return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
             },
         }),
+        
+        getShippingList: builder.query<EntityState<ShippingEntry>, void>({
+            query : () => 'shippingList',
+            transformResponse(response: ShippingEntry[]) {
+                return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
+            },
+        }),
     }),
 });
 
@@ -74,6 +94,8 @@ export const {
     useGetPriceListQuery,
     
     useGetCountryListQuery,
+    
+    useGetShippingListQuery,
 } = apiSlice;
 
 

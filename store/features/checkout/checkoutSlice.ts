@@ -23,6 +23,8 @@ export interface CheckoutState {
     shippingCity        ?: string
     shippingZone        ?: string
     shippingZip         ?: string
+    
+    shippingProvider    ?: string
 }
 
 const initialState: CheckoutState = {
@@ -76,6 +78,10 @@ export const checkoutSlice = createSlice({
         setShippingZip: (state, {payload: value}: PayloadAction<string>) => {
             state.shippingZip = value;
         },
+        
+        setShippingProvider: (state, {payload: value}: PayloadAction<string>) => {
+            state.shippingProvider = value;
+        },
     },
 });
 
@@ -101,6 +107,8 @@ export const {
     setShippingCity,
     setShippingZone,
     setShippingZip,
+    
+    setShippingProvider,
 } = checkoutSlice.actions;
 
 
@@ -126,6 +134,8 @@ export const selectShippingData = (state: RootState) => {
         shippingCity,
         shippingZone,
         shippingZip,
+        
+        shippingProvider,
     } = state.checkout;
     
     return {
@@ -147,6 +157,8 @@ export const selectShippingData = (state: RootState) => {
         shippingCity,
         shippingZone,
         shippingZip,
+        
+        shippingProvider,
     };
 };
 

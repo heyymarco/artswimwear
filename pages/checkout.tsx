@@ -2,18 +2,18 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, TelInput, TextInput, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
+import { Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, Radio, TelInput, TextInput, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { CountryEntry, PriceEntry, ProductEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
+import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
 import { Section } from '@/components/sections/Section'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { selectCheckoutProgress, selectShippingData, setCheckoutStep, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
+import { selectCheckoutProgress, selectShippingData, setCheckoutStep, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 
 
@@ -75,10 +75,10 @@ const WithDetails = ({isDesktop, children}: WithDetailsProps) => {
     );
 };
 
-interface RegularCheckoutDataProps {
+interface RegularCheckoutProps {
     countryList : EntityState<CountryEntry>
 }
-const RegularCheckoutData = ({countryList}: RegularCheckoutDataProps) => {
+const RegularCheckout = ({countryList}: RegularCheckoutProps) => {
     const {
         marketingOpt,
         
@@ -210,8 +210,8 @@ const NavCheckout = ({regularCheckoutSectionRef}: NavCheckoutProps) => {
 
 interface OrderSummaryProps {
     cartItems   : CartEntry[]
-    priceList   : EntityState<PriceEntry>   | undefined
-    productList : EntityState<ProductEntry> | undefined
+    priceList   : EntityState<PriceEntry>
+    productList : EntityState<ProductEntry>
     
     isDesktop   : boolean
 }
@@ -226,8 +226,8 @@ const OrderSummary = ({cartItems, priceList, productList, isDesktop}: OrderSumma
             <WithDetails isDesktop={isDesktop}>
                 <List className='orderList' listStyle='flat'>
                     {cartItems.map((item) => {
-                        const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
-                        const product = productList?.entities?.[item.productId];
+                        const productUnitPrice = priceList.entities?.[item.productId]?.price ?? undefined;
+                        const product = productList.entities?.[item.productId];
                         return (
                             <ListItem key={item.productId} className={styles.productEntry}
                                 enabled={!!product}
@@ -254,7 +254,7 @@ const OrderSummary = ({cartItems, priceList, productList, isDesktop}: OrderSumma
             <hr />
             <p className='currencyBlock'>
                 Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
-                    const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                    const productUnitPrice = priceList.entities?.[item.productId]?.price ?? undefined;
                     if (!productUnitPrice) return accum;
                     return accum + (productUnitPrice * item.quantity);
                 }, 0))}</span>
@@ -271,7 +271,7 @@ const OrderSummary = ({cartItems, priceList, productList, isDesktop}: OrderSumma
 }
 
 interface OrderReviewProps {
-    countryList: EntityState<CountryEntry> | undefined
+    countryList: EntityState<CountryEntry>
 }
 const OrderReview = ({countryList}: OrderReviewProps) => {
     const {
@@ -300,13 +300,54 @@ const OrderReview = ({countryList}: OrderReviewProps) => {
                 </tr>
                 <tr>
                     <td>Ship to</td>
-                    <td>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities[shippingCountry ?? '']?.name}`}</td>
+                    <td>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList.entities[shippingCountry ?? '']?.name}`}</td>
                     <td>
                         <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('info'))}>Change</ButtonIcon>
                     </td>
                 </tr>
             </tbody>
         </table>
+    );
+}
+
+interface ShippingMethodProps {
+    shippingList: EntityState<ShippingEntry>
+}
+const ShippingMethod = ({shippingList}: ShippingMethodProps) => {
+    const {
+        shippingProvider,
+    } = useSelector(selectShippingData);
+    const dispatch = useDispatch();
+    
+    
+    
+    const filteredShippingList = Object.values(shippingList.entities).filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry);
+    // const selectedShipping     = shippingList.entities[shippingProvider ?? ''];
+    
+    
+    
+    // useEffect(() => {
+    //     if (shippingProvider) return;
+    //     dispatch(setShippingProvider());
+    // }, [shippingProvider]);
+    
+    
+    
+    // jsx:
+    return (
+        <List theme='primary' actionCtrl={true}>
+            {filteredShippingList.map((shippingEntry, index) =>
+                <ListItem
+                    key={index}
+                    
+                    active={filteredShippingList?.[index]?._id === shippingProvider}
+                    onClick={() => dispatch(setShippingProvider(filteredShippingList?.[index]?._id ?? ''))}
+                >
+                    <Radio enableValidation={false} inheritActive={true} nude={false} />
+                    {shippingEntry.name}
+                </ListItem>
+            )}
+        </List>
     );
 }
 
@@ -319,9 +360,10 @@ export default function Checkout() {
     const {data: priceList, isLoading: isLoading1, isError: isError1} = useGetPriceListQuery();
     const {data: productList, isLoading: isLoading2, isError: isError2} = useGetProductListQuery();
     const {data: countryList, isLoading: isLoading3, isError: isError3} = useGetCountryListQuery();
-    const isLoading = isLoading1 || isLoading2 || isLoading3;
-    const isError = isError1 || isError2 || isError3;
-    const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList;
+    const {data: shippingList, isLoading: isLoading4, isError: isError4} = useGetShippingListQuery();
+    const isLoading = isLoading1 || isLoading2 || isLoading3 || isLoading4;
+    const isError = isError1 || isError2 || isError3 || isError4;
+    const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList && !!shippingList;
     
     const {
         checkoutStep,
@@ -404,14 +446,14 @@ export default function Checkout() {
                                 </div>
                                 
                                 <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
-                                    <RegularCheckoutData countryList={countryList} />
+                                    <RegularCheckout countryList={countryList} />
                                 </Section>
                             </Section>
                         </>}
                         
                         {(checkoutStep === 'shipping') && <>
                             <Section className={styles.shipping} title='Shipping Method'>
-                                choose shipping...
+                                <ShippingMethod shippingList={shippingList} />
                             </Section>
                         </>}
                     </div>
