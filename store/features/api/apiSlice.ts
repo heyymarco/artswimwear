@@ -16,8 +16,9 @@ const productListAdapter = createEntityAdapter<ProductEntry>({
 });
 
 export interface PriceEntry {
-    _id   : string
-    price : number
+    _id             : string
+    price           : number
+    shippingWeight ?: number
 }
 const priceListAdapter = createEntityAdapter<PriceEntry>({
     selectId : (priceEntry) => priceEntry._id,

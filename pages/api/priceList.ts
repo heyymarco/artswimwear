@@ -32,7 +32,7 @@ export default async (
             
             
             
-            const priceList = await Product.find({}, { price: true });
+            const priceList = await Product.find({}, { price: true, shippingWeight: true });
             return res.status(200).json(priceList);
     } // switch
 };
