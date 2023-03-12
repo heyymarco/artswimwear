@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { Main } from '@/components/sections/Main'
 import { Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, Radio, TelInput, TextInput, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery } from '@/store/features/api/apiSlice'
+import { calculateShippingCost, CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
@@ -209,14 +209,37 @@ const NavCheckout = ({regularCheckoutSectionRef}: NavCheckoutProps) => {
 }
 
 interface OrderSummaryProps {
-    cartItems   : CartEntry[]
-    priceList   : EntityState<PriceEntry>
-    productList : EntityState<ProductEntry>
+    cartItems    : CartEntry[]
+    priceList    : EntityState<PriceEntry>
+    productList  : EntityState<ProductEntry>
+    shippingList : EntityState<ShippingEntry>
     
-    isDesktop   : boolean
+    isDesktop    : boolean
 }
-const OrderSummary = ({cartItems, priceList, productList, isDesktop}: OrderSummaryProps) => {
+const OrderSummary = ({cartItems, priceList, productList, shippingList, isDesktop}: OrderSummaryProps) => {
     const styles = useCheckoutStyleSheet();
+    const {
+        shippingProvider,
+    } = useSelector(selectShippingData);
+    
+    
+    
+    const selectedShipping = shippingList.entities[shippingProvider ?? ''];
+    
+    
+    
+    const totalProductPrices = cartItems.reduce((accum, item) => {
+        const productUnitPrice = priceList.entities?.[item.productId]?.price ?? undefined;
+        if (!productUnitPrice) return accum;
+        return accum + (productUnitPrice * item.quantity);
+    }, 0);
+    
+    const totalProductWeights = selectedShipping && cartItems.reduce((accum, item) => {
+        const productUnitWeight = priceList.entities?.[item.productId]?.shippingWeight ?? undefined;
+        if (!productUnitWeight) return accum;
+        return accum + (productUnitWeight * item.quantity);
+    }, 0);
+    const totalShippingCosts = selectedShipping && calculateShippingCost(totalProductWeights, selectedShipping);
     
     
     
@@ -253,18 +276,20 @@ const OrderSummary = ({cartItems, priceList, productList, isDesktop}: OrderSumma
             </WithDetails>
             <hr />
             <p className='currencyBlock'>
-                Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
-                    const productUnitPrice = priceList.entities?.[item.productId]?.price ?? undefined;
-                    if (!productUnitPrice) return accum;
-                    return accum + (productUnitPrice * item.quantity);
-                }, 0))}</span>
+                Subtotal products: <span className='currency'>
+                    {formatCurrency(totalProductPrices)}
+                </span>
             </p>
             <p className='currencyBlock'>
-                Shipping: <span className='currency'>calculated at next step</span>
+                Shipping: <span className='currency'>
+                    {(typeof(totalShippingCosts) === 'number') ? formatCurrency(totalShippingCosts) : 'calculated at next step'}
+                </span>
             </p>
             <hr />
             <p className='currencyBlock'>
-                Total: <span className='currency'>calculated at next step</span>
+                Total: <span className='currency'>
+                    {(typeof(totalShippingCosts) === 'number') ? formatCurrency(totalProductPrices + totalShippingCosts) : 'calculated at next step'}
+                </span>
             </p>
         </>
     );
@@ -422,7 +447,7 @@ export default function Checkout() {
                 
                 {isCartDataReady && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
                     <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
-                        <OrderSummary cartItems={cartItems} priceList={priceList} productList={productList} isDesktop={isDesktop} />
+                        <OrderSummary cartItems={cartItems} priceList={priceList} productList={productList} shippingList={shippingList} isDesktop={isDesktop} />
                     </Section>
                     
                     <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>

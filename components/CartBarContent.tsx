@@ -32,6 +32,14 @@ export const CartBarContent = () => {
     
     
     
+    const totalProductPrices = (isCartDataReady || undefined) && cartItems.reduce((accum, item) => {
+        const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+        if (!productUnitPrice) return accum;
+        return accum + (productUnitPrice * item.quantity);
+    }, 0);
+    
+    
+    
     return (
         <>
             <CardHeader>
@@ -82,11 +90,9 @@ export const CartBarContent = () => {
                     
                     {isCartDataReady && <ListItem theme='primary'>
                         <p className='currencyBlock'>
-                            Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
-                                const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
-                                if (!productUnitPrice) return accum;
-                                return accum + (productUnitPrice * item.quantity);
-                            }, 0))}</span>
+                            Subtotal products: <span className='currency'>
+                                {formatCurrency(totalProductPrices)}
+                            </span>
                         </p>
                     </ListItem>}
                 </List>
