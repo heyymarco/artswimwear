@@ -69,8 +69,8 @@ export default () => {
             }),
             ...children('section', {
                 ...children(['&', 'article'], {
-                    [paddingVars.paddingInline] : '0px !important',
-                    [paddingVars.paddingBlock ] : '0px !important',
+                    [paddingVars.paddingInline] : '0px',
+                    [paddingVars.paddingBlock ] : '0px',
                 }),
             }),
             ...children('aside', {
@@ -79,8 +79,8 @@ export default () => {
                 }),
                 ...ifScreenWidthAtLeast('lg', {
                     ...children(['&', 'article'], {
-                        [paddingVars.paddingInline] : '0px !important',
-                        // [paddingVars.paddingBlock ] : '0px !important',
+                        [paddingVars.paddingInline] : '0px',
+                        // [paddingVars.paddingBlock ] : '0px',
                     }),
                 }),
             }),
@@ -95,17 +95,21 @@ export default () => {
                 paddingBlock  : containers.paddingBlock,
             }),
             ...children(['&', 'article'], {
-                [paddingVars.paddingInline] : '0px !important',
-                [paddingVars.paddingBlock ] : '0px !important',
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
             }),
         }),
         scopeOf('currentStepLayout', {
             gridArea: 'currentStep',
             
+            display: 'flex',
+            flexDirection: 'column',
+            gapBlock: containers.paddingBlock,
+            
             ...children(['section', 'aside'], {
                 ...children(['&', 'article'], {
-                    [paddingVars.paddingInline] : '0px !important',
-                    [paddingVars.paddingBlock ] : '0px !important',
+                    [paddingVars.paddingInline] : '0px',
+                    [paddingVars.paddingBlock ] : '0px',
                 }),
             }),
         }),
@@ -113,9 +117,12 @@ export default () => {
         scopeOf('orderSummary', {
             gridArea: 'orderSummary',
             
-            ...ifScreenWidthSmallerThan('lg', {
-                [paddingVars.paddingInline] : containers.paddingInline,
-                [paddingVars.paddingBlock ] : containers.paddingBlock,
+            ...children(['&', 'article'], {
+                [paddingVars.paddingBlock ] : '0px',
+                ...ifScreenWidthSmallerThan('lg', {
+                    [paddingVars.paddingInline] : containers.paddingInline,
+                    [paddingVars.paddingBlock ] : containers.paddingBlock,
+                }),
             }),
             
             ...descendants('.currencyBlock', {
@@ -183,8 +190,8 @@ export default () => {
         }),
         scopeOf('expressCheckout', {
             ...children(['&', 'article'], {
-                [paddingVars.paddingInline] : '0px !important',
-                [paddingVars.paddingBlock ] : '0px !important',
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
             }),
         }),
         scopeOf('checkoutAlt', {
@@ -203,8 +210,8 @@ export default () => {
         }),
         scopeOf('regularCheckout', {
             ...children(['&', 'article'], {
-                [paddingVars.paddingInline] : '0px !important',
-                [paddingVars.paddingBlock ] : '0px !important',
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
             }),
             ...children('article', {
                 ...children('section', {
@@ -261,8 +268,8 @@ export default () => {
             gridArea: 'navCheckout',
             
             ...children(['&', 'article'], {
-                [paddingVars.paddingInline] : '0px !important',
-                [paddingVars.paddingBlock ] : '0px !important',
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
             }),
             
             ...children('article', {

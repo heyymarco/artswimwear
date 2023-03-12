@@ -350,7 +350,7 @@ export default function Checkout() {
                         </>}
                         
                         {(checkoutStep === 'shipping') && <>
-                            <Section className={styles.shipping}>
+                            <Section className={styles.shipping} title='Shipping Method'>
                                 choose shipping...
                             </Section>
                         </>}
