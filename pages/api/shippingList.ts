@@ -34,7 +34,7 @@ export default async (
             
             const shippingList = await Shipping.find({
                 // enabled: true
-            }, { name: true, estimate: true, weightStep: true, shippingRate: true, enabled: true });
+            }, { name: true, estimate: true, weightStep: true, shippingRates: true, enabled: true });
             if (!shippingList.length) {
                 const newShippingList = (await import('@/libs/shippingList')).default;
                 await Shipping.collection.insertMany(
@@ -42,7 +42,7 @@ export default async (
                         name           : shipping.name,
                         estimate       : shipping.estimate,
                         weightStep     : shipping.weightStep,
-                        shippingRate   : shipping.shippingRate,
+                        shippingRates  : shipping.shippingRates,
                         enabled        : true,
                     }))
                 );
@@ -55,7 +55,7 @@ export default async (
                     name           : shipping.name,
                     estimate       : shipping.estimate,
                     weightStep     : shipping.weightStep,
-                    shippingRate   : shipping.shippingRate.map((shippingRate: any) => ({
+                    shippingRates  : shipping.shippingRates.map((shippingRate: any) => ({
                         startingWeight : shippingRate.startingWeight,
                         rate           : shippingRate.rate,
                     })),

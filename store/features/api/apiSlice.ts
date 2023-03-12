@@ -37,7 +37,7 @@ export interface ShippingEntry {
     name                : string
     estimate           ?: string
     weightStep          : number
-    shippingRate        : Array<{
+    shippingRates       : Array<{
         startingWeight  : number
         rate            : number
     }>
@@ -112,7 +112,7 @@ export const {
 
 
 // utilities:
-export const calculateShippingCost = (totalWeight: number|undefined|null, {weightStep, shippingRate}: Pick<ShippingEntry, 'weightStep'|'shippingRate'>): number|null => {
+export const calculateShippingCost = (totalWeight: number|undefined|null, {weightStep, shippingRates}: Pick<ShippingEntry, 'weightStep'|'shippingRates'>): number|null => {
     if ((totalWeight === undefined) || (totalWeight === null) || isNaN(totalWeight) || !isFinite(totalWeight)) return null;
     
     
@@ -121,12 +121,12 @@ export const calculateShippingCost = (totalWeight: number|undefined|null, {weigh
     let totalCost = 0;
     for (
         let index = 0,
-            maxIndex              = shippingRate.length,
+            maxIndex              = shippingRates.length,
             
             remainingWeight       = !weightStep ? totalWeight : Math.max(Math.ceil(totalWeight / weightStep) * weightStep, weightStep),
             currentWeight         : number,
             
-            currentRate           : typeof shippingRate[number],
+            currentRate           : typeof shippingRates[number],
             currentStartingWeight : number,
             nextStartingWeight    : number|undefined,
             
@@ -136,9 +136,9 @@ export const calculateShippingCost = (totalWeight: number|undefined|null, {weigh
         ;
         index++
     ) {
-        currentRate           = shippingRate[index];
+        currentRate           = shippingRates[index];
         currentStartingWeight = currentRate.startingWeight;
-        nextStartingWeight    = shippingRate[index + 1]?.startingWeight;
+        nextStartingWeight    = shippingRates[index + 1]?.startingWeight;
         
         
         

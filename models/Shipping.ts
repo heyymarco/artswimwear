@@ -10,7 +10,7 @@ const shippingSchema = new Schema({
     name           : { type: String               , required: true  },
     estimate       : { type: String               , required: false },
     weightStep     : { type: Number               , required: true  },
-    shippingRate   : { type: [shippingRateSchema] , required: true  },
+    shippingRates  : { type: [shippingRateSchema] , required: true  },
     enabled        : { type: Boolean              , required: true  },
 });
 
