@@ -143,7 +143,7 @@ export const calculateShippingCost = (totalWeight: number|undefined|null, {weigh
         currentWeight         = (nextStartingWeight !== undefined) ? (nextStartingWeight - currentStartingWeight) : remainingWeight;
         currentWeight         = Math.min(currentWeight, remainingWeight);
         
-        currentCost           = currentWeight * currentRate.rate
+        currentCost           = currentWeight * currentRate.rate;
         totalCost            += currentCost;
         
         
