@@ -1,6 +1,6 @@
 import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
 import { containers } from "@reusable-ui/components";
-import { ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, typos, usesGroupable, usesPadding } from "@reusable-ui/core";
+import { borders, ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, typos, usesBorder, usesGroupable, usesPadding } from "@reusable-ui/core";
 
 
 
@@ -8,6 +8,7 @@ const imageSize = 64;  // 64px
 export default () => {
     const {paddingVars  } = usesPadding();
     const {groupableVars} = usesGroupable();
+    const {borderVars   } = usesBorder();
     
     
     
@@ -184,6 +185,30 @@ export default () => {
         }),
         
         scopeOf('orderReview', {
+            ...descendants('table', {
+                borderCollapse: 'collapse',
+                tableLayout: 'auto',
+                // tableLayout: 'fixed',
+                border: borderVars.border,
+                borderWidth: borders.defaultWidth,
+                width: '100%',
+                
+                
+                
+                // ...descendants('tbody', {
+                //     display: 'block',
+                //     padding: '1rem',
+                // }),
+                ...descendants('tr', {
+                    ...rule(':not(:last-child)', {
+                        borderBlockEnd: borderVars.border,
+                        borderBlockEndWidth: borders.defaultWidth,
+                    }),
+                }),
+                ...descendants('td', {
+                    padding: '0.75rem',
+                }),
+            }),
         }),
         scopeOf('checkout', {
             display: 'flex',

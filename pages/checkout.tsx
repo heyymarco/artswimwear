@@ -10,7 +10,7 @@ import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
 import { Section } from '@/components/sections/Section'
 import { useRef, useState } from 'react'
-import { CartEntry, selectCartItems, selectIsCartShown, showCart } from '@/store/features/cart/cartSlice'
+import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
 import { selectCheckoutProgress, selectShippingData, setCheckoutStep, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
@@ -283,6 +283,7 @@ const OrderReview = ({countryList}: OrderReviewProps) => {
         shippingZip,
         shippingCountry,
     } = useSelector(selectShippingData);
+    const dispatch = useDispatch();
     
     
     
@@ -294,14 +295,14 @@ const OrderReview = ({countryList}: OrderReviewProps) => {
                     <td>Contact</td>
                     <td>{shippingEmail}</td>
                     <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link'>Change</ButtonIcon>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('info'))}>Change</ButtonIcon>
                     </td>
                 </tr>
                 <tr>
                     <td>Ship to</td>
                     <td>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities[shippingCountry ?? '']?.name}`}</td>
                     <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link'>Change</ButtonIcon>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('info'))}>Change</ButtonIcon>
                     </td>
                 </tr>
             </tbody>
