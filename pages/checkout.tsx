@@ -325,28 +325,36 @@ export default function Checkout() {
                         <ProgressCheckout isDesktop={isDesktop} />
                     </Section>
                     
-                    {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <>
-                        <Section tag='aside' className={styles.review} title='Review'>
-                            blah...
-                        </Section>
-                    </>}
-                    
-                    {(checkoutStep === 'info') && <>
-                        <Section className={styles.checkout}>
-                            <Section className={styles.expressCheckout} title='Express Checkout'>
+                    <div className={styles.currentStepLayout}>
+                        {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <>
+                            <Section tag='aside' className={styles.review} title='Review'>
+                                review...
                             </Section>
-                            
-                            <div className={styles.checkoutAlt}>
-                                <hr />
-                                <span>OR</span>
-                                <hr />
-                            </div>
-                            
-                            <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
-                                <RegularCheckoutData countryList={countryList} />
+                        </>}
+                        
+                        {(checkoutStep === 'info') && <>
+                            <Section className={styles.checkout}>
+                                <Section className={styles.expressCheckout} title='Express Checkout'>
+                                </Section>
+                                
+                                <div className={styles.checkoutAlt}>
+                                    <hr />
+                                    <span>OR</span>
+                                    <hr />
+                                </div>
+                                
+                                <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
+                                    <RegularCheckoutData countryList={countryList} />
+                                </Section>
                             </Section>
-                        </Section>
-                    </>}
+                        </>}
+                        
+                        {(checkoutStep === 'shipping') && <>
+                            <Section className={styles.shipping}>
+                                choose shipping...
+                            </Section>
+                        </>}
+                    </div>
                     
                     <Section tag='nav' className={styles.navCheckout}>
                         <NavCheckout regularCheckoutSectionRef={regularCheckoutSectionRef} />

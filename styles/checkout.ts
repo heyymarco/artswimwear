@@ -34,8 +34,6 @@ export default () => {
             }),
         }),
         
-        
-        
         scopeOf('layout', {
             display: 'grid',
             gridTemplate: [[
@@ -60,6 +58,15 @@ export default () => {
             }),
             gapInline: `calc(${containers.paddingInline} / 2)`,
             gapBlock : containers.paddingBlock,
+            alignContent: 'start',
+            boxSizing: 'border-box',
+            minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
+            ...fallbacks({
+                minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
+            }),
+            ...fallbacks({
+                minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
+            }),
             ...children('section', {
                 ...children(['&', 'article'], {
                     [paddingVars.paddingInline] : '0px !important',
@@ -92,9 +99,17 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px !important',
             }),
         }),
-        scopeOf('review', {
-            // todo
+        scopeOf('currentStepLayout', {
+            gridArea: 'currentStep',
+            
+            ...children(['section', 'aside'], {
+                ...children(['&', 'article'], {
+                    [paddingVars.paddingInline] : '0px !important',
+                    [paddingVars.paddingBlock ] : '0px !important',
+                }),
+            }),
         }),
+        
         scopeOf('orderSummary', {
             gridArea: 'orderSummary',
             
@@ -159,9 +174,10 @@ export default () => {
                 margin: 0,
             }),
         }),
+        
+        scopeOf('review', {
+        }),
         scopeOf('checkout', {
-            gridArea: 'currentStep',
-            
             display: 'flex',
             flexDirection: 'column',
         }),
@@ -191,6 +207,13 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px !important',
             }),
             ...children('article', {
+                ...children('section', {
+                    ...children(['&', 'article'], {
+                        [paddingVars.paddingInline] : `calc(${containers.paddingInline} / 2)`,
+                        [paddingVars.paddingBlock ] : `calc(${containers.paddingBlock } / 2)`,
+                    }),
+                }),
+                
                 ...children('.contact', {
                     ...children('article', {
                         display: 'flex',
@@ -231,8 +254,16 @@ export default () => {
                 }),
             }),
         }),
+        scopeOf('shipping', {
+        }),
+        
         scopeOf('navCheckout', {
             gridArea: 'navCheckout',
+            
+            ...children(['&', 'article'], {
+                [paddingVars.paddingInline] : '0px !important',
+                [paddingVars.paddingBlock ] : '0px !important',
+            }),
             
             ...children('article', {
                 display: 'flex',
@@ -252,6 +283,7 @@ export default () => {
                 }),
             }),
         }),
+        
         scopeOf('vertLine', {
             gridArea: 'vertLine',
             
