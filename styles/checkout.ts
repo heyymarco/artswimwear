@@ -289,6 +289,30 @@ export default () => {
         }),
         scopeOf('shipping', {
         }),
+        scopeOf('shippingEntry', {
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '1rem',
+            padding: '1rem',
+            ...children('.indicator', {
+                flex: '0 0 auto',
+                ...children('input', {
+                    borderColor: 'currentcolor',
+                }),
+            }),
+            ...children(['.name', '.cost'], {
+                flex: '1 1 auto',
+                margin: 0,
+            }),
+            ...children('.name', {
+                textAlign: 'start',
+                fontSize: typos.fontSizeMd,
+                fontWeight : typos.fontWeightSemibold,
+            }),
+            ...children('.cost', {
+                textAlign: 'end',
+            }),
+        }),
         
         scopeOf('navCheckout', {
             gridArea: 'navCheckout',

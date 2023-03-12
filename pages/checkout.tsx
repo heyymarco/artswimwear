@@ -341,6 +341,7 @@ interface ShippingMethodProps {
     shippingList : EntityState<ShippingEntry>
 }
 const ShippingMethod = ({cartItems, priceList, shippingList}: ShippingMethodProps) => {
+    const styles = useCheckoutStyleSheet();
     const {
         shippingProvider,
     } = useSelector(selectShippingData);
@@ -379,6 +380,7 @@ const ShippingMethod = ({cartItems, priceList, shippingList}: ShippingMethodProp
                 return (
                     <ListItem
                         key={index}
+                        className={styles.shippingEntry}
                         
                         active={filteredShippingList?.[index]?._id === shippingProvider}
                         onClick={() => dispatch(setShippingProvider(filteredShippingList?.[index]?._id ?? ''))}
