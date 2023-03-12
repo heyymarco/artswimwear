@@ -343,8 +343,10 @@ const ShippingMethod = ({shippingList}: ShippingMethodProps) => {
                     active={filteredShippingList?.[index]?._id === shippingProvider}
                     onClick={() => dispatch(setShippingProvider(filteredShippingList?.[index]?._id ?? ''))}
                 >
-                    <Radio enableValidation={false} inheritActive={true} nude={false} />
-                    {shippingEntry.name}
+                    <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} />
+                    <p className='name'>{shippingEntry.name}</p>
+                    {!!shippingEntry.estimate && <p className='estimate'>Estimate: {shippingEntry.estimate}</p>}
+                    <p className='cost'>$$$</p>
                 </ListItem>
             )}
         </List>
