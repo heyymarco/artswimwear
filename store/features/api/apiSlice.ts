@@ -117,12 +117,13 @@ export const calculateShippingCost = (totalWeight: number|undefined|null, {weigh
     
     
     
+    weightStep = Math.max(0, weightStep);
     let totalCost = 0;
     for (
         let index = 0,
             maxIndex              = shippingRate.length,
             
-            remainingWeight       = Math.max(Math.ceil(totalWeight / weightStep) * weightStep, weightStep),
+            remainingWeight       = !weightStep ? totalWeight : Math.max(Math.ceil(totalWeight / weightStep) * weightStep, weightStep),
             currentWeight         : number,
             
             currentRate           : typeof shippingRate[number],
@@ -149,7 +150,7 @@ export const calculateShippingCost = (totalWeight: number|undefined|null, {weigh
         
         
         
-        remainingWeight -= currentWeight;
+        remainingWeight      -= currentWeight;
         if (remainingWeight <= 0) break;
     } // for
     return totalCost;
