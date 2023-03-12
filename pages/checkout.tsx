@@ -26,36 +26,46 @@ const useCheckoutStyleSheet = dynamicStyleSheets(
 
 
 interface ICheckoutContext {
-    cartItems       : CartEntry[]
-    hasCart         : boolean
-    checkoutStep    : CheckoutStep
+    cartItems                 : CartEntry[]
+    hasCart                   : boolean
+    checkoutStep              : CheckoutStep
     
-    priceList       : EntityState<PriceEntry>    | undefined
-    productList     : EntityState<ProductEntry>  | undefined
-    countryList     : EntityState<CountryEntry>  | undefined
-    shippingList    : EntityState<ShippingEntry> | undefined
+    priceList                 : EntityState<PriceEntry>    | undefined
+    productList               : EntityState<ProductEntry>  | undefined
+    countryList               : EntityState<CountryEntry>  | undefined
+    shippingList              : EntityState<ShippingEntry> | undefined
     
-    isLoading       : boolean
-    isError         : boolean
-    isCartDataReady : boolean
+    isLoading                 : boolean
+    isError                   : boolean
+    isCartDataReady           : boolean
     
-    isDesktop       : boolean
+    isDesktop                 : boolean
+    
+    regularCheckoutSectionRef : React.MutableRefObject<HTMLElement|null>      | undefined
+    shippingEmailInputRef     : React.MutableRefObject<HTMLInputElement|null> | undefined
+    shippingAddressInputRef   : React.MutableRefObject<HTMLInputElement|null> | undefined
+    shippingMethodOptionRef   : React.MutableRefObject<HTMLElement|null>      | undefined
 }
 const CheckoutContext = createContext<ICheckoutContext>({
-    cartItems       : [],
-    hasCart         : false,
-    checkoutStep    : 'info',
+    cartItems                 : [],
+    hasCart                   : false,
+    checkoutStep              : 'info',
     
-    priceList       : undefined,
-    productList     : undefined,
-    countryList     : undefined,
-    shippingList    : undefined,
+    priceList                 : undefined,
+    productList               : undefined,
+    countryList               : undefined,
+    shippingList              : undefined,
     
-    isLoading       : false,
-    isError         : false,
-    isCartDataReady : false,
+    isLoading                 : false,
+    isError                   : false,
+    isCartDataReady           : false,
     
-    isDesktop       : false,
+    isDesktop                 : false,
+    
+    regularCheckoutSectionRef : undefined,
+    shippingEmailInputRef     : undefined,
+    shippingAddressInputRef   : undefined,
+    shippingMethodOptionRef   : undefined,
 });
 const useCheckout = () => useContext(CheckoutContext);
 
@@ -95,6 +105,14 @@ export default function Checkout() {
     
     
     
+    // refs:
+    const regularCheckoutSectionRef = useRef<HTMLElement|null>(null);
+    const shippingEmailInputRef     = useRef<HTMLInputElement|null>(null);
+    const shippingAddressInputRef   = useRef<HTMLInputElement|null>(null);
+    const shippingMethodOptionRef   = useRef<HTMLElement|null>(null);
+    
+    
+    
     const checkoutData = useMemo<ICheckoutContext>(() => ({
         cartItems,
         hasCart,
@@ -110,6 +128,11 @@ export default function Checkout() {
         isCartDataReady,
         
         isDesktop,
+        
+        regularCheckoutSectionRef,
+        shippingEmailInputRef,
+        shippingAddressInputRef,
+        shippingMethodOptionRef,
     }), [
         cartItems,
         hasCart,
@@ -126,11 +149,6 @@ export default function Checkout() {
         
         isDesktop,
     ]);
-    
-    
-    
-    // refs:
-    const regularCheckoutSectionRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -202,7 +220,7 @@ export default function Checkout() {
                         </div>
                         
                         <Section tag='nav' className={styles.navCheckout}>
-                            <NavCheckout regularCheckoutSectionRef={regularCheckoutSectionRef} />
+                            <NavCheckout />
                         </Section>
                         
                         <hr className={styles.vertLine} />
@@ -295,10 +313,12 @@ const ProgressCheckout = () => {
 
 
 
-interface NavCheckoutProps {
-    regularCheckoutSectionRef : React.RefObject<HTMLElement> // getter ref
-}
-const NavCheckout = ({regularCheckoutSectionRef}: NavCheckoutProps) => {
+const NavCheckout = () => {
+    // context:
+    const {regularCheckoutSectionRef} = useCheckout();
+    
+    
+    
     // stores:
     const checkoutProgress = useSelector(selectCheckoutProgress);
     const dispatch = useDispatch();
@@ -316,7 +336,7 @@ const NavCheckout = ({regularCheckoutSectionRef}: NavCheckoutProps) => {
         { text: 'Continue to shipping' , action: () => {
             dispatch(setShippingValidation(true));
             
-            if (!!regularCheckoutSectionRef.current?.querySelector(':invalid')) return; // there is an invalid field
+            if (!!regularCheckoutSectionRef?.current?.querySelector(':invalid')) return; // there is an invalid field
             
             dispatch(setCheckoutStep('shipping'));
         }},
@@ -345,7 +365,7 @@ const NavCheckout = ({regularCheckoutSectionRef}: NavCheckoutProps) => {
 
 const RegularCheckout = () => {
     // context:
-    const {countryList} = useCheckout();
+    const {countryList, shippingEmailInputRef, shippingAddressInputRef } = useCheckout();
     
     
     
@@ -381,7 +401,7 @@ const RegularCheckout = () => {
     return (
         <ValidationProvider enableValidation={shippingValidation}>
             <Section className='contact' title='Contact Information'>
-                <EmailInput className='email'     placeholder='Email'      required autoComplete='shipping email'          value={shippingEmail}              onChange={({target:{value}}) => dispatch(setShippingEmail(value))}     />
+                <EmailInput className='email'     placeholder='Email'      required autoComplete='shipping email'          value={shippingEmail}              onChange={({target:{value}}) => dispatch(setShippingEmail(value))}     elmRef={shippingEmailInputRef} />
                 <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})                 => dispatch(setMarketingOpt(active))}      >
                     Email me with news and offers
                 </Check>
@@ -404,7 +424,7 @@ const RegularCheckout = () => {
                 <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name'     value={shippingFirstName}          onChange={({target:{value}}) => dispatch(setShippingFirstName(value))} />
                 <TextInput  className='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name'    value={shippingLastName}           onChange={({target:{value}}) => dispatch(setShippingLastName(value))}  />
                 <TelInput   className='phone'     placeholder='Phone'      required autoComplete='shipping tel'            value={shippingPhone}              onChange={({target:{value}}) => dispatch(setShippingPhone(value))}     />
-                <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' value={shippingAddress}            onChange={({target:{value}}) => dispatch(setShippingAddress(value))}   />
+                <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' value={shippingAddress}            onChange={({target:{value}}) => dispatch(setShippingAddress(value))}   elmRef={shippingAddressInputRef} />
                 <TextInput  className='city'      placeholder='City'       required autoComplete='shipping address-level2' value={shippingCity}               onChange={({target:{value}}) => dispatch(setShippingCity(value))}      />
                 <TextInput  className='zone'      placeholder='State'      required autoComplete='shipping address-level1' value={shippingZone}               onChange={({target:{value}}) => dispatch(setShippingZone(value))}      />
                 <TextInput  className='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code'    value={shippingZip}                onChange={({target:{value}}) => dispatch(setShippingZip(value))}       />
@@ -508,7 +528,7 @@ const OrderSummary = () => {
 }
 const OrderReview = () => {
     // context:
-    const {countryList, shippingList} = useCheckout();
+    const {countryList, shippingList, shippingEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckout();
     
     
     
@@ -543,21 +563,36 @@ const OrderReview = () => {
                     <td>Contact</td>
                     <td>{shippingEmail}</td>
                     <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('info'))}>Change</ButtonIcon>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
+                            dispatch(setCheckoutStep('info'));
+                            setTimeout(() => {
+                                shippingEmailInputRef?.current?.focus?.();
+                            }, 100);
+                        }}>Change</ButtonIcon>
                     </td>
                 </tr>
                 <tr>
                     <td>Ship to</td>
                     <td>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}</td>
                     <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('info'))}>Change</ButtonIcon>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
+                            dispatch(setCheckoutStep('info'));
+                            setTimeout(() => {
+                                shippingAddressInputRef?.current?.focus?.();
+                            }, 100);
+                        }}>Change</ButtonIcon>
                     </td>
                 </tr>
                 {(checkoutStep !== 'shipping') && <tr>
                     <td>Method</td>
                     <td>{`${selectedShipping?.name}${!selectedShipping?.estimate ? '' : ` - ${selectedShipping?.estimate}`}`}</td>
                     <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('shipping'))}>Change</ButtonIcon>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
+                            dispatch(setCheckoutStep('shipping'));
+                            setTimeout(() => {
+                                shippingMethodOptionRef?.current?.focus?.();
+                            }, 100);
+                        }}>Change</ButtonIcon>
                     </td>
                 </tr>}
             </tbody>
@@ -574,7 +609,7 @@ const ShippingMethod = () => {
     
     
     // context:
-    const {cartItems, priceList, shippingList} = useCheckout();
+    const {cartItems, priceList, shippingList, shippingMethodOptionRef} = useCheckout();
     
     
     
@@ -626,7 +661,7 @@ const ShippingMethod = () => {
         <List theme='primary' actionCtrl={true}>
             {!!filteredShippingList && filteredShippingList.map((shippingEntry, index) => {
                 const totalShippingCosts = calculateShippingCost(totalProductWeights, shippingEntry);
-                
+                const isActive           = filteredShippingList?.[index]?._id === shippingProvider;
                 
                 
                 return (
@@ -634,10 +669,12 @@ const ShippingMethod = () => {
                         key={index}
                         className={styles.shippingEntry}
                         
-                        active={filteredShippingList?.[index]?._id === shippingProvider}
+                        active={isActive}
                         onClick={() => dispatch(setShippingProvider(filteredShippingList?.[index]?._id ?? ''))}
+                        
+                        elmRef={isActive ? shippingMethodOptionRef : undefined}
                     >
-                        <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} />
+                        <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                         <p className='name'>{shippingEntry.name}</p>
                         {!!shippingEntry.estimate && <p className='estimate'>Estimate: {shippingEntry.estimate}</p>}
                         <p className='cost'>
