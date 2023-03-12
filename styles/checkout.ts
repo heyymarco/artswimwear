@@ -287,7 +287,7 @@ export default () => {
                 }),
             }),
         }),
-        scopeOf('shipping', {
+        scopeOf('shippingMethod', {
         }),
         scopeOf('shippingEntry', {
             display: 'flex',
@@ -310,6 +310,32 @@ export default () => {
                 fontWeight : typos.fontWeightSemibold,
             }),
             ...children('.cost', {
+                textAlign: 'end',
+            }),
+        }),
+        scopeOf('paymentMethod', {
+        }),
+        scopeOf('paymentEntryHeader', {
+            display: 'flex',
+            flexDirection: 'row',
+            gap: '1rem',
+            padding: '1rem',
+            ...children('.indicator', {
+                flex: '0 0 auto',
+                ...children('input', {
+                    borderColor: 'currentcolor',
+                }),
+            }),
+            ...children(['.name', '.icon'], {
+                flex: '1 1 auto',
+                margin: 0,
+            }),
+            ...children('.name', {
+                textAlign: 'start',
+                fontSize: typos.fontSizeMd,
+                fontWeight : typos.fontWeightSemibold,
+            }),
+            ...children('.icon', {
                 textAlign: 'end',
             }),
         }),

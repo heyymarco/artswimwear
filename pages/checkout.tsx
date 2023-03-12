@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, Radio, TelInput, TextInput, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
+import { Accordion, AccordionItem, Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, ExclusiveAccordion, List, ListItem, Radio, TelInput, TextInput, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { calculateShippingCost, CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -189,34 +189,32 @@ export default function Checkout() {
                         </Section>
                         
                         <div className={styles.currentStepLayout}>
-                            {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <>
-                                <Section tag='aside' className={styles.orderReview}>
-                                    <OrderReview />
-                                </Section>
-                            </>}
+                            {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
+                                <OrderReview />
+                            </Section>}
                             
-                            {(checkoutStep === 'info') && <>
-                                <Section className={styles.checkout}>
-                                    <Section className={styles.expressCheckout} title='Express Checkout'>
-                                    </Section>
-                                    
-                                    <div className={styles.checkoutAlt}>
-                                        <hr />
-                                        <span>OR</span>
-                                        <hr />
-                                    </div>
-                                    
-                                    <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
-                                        <RegularCheckout />
-                                    </Section>
+                            {(checkoutStep === 'info') && <Section className={styles.checkout}>
+                                <Section className={styles.expressCheckout} title='Express Checkout'>
                                 </Section>
-                            </>}
+                                
+                                <div className={styles.checkoutAlt}>
+                                    <hr />
+                                    <span>OR</span>
+                                    <hr />
+                                </div>
+                                
+                                <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
+                                    <RegularCheckout />
+                                </Section>
+                            </Section>}
                             
-                            {(checkoutStep === 'shipping') && <>
-                                <Section className={styles.shipping} title='Shipping Method'>
-                                    <ShippingMethod />
-                                </Section>
-                            </>}
+                            {(checkoutStep === 'shipping') && <Section className={styles.shippingMethod} title='Shipping Method'>
+                                <ShippingMethod />
+                            </Section>}
+                            
+                            {(checkoutStep === 'payment') && <Section className={styles.paymentMethod} title='Payment Method'>
+                                <PaymentMethod />
+                            </Section>}
                         </div>
                         
                         <Section tag='nav' className={styles.navCheckout}>
@@ -684,5 +682,33 @@ const ShippingMethod = () => {
                 );
             })}
         </List>
+    );
+}
+const PaymentMethod = () => {
+    // styles:
+    const styles = useCheckoutStyleSheet();
+    
+    
+    
+    // jsx:
+    return (
+        <ExclusiveAccordion theme='primary' defaultExpandedListIndex={0} listStyle='content'>
+            <AccordionItem label={<>
+                <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                Credit Card
+            </>} listItemComponent={<ListItem className={styles.shippingEntry} />}>
+                <p>
+                    blah...
+                </p>
+            </AccordionItem>
+            <AccordionItem label={<>
+                <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                PayPal
+            </>} listItemComponent={<ListItem className={styles.shippingEntry} />}>
+                <p>
+                    blah...
+                </p>
+            </AccordionItem>
+        </ExclusiveAccordion>
     );
 }
