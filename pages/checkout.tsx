@@ -362,10 +362,25 @@ const ShippingMethod = ({cartItems, priceList, shippingList}: ShippingMethodProp
     
     
     
-    // useEffect(() => {
-    //     if (shippingProvider) return;
-    //     dispatch(setShippingProvider());
-    // }, [shippingProvider]);
+    useEffect(() => {
+        if (shippingProvider) return; // already set => ignore
+        
+        
+        
+        // find the cheapest shipping cost:
+        const orderedConstAscending = (
+            filteredShippingList
+            .map((shippingEntry) => ({
+                _id                : shippingEntry._id,
+                totalShippingCosts : calculateShippingCost(totalProductWeights, shippingEntry)
+            }))
+            .sort((a, b) => (a.totalShippingCosts ?? -1) - (b.totalShippingCosts ?? -1)) // -1 means: no need to ship (digital products)
+        );
+        if (orderedConstAscending.length >= 1) {
+            dispatch(setShippingProvider(orderedConstAscending[0]._id));
+            // console.log('shipping method has automatically set to cheapest: ', orderedConstAscending[0]._id);
+        } // if
+    }, [shippingProvider]);
     
     
     
