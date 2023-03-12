@@ -183,7 +183,7 @@ export default () => {
             }),
         }),
         
-        scopeOf('review', {
+        scopeOf('orderReview', {
         }),
         scopeOf('checkout', {
             display: 'flex',

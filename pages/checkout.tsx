@@ -4,13 +4,13 @@ import Head from 'next/head'
 import { Main } from '@/components/sections/Main'
 import { Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, List, ListItem, TelInput, TextInput, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { CountryEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
+import { CountryEntry, PriceEntry, ProductEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
 import { Section } from '@/components/sections/Section'
 import { useRef, useState } from 'react'
-import { selectCartItems, selectIsCartShown, showCart } from '@/store/features/cart/cartSlice'
+import { CartEntry, selectCartItems, selectIsCartShown, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
 import { selectCheckoutProgress, selectShippingData, setCheckoutStep, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
@@ -103,7 +103,7 @@ const RegularCheckoutData = ({countryList}: RegularCheckoutDataProps) => {
     
     
     const filteredCountryList = Object.values(countryList.entities).filter((countryEntry): countryEntry is Exclude<typeof countryEntry, undefined> => !!countryEntry);
-    const selectedCountry     = filteredCountryList.find((countryEntry) => countryEntry.code === shippingCountry);
+    const selectedCountry     = countryList.entities[shippingCountry ?? ''];
     
     
     return (
@@ -208,6 +208,107 @@ const NavCheckout = ({regularCheckoutSectionRef}: NavCheckoutProps) => {
     );
 }
 
+interface OrderSummaryProps {
+    cartItems   : CartEntry[]
+    priceList   : EntityState<PriceEntry>   | undefined
+    productList : EntityState<ProductEntry> | undefined
+    
+    isDesktop   : boolean
+}
+const OrderSummary = ({cartItems, priceList, productList, isDesktop}: OrderSummaryProps) => {
+    const styles = useCheckoutStyleSheet();
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <WithDetails isDesktop={isDesktop}>
+                <List className='orderList' listStyle='flat'>
+                    {cartItems.map((item) => {
+                        const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                        const product = productList?.entities?.[item.productId];
+                        return (
+                            <ListItem key={item.productId} className={styles.productEntry}
+                                enabled={!!product}
+                                theme={!product ? 'danger' : undefined}
+                                mild={!product ? false : undefined}
+                            >
+                                <h3 className='title h6'>{product?.name ?? 'PRODUCT WAS REMOVED'}</h3>
+                                <ProductImageWithStatus
+                                    alt={product?.name ?? ''}
+                                    src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
+                                    sizes='64px'
+                                    
+                                    status={item.quantity}
+                                />
+                                <p className='subPrice currencyBlock'>
+                                    {!product && <>This product was removed before you purcase it</>}
+                                    <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span>
+                                </p>
+                            </ListItem>
+                        )
+                    })}
+                </List>
+            </WithDetails>
+            <hr />
+            <p className='currencyBlock'>
+                Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
+                    const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
+                    if (!productUnitPrice) return accum;
+                    return accum + (productUnitPrice * item.quantity);
+                }, 0))}</span>
+            </p>
+            <p className='currencyBlock'>
+                Shipping: <span className='currency'>calculated at next step</span>
+            </p>
+            <hr />
+            <p className='currencyBlock'>
+                Total: <span className='currency'>calculated at next step</span>
+            </p>
+        </>
+    );
+}
+
+interface OrderReviewProps {
+    countryList: EntityState<CountryEntry> | undefined
+}
+const OrderReview = ({countryList}: OrderReviewProps) => {
+    const {
+        shippingEmail,
+        
+        shippingAddress,
+        shippingCity,
+        shippingZone,
+        shippingZip,
+        shippingCountry,
+    } = useSelector(selectShippingData);
+    
+    
+    
+    // jsx:
+    return (
+        <table>
+            <tbody>
+                <tr>
+                    <td>Contact</td>
+                    <td>{shippingEmail}</td>
+                    <td>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link'>Change</ButtonIcon>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ship to</td>
+                    <td>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities[shippingCountry ?? '']?.name}`}</td>
+                    <td>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link'>Change</ButtonIcon>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    );
+}
+
 
 
 export default function Checkout() {
@@ -276,49 +377,7 @@ export default function Checkout() {
                 
                 {isCartDataReady && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
                     <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
-                        <WithDetails isDesktop={isDesktop}>
-                            <List className='orderList' listStyle='flat'>
-                                {cartItems.map((item) => {
-                                    const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
-                                    const product = productList?.entities?.[item.productId];
-                                    return (
-                                        <ListItem key={item.productId} className={styles.productEntry}
-                                            enabled={!!product}
-                                            theme={!product ? 'danger' : undefined}
-                                            mild={!product ? false : undefined}
-                                        >
-                                            <h3 className='title h6'>{product?.name ?? 'PRODUCT WAS REMOVED'}</h3>
-                                            <ProductImageWithStatus
-                                                alt={product?.name ?? ''}
-                                                src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
-                                                sizes='64px'
-                                                
-                                                status={item.quantity}
-                                            />
-                                            <p className='subPrice currencyBlock'>
-                                                {!product && <>This product was removed before you purcase it</>}
-                                                <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span>
-                                            </p>
-                                        </ListItem>
-                                    )
-                                })}
-                            </List>
-                        </WithDetails>
-                        <hr />
-                        <p className='currencyBlock'>
-                            Subtotal products: <span className='currency'>{formatCurrency(cartItems.reduce((accum, item) => {
-                                const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
-                                if (!productUnitPrice) return accum;
-                                return accum + (productUnitPrice * item.quantity);
-                            }, 0))}</span>
-                        </p>
-                        <p className='currencyBlock'>
-                            Shipping: <span className='currency'>calculated at next step</span>
-                        </p>
-                        <hr />
-                        <p className='currencyBlock'>
-                            Total: <span className='currency'>calculated at next step</span>
-                        </p>
+                        <OrderSummary cartItems={cartItems} priceList={priceList} productList={productList} isDesktop={isDesktop} />
                     </Section>
                     
                     <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
@@ -327,8 +386,8 @@ export default function Checkout() {
                     
                     <div className={styles.currentStepLayout}>
                         {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <>
-                            <Section tag='aside' className={styles.review} title='Review'>
-                                review...
+                            <Section tag='aside' className={styles.orderReview}>
+                                <OrderReview countryList={countryList} />
                             </Section>
                         </>}
                         
