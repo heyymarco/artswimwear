@@ -8,8 +8,8 @@ const currencyFormatter = new Intl.NumberFormat('id-ID', {
 
 
 
-export const formatCurrency = (value?: number): string => {
-    if ((value === undefined) || isNaN(value)) return '-';
+export const formatCurrency = (value?: number|null|undefined): string => {
+    if ((value === null) || (value === undefined) || isNaN(value)) return '-';
     return currencyFormatter.format(value)
 };
 

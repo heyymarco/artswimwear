@@ -336,9 +336,11 @@ const OrderReview = ({countryList}: OrderReviewProps) => {
 }
 
 interface ShippingMethodProps {
-    shippingList: EntityState<ShippingEntry>
+    cartItems    : CartEntry[]
+    priceList    : EntityState<PriceEntry>
+    shippingList : EntityState<ShippingEntry>
 }
-const ShippingMethod = ({shippingList}: ShippingMethodProps) => {
+const ShippingMethod = ({cartItems, priceList, shippingList}: ShippingMethodProps) => {
     const {
         shippingProvider,
     } = useSelector(selectShippingData);
@@ -348,6 +350,14 @@ const ShippingMethod = ({shippingList}: ShippingMethodProps) => {
     
     const filteredShippingList = Object.values(shippingList.entities).filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry);
     // const selectedShipping     = shippingList.entities[shippingProvider ?? ''];
+    
+    
+    
+    const totalProductWeights = cartItems.reduce((accum, item) => {
+        const productUnitWeight = priceList.entities?.[item.productId]?.shippingWeight ?? undefined;
+        if (!productUnitWeight) return accum;
+        return accum + (productUnitWeight * item.quantity);
+    }, 0);
     
     
     
@@ -361,19 +371,27 @@ const ShippingMethod = ({shippingList}: ShippingMethodProps) => {
     // jsx:
     return (
         <List theme='primary' actionCtrl={true}>
-            {filteredShippingList.map((shippingEntry, index) =>
-                <ListItem
-                    key={index}
-                    
-                    active={filteredShippingList?.[index]?._id === shippingProvider}
-                    onClick={() => dispatch(setShippingProvider(filteredShippingList?.[index]?._id ?? ''))}
-                >
-                    <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} />
-                    <p className='name'>{shippingEntry.name}</p>
-                    {!!shippingEntry.estimate && <p className='estimate'>Estimate: {shippingEntry.estimate}</p>}
-                    <p className='cost'>$$$</p>
-                </ListItem>
-            )}
+            {filteredShippingList.map((shippingEntry, index) => {
+                const totalShippingCosts = calculateShippingCost(totalProductWeights, shippingEntry);
+                
+                
+                
+                return (
+                    <ListItem
+                        key={index}
+                        
+                        active={filteredShippingList?.[index]?._id === shippingProvider}
+                        onClick={() => dispatch(setShippingProvider(filteredShippingList?.[index]?._id ?? ''))}
+                    >
+                        <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} />
+                        <p className='name'>{shippingEntry.name}</p>
+                        {!!shippingEntry.estimate && <p className='estimate'>Estimate: {shippingEntry.estimate}</p>}
+                        <p className='cost'>
+                            {formatCurrency(totalShippingCosts)}
+                        </p>
+                    </ListItem>
+                );
+            })}
         </List>
     );
 }
@@ -480,7 +498,7 @@ export default function Checkout() {
                         
                         {(checkoutStep === 'shipping') && <>
                             <Section className={styles.shipping} title='Shipping Method'>
-                                <ShippingMethod shippingList={shippingList} />
+                                <ShippingMethod cartItems={cartItems} priceList={priceList} shippingList={shippingList} />
                             </Section>
                         </>}
                     </div>
