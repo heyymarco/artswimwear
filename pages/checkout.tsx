@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Accordion, AccordionItem, Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, ExclusiveAccordion, List, ListItem, Radio, TelInput, TextInput, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
+import { Accordion, AccordionItem, Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { calculateShippingCost, CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -339,7 +339,7 @@ const NavCheckout = () => {
             dispatch(setCheckoutStep('shipping'));
         }},
         { text: 'Continue to payment'  , action: () => dispatch(setCheckoutStep('payment')) },
-        { text: 'Pay now' , action: () => {
+        { text: 'Pay Now' , action: () => {
             // payment action
         }},
     ][checkoutProgress];
@@ -697,10 +697,7 @@ const PaymentMethod = () => {
                 <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                 Credit Card
             </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryCard} />} lazy={true} >
-                <TextInput  className='number'    placeholder='Card number'               inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-number' />
-                <TextInput  className='name'      placeholder='Cardholder Name'           inputMode='text'                     required autoComplete='cc-name'   />
-                <TextInput  className='expiry'    placeholder='Expiration Date (MM / YY)' inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-exp'    />
-                <TextInput  className='csc'       placeholder='Security code'             inputMode='numeric' pattern='[0-9]*'          autoComplete='cc-csc'    />
+                <PaymentMethodCard />
             </AccordionItem>
             <AccordionItem label={<>
                 <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
@@ -711,5 +708,60 @@ const PaymentMethod = () => {
                 </p>
             </AccordionItem>
         </ExclusiveAccordion>
+    );
+}
+const PaymentMethodCard = () => {
+    // states:
+    const [enableValidation, setEnableValidation] = useState<boolean>(false);
+    
+    
+    
+    // refs:
+    const safeSignRef = useRef<HTMLElement|null>(null);
+    const cscSignRef  = useRef<HTMLElement|null>(null);
+    
+    
+    
+    // jsx:
+    return (
+        <ValidationProvider enableValidation={enableValidation}>
+            <Group className='number'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='credit_card' theme='primary' mild={true} />
+                </Label>
+                <TextInput placeholder='Card Number'               inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-number' />
+                <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
+                    <Icon icon='lock' />
+                    <Tooltip className='tooltip' size='sm' floatingOn={safeSignRef}>
+                        All transactions are secure and encrypted.
+                    </Tooltip>
+                </Label>
+            </Group>
+            <Group className='name'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='person' theme='primary' mild={true} />
+                </Label>
+                <TextInput placeholder='Cardholder Name'           inputMode='text'                     required autoComplete='cc-name'   />
+            </Group>
+            <Group className='expiry'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='date_range' theme='primary' mild={true} />
+                </Label>
+                <TextInput placeholder='Expiration Date (MM / YY)' inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-exp'    />
+            </Group>
+            <Group className='csc'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='fiber_pin' theme='primary' mild={true} />
+                </Label>
+                <TextInput placeholder='Security Code'             inputMode='numeric' pattern='[0-9]*'          autoComplete='cc-csc'    />
+                <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
+                    <Icon icon='help' />
+                    <Tooltip className='tooltip' size='sm' floatingOn={cscSignRef}>
+                        3-digit security code usually found on the back of your card.<br />
+                        American Express cards have a 4-digit code located on the front.
+                    </Tooltip>
+                </Label>
+            </Group>
+        </ValidationProvider>        
     );
 }

@@ -1,6 +1,6 @@
-import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
-import { containers } from "@reusable-ui/components";
-import { borders, ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, typos, usesBorder, usesGroupable, usesPadding } from "@reusable-ui/core";
+import { children, descendants, fallbacks, rule, scopeOf, style, vars } from "@cssfn/core";
+import { containers, iconElm, usesIcon, usesIconFontLayout } from "@reusable-ui/components";
+import { borders, ifNeutralize, ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, markValid, themes, typos, usesBorder, usesGroupable, usesPadding, usesValidationIcon } from "@reusable-ui/core";
 
 
 
@@ -86,6 +86,9 @@ export default () => {
                     }),
                 }),
             }),
+            ...descendants('.tooltip', {
+                minInlineSize: '10rem',
+            })
         }),
         scopeOf('progressCheckout', {
             gridArea: 'progressCheckout',
@@ -343,6 +346,39 @@ export default () => {
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
+            }),
+            ...children('article', {
+                display: 'grid',
+                gridTemplate: [[
+                    '"number" auto',
+                    '"name  " auto',
+                    '"expiry" auto',
+                    '"csc   " auto',
+                    '/',
+                    '1fr'
+                ]],
+                ...ifScreenWidthAtLeast('sm', {
+                    gridTemplate: [[
+                        '"number number" auto',
+                        '"name     name" auto',
+                        '"expiry    csc" auto',
+                        '/',
+                        '1fr 1fr'
+                    ]],
+                }),
+                gap: '1rem',
+                ...children('.number', {
+                    gridArea: 'number',
+                }),
+                ...children('.name', {
+                    gridArea: 'name',
+                }),
+                ...children('.expiry', {
+                    gridArea: 'expiry',
+                }),
+                ...children('.csc', {
+                    gridArea: 'csc',
+                }),
             }),
         }),
         scopeOf('paymentEntryPaypal', {
