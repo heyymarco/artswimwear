@@ -25,12 +25,17 @@ export interface CheckoutState {
     shippingZip         ?: string
     
     shippingProvider    ?: string
+    
+    
+    
+    paymentId           ?: string
 }
 
 const initialState: CheckoutState = {
     checkoutStep       : 'info',
     marketingOpt       : true,
     shippingValidation : false,
+    paymentId          : undefined,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
@@ -82,6 +87,12 @@ export const checkoutSlice = createSlice({
         setShippingProvider: (state, {payload: value}: PayloadAction<string>) => {
             state.shippingProvider = value;
         },
+        
+        
+        
+        setPaymentId: (state, {payload: value}: PayloadAction<string|undefined>) => {
+            state.paymentId = value;
+        },
     },
 });
 
@@ -109,12 +120,16 @@ export const {
     setShippingZip,
     
     setShippingProvider,
+    
+    
+    
+    setPaymentId,
 } = checkoutSlice.actions;
 
 
 
 // selectors:
-export const selectShippingData = (state: RootState) => {
+export const selectCheckoutState = (state: RootState): CheckoutState => {
     const {
         checkoutStep,
         marketingOpt,
@@ -136,6 +151,10 @@ export const selectShippingData = (state: RootState) => {
         shippingZip,
         
         shippingProvider,
+        
+        
+        
+        paymentId,
     } = state.checkout;
     
     return {
@@ -159,6 +178,10 @@ export const selectShippingData = (state: RootState) => {
         shippingZip,
         
         shippingProvider,
+        
+        
+        
+        paymentId,
     };
 };
 

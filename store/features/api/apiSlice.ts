@@ -1,6 +1,8 @@
 import type { RootState } from '@/store/store';
 import { createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import type { CartState } from '../cart/cartSlice';
+import type { CheckoutState } from '../checkout/checkoutSlice';
 
 
 
@@ -46,6 +48,19 @@ const shippingListAdapter = createEntityAdapter<ShippingEntry>({
     selectId : (shippingEntry) => shippingEntry._id,
 });
 
+export interface PaymentEntry
+    extends
+        Omit<CartState, 'showCart'>,
+        Omit<CheckoutState, 'checkoutStep'>
+{
+}
+export interface PaymentResult
+    extends
+        Pick<CheckoutState, 'paymentId'>
+{
+    succeeded ?: string
+    failed    ?: string
+}
 
 
 export const apiSlice = createApi({
@@ -84,6 +99,14 @@ export const apiSlice = createApi({
                 return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
             },
         }),
+        
+        payment: builder.mutation<PaymentResult, PaymentEntry>({
+            query : (payment) => ({
+                url    : 'payment',
+                method : 'PUT',
+                body   : payment,
+            }),
+        })
     }),
 });
 
@@ -98,6 +121,8 @@ export const {
     useGetCountryListQuery,
     
     useGetShippingListQuery,
+    
+    usePaymentMutation,
 } = apiSlice;
 
 

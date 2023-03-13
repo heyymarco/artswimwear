@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { Main } from '@/components/sections/Main'
 import { Accordion, AccordionItem, Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { calculateShippingCost, CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery } from '@/store/features/api/apiSlice'
+import { calculateShippingCost, CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery, usePaymentMutation } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
@@ -13,7 +13,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectShippingData, setCheckoutStep, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentId, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 
 
@@ -29,6 +29,7 @@ interface ICheckoutContext {
     cartItems                 : CartEntry[]
     hasCart                   : boolean
     checkoutStep              : CheckoutStep
+    checkoutProgress          : number
     
     priceList                 : EntityState<PriceEntry>    | undefined
     productList               : EntityState<ProductEntry>  | undefined
@@ -50,6 +51,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     cartItems                 : [],
     hasCart                   : false,
     checkoutStep              : 'info',
+    checkoutProgress          : 0,
     
     priceList                 : undefined,
     productList               : undefined,
@@ -75,11 +77,15 @@ export default function Checkout() {
     
     
     
-    const cartItems      = useSelector(selectCartItems);
-    const {checkoutStep} = useSelector(selectShippingData);
-    
+    // stores:
+    const cartItems        = useSelector(selectCartItems);
+    const {checkoutStep}   = useSelector(selectCheckoutState);
+    const checkoutProgress = useSelector(selectCheckoutProgress);
     const hasCart = !!cartItems.length;
     
+    
+    
+    // apis:
     const {data: priceList   , isLoading: isLoading1, isError: isError1} = useGetPriceListQuery();
     const {data: productList , isLoading: isLoading2, isError: isError2} = useGetProductListQuery();
     const {data: countryList , isLoading: isLoading3, isError: isError3} = useGetCountryListQuery();
@@ -117,6 +123,7 @@ export default function Checkout() {
         cartItems,
         hasCart,
         checkoutStep,
+        checkoutProgress,
         
         priceList,
         productList,
@@ -137,6 +144,7 @@ export default function Checkout() {
         cartItems,
         hasCart,
         checkoutStep,
+        checkoutProgress,
         
         priceList,
         productList,
@@ -290,12 +298,7 @@ const WithDetails = ({children}: WithDetailsProps) => {
 
 const ProgressCheckout = () => {
     // context:
-    const {isDesktop} = useCheckout();
-    
-    
-    
-    // stores:
-    const checkoutProgress = useSelector(selectCheckoutProgress);
+    const {isDesktop, checkoutProgress} = useCheckout();
     
     
     
@@ -313,20 +316,16 @@ const ProgressCheckout = () => {
 
 const NavCheckout = () => {
     // context:
-    const {regularCheckoutSectionRef} = useCheckout();
+    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef} = useCheckout();
     
     
     
     // stores:
-    const checkoutProgress = useSelector(selectCheckoutProgress);
-    const {
-        checkoutStep,
-    } = useSelector(selectShippingData);
     const dispatch = useDispatch();
     
     
     
-    // fn props:
+    // utilities:
     const prevAction = [
         { text: 'Return to cart'       , action: () => dispatch(showCart(true)) },
         { text: 'Return to information', action: () => dispatch(setCheckoutStep('info')) },
@@ -389,7 +388,7 @@ const RegularCheckout = () => {
         shippingCity,
         shippingZone,
         shippingZip,
-    } = useSelector(selectShippingData);
+    } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
     
@@ -454,14 +453,11 @@ const OrderSummary = () => {
     // stores:
     const {
         shippingProvider,
-    } = useSelector(selectShippingData);
+    } = useSelector(selectCheckoutState);
     
+    const selectedShipping    = shippingList?.entities?.[shippingProvider ?? ''];
     
-    
-    // fn props:
-    const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
-    
-    const totalProductPrices = cartItems.reduce((accum, item) => {
+    const totalProductPrices  = cartItems.reduce((accum, item) => {
         const productUnitPrice = priceList?.entities?.[item.productId]?.price;
         if (!productUnitPrice) return accum;
         return accum + (productUnitPrice * item.quantity);
@@ -472,7 +468,7 @@ const OrderSummary = () => {
         if (!productUnitWeight) return accum;
         return accum + (productUnitWeight * item.quantity);
     }, 0);
-    const totalShippingCosts = selectedShipping && calculateShippingCost(totalProductWeights, selectedShipping);
+    const totalShippingCosts  = selectedShipping && calculateShippingCost(totalProductWeights, selectedShipping);
     
     
     
@@ -529,7 +525,7 @@ const OrderSummary = () => {
 }
 const OrderReview = () => {
     // context:
-    const {countryList, shippingList, shippingEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckout();
+    const {checkoutStep, countryList, shippingList, shippingEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckout();
     
     
     
@@ -544,10 +540,7 @@ const OrderReview = () => {
         shippingCountry,
         
         shippingProvider,
-    } = useSelector(selectShippingData);
-    const {
-        checkoutStep,
-    } = useSelector(selectShippingData);
+    } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
     
@@ -617,7 +610,7 @@ const ShippingMethod = () => {
     // stores:
     const {
         shippingProvider,
-    } = useSelector(selectShippingData);
+    } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
     
@@ -714,6 +707,19 @@ const PaymentMethod = () => {
     );
 }
 const PaymentMethodCard = () => {
+    // context:
+    const {cartItems} = useCheckout();
+    
+    
+    
+    // stores:
+    const {
+        checkoutStep : _checkoutStep, // remove
+    ...restCheckoutState} = useSelector(selectCheckoutState);
+    const dispatch = useDispatch();
+    
+    
+    
     // states:
     const [enableValidation, setEnableValidation] = useState<boolean>(false);
     
@@ -722,6 +728,39 @@ const PaymentMethodCard = () => {
     // refs:
     const safeSignRef = useRef<HTMLElement|null>(null);
     const cscSignRef  = useRef<HTMLElement|null>(null);
+    
+    
+    
+    // apis:
+    const [performPayment, {data: paymentResult, isLoading, isError}] = usePaymentMutation();
+    useEffect(() => {
+        // update paymentId (if any):
+        if (paymentResult && ('paymentId' in paymentResult)) {
+            dispatch(setPaymentId(paymentResult.paymentId || undefined));
+        } // if
+        
+        
+        
+        // check the result:
+        if (isError) {
+            // maybe network error or internal server error:
+            console.log('payment error: ', paymentResult);
+        }
+        else if (paymentResult) {
+            // may succeeded or failed:
+            if (paymentResult.succeeded) {
+                // payment accepted:
+                console.log('payment accepted: ', paymentResult);
+                
+                // clear the used paymentId:
+                dispatch(setPaymentId(undefined));
+            }
+            else {
+                // payment rejected:
+                console.log('payment rejected: ', paymentResult);
+            } // if
+        }
+    }, [paymentResult, isError])
     
     
     
@@ -766,7 +805,12 @@ const PaymentMethodCard = () => {
                 </Label>
             </Group>
             <hr className='horz' />
-            <ButtonIcon icon='monetization_on' className='payNow' size='lg' gradient={true}>
+            <ButtonIcon icon={!isLoading ? 'monetization_on' : 'busy'} enabled={!isLoading} className='payNow' size='lg' gradient={true} onClick={() => {
+                performPayment({
+                    items : cartItems,
+                    ...restCheckoutState,
+                });
+            }}>
                 Pay Now
             </ButtonIcon>
         </ValidationProvider>        
