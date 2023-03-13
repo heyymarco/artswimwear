@@ -696,15 +696,16 @@ const PaymentMethod = () => {
             <AccordionItem label={<>
                 <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                 Credit Card
-            </>} listItemComponent={<ListItem className={styles.shippingEntry} />}>
-                <p>
-                    blah...
-                </p>
+            </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryCard} />} lazy={true} >
+                <TextInput  className='number'    placeholder='Card number'               inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-number' />
+                <TextInput  className='name'      placeholder='Cardholder Name'           inputMode='text'                     required autoComplete='cc-name'   />
+                <TextInput  className='expiry'    placeholder='Expiration Date (MM / YY)' inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-exp'    />
+                <TextInput  className='csc'       placeholder='Security code'             inputMode='numeric' pattern='[0-9]*'          autoComplete='cc-csc'    />
             </AccordionItem>
             <AccordionItem label={<>
                 <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                 PayPal
-            </>} listItemComponent={<ListItem className={styles.shippingEntry} />}>
+                </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} lazy={true} >
                 <p>
                     blah...
                 </p>

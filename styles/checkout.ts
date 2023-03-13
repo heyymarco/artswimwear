@@ -339,6 +339,18 @@ export default () => {
                 textAlign: 'end',
             }),
         }),
+        scopeOf('paymentEntryCard', {
+            ...children(['&', 'article'], {
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
+            }),
+        }),
+        scopeOf('paymentEntryPaypal', {
+            ...children(['&', 'article'], {
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
+            }),
+        }),
         
         scopeOf('navCheckout', {
             gridArea: 'navCheckout',
