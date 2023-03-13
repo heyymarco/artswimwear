@@ -319,6 +319,9 @@ const NavCheckout = () => {
     
     // stores:
     const checkoutProgress = useSelector(selectCheckoutProgress);
+    const {
+        checkoutStep,
+    } = useSelector(selectShippingData);
     const dispatch = useDispatch();
     
     
@@ -352,9 +355,9 @@ const NavCheckout = () => {
             <ButtonIcon className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link' onClick={prevAction.action}>
                 {prevAction.text}
             </ButtonIcon>
-            <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end' onClick={nextAction.action}>
+            {(checkoutStep !== 'payment') && <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end' onClick={nextAction.action}>
                 {nextAction.text}
-            </ButtonIcon>
+            </ButtonIcon>}
         </>
     );
 }
@@ -704,7 +707,7 @@ const PaymentMethod = () => {
                 PayPal
                 </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} lazy={true} >
                 <p>
-                    blah...
+                    Coming soon...
                 </p>
             </AccordionItem>
         </ExclusiveAccordion>
@@ -762,6 +765,10 @@ const PaymentMethodCard = () => {
                     </Tooltip>
                 </Label>
             </Group>
+            <hr className='horz' />
+            <ButtonIcon icon='monetization_on' className='payNow' size='lg' gradient={true}>
+                Pay Now
+            </ButtonIcon>
         </ValidationProvider>        
     );
 }
