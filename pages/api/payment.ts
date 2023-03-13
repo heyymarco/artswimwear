@@ -24,7 +24,7 @@ export default async (
     res: NextApiResponse
 ) => {
     switch(req.method) {
-        case 'PUT':
+        case 'PUT': {
             // if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
                 await new Promise<void>((resolve) => {
                     setTimeout(() => {
@@ -35,7 +35,8 @@ export default async (
             
             
             
-            const requestJson = req.body && (typeof(req.body) === 'object') ? req.body : undefined;
+            const body = req.body;
+            const requestJson = body && (typeof(body) === 'object') ? body : undefined;
             if (requestJson instanceof Error) return res.status(400).end(); // bad req JSON
             
             
@@ -46,7 +47,7 @@ export default async (
             
             
             // // simulates a payment failed:
-            // return res.status(200).json({
+            // return res.status(200).json({ // OK
             //     paymentId : prevPaymentId,
             //     failed    : 'payment declined',
             // });
@@ -72,13 +73,52 @@ export default async (
                     // metadata: {order_id: '6735'}, // not yet implemented
                 })
             );
-            return res.status(200).json({
+            return res.status(200).json({ // OK
                 paymentId     : payment.id,
                 client_secret : payment.client_secret,
             });
+        } break;
+        case 'POST': { // use POST method to receive callback (webhook) from stripe:
+            const body      = req.body;
+            const signature = req.headers['stripe-signature'];
             
             
             
+            // validate the request is coming from stripe:
+            if (!signature) return res.status(400).end(); // missing signature
+            let event = null;
+            try {
+                event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_SECRET_WEBHOOK ?? '');
+            }
+            catch (error) {
+                return res.status(400).end(); // invalid signature
+            } // try
+            
+            
+            
+            // actions:
+            let payment : Stripe.PaymentIntent|undefined = undefined;
+            switch (event.type) {
+                case 'payment_intent.processing': {
+                    // wait for the initiated payment to succeed or fail.
+                } break;
+                case 'payment_intent.amount_capturable_updated': {
+                    // capture the funds that are available for payment
+                } break;
+                case 'payment_intent.succeeded': {
+                    payment = event.data.object as any;
+                    // payment succeeded
+                } break;
+                case 'payment_intent.payment_failed': {
+                    payment = event.data.object as any;
+                    // payment failed
+                } break;
+            } // switch
+            
+            
+            
+            res.status(200); // OK
+        } break;
         default:
             return res.status(400).end();
     } // switch
