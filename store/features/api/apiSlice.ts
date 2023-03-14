@@ -2,7 +2,7 @@ import type { RootState } from '@/store/store';
 import { createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { CartState } from '../cart/cartSlice';
-import type { ClientToken, CheckoutState } from '../checkout/checkoutSlice';
+import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice';
 
 
 
@@ -67,50 +67,65 @@ export const apiSlice = createApi({
         baseUrl: '/api'
     }),
     endpoints : (builder) => ({
-        getProductList: builder.query<EntityState<ProductEntry>, void>({
+        getProductList   : builder.query<EntityState<ProductEntry>, void>({
             query : () => 'product',
             transformResponse(response: ProductEntry[]) {
                 return productListAdapter.addMany(productListAdapter.getInitialState(), response);
             },
         }),
-        getProductDetail: builder.query<any, string>({
+        getProductDetail : builder.query<any, string>({
             query : (productPath: string) => `product?path=${productPath}`,
         }),
         
-        getPriceList: builder.query<EntityState<PriceEntry>, void>({
+        
+        
+        getPriceList : builder.query<EntityState<PriceEntry>, void>({
             query : () => 'priceList',
             transformResponse(response: PriceEntry[]) {
                 return priceListAdapter.addMany(priceListAdapter.getInitialState(), response);
             },
         }),
         
-        getCountryList: builder.query<EntityState<CountryEntry>, void>({
+        
+        
+        getCountryList : builder.query<EntityState<CountryEntry>, void>({
             query : () => 'countryList',
             transformResponse(response: CountryEntry[]) {
                 return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
             },
         }),
         
-        getShippingList: builder.query<EntityState<ShippingEntry>, void>({
+        
+        
+        getShippingList : builder.query<EntityState<ShippingEntry>, void>({
             query : () => 'shippingList',
             transformResponse(response: ShippingEntry[]) {
                 return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
             },
         }),
         
-        generateClientToken: builder.mutation<ClientToken, void>({
+        
+        
+        generatePaymentToken : builder.mutation<PaymentToken, void>({
             query : () => ({
                 url    : 'payment',
                 method : 'GET',
             }),
         }),
-        makePayment: builder.mutation<PaymentResult, PaymentEntry>({
+        placeOrder           : builder.mutation<PaymentResult, PaymentEntry>({
             query : (payment) => ({
                 url    : 'payment',
-                method : 'PUT',
+                method : 'POST',
                 body   : payment,
             }),
-        })
+        }),
+        makePayment          : builder.mutation<PaymentResult, PaymentEntry>({
+            query : (payment) => ({
+                url    : 'payment',
+                method : 'PATCH',
+                body   : payment,
+            }),
+        }),
     }),
 });
 
@@ -126,7 +141,7 @@ export const {
     
     useGetShippingListQuery,
     
-    useGenerateClientTokenMutation,
+    useGeneratePaymentTokenMutation,
     useMakePaymentMutation,
 } = apiSlice;
 

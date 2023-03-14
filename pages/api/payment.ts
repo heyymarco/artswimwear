@@ -7,7 +7,7 @@ const baseURL = {
     production : 'https://api-m.paypal.com'
 };
 // const accessTokenExpiresThreshold = 0.5;
-const clientTokenExpiresThreshold = 0.5;
+const paymentTokenExpiresThreshold = 0.5;
 
 
 
@@ -42,9 +42,9 @@ const generateAccessToken = async () => {
 }
 
 /**
- * Call this function to create your client token.
+ * Call this function to create your client token (paymentToken).
  */
-const generateClientToken = async () => {
+const generatePaymentToken = async () => {
     const accessToken = await generateAccessToken();
     const response    = await fetch(`${baseURL.sandbox}/v1/identity/generate-token`, {
         method  : 'POST',
@@ -62,12 +62,12 @@ const generateClientToken = async () => {
             expires_in: 3600, // seconds
         }
     */
-    console.log('clientToken created!');
-    // console.log('clientToken: ', data);
-    if (!data || data.error) throw data?.error_description ?? data?.error ?? Error('Fetch client token failed.');
+    console.log('paymentToken created!');
+    // console.log('paymentToken: ', data);
+    if (!data || data.error) throw data?.error_description ?? data?.error ?? Error('Fetch paymentToken failed.');
     return {
-        clientToken : data.client_token,
-        expires     : Date.now() + ((data.expires_in ?? 3600) * 1000 * clientTokenExpiresThreshold)
+        paymentToken : data.client_token,
+        expires      : Date.now() + ((data.expires_in ?? 3600) * 1000 * paymentTokenExpiresThreshold)
     };
 }
 
@@ -78,7 +78,7 @@ export default async (
     res: NextApiResponse
 ) => {
     switch(req.method) {
-        case 'GET': {
+        case 'GET': { // intialize paymentToken
             // if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
                 await new Promise<void>((resolve) => {
                     setTimeout(() => {
@@ -90,10 +90,17 @@ export default async (
             
             
             return res.status(200).json( // OK
-                await generateClientToken(),
+                await generatePaymentToken(),
             );
         } break;
-        case 'POST': { // use POST method to receive callback (webhook) from stripe:
+        case 'POST': { // place the order and calculate the total price (not relying priceList on the client_side)
+            const body = req.body;
+            
+            
+            
+            res.status(200); // OK
+        } break;
+        case 'PATCH': { // purchase the previously posted order
             const body = req.body;
             
             
