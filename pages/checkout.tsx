@@ -896,6 +896,10 @@ const PaymentMethodCard = () => {
                             <p>
                                 Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
                             </p>
+                            <p>
+                                The card data will be forwarded to our payment gateway (PayPal).<br />
+                                We won&apos;t store your card data into our database.
+                            </p>
                         </Tooltip>
                     </Label>
                 </Group>
