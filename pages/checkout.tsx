@@ -890,7 +890,12 @@ const PaymentMethodCard = () => {
                     <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
                         <Icon icon='lock' />
                         <Tooltip className='tooltip' size='sm' floatingOn={safeSignRef}>
-                            All transactions are secure and encrypted.
+                            <p>
+                                All transactions are secure and encrypted.
+                            </p>
+                            <p>
+                                Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
+                            </p>
                         </Tooltip>
                     </Label>
                 </Group>
@@ -934,8 +939,12 @@ const PaymentMethodCard = () => {
                     <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
                         <Icon icon='help' />
                         <Tooltip className='tooltip' size='sm' floatingOn={cscSignRef}>
-                            3-digit security code usually found on the back of your card.<br />
-                            American Express cards have a 4-digit code located on the front.
+                            <p>
+                                3-digit security code usually found on the back of your card.
+                            </p>
+                            <p>
+                                American Express cards have a 4-digit code located on the front.
+                            </p>
                         </Tooltip>
                     </Label>
                 </Group>
