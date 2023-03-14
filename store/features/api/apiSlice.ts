@@ -50,8 +50,8 @@ const shippingListAdapter = createEntityAdapter<ShippingEntry>({
 
 export interface PlaceOrderData
     extends
-        Omit<CartState, 'showCart'>,
-        Omit<CheckoutState, 'checkoutStep'>
+        Omit<CartState,     'showCart'>,                                        // cart item(s)
+        Omit<CheckoutState, 'checkoutStep'|'shippingValidation'|'paymentToken'> // shipping address + marketingOpt
 {
 }
 export interface PlaceOrderResult

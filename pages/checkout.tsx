@@ -818,7 +818,9 @@ const PaymentMethodCard = () => {
     
     // stores:
     const {
-        checkoutStep : _checkoutStep, // remove
+        checkoutStep       : _checkoutStep,       // remove
+        shippingValidation : _shippingValidation, // remove
+        paymentToken       : _paymentToken,       // remove
     ...restCheckoutState} = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -845,8 +847,8 @@ const PaymentMethodCard = () => {
         console.log('processing payment...');
         try {
             const data = await placeOrder({
-                items : cartItems,
-                ...restCheckoutState,
+                items : cartItems,    // cart item(s)
+                ...restCheckoutState, // shipping address + marketingOpt
             }).unwrap();
             if (data.id) {
                 console.log('order data: ', data);

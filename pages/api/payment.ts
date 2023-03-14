@@ -107,12 +107,70 @@ export default async (
             );
         } break;
         case 'POST': { // place the order and calculate the total price (not relying priceList on the client_side)
-            const body = req.body;
+            const data = req.body;
+            if (typeof(data) !== 'object') return res.status(400).end(); // bad req
             
             
             
-            console.log('TODO: calculating total order price...', body);
+            // validate shipping address:
+            const {
+                marketingOpt = true,
+                
+                shippingFirstName,
+                shippingLastName,
+                
+                shippingPhone,
+                shippingEmail,
+                
+                shippingCountry,
+                shippingAddress,
+                shippingCity,
+                shippingZone,
+                shippingZip,
+                
+                shippingProvider,
+            } = data;
+            if (
+                (typeof(marketingOpt) !== 'boolean')
+                
+                || !shippingFirstName || (typeof(shippingFirstName) !== 'string')
+                || !shippingLastName  || (typeof(shippingLastName) !== 'string')
+                
+                || !shippingPhone     || (typeof(shippingPhone) !== 'string')
+                || !shippingEmail     || (typeof(shippingEmail) !== 'string') // todo validate email
+                
+                || !shippingCountry   || (typeof(shippingCountry) !== 'string') // todo validate country id
+                || !shippingAddress   || (typeof(shippingAddress) !== 'string')
+                || !shippingCity      || (typeof(shippingCity) !== 'string')
+                || !shippingZone      || (typeof(shippingZone) !== 'string')
+                || !shippingZip       || (typeof(shippingZip) !== 'string')
+                
+                || !shippingProvider  || (typeof(shippingProvider) !== 'string') // todo validate shipping provider
+            ) {
+                return res.status(400).end(); // bad req
+            } // if
+            
+            
+            
+            // TODO: validate cart items + calculate total prices + calculate shipping cost
+            const items = data.items;
+            if (!items || !Array.isArray(items) || !items.length) return res.status(400).end(); // bad req
+            
             const productList = await Product.findOne({ path: req.query.path }, { _id: true, name: true, price: true, shippingWeight: true });
+            
+            for (const item of items) {
+                if (!item || (typeof(item) !== 'object')) return res.status(400).end(); // bad req
+                const {
+                    productId,
+                    quantity,
+                } = item;
+                if (!productId || (typeof(productId) !== 'string')) return res.status(400).end(); // bad req
+                if (!quantity || (typeof(quantity) !== 'number') || !isFinite(quantity) || (quantity < 0)) return res.status(400).end(); // bad req
+            } // for
+            
+            
+            
+            console.log('TODO: calculating total order price...', data);
             
             
             
