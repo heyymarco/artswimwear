@@ -1,4 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import { connectDB } from '@/libs/dbConn'
+import Product from '@/models/Product'
+
+
+
+try {
+    await connectDB(); // top level await
+    console.log('connected to mongoDB!');
+}
+catch (error) {
+    console.log('FAILED to connect mongoDB!');
+    throw error;
+} // try
 
 
 
@@ -96,7 +109,12 @@ export default async (
         case 'POST': { // place the order and calculate the total price (not relying priceList on the client_side)
             const body = req.body;
             
+            
+            
             console.log('TODO: calculating total order price...', body);
+            const productList = await Product.findOne({ path: req.query.path }, { _id: true, name: true, price: true, shippingWeight: true });
+            
+            
             
             return res.status(200).json({ // OK
                 id: 'order#1234',
