@@ -759,9 +759,7 @@ const PaymentMethod = () => {
                 <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                 PayPal
                 </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} lazy={true} >
-                <p>
-                    <PaymentMethodPaypal />
-                </p>
+                <PaymentMethodPaypal />
             </AccordionItem>
         </ExclusiveAccordion>
     );
