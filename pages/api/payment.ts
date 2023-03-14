@@ -96,7 +96,7 @@ export default async (
         case 'POST': { // place the order and calculate the total price (not relying priceList on the client_side)
             const body = req.body;
             
-            console.log('TODO: calculating total order price...');
+            console.log('TODO: calculating total order price...', body);
             
             return res.status(200).json({ // OK
                 id: 'order#1234',
@@ -105,7 +105,7 @@ export default async (
         case 'PATCH': { // purchase the previously posted order
             const body = req.body;
             
-            console.log('TODO: capturing the payment...');
+            console.log('TODO: capturing the payment...', body);
             
             return res.status(200).end(); // OK
         } break;

@@ -48,13 +48,23 @@ const shippingListAdapter = createEntityAdapter<ShippingEntry>({
     selectId : (shippingEntry) => shippingEntry._id,
 });
 
-export interface PaymentEntry
+export interface PlaceOrderData
     extends
         Omit<CartState, 'showCart'>,
         Omit<CheckoutState, 'checkoutStep'>
 {
 }
-export interface PaymentResult
+export interface PlaceOrderResult
+{
+    id    ?: string
+    error ?: string
+}
+
+export interface MakePaymentData
+{
+    id    ?: string
+}
+export interface MakePaymentResult
 {
     id    ?: string
     error ?: string
@@ -112,18 +122,18 @@ export const apiSlice = createApi({
                 method : 'GET',
             }),
         }),
-        placeOrder           : builder.mutation<PaymentResult, PaymentEntry>({
-            query : (payment) => ({
+        placeOrder           : builder.mutation<PlaceOrderResult, PlaceOrderData>({
+            query : (orderData) => ({
                 url    : 'payment',
                 method : 'POST',
-                body   : payment,
+                body   : orderData,
             }),
         }),
-        makePayment          : builder.mutation<PaymentResult, PaymentEntry>({
-            query : (payment) => ({
+        makePayment          : builder.mutation<MakePaymentResult, MakePaymentData>({
+            query : (paymentData) => ({
                 url    : 'payment',
                 method : 'PATCH',
-                body   : payment,
+                body   : paymentData,
             }),
         }),
     }),

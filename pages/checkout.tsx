@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
 import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
-import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField } from '@paypal/react-paypal-js'
+import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields } from '@paypal/react-paypal-js'
 
 
 
@@ -837,19 +837,19 @@ const PaymentMethodCard = () => {
     
     // apis:
     const [placeOrder] = usePlaceOrderMutation();
-    const [makePayment, {isLoading, isError}] = useMakePaymentMutation();
     
     
     
     // handlers:
     const handlePlaceOrder = async (): Promise<string> => {
+        console.log('processing payment...');
         try {
             const data = await placeOrder({
                 items : cartItems,
                 ...restCheckoutState,
             }).unwrap();
             if (data.id) {
-                console.log('data: ', data);
+                console.log('order data: ', data);
                 return data.id;
             }
             else {
@@ -861,13 +861,13 @@ const PaymentMethodCard = () => {
             // TODO: handle error
             return '';
         } // try
-    }
+    }    
     
     
     
     // jsx:
     return (
-        <PayPalHostedFieldsProvider createOrder={handlePlaceOrder} styles={hostedFieldsStyle}>
+        <PayPalHostedFieldsProvider styles={hostedFieldsStyle} createOrder={handlePlaceOrder}>
             <ValidationProvider enableValidation={enableValidation}>
                 <Group className='number'>
                     <Label theme='secondary' mild={false} className='solid'>
@@ -953,15 +953,70 @@ const PaymentMethodCard = () => {
                     </Label>
                 </Group>
                 <hr className='horz' />
-                <ButtonIcon icon={!isLoading ? 'monetization_on' : 'busy'} enabled={!isLoading} className='payNow' size='lg' gradient={true} onClick={() => {
-                    makePayment({
-                        items : cartItems,
-                        ...restCheckoutState,
-                    });
-                }}>
-                    Pay Now
-                </ButtonIcon>
+                <CardPaymentButton />
             </ValidationProvider>        
         </PayPalHostedFieldsProvider>
+    );
+}
+const CardPaymentButton = () => {
+    // apis:
+    const [placeOrder,  {isLoading: isLoading1, isError: isError1}] = usePlaceOrderMutation();
+    const [makePayment, {isLoading: isLoading2, isError: isError2}] = useMakePaymentMutation();
+    const isLoading = isLoading1 || isLoading2;
+    const isError   = isError1   || isError2;
+    
+    
+    
+    // handlers:
+    const hostedFields = usePayPalHostedFields();
+    const handleSubmitPayment = async () => {
+        console.log('check: ', hostedFields)
+        if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
+        const authenticate = await hostedFields.cardFields.submit({
+            cardholderName: 'Smith John', // cardholder's first and last name
+            billingAddress: {
+                streetAddress     : undefined, // street address, line 1
+                extendedAddress   : undefined, // street address, line 2 (Ex: Unit, Apartment, etc.)
+                region            : undefined, // state
+                locality          : undefined, // city
+                postalCode        : undefined, // postal Code
+                countryCodeAlpha2 : undefined, // country Code
+            },
+        });
+        console.log('authenticate: ', authenticate);
+        
+        
+        
+        try {
+            const data = await makePayment({
+                id: authenticate.orderId,
+            }).unwrap();
+            // Two cases to handle:
+            //   (1) Non-recoverable errors -> Show a failure message
+            //   (2) Successful transaction -> Show confirmation or thank you
+            // This example reads a v2/checkout/orders capture response, propagated from the server
+            // You could use a different API or structure for your 'orderData'
+            if (data.id) {
+                console.log('payment data: ', data);
+                return data.id;
+            }
+            else {
+                // TODO handle error
+                return '';
+            } // if
+        }
+        catch {
+            // TODO: handle error
+            return '';
+        } // try
+    }
+    
+    
+    
+    // jsx:
+    return (
+        <ButtonIcon icon={!isLoading ? 'monetization_on' : 'busy'} enabled={!isLoading} className='payNow' size='lg' gradient={true} onClick={handleSubmitPayment}>
+            Pay Now
+        </ButtonIcon>
     );
 }
