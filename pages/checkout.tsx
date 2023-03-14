@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { Main } from '@/components/sections/Main'
 import { Accordion, AccordionItem, Badge, Busy, ButtonIcon, Check, Container, Details, DropdownListButton, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { calculateShippingCost, CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery, usePaymentMutation } from '@/store/features/api/apiSlice'
+import { calculateShippingCost, CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGenerateClientTokenMutation, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery, useMakePaymentMutation } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
@@ -13,8 +13,9 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentId, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setClientToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, ClientToken } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
 
 
 
@@ -46,6 +47,8 @@ interface ICheckoutContext {
     shippingEmailInputRef     : React.MutableRefObject<HTMLInputElement|null> | undefined
     shippingAddressInputRef   : React.MutableRefObject<HTMLInputElement|null> | undefined
     shippingMethodOptionRef   : React.MutableRefObject<HTMLElement|null>      | undefined
+    
+    clientToken               : ClientToken|undefined
 }
 const CheckoutContext = createContext<ICheckoutContext>({
     cartItems                 : [],
@@ -68,6 +71,8 @@ const CheckoutContext = createContext<ICheckoutContext>({
     shippingEmailInputRef     : undefined,
     shippingAddressInputRef   : undefined,
     shippingMethodOptionRef   : undefined,
+    
+    clientToken               : undefined,
 });
 const useCheckout = () => useContext(CheckoutContext);
 
@@ -79,22 +84,75 @@ export default function Checkout() {
     
     // stores:
     const cartItems        = useSelector(selectCartItems);
-    const {checkoutStep}   = useSelector(selectCheckoutState);
+    const {
+        checkoutStep,
+        clientToken : existingClientToken,
+    }   = useSelector(selectCheckoutState);
     const checkoutProgress = useSelector(selectCheckoutProgress);
     const hasCart = !!cartItems.length;
+    const dispatch = useDispatch();
     
     
     
     // apis:
-    const {data: priceList   , isLoading: isLoading1, isError: isError1} = useGetPriceListQuery();
-    const {data: productList , isLoading: isLoading2, isError: isError2} = useGetProductListQuery();
-    const {data: countryList , isLoading: isLoading3, isError: isError3} = useGetCountryListQuery();
-    const {data: shippingList, isLoading: isLoading4, isError: isError4} = useGetShippingListQuery();
+    const                       {data: priceList     , isLoading: isLoading1, isError: isError1}  = useGetPriceListQuery();
+    const                       {data: productList   , isLoading: isLoading2, isError: isError2}  = useGetProductListQuery();
+    const                       {data: countryList   , isLoading: isLoading3, isError: isError3}  = useGetCountryListQuery();
+    const                       {data: shippingList  , isLoading: isLoading4, isError: isError4}  = useGetShippingListQuery();
+    const [generateClientToken, {data: newClientToken, isLoading: isLoading5, isError: isError5}] = useGenerateClientTokenMutation();
     
-    const isLoading = isLoading1 || isLoading2 || isLoading3 || isLoading4;
-    const isError = isError1 || isError2 || isError3 || isError4;
+    const isLoading       = isLoading1 || isLoading2 || isLoading3 || isLoading4 ||  !existingClientToken;
+    const isError         = isError1   || isError2   || isError3   || isError4   || (!existingClientToken && isError5);
     const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList && !!shippingList;
     
+    
+    
+    // dom effects:
+    const isClientTokenInitialized = useRef<boolean>(false);
+    useEffect(() => {
+        // conditions:
+        if (isLoading5) return;
+        
+        
+        
+        // setups:
+        let cancelRefresh : ReturnType<typeof setTimeout>|undefined = undefined;
+        if (!isClientTokenInitialized.current) {
+            isClientTokenInitialized.current = true;
+            
+            // the first time to generate a new token:
+            console.log('initial: generate a new token');
+            generateClientToken();
+        }
+        else if (isError5) {
+            // retry to generate a new token:
+            console.log('schedule retry : generate a new token');
+            cancelRefresh = setTimeout(() => {
+                console.log('retry : generate a new token');
+                generateClientToken();
+            }, 60 * 1000);
+        }
+        else if (newClientToken) {
+            // replace the expiring one:
+            dispatch(setClientToken(newClientToken));
+            
+            
+            
+            // schedule to generate a new token:
+            console.log('schedule renew : generate a new token');
+            cancelRefresh = setTimeout(() => {
+                console.log('renew : generate a new token');
+                generateClientToken();
+            }, (newClientToken.expires - Date.now()) * 1000);
+        } // if
+        
+        
+        
+        // cleanups:
+        return () => {
+            if (cancelRefresh) clearTimeout(cancelRefresh);
+        };
+    }, [newClientToken, isLoading5, isError5]);
     
     
     // states:
@@ -140,6 +198,8 @@ export default function Checkout() {
         shippingEmailInputRef,
         shippingAddressInputRef,
         shippingMethodOptionRef,
+        
+        clientToken: existingClientToken,
     }), [
         cartItems,
         hasCart,
@@ -700,10 +760,28 @@ const PaymentMethod = () => {
                 PayPal
                 </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} lazy={true} >
                 <p>
-                    Coming soon...
+                    <PaymentMethodPaypal />
                 </p>
             </AccordionItem>
         </ExclusiveAccordion>
+    );
+}
+const PaymentMethodPaypal = () => {
+    // context:
+    const {clientToken} = useCheckout();
+    
+    
+    
+    // jsx:
+    return (
+        <PayPalScriptProvider options={{
+            'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
+            'data-client-token' : clientToken?.clientToken,
+            currency            : 'USD',
+            intent              : 'capture',
+        }}>
+            <PayPalButtons />
+        </PayPalScriptProvider>
     );
 }
 const PaymentMethodCard = () => {
@@ -732,35 +810,7 @@ const PaymentMethodCard = () => {
     
     
     // apis:
-    const [performPayment, {data: paymentResult, isLoading, isError}] = usePaymentMutation();
-    useEffect(() => {
-        // update paymentId (if any):
-        if (paymentResult && ('paymentId' in paymentResult)) {
-            dispatch(setPaymentId(paymentResult.paymentId || undefined));
-        } // if
-        
-        
-        
-        // check the result:
-        if (isError) {
-            // maybe network error or internal server error:
-            console.log('payment error: ', paymentResult);
-        }
-        else if (paymentResult) {
-            // may succeeded or failed:
-            if (paymentResult.succeeded) {
-                // payment accepted:
-                console.log('payment accepted: ', paymentResult);
-                
-                // clear the used paymentId:
-                dispatch(setPaymentId(undefined));
-            }
-            else {
-                // payment rejected:
-                console.log('payment rejected: ', paymentResult);
-            } // if
-        }
-    }, [paymentResult, isError])
+    const [makePayment, {isLoading, isError}] = useMakePaymentMutation();
     
     
     
@@ -806,7 +856,7 @@ const PaymentMethodCard = () => {
             </Group>
             <hr className='horz' />
             <ButtonIcon icon={!isLoading ? 'monetization_on' : 'busy'} enabled={!isLoading} className='payNow' size='lg' gradient={true} onClick={() => {
-                performPayment({
+                makePayment({
                     items : cartItems,
                     ...restCheckoutState,
                 });

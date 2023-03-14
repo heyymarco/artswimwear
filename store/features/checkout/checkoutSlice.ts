@@ -4,6 +4,10 @@ import { RootState, AppThunk } from '../../store';
 
 
 export type CheckoutStep = 'info'|'shipping'|'payment'
+export interface ClientToken {
+    clientToken : string
+    expires     : number
+}
 export interface CheckoutState {
     checkoutStep         : CheckoutStep
     marketingOpt         : boolean
@@ -28,14 +32,14 @@ export interface CheckoutState {
     
     
     
-    paymentId           ?: string
+    clientToken         ?: ClientToken
 }
 
 const initialState: CheckoutState = {
     checkoutStep       : 'info',
     marketingOpt       : true,
     shippingValidation : false,
-    paymentId          : undefined,
+    clientToken        : undefined,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
@@ -90,8 +94,8 @@ export const checkoutSlice = createSlice({
         
         
         
-        setPaymentId: (state, {payload: value}: PayloadAction<string|undefined>) => {
-            state.paymentId = value;
+        setClientToken: (state, {payload: value}: PayloadAction<ClientToken|undefined>) => {
+            state.clientToken = value;
         },
     },
 });
@@ -123,7 +127,7 @@ export const {
     
     
     
-    setPaymentId,
+    setClientToken,
 } = checkoutSlice.actions;
 
 
@@ -154,7 +158,7 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
-        paymentId,
+        clientToken,
     } = state.checkout;
     
     return {
@@ -181,7 +185,7 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
-        paymentId,
+        clientToken,
     };
 };
 

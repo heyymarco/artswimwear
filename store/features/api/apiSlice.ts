@@ -2,7 +2,7 @@ import type { RootState } from '@/store/store';
 import { createEntityAdapter, EntityState } from '@reduxjs/toolkit';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { CartState } from '../cart/cartSlice';
-import type { CheckoutState } from '../checkout/checkoutSlice';
+import type { ClientToken, CheckoutState } from '../checkout/checkoutSlice';
 
 
 
@@ -55,8 +55,6 @@ export interface PaymentEntry
 {
 }
 export interface PaymentResult
-    extends
-        Pick<CheckoutState, 'paymentId'>
 {
     succeeded ?: string
     failed    ?: string
@@ -100,7 +98,13 @@ export const apiSlice = createApi({
             },
         }),
         
-        payment: builder.mutation<PaymentResult, PaymentEntry>({
+        generateClientToken: builder.mutation<ClientToken, void>({
+            query : () => ({
+                url    : 'payment',
+                method : 'GET',
+            }),
+        }),
+        makePayment: builder.mutation<PaymentResult, PaymentEntry>({
             query : (payment) => ({
                 url    : 'payment',
                 method : 'PUT',
@@ -122,7 +126,8 @@ export const {
     
     useGetShippingListQuery,
     
-    usePaymentMutation,
+    useGenerateClientTokenMutation,
+    useMakePaymentMutation,
 } = apiSlice;
 
 

@@ -1,21 +1,75 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { connectDB } from '@/libs/dbConn'
-import Stripe from 'stripe'
-
-
-// try {
-//     await connectDB(); // top level await
-//     console.log('connected to mongoDB!');
-// }
-// catch (error) {
-//     console.log('FAILED to connect mongoDB!');
-//     throw error;
-// } // try
 
 
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '', { apiVersion: '2022-11-15' });
+const baseURL = {
+    sandbox    : 'https://api-m.sandbox.paypal.com',
+    production : 'https://api-m.paypal.com'
+};
+// const accessTokenExpiresThreshold = 0.5;
+const clientTokenExpiresThreshold = 0.5;
+
+
+
+/**
+ * Access token is used to authenticate all REST API requests.
+ */
+const generateAccessToken = async () => {
+    const auth = Buffer.from(`${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
+    const response = await fetch(`${baseURL.sandbox}/v1/oauth2/token`, {
+        method  : 'POST',
+        body    : 'grant_type=client_credentials',
+        headers : {
+            Authorization: `Basic ${auth}`,
+        },
+    });
+    const data = await response.json();
+    /*
+        example:
+        {
+            scope: 'https://uri.paypal.com/services/invoicing https://uri.paypal.com/services/vault/payment-tokens/read https://uri.paypal.com/services/disputes/read-buyer https://uri.paypal.com/services/payments/realtimepayment https://uri.paypal.com/services/disputes/update-seller https://uri.paypal.com/services/payments/payment/authcapture openid https://uri.paypal.com/services/disputes/read-seller Braintree:Vault https://uri.paypal.com/services/payments/refund https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/payments/.* https://uri.paypal.com/payments/payouts https://uri.paypal.com/services/vault/payment-tokens/readwrite https://api.paypal.com/v1/vault/credit-card/.* https://uri.paypal.com/services/subscriptions https://uri.paypal.com/services/applications/webhooks',
+            access_token: 'A21AAJtSdh1lInhuRhSzhQrp35cEQ1Ew9imFtfvQmLCMDsBGdtCClFfWOp9p5pV4p1mkaA5Ota7KvHo7lleeyWF1nE0snjKBA',
+            token_type: 'Bearer',
+            app_id: 'APP-80W284485P519543T',
+            expires_in: 32400, // seconds
+            nonce: '2023-03-14T05:52:06Z8D_KHLLcduIuH9NK9MWNlskEse56LZtAEkvtDncxcEU'
+        }
+    */
+    console.log('accessToken created!');
+    // console.log('accessToken: ', data);
+    if (!data || data.error) throw data?.error_description ?? data?.error ?? Error('Fetch access token failed.');
+    return data.access_token;
+}
+
+/**
+ * Call this function to create your client token.
+ */
+const generateClientToken = async () => {
+    const accessToken = await generateAccessToken();
+    const response    = await fetch(`${baseURL.sandbox}/v1/identity/generate-token`, {
+        method  : 'POST',
+        headers : {
+            Authorization: `Bearer ${accessToken}`,
+            'Accept-Language' : 'en_US',
+            'Content-Type'    : 'application/json',
+        },
+    });
+    const data = await response.json();
+    /*
+        example:
+        {
+            client_token: 'eyJicmFpbnRyZWUiOnsiYXV0aG9yaXphdGlvbkZpbmdlcnByaW50IjoiMjY4ZTg0NmMxNjllMzlkYjg2Zjk0ZGE4YWYzYzIxZTc3Y2VlNjBlYmJkZWY2NDM0YzZkZmI4YTg3NjMwYzkzMHxtZXJjaGFudF9pZD1yd3dua3FnMnhnNTZobTJuJnB1YmxpY19rZXk9NjNrdm4zN3Z0MjlxYjRkZiZjcmVhdGVkX2F0PTIwMjMtMDMtMTRUMDU6NTI6MDcuMjY2WiIsInZlcnNpb24iOiIzLXBheXBhbCJ9LCJwYXlwYWwiOnsiaWRUb2tlbiI6bnVsbCwiYWNjZXNzVG9rZW4iOiJBMjFBQUx0cnZYRnJ6MnZnRXZHWFdrc096RGU3WGVDQUlzR2ZTSHlIRHgwNUdzTVdwOTZDLXFFRUtwT1RpN2hUczNCUFRoYm4zZTl3Y09iVnh4Y2tJLWxkZ1llMGw0aFZBIn19',
+            expires_in: 3600, // seconds
+        }
+    */
+    console.log('clientToken created!');
+    // console.log('clientToken: ', data);
+    if (!data || data.error) throw data?.error_description ?? data?.error ?? Error('Fetch client token failed.');
+    return {
+        clientToken : data.client_token,
+        expires     : Date.now() + ((data.expires_in ?? 3600) * 1000 * clientTokenExpiresThreshold)
+    };
+}
 
 
 
@@ -24,7 +78,7 @@ export default async (
     res: NextApiResponse
 ) => {
     switch(req.method) {
-        case 'PUT': {
+        case 'GET': {
             // if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
                 await new Promise<void>((resolve) => {
                     setTimeout(() => {
@@ -35,85 +89,12 @@ export default async (
             
             
             
-            const body = req.body;
-            const requestJson = body && (typeof(body) === 'object') ? body : undefined;
-            if (requestJson instanceof Error) return res.status(400).end(); // bad req JSON
-            
-            
-            
-            const prevPaymentId = requestJson?.paymentId;
-            if (requestJson) console.log('request JSON: ', requestJson);
-            
-            
-            
-            // // simulates a payment failed:
-            // return res.status(200).json({ // OK
-            //     paymentId : prevPaymentId,
-            //     failed    : 'payment declined',
-            // });
-            
-            
-            
-            const payment = (
-                // get the prev paymentIntent (if any):
-                (
-                    !prevPaymentId
-                    ? undefined
-                    : await stripe.paymentIntents.retrieve(prevPaymentId)
-                )
-                ??
-                // create a new paymentIntent:
-                await stripe.paymentIntents.create({
-                    description : `Payment at ${new Date().toISOString()}`,
-                    
-                    amount : 123,
-                    currency: 'usd',
-                    payment_method_types : ['card'],
-                    setup_future_usage: 'on_session', // on_session : charge immediately // off_session : (may charge immediately) and re-charges in the future (saved payment)
-                    // metadata: {order_id: '6735'}, // not yet implemented
-                })
+            return res.status(200).json( // OK
+                await generateClientToken(),
             );
-            return res.status(200).json({ // OK
-                paymentId     : payment.id,
-                client_secret : payment.client_secret,
-            });
         } break;
         case 'POST': { // use POST method to receive callback (webhook) from stripe:
-            const body      = req.body;
-            const signature = req.headers['stripe-signature'];
-            
-            
-            
-            // validate the request is coming from stripe:
-            if (!signature) return res.status(400).end(); // missing signature
-            let event = null;
-            try {
-                event = stripe.webhooks.constructEvent(body, signature, process.env.STRIPE_SECRET_WEBHOOK ?? '');
-            }
-            catch (error) {
-                return res.status(400).end(); // invalid signature
-            } // try
-            
-            
-            
-            // actions:
-            let payment : Stripe.PaymentIntent|undefined = undefined;
-            switch (event.type) {
-                case 'payment_intent.processing': {
-                    // wait for the initiated payment to succeed or fail.
-                } break;
-                case 'payment_intent.amount_capturable_updated': {
-                    // capture the funds that are available for payment
-                } break;
-                case 'payment_intent.succeeded': {
-                    payment = event.data.object as any;
-                    // payment succeeded
-                } break;
-                case 'payment_intent.payment_failed': {
-                    payment = event.data.object as any;
-                    // payment failed
-                } break;
-            } // switch
+            const body = req.body;
             
             
             
