@@ -746,25 +746,6 @@ const PaymentMethod = () => {
     
     
     
-    // jsx:
-    return (
-        <ExclusiveAccordion theme='primary' defaultExpandedListIndex={0} listStyle='content'>
-            <AccordionItem label={<>
-                <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
-                Credit Card
-            </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryCard} />} lazy={true} >
-                <PaymentMethodCard />
-            </AccordionItem>
-            <AccordionItem label={<>
-                <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
-                PayPal
-                </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} lazy={true} >
-                <PaymentMethodPaypal />
-            </AccordionItem>
-        </ExclusiveAccordion>
-    );
-}
-const PaymentMethodPaypal = () => {
     // context:
     const {paymentToken} = useCheckout();
     
@@ -778,8 +759,27 @@ const PaymentMethodPaypal = () => {
             currency            : 'USD',
             intent              : 'capture',
         }}>
-            <PayPalButtons />
+            <ExclusiveAccordion theme='primary' defaultExpandedListIndex={0} listStyle='content'>
+                <AccordionItem label={<>
+                    <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                    Credit Card
+                </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryCard} />} lazy={true} >
+                    <PaymentMethodCard />
+                </AccordionItem>
+                <AccordionItem label={<>
+                    <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                    PayPal
+                    </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} lazy={true} >
+                    <PaymentMethodPaypal />
+                </AccordionItem>
+            </ExclusiveAccordion>
         </PayPalScriptProvider>
+    );
+}
+const PaymentMethodPaypal = () => {
+    // jsx:
+    return (
+        <PayPalButtons  />
     );
 }
 const PaymentMethodCard = () => {
