@@ -1,5 +1,5 @@
-import { children, descendants, fallbacks, rule, scopeOf, style, vars } from "@cssfn/core";
-import { containers, iconElm, usesIcon, usesIconFontLayout } from "@reusable-ui/components";
+import { children, descendants, fallbacks, rule, scopeOf, style, switchOf, vars } from "@cssfn/core";
+import { basics, containers, iconElm, usesIcon, usesIconFontLayout } from "@reusable-ui/components";
 import { borders, ifNeutralize, ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, markValid, themes, typos, usesBorder, usesGroupable, usesPadding, usesValidationIcon } from "@reusable-ui/core";
 
 
@@ -347,7 +347,7 @@ export default () => {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
-            ...children('article', {
+            ...children('article>*', { // added * because <PayPalHostedFieldsProvider> render as <div>
                 display: 'grid',
                 gridTemplate: [[
                     '"number" auto',
@@ -376,6 +376,11 @@ export default () => {
                 }),
                 ...children('.name', {
                     gridArea: 'name',
+                    
+                    // sync the style to CardNumber, ExpirationDate, SecurityCode:
+                    ...descendants('*', {
+                        boxShadow: 'none !important',
+                    }),
                 }),
                 ...children('.expiry', {
                     gridArea: 'expiry',
@@ -391,12 +396,31 @@ export default () => {
                 ...children('.payNow', {
                     gridArea: 'payNow',
                 }),
+                ...descendants('.hostedField', {
+                    // layouts:
+                    display        : 'flex',
+                    flexDirection  : 'row',
+                    justifyContent : 'stretch',
+                    alignItems     : 'stretch',
+                    flexWrap       : 'nowrap',
+                    
+                    ...children(':only-child', {
+                        blockSize  : `calc(1em * ${switchOf(basics.lineHeight, typos.lineHeight)})`,
+                        flex           : [[1, 1, '100%']], // growable, shrinkable, initial 100% parent's width
+                    }),
+                })
             }),
         }),
         scopeOf('paymentEntryPaypal', {
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
+                ...children('div', {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }),
             }),
         }),
         

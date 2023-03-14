@@ -56,8 +56,8 @@ export interface PaymentEntry
 }
 export interface PaymentResult
 {
-    succeeded ?: string
-    failed    ?: string
+    id    ?: string
+    error ?: string
 }
 
 
@@ -142,6 +142,7 @@ export const {
     useGetShippingListQuery,
     
     useGeneratePaymentTokenMutation,
+    usePlaceOrderMutation,
     useMakePaymentMutation,
 } = apiSlice;
 
