@@ -283,9 +283,6 @@ export default () => {
                                 gridColumnEnd: 'span 2',
                             }),
                         }),
-                        ...children('.hidden', {
-                            position: 'absolute',
-                        }),
                     }),
                 }),
             }),

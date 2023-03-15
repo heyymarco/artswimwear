@@ -146,6 +146,9 @@ const AddressField = (props: AddressFieldProps) => {
             <Group className='country'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='flag' theme='primary' mild={true} />
+                    <VisuallyHidden>
+                        <input type='text' tabIndex={-1} role='none' required autoComplete='shipping country'        value={country}   onChange={onCountryChange}      ref={countryInputRefInternal} />
+                    </VisuallyHidden>
                 </Label>
                 <DropdownListButton buttonChildren={selectedCountry?.name ?? 'Country'} theme={!enableValidation ? 'primary' : (selectedCountry ? 'success' : 'danger')} mild={true}>
                     {!!filteredCountryList && filteredCountryList.map(({code, name}, index) =>
@@ -216,10 +219,6 @@ const AddressField = (props: AddressFieldProps) => {
                 </Label>
                 <TextInput  placeholder='ZIP Code'           required autoComplete='shipping postal-code'    value={zip}       onChange={onZipChange}       />
             </Group>
-            
-            <VisuallyHidden className='hidden'>
-                <input type='text' tabIndex={-1} role='none' required autoComplete='shipping country'        value={country}   onChange={onCountryChange}      ref={countryInputRefInternal} />
-            </VisuallyHidden>
         </>
     );
 };
