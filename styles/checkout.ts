@@ -272,9 +272,6 @@ export default () => {
                         gap: '1rem',
                     }),
                 }),
-                ...children('.address', {
-
-                }),
             }),
         }),
         scopeOf('shippingMethod', {
@@ -345,9 +342,15 @@ export default () => {
                 }),
             }),
         }),
+        scopeOf('billingEntry', {
+            ...children(['&', 'article'], {
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
+            }),
+        }),
         scopeOf('paymentMethod', {
         }),
-        scopeOf('paymentEntryHeader', {
+        scopeOf('optionEntryHeader', {
             display: 'flex',
             flexDirection: 'row',
             gap: '1rem',

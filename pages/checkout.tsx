@@ -13,7 +13,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/utilities';
@@ -632,7 +632,77 @@ const OrderSummary = () => {
 }
 const OrderReview = () => {
     // context:
-    const {checkoutStep, countryList, shippingList, shippingEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckout();
+    const {checkoutStep, shippingEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckout();
+    
+    
+    
+    // stores:
+    const dispatch = useDispatch();
+    
+    
+    
+    // jsx:
+    return (
+        <table>
+            <tbody>
+                <tr>
+                    <td>Contact</td>
+                    <td><ShippingContactReview /></td>
+                    <td>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
+                            dispatch(setCheckoutStep('info'));
+                            setTimeout(() => {
+                                shippingEmailInputRef?.current?.focus?.();
+                            }, 100);
+                        }}>Change</ButtonIcon>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ship to</td>
+                    <td><ShippingAddressReview /></td>
+                    <td>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
+                            dispatch(setCheckoutStep('info'));
+                            setTimeout(() => {
+                                shippingAddressInputRef?.current?.focus?.();
+                            }, 100);
+                        }}>Change</ButtonIcon>
+                    </td>
+                </tr>
+                {(checkoutStep !== 'shipping') && <tr>
+                    <td>Method</td>
+                    <td><ShippingMethodReview /></td>
+                    <td>
+                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
+                            dispatch(setCheckoutStep('shipping'));
+                            setTimeout(() => {
+                                shippingMethodOptionRef?.current?.focus?.();
+                            }, 100);
+                        }}>Change</ButtonIcon>
+                    </td>
+                </tr>}
+            </tbody>
+        </table>
+    );
+}
+const ShippingContactReview = () => {
+    // stores:
+    const {
+        shippingEmail,
+    } = useSelector(selectCheckoutState);
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            {shippingEmail}
+        </>
+    );
+}
+const ShippingAddressReview = () => {
+    // context:
+    const {countryList} = useCheckout();
     
     
     
@@ -648,7 +718,25 @@ const OrderReview = () => {
         
         shippingProvider,
     } = useSelector(selectCheckoutState);
-    const dispatch = useDispatch();
+    
+    
+    
+    return (
+        <>
+            {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
+        </>
+    );
+}
+const ShippingMethodReview = () => {
+    // context:
+    const {shippingList} = useCheckout();
+    
+    
+    
+    // stores:
+    const {
+        shippingProvider,
+    } = useSelector(selectCheckoutState);
     
     
     
@@ -658,46 +746,9 @@ const OrderReview = () => {
     
     // jsx:
     return (
-        <table>
-            <tbody>
-                <tr>
-                    <td>Contact</td>
-                    <td>{shippingEmail}</td>
-                    <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                            dispatch(setCheckoutStep('info'));
-                            setTimeout(() => {
-                                shippingEmailInputRef?.current?.focus?.();
-                            }, 100);
-                        }}>Change</ButtonIcon>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Ship to</td>
-                    <td>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}</td>
-                    <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                            dispatch(setCheckoutStep('info'));
-                            setTimeout(() => {
-                                shippingAddressInputRef?.current?.focus?.();
-                            }, 100);
-                        }}>Change</ButtonIcon>
-                    </td>
-                </tr>
-                {(checkoutStep !== 'shipping') && <tr>
-                    <td>Method</td>
-                    <td>{`${selectedShipping?.name}${!selectedShipping?.estimate ? '' : ` - ${selectedShipping?.estimate}`}`}</td>
-                    <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                            dispatch(setCheckoutStep('shipping'));
-                            setTimeout(() => {
-                                shippingMethodOptionRef?.current?.focus?.();
-                            }, 100);
-                        }}>Change</ButtonIcon>
-                    </td>
-                </tr>}
-            </tbody>
-        </table>
+        <>
+            {`${selectedShipping?.name}${!selectedShipping?.estimate ? '' : ` - ${selectedShipping?.estimate}`}`}
+        </>
     );
 }
 
@@ -803,6 +854,7 @@ const Payment = () => {
     
     // stores:
     const {
+        billingAsShipping,
         billingValidation,
         
         billingFirstName,
@@ -823,47 +875,58 @@ const Payment = () => {
     
     return (
         <>
-            <Section className={styles.address} title='Billing Address'>
-                <ValidationProvider enableValidation={billingValidation}>
-                    <AddressField
-                        // // refs:
-                        // addressRef        = {billingAddressInputRef}
-                        
-                        
-                        
-                        // types:
-                        addressType       = 'billing'
-                        
-                        
-                        
-                        // values:
-                        firstName         = {billingFirstName}
-                        lastName          = {billingLastName}
-                        
-                        phone             = {billingPhone}
-                        
-                        countryList       = {countryList}
-                        country           = {billingCountry}
-                        address           = {billingAddress}
-                        city              = {billingCity}
-                        zone              = {billingZone}
-                        zip               = {billingZip}
-                        
-                        
-                        
-                        // events:
-                        onFirstNameChange = {({target:{value}}) => dispatch(setBillingFirstName(value))}
-                        onLastNameChange  = {({target:{value}}) => dispatch(setBillingLastName(value))}
-                        
-                        onPhoneChange     = {({target:{value}}) => dispatch(setBillingPhone(value))}
-                        
-                        onCountryChange   = {({target:{value}}) => dispatch(setBillingCountry(value))}
-                        onAddressChange   = {({target:{value}}) => dispatch(setBillingAddress(value))}
-                        onCityChange      = {({target:{value}}) => dispatch(setBillingCity(value))}
-                        onZoneChange      = {({target:{value}}) => dispatch(setBillingZone(value))}
-                        onZipChange       = {({target:{value}}) => dispatch(setBillingZip(value))}
-                    />
-                </ValidationProvider>
+            <Section title='Billing Address'>
+                <p>
+                    Select the address that matches your card or payment method.
+                </p>
+                <ExclusiveAccordion theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => expanded && dispatch(setBillingAsShipping(listIndex === 0))} listStyle='content'>
+                    <AccordionItem label={<>
+                        <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                        Same as shipping address
+                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.billingEntry} />} /*lazy={true} causes error*/ >
+                        <ShippingAddressReview />
+                    </AccordionItem>
+                    <AccordionItem label={<>
+                        <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                        Use a different billing address
+                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} /*lazy={true} causes error*/ >
+                        <ValidationProvider enableValidation={billingValidation}>
+                            <AddressField
+                                // types:
+                                addressType       = 'billing'
+                                
+                                
+                                
+                                // values:
+                                firstName         = {billingFirstName}
+                                lastName          = {billingLastName}
+                                
+                                phone             = {billingPhone}
+                                
+                                countryList       = {countryList}
+                                country           = {billingCountry}
+                                address           = {billingAddress}
+                                city              = {billingCity}
+                                zone              = {billingZone}
+                                zip               = {billingZip}
+                                
+                                
+                                
+                                // events:
+                                onFirstNameChange = {({target:{value}}) => dispatch(setBillingFirstName(value))}
+                                onLastNameChange  = {({target:{value}}) => dispatch(setBillingLastName(value))}
+                                
+                                onPhoneChange     = {({target:{value}}) => dispatch(setBillingPhone(value))}
+                                
+                                onCountryChange   = {({target:{value}}) => dispatch(setBillingCountry(value))}
+                                onAddressChange   = {({target:{value}}) => dispatch(setBillingAddress(value))}
+                                onCityChange      = {({target:{value}}) => dispatch(setBillingCity(value))}
+                                onZoneChange      = {({target:{value}}) => dispatch(setBillingZone(value))}
+                                onZipChange       = {({target:{value}}) => dispatch(setBillingZip(value))}
+                            />
+                        </ValidationProvider>
+                    </AccordionItem>
+                </ExclusiveAccordion>
             </Section>
             <Section className={styles.paymentMethod} title='Payment Method'>
                 <PaymentMethod />
@@ -897,17 +960,20 @@ const PaymentMethod = () => {
             intent              : 'capture',
             components          : 'hosted-fields,buttons',
         }}>
+            <p>
+                All transactions are secure and encrypted.
+            </p>
             <ExclusiveAccordion theme='primary' expandedListIndex={paymentMethod ?? 0} onExpandedChange={({expanded, listIndex}) => expanded && dispatch(setPaymentMethod(listIndex))} listStyle='content'>
                 <AccordionItem label={<>
                     <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                     Credit Card
-                </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryCard} />} /*lazy={true} causes error*/ >
+                </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryCard} />} /*lazy={true} causes error*/ >
                     <PaymentMethodCard />
                 </AccordionItem>
                 <AccordionItem label={<>
                     <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                     PayPal
-                    </>} listItemComponent={<ListItem className={styles.paymentEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} /*lazy={true} causes error*/ >
+                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} /*lazy={true} causes error*/ >
                     <PaymentMethodPaypal />
                 </AccordionItem>
             </ExclusiveAccordion>
@@ -917,7 +983,12 @@ const PaymentMethod = () => {
 const PaymentMethodPaypal = () => {
     // jsx:
     return (
-        <PayPalButtons  />
+        <>
+            <p>
+                Click the PayPal button below. You will be redirected to the PayPal website to complete the payment.
+            </p>
+            <PayPalButtons  />
+        </>
     );
 }
 const PaymentMethodCard = () => {
@@ -1030,7 +1101,7 @@ const PaymentMethodCard = () => {
                         hostedFieldType='expirationDate'
                         options={{
                             selector: '#cardExpires',
-                            placeholder: 'Expiration Date (MM / YY)',
+                            placeholder: 'MM / YY',
                         }}
                     />
                 </EditableTextControl>
