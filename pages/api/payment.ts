@@ -107,13 +107,13 @@ export default async (
 ) => {
     switch(req.method) {
         case 'GET': { // intialize paymentToken
-            // if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
+            if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
                 await new Promise<void>((resolve) => {
                     setTimeout(() => {
                         resolve();
                     }, 2000);
                 });
-            // } // if
+            } // if
             
             
             
