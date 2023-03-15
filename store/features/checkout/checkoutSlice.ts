@@ -32,6 +32,7 @@ export interface CheckoutState {
     
     
     
+    paymentMethod       ?: number
     paymentToken        ?: PaymentToken
 }
 
@@ -39,6 +40,7 @@ const initialState: CheckoutState = {
     checkoutStep       : 'info',
     marketingOpt       : true,
     shippingValidation : false,
+    paymentMethod      : undefined,
     paymentToken       : undefined,
 };
 export const checkoutSlice = createSlice({
@@ -94,6 +96,9 @@ export const checkoutSlice = createSlice({
         
         
         
+        setPaymentMethod: (state, {payload: value}: PayloadAction<number|undefined>) => {
+            state.paymentMethod = value;
+        },
         setPaymentToken: (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
             state.paymentToken = value;
         },
@@ -127,6 +132,7 @@ export const {
     
     
     
+    setPaymentMethod,
     setPaymentToken,
 } = checkoutSlice.actions;
 
@@ -158,6 +164,7 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
+        paymentMethod,
         paymentToken,
     } = state.checkout;
     
@@ -185,6 +192,7 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
+        paymentMethod,
         paymentToken,
     };
 };

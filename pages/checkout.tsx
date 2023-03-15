@@ -13,7 +13,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/utilities';
@@ -825,6 +825,12 @@ const PaymentMethod = () => {
     
     
     
+    // stores:
+    const {paymentMethod} = useSelector(selectCheckoutState);
+    const dispatch = useDispatch();
+    
+    
+    
     // jsx:
     return (
         <PayPalScriptProvider options={{
@@ -834,7 +840,7 @@ const PaymentMethod = () => {
             intent              : 'capture',
             components          : 'hosted-fields,buttons',
         }}>
-            <ExclusiveAccordion theme='primary' defaultExpandedListIndex={0} listStyle='content'>
+            <ExclusiveAccordion theme='primary' expandedListIndex={paymentMethod ?? 0} onExpandedChange={({expanded, listIndex}) => expanded && dispatch(setPaymentMethod(listIndex))} listStyle='content'>
                 <AccordionItem label={<>
                     <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                     Credit Card
@@ -867,14 +873,9 @@ const PaymentMethodCard = () => {
     const {
         checkoutStep       : _checkoutStep,       // remove
         shippingValidation : _shippingValidation, // remove
+        paymentMethod      : _paymentMethod,      // remove
         paymentToken       : _paymentToken,       // remove
     ...restCheckoutState} = useSelector(selectCheckoutState);
-    const dispatch = useDispatch();
-    
-    
-    
-    // states:
-    const [enableValidation, setEnableValidation] = useState<boolean>(false);
     
     
     
@@ -916,93 +917,91 @@ const PaymentMethodCard = () => {
     // jsx:
     return (
         <PayPalHostedFieldsProvider styles={hostedFieldsStyle} createOrder={handlePlaceOrder}>
-            <ValidationProvider enableValidation={enableValidation}>
-                <Group className='number'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='credit_card' theme='primary' mild={true} />
-                    </Label>
-                    {/* <TextInput placeholder='Card Number'               inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-number' /> */}
-                    <EditableTextControl className='hostedField'>
-                        <PayPalHostedField
-                            id='cardNumber'
-                            hostedFieldType='number'
-                            options={{
-                                selector: '#cardNumber',
-                                placeholder: 'Card Number',
-                            }}
-                            style={{
-                                color: 'red'
-                            }}
-                        />
-                    </EditableTextControl>
-                    <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
-                        <Icon icon='lock' />
-                        <Tooltip className='tooltip' size='sm' floatingOn={safeSignRef}>
-                            <p>
-                                All transactions are secure and encrypted.
-                            </p>
-                            <p>
-                                Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
-                            </p>
-                            <p>
-                                The card data will be forwarded to our payment gateway (PayPal).<br />
-                                We won&apos;t store your card data into our database.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                </Group>
-                <Group className='name'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='person' theme='primary' mild={true} />
-                    </Label>
-                    <TextInput placeholder='Cardholder Name'           inputMode='text'                     required autoComplete='cc-name'   />
-                </Group>
-                <Group className='expiry'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='date_range' theme='primary' mild={true} />
-                    </Label>
-                    {/* <TextInput placeholder='Expiration Date (MM / YY)' inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-exp'    /> */}
-                    <EditableTextControl className='hostedField'>
-                        <PayPalHostedField
-                            id='cardExpires'
-                            hostedFieldType='expirationDate'
-                            options={{
-                                selector: '#cardExpires',
-                                placeholder: 'Expiration Date (MM / YY)',
-                            }}
-                        />
-                    </EditableTextControl>
-                </Group>
-                <Group className='csc'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='fiber_pin' theme='primary' mild={true} />
-                    </Label>
-                    {/* <TextInput placeholder='Security Code'             inputMode='numeric' pattern='[0-9]*'          autoComplete='cc-csc'    /> */}
-                    <EditableTextControl className='hostedField'>
-                        <PayPalHostedField
-                            id='cardCvv'
-                            hostedFieldType='cvv'
-                            options={{
-                                selector: '#cardCvv',
-                                placeholder: 'Security Code',
-                            }}
-                        />
-                    </EditableTextControl>
-                    <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
-                        <Icon icon='help' />
-                        <Tooltip className='tooltip' size='sm' floatingOn={cscSignRef}>
-                            <p>
-                                3-digit security code usually found on the back of your card.
-                            </p>
-                            <p>
-                                American Express cards have a 4-digit code located on the front.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                </Group>
-                <hr className='horz' />
-                <CardPaymentButton />
-            </ValidationProvider>        
+            <Group className='number'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='credit_card' theme='primary' mild={true} />
+                </Label>
+                {/* <TextInput placeholder='Card Number'               inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-number' /> */}
+                <EditableTextControl className='hostedField'>
+                    <PayPalHostedField
+                        id='cardNumber'
+                        hostedFieldType='number'
+                        options={{
+                            selector: '#cardNumber',
+                            placeholder: 'Card Number',
+                        }}
+                        style={{
+                            color: 'red'
+                        }}
+                    />
+                </EditableTextControl>
+                <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
+                    <Icon icon='lock' />
+                    <Tooltip className='tooltip' size='sm' floatingOn={safeSignRef}>
+                        <p>
+                            All transactions are secure and encrypted.
+                        </p>
+                        <p>
+                            Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
+                        </p>
+                        <p>
+                            The card data will be forwarded to our payment gateway (PayPal).<br />
+                            We won&apos;t store your card data into our database.
+                        </p>
+                    </Tooltip>
+                </Label>
+            </Group>
+            <Group className='name'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='person' theme='primary' mild={true} />
+                </Label>
+                <TextInput placeholder='Cardholder Name'           inputMode='text'                     required autoComplete='cc-name'   />
+            </Group>
+            <Group className='expiry'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='date_range' theme='primary' mild={true} />
+                </Label>
+                {/* <TextInput placeholder='Expiration Date (MM / YY)' inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-exp'    /> */}
+                <EditableTextControl className='hostedField'>
+                    <PayPalHostedField
+                        id='cardExpires'
+                        hostedFieldType='expirationDate'
+                        options={{
+                            selector: '#cardExpires',
+                            placeholder: 'Expiration Date (MM / YY)',
+                        }}
+                    />
+                </EditableTextControl>
+            </Group>
+            <Group className='csc'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='fiber_pin' theme='primary' mild={true} />
+                </Label>
+                {/* <TextInput placeholder='Security Code'             inputMode='numeric' pattern='[0-9]*'          autoComplete='cc-csc'    /> */}
+                <EditableTextControl className='hostedField'>
+                    <PayPalHostedField
+                        id='cardCvv'
+                        hostedFieldType='cvv'
+                        options={{
+                            selector: '#cardCvv',
+                            placeholder: 'Security Code',
+                        }}
+                    />
+                </EditableTextControl>
+                <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
+                    <Icon icon='help' />
+                    <Tooltip className='tooltip' size='sm' floatingOn={cscSignRef}>
+                        <p>
+                            3-digit security code usually found on the back of your card.
+                        </p>
+                        <p>
+                            American Express cards have a 4-digit code located on the front.
+                        </p>
+                    </Tooltip>
+                </Label>
+            </Group>
+            <hr className='horz' />
+            <CardPaymentButton />
         </PayPalHostedFieldsProvider>
     );
 }
