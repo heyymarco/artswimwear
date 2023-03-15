@@ -216,6 +216,20 @@ export default () => {
         scopeOf('checkout', {
             display: 'flex',
             flexDirection: 'column',
+            
+            // decrease indent on sub section(s):
+            ...children('article', {
+                ...children('section', {
+                    ...children('article', {
+                        ...children('section', {
+                            ...children(['&', 'article'], {
+                                [paddingVars.paddingInline] : `calc(${containers.paddingInline} / 2)`,
+                                [paddingVars.paddingBlock ] : `calc(${containers.paddingBlock } / 2)`,
+                            }),
+                        }),
+                    }),
+                }),
+            }),
         }),
         scopeOf('expressCheckout', {
             ...children(['&', 'article'], {
@@ -243,12 +257,13 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px',
             }),
             ...children('article', {
-                ...children('section', {
-                    ...children(['&', 'article'], {
-                        [paddingVars.paddingInline] : `calc(${containers.paddingInline} / 2)`,
-                        [paddingVars.paddingBlock ] : `calc(${containers.paddingBlock } / 2)`,
-                    }),
-                }),
+                // decrease indent:
+                // ...children('section', {
+                //     ...children(['&', 'article'], {
+                //         [paddingVars.paddingInline] : `calc(${containers.paddingInline} / 2)`,
+                //         [paddingVars.paddingBlock ] : `calc(${containers.paddingBlock } / 2)`,
+                //     }),
+                // }),
                 
                 ...children('.contact', {
                     ...children('article', {
@@ -258,32 +273,7 @@ export default () => {
                     }),
                 }),
                 ...children('.address', {
-                    ...children('article', {
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(6, 1fr)',
-                        gridAutoRows: 'auto',
-                        gridAutoFlow: 'row',
-                        gap: '1rem',
-                        
-                        ...children('*', {
-                            gridColumnEnd: 'span 6',
-                        }),
-                        ...ifScreenWidthAtLeast('sm', {
-                            ...children(['.firstName', '.lastName'], {
-                                gridColumnEnd: 'span 3',
-                            }),
-                        }),
-                        ...ifScreenWidthAtLeast('lg', {
-                            ...children(['.zone', '.zip'], {
-                                gridColumnEnd: 'span 3',
-                            }),
-                        }),
-                        ...ifScreenWidthAtLeast('xl', {
-                            ...children(['.city', '.zone', '.zip'], {
-                                gridColumnEnd: 'span 2',
-                            }),
-                        }),
-                    }),
+
                 }),
             }),
         }),
@@ -311,6 +301,48 @@ export default () => {
             }),
             ...children('.cost', {
                 textAlign: 'end',
+            }),
+        }),
+        scopeOf('address', {
+            ...children('article', {
+                display: 'grid',
+                gridTemplateColumns: 'repeat(6, 1fr)',
+                gridAutoRows: 'auto',
+                gridAutoFlow: 'row',
+                gap: '1rem',
+                
+                ...children('*', {
+                    gridColumnEnd: 'span 6',
+                }),
+                ...ifScreenWidthAtLeast('sm', {
+                    ...children(['.firstName', '.lastName'], {
+                        gridColumnEnd: 'span 3',
+                    }),
+                }),
+                ...ifScreenWidthAtLeast('lg', {
+                    ...children(['.zone', '.zip'], {
+                        gridColumnEnd: 'span 3',
+                    }),
+                }),
+                ...ifScreenWidthAtLeast('xl', {
+                    ...children(['.city', '.zone', '.zip'], {
+                        gridColumnEnd: 'span 2',
+                    }),
+                }),
+            }),
+        }),
+        scopeOf('payment', {
+            display: 'flex',
+            flexDirection: 'column',
+            
+            // decrease indent on sub section(s):
+            ...children('article', {
+                ...children('section', {
+                    ...children(['&', 'article'], {
+                        [paddingVars.paddingInline] : `calc(${containers.paddingInline} / 2)`,
+                        [paddingVars.paddingBlock ] : `calc(${containers.paddingBlock } / 2)`,
+                    }),
+                }),
             }),
         }),
         scopeOf('paymentMethod', {

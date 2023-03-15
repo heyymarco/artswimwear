@@ -55,7 +55,12 @@ export interface PlaceOrderData
         >,
         Omit<CheckoutState, // shipping address + marketingOpt
             |'checkoutStep'
+            
             |'shippingValidation'
+            
+            |'billingAsShipping'
+            |'billingValidation'
+            
             |'paymentMethod'
             |'paymentToken'
         >

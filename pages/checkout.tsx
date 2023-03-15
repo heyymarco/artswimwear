@@ -13,7 +13,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/utilities';
@@ -310,8 +310,8 @@ export default function Checkout() {
                                 <ShippingMethod />
                             </Section>}
                             
-                            {(checkoutStep === 'payment') && <Section className={styles.paymentMethod} title='Payment Method'>
-                                <PaymentMethod />
+                            {(checkoutStep === 'payment') && <Section className={styles.payment} title='Payment'>
+                                <Payment />
                             </Section>}
                         </div>
                         
@@ -454,6 +454,11 @@ const NavCheckout = () => {
 
 
 const RegularCheckout = () => {
+    // styles:
+    const styles = useCheckoutStyleSheet();
+    
+    
+    
     // context:
     const {countryList, shippingEmailInputRef, shippingAddressInputRef } = useCheckout();
     
@@ -496,7 +501,7 @@ const RegularCheckout = () => {
                     Email me with news and offers
                 </Check>
             </Section>
-            <Section className='address' title='Shipping Address'>
+            <Section className={styles.address} title='Shipping Address'>
                 <AddressField
                     // refs:
                     addressRef        = {shippingAddressInputRef}
@@ -778,6 +783,85 @@ const ShippingMethod = () => {
         </List>
     );
 }
+
+
+
+const Payment = () => {
+    // styles:
+    const styles = useCheckoutStyleSheet();
+    
+    
+    
+    // context:
+    const {countryList} = useCheckout();
+    
+    
+    
+    // stores:
+    const {
+        billingValidation,
+        
+        billingFirstName,
+        billingLastName,
+        
+        billingPhone,
+        billingEmail,
+        
+        billingCountry,
+        billingAddress,
+        billingCity,
+        billingZone,
+        billingZip,
+    } = useSelector(selectCheckoutState);
+    const dispatch = useDispatch();
+    
+    
+    
+    return (
+        <>
+            <Section className={styles.address} title='Billing Address'>
+                <ValidationProvider enableValidation={billingValidation}>
+                    <AddressField
+                        // // refs:
+                        // addressRef        = {billingAddressInputRef}
+                        
+                        
+                        
+                        // values:
+                        firstName         = {billingFirstName}
+                        lastName          = {billingLastName}
+                        
+                        phone             = {billingPhone}
+                        
+                        countryList       = {countryList}
+                        country           = {billingCountry}
+                        address           = {billingAddress}
+                        city              = {billingCity}
+                        zone              = {billingZone}
+                        zip               = {billingZip}
+                        
+                        
+                        
+                        // events:
+                        onFirstNameChange = {({target:{value}}) => dispatch(setBillingFirstName(value))}
+                        onLastNameChange  = {({target:{value}}) => dispatch(setBillingLastName(value))}
+                        
+                        onPhoneChange     = {({target:{value}}) => dispatch(setBillingPhone(value))}
+                        
+                        onCountryChange   = {({target:{value}}) => dispatch(setBillingCountry(value))}
+                        onAddressChange   = {({target:{value}}) => dispatch(setBillingAddress(value))}
+                        onCityChange      = {({target:{value}}) => dispatch(setBillingCity(value))}
+                        onZoneChange      = {({target:{value}}) => dispatch(setBillingZone(value))}
+                        onZipChange       = {({target:{value}}) => dispatch(setBillingZip(value))}
+                    />
+                </ValidationProvider>
+            </Section>
+            <Section className={styles.paymentMethod} title='Payment Method'>
+                <PaymentMethod />
+            </Section>
+        </>
+    );
+}
 const PaymentMethod = () => {
     // styles:
     const styles = useCheckoutStyleSheet();
@@ -836,7 +920,12 @@ const PaymentMethodCard = () => {
     // stores:
     const {
         checkoutStep       : _checkoutStep,       // remove
+        
         shippingValidation : _shippingValidation, // remove
+        
+        billingAsShipping  : _billingAsShipping,  // remove
+        billingValidation  : _billingValidation,  // remove
+        
         paymentMethod      : _paymentMethod,      // remove
         paymentToken       : _paymentToken,       // remove
     ...restCheckoutState} = useSelector(selectCheckoutState);
