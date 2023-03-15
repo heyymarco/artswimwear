@@ -72,10 +72,7 @@ export interface PlaceOrderResult
     status ?: string
 }
 
-export interface MakePaymentData
-{
-    id    ?: string
-}
+export type AuthenticationPaymentData = unknown
 export interface MakePaymentResult
 {
     id    ?: string
@@ -141,7 +138,7 @@ export const apiSlice = createApi({
                 body   : orderData,
             }),
         }),
-        makePayment          : builder.mutation<MakePaymentResult, MakePaymentData>({
+        makePayment          : builder.mutation<MakePaymentResult, AuthenticationPaymentData>({
             query : (paymentData) => ({
                 url    : 'payment',
                 method : 'PATCH',

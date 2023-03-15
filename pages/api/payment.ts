@@ -269,9 +269,30 @@ export default async (
             } // try
         } break;
         case 'PATCH': { // purchase the previously posted order
-            const body = req.body;
+            const data = req.body;
+            if (typeof(data) !== 'object') return res.status(400).end(); // bad req
+            /*
+                example:
+                {
+                    authenticationReason: undefined
+                    authenticationStatus: "APPROVED",
+                    card: {
+                        brand: "AMEX",
+                        card_type: "AMEX"
+                        last_digits: "8431",
+                        type: "CREDIT",
+                    },
+                    liabilityShift: undefined
+                    liabilityShifted: undefined
+                    orderId: "3EF35246F32986147"
+                }
+            */
             
-            console.log('TODO: capturing the payment...', body);
+            
+            
+            console.log('TODO: capturing the payment...', data);
+            
+            
             
             return res.status(200).end(); // OK
         } break;

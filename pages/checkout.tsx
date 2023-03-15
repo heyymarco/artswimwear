@@ -1263,9 +1263,7 @@ const CardPaymentButton = () => {
         
         
         try {
-            const data = await makePayment({
-                id: authenticate.orderId,
-            }).unwrap();
+            const data = await makePayment(authenticate).unwrap();
             // Two cases to handle:
             //   (1) Non-recoverable errors -> Show a failure message
             //   (2) Successful transaction -> Show confirmation or thank you
