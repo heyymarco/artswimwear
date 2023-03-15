@@ -564,7 +564,7 @@ const RegularCheckout = () => {
                 </Group>
                 
                 <VisuallyHidden className='hidden'>
-                    <input type='text' tabIndex={-1} role='none'           required autoComplete='shipping country'        value={shippingCountry}            onChange={({target:{value}}) => dispatch(setShippingCountry(value))}   />
+                    <input type='text' tabIndex={-1} role='none' required autoComplete='shipping country' value={shippingCountry} onChange={({target:{value}}) => dispatch(setShippingCountry(value))} />
                 </VisuallyHidden>
             </Section>
         </ValidationProvider>

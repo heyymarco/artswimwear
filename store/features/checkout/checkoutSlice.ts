@@ -9,37 +9,51 @@ export interface PaymentToken {
     expires      : number
 }
 export interface CheckoutState {
-    checkoutStep         : CheckoutStep
-    marketingOpt         : boolean
+    checkoutStep       : CheckoutStep
+    marketingOpt       : boolean
     
     
     
-    shippingValidation   : boolean
+    shippingValidation : boolean
     
-    shippingFirstName   ?: string
-    shippingLastName    ?: string
+    shippingFirstName  : string
+    shippingLastName   : string
     
-    shippingPhone       ?: string
-    shippingEmail       ?: string
+    shippingPhone      : string
+    shippingEmail      : string
     
-    shippingCountry     ?: string
-    shippingAddress     ?: string
-    shippingCity        ?: string
-    shippingZone        ?: string
-    shippingZip         ?: string
+    shippingCountry    : string
+    shippingAddress    : string
+    shippingCity       : string
+    shippingZone       : string
+    shippingZip        : string
     
-    shippingProvider    ?: string
+    shippingProvider  ?: string
     
     
     
-    paymentMethod       ?: number
-    paymentToken        ?: PaymentToken
+    paymentMethod     ?: number
+    paymentToken      ?: PaymentToken
 }
 
 const initialState: CheckoutState = {
     checkoutStep       : 'info',
     marketingOpt       : true,
+    
     shippingValidation : false,
+    
+    shippingFirstName  : '',
+    shippingLastName   : '',
+    
+    shippingPhone      : '',
+    shippingEmail      : '',
+    
+    shippingCountry    : '',
+    shippingAddress    : '',
+    shippingCity       : '',
+    shippingZone       : '',
+    shippingZip        : '',
+    
     paymentMethod      : undefined,
     paymentToken       : undefined,
 };
