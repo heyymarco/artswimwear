@@ -62,6 +62,11 @@ export interface AddressFieldProps {
     
     
     
+    // types:
+    addressType       ?: 'shipping'|'billing'|(string & {})
+    
+    
+    
     // values:
     firstName         ?: string
     lastName          ?: string
@@ -94,6 +99,11 @@ const AddressField = (props: AddressFieldProps) => {
     const {
         // refs:
         addressRef,
+        
+        
+        
+        // types:
+        addressType,
         
         
         
@@ -132,6 +142,7 @@ const AddressField = (props: AddressFieldProps) => {
     
     // fn props:
     const {enableValidation} = usePropValidation({});
+    const addressTypeFn      = addressType ? ` ${addressType}` : '';
     
     
     
@@ -147,7 +158,7 @@ const AddressField = (props: AddressFieldProps) => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='flag' theme='primary' mild={true} />
                     <VisuallyHidden>
-                        <input type='text' tabIndex={-1} role='none' required autoComplete='shipping country'        value={country}   onChange={onCountryChange}      ref={countryInputRefInternal} />
+                        <input type='text' tabIndex={-1} role='none' required autoComplete={`${addressTypeFn}shipping country`}        value={country}   onChange={onCountryChange}      ref={countryInputRefInternal} />
                     </VisuallyHidden>
                 </Label>
                 <DropdownListButton buttonChildren={selectedCountry?.name ?? 'Country'} theme={!enableValidation ? 'primary' : (selectedCountry ? 'success' : 'danger')} mild={true}>
@@ -181,43 +192,43 @@ const AddressField = (props: AddressFieldProps) => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='person' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='First Name'         required autoComplete='shipping given-name'     value={firstName} onChange={onFirstNameChange} />
+                <TextInput  placeholder='First Name'         required autoComplete={`${addressTypeFn}shipping given-name`}     value={firstName} onChange={onFirstNameChange} />
             </Group>
             <Group className='lastName'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='person_outline' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='Last Name'          required autoComplete='shipping family-name'    value={lastName}  onChange={onLastNameChange}  />
+                <TextInput  placeholder='Last Name'          required autoComplete={`${addressTypeFn}shipping family-name`}    value={lastName}  onChange={onLastNameChange}  />
             </Group>
             <Group className='phone'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='phone' theme='primary' mild={true} />
                 </Label>
-                <TelInput   placeholder='Phone'              required autoComplete='shipping tel'            value={phone}     onChange={onPhoneChange}     />
+                <TelInput   placeholder='Phone'              required autoComplete={`${addressTypeFn}shipping tel`}            value={phone}     onChange={onPhoneChange}     />
             </Group>
             <Group className='address'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='house' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='Address'            required autoComplete='shipping street-address' value={address}   onChange={onAddressChange}      elmRef={addressRef} />
+                <TextInput  placeholder='Address'            required autoComplete={`${addressTypeFn}shipping street-address`} value={address}   onChange={onAddressChange}      elmRef={addressRef} />
             </Group>
             <Group className='city'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='location_city' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='City'               required autoComplete='shipping address-level2' value={city}      onChange={onCityChange}      />
+                <TextInput  placeholder='City'               required autoComplete={`${addressTypeFn}shipping address-level2`} value={city}      onChange={onCityChange}      />
             </Group>
             <Group className='zone'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='location_pin' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='State'              required autoComplete='shipping address-level1' value={zone}      onChange={onZoneChange}      />
+                <TextInput  placeholder='State'              required autoComplete={`${addressTypeFn}shipping address-level1`} value={zone}      onChange={onZoneChange}      />
             </Group>
             <Group className='zip'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='edit_location' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='ZIP Code'           required autoComplete='shipping postal-code'    value={zip}       onChange={onZipChange}       />
+                <TextInput  placeholder='ZIP Code'           required autoComplete={`${addressTypeFn}shipping postal-code`}    value={zip}       onChange={onZipChange}       />
             </Group>
         </>
     );

@@ -507,6 +507,10 @@ const RegularCheckout = () => {
                     addressRef        = {shippingAddressInputRef}
                     
                     
+                    // types:
+                    addressType       = 'shipping'
+                    
+                    
                     
                     // values:
                     firstName         = {shippingFirstName}
@@ -824,6 +828,11 @@ const Payment = () => {
                     <AddressField
                         // // refs:
                         // addressRef        = {billingAddressInputRef}
+                        
+                        
+                        
+                        // types:
+                        addressType       = 'billing'
                         
                         
                         
