@@ -13,7 +13,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/utilities';
@@ -73,9 +73,12 @@ interface ICheckoutContext {
     isDesktop                 : boolean
     
     regularCheckoutSectionRef : React.MutableRefObject<HTMLElement|null>      | undefined
+    shippingMethodOptionRef   : React.MutableRefObject<HTMLElement|null>      | undefined
+    billingAddressSectionRef  : React.MutableRefObject<HTMLElement|null>      | undefined
+    paymentCardSectionRef     : React.MutableRefObject<HTMLElement|null>      | undefined
+    
     shippingEmailInputRef     : React.MutableRefObject<HTMLInputElement|null> | undefined
     shippingAddressInputRef   : React.MutableRefObject<HTMLInputElement|null> | undefined
-    shippingMethodOptionRef   : React.MutableRefObject<HTMLElement|null>      | undefined
     cardholderInputRef        : React.MutableRefObject<HTMLInputElement|null> | undefined
     
     paymentToken              : PaymentToken|undefined
@@ -99,9 +102,12 @@ const CheckoutContext = createContext<ICheckoutContext>({
     isDesktop                 : false,
     
     regularCheckoutSectionRef : undefined,
+    shippingMethodOptionRef   : undefined,
+    billingAddressSectionRef  : undefined,
+    paymentCardSectionRef     : undefined,
+    
     shippingEmailInputRef     : undefined,
     shippingAddressInputRef   : undefined,
-    shippingMethodOptionRef   : undefined,
     cardholderInputRef        : undefined,
     
     paymentToken              : undefined,
@@ -216,9 +222,12 @@ export default function Checkout() {
     
     // refs:
     const regularCheckoutSectionRef = useRef<HTMLElement|null>(null);
+    const shippingMethodOptionRef   = useRef<HTMLElement|null>(null);
+    const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
+    const paymentCardSectionRef     = useRef<HTMLElement|null>(null);
+    
     const shippingEmailInputRef     = useRef<HTMLInputElement|null>(null);
     const shippingAddressInputRef   = useRef<HTMLInputElement|null>(null);
-    const shippingMethodOptionRef   = useRef<HTMLElement|null>(null);
     const cardholderInputRef        = useRef<HTMLInputElement|null>(null);
     
     
@@ -270,9 +279,12 @@ export default function Checkout() {
         isDesktop,
         
         regularCheckoutSectionRef,
+        shippingMethodOptionRef,
+        billingAddressSectionRef,
+        paymentCardSectionRef,
+        
         shippingEmailInputRef,
         shippingAddressInputRef,
-        shippingMethodOptionRef,
         cardholderInputRef,
         
         paymentToken: existingPaymentToken,
@@ -472,10 +484,17 @@ const NavCheckout = () => {
     
     const nextAction = [
         { text: 'Continue to shipping' , action: () => {
+            // validate:
             dispatch(setShippingValidation(true));
+            if (!!regularCheckoutSectionRef?.current?.querySelector(':invalid')) { // there is an/some invalid field
+                // TODO: show modal error message
+                console.log('there is an/some invalid field');
+                return;
+            } // if
             
-            if (!!regularCheckoutSectionRef?.current?.querySelector(':invalid')) return; // there is an invalid field
             
+            
+            // next:
             dispatch(setCheckoutStep('shipping'));
         }},
         { text: 'Continue to payment'  , action: () => dispatch(setCheckoutStep('payment')) },
@@ -896,7 +915,7 @@ const Payment = () => {
     
     
     // context:
-    const {countryList} = useCheckout();
+    const {countryList, billingAddressSectionRef} = useCheckout();
     
     
     
@@ -923,7 +942,7 @@ const Payment = () => {
     
     return (
         <>
-            <Section title='Billing Address'>
+            <Section title='Billing Address' elmRef={billingAddressSectionRef}>
                 <p>
                     Select the address that matches your card or payment method.
                 </p>
@@ -931,14 +950,14 @@ const Payment = () => {
                     <AccordionItem label={<>
                         <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                         Same as shipping address
-                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.billingEntry} />} /*lazy={true} causes error*/ >
+                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.billingEntry} />} >
                         <ShippingAddressReview />
                     </AccordionItem>
                     <AccordionItem label={<>
                         <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                         Use a different billing address
-                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} /*lazy={true} causes error*/ >
-                        <ValidationProvider enableValidation={billingValidation}>
+                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} >
+                        <ValidationProvider enableValidation={!billingAsShipping && billingValidation}>
                             <AddressField
                                 // types:
                                 addressType       = 'billing'
@@ -989,7 +1008,7 @@ const PaymentMethod = () => {
     
     
     // context:
-    const {paymentToken} = useCheckout();
+    const {paymentCardSectionRef, paymentToken} = useCheckout();
     
     
     
@@ -1015,7 +1034,7 @@ const PaymentMethod = () => {
                 <AccordionItem label={<>
                     <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                     Credit Card
-                </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryCard} />} /*lazy={true} causes error*/ >
+                </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryCard} elmRef={paymentCardSectionRef} />} /*lazy={true} causes error*/ >
                     <PaymentMethodCard />
                 </AccordionItem>
                 <AccordionItem label={<>
@@ -1146,7 +1165,7 @@ const PaymentMethodCard = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {cardholderInputRef} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef} = useCheckout();
     
     
     
@@ -1180,6 +1199,7 @@ const CardPaymentButton = () => {
         billingZip,
         billingCountry,
     } = useSelector(selectCheckoutState);
+    const dispatch = useDispatch();
     
     
     
@@ -1194,7 +1214,25 @@ const CardPaymentButton = () => {
     // handlers:
     const hostedFields = usePayPalHostedFields();
     const handleMakePayment = async () => {
-        console.log('check: ', hostedFields)
+        console.log('check: ', hostedFields);
+        
+        
+        
+        // validate:
+        if (!billingAsShipping) dispatch(setBillingValidation(true));
+        if (
+            (!billingAsShipping && !!billingAddressSectionRef?.current?.querySelector(':invalid'))
+            ||
+            !!paymentCardSectionRef?.current?.querySelector(':invalid')
+        ) { // there is an/some invalid field
+            // TODO: show modal error message
+            console.log('there is an/some invalid field', ((!billingAsShipping || undefined) && !!billingAddressSectionRef?.current?.querySelector(':invalid')) ?? paymentCardSectionRef?.current?.querySelector(':invalid'));
+            return;
+        } // if
+        
+        
+        
+        // next:
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         const authenticate = await hostedFields.cardFields.submit({
             cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
