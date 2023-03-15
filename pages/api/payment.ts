@@ -269,6 +269,8 @@ export default async (
         case 'PATCH': { // purchase the previously posted order
             const paypalAuthentication = req.body;
             if (typeof(paypalAuthentication) !== 'object') return res.status(400).end(); // bad req
+            const orderId = paypalAuthentication.orderId
+            if (!orderId)                                  return res.status(400).end(); // bad req
             /*
                 example:
                 {
@@ -288,11 +290,23 @@ export default async (
             
             
             
-            console.log('paypalAuthentication: ', paypalAuthentication);
+            const accessToken = await generateAccessToken();
+            const url = `${paypalURL}/v2/checkout/orders/${orderId}/capture`;
+            const response = await fetch(url, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            const paypalPaymentData = await handlePaypalResponse(response);
+            console.log('paypalPaymentData: ', paypalPaymentData);
             
             
             
-            return res.status(200).end(); // OK
+            return res.status(200).json({ // OK
+                id: 'payment#123#approved',
+            });
         } break;
         default:
             return res.status(400).end();
