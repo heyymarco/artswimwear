@@ -257,7 +257,7 @@ export default () => {
                         gap: '1rem',
                     }),
                 }),
-                ...children('.shipping', {
+                ...children('.address', {
                     ...children('article', {
                         display: 'grid',
                         gridTemplateColumns: 'repeat(6, 1fr)',

@@ -496,7 +496,7 @@ const RegularCheckout = () => {
                     Email me with news and offers
                 </Check>
             </Section>
-            <Section className='shipping' title='Shipping Address'>
+            <Section className='address' title='Shipping Address'>
                 <AddressField
                     // refs:
                     addressRef        = {shippingAddressInputRef}
