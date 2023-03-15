@@ -240,13 +240,13 @@ export default function Checkout() {
     // handlers:
     const handlePlaceOrder = useEvent(async (): Promise<string> => {
         try {
-            const orderResult = await placeOrder({
+            const paypalOrderData = await placeOrder({
                 items : cartItems,                   // cart item(s)
                 ...shippingAddressAndBillingAddress, // shipping address + billing address + marketingOpt
             }).unwrap();
-            if (orderResult.id && (orderResult.status === 'CREATED')) {
-                console.log('order data: ', orderResult);
-                return orderResult.id;
+            if (paypalOrderData.id && (paypalOrderData.status === 'CREATED')) {
+                console.log('order data: ', paypalOrderData);
+                return paypalOrderData.id;
             }
             else {
                 // TODO handle error
@@ -1231,7 +1231,7 @@ const CardPaymentButton = () => {
         
         // next:
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
-        const authenticate = await hostedFields.cardFields.submit({
+        const paypalAuthentication = await hostedFields.cardFields.submit({
             cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
             billingAddress : {
                 streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
@@ -1258,12 +1258,12 @@ const CardPaymentButton = () => {
                 orderId: "3EF35246F32986147"
             }
         */
-        console.log('authenticate: ', authenticate);
+        console.log('paypalAuthentication: ', paypalAuthentication);
         
         
         
         try {
-            const data = await makePayment(authenticate).unwrap();
+            const data = await makePayment(paypalAuthentication).unwrap();
             // Two cases to handle:
             //   (1) Non-recoverable errors -> Show a failure message
             //   (2) Successful transaction -> Show confirmation or thank you

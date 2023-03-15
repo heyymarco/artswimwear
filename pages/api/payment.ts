@@ -40,7 +40,7 @@ const generateAccessToken = async () => {
             Authorization: `Basic ${auth}`,
         },
     });
-    const data = await response.json();
+    const accessTokenData = await response.json();
     /*
         example:
         {
@@ -52,10 +52,9 @@ const generateAccessToken = async () => {
             nonce: '2023-03-14T05:52:06Z8D_KHLLcduIuH9NK9MWNlskEse56LZtAEkvtDncxcEU'
         }
     */
-    console.log('accessToken created!');
-    // console.log('accessToken: ', data);
-    if (!data || data.error) throw data?.error_description ?? data?.error ?? Error('Fetch access token failed.');
-    return data.access_token;
+    console.log('created: accessTokenData: ', accessTokenData);
+    if (!accessTokenData || accessTokenData.error) throw accessTokenData?.error_description ?? accessTokenData?.error ?? Error('Fetch access token failed.');
+    return accessTokenData.access_token;
 }
 
 /**
@@ -71,7 +70,7 @@ const generatePaymentToken = async () => {
             'Content-Type'    : 'application/json',
         },
     });
-    const data = await response.json();
+    const paymentTokenData = await response.json();
     /*
         example:
         {
@@ -79,12 +78,11 @@ const generatePaymentToken = async () => {
             expires_in: 3600, // seconds
         }
     */
-    console.log('paymentToken created!');
-    // console.log('paymentToken: ', data);
-    if (!data || data.error) throw data?.error_description ?? data?.error ?? Error('Fetch paymentToken failed.');
+    console.log('created: paymentTokenData: ', paymentTokenData);
+    if (!paymentTokenData || paymentTokenData.error) throw paymentTokenData?.error_description ?? paymentTokenData?.error ?? Error('Fetch paymentToken failed.');
     return {
-        paymentToken : data.client_token,
-        expires      : Date.now() + ((data.expires_in ?? 3600) * 1000 * paymentTokenExpiresThreshold)
+        paymentToken : paymentTokenData.client_token,
+        expires      : Date.now() + ((paymentTokenData.expires_in ?? 3600) * 1000 * paymentTokenExpiresThreshold)
     };
 }
 
@@ -122,8 +120,8 @@ export default async (
             );
         } break;
         case 'POST': { // place the order and calculate the total price (not relying priceList on the client_side)
-            const data = req.body;
-            if (typeof(data) !== 'object') return res.status(400).end(); // bad req
+            const placeOrderData = req.body;
+            if (typeof(placeOrderData) !== 'object') return res.status(400).end(); // bad req
             
             
             
@@ -144,7 +142,7 @@ export default async (
                 shippingZip,
                 
                 shippingProvider,
-            } = data;
+            } = placeOrderData;
             if (
                 (typeof(marketingOpt) !== 'boolean')
                 
@@ -173,7 +171,7 @@ export default async (
             
             
             // validate cart items + calculate total prices + calculate shipping cost
-            const items = data.items;
+            const items = placeOrderData.items;
             if (!items || !Array.isArray(items) || !items.length) return res.status(400).end(); // bad req
             
             interface ProductEntry {
@@ -231,7 +229,7 @@ export default async (
                 }),
             });
             try {
-                const paypalData = await handlePaypalResponse(paypalResponse);
+                const paypalOrderData = await handlePaypalResponse(paypalResponse);
                 /*
                     example:
                     {
@@ -261,16 +259,16 @@ export default async (
                         ]
                     }
                 */
-                console.log('paypalData: ', paypalData);
-                return res.status(200).json(paypalData); // OK
+                console.log('paypalOrderData: ', paypalOrderData);
+                return res.status(200).json(paypalOrderData); // OK
             }
             catch (error: any) {
                 return res.status(500).send(error?.message ?? error ?? 'error');
             } // try
         } break;
         case 'PATCH': { // purchase the previously posted order
-            const data = req.body;
-            if (typeof(data) !== 'object') return res.status(400).end(); // bad req
+            const paypalAuthentication = req.body;
+            if (typeof(paypalAuthentication) !== 'object') return res.status(400).end(); // bad req
             /*
                 example:
                 {
@@ -290,7 +288,7 @@ export default async (
             
             
             
-            console.log('TODO: capturing the payment...', data);
+            console.log('paypalAuthentication: ', paypalAuthentication);
             
             
             
