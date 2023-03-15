@@ -78,6 +78,7 @@ interface ICheckoutContext {
     shippingMethodOptionRef   : React.MutableRefObject<HTMLElement|null>      | undefined
     
     paymentToken              : PaymentToken|undefined
+    handlePlaceOrder          : () => Promise<string>
 }
 const CheckoutContext = createContext<ICheckoutContext>({
     cartItems                 : [],
@@ -102,6 +103,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     shippingMethodOptionRef   : undefined,
     
     paymentToken              : undefined,
+    handlePlaceOrder          : async (): Promise<string> => '',
 });
 const useCheckout = () => useContext(CheckoutContext);
 
@@ -113,10 +115,22 @@ export default function Checkout() {
     
     // stores:
     const cartItems        = useSelector(selectCartItems);
+    const checkoutState    = useSelector(selectCheckoutState);
     const {
         checkoutStep,
         paymentToken : existingPaymentToken,
-    }   = useSelector(selectCheckoutState);
+    } = checkoutState;
+    const {
+        checkoutStep       : _checkoutStep,       // remove
+        
+        shippingValidation : _shippingValidation, // remove
+        
+        billingAsShipping  : _billingAsShipping,  // remove
+        billingValidation  : _billingValidation,  // remove
+        
+        paymentMethod      : _paymentMethod,      // remove
+        paymentToken       : _paymentToken,       // remove
+    ...shippingAddressAndBillingAddress} = checkoutState;
     const checkoutProgress = useSelector(selectCheckoutProgress);
     const hasCart = !!cartItems.length;
     const dispatch = useDispatch();
@@ -206,6 +220,35 @@ export default function Checkout() {
     
     
     
+    // apis:
+    const [placeOrder] = usePlaceOrderMutation();
+    
+    
+    
+    // handlers:
+    const handlePlaceOrder = useEvent(async (): Promise<string> => {
+        try {
+            const orderResult = await placeOrder({
+                items : cartItems,                   // cart item(s)
+                ...shippingAddressAndBillingAddress, // shipping address + billing address + marketingOpt
+            }).unwrap();
+            if (orderResult.id && (orderResult.status === 'CREATED')) {
+                console.log('order data: ', orderResult);
+                return orderResult.id;
+            }
+            else {
+                // TODO handle error
+                return '';
+            } // if
+        }
+        catch {
+            // TODO: handle error
+            return '';
+        } // try
+    });
+    
+    
+    
     const checkoutData = useMemo<ICheckoutContext>(() => ({
         cartItems,
         hasCart,
@@ -229,6 +272,7 @@ export default function Checkout() {
         shippingMethodOptionRef,
         
         paymentToken: existingPaymentToken,
+        handlePlaceOrder,
     }), [
         cartItems,
         hasCart,
@@ -981,69 +1025,30 @@ const PaymentMethod = () => {
     );
 }
 const PaymentMethodPaypal = () => {
+    // context:
+    const {handlePlaceOrder} = useCheckout();
+    
+    
+    
     // jsx:
     return (
         <>
             <p>
                 Click the PayPal button below. You will be redirected to the PayPal website to complete the payment.
             </p>
-            <PayPalButtons  />
+            <PayPalButtons createOrder={handlePlaceOrder} />
         </>
     );
 }
 const PaymentMethodCard = () => {
     // context:
-    const {cartItems} = useCheckout();
-    
-    
-    
-    // stores:
-    const {
-        checkoutStep       : _checkoutStep,       // remove
-        
-        shippingValidation : _shippingValidation, // remove
-        
-        billingAsShipping  : _billingAsShipping,  // remove
-        billingValidation  : _billingValidation,  // remove
-        
-        paymentMethod      : _paymentMethod,      // remove
-        paymentToken       : _paymentToken,       // remove
-    ...restCheckoutState} = useSelector(selectCheckoutState);
+    const {handlePlaceOrder} = useCheckout();
     
     
     
     // refs:
     const safeSignRef = useRef<HTMLElement|null>(null);
     const cscSignRef  = useRef<HTMLElement|null>(null);
-    
-    
-    
-    // apis:
-    const [placeOrder] = usePlaceOrderMutation();
-    
-    
-    
-    // handlers:
-    const handlePlaceOrder = async (): Promise<string> => {
-        try {
-            const orderResult = await placeOrder({
-                items : cartItems,    // cart item(s)
-                ...restCheckoutState, // shipping address + marketingOpt
-            }).unwrap();
-            if (orderResult.id && (orderResult.status === 'CREATED')) {
-                console.log('order data: ', orderResult);
-                return orderResult.id;
-            }
-            else {
-                // TODO handle error
-                return '';
-            } // if
-        }
-        catch {
-            // TODO: handle error
-            return '';
-        } // try
-    }    
     
     
     
