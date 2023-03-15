@@ -159,9 +159,11 @@ const AddressField = (props: AddressFieldProps) => {
                                 if (countryInputElm) {
                                     // *hack*: trigger `onChange` event:
                                     setTimeout(() => {
+                                        (countryInputElm as any)?._valueTracker?.stopTracking?.(); // react *hack*
                                         countryInputElm.value = code; // *hack* set_value before firing input event
                                         
                                         countryInputElm.dispatchEvent(new Event('input', { bubbles: true, cancelable: false, composed: true }));
+                                        countryInputElm.value = code; // *hack* set_value before firing input event
                                     }, 0); // runs the 'input' event *next after* current event completed
                                 } // if
                             }}
