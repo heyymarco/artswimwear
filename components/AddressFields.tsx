@@ -1,0 +1,227 @@
+// react:
+import {
+    // react:
+    default as React,
+    
+    
+    
+    // hooks:
+    useRef,
+}                           from 'react'
+
+// reusable-ui core:
+import {
+    // a validation management system:
+    usePropValidation,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // simple-components:
+    Icon,
+    Label,
+    TextInput,
+    TelInput,
+    
+    
+    
+    // layout-components:
+    ListItem,
+    
+    
+    
+    // menu-components:
+    DropdownListButton,
+    
+    
+    
+    // composite-components:
+    Group,
+    
+    
+    
+    // utility-components:
+    VisuallyHidden
+}                           from '@reusable-ui/components'  // a set of official Reusable-UI components
+
+// redux:
+import type {
+    EntityState
+}                           from '@reduxjs/toolkit'
+
+// stores:
+import type {
+    CountryEntry,
+}                           from '@/store/features/api/apiSlice'
+
+
+
+export interface AddressFieldProps {
+    // refs:
+    addressRef        ?: React.Ref<HTMLInputElement> // setter ref
+    
+    
+    
+    // values:
+    firstName         ?: string
+    lastName          ?: string
+    
+    phone             ?: string
+    
+    countryList       ?: EntityState<CountryEntry>
+    country           ?: string
+    address           ?: string
+    city              ?: string
+    zone              ?: string
+    zip               ?: string
+    
+    
+    
+    // events:
+    onFirstNameChange ?: React.ChangeEventHandler<HTMLInputElement>
+    onLastNameChange  ?: React.ChangeEventHandler<HTMLInputElement>
+    
+    onPhoneChange     ?: React.ChangeEventHandler<HTMLInputElement>
+    
+    onCountryChange   ?: React.ChangeEventHandler<HTMLInputElement>
+    onAddressChange   ?: React.ChangeEventHandler<HTMLInputElement>
+    onCityChange      ?: React.ChangeEventHandler<HTMLInputElement>
+    onZoneChange      ?: React.ChangeEventHandler<HTMLInputElement>
+    onZipChange       ?: React.ChangeEventHandler<HTMLInputElement>
+}
+const AddressField = (props: AddressFieldProps) => {
+    // props:
+    const {
+        // refs:
+        addressRef,
+        
+        
+        
+        // values:
+        firstName = '',
+        lastName  = '',
+        
+        phone     = '',
+        
+        countryList,
+        country   = '',
+        address   = '',
+        city      = '',
+        zone      = '',
+        zip       = '',
+        
+        
+        
+        // events:
+        onFirstNameChange,
+        onLastNameChange,
+        
+        onPhoneChange,
+        
+        onCountryChange,
+        onAddressChange,
+        onCityChange,
+        onZoneChange,
+        onZipChange,
+    } = props;
+    
+    const filteredCountryList = !countryList ? undefined : Object.values(countryList.entities).filter((countryEntry): countryEntry is Exclude<typeof countryEntry, undefined> => !!countryEntry);
+    const selectedCountry     = countryList?.entities?.[country ?? ''];
+    
+    
+    
+    // fn props:
+    const {enableValidation} = usePropValidation({});
+    
+    
+    
+    // refs:
+    const countryInputRefInternal = useRef<HTMLInputElement|null>(null);
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <Group className='country'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='flag' theme='primary' mild={true} />
+                </Label>
+                <DropdownListButton buttonChildren={selectedCountry?.name ?? 'Country'} theme={!enableValidation ? 'primary' : (selectedCountry ? 'success' : 'danger')} mild={true}>
+                    {!!filteredCountryList && filteredCountryList.map(({code, name}, index) =>
+                        <ListItem
+                            // key={code} // the country may be duplicated in several places
+                            key={index}
+                            
+                            active={code === country}
+                            onClick={() => {
+                                const countryInputElm = countryInputRefInternal.current;
+                                if (countryInputElm) {
+                                    // *hack*: trigger `onChange` event:
+                                    setTimeout(() => {
+                                        countryInputElm.value = code; // *hack* set_value before firing input event
+                                        
+                                        countryInputElm.dispatchEvent(new Event('input', { bubbles: true, cancelable: false, composed: true }));
+                                    }, 0); // runs the 'input' event *next after* current event completed
+                                } // if
+                            }}
+                        >
+                            {name}
+                        </ListItem>
+                    )}
+                </DropdownListButton>
+            </Group>
+            
+            <Group className='firstName'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='person' theme='primary' mild={true} />
+                </Label>
+                <TextInput  placeholder='First Name'         required autoComplete='shipping given-name'     value={firstName} onChange={onFirstNameChange} />
+            </Group>
+            <Group className='lastName'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='person_outline' theme='primary' mild={true} />
+                </Label>
+                <TextInput  placeholder='Last Name'          required autoComplete='shipping family-name'    value={lastName}  onChange={onLastNameChange}  />
+            </Group>
+            <Group className='phone'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='phone' theme='primary' mild={true} />
+                </Label>
+                <TelInput   placeholder='Phone'              required autoComplete='shipping tel'            value={phone}     onChange={onPhoneChange}     />
+            </Group>
+            <Group className='address'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='house' theme='primary' mild={true} />
+                </Label>
+                <TextInput  placeholder='Address'            required autoComplete='shipping street-address' value={address}   onChange={onAddressChange}      elmRef={addressRef} />
+            </Group>
+            <Group className='city'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='location_city' theme='primary' mild={true} />
+                </Label>
+                <TextInput  placeholder='City'               required autoComplete='shipping address-level2' value={city}      onChange={onCityChange}      />
+            </Group>
+            <Group className='zone'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='location_pin' theme='primary' mild={true} />
+                </Label>
+                <TextInput  placeholder='State'              required autoComplete='shipping address-level1' value={zone}      onChange={onZoneChange}      />
+            </Group>
+            <Group className='zip'>
+                <Label theme='secondary' mild={false} className='solid'>
+                    <Icon icon='edit_location' theme='primary' mild={true} />
+                </Label>
+                <TextInput  placeholder='ZIP Code'           required autoComplete='shipping postal-code'    value={zip}       onChange={onZipChange}       />
+            </Group>
+            
+            <VisuallyHidden className='hidden'>
+                <input type='text' tabIndex={-1} role='none' required autoComplete='shipping country'        value={country}   onChange={onCountryChange}      ref={countryInputRefInternal} />
+            </VisuallyHidden>
+        </>
+    );
+};
+export {
+    AddressField,
+    AddressField as default,
+}
