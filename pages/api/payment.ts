@@ -1,6 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { connectDB } from '@/libs/dbConn'
 import Product from '@/models/Product'
+import { createEntityAdapter } from '@reduxjs/toolkit';
+import { calculateShippingCost } from '@/libs/utilities';
+import Shipping from '@/models/Shipping';
 
 
 
@@ -15,10 +18,11 @@ catch (error) {
 
 
 
-const baseURL = {
-    sandbox    : 'https://api-m.sandbox.paypal.com',
-    production : 'https://api-m.paypal.com'
+const basePaypalURL = {
+    development : 'https://api-m.sandbox.paypal.com',
+    production  : 'https://api-m.paypal.com'
 };
+const paypalURL = basePaypalURL.development; // TODO: auto switch development vs production
 // const accessTokenExpiresThreshold = 0.5;
 const paymentTokenExpiresThreshold = 0.5;
 
@@ -29,7 +33,7 @@ const paymentTokenExpiresThreshold = 0.5;
  */
 const generateAccessToken = async () => {
     const auth = Buffer.from(`${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
-    const response = await fetch(`${baseURL.sandbox}/v1/oauth2/token`, {
+    const response = await fetch(`${paypalURL}/v1/oauth2/token`, {
         method  : 'POST',
         body    : 'grant_type=client_credentials',
         headers : {
@@ -59,7 +63,7 @@ const generateAccessToken = async () => {
  */
 const generatePaymentToken = async () => {
     const accessToken = await generateAccessToken();
-    const response    = await fetch(`${baseURL.sandbox}/v1/identity/generate-token`, {
+    const response    = await fetch(`${paypalURL}/v1/identity/generate-token`, {
         method  : 'POST',
         headers : {
             Authorization: `Bearer ${accessToken}`,
@@ -82,6 +86,17 @@ const generatePaymentToken = async () => {
         paymentToken : data.client_token,
         expires      : Date.now() + ((data.expires_in ?? 3600) * 1000 * paymentTokenExpiresThreshold)
     };
+}
+
+const handlePaypalResponse = async (response: Response) => {
+    if (response.status === 200 || response.status === 201) {
+        return response.json();
+    } // if
+    
+    
+    
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
 }
 
 
@@ -149,15 +164,32 @@ export default async (
             ) {
                 return res.status(400).end(); // bad req
             } // if
+            const selectedShipping = await Shipping.findOne({
+                _id: shippingProvider,
+                enabled: true,
+            }, { _id: false, weightStep: true, shippingRates: true });
+            if (!selectedShipping) return res.status(400).end(); // bad req
             
             
             
-            // TODO: validate cart items + calculate total prices + calculate shipping cost
+            // validate cart items + calculate total prices + calculate shipping cost
             const items = data.items;
             if (!items || !Array.isArray(items) || !items.length) return res.status(400).end(); // bad req
             
-            const productList = await Product.findOne({ path: req.query.path }, { _id: true, name: true, price: true, shippingWeight: true });
+            interface ProductEntry {
+                _id             : string
+                price           : number
+                shippingWeight ?: number
+            }
+            const productListAdapter = createEntityAdapter<ProductEntry>({
+                selectId : (productEntry) => productEntry._id,
+            });
+            const productList = productListAdapter.addMany(
+                productListAdapter.getInitialState(),
+                await Product.find({}, { _id: true, price: true, shippingWeight: true })
+            );
             
+            let totalProductPrices = 0, totalProductWeights = 0;
             for (const item of items) {
                 if (!item || (typeof(item) !== 'object')) return res.status(400).end(); // bad req
                 const {
@@ -166,17 +198,75 @@ export default async (
                 } = item;
                 if (!productId || (typeof(productId) !== 'string')) return res.status(400).end(); // bad req
                 if (!quantity || (typeof(quantity) !== 'number') || !isFinite(quantity) || (quantity < 0)) return res.status(400).end(); // bad req
+                
+                const productUnitPrice  = productList.entities[productId]?.price;
+                const productUnitWeight = productList.entities[productId]?.shippingWeight;
+                
+                totalProductPrices  += productUnitPrice  ?? 0;
+                totalProductWeights += productUnitWeight ?? 0;
             } // for
+            const totalShippingCosts = calculateShippingCost(totalProductWeights, selectedShipping);
+            const totalCost = totalProductPrices + (totalShippingCosts ?? 0);
             
             
             
-            console.log('TODO: calculating total order price...', data);
-            
-            
-            
-            return res.status(200).json({ // OK
-                id: 'order#1234',
+            const accessToken = await generateAccessToken();
+            const url = `${paypalURL}/v2/checkout/orders`;
+            const paypalResponse = await fetch(url, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({
+                    intent: "CAPTURE",
+                    purchase_units: [
+                        {
+                            amount: {
+                                currency_code: "USD",
+                                value: totalCost, // TODO: convert idr to usd
+                            },
+                        },
+                    ],
+                }),
             });
+            try {
+                const paypalData = await handlePaypalResponse(paypalResponse);
+                /*
+                    example:
+                    {
+                        id: '4AM48902TR915910H',
+                        status: 'CREATED',
+                        links: [
+                            {
+                                href: 'https://api.sandbox.paypal.com/v2/checkout/orders/4AM48902TR915910H',
+                                rel: 'self',
+                                method: 'GET'
+                            },
+                            {
+                                href: 'https://www.sandbox.paypal.com/checkoutnow?token=4AM48902TR915910H',
+                                rel: 'approve',
+                                method: 'GET'
+                            },
+                            {
+                                href: 'https://api.sandbox.paypal.com/v2/checkout/orders/4AM48902TR915910H',
+                                rel: 'update',
+                                method: 'PATCH'
+                            },
+                            {
+                                href: 'https://api.sandbox.paypal.com/v2/checkout/orders/4AM48902TR915910H/capture',
+                                rel: 'capture',
+                                method: 'POST'
+                            }
+                        ]
+                    }
+                */
+                console.log('paypalData: ', paypalData);
+                return res.status(200).json(paypalData); // OK
+            }
+            catch (error: any) {
+                return res.status(500).send(error?.message ?? error ?? 'error');
+            } // try
         } break;
         case 'PATCH': { // purchase the previously posted order
             const body = req.body;

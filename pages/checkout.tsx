@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { Main } from '@/components/sections/Main'
 import { Accordion, AccordionItem, Badge, Busy, ButtonIcon, Check, Container, controlValues, Details, DropdownListButton, EditableTextControl, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { calculateShippingCost, CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentTokenMutation, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery, useMakePaymentMutation, usePlaceOrderMutation } from '@/store/features/api/apiSlice'
+import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentTokenMutation, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery, useMakePaymentMutation, usePlaceOrderMutation } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
@@ -16,6 +16,7 @@ import { breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvid
 import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields } from '@paypal/react-paypal-js'
+import { calculateShippingCost } from '@/libs/utilities';
 
 
 
@@ -50,7 +51,7 @@ const hostedFieldsStyle = {
     //     'color': 'red'
     // },
 }
-console.log(hostedFieldsStyle)
+
 
 
 interface ICheckoutContext {
@@ -844,15 +845,14 @@ const PaymentMethodCard = () => {
     
     // handlers:
     const handlePlaceOrder = async (): Promise<string> => {
-        console.log('processing payment...');
         try {
-            const data = await placeOrder({
+            const orderResult = await placeOrder({
                 items : cartItems,    // cart item(s)
                 ...restCheckoutState, // shipping address + marketingOpt
             }).unwrap();
-            if (data.id) {
-                console.log('order data: ', data);
-                return data.id;
+            if (orderResult.id && (orderResult.status === 'CREATED')) {
+                console.log('order data: ', orderResult);
+                return orderResult.id;
             }
             else {
                 // TODO handle error
