@@ -73,12 +73,12 @@ export interface AddressFieldProps {
     
     phone             ?: string
     
-    countryList       ?: EntityState<CountryEntry>
-    country           ?: string
     address           ?: string
     city              ?: string
     zone              ?: string
     zip               ?: string
+    country           ?: string
+    countryList       ?: EntityState<CountryEntry>
     
     
     
@@ -88,11 +88,11 @@ export interface AddressFieldProps {
     
     onPhoneChange     ?: React.ChangeEventHandler<HTMLInputElement>
     
-    onCountryChange   ?: React.ChangeEventHandler<HTMLInputElement>
     onAddressChange   ?: React.ChangeEventHandler<HTMLInputElement>
     onCityChange      ?: React.ChangeEventHandler<HTMLInputElement>
     onZoneChange      ?: React.ChangeEventHandler<HTMLInputElement>
     onZipChange       ?: React.ChangeEventHandler<HTMLInputElement>
+    onCountryChange   ?: React.ChangeEventHandler<HTMLInputElement>
 }
 const AddressField = (props: AddressFieldProps) => {
     // props:
@@ -113,12 +113,12 @@ const AddressField = (props: AddressFieldProps) => {
         
         phone     = '',
         
-        countryList,
-        country   = '',
         address   = '',
         city      = '',
         zone      = '',
         zip       = '',
+        country   = '',
+        countryList,
         
         
         
@@ -128,11 +128,11 @@ const AddressField = (props: AddressFieldProps) => {
         
         onPhoneChange,
         
-        onCountryChange,
         onAddressChange,
         onCityChange,
         onZoneChange,
         onZipChange,
+        onCountryChange,
     } = props;
     
     const filteredCountryList = !countryList ? undefined : Object.values(countryList.entities).filter((countryEntry): countryEntry is Exclude<typeof countryEntry, undefined> => !!countryEntry);

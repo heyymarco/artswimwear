@@ -47,8 +47,6 @@ export interface CheckoutState {
     billingZone        : string
     billingZip         : string
     
-    billingProvider   ?: string
-    
     
     
     paymentMethod     ?: number
@@ -187,10 +185,6 @@ export const checkoutSlice = createSlice({
             state.billingZip = value;
         },
         
-        setBillingProvider: (state, {payload: value}: PayloadAction<string>) => {
-            state.billingProvider = value;
-        },
-        
         
         
         setPaymentMethod: (state, {payload: value}: PayloadAction<number|undefined>) => {
@@ -244,8 +238,6 @@ export const {
     setBillingZone,
     setBillingZip,
     
-    setBillingProvider,
-    
     
     
     setPaymentMethod,
@@ -295,8 +287,6 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         billingZone,
         billingZip,
         
-        billingProvider,
-        
         
         
         paymentMethod,
@@ -341,8 +331,6 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         billingCity,
         billingZone,
         billingZip,
-        
-        billingProvider,
         
         
         

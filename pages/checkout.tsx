@@ -76,6 +76,7 @@ interface ICheckoutContext {
     shippingEmailInputRef     : React.MutableRefObject<HTMLInputElement|null> | undefined
     shippingAddressInputRef   : React.MutableRefObject<HTMLInputElement|null> | undefined
     shippingMethodOptionRef   : React.MutableRefObject<HTMLElement|null>      | undefined
+    cardholderInputRef        : React.MutableRefObject<HTMLInputElement|null> | undefined
     
     paymentToken              : PaymentToken|undefined
     handlePlaceOrder          : () => Promise<string>
@@ -101,6 +102,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     shippingEmailInputRef     : undefined,
     shippingAddressInputRef   : undefined,
     shippingMethodOptionRef   : undefined,
+    cardholderInputRef        : undefined,
     
     paymentToken              : undefined,
     handlePlaceOrder          : async (): Promise<string> => '',
@@ -217,6 +219,7 @@ export default function Checkout() {
     const shippingEmailInputRef     = useRef<HTMLInputElement|null>(null);
     const shippingAddressInputRef   = useRef<HTMLInputElement|null>(null);
     const shippingMethodOptionRef   = useRef<HTMLElement|null>(null);
+    const cardholderInputRef        = useRef<HTMLInputElement|null>(null);
     
     
     
@@ -270,6 +273,7 @@ export default function Checkout() {
         shippingEmailInputRef,
         shippingAddressInputRef,
         shippingMethodOptionRef,
+        cardholderInputRef,
         
         paymentToken: existingPaymentToken,
         handlePlaceOrder,
@@ -522,11 +526,11 @@ const RegularCheckout = () => {
         shippingPhone,
         shippingEmail,
         
-        shippingCountry,
         shippingAddress,
         shippingCity,
         shippingZone,
         shippingZip,
+        shippingCountry,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -539,7 +543,7 @@ const RegularCheckout = () => {
                     <Label theme='secondary' mild={false} className='solid'>
                         <Icon icon='email' theme='primary' mild={true} />
                     </Label>
-                    <EmailInput placeholder='Email'      required autoComplete='shipping email'          value={shippingEmail}              onChange={({target:{value}}) => dispatch(setShippingEmail(value))}     elmRef={shippingEmailInputRef} />
+                    <EmailInput placeholder='Email' required autoComplete='shipping email' value={shippingEmail} onChange={({target:{value}}) => dispatch(setShippingEmail(value))} elmRef={shippingEmailInputRef} />
                 </Group>
                 <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})                 => dispatch(setMarketingOpt(active))}      >
                     Email me with news and offers
@@ -562,12 +566,12 @@ const RegularCheckout = () => {
                     
                     phone             = {shippingPhone}
                     
-                    countryList       = {countryList}
-                    country           = {shippingCountry}
                     address           = {shippingAddress}
                     city              = {shippingCity}
                     zone              = {shippingZone}
                     zip               = {shippingZip}
+                    country           = {shippingCountry}
+                    countryList       = {countryList}
                     
                     
                     
@@ -577,11 +581,11 @@ const RegularCheckout = () => {
                     
                     onPhoneChange     = {({target:{value}}) => dispatch(setShippingPhone(value))}
                     
-                    onCountryChange   = {({target:{value}}) => dispatch(setShippingCountry(value))}
                     onAddressChange   = {({target:{value}}) => dispatch(setShippingAddress(value))}
                     onCityChange      = {({target:{value}}) => dispatch(setShippingCity(value))}
                     onZoneChange      = {({target:{value}}) => dispatch(setShippingZone(value))}
                     onZipChange       = {({target:{value}}) => dispatch(setShippingZip(value))}
+                    onCountryChange   = {({target:{value}}) => dispatch(setShippingCountry(value))}
                 />
             </Section>
         </ValidationProvider>
@@ -907,11 +911,11 @@ const Payment = () => {
         billingPhone,
         billingEmail,
         
-        billingCountry,
         billingAddress,
         billingCity,
         billingZone,
         billingZip,
+        billingCountry,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -947,12 +951,12 @@ const Payment = () => {
                                 
                                 phone             = {billingPhone}
                                 
-                                countryList       = {countryList}
-                                country           = {billingCountry}
                                 address           = {billingAddress}
                                 city              = {billingCity}
                                 zone              = {billingZone}
                                 zip               = {billingZip}
+                                country           = {billingCountry}
+                                countryList       = {countryList}
                                 
                                 
                                 
@@ -962,11 +966,11 @@ const Payment = () => {
                                 
                                 onPhoneChange     = {({target:{value}}) => dispatch(setBillingPhone(value))}
                                 
-                                onCountryChange   = {({target:{value}}) => dispatch(setBillingCountry(value))}
                                 onAddressChange   = {({target:{value}}) => dispatch(setBillingAddress(value))}
                                 onCityChange      = {({target:{value}}) => dispatch(setBillingCity(value))}
                                 onZoneChange      = {({target:{value}}) => dispatch(setBillingZone(value))}
                                 onZipChange       = {({target:{value}}) => dispatch(setBillingZip(value))}
+                                onCountryChange   = {({target:{value}}) => dispatch(setBillingCountry(value))}
                             />
                         </ValidationProvider>
                     </AccordionItem>
@@ -1042,7 +1046,7 @@ const PaymentMethodPaypal = () => {
 }
 const PaymentMethodCard = () => {
     // context:
-    const {handlePlaceOrder} = useCheckout();
+    const {cardholderInputRef, handlePlaceOrder} = useCheckout();
     
     
     
@@ -1059,7 +1063,6 @@ const PaymentMethodCard = () => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='credit_card' theme='primary' mild={true} />
                 </Label>
-                {/* <TextInput placeholder='Card Number'               inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-number' /> */}
                 <EditableTextControl className='hostedField'>
                     <PayPalHostedField
                         id='cardNumber'
@@ -1093,13 +1096,12 @@ const PaymentMethodCard = () => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='person' theme='primary' mild={true} />
                 </Label>
-                <TextInput placeholder='Cardholder Name'           inputMode='text'                     required autoComplete='cc-name'   />
+                <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' elmRef={cardholderInputRef} />
             </Group>
             <Group className='expiry'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='date_range' theme='primary' mild={true} />
                 </Label>
-                {/* <TextInput placeholder='Expiration Date (MM / YY)' inputMode='numeric' pattern='[0-9]*' required autoComplete='cc-exp'    /> */}
                 <EditableTextControl className='hostedField'>
                     <PayPalHostedField
                         id='cardExpires'
@@ -1115,7 +1117,6 @@ const PaymentMethodCard = () => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='fiber_pin' theme='primary' mild={true} />
                 </Label>
-                {/* <TextInput placeholder='Security Code'             inputMode='numeric' pattern='[0-9]*'          autoComplete='cc-csc'    /> */}
                 <EditableTextControl className='hostedField'>
                     <PayPalHostedField
                         id='cardCvv'
@@ -1144,6 +1145,44 @@ const PaymentMethodCard = () => {
     );
 }
 const CardPaymentButton = () => {
+    // context:
+    const {cardholderInputRef} = useCheckout();
+    
+    
+    
+    // stores:
+    const {
+        shippingFirstName, // TODO: use it
+        shippingLastName, // TODO: use it
+        
+        shippingPhone, // TODO: use it
+        shippingEmail, // TODO: use it
+        
+        shippingCountry,
+        shippingAddress,
+        shippingCity,
+        shippingZone,
+        shippingZip,
+        
+        
+        
+        billingAsShipping,
+        
+        billingFirstName, // TODO: use it
+        billingLastName, // TODO: use it
+        
+        billingPhone, // TODO: use it
+        billingEmail, // TODO: use it
+        
+        billingAddress,
+        billingCity,
+        billingZone,
+        billingZip,
+        billingCountry,
+    } = useSelector(selectCheckoutState);
+    
+    
+    
     // apis:
     const [placeOrder,  {isLoading: isLoading1, isError: isError1}] = usePlaceOrderMutation();
     const [makePayment, {isLoading: isLoading2, isError: isError2}] = useMakePaymentMutation();
@@ -1154,18 +1193,18 @@ const CardPaymentButton = () => {
     
     // handlers:
     const hostedFields = usePayPalHostedFields();
-    const handleSubmitPayment = async () => {
+    const handleMakePayment = async () => {
         console.log('check: ', hostedFields)
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         const authenticate = await hostedFields.cardFields.submit({
-            cardholderName: 'Smith John', // cardholder's first and last name
-            billingAddress: {
-                streetAddress     : undefined, // street address, line 1
-                extendedAddress   : undefined, // street address, line 2 (Ex: Unit, Apartment, etc.)
-                region            : undefined, // state
-                locality          : undefined, // city
-                postalCode        : undefined, // postal Code
-                countryCodeAlpha2 : undefined, // country Code
+            cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
+            billingAddress : {
+                streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
+             // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
+                locality          : billingAsShipping ? shippingCity    : billingCity,    // city
+                region            : billingAsShipping ? shippingZone    : billingZone,    // state
+                postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
+                countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
             },
         });
         console.log('authenticate: ', authenticate);
@@ -1200,7 +1239,7 @@ const CardPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon icon={!isLoading ? 'monetization_on' : 'busy'} enabled={!isLoading} className='payNow' size='lg' gradient={true} onClick={handleSubmitPayment}>
+        <ButtonIcon icon={!isLoading ? 'monetization_on' : 'busy'} enabled={!isLoading} className='payNow' size='lg' gradient={true} onClick={handleMakePayment}>
             Pay Now
         </ButtonIcon>
     );
