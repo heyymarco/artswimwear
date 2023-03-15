@@ -1090,9 +1090,6 @@ const PaymentMethodCard = () => {
                             selector: '#cardNumber',
                             placeholder: 'Card Number',
                         }}
-                        style={{
-                            color: 'red'
-                        }}
                     />
                 </EditableTextControl>
                 <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
@@ -1245,6 +1242,22 @@ const CardPaymentButton = () => {
                 countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
             },
         });
+        /*
+            example:
+            {
+                authenticationReason: undefined
+                authenticationStatus: "APPROVED",
+                card: {
+                    brand: "AMEX",
+                    card_type: "AMEX"
+                    last_digits: "8431",
+                    type: "CREDIT",
+                },
+                liabilityShift: undefined
+                liabilityShifted: undefined
+                orderId: "3EF35246F32986147"
+            }
+        */
         console.log('authenticate: ', authenticate);
         
         
