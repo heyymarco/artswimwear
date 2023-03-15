@@ -290,14 +290,15 @@ export default function Checkout() {
                             </Section>}
                             
                             {(checkoutStep === 'info') && <Section className={styles.checkout}>
-                                <Section className={styles.expressCheckout} title='Express Checkout'>
+                                {/* TODO: activate */}
+                                {/* <Section className={styles.expressCheckout} title='Express Checkout'>
                                 </Section>
                                 
                                 <div className={styles.checkoutAlt}>
                                     <hr />
                                     <span>OR</span>
                                     <hr />
-                                </div>
+                                </div> */}
                                 
                                 <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
                                     <RegularCheckout />
@@ -489,33 +490,78 @@ const RegularCheckout = () => {
     return (
         <ValidationProvider enableValidation={shippingValidation}>
             <Section className='contact' title='Contact Information'>
-                <EmailInput className='email'     placeholder='Email'      required autoComplete='shipping email'          value={shippingEmail}              onChange={({target:{value}}) => dispatch(setShippingEmail(value))}     elmRef={shippingEmailInputRef} />
+                <Group className='email'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='email' theme='primary' mild={true} />
+                    </Label>
+                    <EmailInput placeholder='Email'      required autoComplete='shipping email'          value={shippingEmail}              onChange={({target:{value}}) => dispatch(setShippingEmail(value))}     elmRef={shippingEmailInputRef} />
+                </Group>
                 <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})                 => dispatch(setMarketingOpt(active))}      >
                     Email me with news and offers
                 </Check>
             </Section>
             <Section className='shipping' title='Shipping Address'>
-                <DropdownListButton buttonChildren={selectedCountry?.name ?? 'Country/Region'} theme={!shippingValidation ? 'primary' : (selectedCountry ? 'success' : 'danger')} mild={true}>
-                    {!!filteredCountryList && filteredCountryList.map((countryEntry, index) =>
-                        <ListItem
-                            // key={countryEntry.code} // the country may be duplicated in several places
-                            key={index}
-                            
-                            active={filteredCountryList?.[index]?.code === shippingCountry}
-                            onClick={() => dispatch(setShippingCountry(filteredCountryList?.[index]?.code ?? ''))}
-                        >
-                            {countryEntry.name}
-                        </ListItem>
-                    )}
-                </DropdownListButton>
+                <Group className='country'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='flag' theme='primary' mild={true} />
+                    </Label>
+                    <DropdownListButton buttonChildren={selectedCountry?.name ?? 'Country/Region'} theme={!shippingValidation ? 'primary' : (selectedCountry ? 'success' : 'danger')} mild={true}>
+                        {!!filteredCountryList && filteredCountryList.map((countryEntry, index) =>
+                            <ListItem
+                                // key={countryEntry.code} // the country may be duplicated in several places
+                                key={index}
+                                
+                                active={filteredCountryList?.[index]?.code === shippingCountry}
+                                onClick={() => dispatch(setShippingCountry(filteredCountryList?.[index]?.code ?? ''))}
+                            >
+                                {countryEntry.name}
+                            </ListItem>
+                        )}
+                    </DropdownListButton>
+                </Group>
                 
-                <TextInput  className='firstName' placeholder='First Name' required autoComplete='shipping given-name'     value={shippingFirstName}          onChange={({target:{value}}) => dispatch(setShippingFirstName(value))} />
-                <TextInput  className='lastName'  placeholder='Last Name'  required autoComplete='shipping family-name'    value={shippingLastName}           onChange={({target:{value}}) => dispatch(setShippingLastName(value))}  />
-                <TelInput   className='phone'     placeholder='Phone'      required autoComplete='shipping tel'            value={shippingPhone}              onChange={({target:{value}}) => dispatch(setShippingPhone(value))}     />
-                <TextInput  className='address'   placeholder='Address'    required autoComplete='shipping street-address' value={shippingAddress}            onChange={({target:{value}}) => dispatch(setShippingAddress(value))}   elmRef={shippingAddressInputRef} />
-                <TextInput  className='city'      placeholder='City'       required autoComplete='shipping address-level2' value={shippingCity}               onChange={({target:{value}}) => dispatch(setShippingCity(value))}      />
-                <TextInput  className='zone'      placeholder='State'      required autoComplete='shipping address-level1' value={shippingZone}               onChange={({target:{value}}) => dispatch(setShippingZone(value))}      />
-                <TextInput  className='zip'       placeholder='ZIP Code'   required autoComplete='shipping postal-code'    value={shippingZip}                onChange={({target:{value}}) => dispatch(setShippingZip(value))}       />
+                <Group className='firstName'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='person' theme='primary' mild={true} />
+                    </Label>
+                    <TextInput  placeholder='First Name' required autoComplete='shipping given-name'     value={shippingFirstName}          onChange={({target:{value}}) => dispatch(setShippingFirstName(value))} />
+                </Group>
+                <Group className='lastName'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='person_outline' theme='primary' mild={true} />
+                    </Label>
+                    <TextInput  placeholder='Last Name'  required autoComplete='shipping family-name'    value={shippingLastName}           onChange={({target:{value}}) => dispatch(setShippingLastName(value))}  />
+                </Group>
+                <Group className='phone'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='phone' theme='primary' mild={true} />
+                    </Label>
+                    <TelInput   placeholder='Phone'      required autoComplete='shipping tel'            value={shippingPhone}              onChange={({target:{value}}) => dispatch(setShippingPhone(value))}     />
+                </Group>
+                <Group className='address'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='house' theme='primary' mild={true} />
+                    </Label>
+                    <TextInput  placeholder='Address'    required autoComplete='shipping street-address' value={shippingAddress}            onChange={({target:{value}}) => dispatch(setShippingAddress(value))}   elmRef={shippingAddressInputRef} />
+                </Group>
+                <Group className='city'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='location_city' theme='primary' mild={true} />
+                    </Label>
+                    <TextInput  placeholder='City'       required autoComplete='shipping address-level2' value={shippingCity}               onChange={({target:{value}}) => dispatch(setShippingCity(value))}      />
+                </Group>
+                <Group className='zone'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='location_pin' theme='primary' mild={true} />
+                    </Label>
+                    <TextInput  placeholder='State'      required autoComplete='shipping address-level1' value={shippingZone}               onChange={({target:{value}}) => dispatch(setShippingZone(value))}      />
+                </Group>
+                <Group className='zip'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='edit_location' theme='primary' mild={true} />
+                    </Label>
+                    <TextInput  placeholder='ZIP Code'   required autoComplete='shipping postal-code'    value={shippingZip}                onChange={({target:{value}}) => dispatch(setShippingZip(value))}       />
+                </Group>
                 
                 <VisuallyHidden className='hidden'>
                     <input type='text' tabIndex={-1} role='none'           required autoComplete='shipping country'        value={shippingCountry}            onChange={({target:{value}}) => dispatch(setShippingCountry(value))}   />
