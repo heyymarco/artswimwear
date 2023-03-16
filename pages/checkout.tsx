@@ -1082,7 +1082,7 @@ const PaymentMethodCard = () => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='credit_card' theme='primary' mild={true} />
                 </Label>
-                <EditableTextControl className='hostedField'>
+                <EditableTextControl className='hostedField' tabIndex={-1}>
                     <PayPalHostedField
                         id='cardNumber'
                         hostedFieldType='number'
@@ -1118,7 +1118,7 @@ const PaymentMethodCard = () => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='date_range' theme='primary' mild={true} />
                 </Label>
-                <EditableTextControl className='hostedField'>
+                <EditableTextControl className='hostedField' tabIndex={-1}>
                     <PayPalHostedField
                         id='cardExpires'
                         hostedFieldType='expirationDate'
@@ -1133,7 +1133,7 @@ const PaymentMethodCard = () => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='fiber_pin' theme='primary' mild={true} />
                 </Label>
-                <EditableTextControl className='hostedField'>
+                <EditableTextControl className='hostedField' tabIndex={-1}>
                     <PayPalHostedField
                         id='cardCvv'
                         hostedFieldType='cvv'
