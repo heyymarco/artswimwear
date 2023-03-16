@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { Main } from '@/components/sections/Main'
 import { Busy, ButtonIcon, Carousel, Nav, NavItem } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { useGetProductDetailQuery } from '@/store/features/api/apiSlice'
+import { useGetProductDetail } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage from '@/components/ProductImage'
 import Link from 'next/link'
@@ -28,7 +28,7 @@ const useProductDetailStyleSheet = dynamicStyleSheets(
 export default function ProductDetail() {
     const styles = useProductDetailStyleSheet();
     const router = useRouter();
-    const {data: product, isLoading, isError} = useGetProductDetailQuery(router.query.productPath as any ?? '');
+    const {data: product, isLoading, isError} = useGetProductDetail(router.query.productPath as any ?? '');
     const [addProductQty, setAddProductQty] = useState(1);
     const dispatch = useDispatch();
     

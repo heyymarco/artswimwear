@@ -3,7 +3,7 @@ import { ButtonIcon, CardBody, CardHeader, CloseButton, Group, List, ListItem } 
 import { useDispatch, useSelector } from 'react-redux'
 import { removeFromCart, selectCartItems, setCartItemQuantity, showCart } from '@/store/features/cart/cartSlice';
 import QuantityInput from './QuantityInput';
-import { useGetPriceListQuery, useGetProductListQuery } from '@/store/features/api/apiSlice';
+import { useGetPriceList, useGetProductList } from '@/store/features/api/apiSlice';
 import LoadingBar from './LoadingBar';
 import { formatCurrency } from '@/libs/formatters';
 import { dynamicStyleSheets } from '@cssfn/cssfn-react';
@@ -23,8 +23,8 @@ export const CartBarContent = () => {
     const cartItems   = useSelector(selectCartItems);
     const hasCart = !!cartItems.length;
     const dispatch = useDispatch();
-    const {data: priceList, isLoading: isLoading1, isError: isError1} = useGetPriceListQuery();
-    const {data: productList, isLoading: isLoading2, isError: isError2} = useGetProductListQuery();
+    const {data: priceList, isLoading: isLoading1, isError: isError1} = useGetPriceList();
+    const {data: productList, isLoading: isLoading2, isError: isError2} = useGetProductList();
     const isLoading = isLoading1 || isLoading2;
     const isError = isError1 || isError2;
     const isCartDataReady = hasCart && !!priceList && !!productList;

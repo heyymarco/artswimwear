@@ -120,6 +120,16 @@ export default async (
             );
         } break;
         case 'POST': { // place the order and calculate the total price (not relying priceList on the client_side)
+            if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
+                await new Promise<void>((resolve) => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 2000);
+                });
+            } // if
+            
+            
+            
             const placeOrderData = req.body;
             if (typeof(placeOrderData) !== 'object') return res.status(400).end(); // bad req
             

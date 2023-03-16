@@ -151,18 +151,18 @@ export const apiSlice = createApi({
 
 
 export const {
-    useGetProductListQuery,
-    useGetProductDetailQuery,
+    useGetProductListQuery          : useGetProductList,
+    useGetProductDetailQuery        : useGetProductDetail,
     
-    useGetPriceListQuery,
+    useGetPriceListQuery            : useGetPriceList,
     
-    useGetCountryListQuery,
+    useGetCountryListQuery          : useGetCountryList,
     
-    useGetShippingListQuery,
+    useGetShippingListQuery         : useGetShippingList,
     
-    useGeneratePaymentTokenMutation,
-    usePlaceOrderMutation,
-    useMakePaymentMutation,
+    useGeneratePaymentTokenMutation : useGeneratePaymentToken,
+    usePlaceOrderMutation           : usePlaceOrder,
+    useMakePaymentMutation          : useMakePayment,
 } = apiSlice;
 
 

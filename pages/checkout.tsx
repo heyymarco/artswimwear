@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { Main } from '@/components/sections/Main'
 import { Accordion, AccordionItem, Badge, Busy, ButtonIcon, Check, Container, controlValues, Details, DropdownListButton, EditableTextControl, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentTokenMutation, useGetCountryListQuery, useGetPriceListQuery, useGetProductListQuery, useGetShippingListQuery, useMakePaymentMutation, usePlaceOrderMutation } from '@/store/features/api/apiSlice'
+import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetShippingList, usePlaceOrder, useMakePayment } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
@@ -83,6 +83,9 @@ interface ICheckoutContext {
     
     paymentToken              : PaymentToken|undefined
     handlePlaceOrder          : () => Promise<string>
+    
+    placeOrderApi             : ReturnType<typeof usePlaceOrder>
+    makePaymentApi            : ReturnType<typeof useMakePayment>
 }
 const CheckoutContext = createContext<ICheckoutContext>({
     cartItems                 : [],
@@ -111,7 +114,10 @@ const CheckoutContext = createContext<ICheckoutContext>({
     cardholderInputRef        : undefined,
     
     paymentToken              : undefined,
-    handlePlaceOrder          : async (): Promise<string> => '',
+    handlePlaceOrder          : undefined as any,
+    
+    placeOrderApi             : undefined as any,
+    makePaymentApi            : undefined as any,
 });
 const useCheckout = () => useContext(CheckoutContext);
 
@@ -146,11 +152,11 @@ export default function Checkout() {
     
     
     // apis:
-    const                        {data: priceList      , isLoading: isLoading1, isError: isError1}  = useGetPriceListQuery();
-    const                        {data: productList    , isLoading: isLoading2, isError: isError2}  = useGetProductListQuery();
-    const                        {data: countryList    , isLoading: isLoading3, isError: isError3}  = useGetCountryListQuery();
-    const                        {data: shippingList   , isLoading: isLoading4, isError: isError4}  = useGetShippingListQuery();
-    const [generatePaymentToken, {data: newPaymentToken, isLoading: isLoading5, isError: isError5}] = useGeneratePaymentTokenMutation();
+    const                        {data: priceList      , isLoading: isLoading1, isError: isError1}  = useGetPriceList();
+    const                        {data: productList    , isLoading: isLoading2, isError: isError2}  = useGetProductList();
+    const                        {data: countryList    , isLoading: isLoading3, isError: isError3}  = useGetCountryList();
+    const                        {data: shippingList   , isLoading: isLoading4, isError: isError4}  = useGetShippingList();
+    const [generatePaymentToken, {data: newPaymentToken, isLoading: isLoading5, isError: isError5}] = useGeneratePaymentToken();
     
     const isLoading       = isLoading1 || isLoading2 || isLoading3 || isLoading4 ||  !existingPaymentToken;
     const isError         = isError1   || isError2   || isError3   || isError4   || (!existingPaymentToken && isError5);
@@ -233,12 +239,16 @@ export default function Checkout() {
     
     
     // apis:
-    const [placeOrder] = usePlaceOrderMutation();
+    const placeOrderApi  = usePlaceOrder();
+    const [placeOrder]   = placeOrderApi;
+    
+    const makePaymentApi = useMakePayment();
     
     
     
     // handlers:
     const handlePlaceOrder = useEvent(async (): Promise<string> => {
+        console.log('placing order!');
         try {
             const paypalOrderData = await placeOrder({
                 items : cartItems,                   // cart item(s)
@@ -278,17 +288,20 @@ export default function Checkout() {
         
         isDesktop,
         
-        regularCheckoutSectionRef,
-        shippingMethodOptionRef,
-        billingAddressSectionRef,
-        paymentCardSectionRef,
+        regularCheckoutSectionRef, // stable ref
+        shippingMethodOptionRef,   // stable ref
+        billingAddressSectionRef,  // stable ref
+        paymentCardSectionRef,     // stable ref
         
-        shippingEmailInputRef,
-        shippingAddressInputRef,
-        cardholderInputRef,
+        shippingEmailInputRef,     // stable ref
+        shippingAddressInputRef,   // stable ref
+        cardholderInputRef,        // stable ref
         
         paymentToken: existingPaymentToken,
-        handlePlaceOrder,
+        handlePlaceOrder,          // stable ref
+        
+        placeOrderApi,
+        makePaymentApi,
     }), [
         cartItems,
         hasCart,
@@ -305,6 +318,21 @@ export default function Checkout() {
         isCartDataReady,
         
         isDesktop,
+        
+        // regularCheckoutSectionRef, // stable ref
+        // shippingMethodOptionRef,   // stable ref
+        // billingAddressSectionRef,  // stable ref
+        // paymentCardSectionRef,     // stable ref
+        
+        // shippingEmailInputRef,     // stable ref
+        // shippingAddressInputRef,   // stable ref
+        // cardholderInputRef,        // stable ref
+        
+        existingPaymentToken,
+        // handlePlaceOrder,          // stable ref
+        
+        placeOrderApi,
+        makePaymentApi,
     ]);
     
     
@@ -1162,7 +1190,7 @@ const PaymentMethodCard = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, placeOrderApi, makePaymentApi} = useCheckout();
     
     
     
@@ -1201,10 +1229,10 @@ const CardPaymentButton = () => {
     
     
     // apis:
-    const [placeOrder,  {isLoading: isLoading1, isError: isError1}] = usePlaceOrderMutation();
-    const [makePayment, {isLoading: isLoading2, isError: isError2}] = useMakePaymentMutation();
-    const isLoading = isLoading1 || isLoading2;
-    const isError   = isError1   || isError2;
+    const [           , {isLoading: isOrderBusy, isError: isOrderError, ...others}] = placeOrderApi;
+    const [makePayment, {isLoading: isLoading2, isError: isError2}] = makePaymentApi;
+    const isLoading = isOrderBusy    || isLoading2;
+    const isError   = isOrderError   || isError2;
     
     
     
@@ -1231,56 +1259,61 @@ const CardPaymentButton = () => {
         
         // next:
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
-        const paypalAuthentication = await hostedFields.cardFields.submit({
-            cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
-            billingAddress : {
-                streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
-             // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
-                locality          : billingAsShipping ? shippingCity    : billingCity,    // city
-                region            : billingAsShipping ? shippingZone    : billingZone,    // state
-                postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
-                countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
-            },
-        });
-        /*
-            example:
-            {
-                authenticationReason: undefined
-                authenticationStatus: "APPROVED",
-                card: {
-                    brand: "AMEX",
-                    card_type: "AMEX"
-                    last_digits: "8431",
-                    type: "CREDIT",
-                },
-                liabilityShift: undefined
-                liabilityShifted: undefined
-                orderId: "3EF35246F32986147"
-            }
-        */
-        console.log('paypalAuthentication: ', paypalAuthentication);
-        
-        
-        
         try {
-            const data = await makePayment(paypalAuthentication).unwrap();
-            // Two cases to handle:
-            //   (1) Non-recoverable errors -> Show a failure message
-            //   (2) Successful transaction -> Show confirmation or thank you
-            // This example reads a v2/checkout/orders capture response, propagated from the server
-            // You could use a different API or structure for your 'orderData'
-            if (data.id) {
-                console.log('payment data: ', data);
-                return data.id;
+            const paypalAuthentication = await hostedFields.cardFields.submit({
+                cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
+                billingAddress : {
+                    streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
+                // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
+                    locality          : billingAsShipping ? shippingCity    : billingCity,    // city
+                    region            : billingAsShipping ? shippingZone    : billingZone,    // state
+                    postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
+                    countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
+                },
+            });
+            /*
+                example:
+                {
+                    authenticationReason: undefined
+                    authenticationStatus: "APPROVED",
+                    card: {
+                        brand: "AMEX",
+                        card_type: "AMEX"
+                        last_digits: "8431",
+                        type: "CREDIT",
+                    },
+                    liabilityShift: undefined
+                    liabilityShifted: undefined
+                    orderId: "3EF35246F32986147"
+                }
+            */
+            console.log('paypalAuthentication: ', paypalAuthentication);
+            
+            
+            
+            try {
+                const data = await makePayment(paypalAuthentication).unwrap();
+                // Two cases to handle:
+                //   (1) Non-recoverable errors -> Show a failure message
+                //   (2) Successful transaction -> Show confirmation or thank you
+                // This example reads a v2/checkout/orders capture response, propagated from the server
+                // You could use a different API or structure for your 'orderData'
+                if (data.id) {
+                    console.log('payment data: ', data);
+                    return data.id;
+                }
+                else {
+                    // TODO handle error
+                    return '';
+                } // if
             }
-            else {
-                // TODO handle error
+            catch {
+                // TODO: handle error
                 return '';
-            } // if
+            } // try
         }
         catch {
-            // TODO: handle error
-            return '';
+            // TODO: handle payment authentication rejection
         } // try
     }
     

@@ -5,7 +5,7 @@ import { Main } from '@/components/sections/Main'
 import { Busy } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { GenericSection } from '@/components/sections/GenericSection'
-import { useGetProductListQuery } from '@/store/features/api/apiSlice'
+import { useGetProductList } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage from '@/components/ProductImage'
 import Link from 'next/link'
@@ -21,7 +21,7 @@ const useProductListStyleSheet = dynamicStyleSheets(
 
 export default function ProductList() {
     const styles = useProductListStyleSheet();
-    const {data: productList, isLoading, isError} = useGetProductListQuery();
+    const {data: productList, isLoading, isError} = useGetProductList();
     return (
         <>
             <Head>
