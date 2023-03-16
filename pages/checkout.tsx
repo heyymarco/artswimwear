@@ -1200,85 +1200,87 @@ const PaymentMethodCard = () => {
     // jsx:
     return (
         <PayPalHostedFieldsProvider styles={hostedFieldsStyle} createOrder={handlePlaceOrder}>
-            <Group className='number'>
-                <Label theme='secondary' mild={false} className='solid'>
-                    <Icon icon='credit_card' theme='primary' mild={true} />
-                </Label>
-                <PayPalHostedFieldExtended
-                    className='hostedField'
-                    
-                    id='cardNumber'
-                    hostedFieldType='number'
-                    options={{
-                        selector: '#cardNumber',
-                        placeholder: 'Card Number',
-                    }}
-                />
-                <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
-                    <Icon icon='lock' />
-                    <Tooltip className='tooltip' size='sm' floatingOn={safeSignRef}>
-                        <p>
-                            All transactions are secure and encrypted.
-                        </p>
-                        <p>
-                            Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
-                        </p>
-                        <p>
-                            The card data will be forwarded to our payment gateway (PayPal).<br />
-                            We won&apos;t store your card data into our database.
-                        </p>
-                    </Tooltip>
-                </Label>
-            </Group>
-            <Group className='name'>
-                <Label theme='secondary' mild={false} className='solid'>
-                    <Icon icon='person' theme='primary' mild={true} />
-                </Label>
-                <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' elmRef={cardholderInputRef} />
-            </Group>
-            <Group className='expiry'>
-                <Label theme='secondary' mild={false} className='solid'>
-                    <Icon icon='date_range' theme='primary' mild={true} />
-                </Label>
-                <PayPalHostedFieldExtended
-                    className='hostedField'
-                    
-                    id='cardExpires'
-                    hostedFieldType='expirationDate'
-                    options={{
-                        selector: '#cardExpires',
-                        placeholder: 'MM / YY',
-                    }}
-                />
-            </Group>
-            <Group className='csc'>
-                <Label theme='secondary' mild={false} className='solid'>
-                    <Icon icon='fiber_pin' theme='primary' mild={true} />
-                </Label>
-                <PayPalHostedFieldExtended
-                    className='hostedField'
-                    
-                    id='cardCvv'
-                    hostedFieldType='cvv'
-                    options={{
-                        selector: '#cardCvv',
-                        placeholder: 'Security Code',
-                    }}
-                />
-                <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
-                    <Icon icon='help' />
-                    <Tooltip className='tooltip' size='sm' floatingOn={cscSignRef}>
-                        <p>
-                            3-digit security code usually found on the back of your card.
-                        </p>
-                        <p>
-                            American Express cards have a 4-digit code located on the front.
-                        </p>
-                    </Tooltip>
-                </Label>
-            </Group>
-            <hr className='horz' />
-            <CardPaymentButton />
+            <ValidationProvider enableValidation={true/*paymentCardValidation*/}>
+                <Group className='number'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='credit_card' theme='primary' mild={true} />
+                    </Label>
+                    <PayPalHostedFieldExtended
+                        className='hostedField'
+                        
+                        id='cardNumber'
+                        hostedFieldType='number'
+                        options={{
+                            selector: '#cardNumber',
+                            placeholder: 'Card Number',
+                        }}
+                    />
+                    <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
+                        <Icon icon='lock' />
+                        <Tooltip className='tooltip' size='sm' floatingOn={safeSignRef}>
+                            <p>
+                                All transactions are secure and encrypted.
+                            </p>
+                            <p>
+                                Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
+                            </p>
+                            <p>
+                                The card data will be forwarded to our payment gateway (PayPal).<br />
+                                We won&apos;t store your card data into our database.
+                            </p>
+                        </Tooltip>
+                    </Label>
+                </Group>
+                <Group className='name'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='person' theme='primary' mild={true} />
+                    </Label>
+                    <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' elmRef={cardholderInputRef} />
+                </Group>
+                <Group className='expiry'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='date_range' theme='primary' mild={true} />
+                    </Label>
+                    <PayPalHostedFieldExtended
+                        className='hostedField'
+                        
+                        id='cardExpires'
+                        hostedFieldType='expirationDate'
+                        options={{
+                            selector: '#cardExpires',
+                            placeholder: 'MM / YY',
+                        }}
+                    />
+                </Group>
+                <Group className='csc'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='fiber_pin' theme='primary' mild={true} />
+                    </Label>
+                    <PayPalHostedFieldExtended
+                        className='hostedField'
+                        
+                        id='cardCvv'
+                        hostedFieldType='cvv'
+                        options={{
+                            selector: '#cardCvv',
+                            placeholder: 'Security Code',
+                        }}
+                    />
+                    <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
+                        <Icon icon='help' />
+                        <Tooltip className='tooltip' size='sm' floatingOn={cscSignRef}>
+                            <p>
+                                3-digit security code usually found on the back of your card.
+                            </p>
+                            <p>
+                                American Express cards have a 4-digit code located on the front.
+                            </p>
+                        </Tooltip>
+                    </Label>
+                </Group>
+                <hr className='horz' />
+                <CardPaymentButton />
+            </ValidationProvider>
         </PayPalHostedFieldsProvider>
     );
 }
@@ -1354,6 +1356,7 @@ const CardPaymentButton = () => {
         // next:
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         try {
+            console.log('cardholder name: ', cardholderInputRef?.current?.value);
             // submit card data to PayPal_API to get authentication:
             const paypalAuthentication = await hostedFields.cardFields.submit({
                 // trigger 3D Secure authentication:

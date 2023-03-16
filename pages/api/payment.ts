@@ -52,7 +52,8 @@ const generateAccessToken = async () => {
             nonce: '2023-03-14T05:52:06Z8D_KHLLcduIuH9NK9MWNlskEse56LZtAEkvtDncxcEU'
         }
     */
-    console.log('created: accessTokenData: ', accessTokenData);
+    console.log('created: accessTokenData');
+    // console.log('created: accessTokenData: ', accessTokenData);
     if (!accessTokenData || accessTokenData.error) throw accessTokenData?.error_description ?? accessTokenData?.error ?? Error('Fetch access token failed.');
     return accessTokenData.access_token;
 }
@@ -78,7 +79,8 @@ const generatePaymentToken = async () => {
             expires_in: 3600, // seconds
         }
     */
-    console.log('created: paymentTokenData: ', paymentTokenData);
+    console.log('created: paymentTokenData');
+    // console.log('created: paymentTokenData: ', paymentTokenData);
     if (!paymentTokenData || paymentTokenData.error) throw paymentTokenData?.error_description ?? paymentTokenData?.error ?? Error('Fetch paymentToken failed.');
     return {
         paymentToken : paymentTokenData.client_token,
@@ -210,11 +212,12 @@ export default async (
                 const productUnitPrice  = productList.entities[productId]?.price;
                 const productUnitWeight = productList.entities[productId]?.shippingWeight;
                 
-                totalProductPrices  += productUnitPrice  ?? 0;
-                totalProductWeights += productUnitWeight ?? 0;
+                totalProductPrices  += (productUnitPrice  ?? 0) * quantity;
+                totalProductWeights += (productUnitWeight ?? 0) * quantity;
             } // for
             const totalShippingCosts = calculateShippingCost(totalProductWeights, selectedShipping);
             const totalCost = totalProductPrices + (totalShippingCosts ?? 0);
+            console.log('totalCost: ', totalCost);
             
             
             
@@ -232,7 +235,8 @@ export default async (
                         {
                             amount: {
                                 currency_code: "USD",
-                                value: totalCost, // TODO: convert idr to usd
+                                // value: totalCost, // TODO: convert idr to usd
+                                value: 100,
                             },
                         },
                     ],
@@ -338,13 +342,27 @@ export default async (
                         ]
                     }
                 */
-                console.log('paypalPaymentData: ', paypalPaymentData);
+                console.log('capture: paypalPaymentData: ', paypalPaymentData);
+                const captureData = paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0];
+                console.log('captureData : ', captureData);
+                console.log('captureData.status : ', captureData?.status);
                 
                 
-                
-                return res.status(200).json({ // OK
-                    id: 'payment#123#approved',
-                });
+                switch (captureData?.status) {
+                    case 'COMPLETED': {
+                        return res.status(200).json({ // payment approved
+                            id: 'payment#123#approved',
+                        });
+                    } break;
+                    case 'DECLINED': {
+                        return res.status(402).json({ // payment declined
+                            error: 'payment declined',
+                        });
+                    } break;
+                    default: {
+                        return res.status(500).send('unknown error');
+                    } break;
+                } // switch
             }
             catch (error: any) {
                 return res.status(500).send(error?.message ?? error ?? 'error');
