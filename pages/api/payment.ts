@@ -299,14 +299,19 @@ export default async (
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
-            const paypalPaymentData = await handlePaypalResponse(response);
-            console.log('paypalPaymentData: ', paypalPaymentData);
-            
-            
-            
-            return res.status(200).json({ // OK
-                id: 'payment#123#approved',
-            });
+            try {
+                const paypalPaymentData = await handlePaypalResponse(response);
+                console.log('paypalPaymentData: ', paypalPaymentData);
+                
+                
+                
+                return res.status(200).json({ // OK
+                    id: 'payment#123#approved',
+                });
+            }
+            catch (error: any) {
+                return res.status(500).send(error?.message ?? error ?? 'error');
+            } // try
         } break;
         default:
             return res.status(400).end();
