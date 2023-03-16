@@ -41,7 +41,7 @@ import {
     
     
     // utility-components:
-    VisuallyHidden
+    VisuallyHidden,
 }                           from '@reusable-ui/components'  // a set of official Reusable-UI components
 
 // redux:
@@ -53,6 +53,11 @@ import type {
 import type {
     CountryEntry,
 }                           from '@/store/features/api/apiSlice'
+
+// internals:
+import {
+    CountryButton,
+}                           from '@/components/CountryButton/CountryButton'
 
 
 
@@ -161,7 +166,13 @@ const AddressField = (props: AddressFieldProps) => {
                         <input type='text' tabIndex={-1} role='none' required autoComplete={`${addressTypeFn}shipping country`}        value={country}   onChange={onCountryChange}      ref={countryInputRefInternal} />
                     </VisuallyHidden>
                 </Label>
-                <DropdownListButton buttonChildren={selectedCountry?.name ?? 'Country'} theme={!enableValidation ? 'primary' : (selectedCountry ? 'success' : 'danger')} mild={true}>
+                <DropdownListButton
+                    buttonChildren={selectedCountry?.name ?? 'Country'}
+                    buttonComponent={<CountryButton isValid={!!selectedCountry} />}
+                    
+                    theme='primary'
+                    mild={true}
+                >
                     {!!filteredCountryList && filteredCountryList.map(({code, name}, index) =>
                         <ListItem
                             // key={code} // the country may be duplicated in several places

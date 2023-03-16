@@ -29,6 +29,8 @@ const useCheckoutStyleSheet = dynamicStyleSheets(
 
 
 
+const invalidSelector = ':is(.invalidating, .invalidated)';
+
 const hostedFieldsStyle = {
     // Style all elements
     input: {
@@ -608,9 +610,10 @@ const NavCheckout = () => {
         { text: 'Continue to shipping' , action: () => {
             // validate:
             dispatch(setShippingValidation(true));
-            if (!!regularCheckoutSectionRef?.current?.querySelector(':invalid')) { // there is an/some invalid field
+            const invalidFields = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
+            if (invalidFields?.length) { // there is an/some invalid field
                 // TODO: show modal error message
-                console.log('there is an/some invalid field');
+                console.log('there is an/some invalid field', invalidFields);
                 return;
             } // if
             
@@ -1193,6 +1196,8 @@ const PaymentMethodCard = () => {
     
     // refs:
     const safeSignRef = useRef<HTMLElement|null>(null);
+    const nameSignRef = useRef<HTMLElement|null>(null);
+    const dateSignRef = useRef<HTMLElement|null>(null);
     const cscSignRef  = useRef<HTMLElement|null>(null);
     
     
@@ -1236,6 +1241,14 @@ const PaymentMethodCard = () => {
                         <Icon icon='person' theme='primary' mild={true} />
                     </Label>
                     <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' elmRef={cardholderInputRef} />
+                    <Label theme='success' mild={true} className='solid' elmRef={nameSignRef}>
+                        <Icon icon='help' />
+                        <Tooltip className='tooltip' size='sm' floatingOn={nameSignRef}>
+                            <p>
+                                The owner name as printed on front card.
+                            </p>
+                        </Tooltip>
+                    </Label>
                 </Group>
                 <Group className='expiry'>
                     <Label theme='secondary' mild={false} className='solid'>
@@ -1251,6 +1264,14 @@ const PaymentMethodCard = () => {
                             placeholder: 'MM / YY',
                         }}
                     />
+                    <Label theme='success' mild={true} className='solid' elmRef={dateSignRef}>
+                        <Icon icon='help' />
+                        <Tooltip className='tooltip' size='sm' floatingOn={dateSignRef}>
+                            <p>
+                                The expiration date as printed on front card.
+                            </p>
+                        </Tooltip>
+                    </Label>
                 </Group>
                 <Group className='csc'>
                     <Label theme='secondary' mild={false} className='solid'>
@@ -1341,13 +1362,13 @@ const CardPaymentButton = () => {
         
         // validate:
         if (!billingAsShipping) dispatch(setBillingValidation(true));
-        if (
-            (!billingAsShipping && !!billingAddressSectionRef?.current?.querySelector(':invalid'))
-            ||
-            !!paymentCardSectionRef?.current?.querySelector(':invalid')
-        ) { // there is an/some invalid field
+        const invalidFields = [
+            ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
+            ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),
+        ];
+        if (invalidFields?.length) { // there is an/some invalid field
             // TODO: show modal error message
-            console.log('there is an/some invalid field', ((!billingAsShipping || undefined) && !!billingAddressSectionRef?.current?.querySelector(':invalid')) ?? paymentCardSectionRef?.current?.querySelector(':invalid'));
+            console.log('there is an/some invalid field', invalidFields);
             return;
         } // if
         
