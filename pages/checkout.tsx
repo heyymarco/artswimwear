@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Accordion, AccordionItem, Badge, Busy, ButtonIcon, Check, Container, controlValues, Details, DropdownListButton, EditableTextControl, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
+import { Accordion, AccordionItem, Badge, BasicProps, Busy, ButtonIcon, Check, Container, controlValues, Details, DropdownListButton, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetShippingList, usePlaceOrder, useMakePayment } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -15,7 +15,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
 import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
-import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields } from '@paypal/react-paypal-js'
+import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName } from '@paypal/paypal-js';
+import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/utilities';
 import AddressField from '@/components/AddressFields'
 
@@ -51,6 +52,99 @@ const hostedFieldsStyle = {
     // '.invalid': {
     //     'color': 'red'
     // },
+}
+
+interface PayPalHostedFieldExtendedProps
+    extends
+        EditableTextControlProps,
+        Pick<PayPalHostedFieldProps,
+            |'hostedFieldType'
+            |'options'
+            |'id'
+            // |'className'
+            // |'lang'
+            // |'title'
+            // |'style'
+        >
+{
+}
+const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
+    // rest props:
+    const {
+        hostedFieldType,
+        options,
+        id,
+    ...restEditableTextControlProps} = props;
+    
+    
+    
+    // states:
+    const [isFocused, setIsFocused] = useState<boolean>(false);
+    const [isValid  , setIsValid  ] = useState<boolean>(true);
+    
+    
+    
+    // handlers:
+    const handleFocusBlur = useEvent((event: HostedFieldsEvent) => {
+        const field = event.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
+        if (!field) return;
+        if (field.isFocused === isFocused) return;
+        setIsFocused(field.isFocused);
+    });
+    const handleValidInvalid = useEvent((event: HostedFieldsEvent) => {
+        const field = event.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
+        if (!field) return;
+        if (field.isValid === isValid) return;
+        setIsValid(field.isValid);
+    });
+    
+    
+    
+    // dom effects:
+    const {cardFields} = usePayPalHostedFields();
+    useEffect(() => {
+        // conditions:
+        if (!cardFields)      return;
+        if (!hostedFieldType) return;
+        
+        
+        
+        // setups:
+        cardFields.on('focus'          , handleFocusBlur);
+        cardFields.on('blur'           , handleFocusBlur);
+        cardFields.on('validityChange' , handleValidInvalid);
+        
+        
+        
+        // cleanups:
+        return () => {
+            cardFields.off?.('focus'          , handleFocusBlur);
+            cardFields.off?.('blur'           , handleFocusBlur);
+            cardFields.off?.('validityChange' , handleValidInvalid);
+        };
+    }, [cardFields, hostedFieldType]);
+    
+    
+    
+    // jsx:
+    return (
+        <EditableTextControl
+            {...restEditableTextControlProps}
+            
+            tabIndex={-1}
+            
+            focused={isFocused}
+            isValid={isValid}
+        >
+            <PayPalHostedField
+                {...{
+                    hostedFieldType,
+                    options,
+                    id,
+                }}
+            />
+        </EditableTextControl>
+    );
 }
 
 
@@ -1110,16 +1204,16 @@ const PaymentMethodCard = () => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='credit_card' theme='primary' mild={true} />
                 </Label>
-                <EditableTextControl className='hostedField' tabIndex={-1}>
-                    <PayPalHostedField
-                        id='cardNumber'
-                        hostedFieldType='number'
-                        options={{
-                            selector: '#cardNumber',
-                            placeholder: 'Card Number',
-                        }}
-                    />
-                </EditableTextControl>
+                <PayPalHostedFieldExtended
+                    className='hostedField'
+                    
+                    id='cardNumber'
+                    hostedFieldType='number'
+                    options={{
+                        selector: '#cardNumber',
+                        placeholder: 'Card Number',
+                    }}
+                />
                 <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
                     <Icon icon='lock' />
                     <Tooltip className='tooltip' size='sm' floatingOn={safeSignRef}>
@@ -1146,31 +1240,31 @@ const PaymentMethodCard = () => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='date_range' theme='primary' mild={true} />
                 </Label>
-                <EditableTextControl className='hostedField' tabIndex={-1}>
-                    <PayPalHostedField
-                        id='cardExpires'
-                        hostedFieldType='expirationDate'
-                        options={{
-                            selector: '#cardExpires',
-                            placeholder: 'MM / YY',
-                        }}
-                    />
-                </EditableTextControl>
+                <PayPalHostedFieldExtended
+                    className='hostedField'
+                    
+                    id='cardExpires'
+                    hostedFieldType='expirationDate'
+                    options={{
+                        selector: '#cardExpires',
+                        placeholder: 'MM / YY',
+                    }}
+                />
             </Group>
             <Group className='csc'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='fiber_pin' theme='primary' mild={true} />
                 </Label>
-                <EditableTextControl className='hostedField' tabIndex={-1}>
-                    <PayPalHostedField
-                        id='cardCvv'
-                        hostedFieldType='cvv'
-                        options={{
-                            selector: '#cardCvv',
-                            placeholder: 'Security Code',
-                        }}
-                    />
-                </EditableTextControl>
+                <PayPalHostedFieldExtended
+                    className='hostedField'
+                    
+                    id='cardCvv'
+                    hostedFieldType='cvv'
+                    options={{
+                        selector: '#cardCvv',
+                        placeholder: 'Security Code',
+                    }}
+                />
                 <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
                     <Icon icon='help' />
                     <Tooltip className='tooltip' size='sm' floatingOn={cscSignRef}>
@@ -1268,7 +1362,7 @@ const CardPaymentButton = () => {
                 cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
                 billingAddress : {
                     streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
-                // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
+                 // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
                     locality          : billingAsShipping ? shippingCity    : billingCity,    // city
                     region            : billingAsShipping ? shippingZone    : billingZone,    // state
                     postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code

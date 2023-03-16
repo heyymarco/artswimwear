@@ -408,11 +408,6 @@ export default () => {
                 }),
                 ...children('.name', {
                     gridArea: 'name',
-                    
-                    // sync the style to CardNumber, ExpirationDate, SecurityCode:
-                    ...descendants('*', {
-                        boxShadow: 'none !important',
-                    }),
                 }),
                 ...children('.expiry', {
                     gridArea: 'expiry',
