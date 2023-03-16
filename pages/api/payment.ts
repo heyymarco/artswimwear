@@ -221,9 +221,9 @@ export default async (
             const accessToken = await generateAccessToken();
             const url = `${paypalURL}/v2/checkout/orders`;
             const paypalResponse = await fetch(url, {
-                method: "post",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({
@@ -287,14 +287,14 @@ export default async (
                     authenticationReason: undefined
                     authenticationStatus: "APPROVED",
                     card: {
-                        brand: "AMEX",
-                        card_type: "AMEX"
-                        last_digits: "8431",
+                        brand: "VISA",
+                        card_type: "VISA",
+                        last_digits: "7704",
                         type: "CREDIT",
                     },
                     liabilityShift: undefined
                     liabilityShifted: undefined
-                    orderId: "3EF35246F32986147"
+                    orderId: "1N785713SG267310M"
                 }
             */
             
@@ -303,14 +303,41 @@ export default async (
             const accessToken = await generateAccessToken();
             const url = `${paypalURL}/v2/checkout/orders/${orderId}/capture`;
             const response = await fetch(url, {
-                method: "post",
+                method: 'POST',
                 headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${accessToken}`,
                 },
             });
             try {
                 const paypalPaymentData = await handlePaypalResponse(response);
+                /*
+                    example:
+                    {
+                        id: '1N785713SG267310M',
+                        status: 'COMPLETED',
+                        payment_source: {
+                            card: {
+                                last_digits: '7704',
+                                brand: 'VISA',
+                                type: 'CREDIT'
+                            }
+                        },
+                        purchase_units: [
+                            {
+                                reference_id: 'default',
+                                payments: [Object]
+                            }
+                        ],
+                        links: [
+                            {
+                                href: 'https://api.sandbox.paypal.com/v2/checkout/orders/1N785713SG267310M',
+                                rel: 'self',
+                                method: 'GET'
+                            }
+                        ]
+                    }
+                */
                 console.log('paypalPaymentData: ', paypalPaymentData);
                 
                 

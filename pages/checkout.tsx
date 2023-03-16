@@ -1260,7 +1260,11 @@ const CardPaymentButton = () => {
         // next:
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         try {
+            // submit card data to PayPal_API to get authentication:
             const paypalAuthentication = await hostedFields.cardFields.submit({
+                // trigger 3D Secure authentication:
+                contingencies: ['SCA_WHEN_REQUIRED'],
+                
                 cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
                 billingAddress : {
                     streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
@@ -1277,14 +1281,14 @@ const CardPaymentButton = () => {
                     authenticationReason: undefined
                     authenticationStatus: "APPROVED",
                     card: {
-                        brand: "AMEX",
-                        card_type: "AMEX"
-                        last_digits: "8431",
+                        brand: "VISA",
+                        card_type: "VISA",
+                        last_digits: "7704",
                         type: "CREDIT",
                     },
                     liabilityShift: undefined
                     liabilityShifted: undefined
-                    orderId: "3EF35246F32986147"
+                    orderId: "1N785713SG267310M"
                 }
             */
             console.log('paypalAuthentication: ', paypalAuthentication);
@@ -1292,6 +1296,7 @@ const CardPaymentButton = () => {
             
             
             try {
+                // then forward the authentication to backend_API to receive the fund:
                 const data = await makePayment(paypalAuthentication).unwrap();
                 // Two cases to handle:
                 //   (1) Non-recoverable errors -> Show a failure message
