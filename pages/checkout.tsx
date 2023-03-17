@@ -12,8 +12,8 @@ import { Section } from '@/components/sections/Section'
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation } from '@/store/features/checkout/checkoutSlice'
+import { AccessibilityProvider, breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName } from '@paypal/paypal-js';
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
@@ -621,6 +621,9 @@ const NavCheckout = () => {
     
     
     // stores:
+    const {
+        paymentIsProcessing,
+    } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
     
@@ -660,10 +663,10 @@ const NavCheckout = () => {
     // jsx:
     return (
         <>
-            <ButtonIcon className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link' onClick={prevAction.action}>
+            <ButtonIcon enabled={!paymentIsProcessing} className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link' onClick={prevAction.action}>
                 {prevAction.text}
             </ButtonIcon>
-            {(checkoutStep !== 'payment') && <ButtonIcon className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end' onClick={nextAction.action}>
+            {(checkoutStep !== 'payment') && <ButtonIcon enabled={!paymentIsProcessing} className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end' onClick={nextAction.action}>
                 {nextAction.text}
             </ButtonIcon>}
         </>
@@ -856,52 +859,57 @@ const OrderReview = () => {
     
     
     // stores:
+    const {
+        paymentIsProcessing,
+    } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
     
     
     // jsx:
     return (
-        <table>
-            <tbody>
-                <tr>
-                    <td>Contact</td>
-                    <td><ShippingContactReview /></td>
-                    <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                            dispatch(setCheckoutStep('info'));
-                            setTimeout(() => {
-                                shippingEmailInputRef?.current?.focus?.();
-                            }, 100);
-                        }}>Change</ButtonIcon>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Ship to</td>
-                    <td><ShippingAddressReview /></td>
-                    <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                            dispatch(setCheckoutStep('info'));
-                            setTimeout(() => {
-                                shippingAddressInputRef?.current?.focus?.();
-                            }, 100);
-                        }}>Change</ButtonIcon>
-                    </td>
-                </tr>
-                {(checkoutStep !== 'shipping') && <tr>
-                    <td>Method</td>
-                    <td><ShippingMethodReview /></td>
-                    <td>
-                        <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                            dispatch(setCheckoutStep('shipping'));
-                            setTimeout(() => {
-                                shippingMethodOptionRef?.current?.focus?.();
-                            }, 100);
-                        }}>Change</ButtonIcon>
-                    </td>
-                </tr>}
-            </tbody>
-        </table>
+        <AccessibilityProvider enabled={!paymentIsProcessing}>
+            <table>
+                <tbody>
+                    <tr>
+                        <td>Contact</td>
+                        <td><ShippingContactReview /></td>
+                        <td>
+                            <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
+                                dispatch(setCheckoutStep('info'));
+                                setTimeout(() => {
+                                    shippingEmailInputRef?.current?.focus?.();
+                                }, 100);
+                            }}>Change</ButtonIcon>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ship to</td>
+                        <td><ShippingAddressReview /></td>
+                        <td>
+                            <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
+                                dispatch(setCheckoutStep('info'));
+                                setTimeout(() => {
+                                    shippingAddressInputRef?.current?.focus?.();
+                                }, 100);
+                            }}>Change</ButtonIcon>
+                        </td>
+                    </tr>
+                    {(checkoutStep !== 'shipping') && <tr>
+                        <td>Method</td>
+                        <td><ShippingMethodReview /></td>
+                        <td>
+                            <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
+                                dispatch(setCheckoutStep('shipping'));
+                                setTimeout(() => {
+                                    shippingMethodOptionRef?.current?.focus?.();
+                                }, 100);
+                            }}>Change</ButtonIcon>
+                        </td>
+                    </tr>}
+                </tbody>
+            </table>
+        </AccessibilityProvider>
     );
 }
 const ShippingContactReview = () => {
@@ -1087,6 +1095,10 @@ const Payment = () => {
         billingZone,
         billingZip,
         billingCountry,
+        
+        
+        
+        paymentIsProcessing,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -1098,7 +1110,7 @@ const Payment = () => {
                 <p>
                     Select the address that matches your card or payment method.
                 </p>
-                <ExclusiveAccordion theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
+                <ExclusiveAccordion enabled={!paymentIsProcessing} theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
                     // conditions:
                     if (!expanded) return;
                     
@@ -1174,7 +1186,10 @@ const PaymentMethod = () => {
     
     
     // stores:
-    const {paymentMethod} = useSelector(selectCheckoutState);
+    const {
+        paymentMethod,
+        paymentIsProcessing,
+    } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
     
@@ -1191,7 +1206,7 @@ const PaymentMethod = () => {
             <p>
                 All transactions are secure and encrypted.
             </p>
-            <ExclusiveAccordion theme='primary' expandedListIndex={paymentMethod ?? 0} onExpandedChange={({expanded, listIndex}) => {
+            <ExclusiveAccordion enabled={!paymentIsProcessing} theme='primary' expandedListIndex={paymentMethod ?? 0} onExpandedChange={({expanded, listIndex}) => {
                 // conditions:
                 if (!expanded) return;
                 
@@ -1392,16 +1407,17 @@ const CardPaymentButton = () => {
         billingZone,
         billingZip,
         billingCountry,
+        
+        
+        
+        paymentIsProcessing,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
     
     
     // apis:
-    const [           , {isLoading: isOrderBusy, isError: isOrderError, ...others}] = placeOrderApi;
-    const [makePayment, {isLoading: isLoading2, isError: isError2}] = makePaymentApi;
-    const isLoading = isOrderBusy    || isLoading2;
-    const isError   = isOrderError   || isError2;
+    const [makePayment] = makePaymentApi;
     
     
     
@@ -1431,6 +1447,11 @@ const CardPaymentButton = () => {
         // next:
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         try {
+            // update the UI:
+            dispatch(setPaymentIsProcessing(true));
+            
+            
+            
             // submit card data to PayPal_API to get authentication:
             const paypalAuthentication = await hostedFields.cardFields.submit({
                 // trigger 3D Secure authentication:
@@ -1490,6 +1511,10 @@ const CardPaymentButton = () => {
         }
         catch {
             // TODO: handle payment authentication rejection
+        }
+        finally {
+            // update the UI:
+            dispatch(setPaymentIsProcessing(false));
         } // try
     }
     
@@ -1497,7 +1522,7 @@ const CardPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon icon={!isLoading ? 'monetization_on' : 'busy'} enabled={!isLoading} className='payNow' size='lg' gradient={true} onClick={handleMakePayment}>
+        <ButtonIcon icon={!paymentIsProcessing ? 'monetization_on' : 'busy'} enabled={!paymentIsProcessing} className='payNow' size='lg' gradient={true} onClick={handleMakePayment}>
             Pay Now
         </ButtonIcon>
     );
