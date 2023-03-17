@@ -1377,7 +1377,6 @@ const CardPaymentButton = () => {
         // next:
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         try {
-            console.log('cardholder name: ', cardholderInputRef?.current?.value);
             // submit card data to PayPal_API to get authentication:
             const paypalAuthentication = await hostedFields.cardFields.submit({
                 // trigger 3D Secure authentication:
