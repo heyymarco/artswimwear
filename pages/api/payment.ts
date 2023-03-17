@@ -453,7 +453,7 @@ export default async (
                             name                  : {
                                 // full_name string
                                 // When the party is a person, the party's full name.
-                                full_name         : shippingProvider,
+                                full_name         : `${shippingFirstName} ${shippingLastName}`,
                             },
                             
                             // type enum|undefined
