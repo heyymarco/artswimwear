@@ -1313,11 +1313,11 @@ const CardPaymentButton = () => {
     
     // stores:
     const {
-        shippingFirstName, // TODO: use it
-        shippingLastName, // TODO: use it
+        shippingFirstName : _shippingFirstName, // not implemented yet, because billingFirstName is not implemented
+        shippingLastName  : _shippingLastName,  // not implemented yet, because billingLastName  is not implemented
         
-        shippingPhone, // TODO: use it
-        shippingEmail, // TODO: use it
+        shippingPhone     : _shippingPhone,     // not implemented yet, because billingPhone     is not implemented
+        shippingEmail     : _shippingEmail,     // not implemented yet, because billingEmail     is not implemented
         
         shippingCountry,
         shippingAddress,
@@ -1329,11 +1329,11 @@ const CardPaymentButton = () => {
         
         billingAsShipping,
         
-        billingFirstName : _billingFirstName, // not implemented, already to use cardholderName
-        billingLastName  : _billingLastName,  // not implemented, already to use cardholderName
+        billingFirstName : _billingFirstName,   // not implemented, already to use cardholderName
+        billingLastName  : _billingLastName,    // not implemented, already to use cardholderName
         
-        billingPhone     : _billingPhone,     // not implemented yet
-        billingEmail     : _billingEmail,     // not implemented yet
+        billingPhone     : _billingPhone,       // not implemented yet
+        billingEmail     : _billingEmail,       // not implemented yet
         
         billingAddress,
         billingCity,
