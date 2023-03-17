@@ -224,6 +224,7 @@ export default async (
             }
             const reportedProductItem : ReportedProductItem[] = [];
             let totalProductPricesConverted = 0, totalProductWeights : number|undefined = undefined;
+            const defaultCurrencyCode = await getDefaultCurrencyCode();
             for (const item of items) {
                 if (!item || (typeof(item) !== 'object')) return res.status(400).end(); // bad req
                 const {
@@ -290,7 +291,7 @@ export default async (
                         amount                    : {
                             // currency_code string required
                             // The three-character ISO-4217 currency code that identifies the currency.
-                            currency_code         : await getDefaultCurrencyCode(),
+                            currency_code         : defaultCurrencyCode,
                             
                             // value string required
                             /*
@@ -318,14 +319,14 @@ export default async (
                                 // item_total Money|undefined
                                 // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                                 item_total        : {
-                                    currency_code : await getDefaultCurrencyCode(),
+                                    currency_code : defaultCurrencyCode,
                                     value         : totalProductPricesConverted,
                                 },
                                 
                                 // shipping Money|undefined
                                 // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
                                 shipping          : (totalShippingCostsConverted === undefined) ? undefined : {
-                                    currency_code : await getDefaultCurrencyCode(),
+                                    currency_code : defaultCurrencyCode,
                                     value         : totalShippingCostsConverted,
                                 },
                                 
@@ -351,50 +352,50 @@ export default async (
                         // The purchase description.
                         description               : undefined,
                         
-                        // // items array (contains the item object)
-                        // // An array of items that the customer purchases from the merchant.
-                        // items                     : reportedProductItem.map(async (item) => ({
-                        //     // name string required
-                        //     // The item name or title.
-                        //     name                  : item.name,
+                        // items array (contains the item object)
+                        // An array of items that the customer purchases from the merchant.
+                        items                     : reportedProductItem.map((item) => ({
+                            // name string required
+                            // The item name or title.
+                            name                  : item.name,
                             
-                        //     // quantity string required
-                        //     // The item quantity. Must be a whole number.
-                        //     quantity              : `${item.quantity}`,
+                            // quantity string required
+                            // The item quantity. Must be a whole number.
+                            quantity              : item.quantity,
                             
-                        //     // unit_amount Money required
-                        //     // The item price or rate per unit.
-                        //     unit_amount           : {
-                        //         // currency_code string required
-                        //         // The three-character ISO-4217 currency code that identifies the currency.
-                        //         currency_code     : await getDefaultCurrencyCode(),
+                            // unit_amount Money required
+                            // The item price or rate per unit.
+                            unit_amount           : {
+                                // currency_code string required
+                                // The three-character ISO-4217 currency code that identifies the currency.
+                                currency_code     : defaultCurrencyCode,
                                 
-                        //         // value string required
-                        //         /*
-                        //             The value, which might be:
-                        //             * An integer for currencies like JPY that are not typically fractional.
-                        //             * A decimal fraction for currencies like TND that are subdivided into thousandths.
-                        //         */
-                        //         value             : item.unitPriceConverted ?? 0,
-                        //     },
+                                // value string required
+                                /*
+                                    The value, which might be:
+                                    * An integer for currencies like JPY that are not typically fractional.
+                                    * A decimal fraction for currencies like TND that are subdivided into thousandths.
+                                */
+                                value             : item.unitPriceConverted ?? 0,
+                            },
                             
-                        //     // category enum|undefined
-                        //     // The item category type.
-                        //     // The possible values are: 'DIGITAL_GOODS'|'PHYSICAL_GOODS'|'DONATION'
-                        //     category              : (item.unitWeight === undefined) ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS',
+                            // category enum|undefined
+                            // The item category type.
+                            // The possible values are: 'DIGITAL_GOODS'|'PHYSICAL_GOODS'|'DONATION'
+                            category              : (item.unitWeight === undefined) ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS',
                             
-                        //     // description string|undefined
-                        //     // The detailed item description.
-                        //     description           : undefined,
+                            // description string|undefined
+                            // The detailed item description.
+                            description           : undefined,
                             
-                        //     // sku string|undefined
-                        //     // The stock keeping unit (SKU) for the item.
-                        //     sku                   : undefined,
+                            // sku string|undefined
+                            // The stock keeping unit (SKU) for the item.
+                            sku                   : undefined,
                             
-                        //     // tax object|undefined
-                        //     // The item tax for each unit.
-                        //     tax                   : undefined,
-                        // })),
+                            // tax object|undefined
+                            // The item tax for each unit.
+                            tax                   : undefined,
+                        })),
                         
                         // payee object|undefined
                         payee                     : {
