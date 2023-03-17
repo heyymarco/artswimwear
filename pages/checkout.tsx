@@ -117,34 +117,21 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     
     useEffect(() => {
         // conditions:
-        if (isFocused !== undefined) return;
-        if (!cardFields) return;
+        if (!cardFields)      return;
+        if (!hostedFieldType) return;
         const field = cardFields.getState()?.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
-        if (!field) return;
-        
-        
-        
-        // setups:
-        setIsFocused(field.isFocused);
-    }, [cardFields, isFocused]);
-    
-    useEffect(() => {
-        // conditions:
-        if (isValid !== undefined) return;
-        if (!cardFields) return;
-        const field = cardFields.getState()?.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
-        if (!field) return;
+        if (!field)           return;
         
         
         
         // setups:
         setIsValid(field.isValid);
-    }, [cardFields, isValid]);
+        setIsFocused(field.isFocused);
+    }, [cardFields, hostedFieldType]);
     
     useEffect(() => {
         // conditions:
-        if (!cardFields)      return;
-        if (!hostedFieldType) return;
+        if (!cardFields) return;
         
         
         
@@ -161,7 +148,7 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
             cardFields.off?.('blur'           , handleFocusBlur);
             cardFields.off?.('validityChange' , handleValidInvalid);
         };
-    }, [cardFields, hostedFieldType]);
+    }, [cardFields]);
     
     
     
