@@ -282,7 +282,7 @@ export default async (
                         amount                    : {
                             // currency_code string required
                             // The three-character ISO-4217 currency code that identifies the currency.
-                            currency_code         : getDefaultCurrencyCode(),
+                            currency_code         : await getDefaultCurrencyCode(),
                             
                             // value string required
                             /*
@@ -310,14 +310,14 @@ export default async (
                                 // item_total Money|undefined
                                 // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                                 item_total        : {
-                                    currency_code : getDefaultCurrencyCode(),
+                                    currency_code : await getDefaultCurrencyCode(),
                                     value         : totalProductPrices,
                                 },
                                 
                                 // shipping Money|undefined
                                 // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
                                 shipping          : (totalShippingCosts === undefined) ? undefined : {
-                                    currency_code : getDefaultCurrencyCode(),
+                                    currency_code : await getDefaultCurrencyCode(),
                                     value         : totalShippingCosts,
                                 },
                                 
@@ -359,7 +359,7 @@ export default async (
                             unit_amount           : {
                                 // currency_code string required
                                 // The three-character ISO-4217 currency code that identifies the currency.
-                                currency_code     : getDefaultCurrencyCode(),
+                                currency_code     : await getDefaultCurrencyCode(),
                                 
                                 // value string required
                                 /*
