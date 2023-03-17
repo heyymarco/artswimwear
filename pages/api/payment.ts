@@ -99,6 +99,13 @@ const handlePaypalResponse = async (response: Response) => {
     throw new Error(errorMessage);
 }
 
+const getDefaultCurrencyCode = async (): Promise<string> => {
+    return 'USD';
+}
+const convertCurrencyIfRequired = async (from: number): Promise<number> => {
+    return from / 15000; // TODO: convert USD to IDR
+}
+
 
 
 export default async (
@@ -164,11 +171,11 @@ export default async (
                 || !shippingPhone     || (typeof(shippingPhone) !== 'string')
                 || !shippingEmail     || (typeof(shippingEmail) !== 'string') // todo validate email
                 
-                || !shippingCountry   || (typeof(shippingCountry) !== 'string') // todo validate country id
                 || !shippingAddress   || (typeof(shippingAddress) !== 'string')
                 || !shippingCity      || (typeof(shippingCity) !== 'string')
                 || !shippingZone      || (typeof(shippingZone) !== 'string')
                 || !shippingZip       || (typeof(shippingZip) !== 'string')
+                || !shippingCountry   || (typeof(shippingCountry) !== 'string') // todo validate country id
                 
                 || !shippingProvider  || (typeof(shippingProvider) !== 'string') // todo validate shipping provider
             ) {
@@ -188,6 +195,7 @@ export default async (
             
             interface ProductEntry {
                 _id             : string
+                name            : string
                 price           : number
                 shippingWeight ?: number
             }
@@ -196,10 +204,17 @@ export default async (
             });
             const productList = productListAdapter.addMany(
                 productListAdapter.getInitialState(),
-                await Product.find({}, { _id: true, price: true, shippingWeight: true })
+                await Product.find({}, { _id: true, name: true, price: true, shippingWeight: true })
             );
             
-            let totalProductPrices = 0, totalProductWeights = 0;
+            interface ReportedProductItem {
+                name        : string
+                quantity    : number
+                unitPrice  ?: number
+                unitWeight ?: number
+            }
+            const reportedProductItem : ReportedProductItem[] = [];
+            let totalProductPrices = 0, totalProductWeights : number|undefined = undefined;
             for (const item of items) {
                 if (!item || (typeof(item) !== 'object')) return res.status(400).end(); // bad req
                 const {
@@ -208,14 +223,40 @@ export default async (
                 } = item;
                 if (!productId || (typeof(productId) !== 'string')) return res.status(400).end(); // bad req
                 if (!quantity || (typeof(quantity) !== 'number') || !isFinite(quantity) || (quantity < 0)) return res.status(400).end(); // bad req
+                if ((quantity % 1)) return res.status(400).end(); // bad req
+                if (quantity === 0) continue;
                 
-                const productUnitPrice  = productList.entities[productId]?.price;
-                const productUnitWeight = productList.entities[productId]?.shippingWeight;
                 
-                totalProductPrices  += (productUnitPrice  ?? 0) * quantity;
-                totalProductWeights += (productUnitWeight ?? 0) * quantity;
+                
+                const unitPrice  = productList.entities[productId]?.price;
+                const unitWeight = productList.entities[productId]?.shippingWeight;
+                
+                
+                
+                reportedProductItem.push({
+                    name        : productList.entities[productId]?.name ?? productId,
+                    quantity    : quantity,
+                    unitPrice   : unitPrice,
+                    unitWeight  : unitWeight,
+                });
+                
+                
+                if (unitPrice !== undefined) {
+                    totalProductPrices  += (await convertCurrencyIfRequired(unitPrice)) * quantity;
+                } // if
+                
+                if (unitWeight !== undefined) {
+                    if (totalProductWeights === undefined) totalProductWeights = 0; // contains at least 1 PHYSICAL_GOODS
+                    totalProductWeights +=                                  unitWeight  * quantity;
+                } // if
             } // for
-            const totalShippingCosts = calculateShippingCost(totalProductWeights, selectedShipping);
+            const totalShippingCosts : number|undefined = (
+                (totalProductWeights !== undefined)
+                ?
+                await convertCurrencyIfRequired(calculateShippingCost(totalProductWeights, selectedShipping) ?? 0)
+                :
+                undefined
+            );
             const totalCost = totalProductPrices + (totalShippingCosts ?? 0);
             console.log('totalCost: ', totalCost);
             
@@ -230,16 +271,193 @@ export default async (
                     Authorization: `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify({
-                    intent: "CAPTURE",
-                    purchase_units: [
-                        {
-                            amount: {
-                                currency_code: "USD",
-                                // value: totalCost, // TODO: convert idr to usd
-                                value: 100,
+                    // intent enum required
+                    // The intent to either capture payment immediately or authorize a payment for an order after order creation.
+                    // The possible values are: 'CAPTURE'|'AUTHORIZE'
+                    intent                        : 'CAPTURE',
+                    
+                    // purchase_units array (contains the purchase_unit_request object) required
+                    purchase_units                : [{ // array of contract between a payer and the payee, in the case of this commerce order -- only ONE contract for ONE order
+                        // amount Money required
+                        amount                    : {
+                            // currency_code string required
+                            // The three-character ISO-4217 currency code that identifies the currency.
+                            currency_code         : getDefaultCurrencyCode(),
+                            
+                            // value string required
+                            /*
+                                The value, which might be:
+                                * An integer for currencies like JPY that are not typically fractional.
+                                * A decimal fraction for currencies like TND that are subdivided into thousandths.
+                            */
+                            value                 : await convertCurrencyIfRequired(totalCost),
+                            
+                            // breakdown object|undefined
+                            // The breakdown of the amount. Breakdown provides details such as total item amount, total tax amount, shipping, handling, insurance, and discounts, if any.
+                            breakdown             : {
+                                // discount Money|undefined
+                                // The discount for all items within a given purchase_unit. discount.value can not be a negative number.
+                                discount          : undefined,
+                                
+                                // handling Money|undefined
+                                // The handling fee for all items within a given purchase_unit. handling.value can not be a negative number.
+                                handling          : undefined,
+                                
+                                // insurance Money|undefined
+                                // The insurance fee for all items within a given purchase_unit. insurance.value can not be a negative number.
+                                insurance         : undefined,
+                                
+                                // item_total Money|undefined
+                                // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
+                                item_total        : {
+                                    currency_code : getDefaultCurrencyCode(),
+                                    value         : totalProductPrices,
+                                },
+                                
+                                // shipping Money|undefined
+                                // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
+                                shipping          : (totalShippingCosts === undefined) ? undefined : {
+                                    currency_code : getDefaultCurrencyCode(),
+                                    value         : totalShippingCosts,
+                                },
+                                
+                                // shipping_discount Money|undefined
+                                // The shipping discount for all items within a given purchase_unit. shipping_discount.value can not be a negative number
+                                shipping_discount : undefined,
+                                
+                                // tax_total Money|undefined
+                                // The total tax for all items. Required if the request includes purchase_units.items.tax. Must equal the sum of (items[].tax * items[].quantity) for all items. tax_total.value can not be a negative number.
+                                tax_total         : undefined,
                             },
                         },
-                    ],
+                        
+                        // invoice_id string|undefined
+                        // The API caller-provided external invoice number for this order. Appears in both the payer's transaction history and the emails that the payer receives.
+                        invoice_id                : undefined,
+                        
+                        // custom_id string|undefined
+                        // The API caller-provided external ID. Used to reconcile client transactions with PayPal transactions. Appears in transaction and settlement reports but is not visible to the payer.
+                        custom_id                 : undefined,
+                        
+                        // description string|undefined
+                        // The purchase description.
+                        description               : undefined,
+                        
+                        // items array (contains the item object)
+                        // An array of items that the customer purchases from the merchant.
+                        items                     : reportedProductItem.map(async (item) => ({
+                            // name string required
+                            // The item name or title.
+                            name                  : item.name,
+                            
+                            // quantity string required
+                            // The item quantity. Must be a whole number.
+                            quantity              : `${item.quantity}`,
+                            
+                            // unit_amount Money required
+                            // The item price or rate per unit.
+                            unit_amount           : {
+                                // currency_code string required
+                                // The three-character ISO-4217 currency code that identifies the currency.
+                                currency_code     : getDefaultCurrencyCode(),
+                                
+                                // value string required
+                                /*
+                                    The value, which might be:
+                                    * An integer for currencies like JPY that are not typically fractional.
+                                    * A decimal fraction for currencies like TND that are subdivided into thousandths.
+                                */
+                                value             : await convertCurrencyIfRequired(item.unitPrice ?? 0),
+                            },
+                            
+                            // category enum|undefined
+                            // The item category type.
+                            // The possible values are: 'DIGITAL_GOODS'|'PHYSICAL_GOODS'|'DONATION'
+                            category              : (item.unitWeight === undefined) ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS',
+                            
+                            // description string|undefined
+                            // The detailed item description.
+                            description           : undefined,
+                            
+                            // sku string|undefined
+                            // The stock keeping unit (SKU) for the item.
+                            sku                   : undefined,
+                            
+                            // tax object|undefined
+                            // The item tax for each unit.
+                            tax                   : undefined,
+                        })),
+                        
+                        // payee object|undefined
+                        payee                     : {
+                            // email_address string|undefined
+                            // The email address of merchant.
+                            email_address         : undefined,
+                            
+                            // merchant_id string
+                            // The encrypted PayPal account ID of the merchant.
+                            merchant_id           : undefined,
+                        },
+                        
+                        // shipping object|undefined
+                        // The name and address of the person to whom to ship the items.
+                        shipping                  : {
+                            // address object|undefined
+                            // The address of the person to whom to ship the items.
+                            address               : {
+                                // address_line_1 string|undefined
+                                // The first line of the address. For example, number or street. For example, 173 Drury Lane.
+                                // Required for data entry and compliance and risk checks. Must contain the full address.
+                                address_line_1    : shippingAddress,
+                                
+                                // address_line_2 string|undefined
+                                // The second line of the address. For example, suite or apartment number.
+                                address_line_2    : undefined,
+                                
+                                // admin_area_2 string|undefined
+                                // A city, town, or village.
+                                admin_area_2      : shippingCity,
+                                
+                                // admin_area_1 string|undefined
+                                // The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision. Format for postal delivery. For example, CA and not California.
+                                /*
+                                    Value, by country, is:
+                                    * UK. A county.
+                                    * US. A state.
+                                    * Canada. A province.
+                                    * Japan. A prefecture.
+                                    * Switzerland. A kanton.
+                                */
+                                admin_area_1      : shippingZone,
+                                
+                                // postal_code string
+                                // The postal code, which is the zip code or equivalent. Typically required for countries with a postal code or an equivalent.
+                                postal_code       : shippingZip,
+                                
+                                // country_code string required
+                                // The two-character ISO 3166-1 code that identifies the country or region.
+                                country_code      : shippingCountry,
+                            },
+                            
+                            // name object|undefined
+                            // The name of the person to whom to ship the items. Supports only the full_name property.
+                            name                  : {
+                                // full_name string
+                                // When the party is a person, the party's full name.
+                                full_name         : shippingProvider,
+                            },
+                            
+                            // type enum|undefined
+                            // The method by which the payer wants to get their items from the payee e.g shipping, in-person pickup. Either type or options but not both may be present.
+                            // The possible values are: 'SHIPPING'|'PICKUP_IN_PERSON'
+                            type                  : 'SHIPPING',
+                        },
+                        
+                        // soft_descriptor string|undefined
+                        // The soft descriptor is the dynamic text used to construct the statement descriptor that appears on a payer's card statement.
+                        // If an Order is paid using the "PayPal Wallet", the statement descriptor will appear in following format on the payer's card statement: PAYPAL_prefix+(space)+merchant_descriptor+(space)+ soft_descriptor
+                        soft_descriptor           : undefined,
+                    }],
                 }),
             });
             try {
@@ -360,6 +578,8 @@ export default async (
                         });
                     } break;
                     default: {
+                        console.log(paypalPaymentData);
+                        console.log(captureData);
                         return res.status(500).send('unknown error');
                     } break;
                 } // switch
