@@ -1329,11 +1329,11 @@ const CardPaymentButton = () => {
         
         billingAsShipping,
         
-        billingFirstName : _billingFirstName,   // not implemented, already to use cardholderName
-        billingLastName  : _billingLastName,    // not implemented, already to use cardholderName
+        billingFirstName  : _billingFirstName,  // not implemented, already to use cardholderName
+        billingLastName   : _billingLastName,   // not implemented, already to use cardholderName
         
-        billingPhone     : _billingPhone,       // not implemented yet
-        billingEmail     : _billingEmail,       // not implemented yet
+        billingPhone      : _billingPhone,      // not implemented yet
+        billingEmail      : _billingEmail,      // not implemented yet
         
         billingAddress,
         billingCity,
