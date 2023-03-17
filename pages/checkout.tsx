@@ -1166,7 +1166,16 @@ const PaymentMethod = () => {
             <p>
                 All transactions are secure and encrypted.
             </p>
-            <ExclusiveAccordion theme='primary' expandedListIndex={paymentMethod ?? 0} onExpandedChange={({expanded, listIndex}) => expanded && dispatch(setPaymentMethod(listIndex))} listStyle='content'>
+            <ExclusiveAccordion theme='primary' expandedListIndex={paymentMethod ?? 0} onExpandedChange={({expanded, listIndex}) => {
+                // conditions:
+                if (!expanded) return;
+                
+                
+                
+                // actions:
+                dispatch(setPaymentMethod(listIndex));
+                if (listIndex !== 0) dispatch(setPaymentCardValidation(false));
+            }} listStyle='content'>
                 <AccordionItem label={<>
                     <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                     Credit Card
