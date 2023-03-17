@@ -810,13 +810,13 @@ const OrderSummary = () => {
             </p>
             <p className='currencyBlock'>
                 Shipping: <span className='currency'>
-                    {(typeof(totalShippingCosts) === 'number') ? formatCurrency(totalShippingCosts) : 'calculated at next step'}
+                    {!!selectedShipping ? formatCurrency(totalShippingCosts) : 'calculated at next step'}
                 </span>
             </p>
             <hr />
             <p className='currencyBlock'>
                 Total: <span className='currency'>
-                    {(typeof(totalShippingCosts) === 'number') ? formatCurrency(totalProductPrices + totalShippingCosts) : 'calculated at next step'}
+                    {!!selectedShipping ? formatCurrency(totalProductPrices + (totalShippingCosts ?? 0)) : 'calculated at next step'}
                 </span>
             </p>
         </>
@@ -988,9 +988,9 @@ const ShippingMethod = () => {
             filteredShippingList
             ?.map((shippingEntry) => ({
                 _id                : shippingEntry._id,
-                totalShippingCosts : calculateShippingCost(totalProductWeights, shippingEntry)
+                totalShippingCosts : calculateShippingCost(totalProductWeights, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
             }))
-            ?.sort((a, b) => (a.totalShippingCosts ?? -1) - (b.totalShippingCosts ?? -1)) // -1 means: no need to ship (digital products)
+            ?.sort((a, b) => a.totalShippingCosts - b.totalShippingCosts) // -1 means: no need to ship (digital products)
         );
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
             dispatch(setShippingProvider(orderedConstAscending[0]._id));

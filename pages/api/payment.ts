@@ -102,7 +102,12 @@ const handlePaypalResponse = async (response: Response) => {
 const getDefaultCurrencyCode = async (): Promise<string> => {
     return 'USD';
 }
-const convertCurrencyIfRequired = async (from: number): Promise<number> => {
+const convertCurrencyIfRequired = async (from: number|undefined): Promise<number|undefined> => {
+    // conditions:
+    if (from === undefined) return undefined;
+    
+    
+    
     const convertRate          = 15000
     const rawConverted         = from / convertRate;
     const smallestFractionUnit = 0.01;
@@ -212,10 +217,10 @@ export default async (
             );
             
             interface ReportedProductItem {
-                name        : string
-                quantity    : number
-                unitPrice  ?: number
-                unitWeight ?: number
+                name                 : string
+                quantity             : number
+                unitPriceConverted  ?: number
+                unitWeight          ?: number
             }
             const reportedProductItem : ReportedProductItem[] = [];
             let totalProductPricesConverted = 0, totalProductWeights : number|undefined = undefined;
@@ -232,21 +237,22 @@ export default async (
                 
                 
                 
-                const unitPrice  = productList.entities[productId]?.price;
-                const unitWeight = productList.entities[productId]?.shippingWeight;
+                const unitPrice          = productList.entities[productId]?.price;
+                const unitPriceConverted = await convertCurrencyIfRequired(unitPrice);
+                const unitWeight         = productList.entities[productId]?.shippingWeight;
                 
                 
                 
                 reportedProductItem.push({
-                    name        : productList.entities[productId]?.name ?? productId,
-                    quantity    : quantity,
-                    unitPrice   : unitPrice,
-                    unitWeight  : unitWeight,
+                    name               : productList.entities[productId]?.name ?? productId,
+                    quantity           : quantity,
+                    unitPriceConverted : unitPriceConverted,
+                    unitWeight         : unitWeight,
                 });
                 
                 
-                if (unitPrice !== undefined) {
-                    totalProductPricesConverted  += (await convertCurrencyIfRequired(unitPrice)) * quantity;
+                if (unitPriceConverted !== undefined) {
+                    totalProductPricesConverted  += unitPriceConverted * quantity;
                 } // if
                 
                 if (unitWeight !== undefined) {
@@ -254,14 +260,8 @@ export default async (
                     totalProductWeights +=                                  unitWeight  * quantity;
                 } // if
             } // for
-            const totalShippingCostsConverted : number|undefined = (
-                (totalProductWeights !== undefined)
-                ?
-                await convertCurrencyIfRequired(calculateShippingCost(totalProductWeights, selectedShipping) ?? 0)
-                :
-                undefined
-            );
-            const totalCostConverted = totalProductPricesConverted + (totalShippingCostsConverted ?? 0);
+            const totalShippingCostsConverted = await convertCurrencyIfRequired(calculateShippingCost(totalProductWeights, selectedShipping));
+            const totalCostConverted          = totalProductPricesConverted + (totalShippingCostsConverted ?? 0);
             console.log('total bill: ', {
                 totalProductPricesConverted,
                 totalShippingCostsConverted,
@@ -375,7 +375,7 @@ export default async (
                         //             * An integer for currencies like JPY that are not typically fractional.
                         //             * A decimal fraction for currencies like TND that are subdivided into thousandths.
                         //         */
-                        //         value             : await convertCurrencyIfRequired(item.unitPrice ?? 0),
+                        //         value             : item.unitPriceConverted ?? 0,
                         //     },
                             
                         //     // category enum|undefined

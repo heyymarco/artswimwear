@@ -3,8 +3,8 @@ import type { ShippingEntry } from '@/store/features/api/apiSlice'
 
 
 // utilities:
-export const calculateShippingCost = (totalWeight: number|undefined|null, {weightStep, shippingRates}: Pick<ShippingEntry, 'weightStep'|'shippingRates'>): number|null => {
-    if ((totalWeight === undefined) || (totalWeight === null) || isNaN(totalWeight) || !isFinite(totalWeight)) return null;
+export const calculateShippingCost = (totalWeight: number|undefined, {weightStep, shippingRates}: Pick<ShippingEntry, 'weightStep'|'shippingRates'>): number|undefined => {
+    if ((totalWeight === undefined) || isNaN(totalWeight) || !isFinite(totalWeight)) return undefined;
     
     
     
