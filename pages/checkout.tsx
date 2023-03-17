@@ -13,7 +13,7 @@ import { createContext, useContext, useEffect, useMemo, useRef, useState } from 
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName } from '@paypal/paypal-js';
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
@@ -231,15 +231,16 @@ export default function Checkout() {
         paymentToken : existingPaymentToken,
     } = checkoutState;
     const {
-        checkoutStep       : _checkoutStep,       // remove
+        checkoutStep          : _checkoutStep,          // remove
         
-        shippingValidation : _shippingValidation, // remove
+        shippingValidation    : _shippingValidation,    // remove
         
-        billingAsShipping  : _billingAsShipping,  // remove
-        billingValidation  : _billingValidation,  // remove
+        billingAsShipping     : _billingAsShipping,     // remove
+        billingValidation     : _billingValidation,     // remove
         
-        paymentMethod      : _paymentMethod,      // remove
-        paymentToken       : _paymentToken,       // remove
+        paymentMethod         : _paymentMethod,         // remove
+        paymentToken          : _paymentToken,          // remove
+        paymentCardValidation : _paymentCardValidation, // remove
     ...shippingAddressAndBillingAddress} = checkoutState;
     const checkoutProgress = useSelector(selectCheckoutProgress);
     const hasCart = !!cartItems.length;
@@ -1071,7 +1072,16 @@ const Payment = () => {
                 <p>
                     Select the address that matches your card or payment method.
                 </p>
-                <ExclusiveAccordion theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => expanded && dispatch(setBillingAsShipping(listIndex === 0))} listStyle='content'>
+                <ExclusiveAccordion theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
+                    // conditions:
+                    if (!expanded) return;
+                    
+                    
+                    
+                    // actions:
+                    dispatch(setBillingAsShipping(listIndex === 0));
+                    if (listIndex === 0) dispatch(setBillingValidation(false));
+                }} listStyle='content'>
                     <AccordionItem label={<>
                         <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                         Same as shipping address
@@ -1194,6 +1204,13 @@ const PaymentMethodCard = () => {
     
     
     
+    // stores:
+    const {
+        paymentCardValidation,
+    } = useSelector(selectCheckoutState);
+    
+    
+    
     // refs:
     const safeSignRef = useRef<HTMLElement|null>(null);
     const nameSignRef = useRef<HTMLElement|null>(null);
@@ -1205,7 +1222,7 @@ const PaymentMethodCard = () => {
     // jsx:
     return (
         <PayPalHostedFieldsProvider styles={hostedFieldsStyle} createOrder={handlePlaceOrder}>
-            <ValidationProvider enableValidation={true/*paymentCardValidation*/}>
+            <ValidationProvider enableValidation={paymentCardValidation}>
                 <Group className='number'>
                     <Label theme='secondary' mild={false} className='solid'>
                         <Icon icon='credit_card' theme='primary' mild={true} />
@@ -1362,6 +1379,7 @@ const CardPaymentButton = () => {
         
         // validate:
         if (!billingAsShipping) dispatch(setBillingValidation(true));
+        dispatch(setPaymentCardValidation(true));
         const invalidFields = [
             ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
             ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),

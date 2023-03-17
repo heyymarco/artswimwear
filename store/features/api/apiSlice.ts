@@ -63,6 +63,7 @@ export interface PlaceOrderData
             
             |'paymentMethod'
             |'paymentToken'
+            |'paymentCardValidation'
         >
 {
 }
