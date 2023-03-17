@@ -9,93 +9,95 @@ export interface PaymentToken {
     expires      : number
 }
 export interface CheckoutState {
-    checkoutStep          : CheckoutStep
-    marketingOpt          : boolean
+    checkoutStep           : CheckoutStep
+    marketingOpt           : boolean
     
     
     
-    shippingValidation    : boolean
+    shippingValidation     : boolean
     
-    shippingFirstName     : string
-    shippingLastName      : string
+    shippingFirstName      : string
+    shippingLastName       : string
     
-    shippingPhone         : string
-    shippingEmail         : string
+    shippingPhone          : string
+    shippingEmail          : string
     
-    shippingCountry       : string
-    shippingAddress       : string
-    shippingCity          : string
-    shippingZone          : string
-    shippingZip           : string
+    shippingCountry        : string
+    shippingAddress        : string
+    shippingCity           : string
+    shippingZone           : string
+    shippingZip            : string
     
-    shippingProvider     ?: string
-    
-    
-    
-    billingAsShipping     : boolean
-    billingValidation     : boolean
-    
-    billingFirstName      : string
-    billingLastName       : string
-    
-    billingPhone          : string
-    billingEmail          : string
-    
-    billingCountry        : string
-    billingAddress        : string
-    billingCity           : string
-    billingZone           : string
-    billingZip            : string
+    shippingProvider      ?: string
     
     
     
-    paymentMethod        ?: number
-    paymentToken         ?: PaymentToken
-    paymentCardValidation : boolean
+    billingAsShipping      : boolean
+    billingValidation      : boolean
+    
+    billingFirstName       : string
+    billingLastName        : string
+    
+    billingPhone           : string
+    billingEmail           : string
+    
+    billingCountry         : string
+    billingAddress         : string
+    billingCity            : string
+    billingZone            : string
+    billingZip             : string
+    
+    
+    
+    paymentMethod         ?: number
+    paymentToken          ?: PaymentToken
+    paymentCardValidation  : boolean
+    paymentIsProcessing    : boolean
 }
 
 const initialState: CheckoutState = {
-    checkoutStep          : 'info',
-    marketingOpt          : true,
+    checkoutStep           : 'info',
+    marketingOpt           : true,
     
     
     
-    shippingValidation    : false,
+    shippingValidation     : false,
     
-    shippingFirstName     : '',
-    shippingLastName      : '',
+    shippingFirstName      : '',
+    shippingLastName       : '',
     
-    shippingPhone         : '',
-    shippingEmail         : '',
+    shippingPhone          : '',
+    shippingEmail          : '',
     
-    shippingCountry       : '',
-    shippingAddress       : '',
-    shippingCity          : '',
-    shippingZone          : '',
-    shippingZip           : '',
-    
-    
-    
-    billingAsShipping     : true,
-    billingValidation     : false,
-    
-    billingFirstName      : '',
-    billingLastName       : '',
-    
-    billingPhone          : '',
-    billingEmail          : '',
-    
-    billingCountry        : '',
-    billingAddress        : '',
-    billingCity           : '',
-    billingZone           : '',
-    billingZip            : '',
+    shippingCountry        : '',
+    shippingAddress        : '',
+    shippingCity           : '',
+    shippingZone           : '',
+    shippingZip            : '',
     
     
     
-    paymentMethod         : undefined,
-    paymentToken          : undefined,
-    paymentCardValidation : false,
+    billingAsShipping      : true,
+    billingValidation      : false,
+    
+    billingFirstName       : '',
+    billingLastName        : '',
+    
+    billingPhone           : '',
+    billingEmail           : '',
+    
+    billingCountry         : '',
+    billingAddress         : '',
+    billingCity            : '',
+    billingZone            : '',
+    billingZip             : '',
+    
+    
+    
+    paymentMethod          : undefined,
+    paymentToken           : undefined,
+    paymentCardValidation  : false,
+    paymentIsProcessing    : false,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
@@ -128,10 +130,10 @@ export const checkoutSlice = createSlice({
             state.shippingEmail = value;
         },
         
-        setShippingCountry: (state, {payload: value}: PayloadAction<string>) => {
+        setShippingCountry : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingCountry = value;
         },
-        setShippingAddress: (state, {payload: value}: PayloadAction<string>) => {
+        setShippingAddress : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingAddress = value;
         },
         setShippingCity: (state, {payload: value}: PayloadAction<string>) => {
@@ -160,7 +162,7 @@ export const checkoutSlice = createSlice({
         setBillingFirstName: (state, {payload: value}: PayloadAction<string>) => {
             state.billingFirstName = value;
         },
-        setBillingLastName: (state, {payload: value}: PayloadAction<string>) => {
+        setBillingLastName : (state, {payload: value}: PayloadAction<string>) => {
             state.billingLastName = value;
         },
         
@@ -197,6 +199,9 @@ export const checkoutSlice = createSlice({
         },
         setPaymentCardValidation: (state, {payload: value}: PayloadAction<boolean>) => {
             state.paymentCardValidation = value;
+        },
+        setPaymentIsProcessing: (state, {payload: value}: PayloadAction<boolean>) => {
+            state.paymentIsProcessing = value;
         },
     },
 });
@@ -248,6 +253,7 @@ export const {
     setPaymentMethod,
     setPaymentToken,
     setPaymentCardValidation,
+    setPaymentIsProcessing,
 } = checkoutSlice.actions;
 
 
@@ -298,6 +304,7 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         paymentMethod,
         paymentToken,
         paymentCardValidation,
+        paymentIsProcessing,
     } = state.checkout;
     
     return {
@@ -344,6 +351,7 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         paymentMethod,
         paymentToken,
         paymentCardValidation,
+        paymentIsProcessing,
     };
 };
 

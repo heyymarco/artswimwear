@@ -265,6 +265,7 @@ export default function Checkout() {
         paymentMethod         : _paymentMethod,         // remove
         paymentToken          : _paymentToken,          // remove
         paymentCardValidation : _paymentCardValidation, // remove
+        paymentIsProcessing   : _paymentIsProcessing,   // remove
     ...shippingAddressAndBillingAddress} = checkoutState;
     const checkoutProgress = useSelector(selectCheckoutProgress);
     const hasCart = !!cartItems.length;
