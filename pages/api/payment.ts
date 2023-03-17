@@ -218,7 +218,7 @@ export default async (
                 unitWeight ?: number
             }
             const reportedProductItem : ReportedProductItem[] = [];
-            let totalProductPrices = 0, totalProductWeights : number|undefined = undefined;
+            let totalProductPricesConverted = 0, totalProductWeights : number|undefined = undefined;
             for (const item of items) {
                 if (!item || (typeof(item) !== 'object')) return res.status(400).end(); // bad req
                 const {
@@ -246,7 +246,7 @@ export default async (
                 
                 
                 if (unitPrice !== undefined) {
-                    totalProductPrices  += (await convertCurrencyIfRequired(unitPrice)) * quantity;
+                    totalProductPricesConverted  += (await convertCurrencyIfRequired(unitPrice)) * quantity;
                 } // if
                 
                 if (unitWeight !== undefined) {
@@ -254,15 +254,15 @@ export default async (
                     totalProductWeights +=                                  unitWeight  * quantity;
                 } // if
             } // for
-            const totalShippingCosts : number|undefined = (
+            const totalShippingCostsConverted : number|undefined = (
                 (totalProductWeights !== undefined)
                 ?
                 await convertCurrencyIfRequired(calculateShippingCost(totalProductWeights, selectedShipping) ?? 0)
                 :
                 undefined
             );
-            const totalCost = totalProductPrices + (totalShippingCosts ?? 0);
-            console.log('totalCost: ', totalCost);
+            const totalCostConverted = totalProductPricesConverted + (totalShippingCostsConverted ?? 0);
+            console.log('totalCostConverted: ', totalCostConverted);
             
             
             
@@ -294,7 +294,7 @@ export default async (
                                 * An integer for currencies like JPY that are not typically fractional.
                                 * A decimal fraction for currencies like TND that are subdivided into thousandths.
                             */
-                            value                 : await convertCurrencyIfRequired(totalCost),
+                            value                 : totalCostConverted,
                             
                             // breakdown object|undefined
                             // The breakdown of the amount. Breakdown provides details such as total item amount, total tax amount, shipping, handling, insurance, and discounts, if any.
@@ -315,14 +315,14 @@ export default async (
                                 // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                                 item_total        : {
                                     currency_code : await getDefaultCurrencyCode(),
-                                    value         : totalProductPrices,
+                                    value         : totalProductPricesConverted,
                                 },
                                 
                                 // shipping Money|undefined
                                 // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
-                                shipping          : (totalShippingCosts === undefined) ? undefined : {
+                                shipping          : (totalShippingCostsConverted === undefined) ? undefined : {
                                     currency_code : await getDefaultCurrencyCode(),
-                                    value         : totalShippingCosts,
+                                    value         : totalShippingCostsConverted,
                                 },
                                 
                                 // shipping_discount Money|undefined
