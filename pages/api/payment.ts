@@ -103,7 +103,11 @@ const getDefaultCurrencyCode = async (): Promise<string> => {
     return 'USD';
 }
 const convertCurrencyIfRequired = async (from: number): Promise<number> => {
-    return from / 15000; // TODO: convert USD to IDR
+    const convertRate          = 15000
+    const rawConverted         = from / convertRate;
+    const smallestFractionUnit = 0.01;
+    const fractions            = Math.ceil(rawConverted / smallestFractionUnit);
+    return fractions * smallestFractionUnit;
 }
 
 
