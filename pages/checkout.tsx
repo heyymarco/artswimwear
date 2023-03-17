@@ -81,22 +81,32 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     
     
     // states:
-    const [isFocused, setIsFocused] = useState<boolean>(false);
-    const [isValid  , setIsValid  ] = useState<boolean>(true);
+    const [isFocused, setIsFocused] = useState<boolean|undefined>(false);
+    const [isValid  , setIsValid  ] = useState<boolean|undefined>(true);
     
     
     
     // handlers:
     const handleFocusBlur = useEvent((event: HostedFieldsEvent) => {
+        // conditions:
         const field = event.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
         if (!field) return;
         if (field.isFocused === isFocused) return;
+        
+        
+        
+        // actions:
         setIsFocused(field.isFocused);
     });
     const handleValidInvalid = useEvent((event: HostedFieldsEvent) => {
+        // conditions:
         const field = event.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
         if (!field) return;
         if (field.isValid === isValid) return;
+        
+        
+        
+        // actions:
         setIsValid(field.isValid);
     });
     
@@ -104,6 +114,33 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     
     // dom effects:
     const {cardFields} = usePayPalHostedFields();
+    
+    useEffect(() => {
+        // conditions:
+        if (isFocused !== undefined) return;
+        if (!cardFields) return;
+        const field = cardFields.getState()?.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
+        if (!field) return;
+        
+        
+        
+        // setups:
+        setIsFocused(field.isFocused);
+    }, [cardFields, isFocused]);
+    
+    useEffect(() => {
+        // conditions:
+        if (isValid !== undefined) return;
+        if (!cardFields) return;
+        const field = cardFields.getState()?.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
+        if (!field) return;
+        
+        
+        
+        // setups:
+        setIsValid(field.isValid);
+    }, [cardFields, isValid]);
+    
     useEffect(() => {
         // conditions:
         if (!cardFields)      return;
@@ -133,10 +170,10 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
         <EditableTextControl
             {...restEditableTextControlProps}
             
-            tabIndex={-1}
+            tabIndex = {-1}
             
-            focused={isFocused}
-            isValid={isValid}
+            focused  = {isFocused ?? false}
+            isValid  = {isValid   ?? null }
         >
             <PayPalHostedField
                 {...{
