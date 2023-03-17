@@ -608,9 +608,10 @@ const NavCheckout = () => {
     ][checkoutProgress];
     
     const nextAction = [
-        { text: 'Continue to shipping' , action: () => {
+        { text: 'Continue to shipping' , action: async () => {
             // validate:
-            dispatch(setShippingValidation(true));
+            // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+            await dispatch(setShippingValidation(true));
             const invalidFields = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
             if (invalidFields?.length) { // there is an/some invalid field
                 // TODO: show modal error message
@@ -1378,8 +1379,9 @@ const CardPaymentButton = () => {
         
         
         // validate:
-        if (!billingAsShipping) dispatch(setBillingValidation(true));
-        dispatch(setPaymentCardValidation(true));
+        // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+        if (!billingAsShipping) await dispatch(setBillingValidation(true));
+        await dispatch(setPaymentCardValidation(true));
         const invalidFields = [
             ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
             ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),
