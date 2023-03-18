@@ -2,17 +2,17 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Accordion, AccordionItem, Badge, BasicProps, Busy, ButtonIcon, Check, Container, controlValues, Details, DropdownListButton, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
+import { Accordion, AccordionItem, Badge, BasicProps, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Container, controlValues, Details, DropdownListButton, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetShippingList, usePlaceOrder, useMakePayment } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
 import { Section } from '@/components/sections/Section'
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { AccessibilityProvider, breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
+import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
 import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js';
@@ -175,6 +175,11 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
 
 
 
+interface ShowDialogMessage {
+    theme   ?: ThemeName
+    title   ?: string
+    message  : React.ReactNode
+}
 interface ICheckoutContext {
     cartItems                 : CartEntry[]
     hasCart                   : boolean
@@ -206,6 +211,8 @@ interface ICheckoutContext {
     
     placeOrderApi             : ReturnType<typeof usePlaceOrder>
     makePaymentApi            : ReturnType<typeof useMakePayment>
+    
+    showDialogMessage         : React.Dispatch<React.SetStateAction<ShowDialogMessage|false>>
 }
 const CheckoutContext = createContext<ICheckoutContext>({
     cartItems                 : [],
@@ -238,6 +245,8 @@ const CheckoutContext = createContext<ICheckoutContext>({
     
     placeOrderApi             : undefined as any,
     makePaymentApi            : undefined as any,
+    
+    showDialogMessage         : undefined as any,
 });
 const useCheckout = () => useContext(CheckoutContext);
 
@@ -335,6 +344,7 @@ export default function Checkout() {
     }, [newPaymentToken, isLoading5, isError5]);
     
     
+    
     // states:
     const [isDesktop, setIsDesktop] = useState<boolean>(false); // mobile first
     
@@ -346,6 +356,10 @@ export default function Checkout() {
         setIsDesktop(newIsDesktop);
     });
     useWindowResizeObserver(handleWindowResize);
+    
+    const [dialogMessage, showDialogMessage] = useState<ShowDialogMessage|false>(false);
+    const prevDialogMessage = useRef<ShowDialogMessage|null>(null);
+    if (dialogMessage !== false) prevDialogMessage.current = dialogMessage;
     
     
     
@@ -418,6 +432,8 @@ export default function Checkout() {
         
         placeOrderApi,
         makePaymentApi,
+        
+        showDialogMessage,
     }), [
         cartItems,
         hasCart,
@@ -525,6 +541,21 @@ export default function Checkout() {
                         
                         <hr className={styles.vertLine} />
                     </Container>}
+                    
+                    <ModalCard theme={(dialogMessage ? dialogMessage.theme : prevDialogMessage.current?.theme) ?? 'primary'} lazy={true} expanded={!!dialogMessage} onExpandedChange={(event) => !event.expanded && showDialogMessage(false)}>
+                        <CardHeader>
+                            {(dialogMessage ? dialogMessage.title : prevDialogMessage.current?.title) ?? 'Notification'}
+                            <CloseButton onClick={() => showDialogMessage(false)} />
+                        </CardHeader>
+                        <CardBody>
+                            {dialogMessage ? dialogMessage.message : prevDialogMessage.current?.message}
+                        </CardBody>
+                        <CardFooter>
+                            <Button onClick={() => showDialogMessage(false)}>
+                                Okay
+                            </Button>
+                        </CardFooter>
+                    </ModalCard>
                 </CheckoutContext.Provider>
             </Main>
         </>
@@ -610,7 +641,7 @@ const ProgressCheckout = () => {
 
 const NavCheckout = () => {
     // context:
-    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef} = useCheckout();
+    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, showDialogMessage} = useCheckout();
     
     
     
@@ -636,7 +667,23 @@ const NavCheckout = () => {
             await dispatch(setShippingValidation(true));
             const invalidFields = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
             if (invalidFields?.length) { // there is an/some invalid field
-                // TODO: show modal error message
+                const isPlural = (invalidFields?.length > 1);
+                showDialogMessage({
+                    theme   : 'danger',
+                    title   : 'Error',
+                    message : <>
+                        <p>
+                            There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
+                        </p>
+                        <ul>
+                            {Array.from(invalidFields).map((invalidField, index) =>
+                                <li key={index}>
+                                    {(invalidField.children[0] as HTMLInputElement).placeholder || (invalidField as HTMLInputElement).textContent}
+                                </li>
+                            )}
+                        </ul>
+                    </>
+                });
                 console.log('there is an/some invalid field', invalidFields);
                 return;
             } // if
