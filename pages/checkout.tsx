@@ -376,18 +376,10 @@ export default function Checkout() {
                 items : cartItems,                   // cart item(s)
                 ...shippingAddressAndBillingAddress, // shipping address + billing address + marketingOpt
             }).unwrap();
-            if (paypalOrderData.id && (paypalOrderData.status === 'CREATED')) {
-                console.log('order data: ', paypalOrderData);
-                return paypalOrderData.id;
-            }
-            else {
-                // TODO handle error
-                return '';
-            } // if
+            return paypalOrderData.orderId;
         }
         catch {
-            // TODO: handle error
-            return '';
+            throw Error('unable to place order');
         } // try
     });
     

@@ -70,8 +70,7 @@ export interface PlaceOrderData
 }
 export interface PlaceOrderResult
 {
-    id     ?: string
-    status ?: string
+    orderId : string
 }
 
 export type AuthenticationPaymentData = unknown

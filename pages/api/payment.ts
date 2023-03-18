@@ -501,7 +501,10 @@ export default async (
                     }
                 */
                 console.log('paypalOrderData: ', paypalOrderData);
-                return res.status(200).json(paypalOrderData); // OK
+                if ((paypalOrderData?.status !== 'CREATED') || !('id' in paypalOrderData)) throw Error('unexpected API response');
+                return res.status(200).json({ // OK
+                    orderId: paypalOrderData.id,
+                });
             }
             catch {
                 /*
@@ -511,7 +514,7 @@ export default async (
                     * Configured currency is not supported by PayPal.
                     * Invalid request body JSON (programming bug).
                 */
-                return res.status(500).send('internal server error');
+                return res.status(500).json({error: 'internal server error'});
             } // try
         } break;
         case 'PATCH': { // purchase the previously posted order
@@ -596,12 +599,12 @@ export default async (
                     default: {
                         console.log(paypalPaymentData);
                         console.log(captureData);
-                        return res.status(500).send('unknown error');
+                        return res.status(500).json({error: 'unknown error'});
                     } break;
                 } // switch
             }
             catch (error: any) {
-                return res.status(500).send(error?.message ?? error ?? 'error');
+                return res.status(500).json({error: error?.message ?? error ?? 'error'});
             } // try
         } break;
         default:
