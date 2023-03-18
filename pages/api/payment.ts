@@ -4,7 +4,11 @@ import Product from '@/models/Product'
 import { createEntityAdapter } from '@reduxjs/toolkit'
 import { calculateShippingCost } from '@/libs/utilities'
 import Shipping from '@/models/Shipping'
-import type { PlaceOrderResponse } from '@/store/features/api/apiSlice'
+import type {
+    PaymentToken,
+    PlaceOrderResponse,
+    MakePaymentResponse
+} from '@/store/features/api/apiSlice'
 
 
 
@@ -128,128 +132,40 @@ export default async (
     req : NextApiRequest,
     res : NextApiResponse
 ) => {
+    if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 2000);
+        });
+    } // if
+    
+    
+    
     switch(req.method) {
-        case 'GET': { // intialize paymentToken
-            if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
-                await new Promise<void>((resolve) => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 2000);
-                });
-            } // if
-            
-            
-            
-            return res.status(200).json( // OK
-                await generatePaymentToken(),
-            );
-        } break;
-        case 'POST': { // place the order and calculate the total price (not relying priceList on the client_side)
-            if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
-                await new Promise<void>((resolve) => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 2000);
-                });
-            } // if
-            
-            return placeOrder(req, res);
-        } break;
-        case 'PATCH': { // purchase the previously posted order
-            const paypalAuthentication = req.body;
-            if (typeof(paypalAuthentication) !== 'object') return res.status(400).end(); // bad req
-            const orderId = paypalAuthentication.orderId
-            if (!orderId)                                  return res.status(400).end(); // bad req
-            /*
-                example:
-                {
-                    authenticationReason: undefined
-                    authenticationStatus: "APPROVED",
-                    card: {
-                        brand: "VISA",
-                        card_type: "VISA",
-                        last_digits: "7704",
-                        type: "CREDIT",
-                    },
-                    liabilityShift: undefined
-                    liabilityShifted: undefined
-                    orderId: "1N785713SG267310M"
-                }
-            */
-            
-            
-            
-            const accessToken = await generateAccessToken();
-            const url = `${paypalURL}/v2/checkout/orders/${orderId}/capture`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            try {
-                const paypalPaymentData = await handlePaypalResponse(response);
-                /*
-                    example:
-                    {
-                        id: '1N785713SG267310M',
-                        status: 'COMPLETED',
-                        payment_source: {
-                            card: {
-                                last_digits: '7704',
-                                brand: 'VISA',
-                                type: 'CREDIT'
-                            }
-                        },
-                        purchase_units: [
-                            {
-                                reference_id: 'default',
-                                payments: [Object]
-                            }
-                        ],
-                        links: [
-                            {
-                                href: 'https://api.sandbox.paypal.com/v2/checkout/orders/1N785713SG267310M',
-                                rel: 'self',
-                                method: 'GET'
-                            }
-                        ]
-                    }
-                */
-                console.log('capture: paypalPaymentData: ', paypalPaymentData);
-                const captureData = paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0];
-                console.log('captureData : ', captureData);
-                console.log('captureData.status : ', captureData?.status);
-                
-                
-                switch (captureData?.status) {
-                    case 'COMPLETED': {
-                        return res.status(200).json({ // payment approved
-                            id: 'payment#123#approved',
-                        });
-                    } break;
-                    case 'DECLINED': {
-                        return res.status(402).json({ // payment declined
-                            error: 'payment declined',
-                        });
-                    } break;
-                    default: {
-                        console.log(paypalPaymentData);
-                        console.log(captureData);
-                        return res.status(500).json({error: 'unknown error'});
-                    } break;
-                } // switch
-            }
-            catch (error: any) {
-                return res.status(500).json({error: error?.message ?? error ?? 'error'});
-            } // try
-        } break;
-        default:
-            return res.status(400).end();
+        case 'GET'   : return responseGeneratePaymentToken(req, res);
+        case 'POST'  : return responsePlaceOrder(req, res);
+        case 'PATCH' : return responseMakePayment(req, res)
+        default      : return res.status(400).end();
     } // switch
-};
-const placeOrder = async (
+}
+
+/**
+ * intialize paymentToken
+ */
+const responseGeneratePaymentToken = async (
+    req : NextApiRequest,
+    res : NextApiResponse<PaymentToken|ErrorResponse>
+) => {
+    return res.status(200).json( // OK
+        await generatePaymentToken(),
+    );
+}
+
+/**
+ * place the order and calculate the total price (not relying priceList on the client_side)
+ */
+const responsePlaceOrder = async (
     req : NextApiRequest,
     res : NextApiResponse<PlaceOrderResponse|ErrorResponse>
 ) => {
@@ -620,5 +536,102 @@ const placeOrder = async (
             * Invalid request body JSON (programming bug).
         */
         return res.status(500).json({error: 'internal server error'});
+    } // try
+}
+
+/**
+ * purchase the previously posted order
+ */
+const responseMakePayment = async (
+    req : NextApiRequest,
+    res : NextApiResponse<MakePaymentResponse|ErrorResponse>
+) => {
+    const paypalAuthentication = req.body;
+    if (typeof(paypalAuthentication) !== 'object') return res.status(400).end(); // bad req
+    const orderId = paypalAuthentication.orderId
+    if (!orderId)                                  return res.status(400).end(); // bad req
+    /*
+        example:
+        {
+            authenticationReason: undefined
+            authenticationStatus: "APPROVED",
+            card: {
+                brand: "VISA",
+                card_type: "VISA",
+                last_digits: "7704",
+                type: "CREDIT",
+            },
+            liabilityShift: undefined
+            liabilityShifted: undefined
+            orderId: "1N785713SG267310M"
+        }
+    */
+    
+    
+    
+    const accessToken = await generateAccessToken();
+    const url = `${paypalURL}/v2/checkout/orders/${orderId}/capture`;
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+        },
+    });
+    try {
+        const paypalPaymentData = await handlePaypalResponse(response);
+        /*
+            example:
+            {
+                id: '1N785713SG267310M',
+                status: 'COMPLETED',
+                payment_source: {
+                    card: {
+                        last_digits: '7704',
+                        brand: 'VISA',
+                        type: 'CREDIT'
+                    }
+                },
+                purchase_units: [
+                    {
+                        reference_id: 'default',
+                        payments: [Object]
+                    }
+                ],
+                links: [
+                    {
+                        href: 'https://api.sandbox.paypal.com/v2/checkout/orders/1N785713SG267310M',
+                        rel: 'self',
+                        method: 'GET'
+                    }
+                ]
+            }
+        */
+        console.log('capture: paypalPaymentData: ', paypalPaymentData);
+        const captureData = paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0];
+        console.log('captureData : ', captureData);
+        console.log('captureData.status : ', captureData?.status);
+        
+        
+        switch (captureData?.status) {
+            case 'COMPLETED': {
+                return res.status(200).json({ // payment approved
+                    id: 'payment#123#approved',
+                });
+            } break;
+            case 'DECLINED': {
+                return res.status(402).json({ // payment declined
+                    error: 'payment declined',
+                });
+            } break;
+            default: {
+                console.log(paypalPaymentData);
+                console.log(captureData);
+                return res.status(500).json({error: 'unknown error'});
+            } break;
+        } // switch
+    }
+    catch (error: any) {
+        return res.status(500).json({error: error?.message ?? error ?? 'error'});
     } // try
 }

@@ -48,6 +48,8 @@ const shippingListAdapter = createEntityAdapter<ShippingEntry>({
     selectId : (shippingEntry) => shippingEntry._id,
 });
 
+export type { PaymentToken }
+
 export interface PlaceOrderData
     extends
         Omit<CartState,     // cart item(s)
@@ -74,7 +76,7 @@ export interface PlaceOrderResponse
 }
 
 export type AuthenticationPaymentData = unknown
-export interface MakePaymentResult
+export interface MakePaymentResponse
 {
     id    ?: string
     error ?: string
@@ -139,7 +141,7 @@ export const apiSlice = createApi({
                 body   : orderData,
             }),
         }),
-        makePayment          : builder.mutation<MakePaymentResult, AuthenticationPaymentData>({
+        makePayment          : builder.mutation<MakePaymentResponse, AuthenticationPaymentData>({
             query : (paymentData) => ({
                 url    : 'payment',
                 method : 'PATCH',
