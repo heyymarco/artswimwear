@@ -282,7 +282,8 @@ export default function Checkout() {
     
     const isLoading       = isLoading1 || isLoading2 || isLoading3 || isLoading4 ||  !existingPaymentToken;
     const isError         = isError1   || isError2   || isError3   || isError4   || (!existingPaymentToken && isError5);
-    const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList && !!shippingList;
+    const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList && !!shippingList && !!existingPaymentToken;
+    console.log({isLoading, isError, isCartDataReady, existingPaymentToken, newPaymentToken})
     
     
     
