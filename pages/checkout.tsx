@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
 import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
-import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData } from '@paypal/paypal-js';
+import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js';
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/utilities';
 import AddressField from '@/components/AddressFields'
@@ -1233,6 +1233,7 @@ const PaymentMethodPaypal = () => {
     
     
     // stores:
+    const checkoutState = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
     
@@ -1243,7 +1244,7 @@ const PaymentMethodPaypal = () => {
     
     
     // handlers:
-    const handleMakePayment = async (paypalAuthentication: OnApproveData, actions: OnApproveActions) => {
+    const handleMakePayment = async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
             // update the UI:
             dispatch(setPaymentIsProcessing(true));
@@ -1263,6 +1264,37 @@ const PaymentMethodPaypal = () => {
             dispatch(setPaymentIsProcessing(false));
         } // try
     }
+    const handleShippingChange = async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
+        console.log('data', data);
+        // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
+        const shipping_address = data.shipping_address;
+        if (shipping_address) {
+            const shippingFieldMap = new Map([
+                ['address_line_1', 'shippingAddress'],
+                ['address_line_2', undefined        ],
+                ['city'          , 'shippingCity'   ],
+                ['admin_area_2'  , 'shippingCity'   ],
+                ['state'         , 'shippingZone'   ],
+                ['admin_area_1'  , 'shippingZone'   ],
+                ['postal_code'   , 'shippingZip'    ],
+                ['country_code'  , 'shippingCountry'],
+            ]);
+            for (const [shippingField, shippingValue] of Object.entries(shipping_address)) {
+                if (shippingField === undefined) continue;
+                const mappedShippingField = shippingFieldMap.get(shippingField);
+                if (mappedShippingField === undefined) {
+                    console.log('unknown shipping field: ', shippingField);
+                    return actions.reject();
+                } // if
+                const originShippingValue = checkoutState[mappedShippingField as keyof typeof checkoutState];
+                if (originShippingValue !== shippingValue) {
+                    console.log(`DIFF: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
+                    return actions.reject();
+                } // if
+            } // for
+            return actions.resolve();
+        } // if
+    }
     
     
     
@@ -1275,6 +1307,7 @@ const PaymentMethodPaypal = () => {
             <PayPalButtons
                 createOrder={handlePlaceOrder}
                 onApprove={handleMakePayment}
+                onShippingChange={handleShippingChange}
             />
         </>
     );
