@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
 import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
-import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName } from '@paypal/paypal-js';
+import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData } from '@paypal/paypal-js';
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/utilities';
 import AddressField from '@/components/AddressFields'
@@ -283,7 +283,7 @@ export default function Checkout() {
     const isLoading       = isLoading1 || isLoading2 || isLoading3 || isLoading4 ||  !existingPaymentToken;
     const isError         = isError1   || isError2   || isError3   || isError4   || (!existingPaymentToken && isError5);
     const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList && !!shippingList && !!existingPaymentToken;
-    console.log({isLoading, isError, isCartDataReady, existingPaymentToken, newPaymentToken})
+    // console.log({isLoading, isError, isCartDataReady, existingPaymentToken, newPaymentToken})
     
     
     
@@ -373,11 +373,11 @@ export default function Checkout() {
     const handlePlaceOrder = useEvent(async (): Promise<string> => {
         console.log('placing order!');
         try {
-            const paypalOrderData = await placeOrder({
+            const placeOrderResponse = await placeOrder({
                 items : cartItems,                   // cart item(s)
                 ...shippingAddressAndBillingAddress, // shipping address + billing address + marketingOpt
             }).unwrap();
-            return paypalOrderData.orderId;
+            return placeOrderResponse.orderId;
         }
         catch (error: any) {
             // TODO: handle order rejection
@@ -1228,7 +1228,41 @@ const PaymentMethod = () => {
 }
 const PaymentMethodPaypal = () => {
     // context:
-    const {handlePlaceOrder} = useCheckout();
+    const {handlePlaceOrder, makePaymentApi} = useCheckout();
+    
+    
+    
+    // stores:
+    const dispatch = useDispatch();
+    
+    
+    
+    // apis:
+    const [makePayment] = makePaymentApi;
+    
+    
+    
+    // handlers:
+    const handleMakePayment = async (paypalAuthentication: OnApproveData, actions: OnApproveActions) => {
+        try {
+            // update the UI:
+            dispatch(setPaymentIsProcessing(true));
+            
+            
+            
+            // then forward the authentication to backend_API to receive the fund:
+            const makePaymentResponse = await makePayment({ orderId: paypalAuthentication.orderID }).unwrap();
+            console.log('makePaymentResponse: ', makePaymentResponse);
+        }
+        catch (error: any) {
+            // TODO: handle payment authentication rejection
+            console.log('unable to place order: ', error);
+        }
+        finally {
+            // update the UI:
+            dispatch(setPaymentIsProcessing(false));
+        } // try
+    }
     
     
     
@@ -1238,7 +1272,10 @@ const PaymentMethodPaypal = () => {
             <p>
                 Click the PayPal button below. You will be redirected to the PayPal website to complete the payment.
             </p>
-            <PayPalButtons createOrder={handlePlaceOrder} />
+            <PayPalButtons
+                createOrder={handlePlaceOrder}
+                onApprove={handleMakePayment}
+            />
         </>
     );
 }
@@ -1368,7 +1405,7 @@ const PaymentMethodCard = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, placeOrderApi, makePaymentApi} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, makePaymentApi} = useCheckout();
     
     
     
@@ -1482,13 +1519,13 @@ const CardPaymentButton = () => {
             
             
             // then forward the authentication to backend_API to receive the fund:
-            const data = await makePayment(paypalAuthentication).unwrap();
+            const makePaymentResponse = await makePayment({ orderId: paypalAuthentication.orderId }).unwrap();
             // Two cases to handle:
             //   (1) Non-recoverable errors -> Show a failure message
             //   (2) Successful transaction -> Show confirmation or thank you
             // This example reads a v2/checkout/orders capture response, propagated from the server
             // You could use a different API or structure for your 'orderData'
-            console.log('payment data: ', data);
+            console.log('makePaymentResponse: ', makePaymentResponse);
         }
         catch (error: any) {
             // TODO: handle payment authentication rejection
