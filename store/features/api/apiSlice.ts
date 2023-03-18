@@ -68,7 +68,7 @@ export interface PlaceOrderData
         >
 {
 }
-export interface PlaceOrderResult
+export interface PlaceOrderResponse
 {
     orderId : string
 }
@@ -132,7 +132,7 @@ export const apiSlice = createApi({
                 method : 'GET',
             }),
         }),
-        placeOrder           : builder.mutation<PlaceOrderResult, PlaceOrderData>({
+        placeOrder           : builder.mutation<PlaceOrderResponse, PlaceOrderData>({
             query : (orderData) => ({
                 url    : 'payment',
                 method : 'POST',

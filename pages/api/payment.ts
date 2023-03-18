@@ -1,9 +1,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { connectDB } from '@/libs/dbConn'
 import Product from '@/models/Product'
-import { createEntityAdapter } from '@reduxjs/toolkit';
-import { calculateShippingCost } from '@/libs/utilities';
-import Shipping from '@/models/Shipping';
+import { createEntityAdapter } from '@reduxjs/toolkit'
+import { calculateShippingCost } from '@/libs/utilities'
+import Shipping from '@/models/Shipping'
+import type { PlaceOrderResponse } from '@/store/features/api/apiSlice'
+
+
+
+interface ErrorResponse {
+    error : string
+}
 
 
 
@@ -118,8 +125,8 @@ const convertCurrencyIfRequired = async (from: number|undefined): Promise<number
 
 
 export default async (
-    req: NextApiRequest,
-    res: NextApiResponse
+    req : NextApiRequest,
+    res : NextApiResponse
 ) => {
     switch(req.method) {
         case 'GET': { // intialize paymentToken
@@ -146,8 +153,106 @@ export default async (
                 });
             } // if
             
+            return placeOrder(req, res);
+        } break;
+        case 'PATCH': { // purchase the previously posted order
+            const paypalAuthentication = req.body;
+            if (typeof(paypalAuthentication) !== 'object') return res.status(400).end(); // bad req
+            const orderId = paypalAuthentication.orderId
+            if (!orderId)                                  return res.status(400).end(); // bad req
+            /*
+                example:
+                {
+                    authenticationReason: undefined
+                    authenticationStatus: "APPROVED",
+                    card: {
+                        brand: "VISA",
+                        card_type: "VISA",
+                        last_digits: "7704",
+                        type: "CREDIT",
+                    },
+                    liabilityShift: undefined
+                    liabilityShifted: undefined
+                    orderId: "1N785713SG267310M"
+                }
+            */
             
             
+            
+            const accessToken = await generateAccessToken();
+            const url = `${paypalURL}/v2/checkout/orders/${orderId}/capture`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            try {
+                const paypalPaymentData = await handlePaypalResponse(response);
+                /*
+                    example:
+                    {
+                        id: '1N785713SG267310M',
+                        status: 'COMPLETED',
+                        payment_source: {
+                            card: {
+                                last_digits: '7704',
+                                brand: 'VISA',
+                                type: 'CREDIT'
+                            }
+                        },
+                        purchase_units: [
+                            {
+                                reference_id: 'default',
+                                payments: [Object]
+                            }
+                        ],
+                        links: [
+                            {
+                                href: 'https://api.sandbox.paypal.com/v2/checkout/orders/1N785713SG267310M',
+                                rel: 'self',
+                                method: 'GET'
+                            }
+                        ]
+                    }
+                */
+                console.log('capture: paypalPaymentData: ', paypalPaymentData);
+                const captureData = paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0];
+                console.log('captureData : ', captureData);
+                console.log('captureData.status : ', captureData?.status);
+                
+                
+                switch (captureData?.status) {
+                    case 'COMPLETED': {
+                        return res.status(200).json({ // payment approved
+                            id: 'payment#123#approved',
+                        });
+                    } break;
+                    case 'DECLINED': {
+                        return res.status(402).json({ // payment declined
+                            error: 'payment declined',
+                        });
+                    } break;
+                    default: {
+                        console.log(paypalPaymentData);
+                        console.log(captureData);
+                        return res.status(500).json({error: 'unknown error'});
+                    } break;
+                } // switch
+            }
+            catch (error: any) {
+                return res.status(500).json({error: error?.message ?? error ?? 'error'});
+            } // try
+        } break;
+        default:
+            return res.status(400).end();
+    } // switch
+};
+const placeOrder = async (
+    req : NextApiRequest,
+    res : NextApiResponse<PlaceOrderResponse|ErrorResponse>
+) => {
             const placeOrderData = req.body;
             if (typeof(placeOrderData) !== 'object') return res.status(400).end(); // bad req
             
@@ -516,98 +621,4 @@ export default async (
                 */
                 return res.status(500).json({error: 'internal server error'});
             } // try
-        } break;
-        case 'PATCH': { // purchase the previously posted order
-            const paypalAuthentication = req.body;
-            if (typeof(paypalAuthentication) !== 'object') return res.status(400).end(); // bad req
-            const orderId = paypalAuthentication.orderId
-            if (!orderId)                                  return res.status(400).end(); // bad req
-            /*
-                example:
-                {
-                    authenticationReason: undefined
-                    authenticationStatus: "APPROVED",
-                    card: {
-                        brand: "VISA",
-                        card_type: "VISA",
-                        last_digits: "7704",
-                        type: "CREDIT",
-                    },
-                    liabilityShift: undefined
-                    liabilityShifted: undefined
-                    orderId: "1N785713SG267310M"
-                }
-            */
-            
-            
-            
-            const accessToken = await generateAccessToken();
-            const url = `${paypalURL}/v2/checkout/orders/${orderId}/capture`;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            });
-            try {
-                const paypalPaymentData = await handlePaypalResponse(response);
-                /*
-                    example:
-                    {
-                        id: '1N785713SG267310M',
-                        status: 'COMPLETED',
-                        payment_source: {
-                            card: {
-                                last_digits: '7704',
-                                brand: 'VISA',
-                                type: 'CREDIT'
-                            }
-                        },
-                        purchase_units: [
-                            {
-                                reference_id: 'default',
-                                payments: [Object]
-                            }
-                        ],
-                        links: [
-                            {
-                                href: 'https://api.sandbox.paypal.com/v2/checkout/orders/1N785713SG267310M',
-                                rel: 'self',
-                                method: 'GET'
-                            }
-                        ]
-                    }
-                */
-                console.log('capture: paypalPaymentData: ', paypalPaymentData);
-                const captureData = paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0];
-                console.log('captureData : ', captureData);
-                console.log('captureData.status : ', captureData?.status);
-                
-                
-                switch (captureData?.status) {
-                    case 'COMPLETED': {
-                        return res.status(200).json({ // payment approved
-                            id: 'payment#123#approved',
-                        });
-                    } break;
-                    case 'DECLINED': {
-                        return res.status(402).json({ // payment declined
-                            error: 'payment declined',
-                        });
-                    } break;
-                    default: {
-                        console.log(paypalPaymentData);
-                        console.log(captureData);
-                        return res.status(500).json({error: 'unknown error'});
-                    } break;
-                } // switch
-            }
-            catch (error: any) {
-                return res.status(500).json({error: error?.message ?? error ?? 'error'});
-            } // try
-        } break;
-        default:
-            return res.status(400).end();
-    } // switch
-};
+}
