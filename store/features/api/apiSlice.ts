@@ -75,7 +75,10 @@ export interface PlaceOrderResponse
     orderId : string
 }
 
-export type AuthenticationPaymentData = unknown
+export interface AuthenticationPaymentData
+{
+    orderId : string
+}
 export interface MakePaymentResponse
 {
     paymentId : string
