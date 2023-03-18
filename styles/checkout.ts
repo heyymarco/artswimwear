@@ -355,12 +355,6 @@ export default () => {
                 }),
             }),
         }),
-        scopeOf('billingEntry', {
-            ...children(['&', 'article'], {
-                [paddingVars.paddingInline] : '0px',
-                [paddingVars.paddingBlock ] : '0px',
-            }),
-        }),
         scopeOf('paymentMethod', {
         }),
         scopeOf('optionEntryHeader', {
@@ -386,9 +380,19 @@ export default () => {
             ...children('.icon', {
                 textAlign: 'end',
             }),
-        }),
+        }, {specificityWeight: 2}),
+        scopeOf('billingEntry', {
+            [paddingVars.paddingInline] : '1rem',
+            [paddingVars.paddingBlock ] : '1rem',
+            ...children('article', {
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
+            }),
+        }, {specificityWeight: 2}),
         scopeOf('paymentEntryCard', {
-            ...children(['&', 'article'], {
+            [paddingVars.paddingInline] : '1rem',
+            [paddingVars.paddingBlock ] : '1rem',
+            ...children('article', {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
@@ -450,11 +454,15 @@ export default () => {
                     }),
                 })
             }),
-        }),
+        }, {specificityWeight: 2}),
         scopeOf('paymentEntryPaypal', {
-            ...children(['&', 'article'], {
+            [paddingVars.paddingInline] : '1rem',
+            [paddingVars.paddingBlock ] : '1rem',
+            ...children('article', {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
+            }),
+            ...children('article', {
                 ...children('div', {
                     display: 'flex',
                     flexDirection: 'column',
@@ -462,7 +470,7 @@ export default () => {
                     alignItems: 'center',
                 }),
             }),
-        }),
+        }, {specificityWeight: 2}),
         
         scopeOf('navCheckout', {
             gridArea: 'navCheckout',
