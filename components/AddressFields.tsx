@@ -165,6 +165,8 @@ const AddressField = (props: AddressFieldProps) => {
                     
                     theme='primary'
                     mild={true}
+                    
+                    aria-label='Country'
                 >
                     {!!filteredCountryList && filteredCountryList.map(({code, name}, index) =>
                         <ListItem

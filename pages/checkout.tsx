@@ -157,10 +157,12 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
         <EditableTextControl
             {...restEditableTextControlProps}
             
-            tabIndex = {-1}
+            tabIndex   = {-1}
             
-            focused  = {isFocused ?? false}
-            isValid  = {isValid   ?? null }
+            focused    = {isFocused ?? false}
+            isValid    = {isValid   ?? null }
+            
+            aria-label = {options.placeholder}
         >
             <PayPalHostedField
                 {...{
@@ -675,16 +677,26 @@ const NavCheckout = () => {
                         <p>
                             There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
                         </p>
-                        <ul>
+                        <List listStyle='flat'>
                             {Array.from(invalidFields).map((invalidField, index) =>
-                                <li key={index}>
-                                    {(invalidField.children[0] as HTMLInputElement).placeholder || (invalidField as HTMLInputElement).textContent}
-                                </li>
+                                <ListItem key={index}>
+                                    <>
+                                        <Icon
+                                            icon={
+                                                ((invalidField.parentElement?.previousElementSibling as HTMLElement)?.children?.[0]?.children?.[0] as HTMLElement)?.style?.getPropertyValue('--icon-image')?.slice(1, -1)
+                                                ??
+                                                'text_fields'
+                                            }
+                                            theme='primary'
+                                        />
+                                        &nbsp;
+                                        {(invalidField as HTMLElement).ariaLabel ?? (invalidField.children[0] as HTMLInputElement).placeholder}
+                                    </>
+                                </ListItem>
                             )}
-                        </ul>
+                        </List>
                     </>
                 });
-                console.log('there is an/some invalid field', invalidFields);
                 return;
             } // if
             
@@ -1485,7 +1497,7 @@ const PaymentMethodCard = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, makePaymentApi} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, makePaymentApi, showDialogMessage} = useCheckout();
     
     
     
@@ -1548,8 +1560,34 @@ const CardPaymentButton = () => {
             ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),
         ];
         if (invalidFields?.length) { // there is an/some invalid field
-            // TODO: show modal error message
-            console.log('there is an/some invalid field', invalidFields);
+            const isPlural = (invalidFields?.length > 1);
+            showDialogMessage({
+                theme   : 'danger',
+                title   : 'Error',
+                message : <>
+                    <p>
+                        There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
+                    </p>
+                    <List listStyle='flat'>
+                            {Array.from(invalidFields).map((invalidField, index) =>
+                                <ListItem key={index}>
+                                    <>
+                                        <Icon
+                                            icon={
+                                                ((invalidField.parentElement?.previousElementSibling as HTMLElement)?.children?.[0]?.children?.[0] as HTMLElement)?.style?.getPropertyValue('--icon-image')?.slice(1, -1)
+                                                ??
+                                                'text_fields'
+                                            }
+                                            theme='primary'
+                                        />
+                                        &nbsp;
+                                        {(invalidField as HTMLElement).ariaLabel ?? (invalidField.children[0] as HTMLInputElement).placeholder}
+                                    </>
+                                </ListItem>
+                            )}
+                        </List>
+                </>
+            });
             return;
         } // if
         
