@@ -522,12 +522,16 @@ const responsePlaceOrder = async (
             }
         */
         console.log('paypalOrderData: ', paypalOrderData);
-        if ((paypalOrderData?.status !== 'CREATED') || !('id' in paypalOrderData)) throw Error('unexpected API response');
+        if ((paypalOrderData?.status !== 'CREATED') || !('id' in paypalOrderData)) {
+            // TODO: log unexpected response
+            console.log('unexpected response: ', paypalOrderData);
+            throw Error('unexpected API response');
+        } // if
         return res.status(200).json({ // OK
             orderId: paypalOrderData.id,
         });
     }
-    catch {
+    catch (error: any) {
         /*
             Possible errors:
             * Network error.
@@ -536,6 +540,8 @@ const responsePlaceOrder = async (
             * Invalid API_request body JSON (programming bug).
             * unexpected API response (programming bug).
         */
+        // TODO: log internal error
+        console.log('internal error: ', error);
         return res.status(500).json({error: 'internal server error'});
     } // try
 }
@@ -621,10 +627,13 @@ const responseMakePayment = async (
             case 'DECLINED'  : return res.status(402).json({  // payment DECLINED
                 error     : 'payment declined',
             });
-            default          : throw Error('unexpected API response');
+            default          :
+                // TODO: log unexpected response
+                console.log('unexpected response: ', paypalPaymentData, captureData);
+                throw Error('unexpected API response');
         } // switch
     }
-    catch {
+    catch (error: any) {
         /*
             Possible errors:
             * Network error.
@@ -632,6 +641,8 @@ const responseMakePayment = async (
             * Invalid API_request headers (programming bug).
             * unexpected API response (programming bug).
         */
+        // TODO: log internal error
+        console.log('internal error: ', error);
         return res.status(500).json({error: 'internal server error'});
     } // try
 }

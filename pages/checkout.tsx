@@ -1491,7 +1491,7 @@ const CardPaymentButton = () => {
         }
         catch (error: any) {
             // TODO: handle payment authentication rejection
-            throw Error('unable to place order: ', error);
+            console.log('unable to place order: ', error);
         }
         finally {
             // update the UI:
