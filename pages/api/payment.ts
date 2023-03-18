@@ -271,104 +271,28 @@ export default async (
             
             
             
-            const accessToken = await generateAccessToken();
-            const url = `${paypalURL}/v2/checkout/orders`;
-            const paypalResponse = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify({
-                    // intent enum required
-                    // The intent to either capture payment immediately or authorize a payment for an order after order creation.
-                    // The possible values are: 'CAPTURE'|'AUTHORIZE'
-                    intent                        : 'CAPTURE',
-                    
-                    // purchase_units array (contains the purchase_unit_request object) required
-                    purchase_units                : [{ // array of contract between a payer and the payee, in the case of this commerce order -- only ONE contract for ONE order
-                        // amount Money required
-                        amount                    : {
-                            // currency_code string required
-                            // The three-character ISO-4217 currency code that identifies the currency.
-                            currency_code         : defaultCurrencyCode,
-                            
-                            // value string required
-                            /*
-                                The value, which might be:
-                                * An integer for currencies like JPY that are not typically fractional.
-                                * A decimal fraction for currencies like TND that are subdivided into thousandths.
-                            */
-                            value                 : totalCostConverted,
-                            
-                            // breakdown object|undefined
-                            // The breakdown of the amount. Breakdown provides details such as total item amount, total tax amount, shipping, handling, insurance, and discounts, if any.
-                            breakdown             : {
-                                // discount Money|undefined
-                                // The discount for all items within a given purchase_unit. discount.value can not be a negative number.
-                                discount          : undefined,
-                                
-                                // handling Money|undefined
-                                // The handling fee for all items within a given purchase_unit. handling.value can not be a negative number.
-                                handling          : undefined,
-                                
-                                // insurance Money|undefined
-                                // The insurance fee for all items within a given purchase_unit. insurance.value can not be a negative number.
-                                insurance         : undefined,
-                                
-                                // item_total Money|undefined
-                                // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
-                                item_total        : {
-                                    currency_code : defaultCurrencyCode,
-                                    value         : totalProductPricesConverted,
-                                },
-                                
-                                // shipping Money|undefined
-                                // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
-                                shipping          : (totalShippingCostsConverted === undefined) ? undefined : {
-                                    currency_code : defaultCurrencyCode,
-                                    value         : totalShippingCostsConverted,
-                                },
-                                
-                                // shipping_discount Money|undefined
-                                // The shipping discount for all items within a given purchase_unit. shipping_discount.value can not be a negative number
-                                shipping_discount : undefined,
-                                
-                                // tax_total Money|undefined
-                                // The total tax for all items. Required if the request includes purchase_units.items.tax. Must equal the sum of (items[].tax * items[].quantity) for all items. tax_total.value can not be a negative number.
-                                tax_total         : undefined,
-                            },
-                        },
+            try {
+                const accessToken = await generateAccessToken();
+                const url = `${paypalURL}/v2/checkout/orders`;
+                const paypalResponse = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify({
+                        // intent enum required
+                        // The intent to either capture payment immediately or authorize a payment for an order after order creation.
+                        // The possible values are: 'CAPTURE'|'AUTHORIZE'
+                        intent                        : 'CAPTURE',
                         
-                        // invoice_id string|undefined
-                        // The API caller-provided external invoice number for this order. Appears in both the payer's transaction history and the emails that the payer receives.
-                        invoice_id                : undefined,
-                        
-                        // custom_id string|undefined
-                        // The API caller-provided external ID. Used to reconcile client transactions with PayPal transactions. Appears in transaction and settlement reports but is not visible to the payer.
-                        custom_id                 : undefined,
-                        
-                        // description string|undefined
-                        // The purchase description.
-                        description               : undefined,
-                        
-                        // items array (contains the item object)
-                        // An array of items that the customer purchases from the merchant.
-                        items                     : reportedProductItem.map((item) => ({
-                            // name string required
-                            // The item name or title.
-                            name                  : item.name,
-                            
-                            // quantity string required
-                            // The item quantity. Must be a whole number.
-                            quantity              : item.quantity,
-                            
-                            // unit_amount Money required
-                            // The item price or rate per unit.
-                            unit_amount           : {
+                        // purchase_units array (contains the purchase_unit_request object) required
+                        purchase_units                : [{ // array of contract between a payer and the payee, in the case of this commerce order -- only ONE contract for ONE order
+                            // amount Money required
+                            amount                    : {
                                 // currency_code string required
                                 // The three-character ISO-4217 currency code that identifies the currency.
-                                currency_code     : defaultCurrencyCode,
+                                currency_code         : defaultCurrencyCode,
                                 
                                 // value string required
                                 /*
@@ -376,100 +300,176 @@ export default async (
                                     * An integer for currencies like JPY that are not typically fractional.
                                     * A decimal fraction for currencies like TND that are subdivided into thousandths.
                                 */
-                                value             : item.unitPriceConverted ?? 0,
+                                value                 : totalCostConverted,
+                                
+                                // breakdown object|undefined
+                                // The breakdown of the amount. Breakdown provides details such as total item amount, total tax amount, shipping, handling, insurance, and discounts, if any.
+                                breakdown             : {
+                                    // discount Money|undefined
+                                    // The discount for all items within a given purchase_unit. discount.value can not be a negative number.
+                                    discount          : undefined,
+                                    
+                                    // handling Money|undefined
+                                    // The handling fee for all items within a given purchase_unit. handling.value can not be a negative number.
+                                    handling          : undefined,
+                                    
+                                    // insurance Money|undefined
+                                    // The insurance fee for all items within a given purchase_unit. insurance.value can not be a negative number.
+                                    insurance         : undefined,
+                                    
+                                    // item_total Money|undefined
+                                    // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
+                                    item_total        : {
+                                        currency_code : defaultCurrencyCode,
+                                        value         : totalProductPricesConverted,
+                                    },
+                                    
+                                    // shipping Money|undefined
+                                    // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
+                                    shipping          : (totalShippingCostsConverted === undefined) ? undefined : {
+                                        currency_code : defaultCurrencyCode,
+                                        value         : totalShippingCostsConverted,
+                                    },
+                                    
+                                    // shipping_discount Money|undefined
+                                    // The shipping discount for all items within a given purchase_unit. shipping_discount.value can not be a negative number
+                                    shipping_discount : undefined,
+                                    
+                                    // tax_total Money|undefined
+                                    // The total tax for all items. Required if the request includes purchase_units.items.tax. Must equal the sum of (items[].tax * items[].quantity) for all items. tax_total.value can not be a negative number.
+                                    tax_total         : undefined,
+                                },
                             },
                             
-                            // category enum|undefined
-                            // The item category type.
-                            // The possible values are: 'DIGITAL_GOODS'|'PHYSICAL_GOODS'|'DONATION'
-                            category              : (item.unitWeight === undefined) ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS',
+                            // invoice_id string|undefined
+                            // The API caller-provided external invoice number for this order. Appears in both the payer's transaction history and the emails that the payer receives.
+                            invoice_id                : undefined,
+                            
+                            // custom_id string|undefined
+                            // The API caller-provided external ID. Used to reconcile client transactions with PayPal transactions. Appears in transaction and settlement reports but is not visible to the payer.
+                            custom_id                 : undefined,
                             
                             // description string|undefined
-                            // The detailed item description.
-                            description           : undefined,
+                            // The purchase description.
+                            description               : undefined,
                             
-                            // sku string|undefined
-                            // The stock keeping unit (SKU) for the item.
-                            sku                   : undefined,
+                            // items array (contains the item object)
+                            // An array of items that the customer purchases from the merchant.
+                            items                     : reportedProductItem.map((item) => ({
+                                // name string required
+                                // The item name or title.
+                                name                  : item.name,
+                                
+                                // quantity string required
+                                // The item quantity. Must be a whole number.
+                                quantity              : item.quantity,
+                                
+                                // unit_amount Money required
+                                // The item price or rate per unit.
+                                unit_amount           : {
+                                    // currency_code string required
+                                    // The three-character ISO-4217 currency code that identifies the currency.
+                                    currency_code     : defaultCurrencyCode,
+                                    
+                                    // value string required
+                                    /*
+                                        The value, which might be:
+                                        * An integer for currencies like JPY that are not typically fractional.
+                                        * A decimal fraction for currencies like TND that are subdivided into thousandths.
+                                    */
+                                    value             : item.unitPriceConverted ?? 0,
+                                },
+                                
+                                // category enum|undefined
+                                // The item category type.
+                                // The possible values are: 'DIGITAL_GOODS'|'PHYSICAL_GOODS'|'DONATION'
+                                category              : (item.unitWeight === undefined) ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS',
+                                
+                                // description string|undefined
+                                // The detailed item description.
+                                description           : undefined,
+                                
+                                // sku string|undefined
+                                // The stock keeping unit (SKU) for the item.
+                                sku                   : undefined,
+                                
+                                // tax object|undefined
+                                // The item tax for each unit.
+                                tax                   : undefined,
+                            })),
                             
-                            // tax object|undefined
-                            // The item tax for each unit.
-                            tax                   : undefined,
-                        })),
-                        
-                        // payee object|undefined
-                        payee                     : {
-                            // email_address string|undefined
-                            // The email address of merchant.
-                            email_address         : undefined,
-                            
-                            // merchant_id string
-                            // The encrypted PayPal account ID of the merchant.
-                            merchant_id           : undefined,
-                        },
-                        
-                        // shipping object|undefined
-                        // The name and address of the person to whom to ship the items.
-                        shipping                  : {
-                            // address object|undefined
-                            // The address of the person to whom to ship the items.
-                            address               : {
-                                // address_line_1 string|undefined
-                                // The first line of the address. For example, number or street. For example, 173 Drury Lane.
-                                // Required for data entry and compliance and risk checks. Must contain the full address.
-                                address_line_1    : shippingAddress,
+                            // payee object|undefined
+                            payee                     : {
+                                // email_address string|undefined
+                                // The email address of merchant.
+                                email_address         : undefined,
                                 
-                                // address_line_2 string|undefined
-                                // The second line of the address. For example, suite or apartment number.
-                                address_line_2    : undefined,
-                                
-                                // admin_area_2 string|undefined
-                                // A city, town, or village.
-                                admin_area_2      : shippingCity,
-                                
-                                // admin_area_1 string|undefined
-                                // The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision. Format for postal delivery. For example, CA and not California.
-                                /*
-                                    Value, by country, is:
-                                    * UK. A county.
-                                    * US. A state.
-                                    * Canada. A province.
-                                    * Japan. A prefecture.
-                                    * Switzerland. A kanton.
-                                */
-                                admin_area_1      : shippingZone,
-                                
-                                // postal_code string
-                                // The postal code, which is the zip code or equivalent. Typically required for countries with a postal code or an equivalent.
-                                postal_code       : shippingZip,
-                                
-                                // country_code string required
-                                // The two-character ISO 3166-1 code that identifies the country or region.
-                                country_code      : shippingCountry,
+                                // merchant_id string
+                                // The encrypted PayPal account ID of the merchant.
+                                merchant_id           : undefined,
                             },
                             
-                            // name object|undefined
-                            // The name of the person to whom to ship the items. Supports only the full_name property.
-                            name                  : {
-                                // full_name string
-                                // When the party is a person, the party's full name.
-                                full_name         : `${shippingFirstName} ${shippingLastName}`,
+                            // shipping object|undefined
+                            // The name and address of the person to whom to ship the items.
+                            shipping                  : {
+                                // address object|undefined
+                                // The address of the person to whom to ship the items.
+                                address               : {
+                                    // address_line_1 string|undefined
+                                    // The first line of the address. For example, number or street. For example, 173 Drury Lane.
+                                    // Required for data entry and compliance and risk checks. Must contain the full address.
+                                    address_line_1    : shippingAddress,
+                                    
+                                    // address_line_2 string|undefined
+                                    // The second line of the address. For example, suite or apartment number.
+                                    address_line_2    : undefined,
+                                    
+                                    // admin_area_2 string|undefined
+                                    // A city, town, or village.
+                                    admin_area_2      : shippingCity,
+                                    
+                                    // admin_area_1 string|undefined
+                                    // The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision. Format for postal delivery. For example, CA and not California.
+                                    /*
+                                        Value, by country, is:
+                                        * UK. A county.
+                                        * US. A state.
+                                        * Canada. A province.
+                                        * Japan. A prefecture.
+                                        * Switzerland. A kanton.
+                                    */
+                                    admin_area_1      : shippingZone,
+                                    
+                                    // postal_code string
+                                    // The postal code, which is the zip code or equivalent. Typically required for countries with a postal code or an equivalent.
+                                    postal_code       : shippingZip,
+                                    
+                                    // country_code string required
+                                    // The two-character ISO 3166-1 code that identifies the country or region.
+                                    country_code      : shippingCountry,
+                                },
+                                
+                                // name object|undefined
+                                // The name of the person to whom to ship the items. Supports only the full_name property.
+                                name                  : {
+                                    // full_name string
+                                    // When the party is a person, the party's full name.
+                                    full_name         : `${shippingFirstName} ${shippingLastName}`,
+                                },
+                                
+                                // type enum|undefined
+                                // The method by which the payer wants to get their items from the payee e.g shipping, in-person pickup. Either type or options but not both may be present.
+                                // The possible values are: 'SHIPPING'|'PICKUP_IN_PERSON'
+                                type                  : 'SHIPPING',
                             },
                             
-                            // type enum|undefined
-                            // The method by which the payer wants to get their items from the payee e.g shipping, in-person pickup. Either type or options but not both may be present.
-                            // The possible values are: 'SHIPPING'|'PICKUP_IN_PERSON'
-                            type                  : 'SHIPPING',
-                        },
-                        
-                        // soft_descriptor string|undefined
-                        // The soft descriptor is the dynamic text used to construct the statement descriptor that appears on a payer's card statement.
-                        // If an Order is paid using the "PayPal Wallet", the statement descriptor will appear in following format on the payer's card statement: PAYPAL_prefix+(space)+merchant_descriptor+(space)+ soft_descriptor
-                        soft_descriptor           : undefined,
-                    }],
-                }),
-            });
-            try {
+                            // soft_descriptor string|undefined
+                            // The soft descriptor is the dynamic text used to construct the statement descriptor that appears on a payer's card statement.
+                            // If an Order is paid using the "PayPal Wallet", the statement descriptor will appear in following format on the payer's card statement: PAYPAL_prefix+(space)+merchant_descriptor+(space)+ soft_descriptor
+                            soft_descriptor           : undefined,
+                        }],
+                    }),
+                });
                 const paypalOrderData = await handlePaypalResponse(paypalResponse);
                 /*
                     example:
@@ -503,8 +503,15 @@ export default async (
                 console.log('paypalOrderData: ', paypalOrderData);
                 return res.status(200).json(paypalOrderData); // OK
             }
-            catch (error: any) {
-                return res.status(500).send(error?.message ?? error ?? 'error');
+            catch {
+                /*
+                    Possible errors:
+                    * Network error.
+                    * Unable to generate accessToken (invalid `NEXT_PUBLIC_PAYPAL_CLIENT_ID` and/or invalid `PAYPAL_SECRET`).
+                    * Configured currency is not supported by PayPal.
+                    * Invalid request body JSON (programming bug).
+                */
+                return res.status(500).send('internal server error');
             } // try
         } break;
         case 'PATCH': { // purchase the previously posted order
