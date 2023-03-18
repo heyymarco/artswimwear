@@ -378,8 +378,9 @@ export default function Checkout() {
             }).unwrap();
             return paypalOrderData.orderId;
         }
-        catch {
-            throw Error('unable to place order');
+        catch (error: any) {
+            // TODO: handle order rejection
+            throw Error('unable to place order: ', error);
         } // try
     });
     
@@ -1479,30 +1480,18 @@ const CardPaymentButton = () => {
             
             
             
-            try {
-                // then forward the authentication to backend_API to receive the fund:
-                const data = await makePayment(paypalAuthentication).unwrap();
-                // Two cases to handle:
-                //   (1) Non-recoverable errors -> Show a failure message
-                //   (2) Successful transaction -> Show confirmation or thank you
-                // This example reads a v2/checkout/orders capture response, propagated from the server
-                // You could use a different API or structure for your 'orderData'
-                if (data.id) {
-                    console.log('payment data: ', data);
-                    return data.id;
-                }
-                else {
-                    // TODO handle error
-                    return '';
-                } // if
-            }
-            catch {
-                // TODO: handle error
-                return '';
-            } // try
+            // then forward the authentication to backend_API to receive the fund:
+            const data = await makePayment(paypalAuthentication).unwrap();
+            // Two cases to handle:
+            //   (1) Non-recoverable errors -> Show a failure message
+            //   (2) Successful transaction -> Show confirmation or thank you
+            // This example reads a v2/checkout/orders capture response, propagated from the server
+            // You could use a different API or structure for your 'orderData'
+            console.log('payment data: ', data);
         }
-        catch {
+        catch (error: any) {
             // TODO: handle payment authentication rejection
+            throw Error('unable to place order: ', error);
         }
         finally {
             // update the UI:

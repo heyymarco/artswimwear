@@ -533,7 +533,8 @@ const responsePlaceOrder = async (
             * Network error.
             * Unable to generate accessToken (invalid `NEXT_PUBLIC_PAYPAL_CLIENT_ID` and/or invalid `PAYPAL_SECRET`).
             * Configured currency is not supported by PayPal.
-            * Invalid request body JSON (programming bug).
+            * Invalid API_request body JSON (programming bug).
+            * unexpected API response (programming bug).
         */
         return res.status(500).json({error: 'internal server error'});
     } // try
@@ -569,16 +570,16 @@ const responseMakePayment = async (
     
     
     
-    const accessToken = await generateAccessToken();
-    const url = `${paypalURL}/v2/checkout/orders/${orderId}/capture`;
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${accessToken}`,
-        },
-    });
     try {
+        const accessToken = await generateAccessToken();
+        const url = `${paypalURL}/v2/checkout/orders/${orderId}/capture`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
         const paypalPaymentData = await handlePaypalResponse(response);
         /*
             example:
@@ -614,24 +615,23 @@ const responseMakePayment = async (
         
         
         switch (captureData?.status) {
-            case 'COMPLETED': {
-                return res.status(200).json({ // payment approved
-                    id: 'payment#123#approved',
-                });
-            } break;
-            case 'DECLINED': {
-                return res.status(402).json({ // payment declined
-                    error: 'payment declined',
-                });
-            } break;
-            default: {
-                console.log(paypalPaymentData);
-                console.log(captureData);
-                return res.status(500).json({error: 'unknown error'});
-            } break;
+            case 'COMPLETED' :  return res.status(200).json({ // payment APPROVED
+                paymentId : 'payment#123#approved',
+            });
+            case 'DECLINED'  : return res.status(402).json({  // payment DECLINED
+                error     : 'payment declined',
+            });
+            default          : throw Error('unexpected API response');
         } // switch
     }
-    catch (error: any) {
-        return res.status(500).json({error: error?.message ?? error ?? 'error'});
+    catch {
+        /*
+            Possible errors:
+            * Network error.
+            * Unable to generate accessToken (invalid `NEXT_PUBLIC_PAYPAL_CLIENT_ID` and/or invalid `PAYPAL_SECRET`).
+            * Invalid API_request headers (programming bug).
+            * unexpected API response (programming bug).
+        */
+        return res.status(500).json({error: 'internal server error'});
     } // try
 }

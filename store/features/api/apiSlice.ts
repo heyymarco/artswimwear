@@ -78,8 +78,7 @@ export interface PlaceOrderResponse
 export type AuthenticationPaymentData = unknown
 export interface MakePaymentResponse
 {
-    id    ?: string
-    error ?: string
+    paymentId : string
 }
 
 
