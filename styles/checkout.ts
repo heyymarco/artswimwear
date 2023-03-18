@@ -52,11 +52,11 @@ export default () => {
                     '"navCheckout      vertLine orderSummary" auto',
                     '"...........      vertLine orderSummary" auto',
                     '/',
-                    '1fr min-content 1fr'
+                    '9fr min-content 3fr'
                 ]],
             }),
             ...ifScreenWidthAtLeast('xl', {
-                gridTemplateColumns: '3fr min-content 2fr',
+                gridTemplateColumns: '7fr min-content 5fr',
             }),
             gapInline: `calc(${containers.paddingInline} / 2)`,
             gapBlock : containers.paddingBlock,
@@ -177,7 +177,9 @@ export default () => {
                 margin: 0,
                 // maxInlineSize: '15em',
                 whiteSpace: 'normal',
-                textOverflow: 'ellipsis',
+                textOverflow : 'ellipsis', // long text...
+                wordBreak    : 'break-word',
+                overflowWrap : 'break-word',
                 // overflow: 'hidden',
             }),
             ...children('.subPrice', {
@@ -391,7 +393,7 @@ export default () => {
                     '/',
                     '1fr'
                 ]],
-                ...ifScreenWidthAtLeast('sm', {
+                ...ifScreenWidthAtLeast('md', {
                     gridTemplate: [[
                         '"number number" auto',
                         '"name     name" auto',

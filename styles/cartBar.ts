@@ -61,7 +61,9 @@ export default () => [
             margin: 0,
             maxInlineSize: '15em',
             whiteSpace: 'normal',
-            textOverflow: 'ellipsis',
+            textOverflow : 'ellipsis', // long text...
+            wordBreak    : 'break-word',
+            overflowWrap : 'break-word',
             overflow: 'hidden',
         }),
         ...children('.quantity', {
