@@ -25,6 +25,9 @@
     align-items: center;
 }
 
+body {
+    display: grid; // workaround for foreign <div>(s) at the end of </body>
+}
 main {
     min-block-size: calc(100vh - var(--site-header) - var(--site-footer));
     min-block-size: calc(100dvh - var(--site-header) - var(--site-footer));

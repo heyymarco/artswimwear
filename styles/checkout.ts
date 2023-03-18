@@ -200,17 +200,28 @@ export default () => {
                 
                 
                 
-                // ...descendants('tbody', {
-                //     display: 'block',
-                //     padding: '1rem',
-                // }),
+                ...descendants('tbody', {
+                    ...ifScreenWidthSmallerThan('sm', {
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }),
+                }),
                 ...descendants('tr', {
+                    ...ifScreenWidthSmallerThan('sm', {
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        padding: '1rem',
+                    }),
                     ...rule(':not(:last-child)', {
                         borderBlockEnd: borderVars.border,
                         borderBlockEndWidth: borders.defaultWidth,
                     }),
                 }),
                 ...descendants('td', {
+                    ...ifScreenWidthSmallerThan('sm', {
+                        padding: '0rem',
+                    }),
                     padding: '0.75rem',
                 }),
             }),
