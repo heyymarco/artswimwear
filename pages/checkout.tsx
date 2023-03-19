@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Accordion, AccordionItem, Badge, BasicProps, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Container, controlValues, Details, DropdownListButton, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
+import { Accordion, AccordionItem, Alert, Badge, BasicProps, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Container, controlValues, Details, DropdownListButton, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetShippingList, usePlaceOrder, useMakePayment } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -387,7 +387,6 @@ export default function Checkout() {
     
     // handlers:
     const handlePlaceOrder = useEvent(async (): Promise<string> => {
-        console.log('placing order!');
         try {
             const placeOrderResponse = await placeOrder({
                 items : cartItems,                   // cart item(s)
@@ -396,8 +395,24 @@ export default function Checkout() {
             return placeOrderResponse.orderId;
         }
         catch (error: any) {
-            // TODO: handle order rejection
-            throw Error('unable to place order: ', error);
+            showDialogMessage({
+                theme   : 'danger',
+                title   : 'Error Processing Your Order',
+                message : <>
+                    <p>
+                        Oops, there was an error processing your order.
+                    </p>
+                    <p>
+                        There was a <strong>problem contacting our server</strong>.<br />
+                        Make sure your internet connection is available.
+                    </p>
+                    <p>
+                        Please try again in a few minutes.<br />
+                        If the problem still persists, please contact us manually.
+                    </p>
+                </>
+            });
+            throw error;
         } // try
     });
     
@@ -544,7 +559,7 @@ export default function Checkout() {
                         <hr className={styles.vertLine} />
                     </Container>}
                     
-                    <ModalCard theme={(dialogMessage ? dialogMessage.theme : prevDialogMessage.current?.theme) ?? 'primary'} lazy={true} expanded={!!dialogMessage} onExpandedChange={(event) => !event.expanded && showDialogMessage(false)}>
+                    <ModalCard modalCardStyle='scrollable' theme={(dialogMessage ? dialogMessage.theme : prevDialogMessage.current?.theme) ?? 'primary'} lazy={true} expanded={!!dialogMessage} onExpandedChange={(event) => !event.expanded && showDialogMessage(false)}>
                         <CardHeader>
                             {(dialogMessage ? dialogMessage.title : prevDialogMessage.current?.title) ?? 'Notification'}
                             <CloseButton onClick={() => showDialogMessage(false)} />
@@ -1569,23 +1584,23 @@ const CardPaymentButton = () => {
                         There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
                     </p>
                     <List listStyle='flat'>
-                            {Array.from(invalidFields).map((invalidField, index) =>
-                                <ListItem key={index}>
-                                    <>
-                                        <Icon
-                                            icon={
-                                                ((invalidField.parentElement?.previousElementSibling as HTMLElement)?.children?.[0]?.children?.[0] as HTMLElement)?.style?.getPropertyValue('--icon-image')?.slice(1, -1)
-                                                ??
-                                                'text_fields'
-                                            }
-                                            theme='primary'
-                                        />
-                                        &nbsp;
-                                        {(invalidField as HTMLElement).ariaLabel ?? (invalidField.children[0] as HTMLInputElement).placeholder}
-                                    </>
-                                </ListItem>
-                            )}
-                        </List>
+                        {Array.from(invalidFields).map((invalidField, index) =>
+                            <ListItem key={index}>
+                                <>
+                                    <Icon
+                                        icon={
+                                            ((invalidField.parentElement?.previousElementSibling as HTMLElement)?.children?.[0]?.children?.[0] as HTMLElement)?.style?.getPropertyValue('--icon-image')?.slice(1, -1)
+                                            ??
+                                            'text_fields'
+                                        }
+                                        theme='primary'
+                                    />
+                                    &nbsp;
+                                    {(invalidField as HTMLElement).ariaLabel ?? (invalidField.children[0] as HTMLInputElement).placeholder}
+                                </>
+                            </ListItem>
+                        )}
+                    </List>
                 </>
             });
             return;
@@ -1646,8 +1661,57 @@ const CardPaymentButton = () => {
             console.log('makePaymentResponse: ', makePaymentResponse);
         }
         catch (error: any) {
-            // TODO: handle payment authentication rejection
-            console.log('unable to place order: ', error);
+            const errorStatus = error?.status;
+            if (errorStatus === 402) {
+                showDialogMessage({
+                    theme   : 'danger',
+                    title   : 'Error Processing Your Payment',
+                    message : <>
+                        <p>
+                            Sorry, we were unable to process your payment.
+                        </p>
+                        <p>
+                            There was a <strong>problem authorizing your card</strong>.<br />
+                            Make sure your card is still valid and has not reached the transaction limit.
+                        </p>
+                        <p>
+                            Try using a different credit card and try again.<br />
+                            If the problem still persists, please change to another payment method.
+                        </p>
+                        <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
+                            <p>
+                                Make sure your funds have not been deducted.<br />
+                                If you have, please contact us for assistance.
+                            </p>
+                        </Alert>
+                    </>
+                });
+            }
+            else {
+                showDialogMessage({
+                    theme   : 'danger',
+                    title   : 'Error Processing Your Payment',
+                    message : <>
+                        <p>
+                            Oops, there was an error processing your payment.
+                        </p>
+                        <p>
+                            There was a <strong>problem contacting our server</strong>.<br />
+                            Make sure your internet connection is available.
+                        </p>
+                        <p>
+                            Please try again in a few minutes.<br />
+                            If the problem still persists, please contact us manually.
+                        </p>
+                        <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
+                            <p>
+                                Make sure your funds have not been deducted.<br />
+                                If you have, please contact us for assistance.
+                            </p>
+                        </Alert>
+                    </>
+                });
+            } // if
         }
         finally {
             // update the UI:
