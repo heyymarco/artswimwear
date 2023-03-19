@@ -7,6 +7,7 @@ import { HeroSection } from '@/components/sections/HeroSection'
 import { Section } from '@/components/sections/Section'
 import { AccordionItem, Button, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
+import ProductImage from '@/components/ProductImage'
 
 
 
@@ -29,7 +30,13 @@ export default function Home() {
                 <HeroSection theme='secondary' className={styles.hero}>
                     <Carousel className='slides fill' nude={true} size='lg' theme='primary' mild={false}>
                         {[1,2,3,4,5].map(item =>
-                            <Image key={item} alt='' src={`/slides/${item}.jpg`} width={1200} height={1800} />
+                            <ProductImage
+                                key={item}
+                                
+                                alt=''
+                                src={`/slides/${item}.jpg`}
+                                sizes="100vw"
+                            />
                         )}
                     </Carousel>
                     <Container tag='footer' className='fill' theme='primary' mild={false} gradient={true}>
@@ -37,27 +44,7 @@ export default function Home() {
                         {/* <span className='hint'>Scroll down to see more.</span> */}
                     </Container>
                 </HeroSection>
-                <Section className={styles.features} title='Our Story' theme='secondary'>
-                    {/* <div className='figures'>
-                        <figure>
-                            <Image alt='Atika Paramita' src='/figures/atika.jpg' width={200} height={200} />
-                            <figcaption>
-                                <h3>
-                                    Atika Paramita
-                                </h3>
-                                <Button buttonStyle='link' theme='primary' size='sm' href='https://www.instagram.com/atikapj'>@ATIKAPJ</Button>
-                            </figcaption>
-                        </figure>
-                        <figure>
-                            <Image alt='Rossalia Tomlinson' src='/figures/rossalia.jpg' width={200} height={200} />
-                            <figcaption>
-                                <h3>
-                                    Rossalia Tomlinson
-                                </h3>
-                                <Button buttonStyle='link' theme='primary' size='sm' href='https://www.instagram.com/rossaliauran'>@ROSSALIAURAN</Button>
-                            </figcaption>
-                        </figure>
-                    </div> */}
+                <Section className={styles.story} title='Our Story' theme='secondary'>
                     <p>
                         ART is an acronym for Atika and Rossalia Tomlinson, they are best friends from
                         high school. In 2019, they decided to follow their dreams and launch ART – their

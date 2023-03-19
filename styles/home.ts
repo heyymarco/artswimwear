@@ -25,7 +25,16 @@ export default () => [
             
             
             ...children('.slides', {
-                height: `calc(100vh  - var(--site-header) - var(--site-footer))`,
+                height: `calc(100svh  - var(--site-header) - var(--site-footer))`,
+                ...fallbacks({
+                    height: `calc(100dvh  - var(--site-header) - var(--site-footer))`,
+                }),
+                ...fallbacks({
+                    height: `calc(100vh  - var(--site-header) - var(--site-footer))`,
+                }),
+                ...children('ul>li>figure', {
+                    inlineSize: '100%',
+                }),
             }),
             ...children('footer', {
                 alignSelf: 'end',
@@ -53,10 +62,10 @@ export default () => [
             })
         }),
     }),
-    scopeOf('features', {
+    scopeOf('story', {
         ...children('article', {
             ...children(['h1', 'h2'], {
-                fontSize: '4rem',
+                fontSize: '3rem',
             }),
             ...children('.figures', {
                 display: 'flex',
@@ -100,13 +109,16 @@ export default () => [
                 }),
                 alignItems: 'center',
                 gap: '2rem',
+                ...children('img', {
+                    maxInlineSize: '100%',
+                }),
             }),
         }),
     }),
     scopeOf('regeneration', {
         ...children('article', {
             ...children(['h1', 'h2'], {
-                fontSize: '3rem',
+                fontSize: '2rem',
             }),
             ...descendants('.illus', {
                 objectFit: 'contain',
@@ -119,7 +131,7 @@ export default () => [
             display: 'flex',
             flexDirection: 'column',
             ...children(['h1', 'h2'], {
-                fontSize: '4rem',
+                fontSize: '2.5rem',
             }),
             ...children('.paragraphs', {
                 columns: 1,
@@ -139,7 +151,7 @@ export default () => [
             display: 'flex',
             flexDirection: 'column',
             ...children(['h1', 'h2'], {
-                fontSize: '4rem',
+                fontSize: '3rem',
             }),
             ...descendants('.illus', {
                 objectFit: 'cover',
