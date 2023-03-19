@@ -183,72 +183,78 @@ interface ShowDialogMessage {
     message  : React.ReactNode
 }
 interface ICheckoutContext {
-    cartItems                 : CartEntry[]
-    hasCart                   : boolean
-    checkoutStep              : CheckoutStep
-    checkoutProgress          : number
+    cartItems                         : CartEntry[]
+    hasCart                           : boolean
+    checkoutStep                      : CheckoutStep
+    checkoutProgress                  : number
     
-    priceList                 : EntityState<PriceEntry>    | undefined
-    productList               : EntityState<ProductEntry>  | undefined
-    countryList               : EntityState<CountryEntry>  | undefined
-    shippingList              : EntityState<ShippingEntry> | undefined
+    priceList                         : EntityState<PriceEntry>    | undefined
+    productList                       : EntityState<ProductEntry>  | undefined
+    countryList                       : EntityState<CountryEntry>  | undefined
+    shippingList                      : EntityState<ShippingEntry> | undefined
     
-    isLoading                 : boolean
-    isError                   : boolean
-    isCartDataReady           : boolean
+    isLoading                         : boolean
+    isError                           : boolean
+    isCartDataReady                   : boolean
     
-    isDesktop                 : boolean
+    isDesktop                         : boolean
     
-    regularCheckoutSectionRef : React.MutableRefObject<HTMLElement|null>      | undefined
-    shippingMethodOptionRef   : React.MutableRefObject<HTMLElement|null>      | undefined
-    billingAddressSectionRef  : React.MutableRefObject<HTMLElement|null>      | undefined
-    paymentCardSectionRef     : React.MutableRefObject<HTMLElement|null>      | undefined
+    regularCheckoutSectionRef         : React.MutableRefObject<HTMLElement|null>      | undefined
+    shippingMethodOptionRef           : React.MutableRefObject<HTMLElement|null>      | undefined
+    billingAddressSectionRef          : React.MutableRefObject<HTMLElement|null>      | undefined
+    paymentCardSectionRef             : React.MutableRefObject<HTMLElement|null>      | undefined
     
-    shippingEmailInputRef     : React.MutableRefObject<HTMLInputElement|null> | undefined
-    shippingAddressInputRef   : React.MutableRefObject<HTMLInputElement|null> | undefined
-    cardholderInputRef        : React.MutableRefObject<HTMLInputElement|null> | undefined
+    shippingEmailInputRef             : React.MutableRefObject<HTMLInputElement|null> | undefined
+    shippingAddressInputRef           : React.MutableRefObject<HTMLInputElement|null> | undefined
+    cardholderInputRef                : React.MutableRefObject<HTMLInputElement|null> | undefined
     
-    paymentToken              : PaymentToken|undefined
-    handlePlaceOrder          : () => Promise<string>
+    paymentToken                      : PaymentToken|undefined
+    handlePlaceOrder                  : () => Promise<string>
     
-    placeOrderApi             : ReturnType<typeof usePlaceOrder>
-    makePaymentApi            : ReturnType<typeof useMakePayment>
+    showDialogMessage                 : React.Dispatch<React.SetStateAction<ShowDialogMessage|false>>
+    showDialogMessageFieldsError      : (invalidFields: ArrayLike<Element>|undefined) => void
+    showDialogMessagePlaceOrderError  : (error: any) => void
+    showDialogMessageMakePaymentError : (error: any) => void
     
-    showDialogMessage         : React.Dispatch<React.SetStateAction<ShowDialogMessage|false>>
+    placeOrderApi                     : ReturnType<typeof usePlaceOrder>
+    makePaymentApi                    : ReturnType<typeof useMakePayment>
 }
 const CheckoutContext = createContext<ICheckoutContext>({
-    cartItems                 : [],
-    hasCart                   : false,
-    checkoutStep              : 'info',
-    checkoutProgress          : 0,
+    cartItems                         : [],
+    hasCart                           : false,
+    checkoutStep                      : 'info',
+    checkoutProgress                  : 0,
     
-    priceList                 : undefined,
-    productList               : undefined,
-    countryList               : undefined,
-    shippingList              : undefined,
+    priceList                         : undefined,
+    productList                       : undefined,
+    countryList                       : undefined,
+    shippingList                      : undefined,
     
-    isLoading                 : false,
-    isError                   : false,
-    isCartDataReady           : false,
+    isLoading                         : false,
+    isError                           : false,
+    isCartDataReady                   : false,
     
-    isDesktop                 : false,
+    isDesktop                         : false,
     
-    regularCheckoutSectionRef : undefined,
-    shippingMethodOptionRef   : undefined,
-    billingAddressSectionRef  : undefined,
-    paymentCardSectionRef     : undefined,
+    regularCheckoutSectionRef         : undefined,
+    shippingMethodOptionRef           : undefined,
+    billingAddressSectionRef          : undefined,
+    paymentCardSectionRef             : undefined,
     
-    shippingEmailInputRef     : undefined,
-    shippingAddressInputRef   : undefined,
-    cardholderInputRef        : undefined,
+    shippingEmailInputRef             : undefined,
+    shippingAddressInputRef           : undefined,
+    cardholderInputRef                : undefined,
     
-    paymentToken              : undefined,
-    handlePlaceOrder          : undefined as any,
+    paymentToken                      : undefined,
+    handlePlaceOrder                  : undefined as any,
     
-    placeOrderApi             : undefined as any,
-    makePaymentApi            : undefined as any,
+    showDialogMessage                 : undefined as any,
+    showDialogMessageFieldsError      : undefined as any,
+    showDialogMessagePlaceOrderError  : undefined as any,
+    showDialogMessageMakePaymentError : undefined as any,
     
-    showDialogMessage         : undefined as any,
+    placeOrderApi                     : undefined as any,
+    makePaymentApi                    : undefined as any,
 });
 const useCheckout = () => useContext(CheckoutContext);
 
@@ -359,10 +365,6 @@ export default function Checkout() {
     });
     useWindowResizeObserver(handleWindowResize);
     
-    const [dialogMessage, showDialogMessage] = useState<ShowDialogMessage|false>(false);
-    const prevDialogMessage = useRef<ShowDialogMessage|null>(null);
-    if (dialogMessage !== false) prevDialogMessage.current = dialogMessage;
-    
     
     
     // refs:
@@ -395,12 +397,102 @@ export default function Checkout() {
             return placeOrderResponse.orderId;
         }
         catch (error: any) {
+            showDialogMessagePlaceOrderError(error);
+            throw error;
+        } // try
+    });
+    
+    
+    
+    // message handlers:
+    const [dialogMessage, showDialogMessage] = useState<ShowDialogMessage|false>(false);
+    const prevDialogMessage = useRef<ShowDialogMessage|null>(null);
+    if (dialogMessage !== false) prevDialogMessage.current = dialogMessage;
+    
+    const showDialogMessageFieldsError      = (invalidFields: ArrayLike<Element>|undefined): void => {
+        if (!invalidFields?.length) return;
+        const isPlural = (invalidFields?.length > 1);
+        showDialogMessage({
+            theme   : 'danger',
+            title   : 'Error',
+            message : <>
+                <p>
+                    There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
+                </p>
+                <List listStyle='flat'>
+                    {Array.from(invalidFields).map((invalidField, index) =>
+                        <ListItem key={index}>
+                            <>
+                                <Icon
+                                    icon={
+                                        ((invalidField.parentElement?.previousElementSibling as HTMLElement)?.children?.[0]?.children?.[0] as HTMLElement)?.style?.getPropertyValue('--icon-image')?.slice(1, -1)
+                                        ??
+                                        'text_fields'
+                                    }
+                                    theme='primary'
+                                />
+                                &nbsp;
+                                {(invalidField as HTMLElement).ariaLabel ?? (invalidField.children[0] as HTMLInputElement).placeholder}
+                            </>
+                        </ListItem>
+                    )}
+                </List>
+            </>
+        });
+    }
+    const showDialogMessagePlaceOrderError  = (error: any): void => {
+        showDialogMessage({
+            theme   : 'danger',
+            title   : 'Error Processing Your Order',
+            message : <>
+                <p>
+                    Oops, there was an error processing your order.
+                </p>
+                <p>
+                    There was a <strong>problem contacting our server</strong>.<br />
+                    Make sure your internet connection is available.
+                </p>
+                <p>
+                    Please try again in a few minutes.<br />
+                    If the problem still persists, please contact us manually.
+                </p>
+            </>
+        });
+    };
+    const showDialogMessageMakePaymentError = (error: any): void => {
+        const errorStatus = error?.status;
+        if (errorStatus === 402) {
             showDialogMessage({
                 theme   : 'danger',
-                title   : 'Error Processing Your Order',
+                title   : 'Error Processing Your Payment',
                 message : <>
                     <p>
-                        Oops, there was an error processing your order.
+                        Sorry, we were unable to process your payment.
+                    </p>
+                    <p>
+                        There was a <strong>problem authorizing your card</strong>.<br />
+                        Make sure your card is still valid and has not reached the transaction limit.
+                    </p>
+                    <p>
+                        Try using a different credit card and try again.<br />
+                        If the problem still persists, please change to another payment method.
+                    </p>
+                    <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
+                        <p>
+                            Make sure your funds have not been deducted.<br />
+                            If you have, please contact us for assistance.
+                        </p>
+                    </Alert>
+                </>
+            });
+        }
+        else {
+            showDialogMessage({
+                theme   : 'danger',
+                title   : 'Error Processing Your Payment',
+                message : <>
+                    <p>
+                        Oops, there was an error processing your payment.
                     </p>
                     <p>
                         There was a <strong>problem contacting our server</strong>.<br />
@@ -410,11 +502,16 @@ export default function Checkout() {
                         Please try again in a few minutes.<br />
                         If the problem still persists, please contact us manually.
                     </p>
+                    <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
+                        <p>
+                            Make sure your funds have not been deducted.<br />
+                            If you have, please contact us for assistance.
+                        </p>
+                    </Alert>
                 </>
             });
-            throw error;
-        } // try
-    });
+        } // if
+    };
     
     
     
@@ -447,10 +544,13 @@ export default function Checkout() {
         paymentToken: existingPaymentToken,
         handlePlaceOrder,          // stable ref
         
+        showDialogMessage,
+        showDialogMessageFieldsError,
+        showDialogMessagePlaceOrderError,
+        showDialogMessageMakePaymentError,
+        
         placeOrderApi,
         makePaymentApi,
-        
-        showDialogMessage,
     }), [
         cartItems,
         hasCart,
@@ -658,7 +758,7 @@ const ProgressCheckout = () => {
 
 const NavCheckout = () => {
     // context:
-    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, showDialogMessage} = useCheckout();
+    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, showDialogMessageFieldsError} = useCheckout();
     
     
     
@@ -684,34 +784,7 @@ const NavCheckout = () => {
             await dispatch(setShippingValidation(true));
             const invalidFields = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
             if (invalidFields?.length) { // there is an/some invalid field
-                const isPlural = (invalidFields?.length > 1);
-                showDialogMessage({
-                    theme   : 'danger',
-                    title   : 'Error',
-                    message : <>
-                        <p>
-                            There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
-                        </p>
-                        <List listStyle='flat'>
-                            {Array.from(invalidFields).map((invalidField, index) =>
-                                <ListItem key={index}>
-                                    <>
-                                        <Icon
-                                            icon={
-                                                ((invalidField.parentElement?.previousElementSibling as HTMLElement)?.children?.[0]?.children?.[0] as HTMLElement)?.style?.getPropertyValue('--icon-image')?.slice(1, -1)
-                                                ??
-                                                'text_fields'
-                                            }
-                                            theme='primary'
-                                        />
-                                        &nbsp;
-                                        {(invalidField as HTMLElement).ariaLabel ?? (invalidField.children[0] as HTMLInputElement).placeholder}
-                                    </>
-                                </ListItem>
-                            )}
-                        </List>
-                    </>
-                });
+                showDialogMessageFieldsError(invalidFields);
                 return;
             } // if
             
@@ -1302,7 +1375,7 @@ const PaymentMethod = () => {
 }
 const PaymentMethodPaypal = () => {
     // context:
-    const {handlePlaceOrder, makePaymentApi} = useCheckout();
+    const {handlePlaceOrder, showDialogMessageMakePaymentError, makePaymentApi} = useCheckout();
     
     
     
@@ -1327,11 +1400,11 @@ const PaymentMethodPaypal = () => {
             
             // then forward the authentication to backend_API to receive the fund:
             const makePaymentResponse = await makePayment({ orderId: paypalAuthentication.orderID }).unwrap();
+            // TODO: show completed page
             console.log('makePaymentResponse: ', makePaymentResponse);
         }
         catch (error: any) {
-            // TODO: handle payment authentication rejection
-            console.log('unable to place order: ', error);
+            showDialogMessageMakePaymentError(error);
         }
         finally {
             // update the UI:
@@ -1512,7 +1585,7 @@ const PaymentMethodCard = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, makePaymentApi, showDialogMessage} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, showDialogMessageFieldsError, showDialogMessageMakePaymentError, makePaymentApi} = useCheckout();
     
     
     
@@ -1575,34 +1648,7 @@ const CardPaymentButton = () => {
             ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),
         ];
         if (invalidFields?.length) { // there is an/some invalid field
-            const isPlural = (invalidFields?.length > 1);
-            showDialogMessage({
-                theme   : 'danger',
-                title   : 'Error',
-                message : <>
-                    <p>
-                        There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
-                    </p>
-                    <List listStyle='flat'>
-                        {Array.from(invalidFields).map((invalidField, index) =>
-                            <ListItem key={index}>
-                                <>
-                                    <Icon
-                                        icon={
-                                            ((invalidField.parentElement?.previousElementSibling as HTMLElement)?.children?.[0]?.children?.[0] as HTMLElement)?.style?.getPropertyValue('--icon-image')?.slice(1, -1)
-                                            ??
-                                            'text_fields'
-                                        }
-                                        theme='primary'
-                                    />
-                                    &nbsp;
-                                    {(invalidField as HTMLElement).ariaLabel ?? (invalidField.children[0] as HTMLInputElement).placeholder}
-                                </>
-                            </ListItem>
-                        )}
-                    </List>
-                </>
-            });
+            showDialogMessageFieldsError(invalidFields);
             return;
         } // if
         
@@ -1653,65 +1699,11 @@ const CardPaymentButton = () => {
             
             // then forward the authentication to backend_API to receive the fund:
             const makePaymentResponse = await makePayment({ orderId: paypalAuthentication.orderId }).unwrap();
-            // Two cases to handle:
-            //   (1) Non-recoverable errors -> Show a failure message
-            //   (2) Successful transaction -> Show confirmation or thank you
-            // This example reads a v2/checkout/orders capture response, propagated from the server
-            // You could use a different API or structure for your 'orderData'
+            // TODO: show completed page
             console.log('makePaymentResponse: ', makePaymentResponse);
         }
         catch (error: any) {
-            const errorStatus = error?.status;
-            if (errorStatus === 402) {
-                showDialogMessage({
-                    theme   : 'danger',
-                    title   : 'Error Processing Your Payment',
-                    message : <>
-                        <p>
-                            Sorry, we were unable to process your payment.
-                        </p>
-                        <p>
-                            There was a <strong>problem authorizing your card</strong>.<br />
-                            Make sure your card is still valid and has not reached the transaction limit.
-                        </p>
-                        <p>
-                            Try using a different credit card and try again.<br />
-                            If the problem still persists, please change to another payment method.
-                        </p>
-                        <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
-                            <p>
-                                Make sure your funds have not been deducted.<br />
-                                If you have, please contact us for assistance.
-                            </p>
-                        </Alert>
-                    </>
-                });
-            }
-            else {
-                showDialogMessage({
-                    theme   : 'danger',
-                    title   : 'Error Processing Your Payment',
-                    message : <>
-                        <p>
-                            Oops, there was an error processing your payment.
-                        </p>
-                        <p>
-                            There was a <strong>problem contacting our server</strong>.<br />
-                            Make sure your internet connection is available.
-                        </p>
-                        <p>
-                            Please try again in a few minutes.<br />
-                            If the problem still persists, please contact us manually.
-                        </p>
-                        <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
-                            <p>
-                                Make sure your funds have not been deducted.<br />
-                                If you have, please contact us for assistance.
-                            </p>
-                        </Alert>
-                    </>
-                });
-            } // if
+            showDialogMessageMakePaymentError(error);
         }
         finally {
             // update the UI:
