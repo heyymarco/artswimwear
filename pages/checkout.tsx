@@ -409,7 +409,7 @@ export default function Checkout() {
     const prevDialogMessage = useRef<ShowDialogMessage|null>(null);
     if (dialogMessage !== false) prevDialogMessage.current = dialogMessage;
     
-    const showDialogMessageFieldsError      = (invalidFields: ArrayLike<Element>|undefined): void => {
+    const showDialogMessageFieldsError      = useEvent((invalidFields: ArrayLike<Element>|undefined): void => {
         // conditions:
         if (!invalidFields?.length) return;
         
@@ -452,8 +452,8 @@ export default function Checkout() {
                 </List>
             </>
         });
-    }
-    const showDialogMessagePlaceOrderError  = (error: any): void => {
+    });
+    const showDialogMessagePlaceOrderError  = useEvent((error: any): void => {
         showDialogMessage({
             theme   : 'danger',
             title   : 'Error Processing Your Order',
@@ -471,8 +471,8 @@ export default function Checkout() {
                 </p>
             </>
         });
-    };
-    const showDialogMessageMakePaymentError = (error: any): void => {
+    });
+    const showDialogMessageMakePaymentError = useEvent((error: any): void => {
         const errorStatus = error?.status;
         if (errorStatus === 402) {
             showDialogMessage({
@@ -524,7 +524,7 @@ export default function Checkout() {
                 </>
             });
         } // if
-    };
+    });
     
     
     
