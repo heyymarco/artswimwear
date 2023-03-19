@@ -161,7 +161,7 @@ const AddressField = (props: AddressFieldProps) => {
                 </Label>
                 <DropdownListButton
                     buttonChildren={selectedCountry?.name ?? 'Country'}
-                    buttonComponent={<CountryButton isValid={!!selectedCountry} />}
+                    buttonComponent={<CountryButton isValid={!!selectedCountry} assertiveFocusable={true} />}
                     
                     theme='primary'
                     mild={true}

@@ -410,7 +410,20 @@ export default function Checkout() {
     if (dialogMessage !== false) prevDialogMessage.current = dialogMessage;
     
     const showDialogMessageFieldsError      = (invalidFields: ArrayLike<Element>|undefined): void => {
+        // conditions:
         if (!invalidFields?.length) return;
+        
+        
+        
+        // focus the first fieldError:
+        const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), iframe';
+        const firstInvalidField = invalidFields?.[0];
+        const firstFocusableElm = (firstInvalidField.matches(focusableSelector) ? firstInvalidField : firstInvalidField?.querySelector(focusableSelector)) as HTMLElement|null;
+        firstFocusableElm?.focus?.();
+        
+        
+        
+        // show message:
         const isPlural = (invalidFields?.length > 1);
         showDialogMessage({
             theme   : 'danger',
