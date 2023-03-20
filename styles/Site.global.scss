@@ -37,3 +37,7 @@ main {
 :where(ul, ol) {
     list-style-position: inside;
 }
+
+:where(img[data-nimg="fill"]) {
+    visibility: hidden;
+}

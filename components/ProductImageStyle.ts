@@ -34,6 +34,7 @@ export default () => style({
     
     // children:
     ...children(':where(img)', {
+        visibility : 'visible',
         objectFit  : 'contain',
     }),
     ...children(':where(.status)', {
