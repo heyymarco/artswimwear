@@ -1,24 +1,19 @@
 import { default as React, useContext, useMemo } from 'react'
 import type { Tag } from '@reusable-ui/core'
-import { Container, Generic } from '@reusable-ui/components'
+import { Container, ContainerProps, Generic } from '@reusable-ui/components'
 import { ArticleContext, GenericSection, GenericSectionProps, IArticleContext } from './GenericSection';
 
 
 
-export interface SectionProps extends GenericSectionProps {
+export interface ArticleProps<TElement extends Element = HTMLElement>
+    extends
+        ContainerProps<TElement>
+{
     // title:
     titleTag ?: 'h1'|'h2'|'h3'|'h4'|'h5'|'h6'
     title    ?: React.ReactNode
-    
-    
-    
-    // content:
-    children ?: React.ReactNode
 }
-/**
- * A simple `<section>` with built-in `<h2>` and `<article>`.
- */
-export const Section = (props: SectionProps) => {
+export const Article = (props: ArticleProps) => {
     // contexts:
     const { level } = useContext(ArticleContext);
     
@@ -34,7 +29,7 @@ export const Section = (props: SectionProps) => {
         
         // content:
         children : content,
-    ...restGenericSectionProps} = props;
+    ...restContainerProps} = props;
     
     
     
@@ -43,37 +38,94 @@ export const Section = (props: SectionProps) => {
         level: Math.min(6, level + 1), // limits the level to max 6
     }), [level]);
     return (
+        <Container
+            // rest props:
+            {...restContainerProps}
+            
+            
+            
+            // semantics:
+            tag={props.tag ?? 'article'}
+            
+            
+            
+            // variants:
+            mild={props.mild ?? 'inherit'}
+            
+            
+            
+            // classes:
+            className={props.className ?? 'fill-self'}
+        >
+            {/* the article title (if provided) */}
+            {title && <Generic tag={titleTag}>
+                {title}
+            </Generic>}
+            
+            
+            
+            {/* the article content within `ArticleContext` */}
+            <ArticleContext.Provider value={subContextProp}>
+                {content}
+            </ArticleContext.Provider>
+        </Container>
+    );
+}
+
+
+
+export interface SectionProps extends GenericSectionProps, ArticleProps {
+    // components:
+    articleComponent ?: React.ReactComponentElement<any, ArticleProps>
+    
+    
+    
+    // content:
+    children ?: React.ReactNode
+}
+/**
+ * A simple `<section>` with built-in `<h2>` and `<article>`.
+ */
+export const Section = (props: SectionProps) => {
+    // rest props:
+    const {
+        // title:
+        titleTag,
+        title,
+        
+        
+        
+        // components:
+        articleComponent = (<Article /> as React.ReactComponentElement<any, ArticleProps>),
+        
+        
+        
+        // content:
+        children : content,
+    ...restGenericSectionProps} = props;
+    
+    
+    
+    // jsx:
+    return (
         <GenericSection
             // other props:
             {...restGenericSectionProps}
         >
-            {/* a built-in <article> as the content */}
-            <Container
-                // semantics:
-                tag='article'
+            {/* <Article> */}
+            {React.cloneElement<ArticleProps>(articleComponent,
+                // props:
+                {
+                    // title:
+                    titleTag,
+                    title,
+                },
                 
                 
                 
-                // variants:
-                mild='inherit'
-                
-                
-                
-                // classes:
-                className='fill-self'
-            >
-                {/* the article title (if provided) */}
-                {title && <Generic tag={titleTag}>
-                    {title}
-                </Generic>}
-                
-                
-                
-                {/* the article content within `ArticleContext` */}
-                <ArticleContext.Provider value={subContextProp}>
-                    {content}
-                </ArticleContext.Provider>
-            </Container>
+                // children:
+                content,
+            )}
         </GenericSection>
     );
 }

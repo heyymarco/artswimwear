@@ -9,8 +9,9 @@ import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Section } from '@/components/sections/Section'
+import { Article, Section } from '@/components/sections/Section'
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
@@ -204,6 +205,7 @@ interface ICheckoutContext {
     shippingMethodOptionRef           : React.MutableRefObject<HTMLElement|null>      | undefined
     billingAddressSectionRef          : React.MutableRefObject<HTMLElement|null>      | undefined
     paymentCardSectionRef             : React.MutableRefObject<HTMLElement|null>      | undefined
+    navCheckoutSectionElm             : HTMLElement|null                              | undefined
     
     shippingEmailInputRef             : React.MutableRefObject<HTMLInputElement|null> | undefined
     shippingAddressInputRef           : React.MutableRefObject<HTMLInputElement|null> | undefined
@@ -242,6 +244,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     shippingMethodOptionRef           : undefined,
     billingAddressSectionRef          : undefined,
     paymentCardSectionRef             : undefined,
+    navCheckoutSectionElm             : undefined,
     
     shippingEmailInputRef             : undefined,
     shippingAddressInputRef           : undefined,
@@ -375,6 +378,7 @@ export default function Checkout() {
     const shippingMethodOptionRef   = useRef<HTMLElement|null>(null);
     const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
     const paymentCardSectionRef     = useRef<HTMLElement|null>(null);
+    const [navCheckoutSectionElm, setNavCheckoutSectionElm] = useState<HTMLElement|null>(null);
     
     const shippingEmailInputRef     = useRef<HTMLInputElement|null>(null);
     const shippingAddressInputRef   = useRef<HTMLInputElement|null>(null);
@@ -551,23 +555,24 @@ export default function Checkout() {
         
         isDesktop,
         
-        regularCheckoutSectionRef, // stable ref
-        shippingMethodOptionRef,   // stable ref
-        billingAddressSectionRef,  // stable ref
-        paymentCardSectionRef,     // stable ref
+        regularCheckoutSectionRef,         // stable ref
+        shippingMethodOptionRef,           // stable ref
+        billingAddressSectionRef,          // stable ref
+        paymentCardSectionRef,             // stable ref
+        navCheckoutSectionElm,             // mutable ref
         
-        shippingEmailInputRef,     // stable ref
-        shippingAddressInputRef,   // stable ref
-        cardholderInputRef,        // stable ref
+        shippingEmailInputRef,             // stable ref
+        shippingAddressInputRef,           // stable ref
+        cardholderInputRef,                // stable ref
         
         paymentToken: existingPaymentToken,
-        handlePlaceOrder,          // stable ref
-        handleOrderCompleted,
+        handlePlaceOrder,                  // stable ref
+        handleOrderCompleted,              // stable ref
         
-        showDialogMessage,
-        showDialogMessageFieldsError,
-        showDialogMessagePlaceOrderError,
-        showDialogMessageMakePaymentError,
+        showDialogMessage,                 // stable ref
+        showDialogMessageFieldsError,      // stable ref
+        showDialogMessagePlaceOrderError,  // stable ref
+        showDialogMessageMakePaymentError, // stable ref
         
         placeOrderApi,
         makePaymentApi,
@@ -588,17 +593,24 @@ export default function Checkout() {
         
         isDesktop,
         
-        // regularCheckoutSectionRef, // stable ref
-        // shippingMethodOptionRef,   // stable ref
-        // billingAddressSectionRef,  // stable ref
-        // paymentCardSectionRef,     // stable ref
+        // regularCheckoutSectionRef,         // stable ref
+        // shippingMethodOptionRef,           // stable ref
+        // billingAddressSectionRef,          // stable ref
+        // paymentCardSectionRef,             // stable ref
+        navCheckoutSectionElm,             // mutable ref
         
-        // shippingEmailInputRef,     // stable ref
-        // shippingAddressInputRef,   // stable ref
-        // cardholderInputRef,        // stable ref
+        // shippingEmailInputRef,             // stable ref
+        // shippingAddressInputRef,           // stable ref
+        // cardholderInputRef,                // stable ref
         
         existingPaymentToken,
-        // handlePlaceOrder,          // stable ref
+        // handlePlaceOrder,                  // stable ref
+        // handleOrderCompleted,              // stable ref
+        
+        // showDialogMessage,                 // stable ref
+        // showDialogMessageFieldsError,      // stable ref
+        // showDialogMessagePlaceOrderError,  // stable ref
+        // showDialogMessageMakePaymentError, // stable ref
         
         placeOrderApi,
         makePaymentApi,
@@ -676,7 +688,7 @@ export default function Checkout() {
                             </Section>}
                         </div>
                         
-                        <Section tag='nav' className={styles.navCheckout}>
+                        <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={setNavCheckoutSectionElm} />}>
                             <NavCheckout />
                         </Section>
                         
@@ -840,14 +852,14 @@ const NavCheckout = () => {
             </>}
             
             {isOrderConfirmShown && <>
-                {/* <ButtonIcon enabled={!paymentIsProcessing} className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('payment'))}>
+                <ButtonIcon enabled={!paymentIsProcessing} className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('payment'))}>
                     BACK
-                </ButtonIcon> */}
-                <p>
+                </ButtonIcon>
+                {/* <p>
                     <Icon icon='help' theme='primary' size='md' /> Need help? <Button theme='primary' buttonStyle='link'><Link href='/contact'>Contact Us</Link></Button>
-                </p>
+                </p> */}
                 
-                <ButtonIcon enabled={!paymentIsProcessing} className='next' icon='shopping_bag' theme='primary' size='lg' gradient={true} iconPosition='end'>
+                <ButtonIcon className='next' enabled={!paymentIsProcessing} icon='shopping_bag' iconPosition='end' theme='primary' size='lg' gradient={true}>
                     <Link href='/products'>
                         Continue Shopping
                     </Link>
@@ -1216,7 +1228,7 @@ const PaymentMethodReview = () => {
     const type          = paymentMethod?.type;
     const brand         = paymentMethod?.brand || undefined;
     const identifier    = paymentMethod?.identifier;
-    console.log('payment data: ', {paymentMethod, type, brand, identifier});
+    
     
     
     // jsx:
@@ -1722,10 +1734,38 @@ const PaymentMethodCard = () => {
                         </Tooltip>
                     </Label>
                 </Group>
-                <hr className='horz' />
-                <CardPaymentButton />
+                {/* <hr className='horz' /> */}
+                <PortalToNavCheckoutSection>
+                    <CardPaymentButton />
+                </PortalToNavCheckoutSection>
             </ValidationProvider>
         </PayPalHostedFieldsProvider>
+    );
+}
+interface PortalToNavCheckoutSectionProps {
+    children : React.ReactNode
+}
+const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps) => {
+    // context:
+    const {navCheckoutSectionElm} = useCheckout();
+    
+    
+    
+    const [isHydrated, setIsHydrated] = useState<boolean>(false);
+    useEffect(() => {
+        setIsHydrated(!!navCheckoutSectionElm);
+    }, [navCheckoutSectionElm]);
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            {isHydrated && navCheckoutSectionElm && ReactDOM.createPortal(
+                props.children,
+                navCheckoutSectionElm
+            )}
+        </>
     );
 }
 const CardPaymentButton = () => {
@@ -1780,10 +1820,6 @@ const CardPaymentButton = () => {
     // handlers:
     const hostedFields = usePayPalHostedFields();
     const handleMakePayment = async () => {
-        console.log('check: ', hostedFields);
-        
-        
-        
         // validate:
         // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
         if (!billingAsShipping) await dispatch(setBillingValidation(true));
@@ -1859,7 +1895,7 @@ const CardPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon icon={!paymentIsProcessing ? 'monetization_on' : 'busy'} enabled={!paymentIsProcessing} className='payNow' size='lg' gradient={true} onClick={handleMakePayment}>
+        <ButtonIcon className='next payNow' enabled={!paymentIsProcessing} icon={!paymentIsProcessing ? 'monetization_on' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleMakePayment}>
             Pay Now
         </ButtonIcon>
     );

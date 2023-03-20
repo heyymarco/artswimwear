@@ -446,8 +446,8 @@ export default () => {
                     '"name  " auto',
                     '"expiry" auto',
                     '"csc   " auto',
-                    '"horz  " auto',
-                    '"payNow" auto',
+                    // '"horz  " auto',
+                    // '"payNow" auto',
                     '/',
                     '1fr'
                 ]],
@@ -456,8 +456,8 @@ export default () => {
                         '"number number" auto',
                         '"name     name" auto',
                         '"expiry    csc" auto',
-                        '"horz      horz" auto',
-                        '"payNow  payNow" auto',
+                        // '"horz      horz" auto',
+                        // '"payNow  payNow" auto',
                         '/',
                         '1fr 1fr'
                     ]],
@@ -475,14 +475,14 @@ export default () => {
                 ...children('.csc', {
                     gridArea: 'csc',
                 }),
-                ...children('.horz', {
-                    gridArea: 'horz',
+                // ...children('.horz', {
+                //     gridArea: 'horz',
                     
-                    margin: 0,
-                }),
-                ...children('.payNow', {
-                    gridArea: 'payNow',
-                }),
+                //     margin: 0,
+                // }),
+                // ...children('.payNow', {
+                //     gridArea: 'payNow',
+                // }),
                 ...descendants('.hostedField', {
                     // layouts:
                     display        : 'flex',
