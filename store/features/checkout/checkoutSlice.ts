@@ -3,7 +3,7 @@ import { RootState, AppThunk } from '../../store';
 
 
 
-export type CheckoutStep = 'info'|'shipping'|'payment'
+export type CheckoutStep = 'info'|'shipping'|'payment'|'pending'|'paid'
 export interface PaymentToken {
     paymentToken : string
     expires      : number
@@ -356,5 +356,5 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
 };
 
 export const selectCheckoutProgress = ({checkout: {checkoutStep}}: RootState): number => {
-    return ['info', 'shipping', 'payment'].findIndex((progress) => progress === checkoutStep);
+    return ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
 };

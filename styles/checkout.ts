@@ -1,14 +1,15 @@
 import { children, descendants, fallbacks, rule, scopeOf, style, switchOf, vars } from "@cssfn/core";
 import { basics, containers, iconElm, usesIcon, usesIconFontLayout } from "@reusable-ui/components";
-import { borders, ifNeutralize, ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, markValid, themes, typos, usesBorder, usesGroupable, usesPadding, usesValidationIcon } from "@reusable-ui/core";
+import { borders, ifNeutralize, ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, markValid, themes, typos, usesBackground, usesBorder, usesGroupable, usesPadding, usesValidationIcon } from "@reusable-ui/core";
 
 
 
 const imageSize = 64;  // 64px
 export default () => {
-    const {paddingVars  } = usesPadding();
-    const {groupableVars} = usesGroupable();
-    const {borderVars   } = usesBorder();
+    const {paddingVars   } = usesPadding();
+    const {groupableVars } = usesGroupable();
+    const {borderVars    } = usesBorder();
+    const {backgroundVars} = usesBackground();
     
     
     
@@ -200,29 +201,52 @@ export default () => {
                 
                 
                 
-                ...descendants('tbody', {
+                ...children(['thead', 'tbody'], {
+                    ...children('tr', {
+                        ...ifScreenWidthSmallerThan('sm', {
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            padding: '1rem',
+                        }),
+                        ...rule(':not(:last-child)', {
+                            borderBlockEnd: borderVars.border,
+                            borderBlockEndWidth: borders.defaultWidth,
+                        }),
+                        ...children(['th', 'td'], {
+                            ...ifScreenWidthSmallerThan('sm', {
+                                padding: '0rem',
+                            }),
+                            padding: '0.75rem',
+                        }),
+                        ...children('th', {
+                            fontWeight: typos.fontWeightSemibold,
+                        }),
+                    }),
+                }),
+                ...children('thead', {
+                    ...children('tr', {
+                        backgroundColor     : backgroundVars.altBackgColor,
+                        borderBlockEnd      : borderVars.border,
+                        borderBlockEndWidth : borders.defaultWidth,
+                        ...children(['th'], {
+                            textAlign: 'center',
+                        }),
+                    }),
+                }),
+                ...children('tbody', {
                     ...ifScreenWidthSmallerThan('sm', {
                         display: 'flex',
                         flexDirection: 'column',
                     }),
-                }),
-                ...descendants('tr', {
-                    ...ifScreenWidthSmallerThan('sm', {
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        padding: '1rem',
+                    ...children('tr', {
+                        ...children(['th', 'td'], {
+                            textAlign: 'start',
+                            ...ifScreenWidthSmallerThan('sm', {
+                                textAlign: 'center',
+                            }),
+                        }),
                     }),
-                    ...rule(':not(:last-child)', {
-                        borderBlockEnd: borderVars.border,
-                        borderBlockEndWidth: borders.defaultWidth,
-                    }),
-                }),
-                ...descendants('td', {
-                    ...ifScreenWidthSmallerThan('sm', {
-                        padding: '0rem',
-                    }),
-                    padding: '0.75rem',
                 }),
             }),
         }),
