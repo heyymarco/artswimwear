@@ -209,9 +209,6 @@ export default () => {
                 borderWidth: borders.defaultWidth,
                 width: '100%',
                 
-                wordBreak    : 'break-word',
-                overflowWrap : 'anywhere',
-                
                 
                 
                 ...children(['thead', 'tbody'], {
@@ -234,6 +231,10 @@ export default () => {
                         }),
                         ...children('th', {
                             fontWeight: typos.fontWeightSemibold,
+                        }),
+                        ...children('td', {
+                            wordBreak    : 'break-word',
+                            overflowWrap : 'anywhere',
                         }),
                     }),
                 }),
@@ -333,30 +334,6 @@ export default () => {
         }),
         scopeOf('shippingMethod', {
         }),
-        scopeOf('shippingEntry', {
-            display: 'flex',
-            flexDirection: 'row',
-            gap: '1rem',
-            padding: '1rem',
-            ...children('.indicator', {
-                flex: '0 0 auto',
-                ...children('input', {
-                    borderColor: 'currentcolor',
-                }),
-            }),
-            ...children(['.name', '.cost'], {
-                flex: '1 1 auto',
-                margin: 0,
-            }),
-            ...children('.name', {
-                textAlign: 'start',
-                fontSize: typos.fontSizeMd,
-                fontWeight : typos.fontWeightSemibold,
-            }),
-            ...children('.cost', {
-                textAlign: 'end',
-            }),
-        }),
         scopeOf('address', {
             ...children('article', {
                 display: 'grid',
@@ -416,7 +393,7 @@ export default () => {
                     borderColor: 'currentcolor',
                 }),
             }),
-            ...children(['.name', '.icon'], {
+            ...children(['.name', '.cost', '.icon'], {
                 flex: '1 1 auto',
                 margin: 0,
             }),
@@ -425,7 +402,7 @@ export default () => {
                 fontSize: typos.fontSizeMd,
                 fontWeight : typos.fontWeightSemibold,
             }),
-            ...children('.icon', {
+            ...children(['.cost', '.icon'], {
                 textAlign: 'end',
             }),
         }, {specificityWeight: 2}),

@@ -1344,7 +1344,7 @@ const ShippingMethod = () => {
                 return (
                     <ListItem
                         key={index}
-                        className={styles.shippingEntry}
+                        className={styles.optionEntryHeader}
                         
                         active={isActive}
                         onClick={() => dispatch(setShippingProvider(filteredShippingList?.[index]?._id ?? ''))}
@@ -1396,6 +1396,7 @@ const Payment = () => {
         
         
         
+        paymentMethod,
         paymentIsProcessing,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
@@ -1405,7 +1406,10 @@ const Payment = () => {
     // jsx:
     return (
         <>
-            <Section title='Billing Address' elmRef={billingAddressSectionRef}>
+            <Section className={styles.paymentMethod} title='Payment Method'>
+                <PaymentMethod />
+            </Section>
+            {(paymentMethod !== 'paypal') && <Section title='Billing Address' elmRef={billingAddressSectionRef}>
                 <p>
                     Select the address that matches your card or payment method.
                 </p>
@@ -1466,10 +1470,7 @@ const Payment = () => {
                         </ValidationProvider>
                     </AccordionItem>
                 </ExclusiveAccordion>
-            </Section>
-            <Section className={styles.paymentMethod} title='Payment Method'>
-                <PaymentMethod />
-            </Section>
+            </Section>}
         </>
     );
 }
