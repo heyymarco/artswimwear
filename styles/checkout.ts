@@ -98,10 +98,17 @@ export default () => {
             gridArea: 'progressCheckout',
             
             ...ifScreenWidthSmallerThan('lg', {
-                marginInline  : `calc(0px - ${containers.paddingInline})`,
-                marginBlock   : `calc(0px - ${containers.paddingBlock })`,
-                paddingInline : containers.paddingInline,
-                paddingBlock  : containers.paddingBlock,
+                marginInline       : `calc(0px - ${containers.paddingInline})`,
+                marginBlockStart   : `calc(0px - ${containers.paddingBlock})`,
+                marginBlockEnd     : `calc(0px - ${containers.paddingBlockMd})`,
+                ...ifScreenWidthSmallerThan('sm', {
+                    marginBlockEnd : `calc(0px - ${containers.paddingBlockSm})`,
+                }),
+                paddingInline      : containers.paddingInline,
+                paddingBlock       : containers.paddingBlock,
+                ...ifScreenWidthSmallerThan('sm', {
+                    paddingBlock   : containers.paddingBlockSm,
+                }),
             }),
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
