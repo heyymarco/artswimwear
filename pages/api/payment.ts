@@ -796,7 +796,33 @@ const responseMakePayment = async (
         
         switch (captureData?.status) {
             case 'COMPLETED' :  return res.status(200).json({ // payment APPROVED
-                paymentId : 'payment#123#approved',
+                paymentMethod : (() => {
+                    const payment_source = paypalPaymentData?.payment_source;
+                    
+                    const card = payment_source?.card;
+                    if (card) {
+                        return {
+                            type       : 'card',
+                            brand      : card.brand?.toLowerCase() ?? undefined,
+                            identifier : card.last_digits ? `ending with ${card.last_digits}` : undefined,
+                        };
+                    } //if
+                    
+                    const paypal = payment_source?.paypal;
+                    if (paypal) {
+                        return {
+                            type       : 'paypal',
+                            brand      : 'paypal',
+                            identifier : paypal.email_address || undefined,
+                        };
+                    } //if
+                    
+                    return {
+                        type       : 'CUSTOM',
+                        brand      : undefined,
+                        identifier : undefined,
+                    };
+                })(),
                 // @ts-ignore:
                 extra: paypalPaymentData,
             });

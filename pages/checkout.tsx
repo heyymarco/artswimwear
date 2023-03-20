@@ -8,6 +8,7 @@ import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePayme
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Section } from '@/components/sections/Section'
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
@@ -839,6 +840,9 @@ const NavCheckout = () => {
             </>}
             
             {isOrderConfirmShown && <>
+                {/* <ButtonIcon enabled={!paymentIsProcessing} className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('payment'))}>
+                    BACK
+                </ButtonIcon> */}
                 <p>
                     <Icon icon='help' theme='primary' size='md' /> Need help? <Button theme='primary' buttonStyle='link'><Link href='/contact'>Contact Us</Link></Button>
                 </p>
@@ -1093,11 +1097,6 @@ const OrderReview = () => {
     );
 }
 const OrderReviewCompleted = () => {
-    // context:
-    const {checkoutStep, shippingEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckout();
-    
-    
-    
     // stores:
     const {
         paymentIsProcessing,
@@ -1206,10 +1205,25 @@ const ShippingMethodReview = () => {
     );
 }
 const PaymentMethodReview = () => {
+    // context:
+    const {makePaymentApi} = useCheckout();
+    
+    
+    
+    // apis:
+    const [, {data: payment}] = makePaymentApi;
+    const paymentMethod = payment?.paymentMethod;
+    const type          = paymentMethod?.type;
+    const brand         = paymentMethod?.brand || undefined;
+    const identifier    = paymentMethod?.identifier;
+    console.log('payment data: ', {paymentMethod, type, brand, identifier});
+    
+    
     // jsx:
     return (
         <>
-            TODO: show payment method
+            {!!brand ? <Image alt={brand} src={`/brands/${brand}.svg`} width={42} height={26} /> : type}
+            {!!identifier && <>&nbsp;({identifier})</>}
         </>
     );
 }

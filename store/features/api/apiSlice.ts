@@ -79,9 +79,14 @@ export interface AuthenticationPaymentData
 {
     orderId : string
 }
+export interface PaymentMethod {
+    type        : 'card'|'paypal'|'transfer'|(string & {})
+    brand      ?: 'amex'|'visa'|'paypal'|string
+    identifier ?: string
+}
 export interface MakePaymentResponse
 {
-    paymentId : string
+    paymentMethod : PaymentMethod
 }
 
 
