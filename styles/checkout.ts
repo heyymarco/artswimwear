@@ -209,6 +209,9 @@ export default () => {
                 borderWidth: borders.defaultWidth,
                 width: '100%',
                 
+                wordBreak    : 'break-word',
+                overflowWrap : 'anywhere',
+                
                 
                 
                 ...children(['thead', 'tbody'], {
