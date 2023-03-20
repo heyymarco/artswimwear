@@ -840,7 +840,7 @@ const NavCheckout = () => {
             
             {isOrderConfirmShown && <>
                 <p>
-                    <Icon icon='help' theme='primary' size='md' /> Need help? <Button theme='primary' buttonStyle='link'>Contact Us</Button>
+                    <Icon icon='help' theme='primary' size='md' /> Need help? <Button theme='primary' buttonStyle='link'><Link href='/contact'>Contact Us</Link></Button>
                 </p>
                 
                 <ButtonIcon enabled={!paymentIsProcessing} className='next' icon='shopping_bag' theme='primary' size='lg' gradient={true} iconPosition='end'>
@@ -1024,7 +1024,7 @@ const OrderSummary = () => {
                 </span>
             </p>
             <hr />
-            <p className='currencyBlock'>
+            <p className='currencyBlock totalCost'>
                 Total: <span className='currency'>
                     {!!selectedShipping ? formatCurrency(totalProductPrices + (totalShippingCosts ?? 0)) : 'calculated at next step'}
                 </span>

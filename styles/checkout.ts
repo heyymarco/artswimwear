@@ -136,6 +136,13 @@ export default () => {
             
             ...descendants('.currencyBlock', {
                 display: 'flex',
+                
+                ...rule('.totalCost', {
+                    ...descendants(['&', '.currency'], {
+                        fontSize: typos.fontSizeLg,
+                        fontWeight: typos.fontWeightSemibold,
+                    }),
+                })
             }),
             ...descendants('.currency', {
                 
