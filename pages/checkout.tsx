@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing, PaymentMethod } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js';
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
@@ -1494,6 +1494,7 @@ const PaymentMethod = () => {
     
     
     // jsx:
+    const paymentMethodList : PaymentMethod[] = ['card', 'paypal'];
     return (
         <PayPalScriptProvider options={{
             'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
@@ -1505,14 +1506,14 @@ const PaymentMethod = () => {
             <p>
                 All transactions are secure and encrypted.
             </p>
-            <ExclusiveAccordion enabled={!paymentIsProcessing} theme='primary' expandedListIndex={paymentMethod ?? 0} onExpandedChange={({expanded, listIndex}) => {
+            <ExclusiveAccordion enabled={!paymentIsProcessing} theme='primary' expandedListIndex={Math.max(0, paymentMethodList.findIndex((option) => (option === paymentMethod)))} onExpandedChange={({expanded, listIndex}) => {
                 // conditions:
                 if (!expanded) return;
                 
                 
                 
                 // actions:
-                dispatch(setPaymentMethod(listIndex));
+                dispatch(setPaymentMethod(paymentMethodList[listIndex]));
                 if (listIndex !== 0) dispatch(setPaymentCardValidation(false));
             }} listStyle='content'>
                 <AccordionItem label={<>
@@ -1624,6 +1625,7 @@ const PaymentMethodCard = () => {
     
     // stores:
     const {
+        paymentMethod,
         paymentCardValidation,
     } = useSelector(selectCheckoutState);
     
@@ -1735,9 +1737,9 @@ const PaymentMethodCard = () => {
                     </Label>
                 </Group>
                 {/* <hr className='horz' /> */}
-                <PortalToNavCheckoutSection>
+                {((paymentMethod ?? 'card') === 'card') && <PortalToNavCheckoutSection>
                     <CardPaymentButton />
-                </PortalToNavCheckoutSection>
+                </PortalToNavCheckoutSection>}
             </ValidationProvider>
         </PayPalHostedFieldsProvider>
     );

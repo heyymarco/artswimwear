@@ -8,6 +8,7 @@ export interface PaymentToken {
     paymentToken : string
     expires      : number
 }
+export type PaymentMethod = 'card'|'paypal'
 export interface CheckoutState {
     checkoutStep           : CheckoutStep
     marketingOpt           : boolean
@@ -49,7 +50,7 @@ export interface CheckoutState {
     
     
     
-    paymentMethod         ?: number
+    paymentMethod         ?: PaymentMethod
     paymentToken          ?: PaymentToken
     paymentCardValidation  : boolean
     paymentIsProcessing    : boolean
@@ -191,7 +192,7 @@ export const checkoutSlice = createSlice({
         
         
         
-        setPaymentMethod: (state, {payload: value}: PayloadAction<number|undefined>) => {
+        setPaymentMethod: (state, {payload: value}: PayloadAction<PaymentMethod|undefined>) => {
             state.paymentMethod = value;
         },
         setPaymentToken: (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
