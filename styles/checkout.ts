@@ -257,9 +257,11 @@ export default () => {
                             }),
                         }),
                         ...children('td', {
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
+                            ...rule('.hasIcon', {
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                            }),
                         })
                     }),
                 }),

@@ -1143,7 +1143,7 @@ const OrderReviewCompleted = () => {
                     </tr>
                     <tr>
                         <th>Payment Method</th>
-                        <td><PaymentMethodReview /></td>
+                        <td className='hasIcon'><PaymentMethodReview /></td>
                     </tr>
                     <tr>
                         <th>Billing Address</th>
