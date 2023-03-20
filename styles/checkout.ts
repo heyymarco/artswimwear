@@ -60,7 +60,10 @@ export default () => {
                 gridTemplateColumns: '7fr min-content 5fr',
             }),
             gapInline: `calc(${containers.paddingInline} / 2)`,
-            gapBlock : containers.paddingBlock,
+            gapBlock : containers.paddingBlockMd,
+            ...ifScreenWidthSmallerThan('sm', {
+                gapBlock : containers.paddingBlockSm,
+            }),
             alignContent: 'start',
             boxSizing: 'border-box',
             minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
@@ -90,7 +93,7 @@ export default () => {
             ...descendants('.tooltip', {
                 minInlineSize: '10rem',
             })
-        }),
+        }, {specificityWeight: 2}),
         scopeOf('progressCheckout', {
             gridArea: 'progressCheckout',
             
@@ -371,10 +374,14 @@ export default () => {
             
             // decrease indent on sub section(s):
             ...children('article', {
-                ...children('section', {
+                display: 'flex',
+                flexDirection: 'column',
+                gapBlock: containers.paddingBlockMd,
+                
+                ...children(['section', 'aside'], {
                     ...children(['&', 'article'], {
-                        [paddingVars.paddingInline] : `calc(${containers.paddingInline} / 2)`,
-                        [paddingVars.paddingBlock ] : `calc(${containers.paddingBlock } / 2)`,
+                        [paddingVars.paddingInline] : '0px',
+                        [paddingVars.paddingBlock ] : '0px',
                     }),
                 }),
             }),
@@ -499,6 +506,8 @@ export default () => {
         scopeOf('navCheckout', {
             gridArea: 'navCheckout',
             
+            paddingBlockEnd : containers.paddingBlockMd,
+            
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
@@ -519,6 +528,11 @@ export default () => {
                     flexDirection: 'column-reverse',
                     alignItems: 'stretch',
                     gap: '1rem',
+                }),
+                
+                ...children('p', {
+                    margin: 0,
+                    textAlign: 'center',
                 }),
             }),
         }),

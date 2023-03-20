@@ -840,7 +840,7 @@ const NavCheckout = () => {
             
             {isOrderConfirmShown && <>
                 <p>
-                    <Icon icon='help' theme='primary' size='md' /> Need help? <ButtonIcon theme='primary' icon='chat' iconPosition='end' buttonStyle='link'>Contact Us</ButtonIcon>
+                    <Icon icon='help' theme='primary' size='md' /> Need help? <Button theme='primary' buttonStyle='link'>Contact Us</Button>
                 </p>
                 
                 <ButtonIcon enabled={!paymentIsProcessing} className='next' icon='shopping_bag' theme='primary' size='lg' gradient={true} iconPosition='end'>
@@ -1131,6 +1131,10 @@ const OrderReviewCompleted = () => {
                         <td><ShippingMethodReview /></td>
                     </tr>
                     <tr>
+                        <th>Payment Method</th>
+                        <td><PaymentMethodReview /></td>
+                    </tr>
+                    <tr>
                         <th>Billing Address</th>
                         <td><BillingAddressReview /></td>
                     </tr>
@@ -1201,6 +1205,14 @@ const ShippingMethodReview = () => {
         </>
     );
 }
+const PaymentMethodReview = () => {
+    // jsx:
+    return (
+        <>
+            TODO: show payment method
+        </>
+    );
+}
 const BillingAddressReview = () => {
     // context:
     const {countryList} = useCheckout();
@@ -1229,6 +1241,9 @@ const BillingAddressReview = () => {
     const finalBillingZip        = billingAsShipping ? shippingZip     : billingZip;
     const finalBillingCountry    = billingAsShipping ? shippingCountry : billingCountry;
     
+    
+    
+    // jsx:
     return (
         <>
             {`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}
@@ -1847,14 +1862,16 @@ const Paid = () => {
     // jsx:
     return (
         <>
-            <Alert theme='success' expanded={true} controlComponent={<></>}>
-                <p className='h5'>
-                    Your order is confirmed and your payment is received.
-                </p>
-                <p>
-                    You&apos;ll receive a confirmation email with your order number shortly.
-                </p>
-            </Alert>
+            <Section>
+                <Alert theme='success' expanded={true} controlComponent={<></>}>
+                    <p className='h5'>
+                        Your order is confirmed and your payment is received.
+                    </p>
+                    <p>
+                        You&apos;ll receive a confirmation email with your order number shortly.
+                    </p>
+                </Alert>
+            </Section>
             <Section tag='aside' className={styles.orderReview}>
                 <OrderReviewCompleted />
             </Section>
