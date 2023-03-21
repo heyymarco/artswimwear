@@ -684,6 +684,10 @@ export default function Checkout() {
                                 <Payment />
                             </Section>}
                             
+                            {(checkoutStep === 'pending') && <Section className={styles.paymentFinish} title='Thank You'>
+                                <PaymentPending />
+                            </Section>}
+                            
                             {(checkoutStep === 'paid') && <Section className={styles.paymentFinish} title='Thank You'>
                                 <Paid />
                             </Section>}
@@ -1235,7 +1239,7 @@ const PaymentMethodReview = () => {
     // jsx:
     return (
         <>
-            {!!brand ? <Image alt={brand} src={`/brands/${brand}.svg`} width={42} height={26} /> : type}
+            {!!brand ? <Image alt={brand} src={`/brands/${brand}.svg`} width={42} height={26} /> : (type?.toUpperCase() ?? type)}
             {!!identifier && <>&nbsp;({identifier})</>}
         </>
     );
@@ -1991,9 +1995,59 @@ const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps) => {
 
 
 
+const PaymentPending = () => {
+    // styles:
+    const styles = useCheckoutStyleSheet();
+    
+    
+    
+    // stores:
+    const {
+        shippingEmail,
+        
+        billingAsShipping,
+        billingEmail,
+    } = useSelector(selectCheckoutState);
+    const billingEmailFinal = billingAsShipping ? shippingEmail : billingEmail;
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <Section>
+                <Alert theme='success' expanded={true} controlComponent={<></>}>
+                    <p className='h5'>
+                        Your order is confirmed.
+                    </p>
+                    <p>
+                        You&apos;ll receive a confirmation email with your order number shortly.
+                    </p>
+                    <p>
+                        Please <strong>follow the payment instructions</strong> sent to your billing email: <strong style={{wordBreak: 'break-all'}}>{billingEmailFinal}</strong>.
+                    </p>
+                </Alert>
+            </Section>
+            <Section tag='aside' className={styles.orderReview}>
+                <OrderReviewCompleted />
+            </Section>
+        </>
+    );
+}
 const Paid = () => {
     // styles:
     const styles = useCheckoutStyleSheet();
+    
+    
+    
+    // stores:
+    const {
+        shippingEmail,
+        
+        billingAsShipping,
+        billingEmail,
+    } = useSelector(selectCheckoutState);
+    const billingEmailFinal = billingAsShipping ? shippingEmail : billingEmail;
     
     
     
@@ -2006,7 +2060,7 @@ const Paid = () => {
                         Your order is confirmed and your payment is received.
                     </p>
                     <p>
-                        You&apos;ll receive a confirmation email with your order number shortly.
+                        You&apos;ll receive a confirmation email with your order number shortly to: <strong style={{wordBreak: 'break-all'}}>{billingEmailFinal}</strong>.
                     </p>
                 </Alert>
             </Section>

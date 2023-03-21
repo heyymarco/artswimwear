@@ -292,7 +292,7 @@ const responsePlaceOrder = async (
     
     
     
-    if (placeOrderData.payLater === true) {
+    if (placeOrderData.paymentSource === 'manual') {
         return res.status(200).json({ // OK
             orderId: '#ORDER#1234',
         });
