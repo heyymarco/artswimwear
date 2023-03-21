@@ -51,8 +51,8 @@ const shippingListAdapter = createEntityAdapter<ShippingEntry>({
 
 export type { PaymentToken }
 
-export interface PlaceOrderOptions extends Partial<CreateOrderData> {
-    payLater ?: boolean
+export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
+    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'
 }
 export interface PlaceOrderData
     extends
@@ -85,7 +85,7 @@ export interface AuthenticationPaymentData
     orderId : string
 }
 export interface PaymentMethod {
-    type        : 'card'|'paypal'|'banktransfer'|(string & {})
+    type        : 'card'|'paypal'|'manual'|(string & {})
     brand      ?: 'amex'|'visa'|'paypal'|string
     identifier ?: string
 }

@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
+import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -400,7 +400,7 @@ export default function Checkout() {
             const placeOrderResponse = await placeOrder({
                 items : cartItems,                   // cart item(s)
                 ...shippingAddressAndBillingAddress, // shipping address + billing address + marketingOpt
-                ...options,                          // pay later for manual payment (bank transfer) + paymentSource (by <PayPalButtons>)
+                ...options,                          // pay manually | paymentSource (by <PayPalButtons>)
             }).unwrap();
             return placeOrderResponse.orderId;
         }
@@ -684,7 +684,7 @@ export default function Checkout() {
                                 <Payment />
                             </Section>}
                             
-                            {(checkoutStep === 'paid') && <Section className={styles.payment} title='Thank You'>
+                            {(checkoutStep === 'paid') && <Section className={styles.paymentFinish} title='Thank You'>
                                 <Paid />
                             </Section>}
                         </div>
@@ -1410,68 +1410,70 @@ const Payment = () => {
             <Section className={styles.paymentMethod} title='Payment Method'>
                 <PaymentMethod />
             </Section>
-            {(paymentMethod !== 'paypal') && <Section title='Billing Address' elmRef={billingAddressSectionRef}>
-                <p>
-                    Select the address that matches your card or payment method.
-                </p>
-                <ExclusiveAccordion enabled={!paymentIsProcessing} theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
-                    // conditions:
-                    if (!expanded) return;
-                    
-                    
-                    
-                    // actions:
-                    dispatch(setBillingAsShipping(listIndex === 0));
-                    if (listIndex === 0) dispatch(setBillingValidation(false));
-                }} listStyle='content'>
-                    <AccordionItem label={<>
-                        <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
-                        Same as shipping address
-                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.billingEntry} />} >
-                        <ShippingAddressReview />
-                    </AccordionItem>
-                    <AccordionItem label={<>
-                        <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
-                        Use a different billing address
-                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} >
-                        <ValidationProvider enableValidation={!billingAsShipping && billingValidation}>
-                            <AddressField
-                                // types:
-                                addressType       = 'billing'
-                                
-                                
-                                
-                                // values:
-                                firstName         = {billingFirstName}
-                                lastName          = {billingLastName}
-                                
-                                phone             = {billingPhone}
-                                
-                                address           = {billingAddress}
-                                city              = {billingCity}
-                                zone              = {billingZone}
-                                zip               = {billingZip}
-                                country           = {billingCountry}
-                                countryList       = {countryList}
-                                
-                                
-                                
-                                // events:
-                                onFirstNameChange = {({target:{value}}) => dispatch(setBillingFirstName(value))}
-                                onLastNameChange  = {({target:{value}}) => dispatch(setBillingLastName(value))}
-                                
-                                onPhoneChange     = {({target:{value}}) => dispatch(setBillingPhone(value))}
-                                
-                                onAddressChange   = {({target:{value}}) => dispatch(setBillingAddress(value))}
-                                onCityChange      = {({target:{value}}) => dispatch(setBillingCity(value))}
-                                onZoneChange      = {({target:{value}}) => dispatch(setBillingZone(value))}
-                                onZipChange       = {({target:{value}}) => dispatch(setBillingZip(value))}
-                                onCountryChange   = {({target:{value}}) => dispatch(setBillingCountry(value))}
-                            />
-                        </ValidationProvider>
-                    </AccordionItem>
-                </ExclusiveAccordion>
-            </Section>}
+            <Collapse className='collapse' expanded={paymentMethod !== 'paypal'} lazy={true}>
+                <Section title='Billing Address' elmRef={billingAddressSectionRef}>
+                    <p>
+                        Select the address that matches your card or payment method.
+                    </p>
+                    <ExclusiveAccordion enabled={!paymentIsProcessing} theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
+                        // conditions:
+                        if (!expanded) return;
+                        
+                        
+                        
+                        // actions:
+                        dispatch(setBillingAsShipping(listIndex === 0));
+                        if (listIndex === 0) dispatch(setBillingValidation(false));
+                    }} listStyle='content'>
+                        <AccordionItem label={<>
+                            <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                            Same as shipping address
+                        </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.billingEntry} />} >
+                            <ShippingAddressReview />
+                        </AccordionItem>
+                        <AccordionItem label={<>
+                            <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                            Use a different billing address
+                        </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} >
+                            <ValidationProvider enableValidation={!billingAsShipping && billingValidation}>
+                                <AddressField
+                                    // types:
+                                    addressType       = 'billing'
+                                    
+                                    
+                                    
+                                    // values:
+                                    firstName         = {billingFirstName}
+                                    lastName          = {billingLastName}
+                                    
+                                    phone             = {billingPhone}
+                                    
+                                    address           = {billingAddress}
+                                    city              = {billingCity}
+                                    zone              = {billingZone}
+                                    zip               = {billingZip}
+                                    country           = {billingCountry}
+                                    countryList       = {countryList}
+                                    
+                                    
+                                    
+                                    // events:
+                                    onFirstNameChange = {({target:{value}}) => dispatch(setBillingFirstName(value))}
+                                    onLastNameChange  = {({target:{value}}) => dispatch(setBillingLastName(value))}
+                                    
+                                    onPhoneChange     = {({target:{value}}) => dispatch(setBillingPhone(value))}
+                                    
+                                    onAddressChange   = {({target:{value}}) => dispatch(setBillingAddress(value))}
+                                    onCityChange      = {({target:{value}}) => dispatch(setBillingCity(value))}
+                                    onZoneChange      = {({target:{value}}) => dispatch(setBillingZone(value))}
+                                    onZipChange       = {({target:{value}}) => dispatch(setBillingZip(value))}
+                                    onCountryChange   = {({target:{value}}) => dispatch(setBillingCountry(value))}
+                                />
+                            </ValidationProvider>
+                        </AccordionItem>
+                    </ExclusiveAccordion>
+                </Section>
+            </Collapse>
         </>
     );
 }
@@ -1496,7 +1498,7 @@ const PaymentMethod = () => {
     
     
     // jsx:
-    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'bankTransfer'];
+    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'manual'];
     return (
         <PayPalScriptProvider options={{
             'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
@@ -1533,8 +1535,8 @@ const PaymentMethod = () => {
                 <AccordionItem label={<>
                     <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                     Bank Transfer
-                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryBankTransfer} />} /*lazy={true} causes error*/ >
-                    <PaymentMethodBankTransfer />
+                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryManual} />} /*lazy={true} causes error*/ >
+                    <PaymentMethodManual />
                 </AccordionItem>
             </ExclusiveAccordion>
         </PayPalScriptProvider>
@@ -1751,7 +1753,7 @@ const PaymentMethodPaypal = () => {
         </>
     );
 }
-const PaymentMethodBankTransfer = () => {
+const PaymentMethodManual = () => {
     // stores:
     const {
         paymentMethod,
@@ -1768,8 +1770,8 @@ const PaymentMethodBankTransfer = () => {
             <p>
                 We&apos;ll send <em>payment instructions</em> to your (billing) email after you&apos;ve <em>finished the order</em>.
             </p>
-            {(paymentMethod === 'bankTransfer') && <PortalToNavCheckoutSection>
-                <BankTransferPaymentButton />
+            {(paymentMethod === 'manual') && <PortalToNavCheckoutSection>
+                <ManualPaymentButton />
             </PortalToNavCheckoutSection>}
         </>
     );
@@ -1906,7 +1908,7 @@ const CardPaymentButton = () => {
         </ButtonIcon>
     );
 }
-const BankTransferPaymentButton = () => {
+const ManualPaymentButton = () => {
     // context:
     const {handlePlaceOrder, handleOrderCompleted, showDialogMessagePlaceOrderError, makePaymentApi} = useCheckout();
     
@@ -1934,7 +1936,7 @@ const BankTransferPaymentButton = () => {
             
             
             // createOrder:
-            const payLaterOrderId = await handlePlaceOrder({payLater: true});
+            const payLaterOrderId = await handlePlaceOrder({paymentSource: 'manual'});
             
             
             

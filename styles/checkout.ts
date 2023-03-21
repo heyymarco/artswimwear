@@ -379,10 +379,12 @@ export default () => {
                 flexDirection: 'column',
                 gapBlock: containers.paddingBlockMd,
                 
-                ...children(['section', 'aside'], {
-                    ...children(['&', 'article'], {
-                        [paddingVars.paddingInline] : '0px',
-                        [paddingVars.paddingBlock ] : '0px',
+                ...children(['&', '.collapse'], {
+                    ...children('section', {
+                        ...children(['&', 'article'], {
+                            [paddingVars.paddingInline] : '0px',
+                            [paddingVars.paddingBlock ] : '0px',
+                        }),
                     }),
                 }),
             }),
@@ -503,7 +505,7 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scopeOf('paymentEntryBankTransfer', {
+        scopeOf('paymentEntryManual', {
             [paddingVars.paddingInline] : '1rem',
             [paddingVars.paddingBlock ] : '1rem',
             ...children('article', {
@@ -511,6 +513,24 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px',
             }),
         }, {specificityWeight: 2}),
+        scopeOf('paymentFinish', {
+            display: 'flex',
+            flexDirection: 'column',
+            
+            // decrease indent on sub section(s):
+            ...children('article', {
+                display: 'flex',
+                flexDirection: 'column',
+                gapBlock: containers.paddingBlockMd,
+                
+                ...children(['section', 'aside'], {
+                    ...children(['&', 'article'], {
+                        [paddingVars.paddingInline] : '0px',
+                        [paddingVars.paddingBlock ] : '0px',
+                    }),
+                }),
+            }),
+        }),
         
         scopeOf('navCheckout', {
             gridArea: 'navCheckout',

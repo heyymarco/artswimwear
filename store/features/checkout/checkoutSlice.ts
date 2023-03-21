@@ -8,7 +8,7 @@ export interface PaymentToken {
     paymentToken : string
     expires      : number
 }
-export type PaymentMethod = 'card'|'paypal'|'bankTransfer'
+export type PaymentMethod = 'card'|'paypal'|'manual'
 export interface CheckoutState {
     checkoutStep           : CheckoutStep
     marketingOpt           : boolean

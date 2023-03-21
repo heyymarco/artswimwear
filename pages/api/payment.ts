@@ -294,7 +294,7 @@ const responsePlaceOrder = async (
     
     if (placeOrderData.payLater === true) {
         return res.status(200).json({ // OK
-            orderId: '#paylater#1234',
+            orderId: '#ORDER#1234',
         });
     } // if
     
@@ -589,10 +589,10 @@ const responseMakePayment = async (
     
     
     
-    if ((typeof(orderId) === 'string') && orderId.startsWith('#paylater#')) {
+    if ((typeof(orderId) === 'string') && orderId.startsWith('#ORDER#')) {
         return res.status(200).json({ // paylater APPROVED (we waiting for your payment confirmation within xx days)
             paymentMethod : {
-                type: 'banktransfer',
+                type: 'manual',
             },
         });
     } // if
