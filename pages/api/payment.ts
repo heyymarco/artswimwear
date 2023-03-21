@@ -184,11 +184,11 @@ const responsePlaceOrder = async (
         shippingPhone,
         shippingEmail,
         
-        shippingCountry,
         shippingAddress,
         shippingCity,
         shippingZone,
         shippingZip,
+        shippingCountry,
         
         shippingProvider,
     } = placeOrderData;

@@ -1794,11 +1794,11 @@ const CardPaymentButton = () => {
         shippingPhone     : _shippingPhone,     // not implemented yet, because billingPhone     is not implemented
         shippingEmail     : _shippingEmail,     // not implemented yet, because billingEmail     is not implemented
         
-        shippingCountry,
         shippingAddress,
         shippingCity,
         shippingZone,
         shippingZip,
+        shippingCountry,
         
         
         
