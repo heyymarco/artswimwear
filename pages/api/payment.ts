@@ -292,6 +292,14 @@ const responsePlaceOrder = async (
     
     
     
+    if (placeOrderData.payLater === true) {
+        return res.status(200).json({ // OK
+            orderId: '#paylater#1234',
+        });
+    } // if
+    
+    
+    
     try {
         const accessToken = await generateAccessToken();
         const url = `${paypalURL}/v2/checkout/orders`;
@@ -572,7 +580,22 @@ const responseMakePayment = async (
             liabilityShifted: undefined
             orderId: "1N785713SG267310M"
         }
+        
+        example:
+        {
+            orderId: "#paylater#1234"
+        }
     */
+    
+    
+    
+    if ((typeof(orderId) === 'string') && orderId.startsWith('#paylater#')) {
+        return res.status(200).json({ // paylater APPROVED (we waiting for your payment confirmation within xx days)
+            paymentMethod : {
+                type: 'banktransfer',
+            },
+        });
+    } // if
     
     
     

@@ -503,6 +503,14 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
+        scopeOf('paymentEntryBankTransfer', {
+            [paddingVars.paddingInline] : '1rem',
+            [paddingVars.paddingBlock ] : '1rem',
+            ...children('article', {
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
+            }),
+        }, {specificityWeight: 2}),
         
         scopeOf('navCheckout', {
             gridArea: 'navCheckout',

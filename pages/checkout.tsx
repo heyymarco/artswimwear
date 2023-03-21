@@ -2,9 +2,9 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { Accordion, AccordionItem, Alert, Badge, BasicProps, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Container, controlValues, Details, DropdownListButton, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, Radio, TelInput, TextInput, Tooltip, useWindowResizeObserver, VisuallyHidden, WindowResizeCallback } from '@reusable-ui/components'
+import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetShippingList, usePlaceOrder, useMakePayment } from '@/store/features/api/apiSlice'
+import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
@@ -14,12 +14,12 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState 
 import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typos, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
+import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
 import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing, PaymentMethod } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
-import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js';
+import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
-import { calculateShippingCost } from '@/libs/utilities';
+import { calculateShippingCost } from '@/libs/utilities'
 import AddressField from '@/components/AddressFields'
 
 
@@ -212,7 +212,7 @@ interface ICheckoutContext {
     cardholderInputRef                : React.MutableRefObject<HTMLInputElement|null> | undefined
     
     paymentToken                      : PaymentToken|undefined
-    handlePlaceOrder                  : () => Promise<string>
+    handlePlaceOrder                  : (options?: PlaceOrderOptions) => Promise<string>
     handleOrderCompleted              : (paid: boolean) => void
     
     showDialogMessage                 : React.Dispatch<React.SetStateAction<ShowDialogMessage|false>>
@@ -395,11 +395,12 @@ export default function Checkout() {
     
     
     // handlers:
-    const handlePlaceOrder = useEvent(async (): Promise<string> => {
+    const handlePlaceOrder     = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
                 items : cartItems,                   // cart item(s)
                 ...shippingAddressAndBillingAddress, // shipping address + billing address + marketingOpt
+                ...options,                          // pay later for manual payment (bank transfer) + paymentSource (by <PayPalButtons>)
             }).unwrap();
             return placeOrderResponse.orderId;
         }
@@ -1495,7 +1496,7 @@ const PaymentMethod = () => {
     
     
     // jsx:
-    const paymentMethodList : PaymentMethod[] = ['card', 'paypal'];
+    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'bankTransfer'];
     return (
         <PayPalScriptProvider options={{
             'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
@@ -1529,93 +1530,14 @@ const PaymentMethod = () => {
                     </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} /*lazy={true} causes error*/ >
                     <PaymentMethodPaypal />
                 </AccordionItem>
+                <AccordionItem label={<>
+                    <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                    Bank Transfer
+                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryBankTransfer} />} /*lazy={true} causes error*/ >
+                    <PaymentMethodBankTransfer />
+                </AccordionItem>
             </ExclusiveAccordion>
         </PayPalScriptProvider>
-    );
-}
-const PaymentMethodPaypal = () => {
-    // context:
-    const {handlePlaceOrder, handleOrderCompleted, showDialogMessageMakePaymentError, makePaymentApi} = useCheckout();
-    
-    
-    
-    // stores:
-    const checkoutState = useSelector(selectCheckoutState);
-    const dispatch = useDispatch();
-    
-    
-    
-    // apis:
-    const [makePayment] = makePaymentApi;
-    
-    
-    
-    // handlers:
-    const handleMakePayment = async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
-        try {
-            // update the UI:
-            dispatch(setPaymentIsProcessing(true));
-            
-            
-            
-            // then forward the authentication to backend_API to receive the fund:
-            const _makePaymentResponse = await makePayment({ orderId: paypalAuthentication.orderID }).unwrap();
-            handleOrderCompleted(/*paid:*/true);
-        }
-        catch (error: any) {
-            showDialogMessageMakePaymentError(error);
-        }
-        finally {
-            // update the UI:
-            dispatch(setPaymentIsProcessing(false));
-        } // try
-    }
-    const handleShippingChange = async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
-        console.log('data', data);
-        // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
-        const shipping_address = data.shipping_address;
-        if (shipping_address) {
-            const shippingFieldMap = new Map([
-                ['address_line_1', 'shippingAddress'],
-                ['address_line_2', undefined        ],
-                ['city'          , 'shippingCity'   ],
-                ['admin_area_2'  , 'shippingCity'   ],
-                ['state'         , 'shippingZone'   ],
-                ['admin_area_1'  , 'shippingZone'   ],
-                ['postal_code'   , 'shippingZip'    ],
-                ['country_code'  , 'shippingCountry'],
-            ]);
-            for (const [shippingField, shippingValue] of Object.entries(shipping_address)) {
-                if (shippingField === undefined) continue;
-                const mappedShippingField = shippingFieldMap.get(shippingField);
-                if (mappedShippingField === undefined) {
-                    console.log('unknown shipping field: ', shippingField);
-                    return actions.reject();
-                } // if
-                const originShippingValue = checkoutState[mappedShippingField as keyof typeof checkoutState];
-                if (originShippingValue !== shippingValue) {
-                    console.log(`DIFF: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
-                    return actions.reject();
-                } // if
-            } // for
-            return actions.resolve();
-        } // if
-    }
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            <p>
-                Click the PayPal button below. You will be redirected to the PayPal website to complete the payment.
-            </p>
-            <PayPalButtons
-                createOrder={handlePlaceOrder}
-                onApprove={handleMakePayment}
-                onShippingChange={handleShippingChange}
-            />
-        </>
     );
 }
 const PaymentMethodCard = () => {
@@ -1737,7 +1659,6 @@ const PaymentMethodCard = () => {
                         </Tooltip>
                     </Label>
                 </Group>
-                {/* <hr className='horz' /> */}
                 {((paymentMethod ?? 'card') === 'card') && <PortalToNavCheckoutSection>
                     <CardPaymentButton />
                 </PortalToNavCheckoutSection>}
@@ -1745,29 +1666,111 @@ const PaymentMethodCard = () => {
         </PayPalHostedFieldsProvider>
     );
 }
-interface PortalToNavCheckoutSectionProps {
-    children : React.ReactNode
-}
-const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps) => {
+const PaymentMethodPaypal = () => {
     // context:
-    const {navCheckoutSectionElm} = useCheckout();
+    const {handlePlaceOrder, handleOrderCompleted, showDialogMessageMakePaymentError, makePaymentApi} = useCheckout();
     
     
     
-    const [isHydrated, setIsHydrated] = useState<boolean>(false);
-    useEffect(() => {
-        setIsHydrated(!!navCheckoutSectionElm);
-    }, [navCheckoutSectionElm]);
+    // stores:
+    const checkoutState = useSelector(selectCheckoutState);
+    const dispatch = useDispatch();
+    
+    
+    
+    // apis:
+    const [makePayment] = makePaymentApi;
+    
+    
+    
+    // handlers:
+    const handleMakePayment    = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
+        try {
+            // update the UI:
+            dispatch(setPaymentIsProcessing(true));
+            
+            
+            
+            // then forward the authentication to backend_API to receive the fund:
+            const _makePaymentResponse = await makePayment({ orderId: paypalAuthentication.orderID }).unwrap();
+            handleOrderCompleted(/*paid:*/true);
+        }
+        catch (error: any) {
+            showDialogMessageMakePaymentError(error);
+        }
+        finally {
+            // update the UI:
+            dispatch(setPaymentIsProcessing(false));
+        } // try
+    });
+    const handleShippingChange = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
+        console.log('data', data);
+        // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
+        const shipping_address = data.shipping_address;
+        if (shipping_address) {
+            const shippingFieldMap = new Map([
+                ['address_line_1', 'shippingAddress'],
+                ['address_line_2', undefined        ],
+                ['city'          , 'shippingCity'   ],
+                ['admin_area_2'  , 'shippingCity'   ],
+                ['state'         , 'shippingZone'   ],
+                ['admin_area_1'  , 'shippingZone'   ],
+                ['postal_code'   , 'shippingZip'    ],
+                ['country_code'  , 'shippingCountry'],
+            ]);
+            for (const [shippingField, shippingValue] of Object.entries(shipping_address)) {
+                if (shippingField === undefined) continue;
+                const mappedShippingField = shippingFieldMap.get(shippingField);
+                if (mappedShippingField === undefined) {
+                    console.log('unknown shipping field: ', shippingField);
+                    return actions.reject();
+                } // if
+                const originShippingValue = checkoutState[mappedShippingField as keyof typeof checkoutState];
+                if (originShippingValue !== shippingValue) {
+                    console.log(`DIFF: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
+                    return actions.reject();
+                } // if
+            } // for
+            return actions.resolve();
+        } // if
+    });
     
     
     
     // jsx:
     return (
         <>
-            {isHydrated && navCheckoutSectionElm && ReactDOM.createPortal(
-                props.children,
-                navCheckoutSectionElm
-            )}
+            <p>
+                Click the PayPal button below. You will be redirected to the PayPal website to complete the payment.
+            </p>
+            <PayPalButtons
+                createOrder={handlePlaceOrder}
+                onApprove={handleMakePayment}
+                onShippingChange={handleShippingChange}
+            />
+        </>
+    );
+}
+const PaymentMethodBankTransfer = () => {
+    // stores:
+    const {
+        paymentMethod,
+    } = useSelector(selectCheckoutState);
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <p>
+                Pay manually via <strong>bank transfer</strong>.
+            </p>
+            <p>
+                We&apos;ll send <em>payment instructions</em> to your (billing) email after you&apos;ve <em>finished the order</em>.
+            </p>
+            {(paymentMethod === 'bankTransfer') && <PortalToNavCheckoutSection>
+                <BankTransferPaymentButton />
+            </PortalToNavCheckoutSection>}
         </>
     );
 }
@@ -1822,7 +1825,7 @@ const CardPaymentButton = () => {
     
     // handlers:
     const hostedFields = usePayPalHostedFields();
-    const handleMakePayment = async () => {
+    const handleMakePayment = useEvent(async () => {
         // validate:
         // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
         if (!billingAsShipping) await dispatch(setBillingValidation(true));
@@ -1892,7 +1895,7 @@ const CardPaymentButton = () => {
             // update the UI:
             dispatch(setPaymentIsProcessing(false));
         } // try
-    }
+    });
     
     
     
@@ -1901,6 +1904,86 @@ const CardPaymentButton = () => {
         <ButtonIcon className='next payNow' enabled={!paymentIsProcessing} icon={!paymentIsProcessing ? 'monetization_on' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleMakePayment}>
             Pay Now
         </ButtonIcon>
+    );
+}
+const BankTransferPaymentButton = () => {
+    // context:
+    const {handlePlaceOrder, handleOrderCompleted, showDialogMessagePlaceOrderError, makePaymentApi} = useCheckout();
+    
+    
+    
+    // stores:
+    const {
+        paymentIsProcessing,
+    } = useSelector(selectCheckoutState);
+    const dispatch = useDispatch();
+    
+    
+    
+    // apis:
+    const [makePayment] = makePaymentApi;
+    
+    
+    
+    // handlers:
+    const handleFinishOrder = useEvent(async () => {
+        try {
+            // update the UI:
+            dispatch(setPaymentIsProcessing(true));
+            
+            
+            
+            // createOrder:
+            const payLaterOrderId = await handlePlaceOrder({payLater: true});
+            
+            
+            
+            // then forward the authentication to backend_API to book the order (but not paid yet):
+            const _makePaymentResponse = await makePayment({ orderId: payLaterOrderId }).unwrap();
+            handleOrderCompleted(/*paid:*/false);
+        }
+        catch (error: any) {
+            showDialogMessagePlaceOrderError(error);
+        }
+        finally {
+            // update the UI:
+            dispatch(setPaymentIsProcessing(false));
+        } // try
+    });
+    
+    
+    
+    // jsx:
+    return (
+        <ButtonIcon className='next finishOrder' enabled={!paymentIsProcessing} icon={!paymentIsProcessing ? 'done' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleFinishOrder}>
+            Finish Order
+        </ButtonIcon>
+    );
+}
+interface PortalToNavCheckoutSectionProps {
+    children : React.ReactNode
+}
+const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps) => {
+    // context:
+    const {navCheckoutSectionElm} = useCheckout();
+    
+    
+    
+    const [isHydrated, setIsHydrated] = useState<boolean>(false);
+    useEffect(() => {
+        setIsHydrated(!!navCheckoutSectionElm);
+    }, [navCheckoutSectionElm]);
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            {isHydrated && navCheckoutSectionElm && ReactDOM.createPortal(
+                props.children,
+                navCheckoutSectionElm
+            )}
+        </>
     );
 }
 

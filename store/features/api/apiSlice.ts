@@ -1,8 +1,9 @@
-import type { RootState } from '@/store/store';
-import { createEntityAdapter, EntityState } from '@reduxjs/toolkit';
+import type { RootState } from '@/store/store'
+import { createEntityAdapter, EntityState } from '@reduxjs/toolkit'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { CartState } from '../cart/cartSlice';
-import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice';
+import type { CartState } from '../cart/cartSlice'
+import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice'
+import type { CreateOrderData } from '@paypal/paypal-js'
 
 
 
@@ -50,6 +51,9 @@ const shippingListAdapter = createEntityAdapter<ShippingEntry>({
 
 export type { PaymentToken }
 
+export interface PlaceOrderOptions extends Partial<CreateOrderData> {
+    payLater ?: boolean
+}
 export interface PlaceOrderData
     extends
         Omit<CartState,     // cart item(s)
@@ -67,7 +71,8 @@ export interface PlaceOrderData
             |'paymentToken'
             |'paymentCardValidation'
             |'paymentIsProcessing'
-        >
+        >,
+        PlaceOrderOptions
 {
 }
 export interface PlaceOrderResponse
@@ -80,7 +85,7 @@ export interface AuthenticationPaymentData
     orderId : string
 }
 export interface PaymentMethod {
-    type        : 'card'|'paypal'|'transfer'|(string & {})
+    type        : 'card'|'paypal'|'banktransfer'|(string & {})
     brand      ?: 'amex'|'visa'|'paypal'|string
     identifier ?: string
 }
