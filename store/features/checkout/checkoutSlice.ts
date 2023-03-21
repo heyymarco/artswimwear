@@ -23,11 +23,11 @@ export interface CheckoutState {
     shippingPhone          : string
     shippingEmail          : string
     
-    shippingCountry        : string
     shippingAddress        : string
     shippingCity           : string
     shippingZone           : string
     shippingZip            : string
+    shippingCountry        : string
     
     shippingProvider      ?: string
     
@@ -42,11 +42,11 @@ export interface CheckoutState {
     billingPhone           : string
     billingEmail           : string
     
-    billingCountry         : string
     billingAddress         : string
     billingCity            : string
     billingZone            : string
     billingZip             : string
+    billingCountry         : string
     
     
     
@@ -70,11 +70,11 @@ const initialState: CheckoutState = {
     shippingPhone          : '',
     shippingEmail          : '',
     
-    shippingCountry        : '',
     shippingAddress        : '',
     shippingCity           : '',
     shippingZone           : '',
     shippingZip            : '',
+    shippingCountry        : '',
     
     
     
@@ -87,11 +87,11 @@ const initialState: CheckoutState = {
     billingPhone           : '',
     billingEmail           : '',
     
-    billingCountry         : '',
     billingAddress         : '',
     billingCity            : '',
     billingZone            : '',
     billingZip             : '',
+    billingCountry         : '',
     
     
     
@@ -131,9 +131,6 @@ export const checkoutSlice = createSlice({
             state.shippingEmail = value;
         },
         
-        setShippingCountry : (state, {payload: value}: PayloadAction<string>) => {
-            state.shippingCountry = value;
-        },
         setShippingAddress : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingAddress = value;
         },
@@ -145,6 +142,9 @@ export const checkoutSlice = createSlice({
         },
         setShippingZip: (state, {payload: value}: PayloadAction<string>) => {
             state.shippingZip = value;
+        },
+        setShippingCountry : (state, {payload: value}: PayloadAction<string>) => {
+            state.shippingCountry = value;
         },
         
         setShippingProvider: (state, {payload: value}: PayloadAction<string>) => {
@@ -174,9 +174,6 @@ export const checkoutSlice = createSlice({
             state.billingEmail = value;
         },
         
-        setBillingCountry: (state, {payload: value}: PayloadAction<string>) => {
-            state.billingCountry = value;
-        },
         setBillingAddress: (state, {payload: value}: PayloadAction<string>) => {
             state.billingAddress = value;
         },
@@ -188,6 +185,9 @@ export const checkoutSlice = createSlice({
         },
         setBillingZip: (state, {payload: value}: PayloadAction<string>) => {
             state.billingZip = value;
+        },
+        setBillingCountry: (state, {payload: value}: PayloadAction<string>) => {
+            state.billingCountry = value;
         },
         
         
@@ -224,11 +224,11 @@ export const {
     setShippingPhone,
     setShippingEmail,
     
-    setShippingCountry,
     setShippingAddress,
     setShippingCity,
     setShippingZone,
     setShippingZip,
+    setShippingCountry,
     
     setShippingProvider,
     
@@ -243,11 +243,11 @@ export const {
     setBillingPhone,
     setBillingEmail,
     
-    setBillingCountry,
     setBillingAddress,
     setBillingCity,
     setBillingZone,
     setBillingZip,
+    setBillingCountry,
     
     
     
@@ -275,11 +275,11 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         shippingPhone,
         shippingEmail,
         
-        shippingCountry,
         shippingAddress,
         shippingCity,
         shippingZone,
         shippingZip,
+        shippingCountry,
         
         shippingProvider,
         
@@ -294,11 +294,11 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         billingPhone,
         billingEmail,
         
-        billingCountry,
         billingAddress,
         billingCity,
         billingZone,
         billingZip,
+        billingCountry,
         
         
         
@@ -322,11 +322,11 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         shippingPhone,
         shippingEmail,
         
-        shippingCountry,
         shippingAddress,
         shippingCity,
         shippingZone,
         shippingZip,
+        shippingCountry,
         
         shippingProvider,
         
@@ -341,11 +341,11 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         billingPhone,
         billingEmail,
         
-        billingCountry,
         billingAddress,
         billingCity,
         billingZone,
         billingZip,
+        billingCountry,
         
         
         
