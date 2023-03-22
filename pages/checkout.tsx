@@ -1004,7 +1004,7 @@ const RegularCheckout = () => {
             <Section className='contact' title='Contact Information'>
                 <Group className='nick'>
                     <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='email' theme='primary' mild={true} />
+                        <Icon icon='chat' theme='primary' mild={true} />
                     </Label>
                     <TextInput  placeholder='Your Nick Name' required autoComplete='nickname' value={customerNickName} onChange={({target:{value}}) => dispatch(setCustomerNickName(value))} />
                 </Group>
