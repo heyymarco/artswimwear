@@ -9,6 +9,8 @@ import type {
     PlaceOrderResponse,
     MakePaymentResponse
 } from '@/store/features/api/apiSlice'
+import { startSession } from 'mongoose'
+import DraftOrder from '@/models/DraftOrder'
 
 
 
@@ -113,17 +115,41 @@ const handlePaypalResponse = async (response: Response) => {
 const getDefaultCurrencyCode = async (): Promise<string> => {
     return 'USD';
 }
+const getPaymentCurrency = async (): Promise<{rate: number, fractionUnit: number}> => {
+    return {
+        rate         : 15000,
+        fractionUnit : 0.01,
+    };
+}
 const convertCurrencyIfRequired = async (from: number|undefined): Promise<number|undefined> => {
     // conditions:
     if (from === undefined) return undefined;
     
     
     
-    const convertRate          = 15000
-    const rawConverted         = from / convertRate;
-    const smallestFractionUnit = 0.01;
-    const fractions            = Math.ceil(rawConverted / smallestFractionUnit);
-    return fractions * smallestFractionUnit;
+    const {rate, fractionUnit} = await getPaymentCurrency();
+    const rawConverted         = from / rate;
+    const fractions            = Math.ceil(rawConverted / fractionUnit);
+    const stepped              = fractions * fractionUnit;
+    
+    
+    
+    return stepped;
+}
+const revertCurrencyIfRequired = async (from: number|undefined): Promise<number|undefined> => {
+    // conditions:
+    if (from === undefined) return undefined;
+    
+    
+    
+    const {rate, fractionUnit} = await getPaymentCurrency();
+    const fractions            = Math.ceil(from / fractionUnit);
+    const stepped              = fractions * fractionUnit;
+    const rawReverted          = stepped * rate;
+    
+    
+    
+    return rawReverted;
 }
 
 
@@ -238,6 +264,7 @@ const responsePlaceOrder = async (
     );
     
     interface ReportedProductItem {
+        id                   : string
         name                 : string
         quantity             : number
         unitPriceConverted  ?: number
@@ -266,6 +293,7 @@ const responsePlaceOrder = async (
         
         
         reportedProductItem.push({
+            id                 : productId,
             name               : productList.entities[productId]?.name ?? productId,
             quantity           : quantity,
             unitPriceConverted : unitPriceConverted,
@@ -530,11 +558,61 @@ const responsePlaceOrder = async (
             }
         */
         console.log('paypalOrderData: ', paypalOrderData);
-        if ((paypalOrderData?.status !== 'CREATED') || !('id' in paypalOrderData)) {
+        if ((paypalOrderData?.status !== 'CREATED') || (typeof(paypalOrderData?.id) !== 'string')) {
             // TODO: log unexpected response
             console.log('unexpected response: ', paypalOrderData);
             throw Error('unexpected API response');
         } // if
+        
+        
+        
+        const session = await startSession();
+        await session.withTransaction(async (): Promise<void> => {
+            await DraftOrder.create({
+                items              : await Promise.all(reportedProductItem.map(async (productItem) => {
+                    //#regon update product stock
+                    const product = await Product.findById(productItem.id, { stock: true });
+                    if (!product) throw Error('product not found');
+                    const stock = product.stock;
+                    console.log(`stock of ${productItem.name}: `, (stock !== undefined) ? stock : 'unlimited');
+                    if ((stock !== undefined) && isFinite(stock)) {
+                        product.stock = (stock - productItem.quantity);
+                        await product.save();
+                    } // if
+                    //#endregon update product stock
+                    
+                    
+                    
+                    return {
+                        product        : productItem.id,
+                        price          : await revertCurrencyIfRequired(productItem.unitPriceConverted),
+                        shippingWeight : productItem.unitWeight,
+                        quantity       : productItem.quantity,
+                    };
+                })),
+                
+                shipping           : {
+                    firstName      : shippingFirstName,
+                    lastName       : shippingLastName,
+                    
+                    phone          : shippingPhone,
+                    
+                    address        : shippingAddress,
+                    city           : shippingCity,
+                    zone           : shippingZone,
+                    zip            : shippingZip,
+                    country        : shippingCountry.toUpperCase(),
+                },
+                shippingProvider   : shippingProvider,
+                shippingCost       : await revertCurrencyIfRequired(totalShippingCostsConverted),
+                
+                paypalOrderId      : paypalOrderData.id,
+            });
+        });
+        session.endSession();
+        
+        
+        
         return res.status(200).json({ // OK
             orderId: paypalOrderData.id,
         });
