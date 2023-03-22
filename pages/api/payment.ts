@@ -11,6 +11,7 @@ import type {
 } from '@/store/features/api/apiSlice'
 import { startSession } from 'mongoose'
 import DraftOrder from '@/models/DraftOrder'
+import Order from '@/models/Order'
 
 
 
@@ -678,10 +679,11 @@ const responseMakePayment = async (
     
     
     
-    let isPaymentSuccess : boolean|undefined = undefined;
+    const session = await startSession();
     try {
+        let paymentResponse : MakePaymentResponse;
+        //#region process the payment
         if (paypalOrderId) {
-            console.log('paypalOrderId: ', paypalOrderId);
             const accessToken = await generateAccessToken();
             const url = `${paypalURL}/v2/checkout/orders/${paypalOrderId}/capture`;
             const response = await fetch(url, {
@@ -902,8 +904,7 @@ const responseMakePayment = async (
             
             switch (captureData?.status) {
                 case 'COMPLETED' : {
-                    isPaymentSuccess = true;
-                    return res.status(200).json({ // payment APPROVED
+                    paymentResponse = { // payment APPROVED
                         paymentMethod : (() => {
                             const payment_source = paypalPaymentData?.payment_source;
                             
@@ -933,10 +934,9 @@ const responseMakePayment = async (
                         })(),
                         // @ts-ignore:
                         extra: paypalPaymentData,
-                    });
+                    };
                 }; break;
                 case 'DECLINED'  : {
-                    isPaymentSuccess = false;
                     return res.status(402).json({  // payment DECLINED
                         error     : 'payment declined',
                     });
@@ -949,13 +949,37 @@ const responseMakePayment = async (
             } // switch
         }
         else {
-            isPaymentSuccess = true;
-            return res.status(200).json({ // paylater APPROVED (we waiting for your payment confirmation within xx days)
+            paymentResponse = { // paylater APPROVED (we waiting for your payment confirmation within xx days)
                 paymentMethod : {
                     type: 'manual',
                 },
-            });
+            };
         } // if
+        //#endregion process the payment
+        
+        
+        
+        //#region save the database
+        await session.withTransaction(async (): Promise<void> => {
+            await Order.create({
+                items            : draftOrder.items,
+                
+                shipping         : draftOrder.shipping,
+                shippingProvider : draftOrder.shippingProvider,
+                shippingCost     : draftOrder.shippingCost,
+                
+                billing          : undefined, // TODO: complete this!
+                
+                paymentMethod    : paymentResponse.paymentMethod,
+            });
+            await draftOrder.deleteOne();
+        });
+        //#endregion save the database
+        
+        
+        
+        // succeeded:
+        return res.status(200).json(paymentResponse); // OK
     }
     catch (error: any) {
         /*
@@ -965,13 +989,18 @@ const responseMakePayment = async (
             * Invalid API_request headers (programming bug).
             * unexpected API response (programming bug).
         */
+        
+        
+        
         // TODO: log internal error
         console.log('internal error: ', error);
+        
+        
+        
+        session.abortTransaction();
         return res.status(500).json({error: 'internal server error'});
     }
     finally {
-        if (isPaymentSuccess) {
-            // todo: delete draftOrder
-        } // if
+        session.endSession();
     } // try
 }
