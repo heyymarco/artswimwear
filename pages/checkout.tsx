@@ -1940,12 +1940,12 @@ const ManualPaymentButton = () => {
             
             
             // createOrder:
-            const payLaterOrderId = await handlePlaceOrder({paymentSource: 'manual'});
+            const orderId = await handlePlaceOrder({paymentSource: 'manual'});
             
             
             
             // then forward the authentication to backend_API to book the order (but not paid yet):
-            const _makePaymentResponse = await makePayment({ orderId: payLaterOrderId }).unwrap();
+            const _makePaymentResponse = await makePayment({ orderId }).unwrap();
             handleOrderCompleted(/*paid:*/false);
         }
         catch (error: any) {

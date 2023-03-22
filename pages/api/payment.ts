@@ -621,7 +621,7 @@ const responsePlaceOrder = async (
         
         
         return res.status(200).json({ // OK
-            orderId: orderId,
+            orderId: paypalOrderId ?? orderId,
         });
     }
     catch (error: any) {
@@ -651,16 +651,30 @@ const responseMakePayment = async (
     if (typeof(paymentData) !== 'object')  return res.status(400).end(); // bad req
     const rawOrderId = paymentData.orderId;
     if (typeof(rawOrderId) !== 'string')   return res.status(400).end(); // bad req
-    if (!rawOrderId.startsWith('#ORDER#')) return res.status(400).end(); // bad req
-    const draftOrderId = rawOrderId.slice(7);
-    if (!draftOrderId.length)              return res.status(400).end(); // bad req
     
     
     
-    const draftOrder = await DraftOrder.findById(draftOrderId, { paypalOrderId: true });
+    let draftOrderId  : string|undefined = undefined;
+    let paypalOrderId : string|undefined = undefined;
+    if (rawOrderId.startsWith('#ORDER#')) {
+        draftOrderId = rawOrderId.slice(7);
+        if (!draftOrderId.length)          return res.status(400).end(); // bad req
+    }
+    else {
+        paypalOrderId = rawOrderId;
+    } // if
+    
+    
+    
+    const draftOrder = (
+        !!draftOrderId
+        ? await DraftOrder.findById(draftOrderId, {})
+        : !!paypalOrderId
+        ? await DraftOrder.findOne({ paypalOrderId }, {})
+        : undefined
+    );
     console.log('draftOrder: ', draftOrder);
     if (!draftOrder) return res.status(400).end(); // bad req
-    const paypalOrderId : string|undefined = draftOrder.paypalOrderId;
     
     
     
