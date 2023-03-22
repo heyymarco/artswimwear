@@ -7,9 +7,10 @@ import Shipping from '@/models/Shipping'
 import type {
     PaymentToken,
     PlaceOrderResponse,
-    MakePaymentResponse
+    MakePaymentResponse,
+    PaymentMethod,
 } from '@/store/features/api/apiSlice'
-import { startSession } from 'mongoose'
+import { ClientSession, startSession } from 'mongoose'
 import DraftOrder from '@/models/DraftOrder'
 import Order from '@/models/Order'
 
@@ -151,6 +152,38 @@ const revertCurrencyIfRequired = async (from: number|undefined): Promise<number|
     
     
     return rawReverted;
+}
+
+
+
+const commitOrder = async (session: ClientSession, draftOrder: any, billing: any, paymentMethod: PaymentMethod) => {
+    await session.withTransaction(async (): Promise<void> => {
+        await Order.create({
+            items            : draftOrder.items,
+            
+            shipping         : draftOrder.shipping,
+            shippingProvider : draftOrder.shippingProvider,
+            shippingCost     : draftOrder.shippingCost,
+            
+            billing          : undefined, // TODO: complete this!
+            
+            paymentMethod    : paymentMethod,
+        });
+        await draftOrder.deleteOne();
+    });
+}
+const revertOrder = async (session: ClientSession, draftOrder: any) => {
+    await session.withTransaction(async (): Promise<void> => {
+        for (const item of draftOrder.items) {
+            const product = await Product.findById(item.product, { stock: true });
+            const stock = product.stock;
+            if ((stock !== undefined) && isFinite(stock)) {
+                product.stock = (stock + item.quantity);
+                await product.save();
+            } // if
+        } // for
+        await draftOrder.deleteOne();
+    });
 }
 
 
@@ -963,34 +996,11 @@ const responseMakePayment = async (
         const paymentMethod = (paymentResponse as MakePaymentResponse)?.paymentMethod;
         if (paymentMethod) {
             // payment APPROVED => move the `draftOrder` to `order`:
-            await session.withTransaction(async (): Promise<void> => {
-                await Order.create({
-                    items            : draftOrder.items,
-                    
-                    shipping         : draftOrder.shipping,
-                    shippingProvider : draftOrder.shippingProvider,
-                    shippingCost     : draftOrder.shippingCost,
-                    
-                    billing          : undefined, // TODO: complete this!
-                    
-                    paymentMethod    : paymentMethod,
-                });
-                await draftOrder.deleteOne();
-            });
+            await commitOrder(session, draftOrder, undefined, paymentMethod);
         }
         else {
             // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:
-            await session.withTransaction(async (): Promise<void> => {
-                for (const item of draftOrder.items) {
-                    const product = await Product.findById(item.product, { stock: true });
-                    const stock = product.stock;
-                    if ((stock !== undefined) && isFinite(stock)) {
-                        product.stock = (stock + item.quantity);
-                        await product.save();
-                    } // if
-                } // for
-                await draftOrder.deleteOne();
-            });
+            await revertOrder(session, draftOrder);
         } // if
         //#endregion save the database
         
