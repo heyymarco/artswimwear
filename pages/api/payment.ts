@@ -681,7 +681,7 @@ const responseMakePayment = async (
     
     const session = await startSession();
     try {
-        let paymentResponse : MakePaymentResponse;
+        let paymentResponse : MakePaymentResponse|ErrorResponse;
         //#region process the payment
         if (paypalOrderId) {
             const accessToken = await generateAccessToken();
@@ -937,9 +937,9 @@ const responseMakePayment = async (
                     };
                 }; break;
                 case 'DECLINED'  : {
-                    return res.status(402).json({  // payment DECLINED
+                    paymentResponse = {  // payment DECLINED
                         error     : 'payment declined',
-                    });
+                    };
                 }; break;
                 default          : {
                     // TODO: log unexpected response
@@ -960,26 +960,40 @@ const responseMakePayment = async (
         
         
         //#region save the database
-        await session.withTransaction(async (): Promise<void> => {
-            await Order.create({
-                items            : draftOrder.items,
-                
-                shipping         : draftOrder.shipping,
-                shippingProvider : draftOrder.shippingProvider,
-                shippingCost     : draftOrder.shippingCost,
-                
-                billing          : undefined, // TODO: complete this!
-                
-                paymentMethod    : paymentResponse.paymentMethod,
+        const paymentMethod = (paymentResponse as MakePaymentResponse)?.paymentMethod;
+        if (paymentMethod) {
+            // payment APPROVED => move the `draftOrder` to `order`:
+            await session.withTransaction(async (): Promise<void> => {
+                await Order.create({
+                    items            : draftOrder.items,
+                    
+                    shipping         : draftOrder.shipping,
+                    shippingProvider : draftOrder.shippingProvider,
+                    shippingCost     : draftOrder.shippingCost,
+                    
+                    billing          : undefined, // TODO: complete this!
+                    
+                    paymentMethod    : paymentMethod,
+                });
+                await draftOrder.deleteOne();
             });
-            await draftOrder.deleteOne();
-        });
+        }
+        else {
+            // payment DECLINED => delete the `draftOrder`:
+            await session.withTransaction(async (): Promise<void> => {
+                await draftOrder.deleteOne();
+            });
+        } // if
         //#endregion save the database
         
         
         
         // succeeded:
-        return res.status(200).json(paymentResponse); // OK
+        return res.status(
+            paymentMethod
+            ? 200 // payment APPROVED
+            : 402 // payment DECLINED
+        ).json(paymentResponse);
     }
     catch (error: any) {
         /*
