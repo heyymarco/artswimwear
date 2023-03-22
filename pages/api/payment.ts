@@ -646,302 +646,301 @@ const responseMakePayment = async (
     req : NextApiRequest,
     res : NextApiResponse<MakePaymentResponse|ErrorResponse>
 ) => {
-    const paypalAuthentication = req.body;
-    if (typeof(paypalAuthentication) !== 'object') return res.status(400).end(); // bad req
-    const orderId = paypalAuthentication.orderId
-    if (!orderId)                                  return res.status(400).end(); // bad req
-    /*
-        example:
-        {
-            authenticationReason: undefined
-            authenticationStatus: "APPROVED",
-            card: {
-                brand: "VISA",
-                card_type: "VISA",
-                last_digits: "7704",
-                type: "CREDIT",
-            },
-            liabilityShift: undefined
-            liabilityShifted: undefined
-            orderId: "1N785713SG267310M"
-        }
-        
-        example:
-        {
-            orderId: "#paylater#1234"
-        }
-    */
+    const paymentData = req.body;
+    console.log('paymentData: ', paymentData);
+    if (typeof(paymentData) !== 'object')  return res.status(400).end(); // bad req
+    const rawOrderId = paymentData.orderId;
+    if (typeof(rawOrderId) !== 'string')   return res.status(400).end(); // bad req
+    if (!rawOrderId.startsWith('#ORDER#')) return res.status(400).end(); // bad req
+    const draftOrderId = rawOrderId.slice(7);
+    if (!draftOrderId.length)              return res.status(400).end(); // bad req
     
     
     
-    if ((typeof(orderId) === 'string') && orderId.startsWith('#ORDER#')) {
-        return res.status(200).json({ // paylater APPROVED (we waiting for your payment confirmation within xx days)
-            paymentMethod : {
-                type: 'manual',
-            },
-        });
-    } // if
+    const draftOrder = await DraftOrder.findById(draftOrderId, { paypalOrderId: true });
+    console.log('draftOrder: ', draftOrder);
+    if (!draftOrder) return res.status(400).end(); // bad req
+    const paypalOrderId : string|undefined = draftOrder.paypalOrderId;
     
     
     
+    let isPaymentSuccess : boolean|undefined = undefined;
     try {
-        const accessToken = await generateAccessToken();
-        const url = `${paypalURL}/v2/checkout/orders/${orderId}/capture`;
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-        const paypalPaymentData = await handlePaypalResponse(response);
-        /*
-            example:
-            {
-                "id": "3VR64557R6628232K",
-                "status": "COMPLETED",
-                "payment_source": {
-                    "card": {
-                        "last_digits": "8431",
-                        "brand": "AMEX",
-                        "type": "CREDIT"
-                    }
+        if (paypalOrderId) {
+            console.log('paypalOrderId: ', paypalOrderId);
+            const accessToken = await generateAccessToken();
+            const url = `${paypalURL}/v2/checkout/orders/${paypalOrderId}/capture`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
                 },
-                "purchase_units": [
-                    {
-                        "reference_id": "default",
-                        "shipping": {
-                            "name": {
-                                "full_name": "Yunus Kurniawan"
+            });
+            const paypalPaymentData = await handlePaypalResponse(response);
+            /*
+                example:
+                {
+                    "id": "3VR64557R6628232K",
+                    "status": "COMPLETED",
+                    "payment_source": {
+                        "card": {
+                            "last_digits": "8431",
+                            "brand": "AMEX",
+                            "type": "CREDIT"
+                        }
+                    },
+                    "purchase_units": [
+                        {
+                            "reference_id": "default",
+                            "shipping": {
+                                "name": {
+                                    "full_name": "Yunus Kurniawan"
+                                },
+                                "address": {
+                                    "address_line_1": "Jl Monjali Gang Temulawak no 26",
+                                    "admin_area_2": "Sleman",
+                                    "admin_area_1": "Yogyakarta",
+                                    "postal_code": "55284",
+                                    "country_code": "ID"
+                                }
                             },
-                            "address": {
-                                "address_line_1": "Jl Monjali Gang Temulawak no 26",
-                                "admin_area_2": "Sleman",
-                                "admin_area_1": "Yogyakarta",
-                                "postal_code": "55284",
-                                "country_code": "ID"
-                            }
-                        },
-                        "payments": {
-                            "captures": [
-                                {
-                                    "id": "24H17413S3123762P",
-                                    "status": "COMPLETED",
-                                    "amount": {
-                                        "currency_code": "USD",
-                                        "value": "772.72"
-                                    },
-                                    "final_capture": true,
-                                    "disbursement_mode": "INSTANT",
-                                    "seller_protection": {
-                                        "status": "NOT_ELIGIBLE"
-                                    },
-                                    "seller_receivable_breakdown": {
-                                        "gross_amount": {
+                            "payments": {
+                                "captures": [
+                                    {
+                                        "id": "24H17413S3123762P",
+                                        "status": "COMPLETED",
+                                        "amount": {
                                             "currency_code": "USD",
                                             "value": "772.72"
                                         },
-                                        "paypal_fee": {
-                                            "currency_code": "USD",
-                                            "value": "32.09"
+                                        "final_capture": true,
+                                        "disbursement_mode": "INSTANT",
+                                        "seller_protection": {
+                                            "status": "NOT_ELIGIBLE"
                                         },
-                                        "net_amount": {
-                                            "currency_code": "USD",
-                                            "value": "740.63"
+                                        "seller_receivable_breakdown": {
+                                            "gross_amount": {
+                                                "currency_code": "USD",
+                                                "value": "772.72"
+                                            },
+                                            "paypal_fee": {
+                                                "currency_code": "USD",
+                                                "value": "32.09"
+                                            },
+                                            "net_amount": {
+                                                "currency_code": "USD",
+                                                "value": "740.63"
+                                            }
+                                        },
+                                        "links": [
+                                            {
+                                                "href": "https://api.sandbox.paypal.com/v2/payments/captures/24H17413S3123762P",
+                                                "rel": "self",
+                                                "method": "GET"
+                                            },
+                                            {
+                                                "href": "https://api.sandbox.paypal.com/v2/payments/captures/24H17413S3123762P/refund",
+                                                "rel": "refund",
+                                                "method": "POST"
+                                            },
+                                            {
+                                                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/3VR64557R6628232K",
+                                                "rel": "up",
+                                                "method": "GET"
+                                            }
+                                        ],
+                                        "create_time": "2023-03-18T11:39:49Z",
+                                        "update_time": "2023-03-18T11:39:49Z",
+                                        "processor_response": {
+                                            "avs_code": "A",
+                                            "cvv_code": "U",
+                                            "response_code": "0000"
                                         }
-                                    },
-                                    "links": [
-                                        {
-                                            "href": "https://api.sandbox.paypal.com/v2/payments/captures/24H17413S3123762P",
-                                            "rel": "self",
-                                            "method": "GET"
-                                        },
-                                        {
-                                            "href": "https://api.sandbox.paypal.com/v2/payments/captures/24H17413S3123762P/refund",
-                                            "rel": "refund",
-                                            "method": "POST"
-                                        },
-                                        {
-                                            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/3VR64557R6628232K",
-                                            "rel": "up",
-                                            "method": "GET"
-                                        }
-                                    ],
-                                    "create_time": "2023-03-18T11:39:49Z",
-                                    "update_time": "2023-03-18T11:39:49Z",
-                                    "processor_response": {
-                                        "avs_code": "A",
-                                        "cvv_code": "U",
-                                        "response_code": "0000"
                                     }
-                                }
-                            ]
+                                ]
+                            }
                         }
-                    }
-                ],
-                "links": [
-                    {
-                        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/3VR64557R6628232K",
-                        "rel": "self",
-                        "method": "GET"
-                    }
-                ]
-            }
-            
-            example:
-            {
-                "id": "314769333S968980X",
-                "status": "COMPLETED",
-                "payment_source": {
-                    "paypal": {
-                        "email_address": "sb-fsqwb25273882@personal.example.com",
-                        "account_id": "6UZV9866JZEPA",
+                    ],
+                    "links": [
+                        {
+                            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/3VR64557R6628232K",
+                            "rel": "self",
+                            "method": "GET"
+                        }
+                    ]
+                }
+                
+                example:
+                {
+                    "id": "314769333S968980X",
+                    "status": "COMPLETED",
+                    "payment_source": {
+                        "paypal": {
+                            "email_address": "sb-fsqwb25273882@personal.example.com",
+                            "account_id": "6UZV9866JZEPA",
+                            "name": {
+                                "given_name": "John",
+                                "surname": "Doe"
+                            },
+                            "address": {
+                                "country_code": "ID"
+                            }
+                        }
+                    },
+                    "purchase_units": [
+                        {
+                            "reference_id": "default",
+                            "shipping": {
+                                "name": {
+                                    "full_name": "Yunus Kurniawan"
+                                },
+                                "address": {
+                                    "address_line_1": "Jl Monjali Gang Temulawak no 26",
+                                    "admin_area_2": "Sleman",
+                                    "admin_area_1": "Yogyakarta",
+                                    "postal_code": "55284",
+                                    "country_code": "ID"
+                                }
+                            },
+                            "payments": {
+                                "captures": [
+                                    {
+                                        "id": "60C01638HN2535717",
+                                        "status": "COMPLETED",
+                                        "amount": {
+                                            "currency_code": "USD",
+                                            "value": "772.72"
+                                        },
+                                        "final_capture": true,
+                                        "disbursement_mode": "INSTANT",
+                                        "seller_protection": {
+                                            "status": "ELIGIBLE",
+                                            "dispute_categories": [
+                                                "ITEM_NOT_RECEIVED",
+                                                "UNAUTHORIZED_TRANSACTION"
+                                            ]
+                                        },
+                                        "seller_receivable_breakdown": {
+                                            "gross_amount": {
+                                                "currency_code": "USD",
+                                                "value": "772.72"
+                                            },
+                                            "paypal_fee": {
+                                                "currency_code": "USD",
+                                                "value": "39.05"
+                                            },
+                                            "net_amount": {
+                                                "currency_code": "USD",
+                                                "value": "733.67"
+                                            }
+                                        },
+                                        "links": [
+                                            {
+                                                "href": "https://api.sandbox.paypal.com/v2/payments/captures/60C01638HN2535717",
+                                                "rel": "self",
+                                                "method": "GET"
+                                            },
+                                            {
+                                                "href": "https://api.sandbox.paypal.com/v2/payments/captures/60C01638HN2535717/refund",
+                                                "rel": "refund",
+                                                "method": "POST"
+                                            },
+                                            {
+                                                "href": "https://api.sandbox.paypal.com/v2/checkout/orders/314769333S968980X",
+                                                "rel": "up",
+                                                "method": "GET"
+                                            }
+                                        ],
+                                        "create_time": "2023-03-18T11:36:29Z",
+                                        "update_time": "2023-03-18T11:36:29Z"
+                                    }
+                                ]
+                            }
+                        }
+                    ],
+                    "payer": {
                         "name": {
                             "given_name": "John",
                             "surname": "Doe"
                         },
+                        "email_address": "sb-fsqwb25273882@personal.example.com",
+                        "payer_id": "6UZV9866JZEPA",
                         "address": {
                             "country_code": "ID"
                         }
-                    }
-                },
-                "purchase_units": [
-                    {
-                        "reference_id": "default",
-                        "shipping": {
-                            "name": {
-                                "full_name": "Yunus Kurniawan"
-                            },
-                            "address": {
-                                "address_line_1": "Jl Monjali Gang Temulawak no 26",
-                                "admin_area_2": "Sleman",
-                                "admin_area_1": "Yogyakarta",
-                                "postal_code": "55284",
-                                "country_code": "ID"
-                            }
-                        },
-                        "payments": {
-                            "captures": [
-                                {
-                                    "id": "60C01638HN2535717",
-                                    "status": "COMPLETED",
-                                    "amount": {
-                                        "currency_code": "USD",
-                                        "value": "772.72"
-                                    },
-                                    "final_capture": true,
-                                    "disbursement_mode": "INSTANT",
-                                    "seller_protection": {
-                                        "status": "ELIGIBLE",
-                                        "dispute_categories": [
-                                            "ITEM_NOT_RECEIVED",
-                                            "UNAUTHORIZED_TRANSACTION"
-                                        ]
-                                    },
-                                    "seller_receivable_breakdown": {
-                                        "gross_amount": {
-                                            "currency_code": "USD",
-                                            "value": "772.72"
-                                        },
-                                        "paypal_fee": {
-                                            "currency_code": "USD",
-                                            "value": "39.05"
-                                        },
-                                        "net_amount": {
-                                            "currency_code": "USD",
-                                            "value": "733.67"
-                                        }
-                                    },
-                                    "links": [
-                                        {
-                                            "href": "https://api.sandbox.paypal.com/v2/payments/captures/60C01638HN2535717",
-                                            "rel": "self",
-                                            "method": "GET"
-                                        },
-                                        {
-                                            "href": "https://api.sandbox.paypal.com/v2/payments/captures/60C01638HN2535717/refund",
-                                            "rel": "refund",
-                                            "method": "POST"
-                                        },
-                                        {
-                                            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/314769333S968980X",
-                                            "rel": "up",
-                                            "method": "GET"
-                                        }
-                                    ],
-                                    "create_time": "2023-03-18T11:36:29Z",
-                                    "update_time": "2023-03-18T11:36:29Z"
-                                }
-                            ]
-                        }
-                    }
-                ],
-                "payer": {
-                    "name": {
-                        "given_name": "John",
-                        "surname": "Doe"
                     },
-                    "email_address": "sb-fsqwb25273882@personal.example.com",
-                    "payer_id": "6UZV9866JZEPA",
-                    "address": {
-                        "country_code": "ID"
-                    }
+                    "links": [
+                        {
+                            "href": "https://api.sandbox.paypal.com/v2/checkout/orders/314769333S968980X",
+                            "rel": "self",
+                            "method": "GET"
+                        }
+                    ]
+                }
+            */
+            console.log('capture: paypalPaymentData: ', paypalPaymentData);
+            const captureData = paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0];
+            console.log('captureData : ', captureData);
+            console.log('captureData.status : ', captureData?.status);
+            
+            
+            
+            switch (captureData?.status) {
+                case 'COMPLETED' :  {
+                    isPaymentSuccess = true;
+                    return res.status(200).json({ // payment APPROVED
+                        paymentMethod : (() => {
+                            const payment_source = paypalPaymentData?.payment_source;
+                            
+                            const card = payment_source?.card;
+                            if (card) {
+                                return {
+                                    type       : 'card',
+                                    brand      : card.brand?.toLowerCase() ?? undefined,
+                                    identifier : card.last_digits ? `ending with ${card.last_digits}` : undefined,
+                                };
+                            } //if
+                            
+                            const paypal = payment_source?.paypal;
+                            if (paypal) {
+                                return {
+                                    type       : 'paypal',
+                                    brand      : 'paypal',
+                                    identifier : paypal.email_address || undefined,
+                                };
+                            } //if
+                            
+                            return {
+                                type       : 'CUSTOM',
+                                brand      : undefined,
+                                identifier : undefined,
+                            };
+                        })(),
+                        // @ts-ignore:
+                        extra: paypalPaymentData,
+                    });
+                }; break;
+                case 'DECLINED'  : {
+                    isPaymentSuccess = false;
+                    return res.status(402).json({  // payment DECLINED
+                        error     : 'payment declined',
+                    });
+                }; break;
+                default          :
+                    // TODO: log unexpected response
+                    console.log('unexpected response: ', paypalPaymentData, captureData);
+                    throw Error('unexpected API response');
+            } // switch
+        }
+        else {
+            isPaymentSuccess = true;
+            return res.status(200).json({ // paylater APPROVED (we waiting for your payment confirmation within xx days)
+                paymentMethod : {
+                    type: 'manual',
                 },
-                "links": [
-                    {
-                        "href": "https://api.sandbox.paypal.com/v2/checkout/orders/314769333S968980X",
-                        "rel": "self",
-                        "method": "GET"
-                    }
-                ]
-            }
-        */
-        console.log('capture: paypalPaymentData: ', paypalPaymentData);
-        const captureData = paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0];
-        console.log('captureData : ', captureData);
-        console.log('captureData.status : ', captureData?.status);
-        
-        
-        switch (captureData?.status) {
-            case 'COMPLETED' :  return res.status(200).json({ // payment APPROVED
-                paymentMethod : (() => {
-                    const payment_source = paypalPaymentData?.payment_source;
-                    
-                    const card = payment_source?.card;
-                    if (card) {
-                        return {
-                            type       : 'card',
-                            brand      : card.brand?.toLowerCase() ?? undefined,
-                            identifier : card.last_digits ? `ending with ${card.last_digits}` : undefined,
-                        };
-                    } //if
-                    
-                    const paypal = payment_source?.paypal;
-                    if (paypal) {
-                        return {
-                            type       : 'paypal',
-                            brand      : 'paypal',
-                            identifier : paypal.email_address || undefined,
-                        };
-                    } //if
-                    
-                    return {
-                        type       : 'CUSTOM',
-                        brand      : undefined,
-                        identifier : undefined,
-                    };
-                })(),
-                // @ts-ignore:
-                extra: paypalPaymentData,
             });
-            case 'DECLINED'  : return res.status(402).json({  // payment DECLINED
-                error     : 'payment declined',
-            });
-            default          :
-                // TODO: log unexpected response
-                console.log('unexpected response: ', paypalPaymentData, captureData);
-                throw Error('unexpected API response');
-        } // switch
+        } // if
     }
     catch (error: any) {
         /*
@@ -954,5 +953,10 @@ const responseMakePayment = async (
         // TODO: log internal error
         console.log('internal error: ', error);
         return res.status(500).json({error: 'internal server error'});
+    }
+    finally {
+        if (isPaymentSuccess) {
+            // todo: delete draftOrder
+        } // if
     } // try
 }
