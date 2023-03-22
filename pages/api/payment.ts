@@ -567,49 +567,57 @@ const responsePlaceOrder = async (
         
         
         const session = await startSession();
-        await session.withTransaction(async (): Promise<void> => {
-            await DraftOrder.create({
-                items              : await Promise.all(reportedProductItem.map(async (productItem) => {
-                    //#regon update product stock
-                    const product = await Product.findById(productItem.id, { stock: true });
-                    if (!product) throw Error('product not found');
-                    const stock = product.stock;
-                    console.log(`stock of ${productItem.name}: `, (stock !== undefined) ? stock : 'unlimited');
-                    if ((stock !== undefined) && isFinite(stock)) {
-                        product.stock = (stock - productItem.quantity);
-                        await product.save();
-                    } // if
-                    //#endregon update product stock
+        try {
+            await session.withTransaction(async (): Promise<void> => {
+                await DraftOrder.create({
+                    items              : await Promise.all(reportedProductItem.map(async (productItem) => {
+                        //#regon update product stock
+                        const product = await Product.findById(productItem.id, { stock: true });
+                        if (!product) throw Error('product not found');
+                        const stock = product.stock;
+                        console.log(`stock of ${productItem.name}: `, (stock !== undefined) ? stock : 'unlimited');
+                        if ((stock !== undefined) && isFinite(stock)) {
+                            product.stock = (stock - productItem.quantity);
+                            await product.save();
+                        } // if
+                        //#endregon update product stock
+                        
+                        
+                        
+                        return {
+                            product        : productItem.id,
+                            price          : await revertCurrencyIfRequired(productItem.unitPriceConverted),
+                            shippingWeight : productItem.unitWeight,
+                            quantity       : productItem.quantity,
+                        };
+                    })),
                     
+                    shipping           : {
+                        firstName      : shippingFirstName,
+                        lastName       : shippingLastName,
+                        
+                        phone          : shippingPhone,
+                        
+                        address        : shippingAddress,
+                        city           : shippingCity,
+                        zone           : shippingZone,
+                        zip            : shippingZip,
+                        country        : shippingCountry.toUpperCase(),
+                    },
+                    shippingProvider   : shippingProvider,
+                    shippingCost       : await revertCurrencyIfRequired(totalShippingCostsConverted),
                     
-                    
-                    return {
-                        product        : productItem.id,
-                        price          : await revertCurrencyIfRequired(productItem.unitPriceConverted),
-                        shippingWeight : productItem.unitWeight,
-                        quantity       : productItem.quantity,
-                    };
-                })),
-                
-                shipping           : {
-                    firstName      : shippingFirstName,
-                    lastName       : shippingLastName,
-                    
-                    phone          : shippingPhone,
-                    
-                    address        : shippingAddress,
-                    city           : shippingCity,
-                    zone           : shippingZone,
-                    zip            : shippingZip,
-                    country        : shippingCountry.toUpperCase(),
-                },
-                shippingProvider   : shippingProvider,
-                shippingCost       : await revertCurrencyIfRequired(totalShippingCostsConverted),
-                
-                paypalOrderId      : paypalOrderData.id,
+                    paypalOrderId      : paypalOrderData.id,
+                });
             });
-        });
-        session.endSession();
+        }
+        catch (error: any) {
+            session.abortTransaction();
+            throw error;
+        }
+        finally {
+            session.endSession();
+        } // try
         
         
         
