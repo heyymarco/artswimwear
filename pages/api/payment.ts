@@ -901,7 +901,7 @@ const responseMakePayment = async (
             
             
             switch (captureData?.status) {
-                case 'COMPLETED' :  {
+                case 'COMPLETED' : {
                     isPaymentSuccess = true;
                     return res.status(200).json({ // payment APPROVED
                         paymentMethod : (() => {
@@ -941,10 +941,11 @@ const responseMakePayment = async (
                         error     : 'payment declined',
                     });
                 }; break;
-                default          :
+                default          : {
                     // TODO: log unexpected response
                     console.log('unexpected response: ', paypalPaymentData, captureData);
                     throw Error('unexpected API response');
+                }; break;
             } // switch
         }
         else {
