@@ -1,10 +1,10 @@
-import { Schema } from 'mongoose'
+import { Schema, Types } from 'mongoose'
 
 
 
 export const cartEntrySchema = new Schema({
-    productId         : { type: String , required: true  },
-    price             : { type: Number , required: true  },
-    shippingWeight    : { type: Number , required: false },
-    quantity          : { type: Number , required: true  },
+    product           : { type: Types.ObjectId , ref: 'Product' , required: true  },
+    price             : { type: Number                          , required: true  },
+    shippingWeight    : { type: Number                          , required: false },
+    quantity          : { type: Number                          , required: true  },
 });
