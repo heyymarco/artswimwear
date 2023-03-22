@@ -1,4 +1,4 @@
-import { Schema, models, model, Types } from 'mongoose'
+import { Schema, models, model, Types, InferSchemaType } from 'mongoose'
 import { addressSchema } from './Address'
 import { cartEntrySchema } from './CartEntry'
 
@@ -9,6 +9,8 @@ const paymentMethodSchema = new Schema({
     brand            : { type: String                           , required: false },
     identifier       : { type: String                           , required: false },
 });
+export type PaymentMethodSchema = InferSchemaType<typeof paymentMethodSchema>;
+
 const orderSchema = new Schema({
     items            : { type: [cartEntrySchema]                , required: true  },
     

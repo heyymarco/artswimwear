@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose'
+import { Schema, InferSchemaType } from 'mongoose'
 
 
 
@@ -14,3 +14,4 @@ export const addressSchema = new Schema({
     zip       : { type: String , required: false , minLength: 2 , maxLength: 11 },
     country   : { type: String , required: true  , minLength: 2 , maxLength:  3 },
 });
+export type AddressSchema = InferSchemaType<typeof addressSchema>;

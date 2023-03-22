@@ -8,11 +8,11 @@ import type {
     PaymentToken,
     PlaceOrderResponse,
     MakePaymentResponse,
-    PaymentMethod,
 } from '@/store/features/api/apiSlice'
 import { ClientSession, startSession } from 'mongoose'
 import DraftOrder from '@/models/DraftOrder'
-import Order from '@/models/Order'
+import Order, { PaymentMethodSchema } from '@/models/Order'
+import { AddressSchema } from '@/models/Address'
 
 
 
@@ -156,7 +156,7 @@ const revertCurrencyIfRequired = async (from: number|undefined): Promise<number|
 
 
 
-const commitOrder = async (session: ClientSession, draftOrder: any, billing: any, paymentMethod: PaymentMethod) => {
+const commitOrder = async (session: ClientSession, draftOrder: any, billing: AddressSchema|undefined, paymentMethod: PaymentMethodSchema) => {
     await session.withTransaction(async (): Promise<void> => {
         await Order.create({
             items            : draftOrder.items,
