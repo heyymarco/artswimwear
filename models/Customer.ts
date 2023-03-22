@@ -1,8 +1,11 @@
-import { Schema } from 'mongoose'
+import { Schema, InferSchemaType } from 'mongoose'
 
 
 
 export const customerSchema = new Schema({
-    nickName : { type: String , required: true  },
-    email    : { type: String , required: false },
+    marketingOpt : { type: Boolean , required: false },
+    
+    nickName     : { type: String  , required: true  },
+    email        : { type: String  , required: false },
 });
+export type CustomerSchema = InferSchemaType<typeof customerSchema>;

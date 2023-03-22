@@ -12,7 +12,8 @@ import type {
 import { ClientSession, startSession } from 'mongoose'
 import DraftOrder from '@/models/DraftOrder'
 import Order, { PaymentMethodSchema } from '@/models/Order'
-import { AddressSchema } from '@/models/Address'
+import type { AddressSchema } from '@/models/Address'
+import type { CustomerSchema } from '@/models/Customer'
 
 
 
@@ -156,16 +157,18 @@ const revertCurrencyIfRequired = async (from: number|undefined): Promise<number|
 
 
 
-const commitOrder = async (session: ClientSession, draftOrder: any, billing: AddressSchema|undefined, paymentMethod: PaymentMethodSchema) => {
+const commitOrder = async (session: ClientSession, draftOrder: any, customer: CustomerSchema, billing: AddressSchema|undefined, paymentMethod: PaymentMethodSchema) => {
     await session.withTransaction(async (): Promise<void> => {
         await Order.create({
+            customer         : customer,
+            
             items            : draftOrder.items,
             
             shipping         : draftOrder.shipping,
             shippingProvider : draftOrder.shippingProvider,
             shippingCost     : draftOrder.shippingCost,
             
-            billing          : undefined, // TODO: complete this!
+            billing          : billing,
             
             paymentMethod    : paymentMethod,
         });
@@ -704,6 +707,41 @@ const responseMakePayment = async (
     
     
     
+    const {
+        // marketings:
+        marketingOpt,
+        
+        
+        
+        // customers:
+        customerNickName,
+        customerEmail,
+        
+        
+        
+        // bilings:
+        billingFirstName,
+        billingLastName,
+        
+        billingPhone,
+        
+        billingAddress,
+        billingCity,
+        billingZone,
+        billingZip,
+        billingCountry,
+    } = paymentData;
+    if (
+        ((marketingOpt !== undefined) && (typeof(marketingOpt) !== 'boolean'))
+        
+        || !customerNickName || (typeof(customerNickName) !== 'string')
+        || !customerEmail    || (typeof(customerEmail) !== 'string') // TODO: validate email
+    ) {
+        return res.status(400).end(); // bad req
+    } // if
+    
+    
+    
     const draftOrder = (
         !!draftOrderId
         ? await DraftOrder.findById(draftOrderId, {})
@@ -1000,7 +1038,29 @@ const responseMakePayment = async (
         const paymentMethod = (paymentResponse as MakePaymentResponse)?.paymentMethod;
         if (paymentMethod) {
             // payment APPROVED => move the `draftOrder` to `order`:
-            await commitOrder(session, draftOrder, undefined, paymentMethod);
+            await commitOrder(
+                session,
+                draftOrder,
+                {
+                    marketingOpt : marketingOpt,
+                    
+                    nickName     : customerNickName,
+                    email        : customerEmail,
+                },
+                {
+                    firstName : billingFirstName,
+                    lastName  : billingLastName,
+                    
+                    phone     : billingPhone,
+                    
+                    address   : billingAddress,
+                    city      : billingCity,
+                    zone      : billingZone,
+                    zip       : billingZip,
+                    country   : billingCountry,
+                },
+                paymentMethod
+            );
         }
         else {
             // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:

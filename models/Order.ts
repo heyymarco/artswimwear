@@ -13,7 +13,7 @@ const paymentMethodSchema = new Schema({
 export type PaymentMethodSchema = InferSchemaType<typeof paymentMethodSchema>;
 
 const orderSchema = new Schema({
-    customer         : { type: [customerSchema]                 , required: true  },
+    customer         : { type: customerSchema                   , required: true  },
     
     items            : { type: [cartEntrySchema]                , required: true  },
     

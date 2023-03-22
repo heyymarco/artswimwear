@@ -82,6 +82,26 @@ export interface PlaceOrderResponse
 }
 
 export interface AuthenticationPaymentData
+    extends
+        Pick<CheckoutState, // marketings
+            |'marketingOpt'
+        >,
+        Pick<CheckoutState, // customers
+            |'customerNickName'
+            |'customerEmail'
+        >,
+        Pick<CheckoutState, // bilings
+            |'billingFirstName'
+            |'billingLastName'
+            
+            |'billingPhone'
+            
+            |'billingAddress'
+            |'billingCity'
+            |'billingZone'
+            |'billingZip'
+            |'billingCountry'
+        >
 {
     orderId : string
 }

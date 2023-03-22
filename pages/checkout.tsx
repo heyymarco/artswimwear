@@ -213,6 +213,7 @@ interface ICheckoutContext {
     
     paymentToken                      : PaymentToken|undefined
     handlePlaceOrder                  : (options?: PlaceOrderOptions) => Promise<string>
+    handleMakePayment                 : (orderId: string) => Promise<void>
     handleOrderCompleted              : (paid: boolean) => void
     
     showDialogMessage                 : React.Dispatch<React.SetStateAction<ShowDialogMessage|false>>
@@ -252,6 +253,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     
     paymentToken                      : undefined,
     handlePlaceOrder                  : undefined as any,
+    handleMakePayment                 : undefined as any,
     handleOrderCompleted              : undefined as any,
     
     showDialogMessage                 : undefined as any,
@@ -278,6 +280,18 @@ export default function Checkout() {
         paymentToken : existingPaymentToken,
     } = checkoutState;
     const {
+        // marketings:
+        marketingOpt,
+        
+        
+        
+        // customers:
+        customerNickName,
+        customerEmail,
+        
+        
+        
+        // shippings:
         shippingFirstName,
         shippingLastName,
         
@@ -290,6 +304,22 @@ export default function Checkout() {
         shippingCountry,
         
         shippingProvider,
+        
+        
+        
+        // bilings:
+        billingAsShipping,
+        
+        billingFirstName,
+        billingLastName,
+        
+        billingPhone,
+        
+        billingAddress,
+        billingCity,
+        billingZone,
+        billingZip,
+        billingCountry,
     } = checkoutState;
     const checkoutProgress = useSelector(selectCheckoutProgress);
     const hasCart = !!cartItems.length;
@@ -392,6 +422,7 @@ export default function Checkout() {
     const [placeOrder]   = placeOrderApi;
     
     const makePaymentApi = useMakePayment();
+    const [makePayment] = makePaymentApi;
     
     
     
@@ -429,6 +460,36 @@ export default function Checkout() {
             showDialogMessagePlaceOrderError(error);
             throw error;
         } // try
+    });
+    const handleMakePayment    = useEvent(async (orderId: string): Promise<void> => {
+        await makePayment({
+            orderId,
+            
+            
+            
+            // marketings:
+            marketingOpt,
+            
+            
+            
+            // customers:
+            customerNickName,
+            customerEmail,
+            
+            
+            
+            // bilings:
+            billingFirstName : billingAsShipping ? shippingFirstName : billingFirstName,
+            billingLastName  : billingAsShipping ? shippingLastName  : billingLastName,
+            
+            billingPhone     : billingAsShipping ? shippingPhone     : billingPhone,
+            
+            billingAddress   : billingAsShipping ? shippingAddress   : billingAddress,
+            billingCity      : billingAsShipping ? shippingCity      : billingCity,
+            billingZone      : billingAsShipping ? shippingZone      : billingZone,
+            billingZip       : billingAsShipping ? shippingZip       : billingZip,
+            billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
+        }).unwrap();
     });
     const handleOrderCompleted = useEvent((paid: boolean): void => {
         dispatch(setCheckoutStep(paid ? 'paid' : 'pending'));
@@ -589,6 +650,7 @@ export default function Checkout() {
         
         paymentToken: existingPaymentToken,
         handlePlaceOrder,                  // stable ref
+        handleMakePayment,                 // stable ref
         handleOrderCompleted,              // stable ref
         
         showDialogMessage,                 // stable ref
@@ -627,6 +689,7 @@ export default function Checkout() {
         
         existingPaymentToken,
         // handlePlaceOrder,                  // stable ref
+        // handleMakePayment,                 // stable ref
         // handleOrderCompleted,              // stable ref
         
         // showDialogMessage,                 // stable ref
@@ -1704,7 +1767,7 @@ const PaymentMethodCard = () => {
 }
 const PaymentMethodPaypal = () => {
     // context:
-    const {handlePlaceOrder, handleOrderCompleted, showDialogMessageMakePaymentError, makePaymentApi} = useCheckout();
+    const {handlePlaceOrder, handleMakePayment, handleOrderCompleted, showDialogMessageMakePaymentError} = useCheckout();
     
     
     
@@ -1714,13 +1777,8 @@ const PaymentMethodPaypal = () => {
     
     
     
-    // apis:
-    const [makePayment] = makePaymentApi;
-    
-    
-    
     // handlers:
-    const handleMakePayment    = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
+    const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
             // update the UI:
             dispatch(setPaymentIsProcessing(true));
@@ -1728,7 +1786,7 @@ const PaymentMethodPaypal = () => {
             
             
             // then forward the authentication to backend_API to receive the fund:
-            const _makePaymentResponse = await makePayment({ orderId: paypalAuthentication.orderID }).unwrap();
+            await handleMakePayment(paypalAuthentication.orderID);
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
@@ -1781,7 +1839,7 @@ const PaymentMethodPaypal = () => {
             </p>
             <PayPalButtons
                 createOrder={handlePlaceOrder}
-                onApprove={handleMakePayment}
+                onApprove={handleFundApproved}
                 onShippingChange={handleShippingChange}
             />
         </>
@@ -1812,7 +1870,7 @@ const PaymentMethodManual = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, handleOrderCompleted, showDialogMessageFieldsError, showDialogMessageMakePaymentError, makePaymentApi} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, handleMakePayment, handleOrderCompleted, showDialogMessageFieldsError, showDialogMessageMakePaymentError} = useCheckout();
     
     
     
@@ -1852,14 +1910,9 @@ const CardPaymentButton = () => {
     
     
     
-    // apis:
-    const [makePayment] = makePaymentApi;
-    
-    
-    
     // handlers:
     const hostedFields = usePayPalHostedFields();
-    const handleMakePayment = useEvent(async () => {
+    const handlePayButtonClicked = useEvent(async () => {
         // validate:
         // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
         if (!billingAsShipping) await dispatch(setBillingValidation(true));
@@ -1919,7 +1972,7 @@ const CardPaymentButton = () => {
             
             
             // then forward the authentication to backend_API to receive the fund:
-            const _makePaymentResponse = await makePayment({ orderId: paypalAuthentication.orderId }).unwrap();
+            await handleMakePayment(paypalAuthentication.orderId);
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
@@ -1935,14 +1988,14 @@ const CardPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon className='next payNow' enabled={!paymentIsProcessing} icon={!paymentIsProcessing ? 'monetization_on' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleMakePayment}>
+        <ButtonIcon className='next payNow' enabled={!paymentIsProcessing} icon={!paymentIsProcessing ? 'monetization_on' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handlePayButtonClicked}>
             Pay Now
         </ButtonIcon>
     );
 }
 const ManualPaymentButton = () => {
     // context:
-    const {handlePlaceOrder, handleOrderCompleted, showDialogMessagePlaceOrderError, makePaymentApi} = useCheckout();
+    const {handlePlaceOrder, handleMakePayment, handleOrderCompleted, showDialogMessagePlaceOrderError} = useCheckout();
     
     
     
@@ -1954,13 +2007,8 @@ const ManualPaymentButton = () => {
     
     
     
-    // apis:
-    const [makePayment] = makePaymentApi;
-    
-    
-    
     // handlers:
-    const handleFinishOrder = useEvent(async () => {
+    const handleFinishOrderButtonClicked = useEvent(async () => {
         try {
             // update the UI:
             dispatch(setPaymentIsProcessing(true));
@@ -1973,7 +2021,7 @@ const ManualPaymentButton = () => {
             
             
             // then forward the authentication to backend_API to book the order (but not paid yet):
-            const _makePaymentResponse = await makePayment({ orderId }).unwrap();
+            await handleMakePayment(orderId);
             handleOrderCompleted(/*paid:*/false);
         }
         catch (error: any) {
@@ -1989,7 +2037,7 @@ const ManualPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon className='next finishOrder' enabled={!paymentIsProcessing} icon={!paymentIsProcessing ? 'done' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleFinishOrder}>
+        <ButtonIcon className='next finishOrder' enabled={!paymentIsProcessing} icon={!paymentIsProcessing ? 'done' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleFinishOrderButtonClicked}>
             Finish Order
         </ButtonIcon>
     );
