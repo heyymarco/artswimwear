@@ -1,6 +1,7 @@
 import { Schema, models, model, Types, InferSchemaType } from 'mongoose'
 import { addressSchema } from './Address'
 import { cartEntrySchema } from './CartEntry'
+import { customerSchema } from './Customer';
 
 
 
@@ -12,6 +13,8 @@ const paymentMethodSchema = new Schema({
 export type PaymentMethodSchema = InferSchemaType<typeof paymentMethodSchema>;
 
 const orderSchema = new Schema({
+    customer         : { type: [customerSchema]                 , required: true  },
+    
     items            : { type: [cartEntrySchema]                , required: true  },
     
     shipping         : { type: addressSchema                    , required: false },

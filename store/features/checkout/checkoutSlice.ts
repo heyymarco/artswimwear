@@ -15,13 +15,17 @@ export interface CheckoutState {
     
     
     
+    customerNickName       : string
+    customerEmail          : string
+    
+    
+    
     shippingValidation     : boolean
     
     shippingFirstName      : string
     shippingLastName       : string
     
     shippingPhone          : string
-    shippingEmail          : string
     
     shippingAddress        : string
     shippingCity           : string
@@ -40,7 +44,6 @@ export interface CheckoutState {
     billingLastName        : string
     
     billingPhone           : string
-    billingEmail           : string
     
     billingAddress         : string
     billingCity            : string
@@ -62,13 +65,17 @@ const initialState: CheckoutState = {
     
     
     
+    customerNickName       : '',
+    customerEmail          : '',
+    
+    
+    
     shippingValidation     : false,
     
     shippingFirstName      : '',
     shippingLastName       : '',
     
     shippingPhone          : '',
-    shippingEmail          : '',
     
     shippingAddress        : '',
     shippingCity           : '',
@@ -85,7 +92,6 @@ const initialState: CheckoutState = {
     billingLastName        : '',
     
     billingPhone           : '',
-    billingEmail           : '',
     
     billingAddress         : '',
     billingCity            : '',
@@ -113,6 +119,15 @@ export const checkoutSlice = createSlice({
         
         
         
+        setCustomerNickName: (state, {payload: value}: PayloadAction<string>) => {
+            state.customerNickName = value;
+        },
+        setCustomerEmail: (state, {payload: value}: PayloadAction<string>) => {
+            state.customerEmail = value;
+        },
+        
+        
+        
         setShippingValidation: (state, {payload: value}: PayloadAction<boolean>) => {
             state.shippingValidation = value;
         },
@@ -126,9 +141,6 @@ export const checkoutSlice = createSlice({
         
         setShippingPhone: (state, {payload: value}: PayloadAction<string>) => {
             state.shippingPhone = value;
-        },
-        setShippingEmail: (state, {payload: value}: PayloadAction<string>) => {
-            state.shippingEmail = value;
         },
         
         setShippingAddress : (state, {payload: value}: PayloadAction<string>) => {
@@ -169,9 +181,6 @@ export const checkoutSlice = createSlice({
         
         setBillingPhone: (state, {payload: value}: PayloadAction<string>) => {
             state.billingPhone = value;
-        },
-        setBillingEmail: (state, {payload: value}: PayloadAction<string>) => {
-            state.billingEmail = value;
         },
         
         setBillingAddress: (state, {payload: value}: PayloadAction<string>) => {
@@ -216,13 +225,17 @@ export const {
     
     
     
+    setCustomerNickName,
+    setCustomerEmail,
+    
+    
+    
     setShippingValidation,
     
     setShippingFirstName,
     setShippingLastName,
     
     setShippingPhone,
-    setShippingEmail,
     
     setShippingAddress,
     setShippingCity,
@@ -241,7 +254,6 @@ export const {
     setBillingLastName,
     
     setBillingPhone,
-    setBillingEmail,
     
     setBillingAddress,
     setBillingCity,
@@ -267,13 +279,17 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
+        customerNickName,
+        customerEmail,
+        
+        
+        
         shippingValidation,
         
         shippingFirstName,
         shippingLastName,
         
         shippingPhone,
-        shippingEmail,
         
         shippingAddress,
         shippingCity,
@@ -292,7 +308,6 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         billingLastName,
         
         billingPhone,
-        billingEmail,
         
         billingAddress,
         billingCity,
@@ -314,13 +329,17 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
+        customerNickName,
+        customerEmail,
+        
+        
+        
         shippingValidation,
         
         shippingFirstName,
         shippingLastName,
         
         shippingPhone,
-        shippingEmail,
         
         shippingAddress,
         shippingCity,
@@ -339,7 +358,6 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         billingLastName,
         
         billingPhone,
-        billingEmail,
         
         billingAddress,
         billingCity,

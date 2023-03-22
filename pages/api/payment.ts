@@ -236,13 +236,16 @@ const responsePlaceOrder = async (
     
     // validate shipping address:
     const {
-        marketingOpt = true,
+        // cart item(s):
+        items,
         
+        
+        
+        // shippings:
         shippingFirstName,
         shippingLastName,
         
         shippingPhone,
-        shippingEmail,
         
         shippingAddress,
         shippingCity,
@@ -251,15 +254,17 @@ const responsePlaceOrder = async (
         shippingCountry,
         
         shippingProvider,
+        
+        
+        
+        // options: pay manually | paymentSource
+        paymentSource,
     } = placeOrderData;
     if (
-        (typeof(marketingOpt) !== 'boolean')
-        
-        || !shippingFirstName || (typeof(shippingFirstName) !== 'string')
+           !shippingFirstName || (typeof(shippingFirstName) !== 'string')
         || !shippingLastName  || (typeof(shippingLastName) !== 'string')
         
         || !shippingPhone     || (typeof(shippingPhone) !== 'string')
-        || !shippingEmail     || (typeof(shippingEmail) !== 'string') // todo validate email
         
         || !shippingAddress   || (typeof(shippingAddress) !== 'string')
         || !shippingCity      || (typeof(shippingCity) !== 'string')
@@ -280,7 +285,6 @@ const responsePlaceOrder = async (
     
     
     // validate cart items + calculate total prices + calculate shipping cost
-    const items = placeOrderData.items;
     if (!items || !Array.isArray(items) || !items.length) return res.status(400).end(); // bad req
     
     interface ProductEntry {
@@ -356,7 +360,7 @@ const responsePlaceOrder = async (
     
     try {
         let paypalOrderId : string|undefined = undefined;
-        if (placeOrderData.paymentSource !== 'manual') {
+        if (paymentSource !== 'manual') {
             const accessToken = await generateAccessToken();
             const url = `${paypalURL}/v2/checkout/orders`;
             const paypalResponse = await fetch(url, {

@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingEmail, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing, PaymentMethod } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
@@ -207,7 +207,7 @@ interface ICheckoutContext {
     paymentCardSectionRef             : React.MutableRefObject<HTMLElement|null>      | undefined
     navCheckoutSectionElm             : HTMLElement|null                              | undefined
     
-    shippingEmailInputRef             : React.MutableRefObject<HTMLInputElement|null> | undefined
+    contactEmailInputRef              : React.MutableRefObject<HTMLInputElement|null> | undefined
     shippingAddressInputRef           : React.MutableRefObject<HTMLInputElement|null> | undefined
     cardholderInputRef                : React.MutableRefObject<HTMLInputElement|null> | undefined
     
@@ -246,7 +246,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     paymentCardSectionRef             : undefined,
     navCheckoutSectionElm             : undefined,
     
-    shippingEmailInputRef             : undefined,
+    contactEmailInputRef              : undefined,
     shippingAddressInputRef           : undefined,
     cardholderInputRef                : undefined,
     
@@ -278,18 +278,19 @@ export default function Checkout() {
         paymentToken : existingPaymentToken,
     } = checkoutState;
     const {
-        checkoutStep          : _checkoutStep,          // remove
+        shippingFirstName,
+        shippingLastName,
         
-        shippingValidation    : _shippingValidation,    // remove
+        shippingPhone,
         
-        billingAsShipping     : _billingAsShipping,     // remove
-        billingValidation     : _billingValidation,     // remove
+        shippingAddress,
+        shippingCity,
+        shippingZone,
+        shippingZip,
+        shippingCountry,
         
-        paymentMethod         : _paymentMethod,         // remove
-        paymentToken          : _paymentToken,          // remove
-        paymentCardValidation : _paymentCardValidation, // remove
-        paymentIsProcessing   : _paymentIsProcessing,   // remove
-    ...shippingAddressAndBillingAddress} = checkoutState;
+        shippingProvider,
+    } = checkoutState;
     const checkoutProgress = useSelector(selectCheckoutProgress);
     const hasCart = !!cartItems.length;
     const dispatch = useDispatch();
@@ -380,7 +381,7 @@ export default function Checkout() {
     const paymentCardSectionRef     = useRef<HTMLElement|null>(null);
     const [navCheckoutSectionElm, setNavCheckoutSectionElm] = useState<HTMLElement|null>(null);
     
-    const shippingEmailInputRef     = useRef<HTMLInputElement|null>(null);
+    const contactEmailInputRef      = useRef<HTMLInputElement|null>(null);
     const shippingAddressInputRef   = useRef<HTMLInputElement|null>(null);
     const cardholderInputRef        = useRef<HTMLInputElement|null>(null);
     
@@ -398,9 +399,29 @@ export default function Checkout() {
     const handlePlaceOrder     = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
-                items : cartItems,                   // cart item(s)
-                ...shippingAddressAndBillingAddress, // shipping address + billing address + marketingOpt
-                ...options,                          // pay manually | paymentSource (by <PayPalButtons>)
+                // cart item(s):
+                items : cartItems,
+                
+                
+                
+                // shippings:
+                shippingFirstName,
+                shippingLastName,
+                
+                shippingPhone,
+                
+                shippingAddress,
+                shippingCity,
+                shippingZone,
+                shippingZip,
+                shippingCountry,
+                
+                shippingProvider,
+                
+                
+                
+                // options: pay manually | paymentSource (by <PayPalButtons>)
+                ...options,
             }).unwrap();
             return placeOrderResponse.orderId;
         }
@@ -562,7 +583,7 @@ export default function Checkout() {
         paymentCardSectionRef,             // stable ref
         navCheckoutSectionElm,             // mutable ref
         
-        shippingEmailInputRef,             // stable ref
+        contactEmailInputRef,              // stable ref
         shippingAddressInputRef,           // stable ref
         cardholderInputRef,                // stable ref
         
@@ -600,7 +621,7 @@ export default function Checkout() {
         // paymentCardSectionRef,             // stable ref
         navCheckoutSectionElm,             // mutable ref
         
-        // shippingEmailInputRef,             // stable ref
+        // contactEmailInputRef,              // stable ref
         // shippingAddressInputRef,           // stable ref
         // cardholderInputRef,                // stable ref
         
@@ -883,7 +904,7 @@ const RegularCheckout = () => {
     
     
     // context:
-    const {countryList, shippingEmailInputRef, shippingAddressInputRef } = useCheckout();
+    const {countryList, contactEmailInputRef, shippingAddressInputRef } = useCheckout();
     
     
     
@@ -893,13 +914,17 @@ const RegularCheckout = () => {
         
         
         
+        customerNickName,
+        customerEmail,
+        
+        
+        
         shippingValidation,
         
         shippingFirstName,
         shippingLastName,
         
         shippingPhone,
-        shippingEmail,
         
         shippingAddress,
         shippingCity,
@@ -914,11 +939,17 @@ const RegularCheckout = () => {
     return (
         <ValidationProvider enableValidation={shippingValidation}>
             <Section className='contact' title='Contact Information'>
+                <Group className='nick'>
+                    <Label theme='secondary' mild={false} className='solid'>
+                        <Icon icon='email' theme='primary' mild={true} />
+                    </Label>
+                    <TextInput  placeholder='Your Nick Name' required autoComplete='nickname' value={customerNickName} onChange={({target:{value}}) => dispatch(setCustomerNickName(value))} />
+                </Group>
                 <Group className='email'>
                     <Label theme='secondary' mild={false} className='solid'>
                         <Icon icon='email' theme='primary' mild={true} />
                     </Label>
-                    <EmailInput placeholder='Email' required autoComplete='shipping email' value={shippingEmail} onChange={({target:{value}}) => dispatch(setShippingEmail(value))} elmRef={shippingEmailInputRef} />
+                    <EmailInput placeholder='Your Email'     required autoComplete='email'    value={customerEmail}    onChange={({target:{value}}) => dispatch(setCustomerEmail(value))}    elmRef={contactEmailInputRef} />
                 </Group>
                 <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})                 => dispatch(setMarketingOpt(active))}      >
                     Email me with news and offers
@@ -1055,7 +1086,7 @@ const OrderSummary = () => {
 }
 const OrderReview = () => {
     // context:
-    const {checkoutStep, shippingEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckout();
+    const {checkoutStep, contactEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckout();
     
     
     
@@ -1074,12 +1105,12 @@ const OrderReview = () => {
                 <tbody>
                     <tr>
                         <th>Contact</th>
-                        <td><ShippingContactReview /></td>
+                        <td><CustomerContactReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
                                 dispatch(setCheckoutStep('info'));
                                 setTimeout(() => {
-                                    shippingEmailInputRef?.current?.focus?.();
+                                    contactEmailInputRef?.current?.focus?.();
                                 }, 100);
                             }}>Change</ButtonIcon>
                         </td>
@@ -1118,7 +1149,6 @@ const OrderReviewCompleted = () => {
     const {
         paymentIsProcessing,
     } = useSelector(selectCheckoutState);
-    const dispatch = useDispatch();
     
     
     
@@ -1136,7 +1166,7 @@ const OrderReviewCompleted = () => {
                 <tbody>
                     <tr>
                         <th>Contact</th>
-                        <td><ShippingContactReview /></td>
+                        <td><CustomerContactReview /></td>
                     </tr>
                     <tr>
                         <th>Shipping Address</th>
@@ -1159,10 +1189,11 @@ const OrderReviewCompleted = () => {
         </AccessibilityProvider>
     );
 }
-const ShippingContactReview = () => {
+const CustomerContactReview = () => {
     // stores:
     const {
-        shippingEmail,
+        customerNickName,
+        customerEmail,
     } = useSelector(selectCheckoutState);
     
     
@@ -1170,7 +1201,7 @@ const ShippingContactReview = () => {
     // jsx:
     return (
         <>
-            {shippingEmail}
+            {customerEmail} ({customerNickName})
         </>
     );
 }
@@ -1391,7 +1422,6 @@ const Payment = () => {
         billingLastName,
         
         billingPhone,
-        billingEmail,
         
         billingAddress,
         billingCity,
@@ -1792,7 +1822,6 @@ const CardPaymentButton = () => {
         shippingLastName  : _shippingLastName,  // not implemented yet, because billingLastName  is not implemented
         
         shippingPhone     : _shippingPhone,     // not implemented yet, because billingPhone     is not implemented
-        shippingEmail     : _shippingEmail,     // not implemented yet, because billingEmail     is not implemented
         
         shippingAddress,
         shippingCity,
@@ -1808,7 +1837,6 @@ const CardPaymentButton = () => {
         billingLastName   : _billingLastName,   // not implemented, already to use cardholderName
         
         billingPhone      : _billingPhone,      // not implemented yet
-        billingEmail      : _billingEmail,      // not implemented yet
         
         billingAddress,
         billingCity,
@@ -2003,12 +2031,8 @@ const PaymentPending = () => {
     
     // stores:
     const {
-        shippingEmail,
-        
-        billingAsShipping,
-        billingEmail,
+        customerEmail,
     } = useSelector(selectCheckoutState);
-    const billingEmailFinal = billingAsShipping ? shippingEmail : billingEmail;
     
     
     
@@ -2024,7 +2048,7 @@ const PaymentPending = () => {
                         You&apos;ll receive a confirmation email with your order number shortly.
                     </p>
                     <p>
-                        Please <strong>follow the payment instructions</strong> sent to your billing email: <strong style={{wordBreak: 'break-all'}}>{billingEmailFinal}</strong>.
+                        Please <strong>follow the payment instructions</strong> sent to your email: <strong style={{wordBreak: 'break-all'}}>{customerEmail}</strong>.
                     </p>
                 </Alert>
             </Section>
@@ -2042,12 +2066,8 @@ const Paid = () => {
     
     // stores:
     const {
-        shippingEmail,
-        
-        billingAsShipping,
-        billingEmail,
+        customerEmail,
     } = useSelector(selectCheckoutState);
-    const billingEmailFinal = billingAsShipping ? shippingEmail : billingEmail;
     
     
     
@@ -2060,7 +2080,7 @@ const Paid = () => {
                         Your order is confirmed and your payment is received.
                     </p>
                     <p>
-                        You&apos;ll receive a confirmation email with your order number shortly to: <strong style={{wordBreak: 'break-all'}}>{billingEmailFinal}</strong>.
+                        You&apos;ll receive a confirmation email with your order number shortly to: <strong style={{wordBreak: 'break-all'}}>{customerEmail}</strong>.
                     </p>
                 </Alert>
             </Section>

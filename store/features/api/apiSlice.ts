@@ -59,20 +59,21 @@ export interface PlaceOrderData
         Omit<CartState,     // cart item(s)
             |'showCart'
         >,
-        Omit<CheckoutState, // shipping address + marketingOpt
-            |'checkoutStep'
+        Pick<CheckoutState, // shippings
+            |'shippingFirstName'
+            |'shippingLastName'
             
-            |'shippingValidation'
+            |'shippingPhone'
             
-            |'billingAsShipping'
-            |'billingValidation'
+            |'shippingAddress'
+            |'shippingCity'
+            |'shippingZone'
+            |'shippingZip'
+            |'shippingCountry'
             
-            |'paymentMethod'
-            |'paymentToken'
-            |'paymentCardValidation'
-            |'paymentIsProcessing'
+            |'shippingProvider'
         >,
-        PlaceOrderOptions
+        PlaceOrderOptions   // options: pay manually | paymentSource
 {
 }
 export interface PlaceOrderResponse
