@@ -979,8 +979,16 @@ const responseMakePayment = async (
             });
         }
         else {
-            // payment DECLINED => delete the `draftOrder`:
+            // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:
             await session.withTransaction(async (): Promise<void> => {
+                for (const item of draftOrder.items) {
+                    const product = await Product.findById(item.product, { stock: true });
+                    const stock = product.stock;
+                    if ((stock !== undefined) && isFinite(stock)) {
+                        product.stock = (stock + item.quantity);
+                        await product.save();
+                    } // if
+                } // for
                 await draftOrder.deleteOne();
             });
         } // if
