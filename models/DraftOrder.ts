@@ -11,6 +11,8 @@ const draftOrderSchema = new Schema({
     shippingProvider : { type: Types.ObjectId , ref: 'Shipping' , required: false },
     shippingCost     : { type: Number                           , required: false },
     
+    expires          : { type: Date                             , required: true  },
+    
     paypalOrderId    : { type: String                           , required: false },
 });
 export type DraftOrderSchema = InferSchemaType<typeof draftOrderSchema>;

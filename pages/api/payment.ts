@@ -647,6 +647,8 @@ const responsePlaceOrder = async (
                 shippingProvider   : shippingProvider,
                 shippingCost       : await revertCurrencyIfRequired(totalShippingCostsConverted),
                 
+                expires            : (Date.now() + 60 * 1000),
+                
                 paypalOrderId      : paypalOrderId,
             });
             orderId = `#ORDER#${newDraftOrder._id}`;
@@ -654,7 +656,7 @@ const responsePlaceOrder = async (
         });
     }
     catch (error: any) {
-        session.abortTransaction();
+        await session.abortTransaction();
         
         
         
@@ -687,7 +689,7 @@ const responsePlaceOrder = async (
         } // switch
     }
     finally {
-        session.endSession();
+        await session.endSession();
     } // try
     if (!orderId) throw Error('unkown error');
     
@@ -768,13 +770,13 @@ const responseMakePayment = async (
             //#region verify draftOrder_id
             const draftOrder = (
                 !!draftOrderId
-                ? await DraftOrder.findById(draftOrderId, {})
+                ? await DraftOrder.findById(draftOrderId, { expires: true })
                 : !!paypalOrderId
-                ? await DraftOrder.findOne({ paypalOrderId }, {})
+                ? await DraftOrder.findOne({ paypalOrderId }, { expires: true })
                 : undefined
             );
-            console.log('draftOrder: ', draftOrder);
-            if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
+            if (!draftOrder)                      throw 'DRAFT_ORDER_NOT_FOUND';
+            if (draftOrder.expires <= Date.now()) throw 'DRAFT_ORDER_EXPIRED';
             //#endregion verify draftOrder_id
             
             
@@ -1091,13 +1093,14 @@ const responseMakePayment = async (
         });
     }
     catch (error: any) {
-        session.abortTransaction();
+        await session.abortTransaction();
         
         
         
         /*
             Possible client errors:
             * draftOrder_id is not found
+            * draftOrder    is expired
         */
         /*
             Possible server errors:
@@ -1107,17 +1110,18 @@ const responseMakePayment = async (
             * unexpected API response (programming bug).
         */
         switch (error) {
-            case 'DRAFT_ORDER_NOT_FOUND' : {
+            case 'DRAFT_ORDER_NOT_FOUND' :
+            case 'DRAFT_ORDER_EXPIRED'   : {
                 return res.status(400).json({error: error});
             } break;
             
-            default             : {
+            default                      : {
                 return res.status(500).json({error: 'internal server error'});
             } break;
         } // switch
     }
     finally {
-        session.endSession();
+        await session.endSession();
     } // try
     if (!paymentResponse) throw Error('unkown error');
     
