@@ -178,10 +178,12 @@ const commitOrder = async (draftOrder: any, customer: CustomerSchema, billing: A
 const revertOrder = async (draftOrder: any) => {
     for (const item of draftOrder.items) {
         const product = await Product.findById(item.product, { stock: true });
-        const stock = product.stock;
-        if ((stock !== undefined) && isFinite(stock)) {
-            product.stock = (stock + item.quantity);
+        const productStock = product.stock;
+        if ((productStock !== undefined) && isFinite(productStock)) {
+            //#regon increase product stock
+            product.stock = (productStock + item.quantity);
             await product.save();
+            //#endregon increase product stock
         } // if
     } // for
     await draftOrder.deleteOne();
@@ -344,10 +346,10 @@ const responsePlaceOrder = async (
                 if ((productStock !== undefined) && isFinite(productStock)) {
                     if (productStock < quantity) throw 'INSUFFICIENT_PRODUCT_STOCK';
                     
-                    //#regon update product stock
+                    //#regon decrease product stock
                     product.stock = (productStock - quantity);
                     await product.save();
-                    //#endregon update product stock
+                    //#endregon decrease product stock
                 } // if
                 
                 
