@@ -9,11 +9,12 @@ import type {
     PlaceOrderResponse,
     MakePaymentResponse,
 } from '@/store/features/api/apiSlice'
-import { ClientSession, startSession } from 'mongoose'
+import { ClientSession, startSession, Types } from 'mongoose'
 import DraftOrder from '@/models/DraftOrder'
 import Order, { PaymentMethodSchema } from '@/models/Order'
 import type { AddressSchema } from '@/models/Address'
 import type { CustomerSchema } from '@/models/Customer'
+import { CartEntrySchema } from '@/models/CartEntry'
 
 
 
@@ -304,13 +305,7 @@ const responsePlaceOrder = async (
         await Product.find({}, { _id: true, name: true, price: true, shippingWeight: true })
     );
     
-    interface ReportedProductItem {
-        product         : string
-        price           : number
-        shippingWeight ?: number
-        quantity        : number
-    }
-    const itemsConverted : ReportedProductItem[] = [];
+    const itemsConverted : CartEntrySchema[] = [];
     let totalProductPricesConverted = 0, totalProductWeights : number|undefined = undefined;
     const defaultCurrencyCode = await getDefaultCurrencyCode();
     for (const item of items) {
@@ -333,7 +328,7 @@ const responsePlaceOrder = async (
         
         
         itemsConverted.push({
-            product        : productId,
+            product        : new Types.ObjectId(productId) as any,
             price          : unitPriceConverted,
             shippingWeight : unitWeight,
             quantity       : quantity,
@@ -441,7 +436,7 @@ const responsePlaceOrder = async (
                         items                     : itemsConverted.map((itemConverted) => ({
                             // name string required
                             // The item name or title.
-                            name                  : productList.entities[itemConverted.product]?.name ?? itemConverted.product,
+                            name                  : productList.entities[`${itemConverted.product}`]?.name ?? `${itemConverted.product}`,
                             
                             // unit_amount Money required
                             // The item price or rate per unit.
