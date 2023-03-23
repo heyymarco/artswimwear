@@ -1,4 +1,4 @@
-import { Schema, Types } from 'mongoose'
+import { Schema, Types, InferSchemaType } from 'mongoose'
 
 
 
@@ -8,3 +8,4 @@ export const cartEntrySchema = new Schema({
     shippingWeight : { type: Number                          , required: false },
     quantity       : { type: Number                          , required: true  },
 });
+export type CartEntrySchema = InferSchemaType<typeof cartEntrySchema>;

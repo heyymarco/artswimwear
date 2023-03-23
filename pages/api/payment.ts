@@ -305,13 +305,12 @@ const responsePlaceOrder = async (
     );
     
     interface ReportedProductItem {
-        id                   : string
-        name                 : string
-        quantity             : number
-        unitPriceConverted  ?: number
-        unitWeight          ?: number
+        product         : string
+        price           : number
+        shippingWeight ?: number
+        quantity        : number
     }
-    const reportedProductItem : ReportedProductItem[] = [];
+    const itemsConverted : ReportedProductItem[] = [];
     let totalProductPricesConverted = 0, totalProductWeights : number|undefined = undefined;
     const defaultCurrencyCode = await getDefaultCurrencyCode();
     for (const item of items) {
@@ -327,24 +326,21 @@ const responsePlaceOrder = async (
         
         
         
-        const unitPrice          = productList.entities[productId]?.price;
-        const unitPriceConverted = await convertCurrencyIfRequired(unitPrice);
+        const unitPrice          = productList.entities[productId]?.price     ?? 0;
+        const unitPriceConverted = await convertCurrencyIfRequired(unitPrice) ?? 0;
         const unitWeight         = productList.entities[productId]?.shippingWeight;
         
         
         
-        reportedProductItem.push({
-            id                 : productId,
-            name               : productList.entities[productId]?.name ?? productId,
-            quantity           : quantity,
-            unitPriceConverted : unitPriceConverted,
-            unitWeight         : unitWeight,
+        itemsConverted.push({
+            product        : productId,
+            price          : unitPriceConverted,
+            shippingWeight : unitWeight,
+            quantity       : quantity,
         });
         
         
-        if (unitPriceConverted !== undefined) {
-            totalProductPricesConverted  += unitPriceConverted * quantity;
-        } // if
+        totalProductPricesConverted  += unitPriceConverted * quantity;
         
         if (unitWeight !== undefined) {
             if (totalProductWeights === undefined) totalProductWeights = 0; // contains at least 1 PHYSICAL_GOODS
@@ -353,11 +349,6 @@ const responsePlaceOrder = async (
     } // for
     const totalShippingCostsConverted = await convertCurrencyIfRequired(calculateShippingCost(totalProductWeights, selectedShipping));
     const totalCostConverted          = totalProductPricesConverted + (totalShippingCostsConverted ?? 0);
-    console.log('total bill: ', {
-        totalProductPricesConverted,
-        totalShippingCostsConverted,
-        totalCostConverted,
-    });
     
     
     
@@ -447,14 +438,10 @@ const responsePlaceOrder = async (
                         
                         // items array (contains the item object)
                         // An array of items that the customer purchases from the merchant.
-                        items                     : reportedProductItem.map((item) => ({
+                        items                     : itemsConverted.map((itemConverted) => ({
                             // name string required
                             // The item name or title.
-                            name                  : item.name,
-                            
-                            // quantity string required
-                            // The item quantity. Must be a whole number.
-                            quantity              : item.quantity,
+                            name                  : productList.entities[itemConverted.product]?.name ?? itemConverted.product,
                             
                             // unit_amount Money required
                             // The item price or rate per unit.
@@ -469,13 +456,17 @@ const responsePlaceOrder = async (
                                     * An integer for currencies like JPY that are not typically fractional.
                                     * A decimal fraction for currencies like TND that are subdivided into thousandths.
                                 */
-                                value             : item.unitPriceConverted ?? 0,
+                                value             : itemConverted.price,
                             },
+                            
+                            // quantity string required
+                            // The item quantity. Must be a whole number.
+                            quantity              : itemConverted.quantity,
                             
                             // category enum|undefined
                             // The item category type.
                             // The possible values are: 'DIGITAL_GOODS'|'PHYSICAL_GOODS'|'DONATION'
-                            category              : (item.unitWeight === undefined) ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS',
+                            category              : (itemConverted.shippingWeight === undefined) ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS',
                             
                             // description string|undefined
                             // The detailed item description.
@@ -607,14 +598,13 @@ const responsePlaceOrder = async (
         try {
             await session.withTransaction(async (): Promise<void> => {
                 const newDraftOrder = await DraftOrder.create({
-                    items              : await Promise.all(reportedProductItem.map(async (productItem) => {
+                    items              : await Promise.all(itemsConverted.map(async (itemConverted) => {
                         //#regon update product stock
-                        const product = await Product.findById(productItem.id, { stock: true });
+                        const product = await Product.findById(itemConverted.product, { stock: true });
                         if (!product) throw Error('product not found');
                         const stock = product.stock;
-                        console.log(`stock of ${productItem.name}: `, (stock !== undefined) ? stock : 'unlimited');
                         if ((stock !== undefined) && isFinite(stock)) {
-                            product.stock = (stock - productItem.quantity);
+                            product.stock = (stock - itemConverted.quantity);
                             await product.save();
                         } // if
                         //#endregon update product stock
@@ -622,10 +612,10 @@ const responsePlaceOrder = async (
                         
                         
                         return {
-                            product        : productItem.id,
-                            price          : await revertCurrencyIfRequired(productItem.unitPriceConverted),
-                            shippingWeight : productItem.unitWeight,
-                            quantity       : productItem.quantity,
+                            product        : itemConverted.product,
+                            price          : await revertCurrencyIfRequired(itemConverted.price),
+                            shippingWeight : itemConverted.shippingWeight,
+                            quantity       : itemConverted.quantity,
                         };
                     })),
                     
