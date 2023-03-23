@@ -770,13 +770,30 @@ const responseMakePayment = async (
             //#region verify draftOrder_id
             const draftOrder = (
                 !!draftOrderId
-                ? await DraftOrder.findById(draftOrderId, { expires: true })
+                ? await DraftOrder.findById(draftOrderId)
                 : !!paypalOrderId
-                ? await DraftOrder.findOne({ paypalOrderId }, { expires: true })
+                ? await DraftOrder.findOne({ paypalOrderId })
                 : undefined
             );
-            if (!draftOrder)                      throw 'DRAFT_ORDER_NOT_FOUND';
-            if (draftOrder.expires <= Date.now()) throw 'DRAFT_ORDER_EXPIRED';
+            if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
+            if (draftOrder.expires <= Date.now()) {
+                // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:
+                const restoreSession = await startSession();
+                try {
+                    await restoreSession.withTransaction(async (): Promise<void> => {
+                        await revertOrder(restoreSession, { draftOrder });
+                    });
+                }
+                catch (error: any) {
+                    console.log('error: ', error);
+                    /* ignore any error */
+                }
+                finally {
+                    await restoreSession.endSession();
+                } // try
+                
+                throw 'DRAFT_ORDER_EXPIRED';
+            } // if
             //#endregion verify draftOrder_id
             
             
