@@ -307,6 +307,8 @@ const responsePlaceOrder = async (
                 price           : number
                 shippingWeight ?: number
                 stock          ?: number
+                
+                save            : () => Promise<void>
             }
             const productListAdapter = createEntityAdapter<ProductEntry>({
                 selectId : (productEntry) => productEntry._id,
@@ -336,9 +338,22 @@ const responsePlaceOrder = async (
                 
                 
                 
-                const unitPrice          = productList.entities[productId]?.price     ?? 0;
+                const product            = productList.entities[productId];
+                if (!product) throw 'INVALID_PRODUCT_ID';
+                const productStock       = product.stock;
+                if ((productStock !== undefined) && isFinite(productStock)) {
+                    if (productStock < quantity) throw 'INSUFFICIENT_PRODUCT_STOCK';
+                    
+                    //#regon update product stock
+                    product.stock = (productStock - quantity);
+                    await product.save();
+                    //#endregon update product stock
+                } // if
+                
+                
+                const unitPrice          = product.price                              ?? 0;
                 const unitPriceConverted = await convertCurrencyIfRequired(unitPrice) ?? 0;
-                const unitWeight         = productList.entities[productId]?.shippingWeight;
+                const unitWeight         = product.shippingWeight;
                 
                 
                 
@@ -607,18 +622,6 @@ const responsePlaceOrder = async (
             //#region create a newDraftOrder
             const newDraftOrder = await DraftOrder.create({
                 items              : await Promise.all(itemsConverted.map(async (itemConverted) => {
-                    //#regon update product stock
-                    const product = await Product.findById(itemConverted.product, { stock: true });
-                    if (!product) throw Error('product not found');
-                    const stock = product.stock;
-                    if ((stock !== undefined) && isFinite(stock)) {
-                        product.stock = (stock - itemConverted.quantity);
-                        await product.save();
-                    } // if
-                    //#endregon update product stock
-                    
-                    
-                    
                     return {
                         product        : itemConverted.product,
                         price          : await revertCurrencyIfRequired(itemConverted.price),
@@ -656,6 +659,9 @@ const responsePlaceOrder = async (
         /*
             Possible client errors:
             * bad shipping
+            * bad request JSON
+            * invalid product id
+            * insufficient product stock
         */
         /*
             Possible server errors:
@@ -666,12 +672,14 @@ const responsePlaceOrder = async (
             * unexpected API response (programming bug).
         */
         switch (error) {
-            case 'BAD_SHIPPING' :
-            case 'INVALID_JSON' : {
+            case 'BAD_SHIPPING'               :
+            case 'INVALID_JSON'               :
+            case 'INVALID_PRODUCT_ID'         :
+            case 'INSUFFICIENT_PRODUCT_STOCK' : {
                 return res.status(400).json({error: error});
             } break;
             
-            default             : {
+            default                           : {
                 return res.status(500).json({error: 'internal server error'});
             } break;
         } // switch
