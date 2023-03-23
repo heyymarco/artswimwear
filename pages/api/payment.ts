@@ -159,8 +159,8 @@ const revertCurrencyIfRequired = async (from: number|undefined): Promise<number|
 
 
 
-const commitOrder = async (draftOrder: any, customer: CustomerSchema, billing: AddressSchema|undefined, paymentMethod: PaymentMethodSchema) => {
-    await Order.create({
+const commitOrder = async (session: ClientSession, { draftOrder, customer, billing, paymentMethod } : { draftOrder: any, customer: CustomerSchema, billing: AddressSchema|undefined, paymentMethod: PaymentMethodSchema }) => {
+    await Order.create([{
         customer         : customer,
         
         items            : draftOrder.items,
@@ -172,21 +172,21 @@ const commitOrder = async (draftOrder: any, customer: CustomerSchema, billing: A
         billing          : billing,
         
         paymentMethod    : paymentMethod,
-    });
-    await draftOrder.deleteOne();
+    }], { session });
+    await draftOrder.deleteOne({}, { session });
 }
-const revertOrder = async (draftOrder: any) => {
+const revertOrder = async (session: ClientSession, { draftOrder } : { draftOrder: any }) => {
     for (const item of draftOrder.items) {
         const product = await Product.findById(item.product, { stock: true });
         const productStock = product.stock;
         if ((productStock !== undefined) && isFinite(productStock)) {
             //#regon increase product stock
             product.stock = (productStock + item.quantity);
-            await product.save();
+            await product.save({ session });
             //#endregon increase product stock
         } // if
     } // for
-    await draftOrder.deleteOne();
+    await draftOrder.deleteOne({}, { session });
 }
 
 
@@ -622,7 +622,7 @@ const responsePlaceOrder = async (
             
             
             //#region create a newDraftOrder
-            const newDraftOrder = await DraftOrder.create({
+            const newDraftOrders = await DraftOrder.create([{
                 items              : await Promise.all(itemsConverted.map(async (itemConverted) => {
                     return {
                         product        : itemConverted.product,
@@ -632,31 +632,31 @@ const responsePlaceOrder = async (
                     };
                 })),
                 
-                shipping           : {
-                    firstName      : shippingFirstName,
-                    lastName       : shippingLastName,
+                shipping               : {
+                    firstName          : shippingFirstName,
+                    lastName           : shippingLastName,
                     
-                    phone          : shippingPhone,
+                    phone              : shippingPhone,
                     
-                    address        : shippingAddress,
-                    city           : shippingCity,
-                    zone           : shippingZone,
-                    zip            : shippingZip,
-                    country        : shippingCountry.toUpperCase(),
+                    address            : shippingAddress,
+                    city               : shippingCity,
+                    zone               : shippingZone,
+                    zip                : shippingZip,
+                    country            : shippingCountry.toUpperCase(),
                 },
-                shippingProvider   : shippingProvider,
-                shippingCost       : await revertCurrencyIfRequired(totalShippingCostsConverted),
+                shippingProvider       : shippingProvider,
+                shippingCost           : await revertCurrencyIfRequired(totalShippingCostsConverted),
                 
-                expires            : (Date.now() + 60 * 1000),
+                expires                : (Date.now() + 60 * 1000),
                 
-                paypalOrderId      : paypalOrderId,
-            });
-            orderId = `#ORDER#${newDraftOrder._id}`;
+                paypalOrderId          : paypalOrderId,
+            }], { session });
+            orderId = `#ORDER#${newDraftOrders[0]._id}`;
             //#endregion create a newDraftOrder
         });
     }
     catch (error: any) {
-        await session.abortTransaction();
+        // await session.abortTransaction(); // already implicitly aborted
         
         
         
@@ -1062,38 +1062,38 @@ const responseMakePayment = async (
             const paymentMethod = (paymentResponse as MakePaymentResponse)?.paymentMethod;
             if (paymentMethod) {
                 // payment APPROVED => move the `draftOrder` to `order`:
-                await commitOrder(
-                    draftOrder,
-                    {
+                await commitOrder(session, {
+                    draftOrder       : draftOrder,
+                    customer         : {
                         marketingOpt : marketingOpt,
                         
                         nickName     : customerNickName,
                         email        : customerEmail,
                     },
-                    {
-                        firstName : billingFirstName,
-                        lastName  : billingLastName,
+                    billing          : {
+                        firstName    : billingFirstName,
+                        lastName     : billingLastName,
                         
-                        phone     : billingPhone,
+                        phone        : billingPhone,
                         
-                        address   : billingAddress,
-                        city      : billingCity,
-                        zone      : billingZone,
-                        zip       : billingZip,
-                        country   : billingCountry,
+                        address      : billingAddress,
+                        city         : billingCity,
+                        zone         : billingZone,
+                        zip          : billingZip,
+                        country      : billingCountry,
                     },
-                    paymentMethod
-                );
+                    paymentMethod    : paymentMethod,
+                });
             }
             else {
                 // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:
-                await revertOrder(draftOrder);
+                await revertOrder(session, { draftOrder });
             } // if
             //#endregion save the database
         });
     }
     catch (error: any) {
-        await session.abortTransaction();
+        // await session.abortTransaction(); // already implicitly aborted
         
         
         
