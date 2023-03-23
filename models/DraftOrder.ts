@@ -1,4 +1,4 @@
-import { Schema, models, model, Types } from 'mongoose'
+import { Schema, models, model, Types, InferSchemaType } from 'mongoose'
 import { addressSchema } from './Address'
 import { cartEntrySchema } from './CartEntry'
 
@@ -13,5 +13,6 @@ const draftOrderSchema = new Schema({
     
     paypalOrderId    : { type: String                           , required: false },
 });
+export type DraftOrderSchema = InferSchemaType<typeof draftOrderSchema>;
 
 export default models.DraftOrder ?? model('DraftOrder', draftOrderSchema);
