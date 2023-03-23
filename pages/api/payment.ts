@@ -177,7 +177,7 @@ const commitOrder = async (session: ClientSession, { draftOrder, customer, billi
 }
 const revertOrder = async (session: ClientSession, { draftOrder } : { draftOrder: any }) => {
     for (const item of draftOrder.items) {
-        const product = await Product.findById(item.product, { stock: true });
+        const product = await Product.findById(item.product, { stock: true }, { session });
         const productStock = product.stock;
         if ((productStock !== undefined) && isFinite(productStock)) {
             //#regon increase product stock
@@ -310,14 +310,14 @@ const responsePlaceOrder = async (
                 shippingWeight ?: number
                 stock          ?: number
                 
-                save            : () => Promise<void>
+                save            : (options?: object) => Promise<void>
             }
             const productListAdapter = createEntityAdapter<ProductEntry>({
                 selectId : (productEntry) => productEntry._id,
             });
             const productList = productListAdapter.addMany(
                 productListAdapter.getInitialState(),
-                await Product.find({}, { _id: true, name: true, price: true, shippingWeight: true, stock: true })
+                await Product.find({}, { _id: true, name: true, price: true, shippingWeight: true, stock: true }, { session })
             );
             //#endregion fetch valid products
             
@@ -348,7 +348,7 @@ const responsePlaceOrder = async (
                     
                     //#regon decrease product stock
                     product.stock = (productStock - quantity);
-                    await product.save();
+                    await product.save({ session });
                     //#endregon decrease product stock
                 } // if
                 
@@ -653,7 +653,7 @@ const responsePlaceOrder = async (
             }], { session });
             orderId = `#ORDER#${newDraftOrders[0]._id}`;
             //#endregion create a newDraftOrder
-        });
+        }, { readConcern: 'majority', writeConcern: { w: 'majority' } });
     }
     catch (error: any) {
         // await session.abortTransaction(); // already implicitly aborted
@@ -782,7 +782,7 @@ const responseMakePayment = async (
                 try {
                     await restoreSession.withTransaction(async (): Promise<void> => {
                         await revertOrder(restoreSession, { draftOrder });
-                    });
+                    }, { readConcern: 'majority', writeConcern: { w: 'majority' } });
                 }
                 catch (error: any) {
                     console.log('error: ', error);
@@ -1107,7 +1107,7 @@ const responseMakePayment = async (
                 await revertOrder(session, { draftOrder });
             } // if
             //#endregion save the database
-        });
+        }, { readConcern: 'majority', writeConcern: { w: 'majority' } });
     }
     catch (error: any) {
         // await session.abortTransaction(); // already implicitly aborted
