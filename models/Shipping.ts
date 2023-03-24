@@ -1,45 +1,49 @@
-import { Schema, models, model } from 'mongoose'
+import { Schema, models, model, InferSchemaType } from 'mongoose'
 
 
 
 const shippingRateSchema = new Schema({
-    startingWeight : { type: Number                  , required: true  , min: 0       , max: 100      },
-    rate           : { type: Number                  , required: true  , min: 0       , max: 999      },
+    startingWeight  : { type: Number                  , required: true  , min: 0       , max: 100      },
+    rate            : { type: Number                  , required: true  , min: 0       , max: 999      },
 });
 
 const coverageCitySchema = new Schema({
-    city           : { type: String                  , required: true  , minLength: 3 , maxLength: 50 },
+    city            : { type: String                  , required: true  , minLength: 3 , maxLength: 50 },
     
-    estimate       : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
-    shippingRates  : { type: [shippingRateSchema]    , required: true                                 },
+    estimate        : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
+    shippingRates   : { type: [shippingRateSchema]    , required: false                                },
 });
 const coverageZoneSchema = new Schema({
-    zone           : { type: String                  , required: true  , minLength: 3 , maxLength: 50 },
+    zone            : { type: String                  , required: true  , minLength: 3 , maxLength: 50 },
     
-    estimate       : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
-    shippingRates  : { type: [shippingRateSchema]    , required: true                                 },
+    estimate        : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
+    shippingRates   : { type: [shippingRateSchema]    , required: false                                },
     
-    cities         : { type: [coverageCitySchema]    , required: false                                },
+    useSpecificArea : { type: Boolean                 , required: false                                },
+    cities          : { type: [coverageCitySchema]    , required: false                                },
 });
 const coverageCountrySchema = new Schema({
-    country        : { type: String                  , required: true  , minLength: 2 , maxLength:  3 },
+    country         : { type: String                  , required: true  , minLength: 2 , maxLength:  3 },
     
-    estimate       : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
-    shippingRates  : { type: [shippingRateSchema]    , required: true                                 },
+    estimate        : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
+    shippingRates   : { type: [shippingRateSchema]    , required: false                                },
     
-    zones          : { type: [coverageZoneSchema]    , required: false                                },
+    useSpecificArea : { type: Boolean                 , required: false                                },
+    zones           : { type: [coverageZoneSchema]    , required: false                                },
 });
 
 const shippingSchema = new Schema({
-    enabled        : { type: Boolean                 , required: true                                 },
-    name           : { type: String                  , required: true  , minLength: 2 , maxLength: 50 },
+    enabled         : { type: Boolean                 , required: true                                 },
+    name            : { type: String                  , required: true  , minLength: 2 , maxLength: 50 },
     
-    weightStep     : { type: Number                  , required: true  , min: 0       , max: 100      },
+    weightStep      : { type: Number                  , required: true  , min: 0       , max: 100      },
     
-    estimate       : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
-    shippingRates  : { type: [shippingRateSchema]    , required: true                                 },
+    estimate        : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
+    shippingRates   : { type: [shippingRateSchema]    , required: true                                 },
     
-    countries      : { type: [coverageCountrySchema] , required: false                                },
+    useSpecificArea : { type: Boolean                 , required: false                                },
+    countries       : { type: [coverageCountrySchema] , required: false                                },
 });
+export type ShippingSchema = InferSchemaType<typeof shippingSchema>;
 
 export default models.Shipping ?? model('Shipping', shippingSchema);
