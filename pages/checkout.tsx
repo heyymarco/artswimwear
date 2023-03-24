@@ -1006,13 +1006,13 @@ const RegularCheckout = () => {
                     <Label theme='secondary' mild={false} className='solid'>
                         <Icon icon='chat' theme='primary' mild={true} />
                     </Label>
-                    <TextInput  placeholder='Your Nick Name' required autoComplete='nickname' value={customerNickName} onChange={({target:{value}}) => dispatch(setCustomerNickName(value))} />
+                    <TextInput  placeholder='Your Nick Name' required minLength={2} maxLength={30} autoComplete='nickname' value={customerNickName} onChange={({target:{value}}) => dispatch(setCustomerNickName(value))} />
                 </Group>
                 <Group className='email'>
                     <Label theme='secondary' mild={false} className='solid'>
                         <Icon icon='email' theme='primary' mild={true} />
                     </Label>
-                    <EmailInput placeholder='Your Email'     required autoComplete='email'    value={customerEmail}    onChange={({target:{value}}) => dispatch(setCustomerEmail(value))}    elmRef={contactEmailInputRef} />
+                    <EmailInput placeholder='Your Email'     required minLength={5} maxLength={50} autoComplete='email'    value={customerEmail}    onChange={({target:{value}}) => dispatch(setCustomerEmail(value))}    elmRef={contactEmailInputRef} />
                 </Group>
                 <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})                 => dispatch(setMarketingOpt(active))}      >
                     Email me with news and offers

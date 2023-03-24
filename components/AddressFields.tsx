@@ -156,7 +156,7 @@ const AddressField = (props: AddressFieldProps) => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='flag' theme='primary' mild={true} />
                     <VisuallyHidden>
-                        <input type='text' tabIndex={-1} role='none' required autoComplete={`${addressTypeFn}country`}        value={country}   onChange={onCountryChange}      ref={countryInputRefInternal} />
+                        <input type='text' tabIndex={-1} role='none' required minLength={2} maxLength={3} autoComplete={`${addressTypeFn}country`}        value={country}   onChange={onCountryChange}      ref={countryInputRefInternal} />
                     </VisuallyHidden>
                 </Label>
                 <DropdownListButton
@@ -198,43 +198,43 @@ const AddressField = (props: AddressFieldProps) => {
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='person' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='First Name'         required autoComplete={`${addressTypeFn}given-name`}     value={firstName} onChange={onFirstNameChange} />
+                <TextInput  placeholder='First Name'         required minLength={2} maxLength={30} autoComplete={`${addressTypeFn}given-name`}     value={firstName} onChange={onFirstNameChange} />
             </Group>
             <Group className='lastName'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='person_outline' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='Last Name'          required autoComplete={`${addressTypeFn}family-name`}    value={lastName}  onChange={onLastNameChange}  />
+                <TextInput  placeholder='Last Name'          required minLength={1} maxLength={30} autoComplete={`${addressTypeFn}family-name`}    value={lastName}  onChange={onLastNameChange}  />
             </Group>
             <Group className='phone'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='phone' theme='primary' mild={true} />
                 </Label>
-                <TelInput   placeholder='Phone'              required autoComplete={`${addressTypeFn}tel`}            value={phone}     onChange={onPhoneChange}     />
+                <TelInput   placeholder='Phone'              required minLength={5} maxLength={15} autoComplete={`${addressTypeFn}tel`}            value={phone}     onChange={onPhoneChange}     />
             </Group>
             <Group className='address'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='house' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='Address'            required autoComplete={`${addressTypeFn}street-address`} value={address}   onChange={onAddressChange}      elmRef={addressRef} />
+                <TextInput  placeholder='Address'            required minLength={5} maxLength={90} autoComplete={`${addressTypeFn}street-address`} value={address}   onChange={onAddressChange}      elmRef={addressRef} />
             </Group>
             <Group className='city'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='location_city' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='City'               required autoComplete={`${addressTypeFn}address-level2`} value={city}      onChange={onCityChange}      />
+                <TextInput  placeholder='City'               required minLength={3} maxLength={50} autoComplete={`${addressTypeFn}address-level2`} value={city}      onChange={onCityChange}      />
             </Group>
             <Group className='zone'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='location_pin' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='State'              required autoComplete={`${addressTypeFn}address-level1`} value={zone}      onChange={onZoneChange}      />
+                <TextInput  placeholder='State'              required minLength={3} maxLength={50} autoComplete={`${addressTypeFn}address-level1`} value={zone}      onChange={onZoneChange}      />
             </Group>
             <Group className='zip'>
                 <Label theme='secondary' mild={false} className='solid'>
                     <Icon icon='edit_location' theme='primary' mild={true} />
                 </Label>
-                <TextInput  placeholder='ZIP Code'           required autoComplete={`${addressTypeFn}postal-code`}    value={zip}       onChange={onZipChange}       />
+                <TextInput  placeholder='ZIP Code'                    minLength={2} maxLength={11} autoComplete={`${addressTypeFn}postal-code`}    value={zip}       onChange={onZipChange}       />
             </Group>
         </>
     );
