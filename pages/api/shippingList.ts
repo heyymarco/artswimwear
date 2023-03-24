@@ -115,49 +115,61 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     // if countries specified => filter out shippings not_having supported countries:
     compatibleShippings = compatibleShippings.filter((compatibleShipping): boolean => {
-        if (!(compatibleShipping.useSpecificArea ?? false)) {
-            if (compatibleShipping.countries) compatibleShipping.countries = undefined;    // unselect all countries
-            return true;
+        const countries = compatibleShipping.countries;
+        let matchingArea = (
+            (compatibleShipping.useSpecificArea ?? false)
+            &&
+            countries?.find((coverageCountry) => (coverageCountry.country.toLowerCase() === country.toLowerCase()))
+        );
+        // if ((matchingArea === undefined) || (matchingArea === false) || (matchingArea < 0)) matchingArea = undefined;
+        if (countries) {
+            // // doesn't work -- because the array is proxied:
+            // countries.splice(matchingArea || 0, (matchingArea !== undefined) ? 1 : 0); // select the first matching country (if any)
+            
+            // works:
+            countries.splice(0);
+            if (matchingArea) countries.push(matchingArea);
         } // if
-        if (!compatibleShipping.countries?.length) return false;                           // no countries specified => not supports all countries
-        
-        
-        
-        const matchingCountry = compatibleShipping.countries.find((coverageCountry) => (coverageCountry.country.toLowerCase() === country.toLowerCase()));
-        if (!matchingCountry) return false;                                                // the country is not in list => unsupported shipping
-        compatibleShipping.countries = [matchingCountry] as any;                           // select the first matching country
         return true;
     });
     
     // if zones specified => filter out shippings not_having supported zones:
     compatibleShippings = compatibleShippings.filter((compatibleShipping): boolean => {
-        if (!(compatibleShipping.countries?.[0]?.useSpecificArea ?? false)) {
-            if (compatibleShipping.countries?.[0]?.zones) compatibleShipping.countries[0].zones = undefined; // unselect all zones
-            return true;
+        const zones = compatibleShipping.countries?.[0]?.zones;
+        let matchingArea = (
+            (compatibleShipping.countries?.[0]?.useSpecificArea ?? false)
+            &&
+            zones?.find((coverageZone) => (coverageZone.zone.toLowerCase() === zone.toLowerCase()))
+        );
+        // if ((matchingArea === undefined) || (matchingArea === false) || (matchingArea < 0)) matchingArea = undefined;
+        if (zones) {
+            // // doesn't work -- because the array is proxied:
+            // zones.splice(matchingArea || 0, (matchingArea !== undefined) ? 1 : 0); // select the first matching zone (if any)
+            
+            // works:
+            zones.splice(0);
+            if (matchingArea) zones.push(matchingArea);
         } // if
-        if (!compatibleShipping.countries?.[0]?.zones?.length)   return false;             // no zones specified => not supports all zones
-        
-        
-        
-        const matchingZone = compatibleShipping.countries[0].zones.find((coverageZone) => (coverageZone.zone.toLowerCase() === zone.toLowerCase()));
-        if (!matchingZone) return false;                                                   // the zone is not in list => unsupported shipping
-        compatibleShipping.countries[0].zones = [matchingZone] as any;                     // select the first matching zone
         return true;
     });
     
     // if cities specified => filter out shippings not_having supported cities:
     compatibleShippings = compatibleShippings.filter((compatibleShipping): boolean => {
-        if (!(compatibleShipping.countries?.[0]?.zones?.[0]?.useSpecificArea ?? false)) {
-            if (compatibleShipping.countries?.[0]?.zones?.[0]?.cities) compatibleShipping.countries[0].zones[0].cities = undefined; // unselect all cities
-            return true;
+        const cities = compatibleShipping.countries?.[0]?.zones?.[0]?.cities;
+        let matchingArea = (
+            (compatibleShipping.countries?.[0]?.zones?.[0]?.useSpecificArea ?? false)
+            &&
+            cities?.find((coverageCity) => (coverageCity.city.toLowerCase() === city.toLowerCase()))
+        );
+        // if ((matchingArea === undefined) || (matchingArea === false) || (matchingArea < 0)) matchingArea = undefined;
+        if (cities) {
+            // // doesn't work -- because the array is proxied:
+            // cities.splice(matchingArea || 0, (matchingArea !== undefined) ? 1 : 0); // select the first matching city (if any)
+            
+            // works:
+            cities.splice(0);
+            if (matchingArea) cities.push(matchingArea);
         } // if
-        if (!compatibleShipping.countries?.[0]?.zones?.[0]?.cities?.length)  return false; // no cities specified => not supports all cities
-        
-        
-        
-        const matchingCity = compatibleShipping.countries[0].zones[0].cities.find((coverageCity) => (coverageCity.city.toLowerCase() === city.toLowerCase()));
-        if (!matchingCity) return false;                                                   // the city is not in list => unsupported shipping
-        compatibleShipping.countries[0].zones[0].cities = [matchingCity] as any;           // select the first matching city
         return true;
     });
     
