@@ -3,8 +3,8 @@ import { Schema, models, model } from 'mongoose'
 
 
 const shippingRateSchema = new Schema({
-    startingWeight : { type: Number                  , required: true  },
-    rate           : { type: Number                  , required: true  },
+    startingWeight : { type: Number                  , required: true  , min: 0       , max: 100      },
+    rate           : { type: Number                  , required: true  , min: 0       , max: 999      },
 });
 
 const coverageCitySchema = new Schema({
@@ -34,7 +34,7 @@ const shippingSchema = new Schema({
     enabled        : { type: Boolean                 , required: true  },
     name           : { type: String                  , required: true  , minLength: 2 , maxLength: 50 },
     
-    weightStep     : { type: Number                  , required: true  },
+    weightStep     : { type: Number                  , required: true  , min: 0       , max: 100      },
     
     estimate       : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
     shippingRates  : { type: [shippingRateSchema]    , required: true  },
