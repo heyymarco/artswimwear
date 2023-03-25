@@ -56,7 +56,10 @@ export interface CheckoutState {
     paymentMethod         ?: PaymentMethod
     paymentToken          ?: PaymentToken
     paymentCardValidation  : boolean
-    paymentIsProcessing    : boolean
+    
+    
+    
+    isLoadingStep          : boolean
 }
 
 const initialState: CheckoutState = {
@@ -104,7 +107,10 @@ const initialState: CheckoutState = {
     paymentMethod          : undefined,
     paymentToken           : undefined,
     paymentCardValidation  : false,
-    paymentIsProcessing    : false,
+    
+    
+    
+    isLoadingStep          : false,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
@@ -210,8 +216,11 @@ export const checkoutSlice = createSlice({
         setPaymentCardValidation: (state, {payload: value}: PayloadAction<boolean>) => {
             state.paymentCardValidation = value;
         },
-        setPaymentIsProcessing: (state, {payload: value}: PayloadAction<boolean>) => {
-            state.paymentIsProcessing = value;
+        
+        
+        
+        setIsLoadingStep: (state, {payload: value}: PayloadAction<boolean>) => {
+            state.isLoadingStep = value;
         },
     },
 });
@@ -266,7 +275,7 @@ export const {
     setPaymentMethod,
     setPaymentToken,
     setPaymentCardValidation,
-    setPaymentIsProcessing,
+    setIsLoadingStep,
 } = checkoutSlice.actions;
 
 
@@ -320,7 +329,10 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         paymentMethod,
         paymentToken,
         paymentCardValidation,
-        paymentIsProcessing,
+        
+        
+        
+        isLoadingStep,
     } = state.checkout;
     
     return {
@@ -370,7 +382,10 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         paymentMethod,
         paymentToken,
         paymentCardValidation,
-        paymentIsProcessing,
+        
+        
+        
+        isLoadingStep,
     };
 };
 

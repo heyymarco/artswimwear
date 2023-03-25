@@ -2,7 +2,17 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import nextConnect from 'next-connect'
 
 import { connectDB } from '@/libs/dbConn'
-import { default as Shipping, ShippingSchema, MatchingShippingSchema } from '@/models/Shipping'
+import { default as Shipping, ShippingSchema } from '@/models/Shipping'
+import type { AddressSchema } from '@/models/Address'
+
+
+
+// types:
+export interface MatchingAddress extends Required<Pick<AddressSchema, 'country'|'zone'|'city'>> {
+}
+export interface MatchingShipping extends Required<Pick<ShippingSchema, 'name'|'weightStep'|'estimate'|'shippingRates'>> {
+    _id : string
+}
 
 
 
@@ -34,7 +44,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         res.status(404).json({ error: 'Page is not found' });
     },
 })
-.get<NextApiRequest, NextApiResponse<Array<MatchingShippingSchema>>>(async (req, res) => {
+.post<NextApiRequest, NextApiResponse<Array<MatchingShipping>>>(async (req, res) => {
     const {
         city,
         zone,
@@ -50,7 +60,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     
-    let compatibleShippings = await Shipping.find<ShippingSchema>(); // get all shippings including the disabled ones
+    let compatibleShippings = await Shipping.find<ShippingSchema & Pick<MatchingShipping, '_id'>>(); // get all shippings including the disabled ones
     if (!compatibleShippings.length) { // empty => first app setup => initialize the default shippings
         const defaultShippings = (await import('@/libs/defaultShippings')).default;
         await Shipping.insertMany(defaultShippings);
@@ -125,7 +135,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     return res.json(
         compatibleShippings
-        .map((compatibleShipping): Pick<ShippingSchema, 'name'|'weightStep'|'estimate'|'shippingRates'> => {
+        .map((compatibleShipping): Pick<ShippingSchema, 'name'|'weightStep'|'estimate'|'shippingRates'> & Pick<MatchingShipping, '_id'> => {
             const estimate : ShippingSchema['estimate'] = (
                 compatibleShipping.countries?.[0]?.zones?.[0]?.cities?.[0]?.estimate
                 ||
@@ -148,6 +158,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
             
             
             return {
+                _id            : compatibleShipping._id,
                 name           : compatibleShipping.name,
                 
                 weightStep     : compatibleShipping.weightStep,
@@ -156,6 +167,6 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
                 shippingRates  : shippingRates,
             };
         })
-        .filter((compatibleShipping): compatibleShipping is MatchingShippingSchema => !!compatibleShipping.shippingRates?.length)
+        .filter((compatibleShipping): compatibleShipping is MatchingShipping => !!compatibleShipping.shippingRates?.length)
     );
 });

@@ -394,6 +394,7 @@ export default () => {
         scopeOf('optionEntryHeader', {
             display: 'flex',
             flexDirection: 'row',
+            alignItems: 'center',
             gap: '1rem',
             padding: '1rem',
             ...children('.indicator', {
@@ -402,17 +403,25 @@ export default () => {
                     borderColor: 'currentcolor',
                 }),
             }),
-            ...children(['.name', '.cost', '.icon'], {
-                flex: '1 1 auto',
+            ...children(['.name', '.estimate', '.cost', '.icon'], {
+                flex: '0 0 auto',
                 margin: 0,
             }),
             ...children('.name', {
-                textAlign: 'start',
-                fontSize: typos.fontSizeMd,
+                textAlign  : 'start',
+                fontSize   : typos.fontSizeMd,
                 fontWeight : typos.fontWeightSemibold,
+            }),
+            ...children(['.estimate'], {
+                opacity    : 0.8,
+                fontSize   : typos.fontSizeSm,
+                fontWeight : typos.fontWeightNormal,
             }),
             ...children(['.cost', '.icon'], {
                 textAlign: 'end',
+            }),
+            ...children(['.cost'], {
+                flex: '1 1 auto',
             }),
         }, {specificityWeight: 2}),
         scopeOf('billingEntry', {

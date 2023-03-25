@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { Main } from '@/components/sections/Main'
 import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { CountryEntry, PriceEntry, ProductEntry, ShippingEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
+import { CountryEntry, PriceEntry, ProductEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import ProductImage, { ProductImageProps } from '@/components/ProductImage'
 import Link from 'next/link'
@@ -15,12 +15,13 @@ import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setPaymentIsProcessing, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setIsLoadingStep, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/utilities'
 import AddressField from '@/components/AddressFields'
+import type { MatchingAddress, MatchingShipping } from '@/pages/api/shippingList'
 
 
 
@@ -190,14 +191,18 @@ interface ICheckoutContext {
     checkoutStep                      : CheckoutStep
     checkoutProgress                  : number
     
-    priceList                         : EntityState<PriceEntry>    | undefined
-    productList                       : EntityState<ProductEntry>  | undefined
-    countryList                       : EntityState<CountryEntry>  | undefined
-    shippingList                      : EntityState<ShippingEntry> | undefined
+    priceList                         : EntityState<PriceEntry>       | undefined
+    productList                       : EntityState<ProductEntry>     | undefined
+    countryList                       : EntityState<CountryEntry>     | undefined
+    shippingList                      : EntityState<MatchingShipping> | undefined
     
-    isLoading                         : boolean
-    isError                           : boolean
-    isCartDataReady                   : boolean
+    isLoadingPage                     : boolean
+    isErrorPage                       : boolean
+    isReadyPage                       : boolean
+    
+    isLoadingShipping                 : boolean
+    isErrorShipping                   : boolean
+    isReadyShipping                   : boolean
     
     isDesktop                         : boolean
     
@@ -212,6 +217,8 @@ interface ICheckoutContext {
     cardholderInputRef                : React.MutableRefObject<HTMLInputElement|null> | undefined
     
     paymentToken                      : PaymentToken|undefined
+    
+    handleShippingAddressChanged      : (address: MatchingAddress) => Promise<boolean>
     handlePlaceOrder                  : (options?: PlaceOrderOptions) => Promise<string>
     handleMakePayment                 : (orderId: string) => Promise<void>
     handleOrderCompleted              : (paid: boolean) => void
@@ -235,9 +242,13 @@ const CheckoutContext = createContext<ICheckoutContext>({
     countryList                       : undefined,
     shippingList                      : undefined,
     
-    isLoading                         : false,
-    isError                           : false,
-    isCartDataReady                   : false,
+    isLoadingPage                     : false,
+    isErrorPage                       : false,
+    isReadyPage                       : false,
+    
+    isLoadingShipping                 : false,
+    isErrorShipping                   : false,
+    isReadyShipping                   : false,
     
     isDesktop                         : false,
     
@@ -252,6 +263,8 @@ const CheckoutContext = createContext<ICheckoutContext>({
     cardholderInputRef                : undefined,
     
     paymentToken                      : undefined,
+    
+    handleShippingAddressChanged      : undefined as any,
     handlePlaceOrder                  : undefined as any,
     handleMakePayment                 : undefined as any,
     handleOrderCompleted              : undefined as any,
@@ -331,13 +344,13 @@ export default function Checkout() {
     const                        {data: priceList      , isLoading: isLoading1, isError: isError1}  = useGetPriceList();
     const                        {data: productList    , isLoading: isLoading2, isError: isError2}  = useGetProductList();
     const                        {data: countryList    , isLoading: isLoading3, isError: isError3}  = useGetCountryList();
-    const                        {data: shippingList   , isLoading: isLoading4, isError: isError4}  = useGetShippingList();
+    const [getShippingByAddress, {data: shippingList   , isLoading: isLoadingShipping, isError: isErrorShipping}]  = useGetMatchingShippingList();
     const [generatePaymentToken, {data: newPaymentToken, isLoading: isLoading5, isError: isError5}] = useGeneratePaymentToken();
     
-    const isLoading       = isLoading1 || isLoading2 || isLoading3 || isLoading4 ||  !existingPaymentToken;
-    const isError         = isError1   || isError2   || isError3   || isError4   || (!existingPaymentToken && isError5);
-    const isCartDataReady = hasCart && !!priceList && !!productList && !!countryList && !!shippingList && !!existingPaymentToken;
-    // console.log({isLoading, isError, isCartDataReady, existingPaymentToken, newPaymentToken})
+    const isLoadingPage   = isLoading1 || isLoading2 || isLoading3 ||  !existingPaymentToken;
+    const isErrorPage     = isError1   || isError2   || isError3   || (!existingPaymentToken && isError5);
+    const isReadyPage     = hasCart && !!priceList && !!productList && !!countryList && !!existingPaymentToken;
+    const isReadyShipping = !!shippingList;
     
     
     
@@ -427,7 +440,33 @@ export default function Checkout() {
     
     
     // handlers:
-    const handlePlaceOrder     = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
+    const handleShippingAddressChanged = useEvent(async (address: MatchingAddress): Promise<boolean> => {
+        try {
+            await getShippingByAddress(address).unwrap();
+            return true;
+        }
+        catch (error: any) {
+            showDialogMessage({
+                theme   : 'danger',
+                title   : 'Error Calculating Shipping Cost',
+                message : <>
+                    <p>
+                        Oops, there was an error calculating the shipping cost.
+                    </p>
+                    <p>
+                        There was a <strong>problem contacting our server</strong>.<br />
+                        Make sure your internet connection is available.
+                    </p>
+                    <p>
+                        Please try again in a few minutes.<br />
+                        If the problem still persists, please contact us manually.
+                    </p>
+                </>
+            });
+            return false;
+        } // try
+    });
+    const handlePlaceOrder             = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
                 // cart item(s):
@@ -461,7 +500,7 @@ export default function Checkout() {
             throw error;
         } // try
     });
-    const handleMakePayment    = useEvent(async (orderId: string): Promise<void> => {
+    const handleMakePayment            = useEvent(async (orderId: string): Promise<void> => {
         await makePayment({
             orderId,
             
@@ -491,7 +530,7 @@ export default function Checkout() {
             billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
         }).unwrap();
     });
-    const handleOrderCompleted = useEvent((paid: boolean): void => {
+    const handleOrderCompleted         = useEvent((paid: boolean): void => {
         dispatch(setCheckoutStep(paid ? 'paid' : 'pending'));
     });
     
@@ -632,9 +671,13 @@ export default function Checkout() {
         countryList,
         shippingList,
         
-        isLoading,
-        isError,
-        isCartDataReady,
+        isLoadingPage,
+        isErrorPage,
+        isReadyPage,
+        
+        isLoadingShipping,
+        isErrorShipping,
+        isReadyShipping,
         
         isDesktop,
         
@@ -649,6 +692,8 @@ export default function Checkout() {
         cardholderInputRef,                // stable ref
         
         paymentToken: existingPaymentToken,
+        
+        handleShippingAddressChanged,      // stable ref
         handlePlaceOrder,                  // stable ref
         handleMakePayment,                 // stable ref
         handleOrderCompleted,              // stable ref
@@ -671,9 +716,13 @@ export default function Checkout() {
         countryList,
         shippingList,
         
-        isLoading,
-        isError,
-        isCartDataReady,
+        isLoadingPage,
+        isErrorPage,
+        isReadyPage,
+        
+        isLoadingShipping,
+        isErrorShipping,
+        isReadyShipping,
         
         isDesktop,
         
@@ -688,6 +737,8 @@ export default function Checkout() {
         // cardholderInputRef,                // stable ref
         
         existingPaymentToken,
+        
+        // handleShippingAddressChanged,      // stable ref
         // handlePlaceOrder,                  // stable ref
         // handleMakePayment,                 // stable ref
         // handleOrderCompleted,              // stable ref
@@ -711,7 +762,7 @@ export default function Checkout() {
             </Head>
             <Main nude={true}>
                 <CheckoutContext.Provider value={checkoutData}>
-                    {(isLoading || isError || !hasCart) && <Section className={styles.loading} theme='secondary'>
+                    {(isLoadingPage || isErrorPage || !hasCart) && <Section className={styles.loading} theme='secondary'>
                         {
                             !hasCart
                             ?  <>
@@ -724,13 +775,13 @@ export default function Checkout() {
                                     </Link>
                                 </ButtonIcon>
                             </>
-                            : isLoading
+                            : isLoadingPage
                             ? <Busy theme='primary' size='lg' />
                             : <p>Oops, an error occured!</p>
                         }
                     </Section>}
                     
-                    {isCartDataReady && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
+                    {isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
                         <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
                             <OrderSummary />
                         </Section>
@@ -883,14 +934,20 @@ const ProgressCheckout = () => {
 
 const NavCheckout = () => {
     // context:
-    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, showDialogMessageFieldsError} = useCheckout();
+    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, handleShippingAddressChanged, showDialogMessageFieldsError} = useCheckout();
     const isOrderConfirmShown = ['pending', 'paid'].includes(checkoutStep);
     
     
     
     // stores:
     const {
-        paymentIsProcessing,
+        shippingCity,
+        shippingZone,
+        shippingCountry,
+        
+        
+        
+        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -917,7 +974,24 @@ const NavCheckout = () => {
             
             
             // next:
-            dispatch(setCheckoutStep('shipping'));
+            try {
+                // update the UI:
+                dispatch(setIsLoadingStep(true));
+                
+                
+                
+                if (await handleShippingAddressChanged({
+                    city    : shippingCity,
+                    zone    : shippingZone,
+                    country : shippingCountry,
+                })) {
+                    dispatch(setCheckoutStep('shipping'));
+                } // if
+            }
+            finally {
+                // update the UI:
+                dispatch(setIsLoadingStep(false));
+            } // try
         }},
         { text: 'Continue to payment'  , action: () => dispatch(setCheckoutStep('payment')) },
         { text: 'Pay Now' , action: () => {
@@ -931,24 +1005,70 @@ const NavCheckout = () => {
     return (
         <>
             {!isOrderConfirmShown && <>
-                {!isOrderConfirmShown && <ButtonIcon enabled={!paymentIsProcessing} className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link' onClick={prevAction.action}>
+                {!isOrderConfirmShown && <ButtonIcon
+                    enabled={!isLoadingStep}
+                    
+                    className='back'
+                    theme='primary'
+                    size='md'
+                    buttonStyle='link'
+                    
+                    icon='arrow_back'
+                    iconPosition='start'
+                    
+                    onClick={prevAction.action}
+                >
                     {prevAction.text}
                 </ButtonIcon>}
                 
-                {(checkoutStep !== 'payment') && <ButtonIcon enabled={!paymentIsProcessing} className='next' icon='arrow_forward' theme='primary' size='lg' gradient={true} iconPosition='end' onClick={nextAction.action}>
+                {(checkoutStep !== 'payment') && <ButtonIcon
+                    enabled={!isLoadingStep}
+                    
+                    className='next'
+                    theme='primary'
+                    size='lg'
+                    gradient={true}
+                    
+                    icon={!isLoadingStep ? 'arrow_forward' : 'busy'}
+                    iconPosition='end'
+                    
+                    onClick={nextAction.action}
+                >
                     {nextAction.text}
                 </ButtonIcon>}
             </>}
             
             {isOrderConfirmShown && <>
-                <ButtonIcon enabled={!paymentIsProcessing} className='back' icon='arrow_back' theme='primary' size='md' buttonStyle='link' onClick={() => dispatch(setCheckoutStep('payment'))}>
+                <ButtonIcon
+                    enabled={!isLoadingStep}
+                    
+                    className='back'
+                    theme='primary'
+                    size='md'
+                    buttonStyle='link'
+                    
+                    icon='arrow_back'
+                    iconPosition='start'
+                    
+                    onClick={() => dispatch(setCheckoutStep('payment'))}
+                >
                     BACK
                 </ButtonIcon>
                 {/* <p>
                     <Icon icon='help' theme='primary' size='md' /> Need help? <Button theme='primary' buttonStyle='link'><Link href='/contact'>Contact Us</Link></Button>
                 </p> */}
                 
-                <ButtonIcon className='next' enabled={!paymentIsProcessing} icon='shopping_bag' iconPosition='end' theme='primary' size='lg' gradient={true}>
+                <ButtonIcon
+                    enabled={!isLoadingStep}
+                    
+                    className='next'
+                    theme='primary'
+                    size='lg'
+                    gradient={true}
+                    
+                    icon='shopping_bag'
+                    iconPosition='end'
+                >
                     <Link href='/products'>
                         Continue Shopping
                     </Link>
@@ -1155,7 +1275,7 @@ const OrderReview = () => {
     
     // stores:
     const {
-        paymentIsProcessing,
+        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -1163,7 +1283,7 @@ const OrderReview = () => {
     
     // jsx:
     return (
-        <AccessibilityProvider enabled={!paymentIsProcessing}>
+        <AccessibilityProvider enabled={!isLoadingStep}>
             <table>
                 <tbody>
                     <tr>
@@ -1210,14 +1330,14 @@ const OrderReview = () => {
 const OrderReviewCompleted = () => {
     // stores:
     const {
-        paymentIsProcessing,
+        isLoadingStep,
     } = useSelector(selectCheckoutState);
     
     
     
     // jsx:
     return (
-        <AccessibilityProvider enabled={!paymentIsProcessing}>
+        <AccessibilityProvider enabled={!isLoadingStep}>
             <table>
                 <thead>
                     <tr>
@@ -1495,7 +1615,10 @@ const Payment = () => {
         
         
         paymentMethod,
-        paymentIsProcessing,
+        
+        
+        
+        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -1512,7 +1635,7 @@ const Payment = () => {
                     <p>
                         Select the address that matches your card or payment method.
                     </p>
-                    <ExclusiveAccordion enabled={!paymentIsProcessing} theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
+                    <ExclusiveAccordion enabled={!isLoadingStep} theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
                         // conditions:
                         if (!expanded) return;
                         
@@ -1588,7 +1711,10 @@ const PaymentMethod = () => {
     // stores:
     const {
         paymentMethod,
-        paymentIsProcessing,
+        
+        
+        
+        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -1607,7 +1733,7 @@ const PaymentMethod = () => {
             <p>
                 All transactions are secure and encrypted.
             </p>
-            <ExclusiveAccordion enabled={!paymentIsProcessing} theme='primary' expandedListIndex={Math.max(0, paymentMethodList.findIndex((option) => (option === paymentMethod)))} onExpandedChange={({expanded, listIndex}) => {
+            <ExclusiveAccordion enabled={!isLoadingStep} theme='primary' expandedListIndex={Math.max(0, paymentMethodList.findIndex((option) => (option === paymentMethod)))} onExpandedChange={({expanded, listIndex}) => {
                 // conditions:
                 if (!expanded) return;
                 
@@ -1781,7 +1907,7 @@ const PaymentMethodPaypal = () => {
     const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
             // update the UI:
-            dispatch(setPaymentIsProcessing(true));
+            dispatch(setIsLoadingStep(true));
             
             
             
@@ -1794,7 +1920,7 @@ const PaymentMethodPaypal = () => {
         }
         finally {
             // update the UI:
-            dispatch(setPaymentIsProcessing(false));
+            dispatch(setIsLoadingStep(false));
         } // try
     });
     const handleShippingChange = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
@@ -1904,7 +2030,7 @@ const CardPaymentButton = () => {
         
         
         
-        paymentIsProcessing,
+        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -1932,7 +2058,7 @@ const CardPaymentButton = () => {
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         try {
             // update the UI:
-            dispatch(setPaymentIsProcessing(true));
+            dispatch(setIsLoadingStep(true));
             
             
             
@@ -1980,7 +2106,7 @@ const CardPaymentButton = () => {
         }
         finally {
             // update the UI:
-            dispatch(setPaymentIsProcessing(false));
+            dispatch(setIsLoadingStep(false));
         } // try
     });
     
@@ -1988,7 +2114,7 @@ const CardPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon className='next payNow' enabled={!paymentIsProcessing} icon={!paymentIsProcessing ? 'monetization_on' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handlePayButtonClicked}>
+        <ButtonIcon className='next payNow' enabled={!isLoadingStep} icon={!isLoadingStep ? 'monetization_on' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handlePayButtonClicked}>
             Pay Now
         </ButtonIcon>
     );
@@ -2001,7 +2127,7 @@ const ManualPaymentButton = () => {
     
     // stores:
     const {
-        paymentIsProcessing,
+        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -2011,7 +2137,7 @@ const ManualPaymentButton = () => {
     const handleFinishOrderButtonClicked = useEvent(async () => {
         try {
             // update the UI:
-            dispatch(setPaymentIsProcessing(true));
+            dispatch(setIsLoadingStep(true));
             
             
             
@@ -2029,7 +2155,7 @@ const ManualPaymentButton = () => {
         }
         finally {
             // update the UI:
-            dispatch(setPaymentIsProcessing(false));
+            dispatch(setIsLoadingStep(false));
         } // try
     });
     
@@ -2037,7 +2163,7 @@ const ManualPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon className='next finishOrder' enabled={!paymentIsProcessing} icon={!paymentIsProcessing ? 'done' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleFinishOrderButtonClicked}>
+        <ButtonIcon className='next finishOrder' enabled={!isLoadingStep} icon={!isLoadingStep ? 'done' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleFinishOrderButtonClicked}>
             Finish Order
         </ButtonIcon>
     );

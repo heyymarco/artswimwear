@@ -4,6 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { CartState } from '../cart/cartSlice'
 import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice'
 import type { CreateOrderData } from '@paypal/paypal-js'
+import type { MatchingAddress, MatchingShipping } from '@/pages/api/shippingList'
 
 
 
@@ -35,17 +36,7 @@ const countryListAdapter = createEntityAdapter<CountryEntry>({
     selectId : (countryEntry) => countryEntry.code,
 });
 
-export interface ShippingEntry {
-    _id                 : string
-    name                : string
-    estimate           ?: string
-    weightStep          : number
-    shippingRates       : Array<{
-        startingWeight  : number
-        rate            : number
-    }>
-}
-const shippingListAdapter = createEntityAdapter<ShippingEntry>({
+const shippingListAdapter = createEntityAdapter<MatchingShipping>({
     selectId : (shippingEntry) => shippingEntry._id,
 });
 
@@ -152,9 +143,13 @@ export const apiSlice = createApi({
         
         
         
-        getShippingList : builder.query<EntityState<ShippingEntry>, void>({
-            query : () => 'shippingList',
-            transformResponse(response: ShippingEntry[]) {
+        getMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, MatchingAddress>({
+            query : (address) => ({
+                url    : 'shippingList',
+                method : 'POST',
+                body   : address,
+            }),
+            transformResponse(response: MatchingShipping[]) {
                 return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
             },
         }),
@@ -187,18 +182,18 @@ export const apiSlice = createApi({
 
 
 export const {
-    useGetProductListQuery          : useGetProductList,
-    useGetProductDetailQuery        : useGetProductDetail,
+    useGetProductListQuery             : useGetProductList,
+    useGetProductDetailQuery           : useGetProductDetail,
     
-    useGetPriceListQuery            : useGetPriceList,
+    useGetPriceListQuery               : useGetPriceList,
     
-    useGetCountryListQuery          : useGetCountryList,
+    useGetCountryListQuery             : useGetCountryList,
     
-    useGetShippingListQuery         : useGetShippingList,
+    useGetMatchingShippingListMutation : useGetMatchingShippingList,
     
-    useGeneratePaymentTokenMutation : useGeneratePaymentToken,
-    usePlaceOrderMutation           : usePlaceOrder,
-    useMakePaymentMutation          : useMakePayment,
+    useGeneratePaymentTokenMutation    : useGeneratePaymentToken,
+    usePlaceOrderMutation              : usePlaceOrder,
+    useMakePaymentMutation             : useMakePayment,
 } = apiSlice;
 
 
