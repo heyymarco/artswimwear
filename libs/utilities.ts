@@ -1,9 +1,9 @@
-import type { ShippingEntry } from '@/store/features/api/apiSlice'
+import type { MatchingShipping } from '@/pages/api/shippingList';
 
 
 
 // utilities:
-export const calculateShippingCost = (totalWeight: number|undefined, {weightStep, shippingRates}: Pick<ShippingEntry, 'weightStep'|'shippingRates'>): number|undefined => {
+export const calculateShippingCost = (totalWeight: number|undefined, {weightStep, shippingRates}: Pick<MatchingShipping, 'weightStep'|'shippingRates'>): number|undefined => {
     if ((totalWeight === undefined) || isNaN(totalWeight) || !isFinite(totalWeight)) return undefined;
     
     
