@@ -14,12 +14,13 @@ export default () => [
         display: 'flex',
         flexDirection: 'column',
     }, {specificityWeight: 3}),
+    
     scopeOf('cartList', {
-    }),
+    }, {specificityWeight: 2}),
     scopeOf('cartTitle', {
         textAlign: 'center',
         fontSize: typos.fontSizeLg,
-    }),
+    }, {specificityWeight: 2}),
     scopeOf('productEntry', {
         display: 'grid',
         gridTemplate: [[
@@ -77,7 +78,8 @@ export default () => [
             fontSize: typos.fontSizeSm,
             margin: 0,
         }),
-    }),
+    }, {specificityWeight: 2}),
+    
     scopeOf('shippingInfo', {
         fontSize: typos.fontSizeMd,
         marginBlockStart: 'auto',
