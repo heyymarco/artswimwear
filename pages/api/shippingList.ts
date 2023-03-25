@@ -115,11 +115,11 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         );
         // if ((matchingArea === undefined) || (matchingArea === false) || (matchingArea < 0)) matchingArea = undefined;
         if (countries) {
-            // // doesn't work -- because the array is proxied:
+            // // doesn't work -- because the array is buggy_proxied:
             // countries.splice(matchingArea || 0, (matchingArea !== undefined) ? 1 : 0); // select the first matching country (if any)
             
             // works:
-            countries.splice(0);
+            countries.splice(0); // clear
             if (matchingArea) countries.push(matchingArea);
         } // if
         return true;
@@ -135,11 +135,11 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         );
         // if ((matchingArea === undefined) || (matchingArea === false) || (matchingArea < 0)) matchingArea = undefined;
         if (zones) {
-            // // doesn't work -- because the array is proxied:
+            // // doesn't work -- because the array is buggy_proxied:
             // zones.splice(matchingArea || 0, (matchingArea !== undefined) ? 1 : 0); // select the first matching zone (if any)
             
             // works:
-            zones.splice(0);
+            zones.splice(0); // clear
             if (matchingArea) zones.push(matchingArea);
         } // if
         return true;
@@ -155,11 +155,11 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         );
         // if ((matchingArea === undefined) || (matchingArea === false) || (matchingArea < 0)) matchingArea = undefined;
         if (cities) {
-            // // doesn't work -- because the array is proxied:
+            // // doesn't work -- because the array is buggy_proxied:
             // cities.splice(matchingArea || 0, (matchingArea !== undefined) ? 1 : 0); // select the first matching city (if any)
             
             // works:
-            cities.splice(0);
+            cities.splice(0); // clear
             if (matchingArea) cities.push(matchingArea);
         } // if
         return true;
@@ -186,7 +186,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
                 ??
                 undefinedIfEmptyArray(compatibleShipping.countries?.[0]?.shippingRates)
                 ??
-                compatibleShipping.shippingRates
+                undefinedIfEmptyArray(compatibleShipping.shippingRates)
             );
             
             
@@ -200,6 +200,6 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
                 shippingRates  : shippingRates,
             };
         })
-        .filter((compatibleShipping): boolean => !!compatibleShipping.shippingRates.length)
+        .filter((compatibleShipping): boolean => !!compatibleShipping.shippingRates?.length)
     );
 });

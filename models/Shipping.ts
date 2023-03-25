@@ -39,7 +39,7 @@ const shippingSchema = new Schema({
     weightStep      : { type: Number                  , required: true  , min: 0       , max: 100      },
     
     estimate        : { type: String                  , required: false , minLength: 2 , maxLength: 50 },
-    shippingRates   : { type: [shippingRateSchema]    , required: true                                 },
+    shippingRates   : { type: [shippingRateSchema]    , required: false                                },
     
     useSpecificArea : { type: Boolean                 , required: false                                },
     countries       : { type: [coverageCountrySchema] , required: false                                },
