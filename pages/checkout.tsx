@@ -347,14 +347,40 @@ export default function Checkout() {
     const [getShippingByAddress, {data: shippingList   , isLoading: isLoadingShipping, isError: isErrorShipping}]  = useGetMatchingShippingList();
     const [generatePaymentToken, {data: newPaymentToken, isLoading: isLoading5, isError: isError5}] = useGeneratePaymentToken();
     
-    const isLoadingPage   = isLoading1 || isLoading2 || isLoading3 ||  !existingPaymentToken;
-    const isErrorPage     = isError1   || isError2   || isError3   || (!existingPaymentToken && isError5);
-    const isReadyPage     = hasCart && !!priceList && !!productList && !!countryList && !!existingPaymentToken;
-    const isReadyShipping = !!shippingList;
+    const isLoadingPage    = isLoading1 || isLoading2 || isLoading3 ||  !existingPaymentToken;
+    const isErrorPage      = isError1   || isError2   || isError3   || (!existingPaymentToken && isError5);
+    const isReadyPage      = hasCart && !!priceList && !!productList && !!countryList && !!existingPaymentToken;
+    const isReadyShipping  = !!shippingList;
+    
+    const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
     
     
     
     // dom effects:
+    
+    // go back to information page if the shippingList is empty:
+    useEffect(() => {
+        // conditions:
+        if (shippingList && Object.keys(shippingList).length) return; // already have shippingList => ignore
+        
+        
+        
+        // no shippingList => go back to information page:
+        dispatch(setCheckoutStep('info'));
+    }, [shippingList]);
+    
+    // go back to shipping page if the selected shipping is not in shippingList:
+    useEffect(() => {
+        if (!shippingList || !Object.keys(shippingList).length) return; // no shippingList => nothing to select => ignore
+        if (selectedShipping) return;  // already have selected shipping => ignore
+        
+        
+        
+        // no shippingList => go back to shipping page:
+        dispatch(setCheckoutStep('shipping'));
+    }, [shippingList, selectedShipping]);
+    
+    // auto renew payment token:
     const isPaymentTokenInitialized = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
@@ -1422,8 +1448,6 @@ const ShippingMethodReview = () => {
         shippingProvider,
     } = useSelector(selectCheckoutState);
     
-    
-    
     const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
     
     
@@ -1518,7 +1542,6 @@ const ShippingMethod = () => {
     
     
     const filteredShippingList = !shippingList ? undefined : Object.values(shippingList.entities).filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry);
-    // const selectedShipping  = shippingList?.entities[shippingProvider ?? ''];
     
     
     
@@ -1530,6 +1553,7 @@ const ShippingMethod = () => {
     
     
     
+    // if no selected shipping method => auto select the cheapest one:
     useEffect(() => {
         if (shippingProvider) return; // already set => ignore
         
@@ -1544,9 +1568,9 @@ const ShippingMethod = () => {
             }))
             ?.sort((a, b) => a.totalShippingCosts - b.totalShippingCosts) // -1 means: no need to ship (digital products)
         );
+        
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
             dispatch(setShippingProvider(orderedConstAscending[0]._id));
-            // console.log('shipping method has automatically set to cheapest: ', orderedConstAscending[0]._id);
         } // if
     }, [shippingProvider]);
     
@@ -1554,32 +1578,43 @@ const ShippingMethod = () => {
     
     // jsx:
     return (
-        <List theme='primary' actionCtrl={true}>
-            {!!filteredShippingList && filteredShippingList.map((shippingEntry, index) => {
-                const totalShippingCosts = calculateShippingCost(totalProductWeights, shippingEntry);
-                const isActive           = filteredShippingList?.[index]?._id === shippingProvider;
-                
-                
-                return (
-                    <ListItem
-                        key={index}
-                        className={styles.optionEntryHeader}
-                        
-                        active={isActive}
-                        onClick={() => dispatch(setShippingProvider(filteredShippingList?.[index]?._id ?? ''))}
-                        
-                        elmRef={isActive ? shippingMethodOptionRef : undefined}
-                    >
-                        <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
-                        <p className='name'>{shippingEntry.name}</p>
-                        {!!shippingEntry.estimate && <p className='estimate'>Estimate: {shippingEntry.estimate}</p>}
-                        <p className='cost'>
-                            {formatCurrency(totalShippingCosts)}
-                        </p>
-                    </ListItem>
-                );
-            })}
-        </List>
+        <>
+            {!!filteredShippingList && <List theme='primary' actionCtrl={true}>
+                {filteredShippingList.map((shippingEntry) => {
+                    const totalShippingCosts = calculateShippingCost(totalProductWeights, shippingEntry);
+                    const isActive           = shippingEntry._id === shippingProvider;
+                    
+                    
+                    
+                    // jsx:
+                    return (
+                        <ListItem
+                            key={shippingEntry._id}
+                            className={styles.optionEntryHeader}
+                            
+                            active={isActive}
+                            onClick={() => dispatch(setShippingProvider(shippingEntry._id))}
+                            
+                            elmRef={isActive ? shippingMethodOptionRef : undefined}
+                        >
+                            <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                            
+                            <p className='name'>
+                                {shippingEntry.name}
+                            </p>
+                            
+                            {!!shippingEntry.estimate && <p className='estimate'>
+                                Estimate: {shippingEntry.estimate}
+                            </p>}
+                            
+                            <p className='cost'>
+                                {formatCurrency(totalShippingCosts)}
+                            </p>
+                        </ListItem>
+                    );
+                })}
+            </List>}
+        </>
     );
 }
 
