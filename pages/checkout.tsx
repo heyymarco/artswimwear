@@ -361,7 +361,7 @@ export default function Checkout() {
     // go back to information page if the shippingList is empty:
     useEffect(() => {
         // conditions:
-        if (shippingList && Object.keys(shippingList).length) return; // already have shippingList => ignore
+        if (shippingList?.ids?.length) return; // already have shippingList => ignore
         
         
         
@@ -371,8 +371,8 @@ export default function Checkout() {
     
     // go back to shipping page if the selected shipping is not in shippingList:
     useEffect(() => {
-        if (!shippingList || !Object.keys(shippingList).length) return; // no shippingList => nothing to select => ignore
-        if (selectedShipping) return;  // already have selected shipping => ignore
+        if (!shippingList?.ids?.length) return; // no shippingList => nothing to select => ignore
+        if (selectedShipping) return;           // already have selected shipping => ignore
         
         
         
@@ -468,7 +468,28 @@ export default function Checkout() {
     // handlers:
     const handleShippingAddressChanged = useEvent(async (address: MatchingAddress): Promise<boolean> => {
         try {
-            await getShippingByAddress(address).unwrap();
+            const shippingList = await getShippingByAddress(address).unwrap();
+            
+            
+            
+            if (!shippingList.ids.length) {
+                showDialogMessage({
+                    theme   : 'danger',
+                    title   : 'No Shipping Agency',
+                    message : <>
+                        <p>
+                            We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
+                        </p>
+                        <p>
+                            Please contact us for further assistance.
+                        </p>
+                    </>
+                });
+                return false;
+            } // if
+            
+            
+            
             return true;
         }
         catch (error: any) {
