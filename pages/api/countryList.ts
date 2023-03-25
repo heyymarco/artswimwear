@@ -36,15 +36,8 @@ export default async (
                 // enabled: true
             }, { _id: false, name: true, code: true, enabled: true });
             if (!countryList.length) {
-                const newCountryList = (await import('@/libs/countryList')).default;
-                await Country.collection.insertMany(
-                    newCountryList.map((country) => ({
-                        name     : country.name,
-                        code     : country.code,
-                        dialCode : country.dialCode,
-                        enabled  : true,
-                    }))
-                );
+                const defaultCountries = (await import('@/libs/defaultCountries')).default;
+                await Country.insertMany(defaultCountries);
             }
             return res.status(200).json(
                 countryList

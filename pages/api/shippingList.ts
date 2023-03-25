@@ -49,8 +49,8 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         // enabled: true
     }, { name: true, estimate: true, weightStep: true, shippingRates: true, enabled: true });
     if (!shippingList.length) {
-        const newShippingList = (await import('@/libs/shippingList')).default;
-        await Shipping.collection.insertMany(
+        const newShippingList = (await import('@/libs/defaultShippings')).default;
+        await Shipping.insertMany(
             newShippingList.map((shipping) => ({
                 name           : shipping.name,
                 estimate       : shipping.estimate,
@@ -85,8 +85,8 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         country,
     } = req.body;
     if (
-           !city    || (typeof(city) !== 'string')    || (city.length    < 3) || (city.length    > 50)
-        || !zone    || (typeof(zone) !== 'string')    || (zone.length    < 3) || (zone.length    > 50)
+           !city    || (typeof(city)    !== 'string') || (city.length    < 3) || (city.length    > 50)
+        || !zone    || (typeof(zone)    !== 'string') || (zone.length    < 3) || (zone.length    > 50)
         || !country || (typeof(country) !== 'string') || (country.length < 2) || (country.length >  3)
     ) {
         return res.status(400).end(); // bad req
@@ -94,18 +94,10 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     
-    let compatibleShippings = await Shipping.find<ShippingSchema>();
-    if (!compatibleShippings.length) {
-        const newShippingList = (await import('@/libs/shippingList')).default;
-        await Shipping.collection.insertMany(
-            newShippingList.map((shipping) => ({
-                name           : shipping.name,
-                estimate       : shipping.estimate,
-                weightStep     : shipping.weightStep,
-                shippingRates  : shipping.shippingRates,
-                enabled        : true,
-            }))
-        );
+    let compatibleShippings = await Shipping.find<ShippingSchema>(); // get all shippings including the disabled ones
+    if (!compatibleShippings.length) { // empty => first app setup => initialize the default shippings
+        const defaultShippings = (await import('@/libs/defaultShippings')).default;
+        await Shipping.insertMany(defaultShippings);
     } // if
     
     
