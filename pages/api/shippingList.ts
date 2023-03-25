@@ -34,51 +34,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         res.status(404).json({ error: 'Page is not found' });
     },
 })
-.get(async (req, res) => {
-    if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
-        await new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
-    } // if
-    
-    
-    
-    const shippingList = await Shipping.find({
-        // enabled: true
-    }, { name: true, estimate: true, weightStep: true, shippingRates: true, enabled: true });
-    if (!shippingList.length) {
-        const newShippingList = (await import('@/libs/defaultShippings')).default;
-        await Shipping.insertMany(
-            newShippingList.map((shipping) => ({
-                name           : shipping.name,
-                estimate       : shipping.estimate,
-                weightStep     : shipping.weightStep,
-                shippingRates  : shipping.shippingRates,
-                enabled        : true,
-            }))
-        );
-    } // if
-    
-    
-    
-    return res.json(
-        shippingList
-        .filter((shipping) => shipping.enabled)
-        .map((shipping) => ({
-            _id                : shipping._id,
-            name               : shipping.name,
-            estimate           : shipping.estimate,
-            weightStep         : shipping.weightStep,
-            shippingRates      : shipping.shippingRates.map((shippingRate: any) => ({
-                startingWeight : shippingRate.startingWeight,
-                rate           : shippingRate.rate,
-            })),
-        }))
-    );
-})
-.post<NextApiRequest, NextApiResponse<Array<MatchingShippingSchema>>>(async (req, res) => {
+.get<NextApiRequest, NextApiResponse<Array<MatchingShippingSchema>>>(async (req, res) => {
     const {
         city,
         zone,
