@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import nextConnect from 'next-connect'
 
 import { connectDB } from '@/libs/dbConn'
-import Shipping, { ShippingSchema } from '@/models/Shipping'
+import { default as Shipping, ShippingSchema, MatchingShippingSchema } from '@/models/Shipping'
 
 
 
@@ -78,7 +78,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         }))
     );
 })
-.post(async (req, res) => {
+.post<NextApiRequest, NextApiResponse<Array<MatchingShippingSchema>>>(async (req, res) => {
     const {
         city,
         zone,
@@ -196,10 +196,10 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
                 
                 weightStep     : compatibleShipping.weightStep,
                 
-                estimate       : estimate,
+                estimate       : estimate || '',
                 shippingRates  : shippingRates,
             };
         })
-        .filter((compatibleShipping): boolean => !!compatibleShipping.shippingRates?.length)
+        .filter((compatibleShipping): compatibleShipping is MatchingShippingSchema => !!compatibleShipping.shippingRates?.length)
     );
 });

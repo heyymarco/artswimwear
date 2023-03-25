@@ -45,5 +45,6 @@ const shippingSchema = new Schema({
     countries       : { type: [coverageCountrySchema] , required: false                                },
 });
 export type ShippingSchema = InferSchemaType<typeof shippingSchema>;
+export type MatchingShippingSchema = Required<Pick<ShippingSchema, 'name'|'weightStep'|'estimate'|'shippingRates'>>
 
 export default models.Shipping ?? model('Shipping', shippingSchema);
