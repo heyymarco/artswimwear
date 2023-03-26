@@ -855,8 +855,8 @@ export default function Checkout() {
                         }
                     </Section>}
                     
-                    {useMemo(() => <>
-                        {isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
+                    {useMemo(() =>
+                        isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
                             <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
                                 <OrderSummary />
                             </Section>
@@ -908,23 +908,25 @@ export default function Checkout() {
                             </Section>
                             
                             <hr className={styles.vertLine} />
-                        </Container>}
-                    </>, [isReadyPage, isDesktop, checkoutStep, styles])}
+                        </Container>
+                    , [isReadyPage, isDesktop, checkoutStep, styles])}
                     
-                    <ModalCard modalCardStyle='scrollable' theme={(dialogMessage ? dialogMessage.theme : prevDialogMessage.current?.theme) ?? 'primary'} lazy={true} expanded={!!dialogMessage} onExpandedChange={(event) => !event.expanded && showDialogMessage(false)}>
-                        <CardHeader>
-                            {(dialogMessage ? dialogMessage.title : prevDialogMessage.current?.title) ?? 'Notification'}
-                            <CloseButton onClick={() => showDialogMessage(false)} />
-                        </CardHeader>
-                        <CardBody>
-                            {dialogMessage ? dialogMessage.message : prevDialogMessage.current?.message}
-                        </CardBody>
-                        <CardFooter>
-                            <Button onClick={() => showDialogMessage(false)}>
-                                Okay
-                            </Button>
-                        </CardFooter>
-                    </ModalCard>
+                    {useMemo(() =>
+                        <ModalCard modalCardStyle='scrollable' theme={(dialogMessage ? dialogMessage.theme : prevDialogMessage.current?.theme) ?? 'primary'} lazy={true} expanded={!!dialogMessage} onExpandedChange={(event) => !event.expanded && showDialogMessage(false)}>
+                            <CardHeader>
+                                {(dialogMessage ? dialogMessage.title : prevDialogMessage.current?.title) ?? 'Notification'}
+                                <CloseButton onClick={() => showDialogMessage(false)} />
+                            </CardHeader>
+                            <CardBody>
+                                {dialogMessage ? dialogMessage.message : prevDialogMessage.current?.message}
+                            </CardBody>
+                            <CardFooter>
+                                <Button onClick={() => showDialogMessage(false)}>
+                                    Okay
+                                </Button>
+                            </CardFooter>
+                        </ModalCard>
+                    , [dialogMessage])}
                 </CheckoutContext.Provider>
             </Main>
         </>
