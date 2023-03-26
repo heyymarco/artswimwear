@@ -1,7 +1,8 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
+import nextConnect from 'next-connect'
+
 import { connectDB } from '@/libs/dbConn'
-import Country from '@/models/Country'
+import { default as Country, CountrySchema } from '@/models/Country'
 
 
 
@@ -16,36 +17,42 @@ catch (error) {
 
 
 
-export default async (
-    req: NextApiRequest,
-    res: NextApiResponse
-) => {
-    switch(req.method) {
-        case 'GET':
-            if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
-                await new Promise<void>((resolve) => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 2000);
-                });
-            } // if
-            
-            
-            
-            const countryList = await Country.find({
-                // enabled: true
-            }, { _id: false, name: true, code: true, enabled: true });
-            if (!countryList.length) {
-                const defaultCountries = (await import('@/libs/defaultCountries')).default;
-                await Country.insertMany(defaultCountries);
-            }
-            return res.status(200).json(
-                countryList
-                .filter((country) => country.enabled)
-                .map((country) => ({
-                    name : country.name,
-                    code : country.code,
-                }))
-            );
-    } // switch
-};
+export default nextConnect<NextApiRequest, NextApiResponse>({
+    onError: (err, req, res, next) => {
+        console.error(err.stack);
+        res.status(500).json({ error: 'Something broke!' });
+    },
+    onNoMatch: (req, res) => {
+        res.status(404).json({ error: 'Page is not found' });
+    },
+})
+.get<NextApiRequest, NextApiResponse<Pick<CountrySchema, 'name'|'code'>>>(async (req, res) => {
+    if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 2000);
+        });
+    } // if
+    
+    
+    
+    const countryList = await Country.find<Pick<CountrySchema, '_id'|'enabled'|'name'|'code'>>({
+        // enabled: true
+    }, { _id: false, enabled: true, name: true, code: true });
+    if (!countryList.length) {
+        const defaultCountries = (await import('@/libs/defaultCountries')).default;
+        await Country.insertMany(defaultCountries);
+    } // if
+    
+    
+    
+    return res.json(
+        countryList
+        .filter((country) => country.enabled)
+        .map((country) => ({
+            name : country.name,
+            code : country.code,
+        }))
+    );
+});

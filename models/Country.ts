@@ -1,13 +1,16 @@
-import { Schema, models, model } from 'mongoose'
+import { Schema, models, model, InferSchemaType } from 'mongoose'
 
 
 
 const countrySchema = new Schema({
-    enabled  : { type: Boolean , required: true },
-    name     : { type: String  , required: true },
+    _id      : { type: String  , required: false },
     
-    code     : { type: String  , required: true },
-    dialCode : { type: String  , required: true },
+    enabled  : { type: Boolean , required: true  },
+    name     : { type: String  , required: true  },
+    
+    code     : { type: String  , required: true  },
+    dialCode : { type: String  , required: true  },
 });
+export type CountrySchema = InferSchemaType<typeof countrySchema>;
 
 export default models.Country ?? model('Country', countrySchema);
