@@ -202,7 +202,6 @@ interface ICheckoutContext {
     
     isLoadingShipping                 : boolean
     isErrorShipping                   : boolean
-    isReadyShipping                   : boolean
     
     isDesktop                         : boolean
     
@@ -248,7 +247,6 @@ const CheckoutContext = createContext<ICheckoutContext>({
     
     isLoadingShipping                 : false,
     isErrorShipping                   : false,
-    isReadyShipping                   : false,
     
     isDesktop                         : false,
     
@@ -344,41 +342,72 @@ export default function Checkout() {
     const                        {data: priceList      , isLoading: isLoading1, isError: isError1}  = useGetPriceList();
     const                        {data: productList    , isLoading: isLoading2, isError: isError2}  = useGetProductList();
     const                        {data: countryList    , isLoading: isLoading3, isError: isError3}  = useGetCountryList();
-    const [getShippingByAddress, {data: shippingList   , isLoading: isLoadingShipping, isError: isErrorShipping}]  = useGetMatchingShippingList();
     const [generatePaymentToken, {data: newPaymentToken, isLoading: isLoading5, isError: isError5}] = useGeneratePaymentToken();
     
-    const isLoadingPage    = isLoading1 || isLoading2 || isLoading3 ||  !existingPaymentToken;
-    const isErrorPage      = isError1   || isError2   || isError3   || (!existingPaymentToken && isError5);
-    const isReadyPage      = hasCart && !!priceList && !!productList && !!countryList && !!existingPaymentToken;
-    const isReadyShipping  = !!shippingList;
+    const [getShippingByAddress, {data: shippingList   , isUninitialized: isUninitShipping, isLoading: isLoadingShipping, isError: isErrorShipping, isSuccess: isSuccessShipping}]  = useGetMatchingShippingList();
     
-    const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
+    const isPerformedRecoverShippingList = useRef<boolean>(false);
+    const isNeedsRecoverShippingList     =                                (checkoutProgress >= 1) && isUninitShipping  && !isPerformedRecoverShippingList.current;
+    const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutProgress >= 2) && isSuccessShipping && !shippingList?.entities?.[shippingProvider ?? ''];
+    
+    const isLoadingPage                  = isLoading1 || isLoading2 || isLoading3 ||  !existingPaymentToken || isNeedsRecoverShippingList;
+    const isErrorPage                    = !isLoadingPage && (isError1   || isError2   || isError3   || (!existingPaymentToken && isError5));
+    const isReadyPage                    = !isLoadingPage && (hasCart && !!priceList && !!productList && !!countryList && !!existingPaymentToken);
     
     
     
     // dom effects:
     
-    // go back to information page if the shippingList is empty:
+    // try to recover shippingList on page_refresh:
     useEffect(() => {
         // conditions:
-        if (shippingList?.ids?.length) return; // already have shippingList => ignore
+        if (!isNeedsRecoverShippingList)     return; // already being initialized/recovered => ignore
         
         
         
-        // no shippingList => go back to information page:
-        dispatch(setCheckoutStep('info'));
-    }, [shippingList]);
+        // check shipping address:
+        const {
+            shippingCity,
+            shippingZone,
+            shippingCountry,
+        } = checkoutState;
+        if (!shippingCity || !shippingZone || !shippingCountry) {
+            // no shippingList => go back to information page:
+            dispatch(setCheckoutStep('info'));
+            
+            
+            
+            // abort to initialize shippingList:
+            return;
+        } // if
+        
+        
+        
+        // initialize shippingList:
+        isPerformedRecoverShippingList.current = true;
+        getShippingByAddress({
+            city    : shippingCity,
+            zone    : shippingZone,
+            country : shippingCountry,
+        });
+    }, [isNeedsRecoverShippingList, checkoutState]);
     
-    // go back to shipping page if the selected shipping is not in shippingList:
+    // go back to shipping page if the selected shippingProvider is not in shippingList:
     useEffect(() => {
-        if (!shippingList?.ids?.length) return; // no shippingList => nothing to select => ignore
-        if (selectedShipping) return;           // already have selected shipping => ignore
+        // conditions:
+        if (!isNeedsRecoverShippingProvider) return; // already recovered => ignore
         
         
         
-        // no shippingList => go back to shipping page:
-        dispatch(setCheckoutStep('shipping'));
-    }, [shippingList, selectedShipping]);
+        if (shippingList?.ids?.length) {
+            // no valid selected shippingProvider -AND- have shippingList => go back to shipping page:
+            dispatch(setCheckoutStep('shipping'));
+        }
+        else {
+            // no valid selected shippingProvider -AND- no shippingList => go back to information page:
+            dispatch(setCheckoutStep('info'));
+        } // if
+    }, [isNeedsRecoverShippingProvider, shippingList]);
     
     // auto renew payment token:
     const isPaymentTokenInitialized = useRef<boolean>(false);
@@ -724,7 +753,6 @@ export default function Checkout() {
         
         isLoadingShipping,
         isErrorShipping,
-        isReadyShipping,
         
         isDesktop,
         
@@ -769,7 +797,6 @@ export default function Checkout() {
         
         isLoadingShipping,
         isErrorShipping,
-        isReadyShipping,
         
         isDesktop,
         
@@ -1558,6 +1585,9 @@ const ShippingMethod = () => {
     const {
         shippingProvider,
     } = useSelector(selectCheckoutState);
+    
+    const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
+    
     const dispatch = useDispatch();
     
     
@@ -1576,7 +1606,7 @@ const ShippingMethod = () => {
     
     // if no selected shipping method => auto select the cheapest one:
     useEffect(() => {
-        if (shippingProvider) return; // already set => ignore
+        if (selectedShipping) return; // already selected => ignore
         
         
         
@@ -1593,7 +1623,7 @@ const ShippingMethod = () => {
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
             dispatch(setShippingProvider(orderedConstAscending[0]._id));
         } // if
-    }, [shippingProvider]);
+    }, [selectedShipping]);
     
     
     
