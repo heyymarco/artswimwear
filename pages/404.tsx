@@ -4,6 +4,7 @@ import { dynamicStyleSheet } from '@cssfn/cssfn-react';
 import { containers } from '@reusable-ui/components';
 import { borders, colors, ifScreenWidthAtLeast, usesThemable } from '@reusable-ui/core';
 import type { NextPage } from 'next'
+import Image from 'next/image'
 import Head from 'next/head'
 
 
@@ -102,7 +103,7 @@ const Page : NextPage = () => {
             <meta name="description" content="Sorry, this page is under construction or maintenance." />
         </Head>
         <GenericSection className={sheet.main} theme='primary' mild={true}>
-            <img className='illustration' src='/under-construction.svg' alt='' />
+            <Image className='illustration' alt='' src='/under-construction.svg' />
             <article>
                 <h1>
                     Under Construction
