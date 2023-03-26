@@ -90,7 +90,7 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     
     
     // handlers:
-    const handleFocusBlur = useEvent((event: HostedFieldsEvent) => {
+    const handleFocusBlur    = useEvent((event: HostedFieldsEvent) => {
         // conditions:
         const field = event.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
         if (!field) return;
@@ -155,6 +155,45 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     
     
     
+    // caches:
+    const {
+        selector,
+        placeholder,
+        type,
+        formatInput,
+        maskInput,
+        select,
+        maxlength,
+        minlength,
+        prefill,
+        rejectUnsupportedCards,
+    } = options;
+    const optionsCached = useMemo(() => ({
+        selector,
+        placeholder,
+        type,
+        formatInput,
+        maskInput,
+        select,
+        maxlength,
+        minlength,
+        prefill,
+        rejectUnsupportedCards,
+    }), [
+        selector,
+        placeholder,
+        type,
+        formatInput,
+        maskInput,
+        select,
+        maxlength,
+        minlength,
+        prefill,
+        rejectUnsupportedCards,
+    ]);
+    
+    
+    
     // jsx:
     return (
         <EditableTextControl
@@ -165,15 +204,17 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
             focused    = {isFocused ?? false}
             isValid    = {isValid   ?? null }
             
-            aria-label = {options.placeholder}
+            aria-label = {optionsCached.placeholder}
         >
-            <PayPalHostedField
-                {...{
-                    hostedFieldType,
-                    options,
-                    id,
-                }}
-            />
+            {useMemo(() =>
+                <PayPalHostedField
+                    {...{
+                        hostedFieldType,
+                        options : optionsCached,
+                        id,
+                    }}
+                />
+            , [hostedFieldType, optionsCached, id])}
         </EditableTextControl>
     );
 }
