@@ -26,7 +26,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         res.status(404).json({ error: 'Page is not found' });
     },
 })
-.get<NextApiRequest, NextApiResponse<Pick<CountrySchema, 'name'|'code'>>>(async (req, res) => {
+.get<NextApiRequest, NextApiResponse<Array<Pick<CountrySchema, 'name'|'code'>>>>(async (req, res) => {
     if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
         await new Promise<void>((resolve) => {
             setTimeout(() => {
