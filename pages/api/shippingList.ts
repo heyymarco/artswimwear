@@ -60,6 +60,12 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     
+    // simulates error:
+    // return res.status(400).end();
+    // return res.json([]);
+    
+    
+    
     let compatibleShippings = await Shipping.find<ShippingSchema & Pick<MatchingShipping, '_id'>>(); // get all shippings including the disabled ones
     if (!compatibleShippings.length) { // empty => first app setup => initialize the default shippings
         const defaultShippings = (await import('@/libs/defaultShippings')).default;

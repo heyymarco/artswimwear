@@ -347,8 +347,8 @@ export default function Checkout() {
     const [getShippingByAddress, {data: shippingList   , isUninitialized: isUninitShipping, isLoading: isLoadingShipping, isError: isErrorShipping, isSuccess: isSuccessShipping}]  = useGetMatchingShippingList();
     
     const isPerformedRecoverShippingList = useRef<boolean>(false);
-    const isNeedsRecoverShippingList     =                                (checkoutProgress >= 1) && isUninitShipping  && !isPerformedRecoverShippingList.current;
-    const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutProgress >= 2) && isSuccessShipping && !shippingList?.entities?.[shippingProvider ?? ''];
+    const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isUninitShipping  && !isPerformedRecoverShippingList.current;
+    const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isErrorShipping || isSuccessShipping) && !shippingList?.entities?.[shippingProvider ?? ''];
     
     const isLoadingPage                  = isLoading1 || isLoading2 || isLoading3 ||  !existingPaymentToken || isNeedsRecoverShippingList;
     const isErrorPage                    = !isLoadingPage && (isError1   || isError2   || isError3   || (!existingPaymentToken && isError5));
