@@ -855,59 +855,61 @@ export default function Checkout() {
                         }
                     </Section>}
                     
-                    {isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
-                        <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
-                            <OrderSummary />
-                        </Section>
-                        
-                        <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
-                            <ProgressCheckout />
-                        </Section>
-                        
-                        <div className={styles.currentStepLayout}>
-                            {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
-                                <OrderReview />
-                            </Section>}
+                    {useMemo(() => <>
+                        {isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
+                            <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
+                                <OrderSummary />
+                            </Section>
                             
-                            {(checkoutStep === 'info') && <Section className={styles.checkout}>
-                                {/* TODO: activate */}
-                                {/* <Section className={styles.expressCheckout} title='Express Checkout'>
-                                </Section>
+                            <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
+                                <ProgressCheckout />
+                            </Section>
+                            
+                            <div className={styles.currentStepLayout}>
+                                {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
+                                    <OrderReview />
+                                </Section>}
                                 
-                                <div className={styles.checkoutAlt}>
-                                    <hr />
-                                    <span>OR</span>
-                                    <hr />
-                                </div> */}
+                                {(checkoutStep === 'info') && <Section className={styles.checkout}>
+                                    {/* TODO: activate */}
+                                    {/* <Section className={styles.expressCheckout} title='Express Checkout'>
+                                    </Section>
+                                    
+                                    <div className={styles.checkoutAlt}>
+                                        <hr />
+                                        <span>OR</span>
+                                        <hr />
+                                    </div> */}
+                                    
+                                    <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
+                                        <RegularCheckout />
+                                    </Section>
+                                </Section>}
                                 
-                                <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
-                                    <RegularCheckout />
-                                </Section>
-                            </Section>}
+                                {(checkoutStep === 'shipping') && <Section className={styles.shippingMethod} title='Shipping Method'>
+                                    <ShippingMethod />
+                                </Section>}
+                                
+                                {(checkoutStep === 'payment') && <Section className={styles.payment} title='Payment'>
+                                    <Payment />
+                                </Section>}
+                                
+                                {(checkoutStep === 'pending') && <Section className={styles.paymentFinish} title='Thank You'>
+                                    <PaymentPending />
+                                </Section>}
+                                
+                                {(checkoutStep === 'paid') && <Section className={styles.paymentFinish} title='Thank You'>
+                                    <Paid />
+                                </Section>}
+                            </div>
                             
-                            {(checkoutStep === 'shipping') && <Section className={styles.shippingMethod} title='Shipping Method'>
-                                <ShippingMethod />
-                            </Section>}
+                            <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={setNavCheckoutSectionElm} />}>
+                                <NavCheckout />
+                            </Section>
                             
-                            {(checkoutStep === 'payment') && <Section className={styles.payment} title='Payment'>
-                                <Payment />
-                            </Section>}
-                            
-                            {(checkoutStep === 'pending') && <Section className={styles.paymentFinish} title='Thank You'>
-                                <PaymentPending />
-                            </Section>}
-                            
-                            {(checkoutStep === 'paid') && <Section className={styles.paymentFinish} title='Thank You'>
-                                <Paid />
-                            </Section>}
-                        </div>
-                        
-                        <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={setNavCheckoutSectionElm} />}>
-                            <NavCheckout />
-                        </Section>
-                        
-                        <hr className={styles.vertLine} />
-                    </Container>}
+                            <hr className={styles.vertLine} />
+                        </Container>}
+                    </>, [isReadyPage, isDesktop, checkoutStep, styles])}
                     
                     <ModalCard modalCardStyle='scrollable' theme={(dialogMessage ? dialogMessage.theme : prevDialogMessage.current?.theme) ?? 'primary'} lazy={true} expanded={!!dialogMessage} onExpandedChange={(event) => !event.expanded && showDialogMessage(false)}>
                         <CardHeader>
@@ -1623,7 +1625,7 @@ const ShippingMethod = () => {
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
             dispatch(setShippingProvider(orderedConstAscending[0]._id));
         } // if
-    }, [selectedShipping]);
+    }, [selectedShipping, filteredShippingList, totalProductWeights]);
     
     
     
