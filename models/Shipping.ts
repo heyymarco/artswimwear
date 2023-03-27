@@ -33,6 +33,8 @@ const coverageCountrySchema = new Schema({
 });
 
 const shippingSchema = new Schema({
+    _id             : { type: String                  , required: false                                },
+    
     enabled         : { type: Boolean                 , required: true                                 },
     name            : { type: String                  , required: true  , minLength: 2 , maxLength: 50 },
     

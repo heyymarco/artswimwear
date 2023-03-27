@@ -8,10 +8,16 @@ import type { AddressSchema } from '@/models/Address'
 
 
 // types:
-export interface MatchingAddress extends Required<Pick<AddressSchema, 'country'|'zone'|'city'>> {
+export interface MatchingAddress
+    extends
+        Pick<AddressSchema, 'country'|'zone'|'city'>
+{
 }
-export interface MatchingShipping extends Required<Pick<ShippingSchema, 'name'|'weightStep'|'estimate'|'shippingRates'>> {
-    _id : string
+export interface MatchingShipping
+    extends
+        Required<Pick<ShippingSchema, '_id'|'shippingRates'>>,
+        Pick<ShippingSchema, 'name'|'weightStep'|'estimate'>
+{
 }
 
 
@@ -66,7 +72,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     
-    let compatibleShippings = await Shipping.find<ShippingSchema & Pick<MatchingShipping, '_id'>>(); // get all shippings including the disabled ones
+    let compatibleShippings = await Shipping.find<Required<Pick<ShippingSchema, '_id'>> & Omit<ShippingSchema, '_id'>>(); // get all shippings including the disabled ones
     if (!compatibleShippings.length) { // empty => first app setup => initialize the default shippings
         const defaultShippings = (await import('@/libs/defaultShippings')).default;
         await Shipping.insertMany(defaultShippings);
@@ -141,8 +147,8 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     return res.json(
         compatibleShippings
-        .map((compatibleShipping): Pick<ShippingSchema, 'name'|'weightStep'|'estimate'|'shippingRates'> & Pick<MatchingShipping, '_id'> => {
-            const estimate : ShippingSchema['estimate'] = (
+        .map((compatibleShipping): Omit<MatchingShipping, 'shippingRates'> & Partial<Pick<MatchingShipping, 'shippingRates'>> => {
+            const estimate      : MatchingShipping['estimate'] = (
                 compatibleShipping.countries?.[0]?.zones?.[0]?.cities?.[0]?.estimate
                 ||
                 compatibleShipping.countries?.[0]?.zones?.[0]?.estimate
@@ -151,7 +157,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
                 ||
                 compatibleShipping.estimate
             );
-            const shippingRates : ShippingSchema['shippingRates'] = (
+            const shippingRates : MatchingShipping['shippingRates']|undefined = (
                 undefinedIfEmptyArray(compatibleShipping.countries?.[0]?.zones?.[0]?.cities?.[0]?.shippingRates)
                 ??
                 undefinedIfEmptyArray(compatibleShipping.countries?.[0]?.zones?.[0]?.shippingRates)
