@@ -85,6 +85,7 @@ const ProductImage = (props: ProductImageProps) => {
                 
                 
                 // appearances:
+                alt={restImageProps.alt} // for satisfying esLint
                 src={src}
                 fill={props.fill ?? true}
                 sizes={props.sizes ?? '255px'}
