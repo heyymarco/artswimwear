@@ -37,7 +37,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     
-    const countryList = await Country.find<Pick<CountrySchema, '_id'|'enabled'|'name'|'code'>>({
+    const countryList = await Country.find<Pick<CountrySchema, 'enabled'|'name'|'code'>>({
         // enabled: true
     }, { _id: false, enabled: true, name: true, code: true });
     if (!countryList.length) {
