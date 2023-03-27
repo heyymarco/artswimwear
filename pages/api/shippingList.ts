@@ -8,17 +8,8 @@ import type { AddressSchema } from '@/models/Address'
 
 
 // types:
-export interface MatchingAddress
-    extends
-        Pick<AddressSchema, 'country'|'zone'|'city'>
-{
-}
-export interface MatchingShipping
-    extends
-        Required<Pick<ShippingSchema, '_id'|'shippingRates'>>,
-        Pick<ShippingSchema, 'name'|'weightStep'|'estimate'>
-{
-}
+export type MatchingAddress  = Pick<AddressSchema, 'country'|'zone'|'city'>
+export type MatchingShipping = Required<Pick<ShippingSchema, '_id'|'shippingRates'>> & Pick<ShippingSchema, 'name'|'weightStep'|'estimate'>
 
 
 
