@@ -1938,7 +1938,7 @@ const PaymentMethodCard = () => {
                     />
                     <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
                         <Icon icon='lock' />
-                        <Tooltip className='tooltip' size='sm' floatingOn={safeSignRef}>
+                        <Tooltip className='tooltip' theme='warning' size='sm' floatingOn={safeSignRef}>
                             <p>
                                 All transactions are secure and encrypted.
                             </p>
@@ -1959,7 +1959,7 @@ const PaymentMethodCard = () => {
                     <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' elmRef={cardholderInputRef} />
                     <Label theme='success' mild={true} className='solid' elmRef={nameSignRef}>
                         <Icon icon='help' />
-                        <Tooltip className='tooltip' size='sm' floatingOn={nameSignRef}>
+                        <Tooltip className='tooltip' theme='warning' size='sm' floatingOn={nameSignRef}>
                             <p>
                                 The owner name as printed on front card.
                             </p>
@@ -1982,7 +1982,7 @@ const PaymentMethodCard = () => {
                     />
                     <Label theme='success' mild={true} className='solid' elmRef={dateSignRef}>
                         <Icon icon='help' />
-                        <Tooltip className='tooltip' size='sm' floatingOn={dateSignRef}>
+                        <Tooltip className='tooltip' theme='warning' size='sm' floatingOn={dateSignRef}>
                             <p>
                                 The expiration date as printed on front card.
                             </p>
@@ -2005,7 +2005,7 @@ const PaymentMethodCard = () => {
                     />
                     <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
                         <Icon icon='help' />
-                        <Tooltip className='tooltip' size='sm' floatingOn={cscSignRef}>
+                        <Tooltip className='tooltip' theme='warning' size='sm' floatingOn={cscSignRef}>
                             <p>
                                 3-digit security code usually found on the back of your card.
                             </p>

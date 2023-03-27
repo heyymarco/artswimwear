@@ -90,9 +90,6 @@ export default () => {
                     }),
                 }),
             }),
-            ...descendants('.tooltip', {
-                minInlineSize: '10rem',
-            })
         }, {specificityWeight: 2}),
         scopeOf('progressCheckout', {
             gridArea: 'progressCheckout',
