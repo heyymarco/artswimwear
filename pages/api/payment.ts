@@ -1,4 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
+import nextConnect from 'next-connect'
+
 import { connectDB } from '@/libs/dbConn'
 import Product from '@/models/Product'
 import { createEntityAdapter } from '@reduxjs/toolkit'
@@ -191,27 +193,24 @@ const revertOrder = async (session: ClientSession, { draftOrder } : { draftOrder
 
 
 
-export default async (
-    req : NextApiRequest,
-    res : NextApiResponse
-) => {
-    if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
-        await new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
-    } // if
-    
-    
-    
-    switch(req.method) {
-        case 'GET'   : return responseGeneratePaymentToken(req, res);
-        case 'POST'  : return responsePlaceOrder(req, res);
-        case 'PATCH' : return responseMakePayment(req, res)
-        default      : return res.status(400).end();
-    } // switch
-}
+export default nextConnect<NextApiRequest, NextApiResponse>({
+    onError: (err, req, res, next) => {
+        console.error(err.stack);
+        res.status(500).json({ error: 'Something broke!' });
+    },
+    onNoMatch: (req, res) => {
+        res.status(404).json({ error: 'Page is not found' });
+    },
+})
+.get<NextApiRequest, NextApiResponse>(async (req, res) => {
+    return await responseGeneratePaymentToken(req, res);
+})
+.post<NextApiRequest, NextApiResponse>(async (req, res) => {
+    return await responsePlaceOrder(req, res);
+})
+.patch<NextApiRequest, NextApiResponse>(async (req, res) => {
+    return await responseMakePayment(req, res);
+});
 
 /**
  * intialize paymentToken
