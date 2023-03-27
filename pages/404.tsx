@@ -103,7 +103,7 @@ const Page : NextPage = () => {
             <meta name="description" content="Sorry, this page is under construction or maintenance." />
         </Head>
         <GenericSection className={sheet.main} theme='primary' mild={true}>
-            <Image className='illustration' alt='' src='/under-construction.svg' />
+            <Image className='illustration' alt='' src='/under-construction.svg' width={0} height={0} />
             <article>
                 <h1>
                     Under Construction
