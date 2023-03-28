@@ -162,6 +162,10 @@ const getCurrencyRate = async (toCurrency: string): Promise<number> => {
 
 
 
+const trimNumber = <TNumber extends number|undefined>(number: TNumber) : TNumber => (typeof(number) !== 'number') ? number : (Number.parseFloat(number.toFixed(6)) as TNumber);
+
+
+
 const getPaypalCurrencyConverter      = async (): Promise<{rate: number, fractionUnit: number}> => {
     return {
         rate         : await getCurrencyRate(PAYPAL_CURRENCY),
@@ -186,7 +190,7 @@ const paypalConvertCurrencyIfRequired = async (from: number|undefined): Promise<
     
     
     
-    return stepped;
+    return trimNumber(stepped);
 }
 const paypalRevertCurrencyIfRequired  = async (from: number|undefined): Promise<number|undefined> => {
     // conditions:
@@ -207,7 +211,7 @@ const paypalRevertCurrencyIfRequired  = async (from: number|undefined): Promise<
     
     
     
-    return stepped;
+    return trimNumber(stepped);
 }
 
 
@@ -418,15 +422,18 @@ const responsePlaceOrder = async (
                 
                 
                 totalProductPricesConverted += unitPriceConverted * quantity;
+                totalProductPricesConverted  = trimNumber(totalProductPricesConverted);
                 
                 if (unitWeight !== undefined) {
                     if (totalProductWeights === undefined) totalProductWeights = 0; // contains at least 1 PHYSICAL_GOODS
+                    
                     totalProductWeights     += unitWeight         * quantity;
+                    totalProductWeights      = trimNumber(totalProductWeights);
                 } // if
             } // for
             const totalShippingCost          = calculateShippingCost(totalProductWeights, { weightStep: selectedShipping.weightStep, shippingRates: shippingRates ?? ([] as any) });
             const totalShippingCostConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
-            const totalCostConverted         = totalProductPricesConverted + (totalShippingCostConverted ?? 0);
+            const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
             //#endregion verify & convert items
             
             
