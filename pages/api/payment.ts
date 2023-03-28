@@ -324,26 +324,24 @@ const responsePlaceOrder = async (
     try {
         await session.withTransaction(async (): Promise<void> => {
             //#region verify shipping
-            const selectedShipping = await Shipping.findOne<Required<Pick<ShippingSchema, '_id'>> & Pick<ShippingSchema, 'enabled'|'weightStep'|'shippingRates'|'useSpecificArea'|'countries'>>({
-                _id           : shippingProvider,
-                enabled       : true,
+            const selectedShipping = await Shipping.findOne<Pick<ShippingSchema, 'weightStep'|'shippingRates'|'useSpecificArea'|'countries'>>({
+                _id     : shippingProvider,
+                enabled : true,
             }, { _id: false, weightStep: true, shippingRates: true, useSpecificArea: true, countries: true });
             if (!selectedShipping) throw 'BAD_SHIPPING';
             
             let shippingRates = selectedShipping.shippingRates;
-            if (selectedShipping.useSpecificArea ?? false) {
-                const matchingCountry = selectedShipping.countries?.find((coverageCountry) => (coverageCountry.country.toLowerCase() === shippingCountry.toLowerCase()));
-                if (matchingCountry) {
-                    if (matchingCountry.shippingRates?.length) shippingRates = matchingCountry.shippingRates;
+            const matchingCountry = (selectedShipping.useSpecificArea ?? false) && selectedShipping.countries?.find((coverageCountry) => (coverageCountry.country.toLowerCase() === shippingCountry.toLowerCase()));
+            if (matchingCountry) {
+                if (matchingCountry.shippingRates?.length) shippingRates = matchingCountry.shippingRates;
+                
+                const matchingZone = (matchingCountry.useSpecificArea ?? false) && matchingCountry.zones?.find((coverageZone) => (coverageZone.zone.toLowerCase() === shippingZone.toLowerCase()));
+                if (matchingZone) {
+                    if (matchingZone.shippingRates?.length) shippingRates = matchingZone.shippingRates;
                     
-                    const matchingZone = matchingCountry.zones?.find((coverageZone) => (coverageZone.zone.toLowerCase() === shippingZone.toLowerCase()));
-                    if (matchingZone) {
-                        if (matchingZone.shippingRates?.length) shippingRates = matchingZone.shippingRates;
-                        
-                        const matchingCity = matchingZone.cities?.find((coverageCity) => (coverageCity.city.toLowerCase() === shippingCity.toLowerCase()));
-                        if (matchingCity) {
-                            if (matchingCity.shippingRates?.length) shippingRates = matchingCity.shippingRates;
-                        } // if
+                    const matchingCity = (matchingZone.useSpecificArea ?? false) && matchingZone.cities?.find((coverageCity) => (coverageCity.city.toLowerCase() === shippingCity.toLowerCase()));
+                    if (matchingCity) {
+                        if (matchingCity.shippingRates?.length) shippingRates = matchingCity.shippingRates;
                     } // if
                 } // if
             } // if
@@ -426,7 +424,7 @@ const responsePlaceOrder = async (
                     totalProductWeights     += unitWeight         * quantity;
                 } // if
             } // for
-            const totalShippingCost          = calculateShippingCost(totalProductWeights, { ...selectedShipping, shippingRates: shippingRates ?? ([] as any) });
+            const totalShippingCost          = calculateShippingCost(totalProductWeights, { weightStep: selectedShipping.weightStep, shippingRates: shippingRates ?? ([] as any) });
             const totalShippingCostConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
             const totalCostConverted         = totalProductPricesConverted + (totalShippingCostConverted ?? 0);
             //#endregion verify & convert items
