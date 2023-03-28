@@ -1659,7 +1659,7 @@ const ShippingMethod = () => {
         const orderedConstAscending = (
             filteredShippingList
             ?.map((shippingEntry) => ({
-                _id                : shippingEntry._id,
+                _id                : `${shippingEntry._id}`,
                 totalShippingCosts : calculateShippingCost(totalProductWeights, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
             }))
             ?.sort((a, b) => a.totalShippingCosts - b.totalShippingCosts) // -1 means: no need to ship (digital products)
@@ -1678,18 +1678,18 @@ const ShippingMethod = () => {
             {!!filteredShippingList && <List theme='primary' actionCtrl={true}>
                 {filteredShippingList.map((shippingEntry) => {
                     const totalShippingCosts = calculateShippingCost(totalProductWeights, shippingEntry);
-                    const isActive           = shippingEntry._id === shippingProvider;
+                    const isActive           = `${shippingEntry._id}` === shippingProvider;
                     
                     
                     
                     // jsx:
                     return (
                         <ListItem
-                            key={shippingEntry._id}
+                            key={`${shippingEntry._id}`}
                             className={styles.optionEntryHeader}
                             
                             active={isActive}
-                            onClick={() => dispatch(setShippingProvider(shippingEntry._id))}
+                            onClick={() => dispatch(setShippingProvider(`${shippingEntry._id}`))}
                             
                             elmRef={isActive ? shippingMethodOptionRef : undefined}
                         >
