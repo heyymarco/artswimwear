@@ -162,10 +162,7 @@ const getCurrencyRate = async (toCurrency: string): Promise<number> => {
 
 
 
-const getPaypalCurrencyCode = (): string => {
-    return PAYPAL_CURRENCY;
-}
-const getPaypalCurrencyConverter = async (): Promise<{rate: number, fractionUnit: number}> => {
+const getPaypalCurrencyConverter      = async (): Promise<{rate: number, fractionUnit: number}> => {
     return {
         rate         : await getCurrencyRate(PAYPAL_CURRENCY),
         fractionUnit : PAYPAL_CURRENCY_FRACTION_UNIT,
@@ -191,7 +188,7 @@ const paypalConvertCurrencyIfRequired = async (from: number|undefined): Promise<
     
     return stepped;
 }
-const paypalRevertCurrencyIfRequired = async (from: number|undefined): Promise<number|undefined> => {
+const paypalRevertCurrencyIfRequired  = async (from: number|undefined): Promise<number|undefined> => {
     // conditions:
     if (from === undefined) return undefined;
     
@@ -357,10 +354,13 @@ const responsePlaceOrder = async (
             
             
             
+            const usePaypal = (paymentSource !== 'manual');
+            
+            
+            
             //#region verify & convert items
             const itemsConverted : CartEntrySchema[] = [];
             let totalProductPricesConverted = 0, totalProductWeights : number|undefined = undefined;
-            const paypalCurrencyCode = getPaypalCurrencyCode();
             for (const item of items) {
                 if (!item || (typeof(item) !== 'object')) throw 'INVALID_JSON';
                 const {
@@ -388,7 +388,7 @@ const responsePlaceOrder = async (
                 
                 
                 const unitPrice          = product.price                              ?? 0;
-                const unitPriceConverted = await paypalConvertCurrencyIfRequired(unitPrice) ?? 0;
+                const unitPriceConverted = usePaypal ? ((await paypalConvertCurrencyIfRequired(unitPrice)) ?? 0) : unitPrice;
                 const unitWeight         = product.shippingWeight;
                 
                 
@@ -408,14 +408,15 @@ const responsePlaceOrder = async (
                     totalProductWeights     += unitWeight         * quantity;
                 } // if
             } // for
-            const totalShippingCostsConverted = await paypalConvertCurrencyIfRequired(calculateShippingCost(totalProductWeights, selectedShipping));
-            const totalCostConverted          = totalProductPricesConverted + (totalShippingCostsConverted ?? 0);
+            const totalShippingCost          = calculateShippingCost(totalProductWeights, selectedShipping);
+            const totalShippingCostConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
+            const totalCostConverted         = totalProductPricesConverted + (totalShippingCostConverted ?? 0);
             //#endregion verify & convert items
             
             
             
             //#region fetch paypal API
-            if (paymentSource !== 'manual') {
+            if (usePaypal) {
                 const accessToken = await generateAccessToken();
                 const url = `${paypalURL}/v2/checkout/orders`;
                 const paypalResponse = await fetch(url, {
@@ -436,7 +437,7 @@ const responsePlaceOrder = async (
                             amount                    : {
                                 // currency_code string required
                                 // The three-character ISO-4217 currency code that identifies the currency.
-                                currency_code         : paypalCurrencyCode,
+                                currency_code         : PAYPAL_CURRENCY,
                                 
                                 // value string required
                                 /*
@@ -464,15 +465,15 @@ const responsePlaceOrder = async (
                                     // item_total Money|undefined
                                     // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                                     item_total        : {
-                                        currency_code : paypalCurrencyCode,
+                                        currency_code : PAYPAL_CURRENCY,
                                         value         : totalProductPricesConverted,
                                     },
                                     
                                     // shipping Money|undefined
                                     // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
-                                    shipping          : (totalShippingCostsConverted === undefined) ? undefined : {
-                                        currency_code : paypalCurrencyCode,
-                                        value         : totalShippingCostsConverted,
+                                    shipping          : (totalShippingCostConverted === undefined) ? undefined : {
+                                        currency_code : PAYPAL_CURRENCY,
+                                        value         : totalShippingCostConverted,
                                     },
                                     
                                     // shipping_discount Money|undefined
@@ -509,7 +510,7 @@ const responsePlaceOrder = async (
                                 unit_amount           : {
                                     // currency_code string required
                                     // The three-character ISO-4217 currency code that identifies the currency.
-                                    currency_code     : paypalCurrencyCode,
+                                    currency_code     : PAYPAL_CURRENCY,
                                     
                                     // value string required
                                     /*
@@ -660,7 +661,7 @@ const responsePlaceOrder = async (
                 items              : await Promise.all(itemsConverted.map(async (itemConverted) => {
                     return {
                         product        : itemConverted.product,
-                        price          : await paypalRevertCurrencyIfRequired(itemConverted.price),
+                        price          : usePaypal ? (await paypalRevertCurrencyIfRequired(itemConverted.price)) : itemConverted.price,
                         shippingWeight : itemConverted.shippingWeight,
                         quantity       : itemConverted.quantity,
                     };
@@ -679,7 +680,7 @@ const responsePlaceOrder = async (
                     country            : shippingCountry.toUpperCase(),
                 },
                 shippingProvider       : shippingProvider,
-                shippingCost           : await paypalRevertCurrencyIfRequired(totalShippingCostsConverted),
+                shippingCost           : usePaypal ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
                 
                 expires                : (Date.now() + 60 * 1000),
                 
