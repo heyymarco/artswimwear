@@ -18,6 +18,7 @@ import Order, { PaymentMethodSchema } from '@/models/Order'
 import type { AddressSchema } from '@/models/Address'
 import type { CustomerSchema } from '@/models/Customer'
 import { CartEntrySchema } from '@/models/CartEntry'
+import { trimNumber } from '@/libs/formatters'
 import {
     COMMERCE_CURRENCY,
     COMMERCE_CURRENCY_FRACTION_UNIT,
@@ -159,10 +160,6 @@ const getCurrencyRate = async (toCurrency: string): Promise<number> => {
     if (toRate === undefined) throw Error('unknown currency');
     return 1 / toRate;
 }
-
-
-
-const trimNumber = <TNumber extends number|undefined>(number: TNumber) : TNumber => (typeof(number) !== 'number') ? number : (Number.parseFloat(number.toFixed(6)) as TNumber);
 
 
 
