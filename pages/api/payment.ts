@@ -169,9 +169,9 @@ const getPaypalCurrencyConverter      = async (): Promise<{rate: number, fractio
         fractionUnit : PAYPAL_CURRENCY_FRACTION_UNIT,
     };
 }
-const paypalConvertCurrencyIfRequired = async (from: number|undefined): Promise<number|undefined> => {
+const paypalConvertCurrencyIfRequired = async <TNumber extends number|undefined>(from: TNumber): Promise<TNumber> => {
     // conditions:
-    if (from === undefined) return undefined;
+    if (typeof(from) !== 'number') return from;
     
     
     
@@ -187,7 +187,7 @@ const paypalConvertCurrencyIfRequired = async (from: number|undefined): Promise<
     
     
     
-    return trimNumber(stepped);
+    return trimNumber(stepped) as TNumber;
 }
 const paypalRevertCurrencyIfRequired  = async (from: number|undefined): Promise<number|undefined> => {
     // conditions:
@@ -404,8 +404,9 @@ const responsePlaceOrder = async (
                 } // if
                 
                 
-                const unitPrice          = product.price                              ?? 0;
-                const unitPriceConverted = usePaypal ? ((await paypalConvertCurrencyIfRequired(unitPrice)) ?? 0) : unitPrice;
+                
+                const unitPrice          = product.price;
+                const unitPriceConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(unitPrice)) : unitPrice;
                 const unitWeight         = product.shippingWeight;
                 
                 
@@ -418,8 +419,11 @@ const responsePlaceOrder = async (
                 });
                 
                 
+                
                 totalProductPricesConverted += unitPriceConverted * quantity;
                 totalProductPricesConverted  = trimNumber(totalProductPricesConverted);
+                
+                
                 
                 if (unitWeight !== undefined) {
                     if (totalProductWeights === undefined) totalProductWeights = 0; // contains at least 1 PHYSICAL_GOODS
