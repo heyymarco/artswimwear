@@ -189,9 +189,9 @@ const paypalConvertCurrencyIfRequired = async <TNumber extends number|undefined>
     
     return trimNumber(stepped) as TNumber;
 }
-const paypalRevertCurrencyIfRequired  = async (from: number|undefined): Promise<number|undefined> => {
+const paypalRevertCurrencyIfRequired  = async <TNumber extends number|undefined>(from: TNumber): Promise<TNumber> => {
     // conditions:
-    if (from === undefined) return undefined;
+    if (typeof(from) !== 'number') return from;
     
     
     
@@ -208,7 +208,7 @@ const paypalRevertCurrencyIfRequired  = async (from: number|undefined): Promise<
     
     
     
-    return trimNumber(stepped);
+    return trimNumber(stepped) as TNumber;
 }
 
 
