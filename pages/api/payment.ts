@@ -18,6 +18,15 @@ import Order, { PaymentMethodSchema } from '@/models/Order'
 import type { AddressSchema } from '@/models/Address'
 import type { CustomerSchema } from '@/models/Customer'
 import { CartEntrySchema } from '@/models/CartEntry'
+import {
+    COMMERCE_CURRENCY,
+    COMMERCE_CURRENCY_FRACTION_UNIT,
+    COMMERCE_CURRENCY_FRACTION_ROUNDING,
+    
+    PAYPAL_CURRENCY,
+    PAYPAL_CURRENCY_FRACTION_UNIT,
+    PAYPAL_CURRENCY_FRACTION_ROUNDING,
+} from '../../commerce.config'
 
 
 
@@ -119,44 +128,89 @@ const handlePaypalResponse = async (response: Response) => {
     throw new Error(errorMessage);
 }
 
-const getDefaultCurrencyCode = async (): Promise<string> => {
-    return 'USD';
+
+
+const currencyExchange = {
+    expires : 0,
+    rates   : new Map<string, number>(),
+};
+const getCurrencyRate = async (toCurrency: string): Promise<number> => {
+    if (currencyExchange.expires <= Date.now()) {
+        const rates = currencyExchange.rates;
+        rates.clear();
+        
+        //#region fetch https://www.exchangerate-api.com
+        const exchangeRateResponse = await fetch(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGERATEAPI_KEY}/latest/${COMMERCE_CURRENCY}`);
+        if (exchangeRateResponse.status !== 200) throw Error('api error');
+        const data = await exchangeRateResponse.json();
+        const apiRates = data?.conversion_rates;
+        if (typeof(apiRates) !== 'object') throw Error('api error');
+        for (const currency in apiRates) {
+            rates.set(currency, apiRates[currency]);
+        } // for
+        //#endregion fetch https://www.exchangerate-api.com
+        
+        currencyExchange.expires = Date.now() + (1 * 3600 * 1000);
+    } // if
+    
+    
+    
+    const toRate = currencyExchange.rates.get(toCurrency);
+    if (toRate === undefined) throw Error('unknown currency');
+    return 1 / toRate;
 }
-const getPaymentCurrency = async (): Promise<{rate: number, fractionUnit: number}> => {
+
+
+
+const getPaypalCurrencyCode = (): string => {
+    return PAYPAL_CURRENCY;
+}
+const getPaypalCurrencyConverter = async (): Promise<{rate: number, fractionUnit: number}> => {
     return {
-        rate         : 15000,
-        fractionUnit : 0.01,
+        rate         : await getCurrencyRate(PAYPAL_CURRENCY),
+        fractionUnit : PAYPAL_CURRENCY_FRACTION_UNIT,
     };
 }
-const convertCurrencyIfRequired = async (from: number|undefined): Promise<number|undefined> => {
+const paypalConvertCurrencyIfRequired = async (from: number|undefined): Promise<number|undefined> => {
     // conditions:
     if (from === undefined) return undefined;
     
     
     
-    const {rate, fractionUnit} = await getPaymentCurrency();
+    const {rate, fractionUnit} = await getPaypalCurrencyConverter();
     const rawConverted         = from / rate;
-    const fractions            = Math.ceil(rawConverted / fractionUnit);
+    const rounding     = {
+        ROUND : Math.round,
+        CEIL  : Math.ceil,
+        FLOOR : Math.floor,
+    }[PAYPAL_CURRENCY_FRACTION_ROUNDING];
+    const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
     
     
     return stepped;
 }
-const revertCurrencyIfRequired = async (from: number|undefined): Promise<number|undefined> => {
+const paypalRevertCurrencyIfRequired = async (from: number|undefined): Promise<number|undefined> => {
     // conditions:
     if (from === undefined) return undefined;
     
     
     
-    const {rate, fractionUnit} = await getPaymentCurrency();
-    const fractions            = Math.ceil(from / fractionUnit);
-    const stepped              = fractions * fractionUnit;
-    const rawReverted          = stepped * rate;
+    const {rate}       = await getPaypalCurrencyConverter();
+    const fractionUnit = COMMERCE_CURRENCY_FRACTION_UNIT;
+    const rawReverted  = from * rate;
+    const rounding     = {
+        ROUND : Math.round,
+        CEIL  : Math.ceil,
+        FLOOR : Math.floor,
+    }[COMMERCE_CURRENCY_FRACTION_ROUNDING];
+    const fractions    = rounding(rawReverted / fractionUnit);
+    const stepped      = fractions * fractionUnit;
     
     
     
-    return rawReverted;
+    return stepped;
 }
 
 
@@ -192,25 +246,6 @@ const revertOrder = async (session: ClientSession, { draftOrder } : { draftOrder
 }
 
 
-
-export default nextConnect<NextApiRequest, NextApiResponse>({
-    onError: (err, req, res, next) => {
-        console.error(err.stack);
-        res.status(500).json({ error: 'Something broke!' });
-    },
-    onNoMatch: (req, res) => {
-        res.status(404).json({ error: 'Page is not found' });
-    },
-})
-.get<NextApiRequest, NextApiResponse>(async (req, res) => {
-    return await responseGeneratePaymentToken(req, res);
-})
-.post<NextApiRequest, NextApiResponse>(async (req, res) => {
-    return await responsePlaceOrder(req, res);
-})
-.patch<NextApiRequest, NextApiResponse>(async (req, res) => {
-    return await responseMakePayment(req, res);
-});
 
 /**
  * intialize paymentToken
@@ -325,7 +360,7 @@ const responsePlaceOrder = async (
             //#region verify & convert items
             const itemsConverted : CartEntrySchema[] = [];
             let totalProductPricesConverted = 0, totalProductWeights : number|undefined = undefined;
-            const defaultCurrencyCode = await getDefaultCurrencyCode();
+            const paypalCurrencyCode = getPaypalCurrencyCode();
             for (const item of items) {
                 if (!item || (typeof(item) !== 'object')) throw 'INVALID_JSON';
                 const {
@@ -353,7 +388,7 @@ const responsePlaceOrder = async (
                 
                 
                 const unitPrice          = product.price                              ?? 0;
-                const unitPriceConverted = await convertCurrencyIfRequired(unitPrice) ?? 0;
+                const unitPriceConverted = await paypalConvertCurrencyIfRequired(unitPrice) ?? 0;
                 const unitWeight         = product.shippingWeight;
                 
                 
@@ -373,7 +408,7 @@ const responsePlaceOrder = async (
                     totalProductWeights     += unitWeight         * quantity;
                 } // if
             } // for
-            const totalShippingCostsConverted = await convertCurrencyIfRequired(calculateShippingCost(totalProductWeights, selectedShipping));
+            const totalShippingCostsConverted = await paypalConvertCurrencyIfRequired(calculateShippingCost(totalProductWeights, selectedShipping));
             const totalCostConverted          = totalProductPricesConverted + (totalShippingCostsConverted ?? 0);
             //#endregion verify & convert items
             
@@ -401,7 +436,7 @@ const responsePlaceOrder = async (
                             amount                    : {
                                 // currency_code string required
                                 // The three-character ISO-4217 currency code that identifies the currency.
-                                currency_code         : defaultCurrencyCode,
+                                currency_code         : paypalCurrencyCode,
                                 
                                 // value string required
                                 /*
@@ -429,14 +464,14 @@ const responsePlaceOrder = async (
                                     // item_total Money|undefined
                                     // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                                     item_total        : {
-                                        currency_code : defaultCurrencyCode,
+                                        currency_code : paypalCurrencyCode,
                                         value         : totalProductPricesConverted,
                                     },
                                     
                                     // shipping Money|undefined
                                     // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
                                     shipping          : (totalShippingCostsConverted === undefined) ? undefined : {
-                                        currency_code : defaultCurrencyCode,
+                                        currency_code : paypalCurrencyCode,
                                         value         : totalShippingCostsConverted,
                                     },
                                     
@@ -474,7 +509,7 @@ const responsePlaceOrder = async (
                                 unit_amount           : {
                                     // currency_code string required
                                     // The three-character ISO-4217 currency code that identifies the currency.
-                                    currency_code     : defaultCurrencyCode,
+                                    currency_code     : paypalCurrencyCode,
                                     
                                     // value string required
                                     /*
@@ -625,7 +660,7 @@ const responsePlaceOrder = async (
                 items              : await Promise.all(itemsConverted.map(async (itemConverted) => {
                     return {
                         product        : itemConverted.product,
-                        price          : await revertCurrencyIfRequired(itemConverted.price),
+                        price          : await paypalRevertCurrencyIfRequired(itemConverted.price),
                         shippingWeight : itemConverted.shippingWeight,
                         quantity       : itemConverted.quantity,
                     };
@@ -644,7 +679,7 @@ const responsePlaceOrder = async (
                     country            : shippingCountry.toUpperCase(),
                 },
                 shippingProvider       : shippingProvider,
-                shippingCost           : await revertCurrencyIfRequired(totalShippingCostsConverted),
+                shippingCost           : await paypalRevertCurrencyIfRequired(totalShippingCostsConverted),
                 
                 expires                : (Date.now() + 60 * 1000),
                 
@@ -1150,3 +1185,16 @@ const responseMakePayment = async (
         : 200 // payment APPROVED
     ).json(paymentResponse);
 }
+
+export default nextConnect<NextApiRequest, NextApiResponse>({
+    onError: (err, req, res, next) => {
+        console.error(err.stack);
+        res.status(500).json({ error: 'Something broke!' });
+    },
+    onNoMatch: (req, res) => {
+        res.status(404).json({ error: 'Page is not found' });
+    },
+})
+.get<NextApiRequest, NextApiResponse>(responseGeneratePaymentToken)
+.post<NextApiRequest, NextApiResponse>(responsePlaceOrder)
+.patch<NextApiRequest, NextApiResponse>(responseMakePayment);
