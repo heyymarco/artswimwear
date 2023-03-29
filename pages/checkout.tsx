@@ -14,7 +14,7 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState 
 import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
+import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, useIsomorphicLayoutEffect, ValidationProvider } from '@reusable-ui/core'
 import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setIsLoadingStep, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
@@ -249,6 +249,7 @@ interface ICheckoutContext {
     shippingMethodOptionRef           : React.MutableRefObject<HTMLElement|null>      | undefined
     billingAddressSectionRef          : React.MutableRefObject<HTMLElement|null>      | undefined
     paymentCardSectionRef             : React.MutableRefObject<HTMLElement|null>      | undefined
+    currentStepSectionRef             : React.MutableRefObject<HTMLElement|null>      | undefined
     navCheckoutSectionElm             : HTMLElement|null                              | undefined
     
     contactEmailInputRef              : React.MutableRefObject<HTMLInputElement|null> | undefined
@@ -294,6 +295,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     shippingMethodOptionRef           : undefined,
     billingAddressSectionRef          : undefined,
     paymentCardSectionRef             : undefined,
+    currentStepSectionRef             : undefined,
     navCheckoutSectionElm             : undefined,
     
     contactEmailInputRef              : undefined,
@@ -449,6 +451,29 @@ export default function Checkout() {
         } // if
     }, [isNeedsRecoverShippingProvider, shippingList]);
     
+    // auto scroll to top on checkoutStep changed:
+    const isSubsequentStep = useRef<boolean>(false);
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (typeof(window) === 'undefined') return; // noop on server_side
+        
+        
+        
+        // actions:
+        if (isSubsequentStep.current) {
+            const currentStepSectionElm = currentStepSectionRef.current;
+            window.document.scrollingElement?.scrollTo({
+                top      : 0,
+                behavior : currentStepSectionElm ? 'auto' : 'smooth',
+            });
+            currentStepSectionElm?.scrollIntoView({
+                block    : 'start',
+                behavior : 'smooth',
+            });
+        } // if
+        isSubsequentStep.current = true;
+    }, [checkoutStep]);
+    
     // auto renew payment token:
     const isPaymentTokenInitialized = useRef<boolean>(false);
     useEffect(() => {
@@ -517,6 +542,7 @@ export default function Checkout() {
     const shippingMethodOptionRef   = useRef<HTMLElement|null>(null);
     const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
     const paymentCardSectionRef     = useRef<HTMLElement|null>(null);
+    const currentStepSectionRef     = useRef<HTMLElement|null>(null);
     const [navCheckoutSectionElm, setNavCheckoutSectionElm] = useState<HTMLElement|null>(null);
     
     const contactEmailInputRef      = useRef<HTMLInputElement|null>(null);
@@ -800,6 +826,7 @@ export default function Checkout() {
         shippingMethodOptionRef,           // stable ref
         billingAddressSectionRef,          // stable ref
         paymentCardSectionRef,             // stable ref
+        currentStepSectionRef,             // stable ref
         navCheckoutSectionElm,             // mutable ref
         
         contactEmailInputRef,              // stable ref
@@ -844,7 +871,8 @@ export default function Checkout() {
         // shippingMethodOptionRef,           // stable ref
         // billingAddressSectionRef,          // stable ref
         // paymentCardSectionRef,             // stable ref
-        navCheckoutSectionElm,             // mutable ref
+        // currentStepSectionRef,             // stable ref
+        navCheckoutSectionElm,                // mutable ref
         
         // contactEmailInputRef,              // stable ref
         // shippingAddressInputRef,           // stable ref
@@ -910,7 +938,7 @@ export default function Checkout() {
                                     <OrderReview />
                                 </Section>}
                                 
-                                {(checkoutStep === 'info') && <Section className={styles.checkout}>
+                                {(checkoutStep === 'info') && <Section elmRef={currentStepSectionRef} className={styles.checkout}>
                                     {/* TODO: activate */}
                                     {/* <Section className={styles.expressCheckout} title='Express Checkout'>
                                     </Section>
@@ -926,19 +954,19 @@ export default function Checkout() {
                                     </Section>
                                 </Section>}
                                 
-                                {(checkoutStep === 'shipping') && <Section className={styles.shippingMethod} title='Shipping Method'>
+                                {(checkoutStep === 'shipping') && <Section elmRef={currentStepSectionRef} className={styles.shippingMethod} title='Shipping Method'>
                                     <ShippingMethod />
                                 </Section>}
                                 
-                                {(checkoutStep === 'payment') && <Section className={styles.payment} title='Payment'>
+                                {(checkoutStep === 'payment') && <Section elmRef={currentStepSectionRef} className={styles.payment} title='Payment'>
                                     <Payment />
                                 </Section>}
                                 
-                                {(checkoutStep === 'pending') && <Section className={styles.paymentFinish} title='Thank You'>
+                                {(checkoutStep === 'pending') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
                                     <PaymentPending />
                                 </Section>}
                                 
-                                {(checkoutStep === 'paid') && <Section className={styles.paymentFinish} title='Thank You'>
+                                {(checkoutStep === 'paid') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
                                     <Paid />
                                 </Section>}
                             </div>
