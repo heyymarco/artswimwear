@@ -3,21 +3,7 @@ import nextConnect from 'next-connect'
 
 import { connectDB } from '@/libs/dbConn'
 import { default as Shipping, ShippingSchema } from '@/models/Shipping'
-import type { AddressSchema } from '@/models/Address'
-
-
-
-// types:
-export type MatchingAddress  = Pick<AddressSchema, 'country'|'zone'|'city'>
-export type MatchingShipping = Required<Pick<ShippingSchema, '_id'|'shippingRates'>> & Pick<ShippingSchema, 'name'|'weightStep'|'estimate'>
-
-
-
-// utilities:
-const undefinedIfEmptyArray = <TArray extends Array<TItem>, TItem>(array: TArray|undefined): TArray|undefined => {
-    if (!array?.length) return undefined;
-    return array;
-}
+import { MatchingShipping, MatchingAddress, getMatchingShipping } from '@/libs/shippings'
 
 
 
@@ -63,8 +49,8 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     
-    let compatibleShippings = await Shipping.find<Required<Pick<ShippingSchema, '_id'>> & Omit<ShippingSchema, '_id'>>(); // get all shippings including the disabled ones
-    if (!compatibleShippings.length) { // empty => first app setup => initialize the default shippings
+    let shippings = await Shipping.find<Required<Pick<ShippingSchema, '_id'>> & Omit<ShippingSchema, '_id'>>(); // get all shippings including the disabled ones
+    if (!shippings.length) { // empty => first app setup => initialize the default shippings
         const defaultShippings = (await import('@/libs/defaultShippings')).default;
         await Shipping.insertMany(defaultShippings);
     } // if
@@ -72,104 +58,19 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     // filter out disabled shippings:
-    compatibleShippings = compatibleShippings.filter(({enabled}) => enabled);
+    shippings = shippings.filter(({enabled}) => enabled);
     
-    // if countries specified => filter out shippings not_having supported countries:
-    compatibleShippings = compatibleShippings.filter((compatibleShipping): boolean => {
-        const countries = compatibleShipping.countries;
-        let matchingArea = (
-            (compatibleShipping.useSpecificArea ?? false)
-            &&
-            countries?.find((coverageCountry) => (coverageCountry.country.toLowerCase() === country.toLowerCase()))
-        );
-        // if ((matchingArea === undefined) || (matchingArea === false) || (matchingArea < 0)) matchingArea = undefined;
-        if (countries) {
-            // // doesn't work -- because the array is buggy_proxied:
-            // countries.splice(matchingArea || 0, (matchingArea !== undefined) ? 1 : 0); // select the first matching country (if any)
-            
-            // works:
-            countries.splice(0); // clear
-            if (matchingArea) countries.push(matchingArea);
-        } // if
-        return true;
-    });
-    
-    // if zones specified => filter out shippings not_having supported zones:
-    compatibleShippings = compatibleShippings.filter((compatibleShipping): boolean => {
-        const zones = compatibleShipping.countries?.[0]?.zones;
-        let matchingArea = (
-            (compatibleShipping.countries?.[0]?.useSpecificArea ?? false)
-            &&
-            zones?.find((coverageZone) => (coverageZone.zone.toLowerCase() === zone.toLowerCase()))
-        );
-        // if ((matchingArea === undefined) || (matchingArea === false) || (matchingArea < 0)) matchingArea = undefined;
-        if (zones) {
-            // // doesn't work -- because the array is buggy_proxied:
-            // zones.splice(matchingArea || 0, (matchingArea !== undefined) ? 1 : 0); // select the first matching zone (if any)
-            
-            // works:
-            zones.splice(0); // clear
-            if (matchingArea) zones.push(matchingArea);
-        } // if
-        return true;
-    });
-    
-    // if cities specified => filter out shippings not_having supported cities:
-    compatibleShippings = compatibleShippings.filter((compatibleShipping): boolean => {
-        const cities = compatibleShipping.countries?.[0]?.zones?.[0]?.cities;
-        let matchingArea = (
-            (compatibleShipping.countries?.[0]?.zones?.[0]?.useSpecificArea ?? false)
-            &&
-            cities?.find((coverageCity) => (coverageCity.city.toLowerCase() === city.toLowerCase()))
-        );
-        // if ((matchingArea === undefined) || (matchingArea === false) || (matchingArea < 0)) matchingArea = undefined;
-        if (cities) {
-            // // doesn't work -- because the array is buggy_proxied:
-            // cities.splice(matchingArea || 0, (matchingArea !== undefined) ? 1 : 0); // select the first matching city (if any)
-            
-            // works:
-            cities.splice(0); // clear
-            if (matchingArea) cities.push(matchingArea);
-        } // if
-        return true;
-    });
+    // filter out non_compatible shippings:
+    const shippingAddress: MatchingAddress = { city, zone, country };
+    const matchingShippings = (
+        shippings
+        .map((shipping) => getMatchingShipping(shipping, shippingAddress))
+        .filter((shipping): shipping is MatchingShipping => !!shipping)
+    );
     
     
     
     return res.json(
-        compatibleShippings
-        .map((compatibleShipping): Omit<MatchingShipping, 'shippingRates'> & Partial<Pick<MatchingShipping, 'shippingRates'>> => {
-            const estimate      : MatchingShipping['estimate'] = (
-                compatibleShipping.countries?.[0]?.zones?.[0]?.cities?.[0]?.estimate
-                ||
-                compatibleShipping.countries?.[0]?.zones?.[0]?.estimate
-                ||
-                compatibleShipping.countries?.[0]?.estimate
-                ||
-                compatibleShipping.estimate
-            );
-            const shippingRates : MatchingShipping['shippingRates']|undefined = (
-                undefinedIfEmptyArray(compatibleShipping.countries?.[0]?.zones?.[0]?.cities?.[0]?.shippingRates)
-                ??
-                undefinedIfEmptyArray(compatibleShipping.countries?.[0]?.zones?.[0]?.shippingRates)
-                ??
-                undefinedIfEmptyArray(compatibleShipping.countries?.[0]?.shippingRates)
-                ??
-                undefinedIfEmptyArray(compatibleShipping.shippingRates)
-            );
-            
-            
-            
-            return {
-                _id            : compatibleShipping._id,
-                name           : compatibleShipping.name,
-                
-                weightStep     : compatibleShipping.weightStep,
-                
-                estimate       : estimate || '',
-                shippingRates  : shippingRates,
-            };
-        })
-        .filter((compatibleShipping): compatibleShipping is MatchingShipping => !!compatibleShipping.shippingRates?.length)
+        matchingShippings
     );
 });

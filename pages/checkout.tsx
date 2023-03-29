@@ -19,9 +19,8 @@ import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutS
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
-import { calculateShippingCost } from '@/libs/utilities'
+import { MatchingShipping, MatchingAddress, calculateShippingCost } from '@/libs/shippings'
 import AddressField from '@/components/AddressFields'
-import type { MatchingAddress, MatchingShipping } from '@/pages/api/shippingList'
 
 
 

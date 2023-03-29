@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import type { CartState } from '../cart/cartSlice'
 import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice'
 import type { CreateOrderData } from '@paypal/paypal-js'
-import type { MatchingAddress, MatchingShipping } from '@/pages/api/shippingList'
+import type { MatchingShipping, MatchingAddress } from '@/libs/shippings'
 
 
 

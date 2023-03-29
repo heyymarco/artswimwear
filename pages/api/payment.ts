@@ -4,13 +4,12 @@ import nextConnect from 'next-connect'
 import { connectDB } from '@/libs/dbConn'
 import { default as Product, ProductSchema } from '@/models/Product'
 import { createEntityAdapter } from '@reduxjs/toolkit'
-import { calculateShippingCost } from '@/libs/utilities'
+import { getMatchingShipping, calculateShippingCost } from '@/libs/shippings'
 import { default as Shipping, ShippingSchema } from '@/models/Shipping'
 import type {
     PaymentToken,
     PlaceOrderResponse,
     MakePaymentResponse,
-    PaymentMethod,
 } from '@/store/features/api/apiSlice'
 import { ClientSession, HydratedDocument, startSession, Types } from 'mongoose'
 import { default as DraftOrder, DraftOrderSchema } from '@/models/DraftOrder'
@@ -333,21 +332,8 @@ const responsePlaceOrder = async (
             }, { _id: false, weightStep: true, shippingRates: true, useSpecificArea: true, countries: true });
             if (!selectedShipping) throw 'BAD_SHIPPING';
             
-            let shippingRates = selectedShipping.shippingRates;
-            const matchingCountry = (selectedShipping.useSpecificArea ?? false) && selectedShipping.countries?.find((coverageCountry) => (coverageCountry.country.toLowerCase() === shippingCountry.toLowerCase()));
-            if (matchingCountry) {
-                if (matchingCountry.shippingRates?.length)      shippingRates = matchingCountry.shippingRates;
-                
-                const matchingZone = (matchingCountry.useSpecificArea ?? false) && matchingCountry.zones?.find((coverageZone) => (coverageZone.zone.toLowerCase() === shippingZone.toLowerCase()));
-                if (matchingZone) {
-                    if (matchingZone.shippingRates?.length)     shippingRates = matchingZone.shippingRates;
-                    
-                    const matchingCity = (matchingZone.useSpecificArea ?? false) && matchingZone.cities?.find((coverageCity) => (coverageCity.city.toLowerCase() === shippingCity.toLowerCase()));
-                    if (matchingCity) {
-                        if (matchingCity.shippingRates?.length) shippingRates = matchingCity.shippingRates;
-                    } // if
-                } // if
-            } // if
+            const matchingShipping = getMatchingShipping(selectedShipping, { city: shippingCity, zone: shippingZone, country: shippingCountry });
+            if (!matchingShipping) throw 'BAD_SHIPPING';
             //#endregion verify shipping
             
             
@@ -426,7 +412,7 @@ const responsePlaceOrder = async (
                     totalProductWeights      = trimNumber(totalProductWeights);
                 } // if
             } // for
-            const totalShippingCost          = calculateShippingCost(totalProductWeights, { weightStep: selectedShipping.weightStep, shippingRates: shippingRates ?? ([] as any) });
+            const totalShippingCost          = calculateShippingCost(totalProductWeights, matchingShipping);
             const totalShippingCostConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
             const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
             //#endregion verify & convert items
