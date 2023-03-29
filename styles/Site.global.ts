@@ -5,6 +5,7 @@ import {
     globalScope,
 }                           from '@cssfn/core'          // writes css in javascript
 
+import { spacers } from '@reusable-ui/core'
 import { navbars } from '@reusable-ui/components'
 
 
@@ -14,7 +15,7 @@ export default [
     globalScope({
         ...rule('html', {
             // scrolls:
-            scrollPaddingBlockStart : navbars.blockSize,
+            scrollPaddingBlockStart : `calc(${navbars.blockSize} + ${spacers.md})`,
         }),
     }),
 ];

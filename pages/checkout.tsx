@@ -2,7 +2,7 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
-import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
+import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { CountryEntry, PriceEntry, ProductEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -224,6 +224,7 @@ interface ShowDialogMessage {
     theme   ?: ThemeName
     title   ?: string
     message  : React.ReactNode
+    onClose ?: () => void
 }
 interface ICheckoutContext {
     cartItems                         : CartEntry[]
@@ -689,11 +690,15 @@ export default function Checkout() {
         
         
         
-        // focus the first fieldError:
-        const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), iframe';
-        const firstInvalidField = invalidFields?.[0];
-        const firstFocusableElm = (firstInvalidField.matches(focusableSelector) ? firstInvalidField : firstInvalidField?.querySelector(focusableSelector)) as HTMLElement|null;
-        firstFocusableElm?.focus?.();
+        // handlers:
+        const handleClose = (): void => {
+            // focus the first fieldError:
+            const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), iframe';
+            const firstInvalidField = invalidFields?.[0];
+            const firstFocusableElm = (firstInvalidField.matches(focusableSelector) ? firstInvalidField : firstInvalidField?.querySelector(focusableSelector)) as HTMLElement|null;
+            firstInvalidField.scrollIntoView({ behavior: 'smooth' });
+            firstFocusableElm?.focus?.( {preventScroll: true });
+        };
         
         
         
@@ -724,7 +729,8 @@ export default function Checkout() {
                         </ListItem>
                     )}
                 </List>
-            </>
+            </>,
+            onClose : handleClose,
         });
     });
     const showDialogMessagePlaceOrderError  = useEvent((error: any): void => {
@@ -980,7 +986,15 @@ export default function Checkout() {
                     , [isReadyPage, isDesktop, checkoutStep, styles])}
                     
                     {useMemo(() =>
-                        <ModalCard modalCardStyle='scrollable' theme={(dialogMessage ? dialogMessage.theme : prevDialogMessage.current?.theme) ?? 'primary'} lazy={true} expanded={!!dialogMessage} onExpandedChange={(event) => !event.expanded && showDialogMessage(false)}>
+                        <ModalCard
+                            modalCardStyle='scrollable'
+                            theme={(dialogMessage ? dialogMessage.theme : prevDialogMessage.current?.theme) ?? 'primary'}
+                            
+                            lazy={true} expanded={!!dialogMessage}
+                            
+                            onExpandedChange={(event) => !event.expanded && showDialogMessage(false)}
+                            onFullyCollapsed={dialogMessage ? dialogMessage.onClose : prevDialogMessage.current?.onClose}
+                        >
                             <CardHeader>
                                 {(dialogMessage ? dialogMessage.title : prevDialogMessage.current?.title) ?? 'Notification'}
                                 <CloseButton onClick={() => showDialogMessage(false)} />
