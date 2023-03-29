@@ -719,7 +719,7 @@ export default function Checkout() {
                                     theme='primary'
                                 />
                                 &nbsp;
-                                {(invalidField as HTMLElement).ariaLabel ?? (invalidField.children[0] as HTMLInputElement).placeholder}
+                                {(invalidField as HTMLElement).getAttribute('aria-label') || (invalidField.children[0] as HTMLInputElement).placeholder}
                             </>
                         </ListItem>
                     )}
