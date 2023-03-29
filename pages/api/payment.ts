@@ -336,11 +336,11 @@ const responsePlaceOrder = async (
             let shippingRates = selectedShipping.shippingRates;
             const matchingCountry = (selectedShipping.useSpecificArea ?? false) && selectedShipping.countries?.find((coverageCountry) => (coverageCountry.country.toLowerCase() === shippingCountry.toLowerCase()));
             if (matchingCountry) {
-                if (matchingCountry.shippingRates?.length) shippingRates = matchingCountry.shippingRates;
+                if (matchingCountry.shippingRates?.length)      shippingRates = matchingCountry.shippingRates;
                 
                 const matchingZone = (matchingCountry.useSpecificArea ?? false) && matchingCountry.zones?.find((coverageZone) => (coverageZone.zone.toLowerCase() === shippingZone.toLowerCase()));
                 if (matchingZone) {
-                    if (matchingZone.shippingRates?.length) shippingRates = matchingZone.shippingRates;
+                    if (matchingZone.shippingRates?.length)     shippingRates = matchingZone.shippingRates;
                     
                     const matchingCity = (matchingZone.useSpecificArea ?? false) && matchingZone.cities?.find((coverageCity) => (coverageCity.city.toLowerCase() === shippingCity.toLowerCase()));
                     if (matchingCity) {
