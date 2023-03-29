@@ -353,21 +353,13 @@ const responsePlaceOrder = async (
             
             
             //#region fetch valid products
-            interface ProductEntry {
-                _id             : string
-                name            : string
-                price           : number
-                shippingWeight ?: number
-                stock          ?: number
-                
-                save            : (options?: object) => Promise<void>
-            }
+            type ProductEntry = HydratedDocument<Pick<ProductSchema, '_id'|'name'|'price'|'shippingWeight'|'stock'>>
             const productListAdapter = createEntityAdapter<ProductEntry>({
-                selectId : (productEntry) => productEntry._id,
+                selectId : (productEntry) => `${productEntry._id}`,
             });
             const productList = productListAdapter.addMany(
                 productListAdapter.getInitialState(),
-                await Product.find({}, { _id: true, name: true, price: true, shippingWeight: true, stock: true }, { session })
+                await Product.find<ProductEntry>({}, { _id: true, name: true, price: true, shippingWeight: true, stock: true }, { session })
             );
             //#endregion fetch valid products
             
