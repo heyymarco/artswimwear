@@ -4,6 +4,7 @@ import nextConnect from 'next-connect'
 import { connectDB } from '@/libs/dbConn'
 import { default as Product, ProductSchema } from '@/models/Product'
 import { formatPath } from '@/libs/formatters';
+import { HydratedDocument } from 'mongoose';
 
 
 
@@ -53,7 +54,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     
-    const previewProducts = await Product.find<PreviewProduct & { save: () => Promise<void> }>({}, { _id: true, name: true, price: true, image: { $first: "$images" }, path: true });
+    const previewProducts = await Product.find<HydratedDocument<PreviewProduct>>({}, { _id: true, name: true, price: true, image: { $first: "$images" }, path: true });
     let productPaths : string[]|undefined = undefined;
     for (const previewProduct of previewProducts) {
         if (!previewProduct.path) {
@@ -76,7 +77,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     return res.json(previewProducts);
 })
 .post<NextApiRequest, NextApiResponse>(async (req, res) => {
-    const newProduct = await Product.create({
+    const newProduct = await Product.create<ProductSchema>({
         name        : req.query.name,
         price       : Number.parseFloat(req.query.price as any),
         description : req.query.description,
