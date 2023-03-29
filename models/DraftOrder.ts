@@ -7,7 +7,7 @@ import { cartEntrySchema } from './CartEntry'
 const draftOrderSchema = new Schema({
     items            : { type: [cartEntrySchema]                , required: true  },
     
-    shipping         : { type: addressSchema                    , required: false },
+    shippingAddress  : { type: addressSchema                    , required: false },
     shippingProvider : { type: Types.ObjectId , ref: 'Shipping' , required: false },
     shippingCost     : { type: Number                           , required: false },
     

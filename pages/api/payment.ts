@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import nextConnect from 'next-connect'
 
 import { connectDB } from '@/libs/dbConn'
-import Product from '@/models/Product'
+import { default as Product, ProductSchema } from '@/models/Product'
 import { createEntityAdapter } from '@reduxjs/toolkit'
 import { calculateShippingCost } from '@/libs/utilities'
 import { default as Shipping, ShippingSchema } from '@/models/Shipping'
@@ -12,8 +12,8 @@ import type {
     MakePaymentResponse,
     PaymentMethod,
 } from '@/store/features/api/apiSlice'
-import { ClientSession, startSession, Types } from 'mongoose'
-import DraftOrder from '@/models/DraftOrder'
+import { ClientSession, HydratedDocument, startSession, Types } from 'mongoose'
+import { default as DraftOrder, DraftOrderSchema } from '@/models/DraftOrder'
 import Order, { PaymentMethodSchema } from '@/models/Order'
 import type { AddressSchema } from '@/models/Address'
 import type { CustomerSchema } from '@/models/Customer'
@@ -213,34 +213,36 @@ const paypalRevertCurrencyIfRequired  = async <TNumber extends number|undefined>
 
 
 
-const commitOrder = async (session: ClientSession, { draftOrder, customer, billing, paymentMethod } : { draftOrder: any, customer: CustomerSchema, billing: AddressSchema|undefined, paymentMethod: PaymentMethodSchema }) => {
+const commitOrder = async (session: ClientSession, { draftOrder, customer, billingAddress, paymentMethod } : { draftOrder: HydratedDocument<DraftOrderSchema>, customer: CustomerSchema, billingAddress: AddressSchema|undefined, paymentMethod: PaymentMethodSchema }) => {
     await Order.create([{
         customer         : customer,
         
         items            : draftOrder.items,
         
-        shipping         : draftOrder.shipping,
+        shipping         : draftOrder.shippingAddress,
         shippingProvider : draftOrder.shippingProvider,
         shippingCost     : draftOrder.shippingCost,
         
-        billing          : billing,
+        billing          : billingAddress,
         
         paymentMethod    : paymentMethod,
     }], { session });
-    await draftOrder.deleteOne({}, { session });
+    await draftOrder.deleteOne({ session });
 }
-const revertOrder = async (session: ClientSession, { draftOrder } : { draftOrder: any }) => {
+const revertOrder = async (session: ClientSession, { draftOrder } : { draftOrder: HydratedDocument<DraftOrderSchema> }) => {
     for (const item of draftOrder.items) {
-        const product = await Product.findById(item.product, { stock: true }, { session });
-        const productStock = product.stock;
-        if ((productStock !== undefined) && isFinite(productStock)) {
-            //#regon increase product stock
-            product.stock = (productStock + item.quantity);
-            await product.save({ session });
-            //#endregon increase product stock
+        const product = await Product.findById<HydratedDocument<ProductSchema>>(item.product, { stock: true }, { session });
+        if (product) { // not has been deleted
+            const productStock = product.stock;
+            if ((productStock !== undefined) && isFinite(productStock)) {
+                //#regon increase product stock
+                product.stock = (productStock + item.quantity);
+                await product.save({ session });
+                //#endregon increase product stock
+            } // if
         } // if
     } // for
-    await draftOrder.deleteOne({}, { session });
+    await draftOrder.deleteOne({ session });
 }
 
 
@@ -681,7 +683,7 @@ const responsePlaceOrder = async (
             
             
             //#region create a newDraftOrder
-            const newDraftOrders = await DraftOrder.create([{
+            const newDraftOrders = await DraftOrder.create<DraftOrderSchema>([{
                 items              : await Promise.all(itemsConverted.map(async (itemConverted) => {
                     return {
                         product        : itemConverted.product,
@@ -691,7 +693,7 @@ const responsePlaceOrder = async (
                     };
                 })),
                 
-                shipping               : {
+                shippingAddress        : {
                     firstName          : shippingFirstName,
                     lastName           : shippingLastName,
                     
@@ -829,13 +831,13 @@ const responseMakePayment = async (
             //#region verify draftOrder_id
             const draftOrder = (
                 !!draftOrderId
-                ? await DraftOrder.findById(draftOrderId)
+                ? await DraftOrder.findById<HydratedDocument<DraftOrderSchema>>(draftOrderId)
                 : !!paypalOrderId
-                ? await DraftOrder.findOne({ paypalOrderId })
+                ? await DraftOrder.findOne<HydratedDocument<DraftOrderSchema>>({ paypalOrderId })
                 : undefined
             );
             if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
-            if (draftOrder.expires <= Date.now()) {
+            if (draftOrder.expires <= new Date()) {
                 // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:
                 const restoreSession = await startSession();
                 try {
@@ -1146,7 +1148,7 @@ const responseMakePayment = async (
                         nickName     : customerNickName,
                         email        : customerEmail,
                     },
-                    billing          : {
+                    billingAddress   : {
                         firstName    : billingFirstName,
                         lastName     : billingLastName,
                         
