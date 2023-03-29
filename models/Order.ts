@@ -17,13 +17,14 @@ const orderSchema = new Schema({
     
     items            : { type: [cartEntrySchema]                , required: true  },
     
-    shipping         : { type: addressSchema                    , required: false },
+    shippingAddress  : { type: addressSchema                    , required: false },
     shippingProvider : { type: Types.ObjectId , ref: 'Shipping' , required: false },
     shippingCost     : { type: Number                           , required: false },
     
-    billing          : { type: addressSchema                    , required: false },
+    billingAddress   : { type: addressSchema                    , required: false },
     
     paymentMethod    : { type: paymentMethodSchema              , required: true  },
 });
+export type OrderSchema = InferSchemaType<typeof orderSchema>;
 
 export default models.Order ?? model('Order', orderSchema);

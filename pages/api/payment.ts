@@ -14,7 +14,7 @@ import type {
 } from '@/store/features/api/apiSlice'
 import { ClientSession, HydratedDocument, startSession, Types } from 'mongoose'
 import { default as DraftOrder, DraftOrderSchema } from '@/models/DraftOrder'
-import Order, { PaymentMethodSchema } from '@/models/Order'
+import { default as Order, OrderSchema, PaymentMethodSchema } from '@/models/Order'
 import type { AddressSchema } from '@/models/Address'
 import type { CustomerSchema } from '@/models/Customer'
 import { CartEntrySchema } from '@/models/CartEntry'
@@ -214,16 +214,16 @@ const paypalRevertCurrencyIfRequired  = async <TNumber extends number|undefined>
 
 
 const commitOrder = async (session: ClientSession, { draftOrder, customer, billingAddress, paymentMethod } : { draftOrder: HydratedDocument<DraftOrderSchema>, customer: CustomerSchema, billingAddress: AddressSchema|undefined, paymentMethod: PaymentMethodSchema }) => {
-    await Order.create([{
+    await Order.create<OrderSchema>([{
         customer         : customer,
         
         items            : draftOrder.items,
         
-        shipping         : draftOrder.shippingAddress,
+        shippingAddress  : draftOrder.shippingAddress,
         shippingProvider : draftOrder.shippingProvider,
         shippingCost     : draftOrder.shippingCost,
         
-        billing          : billingAddress,
+        billingAddress   : billingAddress,
         
         paymentMethod    : paymentMethod,
     }], { session });
