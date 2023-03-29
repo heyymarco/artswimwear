@@ -686,7 +686,7 @@ const responsePlaceOrder = async (
                 shippingProvider       : shippingProvider,
                 shippingCost           : usePaypal ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
                 
-                expires                : (Date.now() + 60 * 1000),
+                expires                : new Date(Date.now() + 60 * 1000),
                 
                 paypalOrderId          : paypalOrderId,
             }], { session });
