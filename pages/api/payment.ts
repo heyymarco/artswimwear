@@ -131,11 +131,11 @@ const handlePaypalResponse = async (response: Response) => {
 
 
 const currencyExchange = {
-    expires : 0,
+    expires : new Date(),
     rates   : new Map<string, number>(),
 };
 const getCurrencyRate = async (toCurrency: string): Promise<number> => {
-    if (currencyExchange.expires <= Date.now()) {
+    if (currencyExchange.expires <= new Date()) {
         const rates = currencyExchange.rates;
         rates.clear();
         
@@ -150,7 +150,7 @@ const getCurrencyRate = async (toCurrency: string): Promise<number> => {
         } // for
         //#endregion fetch https://www.exchangerate-api.com
         
-        currencyExchange.expires = Date.now() + (1 * 3600 * 1000);
+        currencyExchange.expires = new Date(Date.now() + (1 * 3600 * 1000));
     } // if
     
     
@@ -686,7 +686,7 @@ const responsePlaceOrder = async (
                 shippingProvider       : shippingProvider,
                 shippingCost           : usePaypal ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
                 
-                expires                : new Date(Date.now() + 60 * 1000),
+                expires                : new Date(Date.now() + (1 * 60 * 1000)),
                 
                 paypalOrderId          : paypalOrderId,
             }], { session });
