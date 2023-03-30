@@ -11,7 +11,7 @@ import {
 // const imageSize = 255;  // 255px
 export default () => style({
     // layouts:
-    display        : 'flex',
+    display        : ['flex', '!important'],
     flexDirection  : 'column',
     justifyContent : 'center',
     alignItems     : 'center',
