@@ -94,7 +94,7 @@ export default function Home() {
                                         alt=''
                                         src='/illus/turtle.jpg'
                                         // width={200*1.5} height={200}
-                                        sizes='200'
+                                        sizes='200px'
                                     />
                                 </div>
                             </AccordionItem>
@@ -117,7 +117,7 @@ export default function Home() {
                                         alt=''
                                         src='/illus/particles.jpg'
                                         // width={200*1.5} height={200}
-                                        sizes='200'
+                                        sizes='200px'
                                     />
                                 </div>
                             </AccordionItem>
@@ -126,12 +126,12 @@ export default function Home() {
                 </Section>
                 <Section className={styles.regeneration} title='THE ECONYL® REGENERATION SYSTEM' theme='secondary' mild={true}>
                     <ProductImage
-                        className='illus fill'
+                        className='illus fill-self'
                         
                         alt='product regeneration'
                         src='/illus/product-cycle.jpg'
                         // width={800*0.5} height={590*0.5}
-                        sizes='800'
+                        sizes='350px'
                     />
                     <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary' listStyle='content'>
                         <AccordionItem label={<><Icon icon='medical_services' size='xl' /> Rescue</>}>

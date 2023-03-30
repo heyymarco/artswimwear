@@ -1,6 +1,8 @@
 import { children, descendants, fallbacks, scopeOf } from "@cssfn/core";
 import { ifScreenWidthAtLeast } from "@reusable-ui/core";
 
+
+
 export default () => [
     scopeOf('hero', {
         ...children('article', {
@@ -28,7 +30,8 @@ export default () => [
                     height: `calc(100vh  - var(--site-header) - var(--site-footer))`,
                 }),
                 ...children('ul>li>figure', {
-                    inlineSize: '100%',
+                    inlineSize : '100%',
+                    blockSize  : '100%',
                 }),
             }),
             ...children('footer', {
@@ -105,8 +108,10 @@ export default () => [
                 alignItems: 'center',
                 gap: '2rem',
                 ...children('.illus', {
+                    flex: [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's height
+                    
+                    width: 'min(200px, 100%)',
                     aspectRatio: 'unset',
-                    maxInlineSize: '100%',
                     ...children('img', {
                         objectFit: 'cover',
                     }),
@@ -119,13 +124,15 @@ export default () => [
             ...children(['h1', 'h2'], {
                 fontSize: '2rem',
             }),
-            ...descendants('.illus', {
+            ...descendants('.illus.fill-self', {
                 aspectRatio: 'unset',
-                marginBlockEnd: '3rem',
-                height: '50vh',
                 ...children('img', {
                     objectFit: 'contain',
+                    width: ['min(350px, 100%)', '!important'],
                 }),
+                
+                background: 'transparent',
+                marginBlockEnd: '3rem',
             }),
         }),
     }),
@@ -143,7 +150,7 @@ export default () => [
                 }),
                 marginBlockEnd: '3rem',
             }),
-            ...descendants('.illus', {
+            ...descendants('.illus.fill', {
                 aspectRatio: 'unset',
                 ...children('img', {
                     objectFit: 'cover',
@@ -158,7 +165,7 @@ export default () => [
             ...children(['h1', 'h2'], {
                 fontSize: '3rem',
             }),
-            ...descendants('.illus', {
+            ...descendants('.illus.fill', {
                 aspectRatio: 'unset',
                 ...children('img', {
                     objectFit: 'cover',
