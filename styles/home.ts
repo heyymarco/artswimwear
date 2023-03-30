@@ -8,11 +8,6 @@ export default () => [
             justifyContent: 'stretch',
             alignItems: 'center',
             
-            // backgroundImage: `url('/banners/cover.png')`,
-            // backgroundRepeat: 'no-repeat',
-            // backgroundPosition: 'center',
-            // backgroundSize: 'contain',
-            
             boxSizing: 'border-box',
             height: `calc(100svh - var(--site-header))`,
             ...fallbacks({
@@ -109,8 +104,12 @@ export default () => [
                 }),
                 alignItems: 'center',
                 gap: '2rem',
-                ...children('img', {
+                ...children('.illus', {
+                    aspectRatio: 'unset',
                     maxInlineSize: '100%',
+                    ...children('img', {
+                        objectFit: 'cover',
+                    }),
                 }),
             }),
         }),
@@ -121,8 +120,11 @@ export default () => [
                 fontSize: '2rem',
             }),
             ...descendants('.illus', {
-                objectFit: 'contain',
+                aspectRatio: 'unset',
                 marginBlockEnd: '3rem',
+                ...children('img', {
+                    objectFit: 'contain',
+                }),
             }),
         }),
     }),

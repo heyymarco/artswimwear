@@ -36,6 +36,8 @@ export default function Home() {
                                 alt=''
                                 src={`/slides/${item}.jpg`}
                                 sizes='100vw'
+                                
+                                priority={true}
                             />
                         )}
                     </Carousel>
@@ -86,7 +88,13 @@ export default function Home() {
                                         tons of fishing nets, which equals the
                                         weight of three blue whales!
                                     </p>
-                                    <Image alt='' src='/illus/turtle.jpg' width={200*1.5} height={200} />
+                                    <ProductImage
+                                        className='illus'
+                                        
+                                        alt=''
+                                        src='/illus/turtle.jpg'
+                                        width={200*1.5} height={200}
+                                    />
                                 </div>
                             </AccordionItem>
                             <AccordionItem label={<><Icon icon='refresh' size='xl' /> Recycling</>}>
@@ -102,14 +110,26 @@ export default function Home() {
                                         highly resistant to chlorine, sun creams
                                         and oils.
                                     </p>
-                                    <Image alt='' src='/illus/particles.jpg' width={200*1.5} height={200} />
+                                    <ProductImage
+                                        className='illus'
+                                        
+                                        alt=''
+                                        src='/illus/particles.jpg'
+                                        width={200*1.5} height={200}
+                                    />
                                 </div>
                             </AccordionItem>
                         </ExclusiveAccordion>
                     </Section>
                 </Section>
                 <Section className={styles.regeneration} title='THE ECONYL® REGENERATION SYSTEM' theme='secondary' mild={true}>
-                    <Image className='illus fill' src='/illus/product-cycle.jpg' alt='product regeneration' width={800*0.5} height={590*0.5} />
+                    <ProductImage
+                        className='illus fill'
+                        
+                        alt='product regeneration'
+                        src='/illus/product-cycle.jpg'
+                        width={800*0.5} height={590*0.5}
+                    />
                     <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary' listStyle='content'>
                         <AccordionItem label={<><Icon icon='medical_services' size='xl' /> Rescue</>}>
                             <p>

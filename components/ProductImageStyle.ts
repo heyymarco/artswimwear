@@ -2,15 +2,17 @@
 import {
     // writes css in javascript:
     children,
+    rule,
     style,
 }                           from '@cssfn/core'                  // writes css in javascript
 
 
 
-const imageSize = 255;  // 255px
+// const imageSize = 255;  // 255px
 export default () => style({
     // layouts:
     display        : 'flex',
+    flexDirection  : 'column',
     justifyContent : 'center',
     alignItems     : 'center',
     
@@ -22,7 +24,7 @@ export default () => style({
     
     
     // sizes:
-    width          : `${imageSize}px`,
+    // width          : `${imageSize}px`,
     aspectRatio    : '1/1',
     
     
@@ -47,8 +49,13 @@ export default () => style({
         
         
         // sizes:
-        inlineSize : ['100%', '!important'], // to override <NextImage>
-        blockSize  : ['100%', '!important'], // to override <NextImage>
+        flex : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's height
+        ...rule(':not([width])', {
+            width  : ['100%', '!important'], // to override <NextImage>
+        }),
+        ...rule(':not([height])', {
+            height : ['100%', '!important'], // to override <NextImage>
+        }),
     }),
     ...children(':where(.status)', {
         // positions:

@@ -77,10 +77,10 @@ const ProductImage = <TElement extends Element = HTMLElement>(props: ProductImag
         alt,
         src,
         loader,
-        fill  = true,
-        sizes = '255px',
         width,
         height,
+        fill  = !width && !height,
+        sizes = '255px',
         placeholder,
         blurDataURL,
         
@@ -185,10 +185,10 @@ const ProductImage = <TElement extends Element = HTMLElement>(props: ProductImag
                 alt={alt}
                 src={src}
                 loader={loader}
-                fill={fill}
-                sizes={sizes}
                 width={width}
                 height={height}
+                fill={fill}
+                sizes={sizes}
                 placeholder={placeholder}
                 blurDataURL={blurDataURL}
                 
