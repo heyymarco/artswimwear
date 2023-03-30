@@ -51,9 +51,10 @@ export interface ProductImageProps<TElement extends Element = HTMLElement>
         
         // additional bases:
         Omit<NextImageProps,
-            |'src'       // changed from required to optional
-            |'role'      // moved to <Generic>
-            |'key'|'ref' // React.ForwardRef
+            |'src'            // changed from required to optional
+            |'role'           // moved to <Generic>
+            |'key'|'ref'      // React.ForwardRef
+            |'width'|'height' // doesn't support [width] & [height] yet, use [sizes] instead
             |keyof React.DOMAttributes<TElement> // not supported yet
         >
 {
@@ -77,9 +78,10 @@ const ProductImage = <TElement extends Element = HTMLElement>(props: ProductImag
         alt,
         src,
         loader,
-        width,
-        height,
-        fill  = !width && !height,
+        // width,
+        // height,
+        // fill  = !width && !height,
+        fill = true,
         sizes = '255px',
         placeholder,
         blurDataURL,
@@ -185,8 +187,8 @@ const ProductImage = <TElement extends Element = HTMLElement>(props: ProductImag
                 alt={alt}
                 src={src}
                 loader={loader}
-                width={width}
-                height={height}
+                // width={width}
+                // height={height}
                 fill={fill}
                 sizes={sizes}
                 placeholder={placeholder}

@@ -93,7 +93,8 @@ export default function Home() {
                                         
                                         alt=''
                                         src='/illus/turtle.jpg'
-                                        width={200*1.5} height={200}
+                                        // width={200*1.5} height={200}
+                                        sizes='200'
                                     />
                                 </div>
                             </AccordionItem>
@@ -115,7 +116,8 @@ export default function Home() {
                                         
                                         alt=''
                                         src='/illus/particles.jpg'
-                                        width={200*1.5} height={200}
+                                        // width={200*1.5} height={200}
+                                        sizes='200'
                                     />
                                 </div>
                             </AccordionItem>
@@ -128,7 +130,8 @@ export default function Home() {
                         
                         alt='product regeneration'
                         src='/illus/product-cycle.jpg'
-                        width={800*0.5} height={590*0.5}
+                        // width={800*0.5} height={590*0.5}
+                        sizes='800'
                     />
                     <ExclusiveAccordion defaultExpandedListIndex={0} theme='primary' listStyle='content'>
                         <AccordionItem label={<><Icon icon='medical_services' size='xl' /> Rescue</>}>

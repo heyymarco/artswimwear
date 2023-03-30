@@ -122,6 +122,7 @@ export default () => [
             ...descendants('.illus', {
                 aspectRatio: 'unset',
                 marginBlockEnd: '3rem',
+                height: '50vh',
                 ...children('img', {
                     objectFit: 'contain',
                 }),
