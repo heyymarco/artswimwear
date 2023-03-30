@@ -1408,6 +1408,8 @@ const OrderSummary = () => {
                             >
                                 <h3 className='title h6'>{product?.name ?? 'PRODUCT WAS REMOVED'}</h3>
                                 <ProductImageWithStatus
+                                    className='prodImg'
+                                    
                                     alt={product?.name ?? ''}
                                     src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
                                     sizes='64px'

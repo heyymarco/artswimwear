@@ -65,7 +65,10 @@ export default () => [
                     gridArea: 'images',
                     ...children('.slides', {
                         height: '100%',
-                    })
+                        ...children('ul>li>figure', {
+                            background: 'white',
+                        }),
+                    }),
                 }),
                 ...children('.addToCart', {
                     gridArea: 'addToCart',

@@ -34,7 +34,7 @@ export default () => [
             display: 'flex',
             flexDirection: 'column',
             // gap: '1rem',
-            ...children('figure', {
+            ...children('.prodImg', {
                 minWidth : `${minImageSize}px`,
                 width    : 'unset',
                 overflow : 'hidden',
@@ -61,7 +61,7 @@ export default () => [
             ],
             ...rule(':hover', {
                 boxShadow: '0px 0px 1rem rgba(0, 0, 0, 0.7)',
-                ...children('figure', {
+                ...children('.prodImg', {
                     ...children(['img', '.status'], {
                         scale: '105%',
                     }),

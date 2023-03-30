@@ -30,6 +30,8 @@ export default () => [
                     height: `calc(100vh  - var(--site-header) - var(--site-footer))`,
                 }),
                 ...children('ul>li>figure', {
+                    background: 'white',
+                    
                     inlineSize : '100%',
                     blockSize  : '100%',
                 }),

@@ -38,6 +38,8 @@ export default function ProductList() {
                         : Object.values(productList?.entities).filter((product): product is Exclude<typeof product, undefined> => !!product).map((product) =>
                             <article key={product._id}>
                                 <ProductImage
+                                    className='prodImg'
+                                    
                                     alt={product.name ?? ''}
                                     src={product.image ? `/products/${product.name}/${product.image}` : undefined}
                                     sizes='414px'

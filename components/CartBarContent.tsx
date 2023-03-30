@@ -70,6 +70,8 @@ export const CartBarContent = () => {
                             >
                                 <h2 className='title h6'>{product?.name}</h2>
                                 <ProductImage
+                                    className='prodImg'
+                                    
                                     alt={product?.name ?? ''}
                                     src={product?.image ? `/products/${product?.name}/${product?.image}` : undefined}
                                     sizes='64px'

@@ -179,7 +179,7 @@ export default () => {
             gapInline: '1rem',
             gapBlock: '0.5rem',
             padding: 0,
-            ...children('figure', {
+            ...children('.prodImg', {
                 gridArea: 'image',
                 alignSelf: 'center',
                 

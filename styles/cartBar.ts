@@ -50,7 +50,7 @@ export default () => [
             marginInlineStart: 'auto',
             fontWeight: typos.fontWeightBold,
         }),
-        ...children('figure', {
+        ...children('.prodImg', {
             gridArea: 'image',
             alignSelf: 'center',
             
