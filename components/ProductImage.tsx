@@ -14,14 +14,20 @@ import {
 import {
     // react helper hooks:
     useEvent,
+    useMergeEvents,
 }                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
 import {
+    GenericProps,
+    Generic,
+    
+    
+    
     Busy,
     Icon,
 }                           from '@reusable-ui/components'              // a set of official Reusable-UI components
 
 // nextJS:
-import Image                from 'next/image'
+import NextImage            from 'next/image'
 
 
 
@@ -32,12 +38,29 @@ export const useProductImageStyleSheet = dynamicStyleSheet(
 
 
 
-type ImageProps = Parameters<typeof Image>[0]
-export interface ProductImageProps extends Omit<ImageProps, 'src'> {
-    src    ?: ImageProps['src'],
-    elmRef ?: React.Ref<HTMLElement> // setter ref
+type NextImageProps = Parameters<typeof NextImage>[0]
+export interface ProductImageProps<TElement extends Element = HTMLElement>
+    extends
+        // bases:
+        Omit<GenericProps<TElement>,
+            |'onLoad'|'onLoadCapture'|'onError'|'onErrorCapture' // moved to <Generic<Image>>
+        >,
+        Pick<GenericProps<HTMLImageElement>,
+            |'onLoad'|'onLoadCapture'|'onError'|'onErrorCapture' // moved here
+        >,
+        
+        // additional bases:
+        Omit<NextImageProps,
+            |'src'       // changed from required to optional
+            |'role'      // moved to <Generic>
+            |'key'|'ref' // React.ForwardRef
+            |keyof React.DOMAttributes<TElement> // not supported yet
+        >
+{
+    // appearances:
+    src ?: NextImageProps['src'], // changed to optional
 }
-const ProductImage = (props: ProductImageProps) => {
+const ProductImage = <TElement extends Element = HTMLElement>(props: ProductImageProps<TElement>) => {
     // styles:
     const styleSheet = useProductImageStyleSheet();
     
@@ -48,27 +71,106 @@ const ProductImage = (props: ProductImageProps) => {
     
     
     
-    // handlers:
-    const handleError = useEvent(() => {
-        setIsLoaded(false); // error => false
-    });
-    const handleLoaded = useEvent(() => {
-        setIsLoaded(true); // loaded => true
-    });
-    
-    
-    
     // rest props:
     const {
-        elmRef,
-    ...restImageProps} = props;
+        // appearances:
+        alt,
+        src,
+        loader,
+        fill  = true,
+        sizes = '255px',
+        width,
+        height,
+        placeholder,
+        blurDataURL,
+        
+        
+        
+        // behaviors:
+        loading,
+        priority,
+        quality,
+        unoptimized,
+        
+        
+        
+        // <img>:
+        crossOrigin,
+        decoding,
+        referrerPolicy,
+        useMap,
+        
+        
+        
+        // deprecated:
+        // @ts-ignore
+        layout,
+        // @ts-ignore
+        objectFit,
+        // @ts-ignore
+        objectPosition,
+        // @ts-ignore
+        lazyBoundary,
+        // @ts-ignore
+        lazyRoot,
+        
+        
+        
+        // handlers:
+        onLoad,
+        onLoadCapture,
+        onError,
+        onErrorCapture,
+        onLoadingComplete,
+    ...restGenericProps} = props;
+    
+    
+    
+    // handlers:
+    const handleErrorInternal           = useEvent<React.ReactEventHandler<HTMLImageElement>>(() => {
+        setIsLoaded(false); // error => false
+    });
+    const handleError                   = useMergeEvents(
+        // preserves the original `onError`:
+        onError,
+        
+        
+        
+        // handlers:
+        handleErrorInternal,
+    );
+    
+    const handleLoadingCompleteInternal = useEvent((_img: HTMLImageElement) => {
+        setIsLoaded(true); // loaded => true
+    });
+    const handleLoadingComplete         = useMergeEvents(
+        // preserves the original `onLoadingComplete`:
+        onLoadingComplete,
+        
+        
+        
+        // handlers:
+        handleLoadingCompleteInternal,
+    );
     
     
     
     // jsx:
-    const src = props.src;
     return (
-        <figure className={styleSheet.main} ref={elmRef}>
+        <Generic<TElement>
+            // other props:
+            {...restGenericProps}
+            
+            
+            
+            // semantics:
+            tag={props.tag ?? 'figure'}
+            
+            
+            
+            // classes:
+            mainClass={props.mainClass ?? styleSheet.main}
+        >
             {/* no image => show default image: */}
             {(!src) && <Icon className='status' icon='image' theme='primary' size='lg' />}
             
@@ -78,25 +180,58 @@ const ProductImage = (props: ProductImageProps) => {
             {/* error: */}
             {(isLoaded === false    ) && <Icon className='status' icon='broken_image' theme='primary' size='lg' />}
             
-            {src && (isLoaded !== false) && <Image
-                // rest props:
-                {...restImageProps}
-                
-                
-                
+            {src && (isLoaded !== false) && <NextImage
                 // appearances:
-                alt={restImageProps.alt} // for satisfying esLint
+                alt={alt}
                 src={src}
-                fill={props.fill ?? true}
-                sizes={props.sizes ?? '255px'}
+                loader={loader}
+                fill={fill}
+                sizes={sizes}
+                width={width}
+                height={height}
+                placeholder={placeholder}
+                blurDataURL={blurDataURL}
+                
+                
+                
+                // behaviors:
+                loading={loading}
+                priority={priority}
+                quality={quality}
+                unoptimized={unoptimized}
+                
+                
+                
+                // <img>:
+                crossOrigin={crossOrigin}
+                decoding={decoding}
+                referrerPolicy={referrerPolicy}
+                useMap={useMap}
+                
+                
+                
+                // deprecated:
+                // @ts-ignore
+                layout={layout}
+                // @ts-ignore
+                objectFit={objectFit}
+                // @ts-ignore
+                objectPosition={objectPosition}
+                // @ts-ignore
+                lazyBoundary={lazyBoundary}
+                // @ts-ignore
+                lazyRoot={lazyRoot}
                 
                 
                 
                 // handlers:
+                onLoad={onLoad}
+                onLoadCapture={onLoadCapture}
                 onError={handleError}
-                onLoadingComplete={handleLoaded}
+                onErrorCapture={onErrorCapture}
+                onLoadingComplete={handleLoadingComplete}
             />}
-        </figure>
+        </Generic>
     );
 }
 export {

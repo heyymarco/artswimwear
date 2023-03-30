@@ -141,8 +141,10 @@ export default () => [
                 marginBlockEnd: '3rem',
             }),
             ...descendants('.illus', {
-                objectFit: 'cover',
-                height: 'auto',
+                aspectRatio: 'unset',
+                ...children('img', {
+                    objectFit: 'cover',
+                }),
             }),
         }),
     }),
@@ -154,8 +156,10 @@ export default () => [
                 fontSize: '3rem',
             }),
             ...descendants('.illus', {
-                objectFit: 'cover',
-                height: 'auto',
+                aspectRatio: 'unset',
+                ...children('img', {
+                    objectFit: 'cover',
+                }),
             }),
         }),
     }),

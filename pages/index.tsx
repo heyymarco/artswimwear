@@ -35,7 +35,7 @@ export default function Home() {
                                 
                                 alt=''
                                 src={`/slides/${item}.jpg`}
-                                sizes="100vw"
+                                sizes='100vw'
                             />
                         )}
                     </Carousel>
@@ -194,7 +194,13 @@ export default function Home() {
                             produce beautiful works or ART.
                         </p>
                     </div>
-                    <Image className='illus fill' src='/illus/factory.jpg' alt='Factory' width={2490*0.5} height={1483*0.5} />
+                    <ProductImage
+                        className='illus fill'
+                        
+                        alt='Factory'
+                        src='/illus/factory.jpg'
+                        sizes='100vw'
+                    />
                 </Section>
                 <Section className={styles.community} title='Give Back to The Community and Planet' theme='primary' mild={false}>
                     <p>
@@ -211,7 +217,13 @@ export default function Home() {
                         Organization that carry out a great field job by providing education facilities, professional
                         training, accommodation, and creating job opportunities
                     </p>
-                    <Image className='illus fill' src='/illus/community.jpg' alt='Community' width={1852*0.5} height={1410*0.5} />
+                    <ProductImage
+                        className='illus fill'
+                        
+                        src='/illus/community.jpg'
+                        alt='Community'
+                        sizes='100vw'
+                    />
                 </Section>
             </Main>
         </>

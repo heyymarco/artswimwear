@@ -1017,20 +1017,36 @@ export default function Checkout() {
 
 
 
-interface ProductImageWithStatusProps extends ProductImageProps {
+interface ProductImageWithStatusProps<TElement extends Element = HTMLElement>
+    extends
+        // bases:
+        ProductImageProps<TElement>
+{
     status : string|number
 }
-const ProductImageWithStatus = (props: ProductImageWithStatusProps) => {
-    const [imageRef, setImageRef] = useState<HTMLElement|null>(null);
+const ProductImageWithStatus = <TElement extends Element = HTMLElement>(props: ProductImageWithStatusProps<TElement>) => {
+    // refs:
+    const [imageRef, setImageRef] = useState<TElement|null>(null);
     
+    
+    
+    // rest props:
     const {
         status,
     ...restProductImageProps} = props;
     
+    
+    
+    // jsx:
     return (
         <>
-            <ProductImage
+            <ProductImage<TElement>
+                // other props:
                 {...restProductImageProps}
+                
+                
+                
+                // refs:
                 elmRef={setImageRef}
             />
             <Badge theme='danger' badgeStyle='pill' floatingOn={imageRef} floatingPlacement='right-start' floatingOffset={-12} floatingShift={-3}>

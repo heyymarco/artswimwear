@@ -34,10 +34,30 @@ export default () => style({
     
     // children:
     ...children(':where(img)', {
-        visibility : 'visible',
-        objectFit  : 'contain',
+        // positions:
+        // position   : 'absolute',              // fill the <figure> BUT can't take space
+        position   : ['relative', '!important'], // fill the <figure> AND can take space // to override <NextImage>
+        
+        
+        
+        // appearances:
+        objectFit  : 'contain', // default to contain (no image part is loss)
+        visibility : 'visible', // override Site.global
+        
+        
+        
+        // sizes:
+        inlineSize : ['100%', '!important'], // to override <NextImage>
+        blockSize  : ['100%', '!important'], // to override <NextImage>
     }),
     ...children(':where(.status)', {
+        // positions:
+        position   : 'absolute',
+        zIndex     : 99,
+        
+        
+        
+        // typos:
         fontSize   : '2rem',
     }),
 });

@@ -64,6 +64,7 @@ export default function ProductDetail() {
                                             alt={`image #${index + 1} of ${product.name}`}
                                             src={`/products/${product.name}/${img}`}
                                             sizes='100vw'
+                                            
                                             priority={true}
                                         />
                                     )}
