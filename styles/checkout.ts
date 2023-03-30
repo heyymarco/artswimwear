@@ -111,7 +111,7 @@ export default () => {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
-        }),
+        }, {specificityWeight: 2}),
         scopeOf('currentStepLayout', {
             gridArea: 'currentStep',
             
@@ -125,7 +125,7 @@ export default () => {
                     [paddingVars.paddingBlock ] : '0px',
                 }),
             }),
-        }),
+        }, {specificityWeight: 2}),
         
         scopeOf('orderSummary', {
             gridArea: 'orderSummary',
@@ -292,13 +292,13 @@ export default () => {
                     }),
                 }),
             }),
-        }),
+        }, {specificityWeight: 2}),
         scopeOf('expressCheckout', {
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
-        }),
+        }, {specificityWeight: 2}),
         scopeOf('checkoutAlt', {
             display: 'flex',
             flexDirection: 'row',
@@ -335,7 +335,7 @@ export default () => {
                     }),
                 }),
             }),
-        }),
+        }, {specificityWeight: 2}),
         scopeOf('shippingMethod', {
         }),
         scopeOf('address', {
@@ -385,7 +385,7 @@ export default () => {
                     }),
                 }),
             }),
-        }),
+        }, {specificityWeight: 2}),
         scopeOf('paymentMethod', {
         }),
         scopeOf('optionEntryHeader', {
@@ -536,7 +536,7 @@ export default () => {
                     }),
                 }),
             }),
-        }),
+        }, {specificityWeight: 2}),
         
         scopeOf('navCheckout', {
             gridArea: 'navCheckout',
@@ -570,7 +570,7 @@ export default () => {
                     textAlign: 'center',
                 }),
             }),
-        }),
+        }, {specificityWeight: 2}),
         
         scopeOf('vertLine', {
             gridArea: 'vertLine',
