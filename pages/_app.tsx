@@ -22,7 +22,7 @@ import { store, persistor } from '@/store/store'
 import { Provider } from 'react-redux'
 import { CartBar } from '@/components/CartBar';
 import { PersistGate } from 'redux-persist/integration/react';
-
+import { WEBSITE_FAVICON_PNG, WEBSITE_FAVICON_SVG } from '@/website.config'
 
 
 // styles:
@@ -36,9 +36,9 @@ const Header = () => {
     return (
         <>
             <Head>
-                <link rel="icon" type="image/png" href="/artswimwear.png" />
-                <link rel="icon" type="image/svg+xml" href="/artswimwear.svg" />
-                <meta name="viewport" content="width=device-width, initial-scale=1" />
+                <link rel='icon' type='image/png' href={WEBSITE_FAVICON_PNG} />
+                <link rel='icon' type='image/svg+xml' href={WEBSITE_FAVICON_SVG} />
+                <meta name='viewport' content='width=device-width, initial-scale=1' />
             </Head>
             
             <header className='siteHeader'>

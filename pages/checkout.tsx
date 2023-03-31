@@ -20,6 +20,20 @@ import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveAct
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
 import { MatchingShipping, MatchingAddress, calculateShippingCost } from '@/libs/shippings'
 import AddressField from '@/components/AddressFields'
+import {
+    PAGE_CHECKOUT_STEP_INFO_TITLE,
+    PAGE_CHECKOUT_STEP_INFO_DESCRIPTION,
+    PAGE_CHECKOUT_STEP_SHIPPING_TITLE,
+    PAGE_CHECKOUT_STEP_SHIPPING_DESCRIPTION,
+    PAGE_CHECKOUT_STEP_PAYMENT_TITLE,
+    PAGE_CHECKOUT_STEP_PAYMENT_DESCRIPTION,
+    PAGE_CHECKOUT_STEP_PENDING_TITLE,
+    PAGE_CHECKOUT_STEP_PENDING_DESCRIPTION,
+    PAGE_CHECKOUT_STEP_PAID_TITLE,
+    PAGE_CHECKOUT_STEP_PAID_DESCRIPTION,
+    PAGE_CHECKOUT_TITLE,
+    PAGE_CHECKOUT_DESCRIPTION,
+} from '@/website.config'
 
 
 
@@ -907,28 +921,31 @@ export default function Checkout() {
                 {((): React.ReactNode => {
                     switch(checkoutStep) {
                         case 'info'     : return <>
-                            <title>Checkout : Information</title>
-                            <meta name='description' content='Fill the contact information and shipping address.' />
+                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_INFO_TITLE)}</title>
+                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_INFO_DESCRIPTION)} />
                         </>
                         
                         case 'shipping' : return <>
-                            <title>Checkout : Shipping</title>
-                            <meta name='description' content='Choose the shipping method.' />
+                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_SHIPPING_TITLE)}</title>
+                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_SHIPPING_DESCRIPTION)} />
                         </>
                         
                         case 'payment'  : return <>
-                            <title>Checkout : Payment</title>
-                            <meta name='description' content='Choose the payment method.' />
+                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAYMENT_TITLE)}</title>
+                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAYMENT_DESCRIPTION)} />
                         </>
                         
-                        case 'pending'  :
+                        case 'pending'  : return <>
+                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PENDING_TITLE)}</title>
+                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PENDING_DESCRIPTION)} />
+                        </>
+                        
                         case 'paid'     : return <>
-                            <title>Checkout : Completed</title>
-                            <meta name='description' content='The order is complete.' />
+                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAID_TITLE)}</title>
+                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAID_DESCRIPTION)} />
                         </>
                         
                         default         : return <>
-                            <title>Checkout</title>
                         </>
                     } // switch
                 })()}

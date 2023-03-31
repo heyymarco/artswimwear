@@ -6,6 +6,7 @@ import { borders, colors, ifScreenWidthAtLeast, usesThemable } from '@reusable-u
 import type { NextPage } from 'next'
 import Image from 'next/image'
 import Head from 'next/head'
+import { PAGE_404_TITLE, PAGE_404_DESCRIPTION } from '@/website.config'
 
 
 
@@ -30,13 +31,13 @@ const useSheet = dynamicStyleSheet(() => {
             ...fallbacks({
                 height: `calc(100vh  - var(--site-header) - var(--site-footer))`,
             }),
-
+            
             borderBlockStartWidth: borders.hair,
             borderColor: themableVars.backg,
-
+            
             ...children('.illustration', {
                 gridArea: 'illus/illus / content/content',
-
+                
                 position: 'absolute', // do not taking space
                 // justifySelf: 'stretch',
                 // alignSelf: 'stretch',
@@ -50,11 +51,11 @@ const useSheet = dynamicStyleSheet(() => {
             ...children('article', {
                 gridArea: 'shared/shared / content/content',
                 alignSelf: 'end',
-
+                
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'stretch',
-
+                
                 backgroundImage: [
                     `linear-gradient(${colors.secondaryThin}, ${colors.secondaryThin})`,
                     'linear-gradient(rgba(255,255,255, 0.2), rgba(255,255,255, 0.2))'
@@ -62,10 +63,10 @@ const useSheet = dynamicStyleSheet(() => {
                 border: `solid 1px ${colors.white}`,
                 backdropFilter: [['blur(10px)']],
                 filter: [[`drop-shadow(0px 0px 10px ${colors.secondaryBold})`]],
-
+                
                 paddingInline: containers.paddingInline,
                 paddingBlock: containers.paddingBlock,
-
+                
                 // marginInline: `calc(0px - ${containers.paddingInline})`,
                 // marginBlock: `calc(0px - ${containers.paddingBlock})`,
                 // inlineSize: `calc(100% + (2 * ${containers.paddingInline}))`
@@ -80,7 +81,7 @@ const useSheet = dynamicStyleSheet(() => {
                 gridTemplateAreas: [[
                     '"illus shared content"',
                 ]],
-
+                
                 ...children('.illustration', {
                     gridArea: 'illus/illus / shared/shared',
                 }),
@@ -96,11 +97,11 @@ const useSheet = dynamicStyleSheet(() => {
 
 const Page : NextPage = () => {
     const sheet = useSheet();
-
+    
     return (<>
         <Head>
-            <title>Under Construction</title>
-            <meta name="description" content="Sorry, this page is under construction or maintenance." />
+            <title>{PAGE_404_TITLE}</title>
+            <meta name='description' content={PAGE_404_DESCRIPTION} />
         </Head>
         <GenericSection className={sheet.main} theme='primary' mild={true}>
             <Image className='illustration' alt='' src='/under-construction.svg' width={0} height={0} />
