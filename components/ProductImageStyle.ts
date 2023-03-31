@@ -2,17 +2,15 @@
 import {
     // writes css in javascript:
     children,
-    rule,
     style,
 }                           from '@cssfn/core'                  // writes css in javascript
 
 
 
-// const imageSize = 255;  // 255px
 export default () => style({
     // layouts:
     display        : ['flex', '!important'],
-    flexDirection  : 'column',
+    flexDirection  : 'row',    // we'll manipulate the <img> width
     justifyContent : 'center',
     alignItems     : 'center',
     
@@ -24,8 +22,7 @@ export default () => style({
     
     
     // sizes:
-    // width          : `${imageSize}px`,
-    aspectRatio    : '1/1',
+    width          : 'fit-content', // follows the <img> width
     
     
     
@@ -38,7 +35,7 @@ export default () => style({
     ...children(':where(img)', {
         // positions:
         // position   : 'absolute',              // fill the <figure> BUT can't take space
-        position   : ['relative', '!important'], // fill the <figure> AND can take space // to override <NextImage>
+        position   : ['relative', '!important'], // fill the <figure> AND can take space // !important : to override <NextImage>
         
         
         
@@ -49,13 +46,9 @@ export default () => style({
         
         
         // sizes:
-        flex : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's height
-        ...rule(':not([width])', {
-            width  : ['100%', '!important'], // to override <NextImage>
-        }),
-        ...rule(':not([height])', {
-            height : ['100%', '!important'], // to override <NextImage>
-        }),
+        flex   : [[1, 1, 'auto']],       // growable, shrinkable, initial from <img>'s width
+        width  : ['100%', '!important'], // follows the <figure>'s width    // !important : to override <NextImage>
+        height : ['auto', '!important'], // follows the <img>'s aspectRatio // !important : to override <NextImage>
     }),
     ...children(':where(.status)', {
         // positions:
