@@ -16,11 +16,6 @@ export default () => style({
     
     
     
-    // positions:
-    position       : 'relative',
-    
-    
-    
     // sizes:
     width          : 'fit-content', // follows the <img> width
     
