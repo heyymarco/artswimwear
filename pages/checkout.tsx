@@ -709,8 +709,11 @@ export default function Checkout() {
             const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), iframe';
             const firstInvalidField = invalidFields?.[0];
             const firstFocusableElm = (firstInvalidField.matches(focusableSelector) ? firstInvalidField : firstInvalidField?.querySelector(focusableSelector)) as HTMLElement|null;
-            firstInvalidField.scrollIntoView({ behavior: 'smooth' });
-            firstFocusableElm?.focus?.( {preventScroll: true });
+            firstInvalidField.scrollIntoView({
+                block    : 'start',
+                behavior : 'smooth',
+            });
+            firstFocusableElm?.focus?.({ preventScroll: true });
         };
         
         
@@ -1513,8 +1516,12 @@ const OrderReview = () => {
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
                                 dispatch(setCheckoutStep('info'));
                                 setTimeout(() => {
-                                    contactEmailInputRef?.current?.focus?.();
-                                }, 100);
+                                    contactEmailInputRef?.current?.scrollIntoView({
+                                        block    : 'start',
+                                        behavior : 'smooth',
+                                    });
+                                    contactEmailInputRef?.current?.focus?.({ preventScroll: true });
+                                }, 200);
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>
@@ -1525,8 +1532,12 @@ const OrderReview = () => {
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
                                 dispatch(setCheckoutStep('info'));
                                 setTimeout(() => {
-                                    shippingAddressInputRef?.current?.focus?.();
-                                }, 100);
+                                    shippingAddressInputRef?.current?.scrollIntoView({
+                                        block    : 'start',
+                                        behavior : 'smooth',
+                                    });
+                                    shippingAddressInputRef?.current?.focus?.({ preventScroll: true });
+                                }, 200);
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>
@@ -1537,8 +1548,12 @@ const OrderReview = () => {
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
                                 dispatch(setCheckoutStep('shipping'));
                                 setTimeout(() => {
-                                    shippingMethodOptionRef?.current?.focus?.();
-                                }, 100);
+                                    shippingMethodOptionRef?.current?.scrollIntoView({
+                                        block    : 'start',
+                                        behavior : 'smooth',
+                                    });
+                                    shippingMethodOptionRef?.current?.focus?.({ preventScroll: true });
+                                }, 200);
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>}
