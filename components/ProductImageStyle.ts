@@ -9,7 +9,7 @@ import {
 
 export default () => style({
     // layouts:
-    display        : ['flex', '!important'],
+    display        : ['inline-flex', '!important'],
     flexDirection  : 'row',    // we'll manipulate the <img> width
     justifyContent : 'center',
     alignItems     : 'center',

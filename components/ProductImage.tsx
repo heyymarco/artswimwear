@@ -79,7 +79,7 @@ const ProductImage = <TElement extends Element = HTMLElement>(props: ProductImag
         loader,
         width,
         height,
-        sizes,
+        sizes = (width !== undefined) ? `${width}px` : undefined, // a hack for fixing auto_image_size problem when no using [sizes] prop (using [width] & [height] props)
         fill  = !width && !height,
         placeholder,
         blurDataURL,
