@@ -113,7 +113,6 @@ export default () => [
                     flex: [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's height
                     
                     width: 'min(200px, 100%)',
-                    aspectRatio: 'unset',
                     ...children('img', {
                         objectFit: 'cover',
                     }),
@@ -127,7 +126,6 @@ export default () => [
                 fontSize: '2rem',
             }),
             ...descendants('.illus.fill-self', {
-                aspectRatio: 'unset',
                 ...children('img', {
                     objectFit: 'contain',
                     width: ['min(350px, 100%)', '!important'],
@@ -153,7 +151,6 @@ export default () => [
                 marginBlockEnd: '3rem',
             }),
             ...descendants('.illus.fill', {
-                aspectRatio: 'unset',
                 ...children('img', {
                     objectFit: 'cover',
                 }),
@@ -168,7 +165,6 @@ export default () => [
                 fontSize: '3rem',
             }),
             ...descendants('.illus.fill', {
-                aspectRatio: 'unset',
                 ...children('img', {
                     objectFit: 'cover',
                 }),
