@@ -9,8 +9,8 @@ import {
 
 export default () => style({
     // layouts:
-    display        : ['inline-flex', '!important'],
-    flexDirection  : 'row',    // we'll manipulate the <img> width
+    display        : 'inline-flex', // make an inline element like <img>
+    flexDirection  : 'row',         // we'll manipulate the <img> width
     justifyContent : 'center',
     alignItems     : 'center',
     
