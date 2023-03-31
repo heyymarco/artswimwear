@@ -21,11 +21,6 @@ export default () => style({
     
     
     
-    // backgrounds:
-    background     : 'white',
-    
-    
-    
     // children:
     ...children(':where(img)', {
         // positions:
