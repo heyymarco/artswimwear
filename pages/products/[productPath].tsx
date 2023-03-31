@@ -6,7 +6,7 @@ import { Busy, ButtonIcon, Carousel, Nav, NavItem } from '@reusable-ui/component
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetProductDetail } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import ProductImage from '@/components/ProductImage'
+import Image from '@/components/Image/Image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { Section } from '@/components/sections/Section'
@@ -58,7 +58,7 @@ export default function ProductDetail() {
                             <section className='images'>
                                 <Carousel className='slides' size='lg' theme='primary'>
                                     {product.images?.map((img: string, index: number) =>
-                                        <ProductImage
+                                        <Image
                                             key={index}
                                             
                                             alt={`image #${index + 1} of ${product.name}`}

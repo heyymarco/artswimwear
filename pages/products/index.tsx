@@ -7,7 +7,7 @@ import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { GenericSection } from '@/components/sections/GenericSection'
 import { useGetProductList } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import ProductImage from '@/components/ProductImage'
+import Image from '@/components/Image/Image'
 import Link from 'next/link'
 
 
@@ -37,7 +37,7 @@ export default function ProductList() {
                         ? <p>Oops, an error occured!</p>
                         : Object.values(productList?.entities).filter((product): product is Exclude<typeof product, undefined> => !!product).map((product) =>
                             <article key={product._id}>
-                                <ProductImage
+                                <Image
                                     className='prodImg'
                                     
                                     alt={product.name ?? ''}

@@ -32,14 +32,14 @@ import NextImage            from 'next/image'
 
 
 // styles:
-export const useProductImageStyleSheet = dynamicStyleSheet(
-    () => import(/* webpackPrefetch: true */ './ProductImageStyle')
+export const useImageStyleSheet = dynamicStyleSheet(
+    () => import(/* webpackPrefetch: true */ './styles/style')
 , { id: 'ajnv9mjr5u', specificityWeight: 0 }); // a unique salt for SSR support, ensures the server-side & client-side have the same generated class names
 
 
 
 type NextImageProps = Parameters<typeof NextImage>[0]
-export interface ProductImageProps<TElement extends Element = HTMLElement>
+export interface ImageProps<TElement extends Element = HTMLElement>
     extends
         // bases:
         Omit<GenericProps<TElement>,
@@ -60,9 +60,9 @@ export interface ProductImageProps<TElement extends Element = HTMLElement>
     // appearances:
     src ?: NextImageProps['src'], // changed to optional
 }
-const ProductImage = <TElement extends Element = HTMLElement>(props: ProductImageProps<TElement>) => {
+const Image = <TElement extends Element = HTMLElement>(props: ImageProps<TElement>) => {
     // styles:
-    const styleSheet = useProductImageStyleSheet();
+    const styleSheet = useImageStyleSheet();
     
     
     
@@ -235,6 +235,6 @@ const ProductImage = <TElement extends Element = HTMLElement>(props: ProductImag
     );
 }
 export {
-    ProductImage,
-    ProductImage as default,
+    Image,
+    Image as default,
 }

@@ -6,9 +6,8 @@ import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFo
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { CountryEntry, PriceEntry, ProductEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import ProductImage, { ProductImageProps } from '@/components/ProductImage'
+import Image, { ImageProps } from '@/components/Image/Image'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Article, Section } from '@/components/sections/Section'
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
@@ -1017,14 +1016,14 @@ export default function Checkout() {
 
 
 
-interface ProductImageWithStatusProps<TElement extends Element = HTMLElement>
+interface ImageWithStatusProps<TElement extends Element = HTMLElement>
     extends
         // bases:
-        ProductImageProps<TElement>
+        ImageProps<TElement>
 {
     status : string|number
 }
-const ProductImageWithStatus = <TElement extends Element = HTMLElement>(props: ProductImageWithStatusProps<TElement>) => {
+const ImageWithStatus = <TElement extends Element = HTMLElement>(props: ImageWithStatusProps<TElement>) => {
     // refs:
     const [imageRef, setImageRef] = useState<TElement|null>(null);
     
@@ -1033,16 +1032,16 @@ const ProductImageWithStatus = <TElement extends Element = HTMLElement>(props: P
     // rest props:
     const {
         status,
-    ...restProductImageProps} = props;
+    ...restImageProps} = props;
     
     
     
     // jsx:
     return (
         <>
-            <ProductImage<TElement>
+            <Image<TElement>
                 // other props:
-                {...restProductImageProps}
+                {...restImageProps}
                 
                 
                 
@@ -1407,7 +1406,7 @@ const OrderSummary = () => {
                                 mild={!product ? false : undefined}
                             >
                                 <h3 className='title h6'>{product?.name ?? 'PRODUCT WAS REMOVED'}</h3>
-                                <ProductImageWithStatus
+                                <ImageWithStatus
                                     className='prodImg'
                                     
                                     alt={product?.name ?? ''}

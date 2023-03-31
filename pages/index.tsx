@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import Image from 'next/image'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 import { Main } from '@/components/sections/Main'
@@ -7,7 +6,7 @@ import { HeroSection } from '@/components/sections/HeroSection'
 import { Section } from '@/components/sections/Section'
 import { AccordionItem, Button, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import ProductImage from '@/components/ProductImage'
+import Image from '@/components/Image/Image'
 
 
 
@@ -30,7 +29,7 @@ export default function Home() {
                 <HeroSection theme='secondary' className={styles.hero}>
                     <Carousel className='slides fill' nude={true} size='lg' theme='primary' mild={false}>
                         {[1,2,3,4,5].map(item =>
-                            <ProductImage
+                            <Image
                                 key={item}
                                 
                                 alt=''
@@ -55,7 +54,7 @@ export default function Home() {
                         weaving designs.
                     </p>
                     <p>
-                        Both Atika and Rossalia are passionate about the conservation of Indonesia’s
+                        Both Atika and Rossalia are passionate about the conservation of Indonesia&apos;s
                         beautiful oceans, beaches and communities. The girls wanted ART to team up with
                         Art and Nature community whose aim is to empower the people of Indonesia with
                         the skills and education needed to integrate sustainability into their communities
@@ -88,7 +87,7 @@ export default function Home() {
                                         tons of fishing nets, which equals the
                                         weight of three blue whales!
                                     </p>
-                                    <ProductImage
+                                    <Image
                                         className='illus'
                                         
                                         alt=''
@@ -111,7 +110,7 @@ export default function Home() {
                                         highly resistant to chlorine, sun creams
                                         and oils.
                                     </p>
-                                    <ProductImage
+                                    <Image
                                         className='illus'
                                         
                                         alt=''
@@ -125,7 +124,7 @@ export default function Home() {
                     </Section>
                 </Section>
                 <Section className={styles.regeneration} title='THE ECONYL® REGENERATION SYSTEM' theme='secondary' mild={true}>
-                    <ProductImage
+                    <Image
                         className='illus fill-self'
                         
                         alt='product regeneration'
@@ -217,7 +216,7 @@ export default function Home() {
                             produce beautiful works or ART.
                         </p>
                     </div>
-                    <ProductImage
+                    <Image
                         className='illus fill'
                         
                         alt='Factory'
@@ -228,7 +227,7 @@ export default function Home() {
                 <Section className={styles.community} title='Give Back to The Community and Planet' theme='primary' mild={false}>
                     <p>
                         More than 12 million Indonesians lack education and creative skills. They are paid 50% less
-                        than the minimum salary. We believe it’s time for change.
+                        than the minimum salary. We believe it&apos;s time for change.
                     </p>
                     <p>
                         We have chosen to team up with Art and Nature community. Organization leads an art
@@ -240,7 +239,7 @@ export default function Home() {
                         Organization that carry out a great field job by providing education facilities, professional
                         training, accommodation, and creating job opportunities
                     </p>
-                    <ProductImage
+                    <Image
                         className='illus fill'
                         
                         src='/illus/community.jpg'

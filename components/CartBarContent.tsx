@@ -7,7 +7,7 @@ import { useGetPriceList, useGetProductList } from '@/store/features/api/apiSlic
 import LoadingBar from './LoadingBar';
 import { formatCurrency } from '@/libs/formatters';
 import { dynamicStyleSheets } from '@cssfn/cssfn-react';
-import ProductImage from '@/components/ProductImage'
+import Image from '@/components/Image/Image'
 import { useRouter } from 'next/router';
 
 
@@ -69,7 +69,7 @@ export const CartBarContent = () => {
                                 mild={!product ? false : undefined}
                             >
                                 <h2 className='title h6'>{product?.name}</h2>
-                                <ProductImage
+                                <Image
                                     className='prodImg'
                                     
                                     alt={product?.name ?? ''}
