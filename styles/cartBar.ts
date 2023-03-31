@@ -51,10 +51,11 @@ export default () => [
             fontWeight: typos.fontWeightBold,
         }),
         ...children('.prodImg', {
-            gridArea: 'image',
-            alignSelf: 'center',
+            gridArea   : 'image',
+            alignSelf  : 'center',
             
-            width: `${imageSize}px`,
+            background : 'white',
+            width      : `${imageSize}px`,
         }),
         ...children('.title', {
             gridArea: 'title',

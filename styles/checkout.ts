@@ -180,10 +180,11 @@ export default () => {
             gapBlock: '0.5rem',
             padding: 0,
             ...children('.prodImg', {
-                gridArea: 'image',
-                alignSelf: 'center',
+                gridArea   : 'image',
+                alignSelf  : 'center',
                 
-                width: `${imageSize}px`,
+                background : 'white',
+                width      : `${imageSize}px`,
             }),
             ...children('.title', {
                 gridArea: 'title',

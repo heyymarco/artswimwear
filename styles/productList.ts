@@ -35,9 +35,12 @@ export default () => [
             flexDirection: 'column',
             // gap: '1rem',
             ...children('.prodImg', {
-                minWidth : `${minImageSize}px`,
-                width    : 'unset',
-                overflow : 'hidden',
+                flex       : [[1, 1, 'auto']], // growable, shrinkable, initial from it's height
+                
+                background : 'white',
+                minWidth   : `${minImageSize}px`,
+                width      : 'unset',
+                overflow   : 'hidden',
                 ...children(['img', '.status'], {
                     transition : [
                         ['scale', '300ms'],
