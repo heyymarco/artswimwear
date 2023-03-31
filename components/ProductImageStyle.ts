@@ -47,8 +47,8 @@ export default () => style({
         
         // sizes:
         flex   : [[1, 1, 'auto']],       // growable, shrinkable, initial from <img>'s width
-        width  : ['100%', '!important'], // follows the <figure>'s width    // !important : to override <NextImage>
-        height : ['auto', '!important'], // follows the <img>'s aspectRatio // !important : to override <NextImage>
+        width  : ['100%', '!important'], // follows the <figure>'s width  // !important : to override <NextImage>
+        height : ['100%', '!important'], // follows the <figure>'s height // !important : to override <NextImage>
     }),
     ...children(':where(.status)', {
         // positions:
