@@ -1,7 +1,7 @@
 import '../libs/cssfn-preload'
 import '@cssfn/cssfn-dom'
 
-import '../website.config';
+import '../theme.config';
 
 import '@/styles/Site.global.scss'
 

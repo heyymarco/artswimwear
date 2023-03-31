@@ -904,8 +904,34 @@ export default function Checkout() {
     return (
         <>
             <Head>
-                <title>Checkout</title>
-                <meta name='description' content='Checkout' />
+                {((): React.ReactNode => {
+                    switch(checkoutStep) {
+                        case 'info'     : return <>
+                            <title>Checkout : Information</title>
+                            <meta name='description' content='Fill the contact information and shipping address.' />
+                        </>
+                        
+                        case 'shipping' : return <>
+                            <title>Checkout : Shipping</title>
+                            <meta name='description' content='Choose the shipping method.' />
+                        </>
+                        
+                        case 'payment'  : return <>
+                            <title>Checkout : Payment</title>
+                            <meta name='description' content='Choose the payment method.' />
+                        </>
+                        
+                        case 'pending'  :
+                        case 'paid'     : return <>
+                            <title>Checkout : Completed</title>
+                            <meta name='description' content='The order is complete.' />
+                        </>
+                        
+                        default         : return <>
+                            <title>Checkout</title>
+                        </>
+                    } // switch
+                })()}
             </Head>
             <Main nude={true}>
                 <CheckoutContext.Provider value={checkoutData}>
