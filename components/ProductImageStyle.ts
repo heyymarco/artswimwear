@@ -46,7 +46,7 @@ export default () => style({
         
         
         // sizes:
-        flex   : [[1, 1, 'auto']],       // growable, shrinkable, initial from <img>'s width
+        flex   : [[0, 0, 'auto']],       // ungrowable, unshrinkable, initial from <img>'s width // set to fixed_size to make customization easier
         width  : ['100%', '!important'], // follows the <figure>'s width  // !important : to override <NextImage>
         height : ['100%', '!important'], // follows the <figure>'s height // !important : to override <NextImage>
     }),
