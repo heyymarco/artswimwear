@@ -15,7 +15,7 @@ export default [
     globalScope({
         ...rule('html', {
             // scrolls:
-            scrollPaddingBlockStart : `calc(${navbars.blockSize} + ${spacers.md})`,
+            scrollPaddingBlockStart : `calc(${navbars.blockSize} + ${spacers.sm})`,
         }),
     }),
 ];
