@@ -7,7 +7,6 @@ import {
     
     // hooks:
     useRef,
-    useCallback,
 }                           from 'react'
 import {
     // react helper hooks:
@@ -117,7 +116,7 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
     const stepFn     : number  = Math.abs(step ?? 1);
     const negativeFn : boolean = (maxFn < minFn);
     
-    const trimValue = useCallback((value: number): number => {
+    const trimValue    = useEvent((value: number): number => {
         // make sure the requested value is between the min value & max value:
         value     = Math.min(Math.max(
             value
@@ -139,7 +138,7 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
         } // if
         
         return value;
-    }, [minFn, maxFn, stepFn, negativeFn]); // (re)create the function on every time the constraints changes
+    });
     const trimValueOpt = (value: number|undefined): number|undefined => {
         // conditions:
         if (value === undefined) return undefined;
@@ -163,7 +162,7 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
     const [triggerRender]  = useTriggerRender();            // uncontrollable component mode: update the source_of_truth when modified internally by internal component(s)
     
     type ChangeValueAction = 'setValue'|'decrease'|'increase'
-    const changeValue     = useCallback((action: ChangeValueAction, amount: number): void => {
+    const changeValue      = useEvent((action: ChangeValueAction, amount: number): void => {
         let value = valueRef.current;
         switch (action) {
             case 'setValue': {
@@ -202,7 +201,7 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
                 }, 0); // runs the 'input' event *next after* current event completed
             } // if
         } // if
-    }, [minFn, maxFn, stepFn, negativeFn, trimValue, valueFn]); // (re)create the reducer function on every time the constraints changes
+    });
     
     
     
