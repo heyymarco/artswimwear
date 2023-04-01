@@ -1347,7 +1347,7 @@ const RegularCheckout = () => {
                     <Label theme='secondary' mild={false} className='solid'>
                         <Icon icon='chat' theme='primary' mild={true} />
                     </Label>
-                    <TextInput  placeholder='Your Nick Name' required minLength={2} maxLength={30} autoComplete='nickname' value={customerNickName} onChange={({target:{value}}) => dispatch(setCustomerNickName(value))} />
+                    <TextInput  placeholder='Your Nick Name' required minLength={2} maxLength={30} autoComplete='nickname' autoCapitalize='words' value={customerNickName} onChange={({target:{value}}) => dispatch(setCustomerNickName(value))} />
                 </Group>
                 <Group className='email'>
                     <Label theme='secondary' mild={false} className='solid'>
@@ -2072,7 +2072,7 @@ const PaymentMethodCard = () => {
                     <Label theme='secondary' mild={false} className='solid'>
                         <Icon icon='person' theme='primary' mild={true} />
                     </Label>
-                    <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' elmRef={cardholderInputRef} />
+                    <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' autoCapitalize='words' elmRef={cardholderInputRef} />
                     <Label theme='success' mild={true} className='solid' elmRef={nameSignRef}>
                         <Icon icon='help' />
                         <Tooltip className='tooltip' theme='warning' size='sm' floatingOn={nameSignRef}>
