@@ -13,6 +13,7 @@
     "@cssfn/cssfn-dom": "^2.5.1",
     "@cssfn/cssfn-react": "^2.5.0",
     "@heymarco/image": "^1.0.0",
+    "@heymarco/loading-bar": "^1.0.0",
     "@heymarco/section": "^1.0.0",
     "@paypal/react-paypal-js": "^7.8.2",
     "@reduxjs/toolkit": "^1.9.3",

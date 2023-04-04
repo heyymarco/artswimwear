@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { removeFromCart, selectCartItems, setCartItemQuantity, showCart } from '@/store/features/cart/cartSlice';
 import QuantityInput from './QuantityInput';
 import { useGetPriceList, useGetProductList } from '@/store/features/api/apiSlice';
-import LoadingBar from './LoadingBar';
+import { LoadingBar } from '@heymarco/loading-bar'
 import { formatCurrency } from '@/libs/formatters';
 import { dynamicStyleSheets } from '@cssfn/cssfn-react';
 import { Image } from '@heymarco/image'
