@@ -20,7 +20,7 @@ import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
 import { MatchingShipping, MatchingAddress, calculateShippingCost } from '@/libs/shippings'
-import AddressField from '@/components/AddressFields'
+import { AddressFields } from '@heymarco/address-fields'
 import {
     PAGE_CHECKOUT_STEP_INFO_TITLE,
     PAGE_CHECKOUT_STEP_INFO_DESCRIPTION,
@@ -1361,7 +1361,7 @@ const RegularCheckout = () => {
                 </Check>
             </Section>
             <Section className={styles.address} title='Shipping Address'>
-                <AddressField
+                <AddressFields
                     // refs:
                     addressRef        = {shippingAddressInputRef}
                     
@@ -1904,7 +1904,7 @@ const Payment = () => {
                             Use a different billing address
                         </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} >
                             <ValidationProvider enableValidation={!billingAsShipping && billingValidation}>
-                                <AddressField
+                                <AddressFields
                                     // types:
                                     addressType       = 'billing'
                                     
