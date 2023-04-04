@@ -6,7 +6,7 @@ import { Section, HeroSection, Main } from '@heymarco/section'
 
 import { AccordionItem, Button, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import Image from '@/components/Image/Image'
+import { Image } from '@heymarco/image'
 import { PAGE_HOME_TITLE, PAGE_HOME_DESCRIPTION } from '@/website.config'
 
 

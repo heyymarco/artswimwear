@@ -8,7 +8,7 @@ import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFo
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { CountryEntry, PriceEntry, ProductEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import Image, { ImageProps } from '@/components/Image/Image'
+import { ImageProps, Image } from '@heymarco/image'
 import Link from 'next/link'
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'

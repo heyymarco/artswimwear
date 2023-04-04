@@ -7,7 +7,7 @@ import { Busy } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetProductList } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import Image from '@/components/Image/Image'
+import { Image } from '@heymarco/image'
 import Link from 'next/link'
 import { PAGE_PRODUCTS_TITLE, PAGE_PRODUCTS_DESCRIPTION } from '@/website.config'
 

@@ -8,7 +8,7 @@ import { Busy, ButtonIcon, Carousel, Nav, NavItem } from '@reusable-ui/component
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetProductDetail } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
-import Image from '@/components/Image/Image'
+import { Image } from '@heymarco/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import ReactMarkdown from 'react-markdown'

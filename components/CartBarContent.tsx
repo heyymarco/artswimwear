@@ -7,7 +7,7 @@ import { useGetPriceList, useGetProductList } from '@/store/features/api/apiSlic
 import LoadingBar from './LoadingBar';
 import { formatCurrency } from '@/libs/formatters';
 import { dynamicStyleSheets } from '@cssfn/cssfn-react';
-import Image from '@/components/Image/Image'
+import { Image } from '@heymarco/image'
 import { useRouter } from 'next/router';
 
 
