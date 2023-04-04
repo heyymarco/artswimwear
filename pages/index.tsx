@@ -1,9 +1,9 @@
 import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
-import { Main } from '@/components/sections/Main'
-import { HeroSection } from '@/components/sections/HeroSection'
-import { Section } from '@/components/sections/Section'
+
+import { Section, HeroSection, Main } from '@heymarco/section'
+
 import { AccordionItem, Button, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import Image from '@/components/Image/Image'

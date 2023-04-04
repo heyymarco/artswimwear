@@ -1,7 +1,9 @@
 import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
-import { Main } from '@/components/sections/Main'
+
+import { Section, Main } from '@heymarco/section'
+
 import { Busy, ButtonIcon, Carousel, Nav, NavItem } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { useGetProductDetail } from '@/store/features/api/apiSlice'
@@ -9,7 +11,6 @@ import { formatCurrency } from '@/libs/formatters'
 import Image from '@/components/Image/Image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { Section } from '@/components/sections/Section'
 import ReactMarkdown from 'react-markdown'
 import { useState } from 'react'
 import { addToCart } from '@/store/features/cart/cartSlice'

@@ -1,4 +1,5 @@
-import { GenericSection } from '@/components/sections/GenericSection';
+import { GenericSection } from '@heymarco/section'
+
 import { children, fallbacks, style, variants } from '@cssfn/core';
 import { dynamicStyleSheet } from '@cssfn/cssfn-react';
 import { containers } from '@reusable-ui/components';

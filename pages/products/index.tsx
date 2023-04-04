@@ -1,10 +1,10 @@
 import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
-import { Main } from '@/components/sections/Main'
+
+import { GenericSection, Main } from '@heymarco/section'
 import { Busy } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { GenericSection } from '@/components/sections/GenericSection'
 import { useGetProductList } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import Image from '@/components/Image/Image'

@@ -1,14 +1,15 @@
 import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
-import { Main } from '@/components/sections/Main'
+
+import { Article, Section, Main } from '@heymarco/section'
+
 import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { CountryEntry, PriceEntry, ProductEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import Image, { ImageProps } from '@/components/Image/Image'
 import Link from 'next/link'
-import { Article, Section } from '@/components/sections/Section'
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
