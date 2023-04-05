@@ -13,7 +13,7 @@
     "@cssfn/cssfn-dom": "^2.5.1",
     "@cssfn/cssfn-react": "^2.5.0",
     "@heymarco/address-fields": "^1.0.1",
-    "@heymarco/image": "^1.0.1",
+    "@heymarco/image": "^1.0.2",
     "@heymarco/loading-bar": "^1.0.0",
     "@heymarco/section": "^1.0.0",
     "@paypal/react-paypal-js": "^7.8.2",
