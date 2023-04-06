@@ -37,6 +37,8 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     
-    const priceList = await Product.find<Required<Pick<ProductSchema, '_id'>> & Pick<ProductSchema, 'price'|'shippingWeight'>>({}, { _id: true, price: true, shippingWeight: true });
+    const priceList = await Product.find<Required<Pick<ProductSchema, '_id'>> & Pick<ProductSchema, 'price'|'shippingWeight'>>({
+        visibility : { $ne: 'draft' }, // allows access to Product with visibility: 'published'|'hidden' but NOT 'draft'
+    }, { _id: true, price: true, shippingWeight: true });
     return res.json(priceList);
 });

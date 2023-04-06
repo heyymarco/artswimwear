@@ -48,13 +48,18 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     
     
     if (req.query.path) {
-        const detailedProduct = await Product.findOne<DetailedProduct>({ path: req.query.path }, { _id: true, name: true, price: true, images: true, path: true, description: true });
+        const detailedProduct = await Product.findOne<DetailedProduct>({
+            path       : req.query.path,   // find by url path
+            visibility : { $ne: 'draft' }, // allows access to Product with visibility: 'published'|'hidden' but NOT 'draft'
+        }, { _id: true, name: true, price: true, images: true, path: true, description: true });
         return res.json(detailedProduct);
     } // if
     
     
     
-    const previewProducts = await Product.find<HydratedDocument<PreviewProduct>>({}, { _id: true, name: true, price: true, image: { $first: "$images" }, path: true });
+    const previewProducts = await Product.find<HydratedDocument<PreviewProduct>>({
+        visibility: { $eq: 'published' }, // allows access to Product with visibility: 'published' but NOT 'hidden'|'draft'
+    }, { _id: true, name: true, price: true, image: { $first: "$images" }, path: true });
     let productPaths : string[]|undefined = undefined;
     for (const previewProduct of previewProducts) {
         if (!previewProduct.path) {

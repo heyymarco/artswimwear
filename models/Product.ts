@@ -5,6 +5,8 @@ import { Schema, Types, models, model, InferSchemaType } from 'mongoose'
 const productSchema = new Schema({
     _id            : { type: Types.ObjectId , required: false },
     
+    visibility     : { type: String         , required: true  , enum: ['published', 'hidden', 'draft']},
+    
     name           : { type: String         , required: true  },
     
     price          : { type: Number         , required: true  },
