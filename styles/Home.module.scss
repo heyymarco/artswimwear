@@ -10,7 +10,7 @@
     box-sizing: border-box;
     height: calc(100vh  - var(--site-header));
     height: calc(100dvh - var(--site-header));
-    height: calc(100svh - var(--site-header));
+    // height: calc(100svh - var(--site-header));
     &>[class~='slides'] {
         height: calc(100vh  - var(--site-header) - var(--site-footer));
     }

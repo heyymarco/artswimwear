@@ -11,7 +11,7 @@ export default () => [
             alignItems: 'center',
             
             boxSizing: 'border-box',
-            height: `calc(100svh - var(--site-header))`,
+            // height: `calc(100svh - var(--site-header))`,
             ...fallbacks({
                 height: `calc(100dvh - var(--site-header))`,
             }),
@@ -22,7 +22,7 @@ export default () => [
             
             
             ...children('.slides', {
-                height: `calc(100svh  - var(--site-header) - var(--site-footer))`,
+                // height: `calc(100svh  - var(--site-header) - var(--site-footer))`,
                 ...fallbacks({
                     height: `calc(100dvh  - var(--site-header) - var(--site-footer))`,
                 }),

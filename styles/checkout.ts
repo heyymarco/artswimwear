@@ -19,7 +19,7 @@ export default () => {
                 display: 'grid',
                 
                 boxSizing: 'border-box',
-                minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
+                // minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
                 ...fallbacks({
                     minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
                 }),
@@ -66,7 +66,7 @@ export default () => {
             }),
             alignContent: 'start',
             boxSizing: 'border-box',
-            minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
+            // minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
             ...fallbacks({
                 minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
             }),
