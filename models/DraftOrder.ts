@@ -5,15 +5,15 @@ import { cartEntrySchema } from './CartEntry'
 
 
 const draftOrderSchema = new Schema({
-    items            : { type: [cartEntrySchema]                , required: true  },
+    items            : { type: [cartEntrySchema]                , required: true           },
     
-    shippingAddress  : { type: addressSchema                    , required: false },
-    shippingProvider : { type: Types.ObjectId , ref: 'Shipping' , required: false },
-    shippingCost     : { type: Number                           , required: false },
+    shippingAddress  : { type: addressSchema                    , required: false          },
+    shippingProvider : { type: Types.ObjectId , ref: 'Shipping' , required: false          },
+    shippingCost     : { type: Number                           , required: false , min: 0 },
     
-    expires          : { type: Date                             , required: true  },
+    expires          : { type: Date                             , required: true           },
     
-    paypalOrderId    : { type: String                           , required: false },
+    paypalOrderId    : { type: String                           , required: false          },
 });
 export type DraftOrderSchema = InferSchemaType<typeof draftOrderSchema>;
 

@@ -6,24 +6,24 @@ import { customerSchema } from './Customer';
 
 
 const paymentMethodSchema = new Schema({
-    type             : { type: String                           , required: true  },
-    brand            : { type: String                           , required: false },
-    identifier       : { type: String                           , required: false },
+    type             : { type: String                           , required: true           },
+    brand            : { type: String                           , required: false          },
+    identifier       : { type: String                           , required: false          },
 });
 export type PaymentMethodSchema = InferSchemaType<typeof paymentMethodSchema>;
 
 const orderSchema = new Schema({
-    customer         : { type: customerSchema                   , required: true  },
+    customer         : { type: customerSchema                   , required: true           },
     
-    items            : { type: [cartEntrySchema]                , required: true  },
+    items            : { type: [cartEntrySchema]                , required: true           },
     
-    shippingAddress  : { type: addressSchema                    , required: false },
-    shippingProvider : { type: Types.ObjectId , ref: 'Shipping' , required: false },
-    shippingCost     : { type: Number                           , required: false },
+    shippingAddress  : { type: addressSchema                    , required: false          },
+    shippingProvider : { type: Types.ObjectId , ref: 'Shipping' , required: false          },
+    shippingCost     : { type: Number                           , required: false , min: 0 },
     
-    billingAddress   : { type: addressSchema                    , required: false },
+    billingAddress   : { type: addressSchema                    , required: false          },
     
-    paymentMethod    : { type: paymentMethodSchema              , required: true  },
+    paymentMethod    : { type: paymentMethodSchema              , required: true           },
 });
 export type OrderSchema = InferSchemaType<typeof orderSchema>;
 
