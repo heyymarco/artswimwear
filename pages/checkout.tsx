@@ -1187,6 +1187,13 @@ const NavCheckout = () => {
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             await dispatch(setShippingValidation(true));
+            await new Promise<void>((resolve) => { // wait for a validation state applied
+                setTimeout(() => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 0);
+                }, 0);
+            });
             const invalidFields = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
             if (invalidFields?.length) { // there is an/some invalid field
                 showDialogMessageFieldsError(invalidFields);
@@ -2291,6 +2298,13 @@ const CardPaymentButton = () => {
         // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
         if (!billingAsShipping) await dispatch(setBillingValidation(true));
         await dispatch(setPaymentCardValidation(true));
+        await new Promise<void>((resolve) => { // wait for a validation state applied
+            setTimeout(() => {
+                setTimeout(() => {
+                    resolve();
+                }, 0);
+            }, 0);
+        });
         const invalidFields = [
             ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
             ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),
