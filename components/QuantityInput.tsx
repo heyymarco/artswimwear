@@ -16,12 +16,14 @@ import {
     useMergeRefs,
 }                           from '@reusable-ui/core'                    // a set of reusable-ui packages which are responsible for building any component
 import {
+    ButtonProps,
+    
     ButtonIcon,
     
     Group,
     
-    Input,
     InputProps,
+    Input,
 }                           from '@reusable-ui/components'              // a set of official Reusable-UI components
 
 
@@ -44,15 +46,22 @@ export interface QuantityInputProps
         >
 {
     // values:
-    defaultValue ?: number
-    value        ?: number
+    defaultValue            ?: number
+    value                   ?: number
     
     
     
     // validations:
-    min          ?: number
-    max          ?: number
-    step         ?: number
+    min                     ?: number
+    max                     ?: number
+    step                    ?: number
+    
+    
+    
+    // components:
+    decreaseButtonComponent ?: React.ReactComponentElement<any, ButtonProps>
+    increaseButtonComponent ?: React.ReactComponentElement<any, ButtonProps>
+    inputComponent          ?: React.ReactComponentElement<any, InputProps>
 }
 const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
     // rest props:
@@ -106,6 +115,13 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
         
         // formats:
         type = 'number',
+        
+        
+        
+        // components:
+        decreaseButtonComponent = (<ButtonIcon icon='remove' /> as React.ReactComponentElement<any, ButtonProps>),
+        increaseButtonComponent = (<ButtonIcon icon='add'    /> as React.ReactComponentElement<any, ButtonProps>),
+        inputComponent          = (<Input                    /> as React.ReactComponentElement<any, InputProps>),
     ...restInputProps} = props;
     
     
@@ -209,7 +225,12 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
     // refs:
     const inputRefInternal = useRef<HTMLInputElement|null>(null);
     const mergedInputRef   = useMergeRefs(
-        // preserves the original `elmRef`:
+        // preserves the original `elmRef` from `inputComponent`:
+        inputComponent.props.elmRef,
+        
+        
+        
+        // preserves the original `elmRef` from `props`:
         elmRef,
         
         
@@ -220,9 +241,9 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
     
     
     // handlers:
-    const handleChangeInternal = useEvent<React.ChangeEventHandler<HTMLInputElement>>((event) => {
+    const handleChangeInternal      = useEvent<React.ChangeEventHandler<HTMLInputElement>>((event) => {
         // conditions:
-        if (event.defaultPrevented) return;
+        if (event.defaultPrevented) return; // already handled => ignore
         
         
         
@@ -231,8 +252,13 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
             changeValue('setValue', event.target.valueAsNumber);
         } // if
     });
-    const handleChange         = useMergeEvents(
-        // preserves the original `onChange`:
+    const handleChange              = useMergeEvents(
+        // preserves the original `onChange` from `inputComponent`:
+        inputComponent.props.onChange,
+        
+        
+        
+        // preserves the original `onChange` from `props`:
         onChange,
         
         
@@ -241,14 +267,42 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
         handleChangeInternal,
     );
     
-    const handleDecrease       = useEvent<React.MouseEventHandler<HTMLButtonElement>>((_event) => {
+    const handleDecreaseInternal    = useEvent<React.MouseEventHandler<HTMLButtonElement>>((event) => {
+        // conditions:
+        if (event.defaultPrevented) return; // already handled => ignore
+        
+        
+        
         // action:
         changeValue('decrease', 1);
     });
-    const handleIncrease       = useEvent<React.MouseEventHandler<HTMLButtonElement>>((_event) => {
+    const handleDecreaseButtonClick = useMergeEvents(
+        // preserves the original `onClick` from `decreaseButtonComponent`:
+        decreaseButtonComponent.props.onClick,
+        
+        
+        
+        // actions:
+        handleDecreaseInternal,
+    );
+    const handleIncreaseInternal    = useEvent<React.MouseEventHandler<HTMLButtonElement>>((event) => {
+        // conditions:
+        if (event.defaultPrevented) return; // already handled => ignore
+        
+        
+        
         // action:
         changeValue('increase', 1);
     });
+    const handleIncreaseButtonClick = useMergeEvents(
+        // preserves the original `onClick` from `increaseButtonComponent`:
+        increaseButtonComponent.props.onClick,
+        
+        
+        
+        // actions:
+        handleIncreaseInternal,
+    );
     
     
     
@@ -285,40 +339,68 @@ const QuantityInput = (props: QuantityInputProps): JSX.Element|null => {
             // styles:
             style={style}
         >
-            <ButtonIcon icon='remove' title='decrease quantity' enabled={valueRef.current > minFn} onClick={handleDecrease} />
-            <Input
-                // rest props:
-                {...restInputProps}
-                
-                
-                
-                // refs:
-                elmRef={mergedInputRef}
-                
-                
-                
-                // values:
-                {...{
-                 // defaultValue : defaultValueFn,   // fully controllable, no defaultValue
-                    value        : valueRef.current, // fully controllable
+            {/* <Button> */}
+            {React.cloneElement<ButtonProps>(decreaseButtonComponent,
+                // props:
+                {
+                    // accessibilities:
+                    title   : decreaseButtonComponent.props.title   ?? 'decrease quantity',
+                    enabled : decreaseButtonComponent.props.enabled ?? (valueRef.current > minFn),
+                    
+                    
+                    
+                    // handlers:
+                    onClick : handleDecreaseButtonClick,
+                },
+            )}
+            
+            {/* <Input> */}
+            {React.cloneElement<InputProps>(inputComponent,
+                // props:
+                {
+                    // rest props:
+                    ...restInputProps,
+                    
+                    
+                    
+                    // refs:
+                    elmRef : mergedInputRef,
+                    
+                    
+                    
+                    // values:
+                 // defaultValue : inputComponent.props.defaultValue ?? defaultValueFn,   // fully controllable, no defaultValue
+                    value        : inputComponent.props.value        ?? valueRef.current, // fully controllable
                     onChange     : handleChange,
-                }}
-                
-                
-                
-                // validations:
-                {...{
-                    min  : negativeFn ? maxFn : minFn,
-                    max  : negativeFn ? minFn : maxFn,
-                    step : stepFn,
-                }}
-                
-                
-                
-                // formats:
-                type={type}
-            />
-            <ButtonIcon icon='add' title='increase quantity' enabled={valueRef.current < maxFn} onClick={handleIncrease} />
+                    
+                    
+                    
+                    // validations:
+                    min  : inputComponent.props.min  ?? (negativeFn ? maxFn : minFn),
+                    max  : inputComponent.props.max  ?? (negativeFn ? minFn : maxFn),
+                    step : inputComponent.props.step ?? stepFn,
+                    
+                    
+                    
+                    // formats:
+                    type : inputComponent.props.type ?? type,
+                },
+            )}
+            
+            {/* <Button> */}
+            {React.cloneElement<ButtonProps>(increaseButtonComponent,
+                // props:
+                {
+                    // accessibilities:
+                    title   : increaseButtonComponent.props.title   ?? 'increase quantity',
+                    enabled : increaseButtonComponent.props.enabled ?? (valueRef.current < maxFn),
+                    
+                    
+                    
+                    // handlers:
+                    onClick : handleIncreaseButtonClick,
+                },
+            )}
         </Group>
     );
 };
