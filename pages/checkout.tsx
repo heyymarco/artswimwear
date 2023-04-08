@@ -237,7 +237,7 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
 interface ShowDialogMessage {
     theme   ?: ThemeName
     title   ?: string
-    message  : React.ReactNode
+    message  : () => JSX.Element|null
     onClose ?: () => void
 }
 interface ICheckoutContext {
@@ -586,7 +586,7 @@ export default function Checkout() {
                 showDialogMessage({
                     theme   : 'danger',
                     title   : 'No Shipping Agency',
-                    message : <>
+                    message : () => <>
                         <p>
                             We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
                         </p>
@@ -606,7 +606,7 @@ export default function Checkout() {
             showDialogMessage({
                 theme   : 'danger',
                 title   : 'Error Calculating Shipping Cost',
-                message : <>
+                message : () => <>
                     <p>
                         Oops, there was an error calculating the shipping cost.
                     </p>
@@ -694,9 +694,9 @@ export default function Checkout() {
     
     
     // message handlers:
-    const [dialogMessage, showDialogMessage] = useState<ShowDialogMessage|false>(false);
-    const prevDialogMessage = useRef<ShowDialogMessage|null>(null);
-    if (dialogMessage !== false) prevDialogMessage.current = dialogMessage;
+    const [newDialogMessage, showDialogMessage] = useState<ShowDialogMessage|false>(false);
+    const DialogMessage = useRef<ShowDialogMessage|null>(null);
+    if (newDialogMessage !== false) DialogMessage.current = newDialogMessage;
     
     const showDialogMessageFieldsError      = useEvent((invalidFields: ArrayLike<Element>|undefined): void => {
         // conditions:
@@ -724,7 +724,7 @@ export default function Checkout() {
         showDialogMessage({
             theme   : 'danger',
             title   : 'Error',
-            message : <>
+            message : () => <>
                 <p>
                     There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
                 </p>
@@ -754,7 +754,7 @@ export default function Checkout() {
         showDialogMessage({
             theme   : 'danger',
             title   : 'Error Processing Your Order',
-            message : <>
+            message : () => <>
                 <p>
                     Oops, there was an error processing your order.
                 </p>
@@ -775,7 +775,7 @@ export default function Checkout() {
             showDialogMessage({
                 theme   : 'danger',
                 title   : 'Error Processing Your Payment',
-                message : <>
+                message : () => <>
                     <p>
                         Sorry, we were unable to process your payment.
                     </p>
@@ -800,7 +800,7 @@ export default function Checkout() {
             showDialogMessage({
                 theme   : 'danger',
                 title   : 'Error Processing Your Payment',
-                message : <>
+                message : () => <>
                     <p>
                         Oops, there was an error processing your payment.
                     </p>
@@ -1034,19 +1034,19 @@ export default function Checkout() {
                     {useMemo(() =>
                         <ModalCard
                             modalCardStyle='scrollable'
-                            theme={(dialogMessage ? dialogMessage.theme : prevDialogMessage.current?.theme) ?? 'primary'}
+                            theme={DialogMessage.current?.theme ?? 'primary'}
                             
-                            lazy={true} expanded={!!dialogMessage}
+                            lazy={true} expanded={!!newDialogMessage}
                             
-                            onExpandedChange={(event) => !event.expanded && showDialogMessage(false)}
-                            onFullyCollapsed={dialogMessage ? dialogMessage.onClose : prevDialogMessage.current?.onClose}
+                            onExpandedChange={({expanded}) => !expanded && showDialogMessage(false)}
+                            onFullyCollapsed={DialogMessage.current?.onClose}
                         >
                             <CardHeader>
-                                {(dialogMessage ? dialogMessage.title : prevDialogMessage.current?.title) ?? 'Notification'}
+                                {DialogMessage.current?.title ?? 'Notification'}
                                 <CloseButton onClick={() => showDialogMessage(false)} />
                             </CardHeader>
                             <CardBody>
-                                {dialogMessage ? dialogMessage.message : prevDialogMessage.current?.message}
+                                {!!DialogMessage.current && <DialogMessage.current.message />}
                             </CardBody>
                             <CardFooter>
                                 <Button onClick={() => showDialogMessage(false)}>
@@ -1054,7 +1054,7 @@ export default function Checkout() {
                                 </Button>
                             </CardFooter>
                         </ModalCard>
-                    , [dialogMessage])}
+                    , [newDialogMessage])}
                 </CheckoutContext.Provider>
             </Main>
         </>
