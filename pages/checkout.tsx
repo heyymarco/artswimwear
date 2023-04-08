@@ -236,8 +236,8 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
 
 interface ShowDialogMessage {
     theme   ?: ThemeName
-    title   ?: string
-    message  : () => JSX.Element|null
+    title   ?: React.ReactNode
+    message  : React.ReactNode
     onClose ?: () => void
 }
 interface ICheckoutContext {
@@ -586,7 +586,7 @@ export default function Checkout() {
                 showDialogMessage({
                     theme   : 'danger',
                     title   : 'No Shipping Agency',
-                    message : () => <>
+                    message : <>
                         <p>
                             We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
                         </p>
@@ -606,7 +606,7 @@ export default function Checkout() {
             showDialogMessage({
                 theme   : 'danger',
                 title   : 'Error Calculating Shipping Cost',
-                message : () => <>
+                message : <>
                     <p>
                         Oops, there was an error calculating the shipping cost.
                     </p>
@@ -694,9 +694,36 @@ export default function Checkout() {
     
     
     // message handlers:
-    const [newDialogMessage, showDialogMessage] = useState<ShowDialogMessage|false>(false);
-    const DialogMessage = useRef<ShowDialogMessage|null>(null);
-    if (newDialogMessage !== false) DialogMessage.current = newDialogMessage;
+    const [dialogMessage, showDialogMessage] = useState<ShowDialogMessage|false>(false);
+    
+    // for nicely modal collapsing animation -- the JSX is still *residual* even if the modal is *collapsing*:
+    const newDynamicDialogMessage = useMemo((): ShowDialogMessage|undefined => {
+        // conditions:
+        if (dialogMessage === false) return undefined;
+        
+        
+        
+        // data:
+        const uniqueKey = Date.now(); // generate a unique key every time the editMode changes
+        return {
+            ...dialogMessage,
+            
+            /*
+                NOTE:
+                The `key` of `<React.Fragment>` is IMPORTANT in order to React know the `{dynamicDialogMessage.current}` was replaced with another <SimpleEditDialog>.
+            */
+            
+            title   : <React.Fragment key={uniqueKey}>
+                {dialogMessage.title}
+            </React.Fragment>,
+            
+            message : <React.Fragment key={uniqueKey}>
+                {dialogMessage.message}
+            </React.Fragment>,
+        };
+    }, [dialogMessage]);
+    const dynamicDialogMessage = useRef<ShowDialogMessage|null>(null);
+    if (newDynamicDialogMessage !== undefined) dynamicDialogMessage.current = newDynamicDialogMessage;
     
     const showDialogMessageFieldsError      = useEvent((invalidFields: ArrayLike<Element>|undefined): void => {
         // conditions:
@@ -724,7 +751,7 @@ export default function Checkout() {
         showDialogMessage({
             theme   : 'danger',
             title   : 'Error',
-            message : () => <>
+            message : <>
                 <p>
                     There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
                 </p>
@@ -754,7 +781,7 @@ export default function Checkout() {
         showDialogMessage({
             theme   : 'danger',
             title   : 'Error Processing Your Order',
-            message : () => <>
+            message : <>
                 <p>
                     Oops, there was an error processing your order.
                 </p>
@@ -775,7 +802,7 @@ export default function Checkout() {
             showDialogMessage({
                 theme   : 'danger',
                 title   : 'Error Processing Your Payment',
-                message : () => <>
+                message : <>
                     <p>
                         Sorry, we were unable to process your payment.
                     </p>
@@ -800,7 +827,7 @@ export default function Checkout() {
             showDialogMessage({
                 theme   : 'danger',
                 title   : 'Error Processing Your Payment',
-                message : () => <>
+                message : <>
                     <p>
                         Oops, there was an error processing your payment.
                     </p>
@@ -1031,30 +1058,34 @@ export default function Checkout() {
                         </Container>
                     , [isReadyPage, isDesktop, checkoutStep, styles])}
                     
-                    {useMemo(() =>
-                        <ModalCard
-                            modalCardStyle='scrollable'
-                            theme={DialogMessage.current?.theme ?? 'primary'}
-                            
-                            lazy={true} expanded={!!newDialogMessage}
-                            
-                            onExpandedChange={({expanded}) => !expanded && showDialogMessage(false)}
-                            onFullyCollapsed={DialogMessage.current?.onClose}
-                        >
-                            <CardHeader>
-                                {DialogMessage.current?.title ?? 'Notification'}
-                                <CloseButton onClick={() => showDialogMessage(false)} />
-                            </CardHeader>
-                            <CardBody>
-                                {!!DialogMessage.current && <DialogMessage.current.message />}
-                            </CardBody>
-                            <CardFooter>
-                                <Button onClick={() => showDialogMessage(false)}>
-                                    Okay
-                                </Button>
-                            </CardFooter>
-                        </ModalCard>
-                    , [newDialogMessage])}
+                    {useMemo(() => {
+                        // jsx:
+                        const uniqueKey = Date.now();
+                        return (
+                            <ModalCard
+                                modalCardStyle='scrollable'
+                                theme={dynamicDialogMessage.current?.theme ?? 'primary'}
+                                
+                                lazy={true} expanded={!!newDynamicDialogMessage}
+                                
+                                onExpandedChange={({expanded}) => !expanded && showDialogMessage(false)}
+                                onFullyCollapsed={dynamicDialogMessage.current?.onClose}
+                            >
+                                <CardHeader>
+                                    {dynamicDialogMessage.current?.title ?? 'Notification'}
+                                    <CloseButton onClick={() => showDialogMessage(false)} />
+                                </CardHeader>
+                                <CardBody>
+                                    {dynamicDialogMessage.current?.message}
+                                </CardBody>
+                                <CardFooter>
+                                    <Button onClick={() => showDialogMessage(false)}>
+                                        Okay
+                                    </Button>
+                                </CardFooter>
+                            </ModalCard>
+                        );
+                    }, [newDynamicDialogMessage])}
                 </CheckoutContext.Provider>
             </Main>
         </>
