@@ -99,7 +99,7 @@ export const CartBarContent = () => {
                     </ListItem>}
                 </List>
                 <p className={styles.shippingInfo}>Tax included and <u>shipping calculated</u> at checkout.</p>
-                <ButtonIcon enabled={isCartDataReady} icon={!isCartDataReady ? 'busy' : 'shopping_bag'} theme='primary' size='lg' gradient={true} onClick={() => {
+                <ButtonIcon enabled={isCartDataReady} icon={(hasCart && !isCartDataReady) ? 'busy' : 'shopping_bag'} theme='primary' size='lg' gradient={true} onClick={() => {
                     dispatch(showCart(false));
                     router.push('/checkout');
                 }}>
