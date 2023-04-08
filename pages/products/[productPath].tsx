@@ -15,7 +15,7 @@ import ReactMarkdown from 'react-markdown'
 import { useState } from 'react'
 import { addToCart } from '@/store/features/cart/cartSlice'
 import { useDispatch } from 'react-redux'
-import QuantityInput from '@/components/QuantityInput'
+import { QuantityInput } from '@heymarco/quantity-input'
 import { PAGE_PRODUCT_TITLE, PAGE_PRODUCT_DESCRIPTION } from '@/website.config'
 
 

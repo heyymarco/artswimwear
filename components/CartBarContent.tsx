@@ -1,14 +1,14 @@
-import { ButtonIcon, CardBody, CardHeader, CloseButton, Group, List, ListItem } from '@reusable-ui/components';
+import { ButtonIcon, CardBody, CardHeader, CloseButton, Group, List, ListItem } from '@reusable-ui/components'
 
 import { useDispatch, useSelector } from 'react-redux'
-import { removeFromCart, selectCartItems, setCartItemQuantity, showCart } from '@/store/features/cart/cartSlice';
-import QuantityInput from './QuantityInput';
-import { useGetPriceList, useGetProductList } from '@/store/features/api/apiSlice';
+import { removeFromCart, selectCartItems, setCartItemQuantity, showCart } from '@/store/features/cart/cartSlice'
+import { QuantityInput } from '@heymarco/quantity-input'
+import { useGetPriceList, useGetProductList } from '@/store/features/api/apiSlice'
 import { LoadingBar } from '@heymarco/loading-bar'
-import { formatCurrency } from '@/libs/formatters';
-import { dynamicStyleSheets } from '@cssfn/cssfn-react';
+import { formatCurrency } from '@/libs/formatters'
+import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/router'
 
 
 
