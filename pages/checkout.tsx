@@ -35,6 +35,7 @@ import {
     PAGE_CHECKOUT_TITLE,
     PAGE_CHECKOUT_DESCRIPTION,
 } from '@/website.config'
+import ModalStatus from '@/components/ModalStatus'
 
 
 
@@ -695,35 +696,8 @@ export default function Checkout() {
     
     // message handlers:
     const [dialogMessage, showDialogMessage] = useState<ShowDialogMessage|false>(false);
-    
-    // for nicely modal collapsing animation -- the JSX is still *residual* even if the modal is *collapsing*:
-    const newDynamicDialogMessage = useMemo((): ShowDialogMessage|undefined => {
-        // conditions:
-        if (dialogMessage === false) return undefined;
-        
-        
-        
-        // data:
-        const uniqueKey = Date.now(); // generate a unique key every time the editMode changes
-        return {
-            ...dialogMessage,
-            
-            /*
-                NOTE:
-                The `key` of `<React.Fragment>` is IMPORTANT in order to React know the `{dynamicDialogMessage.current}` was replaced with another <SimpleEditDialog>.
-            */
-            
-            title   : <React.Fragment key={uniqueKey}>
-                {dialogMessage.title}
-            </React.Fragment>,
-            
-            message : <React.Fragment key={uniqueKey}>
-                {dialogMessage.message}
-            </React.Fragment>,
-        };
-    }, [dialogMessage]);
-    const dynamicDialogMessage = useRef<ShowDialogMessage|null>(null);
-    if (newDynamicDialogMessage !== undefined) dynamicDialogMessage.current = newDynamicDialogMessage;
+    const prevDialogMessage = useRef<ShowDialogMessage|undefined>(dialogMessage || undefined);
+    if (dialogMessage) prevDialogMessage.current = dialogMessage;
     
     const showDialogMessageFieldsError      = useEvent((invalidFields: ArrayLike<Element>|undefined): void => {
         // conditions:
@@ -1060,32 +1034,33 @@ export default function Checkout() {
                     
                     {useMemo(() => {
                         // jsx:
-                        const uniqueKey = Date.now();
                         return (
-                            <ModalCard
+                            <ModalStatus
                                 modalCardStyle='scrollable'
-                                theme={dynamicDialogMessage.current?.theme ?? 'primary'}
+                                theme={prevDialogMessage.current?.theme ?? 'primary'}
                                 
-                                lazy={true} expanded={!!newDynamicDialogMessage}
+                                lazy={true}
                                 
                                 onExpandedChange={({expanded}) => !expanded && showDialogMessage(false)}
-                                onFullyCollapsed={dynamicDialogMessage.current?.onClose}
+                                onFullyCollapsed={prevDialogMessage.current?.onClose}
                             >
-                                <CardHeader>
-                                    {dynamicDialogMessage.current?.title ?? 'Notification'}
-                                    <CloseButton onClick={() => showDialogMessage(false)} />
-                                </CardHeader>
-                                <CardBody>
-                                    {dynamicDialogMessage.current?.message}
-                                </CardBody>
-                                <CardFooter>
-                                    <Button onClick={() => showDialogMessage(false)}>
-                                        Okay
-                                    </Button>
-                                </CardFooter>
-                            </ModalCard>
+                                {!!dialogMessage && <>
+                                    <CardHeader>
+                                        {dialogMessage.title ?? 'Notification'}
+                                        <CloseButton onClick={() => showDialogMessage(false)} />
+                                    </CardHeader>
+                                    <CardBody>
+                                        {dialogMessage.message}
+                                    </CardBody>
+                                    <CardFooter>
+                                        <Button onClick={() => showDialogMessage(false)}>
+                                            Okay
+                                        </Button>
+                                    </CardFooter>
+                                </>}
+                            </ModalStatus>
                         );
-                    }, [newDynamicDialogMessage])}
+                    }, [dialogMessage])}
                 </CheckoutContext.Provider>
             </Main>
         </>
