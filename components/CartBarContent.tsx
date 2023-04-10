@@ -1,4 +1,5 @@
-import { ButtonIcon, CardBody, CardHeader, CloseButton, Group, List, ListItem } from '@reusable-ui/components'
+import { default as React, useState, useRef } from 'react'
+import { ButtonIcon, CardBody, CardFooter, CardHeader, CloseButton, Group, List, ListItem } from '@reusable-ui/components'
 
 import { useDispatch, useSelector } from 'react-redux'
 import { removeFromCart, selectCartItems, setCartItemQuantity, showCart } from '@/store/features/cart/cartSlice'
@@ -9,6 +10,7 @@ import { formatCurrency } from '@/libs/formatters'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
 import { useRouter } from 'next/router'
+import ModalStatus from './ModalStatus'
 
 
 
@@ -40,6 +42,11 @@ export const CartBarContent = () => {
     
     
     
+    const cartBodyRef = useRef<HTMLElement|null>(null);
+    const [confirmDeleteCartItem, setConfirmDeleteCartItem] = useState<string|undefined>(undefined);
+    
+    
+    
     return (
         <>
             <CardHeader>
@@ -48,7 +55,7 @@ export const CartBarContent = () => {
                 </h1>
                 <CloseButton onClick={() => dispatch(showCart(false))} />
             </CardHeader>
-            <CardBody className={styles.cartBody}>
+            <CardBody className={styles.cartBody} elmRef={cartBodyRef}>
                 <List className={styles.cartList} theme='secondary' mild={false}>
                     <ListItem className={styles.cartTitle} theme='primary'>Order List</ListItem>
                     
@@ -77,8 +84,15 @@ export const CartBarContent = () => {
                                     sizes='64px'
                                 />
                                 <Group className='quantity' title='Quantity' theme='primary' size='sm'>
-                                    <ButtonIcon icon='delete' title='remove from cart' onClick={() => dispatch(removeFromCart({ productId: item.productId }))} />
-                                    <QuantityInput min={0} max={99} value={item.quantity} onChange={(event) => dispatch(setCartItemQuantity({ productId: item.productId, quantity: event.target.valueAsNumber}))} />
+                                    <ButtonIcon icon='delete' title='remove from cart' onClick={() => setConfirmDeleteCartItem(item.productId)} />
+                                    <QuantityInput min={0} max={99} value={item.quantity} onChange={({target:{valueAsNumber}}) => {
+                                        if (valueAsNumber > 0) {
+                                            dispatch(setCartItemQuantity({ productId: item.productId, quantity: valueAsNumber}));
+                                        }
+                                        else {
+                                            setConfirmDeleteCartItem(item.productId);
+                                        } // if
+                                    }} />
                                 </Group>
                                 <p className='subPrice'>
                                     {!product && <>This product was removed before you purcase it</>}
@@ -105,6 +119,35 @@ export const CartBarContent = () => {
                 }}>
                     Place My Order
                 </ButtonIcon>
+                <ModalStatus
+                    theme='warning'
+                    modalViewport={cartBodyRef}
+                >
+                    {!!confirmDeleteCartItem && <>
+                        <CardHeader>
+                            <h4>Delete Confirmation</h4>
+                        </CardHeader>
+                        <CardBody>
+                            <p>
+                                Are you sure to remove product:<br />
+                                <strong>{productList?.entities?.[confirmDeleteCartItem]?.name}</strong><br />from the cart?
+                            </p>
+                        </CardBody>
+                        <CardFooter>
+                            <ButtonIcon icon='check' theme='primary' onClick={() => {
+                                dispatch(removeFromCart({ productId: confirmDeleteCartItem}));
+                                setConfirmDeleteCartItem(undefined);
+                            }}>
+                                Yes
+                            </ButtonIcon>
+                            <ButtonIcon icon='not_interested' theme='secondary' onClick={() => {
+                                setConfirmDeleteCartItem(undefined);
+                            }}>
+                                No
+                            </ButtonIcon>
+                        </CardFooter>
+                    </>}
+                </ModalStatus>
             </CardBody>
         </>
     )
