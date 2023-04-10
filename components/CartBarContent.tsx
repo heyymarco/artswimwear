@@ -121,7 +121,9 @@ export const CartBarContent = () => {
                 </ButtonIcon>
                 <ModalStatus
                     theme='warning'
+                    size='sm'
                     modalViewport={cartBodyRef}
+                    onExpandedChange={({expanded}) => !expanded && setConfirmDeleteCartItem(undefined)}
                 >
                     {!!confirmDeleteCartItem && <>
                         <CardHeader>
