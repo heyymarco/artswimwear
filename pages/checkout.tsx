@@ -1042,7 +1042,7 @@ export default function Checkout() {
                                 lazy={true}
                                 
                                 onExpandedChange={({expanded}) => !expanded && showDialogMessage(false)}
-                                onFullyCollapsed={prevDialogMessage.current?.onClose}
+                                onCollapseEnd={prevDialogMessage.current?.onClose}
                             >
                                 {!!dialogMessage && <>
                                     <CardHeader>
@@ -1909,13 +1909,13 @@ const Payment = () => {
                         <AccordionItem label={<>
                             <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                             Same as shipping address
-                        </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.billingEntry} />} >
+                        </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.billingEntry} />} >
                             <ShippingAddressReview />
                         </AccordionItem>
                         <AccordionItem label={<>
                             <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                             Use a different billing address
-                        </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} >
+                        </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} >
                             <ValidationProvider enableValidation={!billingAsShipping && billingValidation}>
                                 <AddressFields
                                     // types:
@@ -2007,19 +2007,19 @@ const PaymentMethod = () => {
                 <AccordionItem label={<>
                     <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                     Credit Card
-                </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryCard} elmRef={paymentCardSectionRef} />} /*lazy={true} causes error*/ >
+                </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.paymentEntryCard} elmRef={paymentCardSectionRef} />} /*lazy={true} causes error*/ >
                     <PaymentMethodCard />
                 </AccordionItem>
                 <AccordionItem label={<>
                     <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                     PayPal
-                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryPaypal} />} /*lazy={true} causes error*/ >
+                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.paymentEntryPaypal} />} /*lazy={true} causes error*/ >
                     <PaymentMethodPaypal />
                 </AccordionItem>
                 <AccordionItem label={<>
                     <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
                     Bank Transfer
-                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} contentComponent={<Section className={styles.paymentEntryManual} />} /*lazy={true} causes error*/ >
+                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.paymentEntryManual} />} /*lazy={true} causes error*/ >
                     <PaymentMethodManual />
                 </AccordionItem>
             </ExclusiveAccordion>

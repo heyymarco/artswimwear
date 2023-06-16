@@ -3,7 +3,7 @@ import { GenericSection } from '@heymarco/section'
 import { children, fallbacks, style, variants } from '@cssfn/core';
 import { dynamicStyleSheet } from '@cssfn/cssfn-react';
 import { containers } from '@reusable-ui/components';
-import { borders, colors, ifScreenWidthAtLeast, usesThemable } from '@reusable-ui/core';
+import { borders, colors, ifScreenWidthAtLeast, usesThemeable } from '@reusable-ui/core';
 import type { NextPage } from 'next'
 import Image from 'next/image'
 import Head from 'next/head'
@@ -12,7 +12,7 @@ import { PAGE_404_TITLE, PAGE_404_DESCRIPTION } from '@/website.config'
 
 
 const useSheet = dynamicStyleSheet(() => {
-    const {themableVars} = usesThemable();
+    const {themeableVars} = usesThemeable();
     
     return style({
         ...style({
@@ -34,7 +34,7 @@ const useSheet = dynamicStyleSheet(() => {
             }),
             
             borderBlockStartWidth: borders.hair,
-            borderColor: themableVars.backg,
+            borderColor: themeableVars.backg,
             
             ...children('.illustration', {
                 gridArea: 'illus/illus / content/content',

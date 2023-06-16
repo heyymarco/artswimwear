@@ -47,7 +47,7 @@ const ModalStatus = (props: ModalStatusProps): JSX.Element|null => {
             
             
             // handlers:
-            onFullyCollapsed={clearChildren}
+            onCollapseEnd={clearChildren}
         >
             {lastExistingChildren}
         </ModalCard>

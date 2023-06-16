@@ -10,7 +10,7 @@ export type MatchingAddress  = Pick<AddressSchema, 'country'|'zone'|'city'>
 
 
 // utilities:
-export const getMatchingShipping = (shipping: Partial<Pick<ShippingSchema, 'enabled'|'name'>> & Omit<ShippingSchema, 'enabled'|'name'>, shippingAddress: MatchingAddress): MatchingShipping|undefined => {
+export const getMatchingShipping = (shipping: Partial<Pick<ShippingSchema, '_id'|'enabled'|'name'|'estimate'>> & Omit<ShippingSchema, '_id'|'enabled'|'name'|'estimate'>, shippingAddress: MatchingAddress): MatchingShipping|undefined => {
     let estimate          = shipping.estimate;
     let shippingRates     = shipping.shippingRates;
     
