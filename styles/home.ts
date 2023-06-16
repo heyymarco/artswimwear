@@ -1,10 +1,10 @@
-import { children, descendants, fallbacks, scopeOf } from "@cssfn/core";
+import { children, descendants, fallback, scope } from "@cssfn/core";
 import { ifScreenWidthAtLeast } from "@reusable-ui/core";
 
 
 
 export default () => [
-    scopeOf('hero', {
+    scope('hero', {
         ...children('article', {
             display: 'grid',
             justifyContent: 'stretch',
@@ -12,10 +12,10 @@ export default () => [
             
             boxSizing: 'border-box',
             // height: `calc(100svh - var(--site-header))`,
-            ...fallbacks({
+            ...fallback({
                 height: `calc(100dvh - var(--site-header))`,
             }),
-            ...fallbacks({
+            ...fallback({
                 height: `calc(100vh  - var(--site-header))`,
             }),
             
@@ -23,10 +23,10 @@ export default () => [
             
             ...children('.slides', {
                 // height: `calc(100svh  - var(--site-header) - var(--site-footer))`,
-                ...fallbacks({
+                ...fallback({
                     height: `calc(100dvh  - var(--site-header) - var(--site-footer))`,
                 }),
-                ...fallbacks({
+                ...fallback({
                     height: `calc(100vh  - var(--site-header) - var(--site-footer))`,
                 }),
                 ...children('ul>li>figure', {
@@ -62,7 +62,7 @@ export default () => [
             })
         }),
     }),
-    scopeOf('story', {
+    scope('story', {
         ...children('article', {
             ...children(['h1', 'h2'], {
                 fontSize: '3rem',
@@ -92,14 +92,14 @@ export default () => [
             }),
         }),
     }),
-    scopeOf('fabrics', {
+    scope('fabrics', {
         ...children('article', {
             ...children(['h1', 'h2'], {
                 fontSize: '3rem',
             }),
         }),
     }),
-    scopeOf('howWorks', {
+    scope('howWorks', {
         ...children('article', {
             ...descendants('.how-work-item', {
                 display: 'flex',
@@ -120,7 +120,7 @@ export default () => [
             }),
         }),
     }),
-    scopeOf('regeneration', {
+    scope('regeneration', {
         ...children('article', {
             ...children(['h1', 'h2'], {
                 fontSize: '2rem',
@@ -136,7 +136,7 @@ export default () => [
             }),
         }),
     }),
-    scopeOf('ethic', {
+    scope('ethic', {
         ...children('article', {
             display: 'flex',
             flexDirection: 'column',
@@ -157,7 +157,7 @@ export default () => [
             }),
         }),
     }),
-    scopeOf('community', {
+    scope('community', {
         ...children('article', {
             display: 'flex',
             flexDirection: 'column',

@@ -1,6 +1,6 @@
 import { GenericSection } from '@heymarco/section'
 
-import { children, fallbacks, style, variants } from '@cssfn/core';
+import { children, fallback, style, variants } from '@cssfn/core';
 import { dynamicStyleSheet } from '@cssfn/cssfn-react';
 import { containers } from '@reusable-ui/components';
 import { borders, colors, ifScreenWidthAtLeast, usesThemeable } from '@reusable-ui/core';
@@ -26,10 +26,10 @@ const useSheet = dynamicStyleSheet(() => {
             alignItems: 'center',
             boxSizing: 'border-box',
             // height:     `calc(100svh - var(--site-header) - var(--site-footer))`,
-            ...fallbacks({
+            ...fallback({
                 height: `calc(100dvh - var(--site-header) - var(--site-footer))`,
             }),
-            ...fallbacks({
+            ...fallback({
                 height: `calc(100vh  - var(--site-header) - var(--site-footer))`,
             }),
             

@@ -1,4 +1,4 @@
-import { children, fallbacks, rule, scopeOf } from "@cssfn/core";
+import { children, fallback, rule, scope } from "@cssfn/core";
 
 
 
@@ -6,7 +6,7 @@ const minImageSize = 255;  // 255px
 // const gapImage     = 4*16; // 4rem
 // const maxImageSize = (minImageSize * 2) - (gapImage * 1.5);
 export default () => [
-    scopeOf('list', {
+    scope('list', {
         display: 'grid',
         overflow: 'hidden', // workaround for overflowing popup
         ...rule('.loading', {
@@ -15,10 +15,10 @@ export default () => [
             
             boxSizing: 'border-box',
             // height:     `calc(100svh - var(--site-header) - var(--site-footer))`,
-            ...fallbacks({
+            ...fallback({
                 height: `calc(100dvh - var(--site-header) - var(--site-footer))`,
             }),
-            ...fallbacks({
+            ...fallback({
                 height: `calc(100vh  - var(--site-header) - var(--site-footer))`,
             }),
             

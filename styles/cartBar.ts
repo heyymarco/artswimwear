@@ -1,27 +1,27 @@
-import { children, descendants, scopeOf } from "@cssfn/core";
+import { children, descendants, scope } from "@cssfn/core";
 import { ifScreenWidthAtLeast, typos } from "@reusable-ui/core";
 
 
 
 const imageSize = 64;  // 64px
 export default () => [
-    scopeOf('cartWindow', {
+    scope('cartWindow', {
     }),
-    scopeOf('cartListTitle', {
+    scope('cartListTitle', {
         margin: 0,
     }),
-    scopeOf('cartBody', {
+    scope('cartBody', {
         display: 'flex',
         flexDirection: 'column',
     }, {specificityWeight: 3}),
     
-    scopeOf('cartList', {
+    scope('cartList', {
     }, {specificityWeight: 2}),
-    scopeOf('cartTitle', {
+    scope('cartTitle', {
         textAlign: 'center',
         fontSize: typos.fontSizeLg,
     }, {specificityWeight: 2}),
-    scopeOf('productEntry', {
+    scope('productEntry', {
         display: 'grid',
         gridTemplate: [[
             '" image  " max-content',
@@ -81,7 +81,7 @@ export default () => [
         }),
     }, {specificityWeight: 2}),
     
-    scopeOf('shippingInfo', {
+    scope('shippingInfo', {
         fontSize: typos.fontSizeMd,
         marginBlockStart: 'auto',
     }),

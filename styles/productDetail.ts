@@ -1,4 +1,4 @@
-import { children, descendants, fallbacks, rule, scopeOf } from "@cssfn/core";
+import { children, descendants, fallback, rule, scope } from "@cssfn/core";
 import { ifScreenWidthAtLeast } from "@reusable-ui/core";
 
 
@@ -7,16 +7,16 @@ const minImageSize = 255;  // 255px
 // const gapImage     = 4*16; // 4rem
 // const maxImageSize = (minImageSize * 2) - (gapImage * 1.5);
 export default () => [
-    scopeOf('prodDtl', {
+    scope('prodDtl', {
         ...children('article', {
             display: 'grid',
             
             boxSizing: 'border-box',
             // minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
-            ...fallbacks({
+            ...fallback({
                 minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
             }),
-            ...fallbacks({
+            ...fallback({
                 minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
             }),
         }),
@@ -78,10 +78,10 @@ export default () => [
                     }),
                     ...descendants('.ctrlAction', {
                         width: 'fill-available',
-                        ...fallbacks({
+                        ...fallback({
                             width: '-webkit-fill-available',
                         }),
-                        ...fallbacks({
+                        ...fallback({
                             width: '100%',
                         }),
                     }),

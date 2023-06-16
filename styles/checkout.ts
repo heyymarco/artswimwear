@@ -1,4 +1,4 @@
-import { children, descendants, fallbacks, rule, scopeOf, style, switchOf, vars } from "@cssfn/core";
+import { children, descendants, fallback, rule, scope, style, switchOf, vars } from "@cssfn/core";
 import { basics, containers, iconElm, usesIcon, usesIconFontLayout } from "@reusable-ui/components";
 import { borders, ifNeutralize, ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, markValid, themes, typos, usesBackground, usesBorder, usesGroupable, usesPadding, usesValidationIcon } from "@reusable-ui/core";
 
@@ -14,16 +14,16 @@ export default () => {
     
     
     return [
-        scopeOf('loading', {
+        scope('loading', {
             ...children('article', {
                 display: 'grid',
                 
                 boxSizing: 'border-box',
                 // minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
-                ...fallbacks({
+                ...fallback({
                     minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
                 }),
-                ...fallbacks({
+                ...fallback({
                     minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
                 }),
                 
@@ -36,7 +36,7 @@ export default () => {
             }),
         }),
         
-        scopeOf('layout', {
+        scope('layout', {
             display: 'grid',
             gridTemplate: [[
                 '"progressCheckout" auto',
@@ -67,10 +67,10 @@ export default () => {
             alignContent: 'start',
             boxSizing: 'border-box',
             // minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
-            ...fallbacks({
+            ...fallback({
                 minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
             }),
-            ...fallbacks({
+            ...fallback({
                 minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
             }),
             ...children('section', {
@@ -91,7 +91,7 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scopeOf('progressCheckout', {
+        scope('progressCheckout', {
             gridArea: 'progressCheckout',
             
             ...ifScreenWidthSmallerThan('lg', {
@@ -112,7 +112,7 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px',
             }),
         }, {specificityWeight: 2}),
-        scopeOf('currentStepLayout', {
+        scope('currentStepLayout', {
             gridArea: 'currentStep',
             
             display: 'flex',
@@ -127,7 +127,7 @@ export default () => {
             }),
         }, {specificityWeight: 2}),
         
-        scopeOf('orderSummary', {
+        scope('orderSummary', {
             gridArea: 'orderSummary',
             
             ...children(['&', 'article'], {
@@ -166,7 +166,7 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scopeOf('productEntry', {
+        scope('productEntry', {
             gridArea: 'orderSummary',
             
             display: 'grid',
@@ -205,7 +205,7 @@ export default () => {
             }),
         }),
         
-        scopeOf('orderReview', {
+        scope('orderReview', {
             ...descendants('table', {
                 borderCollapse: 'collapse',
                 tableLayout: 'auto',
@@ -276,7 +276,7 @@ export default () => {
                 }),
             }),
         }),
-        scopeOf('checkout', {
+        scope('checkout', {
             display: 'flex',
             flexDirection: 'column',
             
@@ -294,13 +294,13 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scopeOf('expressCheckout', {
+        scope('expressCheckout', {
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
         }, {specificityWeight: 2}),
-        scopeOf('checkoutAlt', {
+        scope('checkoutAlt', {
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
@@ -314,7 +314,7 @@ export default () => {
                 alignItems: 'center',
             }),
         }),
-        scopeOf('regularCheckout', {
+        scope('regularCheckout', {
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
@@ -337,9 +337,9 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scopeOf('shippingMethod', {
+        scope('shippingMethod', {
         }),
-        scopeOf('address', {
+        scope('address', {
             ...children('article', {
                 display: 'grid',
                 gridTemplateColumns: 'repeat(6, 1fr)',
@@ -367,7 +367,7 @@ export default () => {
                 }),
             }),
         }),
-        scopeOf('payment', {
+        scope('payment', {
             display: 'flex',
             flexDirection: 'column',
             
@@ -387,9 +387,9 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scopeOf('paymentMethod', {
+        scope('paymentMethod', {
         }),
-        scopeOf('optionEntryHeader', {
+        scope('optionEntryHeader', {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
@@ -422,7 +422,7 @@ export default () => {
                 flex: '1 1 auto',
             }),
         }, {specificityWeight: 2}),
-        scopeOf('billingEntry', {
+        scope('billingEntry', {
             [paddingVars.paddingInline] : '1rem',
             [paddingVars.paddingBlock ] : '1rem',
             ...children('article', {
@@ -430,7 +430,7 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px',
             }),
         }, {specificityWeight: 2}),
-        scopeOf('paymentEntryCard', {
+        scope('paymentEntryCard', {
             [paddingVars.paddingInline] : '1rem',
             [paddingVars.paddingBlock ] : '1rem',
             ...children('article', {
@@ -496,7 +496,7 @@ export default () => {
                 })
             }),
         }, {specificityWeight: 2}),
-        scopeOf('paymentEntryPaypal', {
+        scope('paymentEntryPaypal', {
             [paddingVars.paddingInline] : '1rem',
             [paddingVars.paddingBlock ] : '1rem',
             ...children('article', {
@@ -512,7 +512,7 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scopeOf('paymentEntryManual', {
+        scope('paymentEntryManual', {
             [paddingVars.paddingInline] : '1rem',
             [paddingVars.paddingBlock ] : '1rem',
             ...children('article', {
@@ -520,7 +520,7 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px',
             }),
         }, {specificityWeight: 2}),
-        scopeOf('paymentFinish', {
+        scope('paymentFinish', {
             display: 'flex',
             flexDirection: 'column',
             
@@ -539,7 +539,7 @@ export default () => {
             }),
         }, {specificityWeight: 2}),
         
-        scopeOf('navCheckout', {
+        scope('navCheckout', {
             gridArea: 'navCheckout',
             
             paddingBlockEnd : containers.paddingBlockMd,
@@ -573,7 +573,7 @@ export default () => {
             }),
         }, {specificityWeight: 2}),
         
-        scopeOf('vertLine', {
+        scope('vertLine', {
             gridArea: 'vertLine',
             
             writingMode: 'vertical-lr',
