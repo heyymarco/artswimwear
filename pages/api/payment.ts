@@ -1062,7 +1062,7 @@ const responseMakePayment = async (
                 switch (captureData?.status) {
                     case 'COMPLETED' : {
                         paymentResponse = { // payment APPROVED
-                            paymentMethod : (() => {
+                            paymentMethod : ((): PaymentMethodSchema => {
                                 const payment_source = paypalPaymentData?.payment_source;
                                 
                                 const card = payment_source?.card;
@@ -1070,7 +1070,7 @@ const responseMakePayment = async (
                                     return {
                                         type       : 'card',
                                         brand      : card.brand?.toLowerCase() ?? undefined,
-                                        identifier : card.last_digits ? `ending with ${card.last_digits}` : undefined,
+                                        identifier : card.last_digits ? `ending with ${card.last_digits}` : '',
                                     };
                                 } //if
                                 
@@ -1085,8 +1085,8 @@ const responseMakePayment = async (
                                 
                                 return {
                                     type       : 'CUSTOM',
-                                    brand      : undefined,
-                                    identifier : undefined,
+                                    brand      : '',
+                                    identifier : '',
                                 };
                             })(),
                             // @ts-ignore:
@@ -1108,7 +1108,9 @@ const responseMakePayment = async (
             else {
                 paymentResponse = { // paylater APPROVED (we waiting for your payment confirmation within xx days)
                     paymentMethod : {
-                        type: 'manual',
+                        type       : 'manual',
+                        brand      : '',
+                        identifier : '',
                     },
                 };
             } // if

@@ -5,6 +5,7 @@ import type { CartState } from '../cart/cartSlice'
 import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice'
 import type { CreateOrderData } from '@paypal/paypal-js'
 import type { MatchingShipping, MatchingAddress } from '@/libs/shippings'
+import type { PaymentMethodSchema } from '@/models/Order'
 
 
 
@@ -96,14 +97,9 @@ export interface AuthenticationPaymentData
 {
     orderId : string
 }
-export interface PaymentMethod {
-    type        : 'card'|'paypal'|'manual'|(string & {})
-    brand      ?: 'amex'|'visa'|'paypal'|string
-    identifier ?: string
-}
 export interface MakePaymentResponse
 {
-    paymentMethod : PaymentMethod
+    paymentMethod : PaymentMethodSchema
 }
 
 
