@@ -3,8 +3,7 @@ import { Badge, ButtonIcon, Collapse, HamburgerMenuButton, Icon, List, ListItem,
 import { selectCartTotalQuantity, toggleCart } from '@/store/features/cart/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEvent } from '@reusable-ui/core';
-import { useEffect, useInsertionEffect, useRef, useState } from 'react';
-
+import { useEffect, useInsertionEffect, useState } from 'react';
 
 
 
@@ -41,36 +40,15 @@ const SiteNavbarMenu = ({
     
     
     const [cartTogglerRef, setCartTogglerRef] = useState<HTMLElement|null>(null);
-    const cartStatusRef = useRef<HTMLElement|null>(null)
-    const CartStatus = () => <Badge elmRef={cartStatusRef} floatingOn={cartTogglerRef} theme='danger' badgeStyle='pill' floatingPlacement='right-start' floatingOffset={!navbarExpanded ? -16 : -24} floatingShift={!navbarExpanded ? 3 : 10}>{cartTotalQuantity}</Badge>
+    const [cartStatusExcited, setCartStatusExcited] = useState<boolean>(false)
+    const CartStatus = () => <Badge excited={cartStatusExcited} onExcitedChange={({excited}) => setCartStatusExcited(excited)} floatingOn={cartTogglerRef} theme='danger' badgeStyle='pill' floatingPlacement='right-start' floatingOffset={!navbarExpanded ? -16 : -24} floatingShift={!navbarExpanded ? 3 : 10}>{cartTotalQuantity}</Badge>
     useEffect(() => {
         if (!hasCart) return;
-        const cartStatusElm = cartStatusRef.current;
-        if (!cartStatusElm) return;
+        if (!cartTotalQuantity) return;
         
         
         
-        const transitionDuration = 300; // ms
-        const cartStatusStyle = cartStatusElm.style;
-        cartStatusStyle.transition = `scale ease ${transitionDuration}ms`;
-        const removeAnimation = () => {
-            cartStatusStyle.transition = '';
-            cartStatusStyle.scale = '';
-        };
-        let cancelAnimation = setTimeout(() => {
-            cartStatusStyle.scale = '200%';
-            cancelAnimation = setTimeout(() => {
-                cartStatusStyle.scale = '';
-                cancelAnimation = setTimeout(removeAnimation, transitionDuration);
-            }, transitionDuration);
-        }, 0);
-        
-        
-        
-        return () => {
-            clearTimeout(cancelAnimation);
-            removeAnimation();
-        }
+        setCartStatusExcited(true);
     }, [hasCart, cartTotalQuantity]); // if the quantity changes => make an animation
     
     
