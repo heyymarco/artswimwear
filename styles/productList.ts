@@ -2,7 +2,11 @@ import { children, fallback, rule, scope } from "@cssfn/core";
 
 
 
-const minImageSize = 255;  // 255px
+// defaults:
+const minImageSize   = 255; // 255px
+const minImageHeight = 255; // 255px
+
+
 // const gapImage     = 4*16; // 4rem
 // const maxImageSize = (minImageSize * 2) - (gapImage * 1.5);
 export default () => [
@@ -40,6 +44,7 @@ export default () => [
                 background : 'white',
                 minWidth   : `${minImageSize}px`,
                 width      : 'unset',
+                minHeight  : `${minImageHeight}px`,
                 overflow   : 'hidden',
                 ...children(['img', '.status'], {
                     transition : [
