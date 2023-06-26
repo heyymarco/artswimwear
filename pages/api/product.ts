@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import nextConnect from 'next-connect'
+import { createRouter } from 'next-connect'
 
 import { connectDB } from '@/libs/dbConn'
 import { default as Product, ProductSchema } from '@/models/Product'
@@ -24,19 +24,19 @@ catch (error) {
 
 
 
-export default nextConnect<NextApiRequest, NextApiResponse>({
-    onError: (err, req, res, next) => {
-        console.error(err.stack);
-        res.status(500).json({ error: 'Something broke!' });
-    },
-    onNoMatch: (req, res) => {
-        res.status(404).json({ error: 'Page is not found' });
-    },
-})
-.get<NextApiRequest, NextApiResponse<
-    | DetailedProduct
-    | Array<PreviewProduct>
->>(async (req, res) => {
+const router = createRouter<
+    NextApiRequest,
+    NextApiResponse<
+        | DetailedProduct|null
+        | Array<PreviewProduct>
+        | { error: string }
+    >
+>();
+
+
+
+router
+.get(async (req, res) => {
     if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
         await new Promise<void>((resolve) => {
             setTimeout(() => {
@@ -81,7 +81,7 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     }
     return res.json(previewProducts);
 })
-.post<NextApiRequest, NextApiResponse>(async (req, res) => {
+.post(async (req, res) => {
     const newProduct = await Product.create<ProductSchema>({
         name        : req.query.name,
         price       : Number.parseFloat(req.query.price as any),
@@ -89,4 +89,16 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     });
     console.log('a product added: ', newProduct);
     return res.json(newProduct);
+});
+
+
+
+export default router.handler({
+    onError: (err: any, req, res) => {
+        console.error(err.stack);
+        res.status(err.statusCode || 500).end(err.message);
+    },
+    onNoMatch: (req, res) => {
+        res.status(404).json({ error: 'Page is not found' });
+    },
 });

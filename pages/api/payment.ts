@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import nextConnect from 'next-connect'
+import { createRouter } from 'next-connect'
 
 import { connectDB } from '@/libs/dbConn'
 import { default as Product, ProductSchema } from '@/models/Product'
@@ -1195,15 +1195,28 @@ const responseMakePayment = async (
     ).json(paymentResponse);
 }
 
-export default nextConnect<NextApiRequest, NextApiResponse>({
-    onError: (err, req, res, next) => {
+
+
+const router = createRouter<
+    NextApiRequest,
+    NextApiResponse
+>();
+
+
+
+router
+.get(responseGeneratePaymentToken)
+.post(responsePlaceOrder)
+.patch(responseMakePayment);
+
+
+
+export default router.handler({
+    onError: (err: any, req, res) => {
         console.error(err.stack);
-        res.status(500).json({ error: 'Something broke!' });
+        res.status(err.statusCode || 500).end(err.message);
     },
     onNoMatch: (req, res) => {
         res.status(404).json({ error: 'Page is not found' });
     },
-})
-.get<NextApiRequest, NextApiResponse>(responseGeneratePaymentToken)
-.post<NextApiRequest, NextApiResponse>(responsePlaceOrder)
-.patch<NextApiRequest, NextApiResponse>(responseMakePayment);
+});
