@@ -17,6 +17,7 @@ import { addToCart } from '@/store/features/cart/cartSlice'
 import { useDispatch } from 'react-redux'
 import { QuantityInput } from '@heymarco/quantity-input'
 import { PAGE_PRODUCT_TITLE, PAGE_PRODUCT_DESCRIPTION } from '@/website.config'
+import resolveImageUrl from '@/libs/resolveImageUrl'
 
 
 
@@ -59,12 +60,12 @@ export default function ProductDetail() {
                             </section>
                             <section className='images'>
                                 <Carousel className='slides' size='lg' theme='primary'>
-                                    {product.images?.map((img: string, index: number) =>
+                                    {product.images?.map((image: string, index: number) =>
                                         <Image
                                             key={index}
                                             
                                             alt={`image #${index + 1} of ${product.name}`}
-                                            src={`/products/${product.name}/${img}`}
+                                            src={resolveImageUrl(image)}
                                             sizes='100vw'
                                             
                                             priority={true}
