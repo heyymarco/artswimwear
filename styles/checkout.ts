@@ -1,3 +1,4 @@
+import { commerces } from "@/config";
 import { children, descendants, fallback, rule, scope, style, switchOf, vars } from "@cssfn/core";
 import { basics, containers, iconElm, usesIcon, usesIconFontLayout } from "@reusable-ui/components";
 import { borders, ifNeutralize, ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, markValid, themes, typos, usesBackground, usesBorder, usesGroupable, usesPadding, usesValidationIcon } from "@reusable-ui/core";
@@ -180,11 +181,12 @@ export default () => {
             gapBlock: '0.5rem',
             padding: 0,
             ...children('.prodImg', {
-                gridArea   : 'image',
-                alignSelf  : 'center',
+                gridArea    : 'image',
+                alignSelf   : 'center',
                 
-                background : 'white',
-                width      : `${imageSize}px`,
+                background  : 'white',
+                width       : `${imageSize}px`,
+                aspectRatio : commerces.defaultProductAspectRatio,
             }),
             ...children('.title', {
                 gridArea: 'title',

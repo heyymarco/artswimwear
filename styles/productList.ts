@@ -1,3 +1,4 @@
+import { commerces } from "@/config";
 import { children, fallback, rule, scope } from "@cssfn/core";
 
 
@@ -39,13 +40,14 @@ export default () => [
             flexDirection: 'column',
             // gap: '1rem',
             ...children('.prodImg', {
-                flex       : [[1, 1, 'auto']], // growable, shrinkable, initial from it's height
+                flex        : [[1, 1, 'auto']], // growable, shrinkable, initial from it's height
                 
-                background : 'white',
-                minWidth   : `${minImageSize}px`,
-                width      : 'unset',
-                minHeight  : `${minImageHeight}px`,
-                overflow   : 'hidden',
+                background  : 'white',
+                minWidth    : `${minImageSize}px`,
+                width       : 'unset',
+                minHeight   : `${minImageHeight}px`,
+                overflow    : 'hidden',
+                aspectRatio : commerces.defaultProductAspectRatio,
                 ...children(['img', '.status'], {
                     transition : [
                         ['scale', '300ms'],
