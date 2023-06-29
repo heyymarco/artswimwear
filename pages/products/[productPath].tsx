@@ -17,7 +17,7 @@ import { addToCart } from '@/store/features/cart/cartSlice'
 import { useDispatch } from 'react-redux'
 import { QuantityInput } from '@heymarco/quantity-input'
 import { PAGE_PRODUCT_TITLE, PAGE_PRODUCT_DESCRIPTION } from '@/website.config'
-import resolveImageUrl from '@/libs/resolveImageUrl'
+import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 
 
 
@@ -65,7 +65,7 @@ export default function ProductDetail() {
                                             key={index}
                                             
                                             alt={`image #${index + 1} of ${product.name}`}
-                                            src={resolveImageUrl(image)}
+                                            src={resolveMediaUrl(image)}
                                             sizes='100vw'
                                             
                                             priority={true}

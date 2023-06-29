@@ -36,7 +36,7 @@ import {
     PAGE_CHECKOUT_DESCRIPTION,
 } from '@/website.config'
 import ModalStatus from '@/components/ModalStatus'
-import resolveImageUrl from '@/libs/resolveImageUrl'
+import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 
 
 
@@ -1471,7 +1471,7 @@ const OrderSummary = () => {
                                     className='prodImg'
                                     
                                     alt={product?.name ?? ''}
-                                    src={resolveImageUrl(product?.image)}
+                                    src={resolveMediaUrl(product?.image)}
                                     sizes='64px'
                                     
                                     status={item.quantity}

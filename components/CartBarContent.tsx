@@ -11,7 +11,7 @@ import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
 import { useRouter } from 'next/router'
 import ModalStatus from './ModalStatus'
-import resolveImageUrl from '@/libs/resolveImageUrl'
+import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 
 
 
@@ -81,7 +81,7 @@ export const CartBarContent = () => {
                                     className='prodImg'
                                     
                                     alt={product?.name ?? ''}
-                                    src={resolveImageUrl(product?.image)}
+                                    src={resolveMediaUrl(product?.image)}
                                     sizes='64px'
                                 />
                                 <Group className='quantity' title='Quantity' theme='primary' size='sm'>
