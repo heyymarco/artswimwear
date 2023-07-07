@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import nextConnect from 'next-connect'
+import { createRouter } from 'next-connect'
 
 import { connectDB } from '@/libs/dbConn'
 import { default as Product, ProductSchema } from '@/models/Product'
@@ -17,16 +17,18 @@ catch (error) {
 
 
 
-export default nextConnect<NextApiRequest, NextApiResponse>({
-    onError: (err, req, res, next) => {
-        console.error(err.stack);
-        res.status(500).json({ error: 'Something broke!' });
-    },
-    onNoMatch: (req, res) => {
-        res.status(404).json({ error: 'Page is not found' });
-    },
-})
-.get<NextApiRequest, NextApiResponse<Array<Required<Pick<ProductSchema, '_id'>> & Pick<ProductSchema, 'price'|'shippingWeight'>>>>(async (req, res) => {
+const router = createRouter<
+    NextApiRequest,
+    NextApiResponse<
+        | Array<Required<Pick<ProductSchema, '_id'>> & Pick<ProductSchema, 'price'|'shippingWeight'>>
+        | { error: string }
+    >
+>();
+
+
+
+router
+.get(async (req, res) => {
     if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
         await new Promise<void>((resolve) => {
             setTimeout(() => {
@@ -41,4 +43,16 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
         visibility : { $ne: 'draft' }, // allows access to Product with visibility: 'published'|'hidden' but NOT 'draft'
     }, { _id: true, price: true, shippingWeight: true });
     return res.json(priceList);
+});
+
+
+
+export default router.handler({
+    onError: (err: any, req, res) => {
+        console.error(err.stack);
+        res.status(err.statusCode || 500).end(err.message);
+    },
+    onNoMatch: (req, res) => {
+        res.status(404).json({ error: 'Page is not found' });
+    },
 });

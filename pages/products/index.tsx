@@ -10,6 +10,7 @@ import { formatCurrency } from '@/libs/formatters'
 import { Image } from '@heymarco/image'
 import Link from 'next/link'
 import { PAGE_PRODUCTS_TITLE, PAGE_PRODUCTS_DESCRIPTION } from '@/website.config'
+import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 
 
 
@@ -42,7 +43,7 @@ export default function ProductList() {
                                     className='prodImg'
                                     
                                     alt={product.name ?? ''}
-                                    src={product.image ? `/products/${product.name}/${product.image}` : undefined}
+                                    src={resolveMediaUrl(product.image)}
                                     sizes='414px'
                                 />
                                 <header>

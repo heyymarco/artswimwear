@@ -1,3 +1,4 @@
+import { commerces } from "@/config";
 import { children, descendants, scope } from "@cssfn/core";
 import { ifScreenWidthAtLeast, typos } from "@reusable-ui/core";
 
@@ -51,11 +52,12 @@ export default () => [
             fontWeight: typos.fontWeightBold,
         }),
         ...children('.prodImg', {
-            gridArea   : 'image',
-            alignSelf  : 'center',
+            gridArea    : 'image',
+            alignSelf   : 'center',
             
-            background : 'white',
-            width      : `${imageSize}px`,
+            background  : 'white',
+            width       : `${imageSize}px`,
+            aspectRatio : commerces.defaultProductAspectRatio,
         }),
         ...children('.title', {
             gridArea: 'title',

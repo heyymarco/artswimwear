@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import nextConnect from 'next-connect'
+import { createRouter } from 'next-connect'
 
 import { connectDB } from '@/libs/dbConn'
 import { default as Shipping, ShippingSchema } from '@/models/Shipping'
@@ -18,16 +18,18 @@ catch (error) {
 
 
 
-export default nextConnect<NextApiRequest, NextApiResponse>({
-    onError: (err, req, res, next) => {
-        console.error(err.stack);
-        res.status(500).json({ error: 'Something broke!' });
-    },
-    onNoMatch: (req, res) => {
-        res.status(404).json({ error: 'Page is not found' });
-    },
-})
-.post<NextApiRequest, NextApiResponse<Array<MatchingShipping>>>(async (req, res) => {
+const router = createRouter<
+    NextApiRequest,
+    NextApiResponse<
+        | Array<MatchingShipping>
+        | { error: string }
+    >
+>();
+
+
+
+router
+.post(async (req, res) => {
     const {
         city,
         zone,
@@ -73,4 +75,16 @@ export default nextConnect<NextApiRequest, NextApiResponse>({
     return res.json(
         matchingShippings
     );
+});
+
+
+
+export default router.handler({
+    onError: (err: any, req, res) => {
+        console.error(err.stack);
+        res.status(err.statusCode || 500).end(err.message);
+    },
+    onNoMatch: (req, res) => {
+        res.status(404).json({ error: 'Page is not found' });
+    },
 });
