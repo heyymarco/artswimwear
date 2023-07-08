@@ -80,15 +80,6 @@ router
         }
     }
     return res.json(previewProducts);
-})
-.post(async (req, res) => {
-    const newProduct = await Product.create<ProductSchema>({
-        name        : req.query.name,
-        price       : Number.parseFloat(req.query.price as any),
-        description : req.query.description,
-    });
-    console.log('a product added: ', newProduct);
-    return res.json(newProduct);
 });
 
 

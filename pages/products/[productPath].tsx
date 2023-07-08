@@ -18,6 +18,7 @@ import { useDispatch } from 'react-redux'
 import { QuantityInput } from '@heymarco/quantity-input'
 import { PAGE_PRODUCT_TITLE, PAGE_PRODUCT_DESCRIPTION } from '@/website.config'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
+import { WysiwygViewer } from '@/components/WysiwygEditor/WysiwygViewer'
 
 
 
@@ -41,7 +42,7 @@ export default function ProductDetail() {
         <>
             <Head>
                 <title>{PAGE_PRODUCT_TITLE.replace('{{TheProductName}}', product?.name ?? '')}</title>
-                <meta name='description' content={PAGE_PRODUCT_DESCRIPTION.replace('{{TheProductExcerpt}}', product?.excerpt ?? product?.description ?? '')} />
+                <meta name='description' content={PAGE_PRODUCT_DESCRIPTION.replace('{{TheProductExcerpt}}', product?.excerpt ?? '')} />
             </Head>
             <Main nude={true}>
                 <Section className={`${styles.prodDtl} ${(isLoading || isError || !product) ? 'loading' : ''}`} theme='secondary'>
@@ -88,11 +89,7 @@ export default function ProductDetail() {
                                     <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction' onClick={() => dispatch(addToCart({productId: product._id, quantity: addProductQty}))}>Add to cart</ButtonIcon>
                                 </p>
                             </section>
-                            {!!product.description && <section className='desc'>
-                                <ReactMarkdown>
-                                    {product.description}
-                                </ReactMarkdown>
-                            </section>}
+                            {!!product.description && <WysiwygViewer className='desc' value={product.description} />}
                         </>
                     }
                 </Section>

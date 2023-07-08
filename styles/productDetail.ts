@@ -1,8 +1,29 @@
-import { children, descendants, fallback, rule, scope } from "@cssfn/core";
-import { ifScreenWidthAtLeast } from "@reusable-ui/core";
+import { children, descendants, fallback, rule, scope, style } from "@cssfn/core";
+import { ifScreenWidthAtLeast, usesBorder, usesPadding } from "@reusable-ui/core";
 
 
 
+const descriptionLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {borderRule } = usesBorder({ borderWidth: '0px', borderRadius: '0px' });
+    const {paddingRule} = usesPadding({ paddingInline: '0px', paddingBlock: '0px' });
+    
+    
+    
+    return style({
+        ...style({
+            gridArea: 'desc',
+        }),
+        
+        
+        
+        // features:
+        ...borderRule(),  // must be placed at the last
+        ...paddingRule(), // must be placed at the last
+    });
+};
 const minImageSize = 255;  // 255px
 // const gapImage     = 4*16; // 4rem
 // const maxImageSize = (minImageSize * 2) - (gapImage * 1.5);
@@ -86,9 +107,7 @@ export default () => [
                         }),
                     }),
                 }),
-                ...children('.desc', {
-                    gridArea: 'desc',
-                }),
+                ...children('.desc', descriptionLayout()),
             }),
         }),
     }),
