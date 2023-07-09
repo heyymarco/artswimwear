@@ -167,7 +167,7 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scope('productEntry', {
+        scope('productPreview', {
             gridArea: 'orderSummary',
             
             display: 'grid',

@@ -6,7 +6,7 @@ import { Article, Section, Main } from '@heymarco/section'
 
 import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { CountryEntry, PriceEntry, ProductEntry, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
+import { CountryEntry, PriceEntry, ProductPreview, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import { ImageProps, Image } from '@heymarco/image'
 import Link from 'next/link'
@@ -249,7 +249,7 @@ interface ICheckoutContext {
     checkoutProgress                  : number
     
     priceList                         : EntityState<PriceEntry>       | undefined
-    productList                       : EntityState<ProductEntry>     | undefined
+    productList                       : EntityState<ProductPreview>   | undefined
     countryList                       : EntityState<CountryEntry>     | undefined
     shippingList                      : EntityState<MatchingShipping> | undefined
     
@@ -1461,7 +1461,7 @@ const OrderSummary = () => {
                         const productUnitPrice = priceList?.entities?.[item.productId]?.price;
                         const product          = productList?.entities?.[item.productId];
                         return (
-                            <ListItem key={item.productId} className={styles.productEntry}
+                            <ListItem key={item.productId} className={styles.productPreview}
                                 enabled={!!product}
                                 theme={!product ? 'danger' : undefined}
                                 mild={!product ? false : undefined}
