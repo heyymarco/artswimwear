@@ -339,13 +339,13 @@ const responsePlaceOrder = async (
             
             
             //#region fetch valid products
-            type ProductEntry = HydratedDocument<Pick<ProductSchema, '_id'|'name'|'price'|'shippingWeight'|'stock'>>
-            const productListAdapter = createEntityAdapter<ProductEntry>({
-                selectId : (productEntry) => `${productEntry._id}`,
+            type ProductData = HydratedDocument<Pick<ProductSchema, '_id'|'name'|'price'|'shippingWeight'|'stock'>>
+            const productListAdapter = createEntityAdapter<ProductData>({
+                selectId : (productData) => `${productData._id}`,
             });
             const productList = productListAdapter.addMany(
                 productListAdapter.getInitialState(),
-                await Product.find<ProductEntry>({
+                await Product.find<ProductData>({
                     visibility : { $ne: 'draft' }, // allows access to Product with visibility: 'published'|'hidden' but NOT 'draft'
                 }, { _id: true, name: true, price: true, shippingWeight: true, stock: true }, { session })
             );
