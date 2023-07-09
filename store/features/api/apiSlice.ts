@@ -7,21 +7,13 @@ import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice'
 import type { CreateOrderData } from '@paypal/paypal-js'
 import type { MatchingShipping, MatchingAddress } from '@/libs/shippings'
 import type { PaymentMethodSchema } from '@/models/Order'
+import type { ProductDetail, ProductPreview } from '@/pages/api/product'
+export type { ProductDetail, ProductPreview } from '@/pages/api/product'
 
 
 
-export interface ProductEntry
-    extends
-        Omit<ProductSchema,
-            |'_id'
-            |'images' // we just pick the first image of [images]
-        >
-{
-    _id   : string
-    image : string
-}
-const productListAdapter = createEntityAdapter<ProductEntry>({
-    selectId : (productEntry) => productEntry._id,
+const productListAdapter = createEntityAdapter<ProductPreview>({
+    selectId : (productPreview) => productPreview._id,
 });
 
 export interface PriceEntry {
@@ -107,19 +99,20 @@ export interface MakePaymentResponse
 }
 
 
+
 export const apiSlice = createApi({
     reducerPath : 'api',
     baseQuery : fetchBaseQuery({
         baseUrl: '/api'
     }),
     endpoints : (builder) => ({
-        getProductList   : builder.query<EntityState<ProductEntry>, void>({
+        getProductList   : builder.query<EntityState<ProductPreview>, void>({
             query : () => 'product',
-            transformResponse(response: ProductEntry[]) {
+            transformResponse(response: ProductPreview[]) {
                 return productListAdapter.addMany(productListAdapter.getInitialState(), response);
             },
         }),
-        getProductDetail : builder.query<any, string>({
+        getProductDetail : builder.query<ProductDetail, string>({
             query : (productPath: string) => `product?path=${productPath}`,
         }),
         
