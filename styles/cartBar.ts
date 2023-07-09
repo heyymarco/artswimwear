@@ -22,7 +22,7 @@ export default () => [
         textAlign: 'center',
         fontSize: typos.fontSizeLg,
     }, {specificityWeight: 2}),
-    scope('productEntry', {
+    scope('productPreview', {
         display: 'grid',
         gridTemplate: [[
             '" image  " max-content',

@@ -71,7 +71,7 @@ export const CartBarContent = () => {
                         const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
                         const product = productList?.entities?.[item.productId];
                         return (
-                            <ListItem key={item.productId} className={styles.productEntry}
+                            <ListItem key={item.productId} className={styles.productPreview}
                                 enabled={!!product}
                                 theme={!product ? 'danger' : undefined}
                                 mild={!product ? false : undefined}
