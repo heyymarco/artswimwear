@@ -3,14 +3,37 @@ import { createRouter } from 'next-connect'
 
 import { connectDB } from '@/libs/dbConn'
 import { default as Product, ProductSchema } from '@/models/Product'
-import { formatPath } from '@/libs/formatters';
 import { HydratedDocument } from 'mongoose';
+import type { WysiwygEditorState } from '@/components/WysiwygEditor'
 
 
 
 // types:
-export type DetailedProduct = Required<Pick<ProductSchema, '_id'>> & Pick<ProductSchema, 'name'|'price'|'images'|'path'|'description'>
-export type PreviewProduct  = Required<Pick<ProductSchema, '_id'>> & Pick<ProductSchema, 'name'|'price'|'path'> & { image?: Required<ProductSchema>['images'][number] }
+export interface ProductDetail
+    extends
+        Pick<ProductSchema,
+            |'name'
+            |'price'
+            |'path'
+            |'excerpt'
+            |'images'
+        >
+{
+    _id         : string
+    description : WysiwygEditorState|null|undefined
+}
+export interface ProductPreview
+    extends
+        Pick<ProductSchema,
+            |'name'
+            |'price'
+            |'path'
+        >
+{
+    _id         : string
+    image       : Required<ProductSchema>['images'][number]
+}
+
 
 
 try {
@@ -27,9 +50,9 @@ catch (error) {
 const router = createRouter<
     NextApiRequest,
     NextApiResponse<
-        | DetailedProduct|null
-        | Array<PreviewProduct>
-        | { error: string }
+        |ProductDetail|null
+        |Array<ProductPreview>
+        |{ error: string }
     >
 >();
 
@@ -48,18 +71,42 @@ router
     
     
     if (req.query.path) {
-        const detailedProduct = await Product.findOne<DetailedProduct>({
-            path       : req.query.path,   // find by url path
-            visibility : { $ne: 'draft' }, // allows access to Product with visibility: 'published'|'hidden' but NOT 'draft'
-        }, { _id: true, name: true, price: true, images: true, path: true, description: true });
-        return res.json(detailedProduct);
+        return res.json(
+            await Product.findOne<ProductDetail>({
+                path       : req.query.path,   // find by url path
+                visibility : { $ne: 'draft' }, // allows access to Product with visibility: 'published'|'hidden' but NOT 'draft'
+            }, {
+                _id         : true,
+                
+                name        : true,
+                
+                price       : true,
+                
+                path        : true,
+                
+                excerpt     : true,
+                description : true,
+                
+                images      : true,
+            })
+        );
     } // if
     
     
     
-    const previewProducts = await Product.find<HydratedDocument<PreviewProduct>>({
+    const previewProducts = await Product.find<HydratedDocument<ProductPreview>>({
         visibility: { $eq: 'published' }, // allows access to Product with visibility: 'published' but NOT 'hidden'|'draft'
-    }, { _id: true, name: true, price: true, image: { $first: "$images" }, path: true });
+    }, {
+        _id   : true,
+        
+        name  : true,
+        
+        price : true,
+        
+        path  : true,
+        
+        image : { $first: "$images" },
+    });
     return res.json(previewProducts);
 });
 
