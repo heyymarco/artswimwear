@@ -16,7 +16,7 @@ const productSchema = new Schema({
     
     description    : { type: Object         , required: false          },
     images         : { type: [String]       , required: false          },
-    path           : { type: String         , required: false          },
+    path           : { type: String         , required: true           },
 });
 export type ProductSchema = InferSchemaType<typeof productSchema>;
 

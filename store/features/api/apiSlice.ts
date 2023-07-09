@@ -1,6 +1,7 @@
 import type { RootState } from '@/store/store'
 import { createEntityAdapter, EntityState } from '@reduxjs/toolkit'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import type { ProductSchema } from '@/models/Product';
 import type { CartState } from '../cart/cartSlice'
 import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice'
 import type { CreateOrderData } from '@paypal/paypal-js'
@@ -9,12 +10,15 @@ import type { PaymentMethodSchema } from '@/models/Order'
 
 
 
-export interface ProductEntry {
+export interface ProductEntry
+    extends
+        Omit<ProductSchema,
+            |'_id'
+            |'images' // we just pick the first image of [images]
+        >
+{
     _id   : string
-    name  : string
-    price : number
     image : string
-    path  : string
 }
 const productListAdapter = createEntityAdapter<ProductEntry>({
     selectId : (productEntry) => productEntry._id,

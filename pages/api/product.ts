@@ -60,25 +60,6 @@ router
     const previewProducts = await Product.find<HydratedDocument<PreviewProduct>>({
         visibility: { $eq: 'published' }, // allows access to Product with visibility: 'published' but NOT 'hidden'|'draft'
     }, { _id: true, name: true, price: true, image: { $first: "$images" }, path: true });
-    let productPaths : string[]|undefined = undefined;
-    for (const previewProduct of previewProducts) {
-        if (!previewProduct.path) {
-            let productPath = formatPath(previewProduct.name);
-            
-            // check for duplicates:
-            if (!productPaths) productPaths = previewProducts.map((product) => product.path).filter((path): path is Exclude<typeof path, undefined> => !!path);
-            if (productPaths.includes(productPath)) {
-                let newProductPath = productPath;
-                for (let counter = 2; counter < 100 && productPaths.includes(newProductPath = `${productPath}-${counter}`); counter++) ;
-                productPath = newProductPath;
-            } // if
-            
-            // assign new pre-computed path:
-            previewProduct.path = productPath;
-            await previewProduct.save();
-            console.log('path updated: ', productPath);
-        }
-    }
     return res.json(previewProducts);
 });
 
