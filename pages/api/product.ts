@@ -9,6 +9,17 @@ import type { WysiwygEditorState } from '@/components/WysiwygEditor'
 
 
 // types:
+export interface ProductPreview
+    extends
+        Pick<ProductSchema,
+            |'name'
+            |'price'
+            |'path'
+        >
+{
+    _id         : string
+    image       : Required<ProductSchema>['images'][number]
+}
 export interface ProductDetail
     extends
         Pick<ProductSchema,
@@ -21,17 +32,6 @@ export interface ProductDetail
 {
     _id         : string
     description : WysiwygEditorState|null|undefined
-}
-export interface ProductPreview
-    extends
-        Pick<ProductSchema,
-            |'name'
-            |'price'
-            |'path'
-        >
-{
-    _id         : string
-    image       : Required<ProductSchema>['images'][number]
 }
 
 

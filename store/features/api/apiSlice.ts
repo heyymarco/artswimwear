@@ -106,19 +106,19 @@ export const apiSlice = createApi({
         baseUrl: '/api'
     }),
     endpoints : (builder) => ({
-        getProductList   : builder.query<EntityState<ProductPreview>, void>({
+        getProductList          : builder.query<EntityState<ProductPreview>, void>({
             query : () => 'product',
             transformResponse(response: ProductPreview[]) {
                 return productListAdapter.addMany(productListAdapter.getInitialState(), response);
             },
         }),
-        getProductDetail : builder.query<ProductDetail, string>({
+        getProductDetail        : builder.query<ProductDetail, string>({
             query : (productPath: string) => `product?path=${productPath}`,
         }),
         
         
         
-        getPriceList : builder.query<EntityState<PriceEntry>, void>({
+        getPriceList            : builder.query<EntityState<PriceEntry>, void>({
             query : () => 'priceList',
             transformResponse(response: PriceEntry[]) {
                 return priceListAdapter.addMany(priceListAdapter.getInitialState(), response);
@@ -127,7 +127,7 @@ export const apiSlice = createApi({
         
         
         
-        getCountryList : builder.query<EntityState<CountryEntry>, void>({
+        getCountryList          : builder.query<EntityState<CountryEntry>, void>({
             query : () => 'countryList',
             transformResponse(response: CountryEntry[]) {
                 return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
@@ -149,20 +149,20 @@ export const apiSlice = createApi({
         
         
         
-        generatePaymentToken : builder.mutation<PaymentToken, void>({
+        generatePaymentToken    : builder.mutation<PaymentToken, void>({
             query : () => ({
                 url    : 'payment',
                 method : 'GET',
             }),
         }),
-        placeOrder           : builder.mutation<PlaceOrderResponse, PlaceOrderData>({
+        placeOrder              : builder.mutation<PlaceOrderResponse, PlaceOrderData>({
             query : (orderData) => ({
                 url    : 'payment',
                 method : 'POST',
                 body   : orderData,
             }),
         }),
-        makePayment          : builder.mutation<MakePaymentResponse, AuthenticationPaymentData>({
+        makePayment             : builder.mutation<MakePaymentResponse, AuthenticationPaymentData>({
             query : (paymentData) => ({
                 url    : 'payment',
                 method : 'PATCH',
