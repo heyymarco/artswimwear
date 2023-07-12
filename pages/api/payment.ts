@@ -18,6 +18,7 @@ import type { AddressSchema } from '@/models/Address'
 import type { CustomerSchema } from '@/models/Customer'
 import { CartEntrySchema } from '@/models/CartEntry'
 import { trimNumber } from '@/libs/formatters'
+import { customAlphabet } from 'nanoid/async'
 import {
     COMMERCE_CURRENCY,
     COMMERCE_CURRENCY_FRACTION_UNIT,
@@ -214,6 +215,8 @@ const paypalRevertCurrencyIfRequired  = async <TNumber extends number|undefined>
 
 const commitOrder = async (session: ClientSession, { draftOrder, customer, billingAddress, paymentMethod } : { draftOrder: HydratedDocument<DraftOrderSchema>, customer: CustomerSchema, billingAddress: AddressSchema|undefined, paymentMethod: PaymentMethodSchema }) => {
     await Order.create<OrderSchema>([{
+        orderId          : draftOrder.orderId,
+        
         customer         : customer,
         
         items            : draftOrder.items,
@@ -310,6 +313,7 @@ const responsePlaceOrder = async (
         
         || !shippingProvider  || (typeof(shippingProvider) !== 'string') // todo validate shipping provider
     ) {
+        console.log('error: invalid data format');
         return res.status(400).end(); // bad req
     } // if
     
@@ -339,7 +343,18 @@ const responsePlaceOrder = async (
             
             
             //#region fetch valid products
-            type ProductData = HydratedDocument<Pick<ProductSchema, '_id'|'name'|'price'|'shippingWeight'|'stock'>>
+            type ProductData = HydratedDocument<
+                Pick<ProductSchema,
+                    |'_id'
+                    |'name'
+                    |'price'
+                    // |'shippingWeight'
+                    // |'stock'
+                > & {
+                    shippingWeight : number|null|undefined
+                    stock          : number|null|undefined
+                }
+            >
             const productListAdapter = createEntityAdapter<ProductData>({
                 selectId : (productData) => `${productData._id}`,
             });
@@ -358,7 +373,7 @@ const responsePlaceOrder = async (
             
             
             //#region verify & convert items
-            const itemsConverted : CartEntrySchema[] = [];
+            const itemsConverted : (Omit<CartEntrySchema, 'shippingWeight'> & { shippingWeight : number|undefined })[] = [];
             let totalProductPricesConverted = 0, totalProductWeights : number|undefined = undefined;
             for (const item of items) {
                 if (!item || (typeof(item) !== 'object')) throw 'INVALID_JSON';
@@ -376,7 +391,7 @@ const responsePlaceOrder = async (
                 const product            = productList.entities[productId];
                 if (!product) throw 'INVALID_PRODUCT_ID';
                 const productStock       = product.stock;
-                if ((productStock !== undefined) && isFinite(productStock)) {
+                if ((productStock !== undefined) && (productStock !== null) && isFinite(productStock)) {
                     if (productStock < quantity) throw 'INSUFFICIENT_PRODUCT_STOCK';
                     
                     //#regon decrease product stock
@@ -389,7 +404,7 @@ const responsePlaceOrder = async (
                 
                 const unitPrice          = product.price;
                 const unitPriceConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(unitPrice)) : unitPrice;
-                const unitWeight         = product.shippingWeight;
+                const unitWeight         = product.shippingWeight ?? undefined;
                 
                 
                 
@@ -418,6 +433,21 @@ const responsePlaceOrder = async (
             const totalShippingCostConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
             const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
             //#endregion verify & convert items
+            
+            
+            
+            //#region generate a unique orderId
+            const nanoid = customAlphabet('0123456789', 16);
+            for (let attempts = 10; attempts > 0; attempts--) {
+                orderId = await nanoid();
+                if ((await Promise.all([
+                    DraftOrder.findOne<HydratedDocument<DraftOrderSchema>>({ orderId }),
+                    DraftOrder.findOne<HydratedDocument<OrderSchema>>({ orderId }),
+                ])).some((result) => !!result)) {
+                    if (!attempts) throw 'INTERNAL_ERROR';
+                } // if
+            } // for
+            //#endregion generate a unique orderId
             
             
             
@@ -664,7 +694,9 @@ const responsePlaceOrder = async (
             
             //#region create a newDraftOrder
             const newDraftOrders = await DraftOrder.create<DraftOrderSchema>([{
-                items              : await Promise.all(itemsConverted.map(async (itemConverted) => {
+                orderId                : orderId,
+                
+                items                  : await Promise.all(itemsConverted.map(async (itemConverted) => {
                     return {
                         product        : itemConverted.product,
                         price          : usePaypal ? (await paypalRevertCurrencyIfRequired(itemConverted.price)) : itemConverted.price,
@@ -692,7 +724,7 @@ const responsePlaceOrder = async (
                 
                 paypalOrderId          : paypalOrderId,
             }], { session });
-            orderId = `#ORDER#${newDraftOrders[0]._id}`;
+            orderId = `#ORDER_${orderId}`;
             //#endregion create a newDraftOrder
         }, { readConcern: 'majority', writeConcern: { w: 'majority' } });
     }
@@ -721,10 +753,12 @@ const responsePlaceOrder = async (
             case 'INVALID_JSON'               :
             case 'INVALID_PRODUCT_ID'         :
             case 'INSUFFICIENT_PRODUCT_STOCK' : {
+                console.log('ERROR: ', error);
                 return res.status(400).json({error: error});
             } break;
             
             default                           : {
+                console.log('ERROR: ', error);
                 return res.status(500).json({error: 'internal server error'});
             } break;
         } // switch
@@ -757,11 +791,11 @@ const responseMakePayment = async (
     
     
     
-    let draftOrderId  : string|undefined = undefined;
+    let orderId  : string|undefined = undefined;
     let paypalOrderId : string|undefined = undefined;
-    if (rawOrderId.startsWith('#ORDER#')) {
-        draftOrderId = rawOrderId.slice(7);
-        if (!draftOrderId.length)          return res.status(400).end(); // bad req
+    if (rawOrderId.startsWith('#ORDER_')) {
+        orderId = rawOrderId.slice(7);
+        if (!orderId.length)               return res.status(400).end(); // bad req
     }
     else {
         paypalOrderId = rawOrderId;
@@ -810,8 +844,8 @@ const responseMakePayment = async (
         await session.withTransaction(async (): Promise<void> => {
             //#region verify draftOrder_id
             const draftOrder = (
-                !!draftOrderId
-                ? await DraftOrder.findById<HydratedDocument<DraftOrderSchema>>(draftOrderId)
+                !!orderId
+                ? await DraftOrder.findOne<HydratedDocument<DraftOrderSchema>>({ orderId })
                 : !!paypalOrderId
                 ? await DraftOrder.findOne<HydratedDocument<DraftOrderSchema>>({ paypalOrderId })
                 : undefined

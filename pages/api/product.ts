@@ -30,8 +30,9 @@ export interface ProductDetail
             |'images'
         >
 {
-    _id         : string
-    description : WysiwygEditorState|null|undefined
+    _id            : string
+    
+    description    : WysiwygEditorState|null|undefined
 }
 
 

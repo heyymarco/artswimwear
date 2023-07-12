@@ -5,6 +5,8 @@ import { cartEntrySchema } from './CartEntry'
 
 
 const draftOrderSchema = new Schema({
+    orderId          : { type: String                           , required: true           },
+    
     items            : { type: [cartEntrySchema]                , required: true           },
     
     shippingAddress  : { type: addressSchema                    , required: false          },
