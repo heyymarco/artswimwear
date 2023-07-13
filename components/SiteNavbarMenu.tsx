@@ -34,7 +34,7 @@ const SiteNavbarMenu = ({
     
     
     useInsertionEffect(() => {
-        navbars.listGridArea = (!hasCart ? '2/1/2/3' : '2/1/2/4') as any;
+        navbars.listGridAreaCollapse = (!hasCart ? '2/1/2/3' : '2/1/2/4') as any;
     }, [hasCart]);
     
     
