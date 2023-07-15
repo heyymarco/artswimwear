@@ -218,7 +218,7 @@ export default () => {
                 
                 margin: 0,
             }),
-        }),
+        }, { specificityWeight: 2 }),
         
         scope('orderReview', {
             ...descendants('table', {
