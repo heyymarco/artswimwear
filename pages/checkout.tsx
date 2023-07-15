@@ -1614,7 +1614,7 @@ const OrderReviewCompleted = () => {
                     </tr>
                     <tr>
                         <th>Payment Method</th>
-                        <td className='hasIcon'><PaymentMethodReview /></td>
+                        <td><PaymentMethodReview /></td>
                     </tr>
                     <tr>
                         <th>Billing Address</th>
@@ -1704,7 +1704,7 @@ const PaymentMethodReview = () => {
     // jsx:
     return (
         <>
-            {!!brand ? <Image alt={brand} src={`/brands/${brand}.svg`} width={42} height={26} /> : (type?.toUpperCase() ?? type)}
+            {!!brand ? <Image className='paymentProvider' alt={brand} src={`/brands/${brand}.svg`} width={42} height={26} /> : (type?.toUpperCase() ?? type)}
             {!!identifier && <>&nbsp;({identifier})</>}
         </>
     );

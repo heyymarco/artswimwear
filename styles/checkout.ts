@@ -274,19 +274,25 @@ export default () => {
                         flexDirection: 'column',
                     }),
                     ...children('tr', {
-                        ...children(['th', 'td'], {
-                            textAlign: 'start',
+                        ...children('th', {
+                            textAlign: 'end',
                             ...ifScreenWidthSmallerThan('sm', {
                                 textAlign: 'center',
                             }),
                         }),
                         ...children('td', {
-                            ...rule('.hasIcon', {
-                                display: 'flex',
-                                flexDirection: 'row',
-                                alignItems: 'center',
+                            textAlign: 'start',
+                            ...ifScreenWidthSmallerThan('sm', {
+                                textAlign: 'center',
                             }),
-                        })
+                            ...children('.paymentProvider', {
+                                width         : '42px',
+                                verticalAlign : 'middle',
+                            }),
+                            ...children('.paymentIdentifier', {
+                                fontSize : typos.fontSizeSm,
+                            }),
+                        }),
                     }),
                 }),
             }),
