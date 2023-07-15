@@ -1476,6 +1476,9 @@ const OrderSummary = () => {
                                     
                                     status={item.quantity}
                                 />
+                                {(productUnitPrice !== undefined) && <p className='unitPrice'>
+                                    @ <span className='currency secondary'>{formatCurrency(productUnitPrice)}</span>
+                                </p>}
                                 <p className='subPrice currencyBlock'>
                                     {!product && <>This product was removed before you purcase it</>}
                                     <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span>

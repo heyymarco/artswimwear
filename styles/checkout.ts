@@ -150,10 +150,13 @@ export default () => {
                 })
             }),
             ...descendants('.currency', {
-                
                 marginInlineStart: 'auto',
                 fontSize: typos.fontSizeMd,
                 fontWeight: typos.fontWeightSemibold,
+                ...rule('.secondary', {
+                    fontSize: typos.fontSizeSm,
+                    fontWeight: typos.fontWeightLight,
+                }),
             }),
             ...children('article', {
                 ...children('.orderCollapse', {
@@ -172,13 +175,15 @@ export default () => {
             
             display: 'grid',
             gridTemplate: [[
-                '"image    title" max-content',
-                '"image subPrice" max-content',
+                '"image     title" max-content',
+                '"image unitPrice" max-content',
+                '"image  subPrice" max-content',
+                '"image  ........" auto',
                 '/',
                 `${imageSize}px auto`,
             ]],
             gapInline: '1rem',
-            gapBlock: '0.5rem',
+            gapBlock: '0.25rem',
             padding: 0,
             ...children('.prodImg', {
                 gridArea    : 'image',
@@ -199,6 +204,14 @@ export default () => {
                 wordBreak    : 'break-word',
                 overflowWrap : 'break-word',
                 // overflow: 'hidden',
+            }),
+            ...children('.unitPrice', {
+                gridArea: 'unitPrice',
+                
+                margin: 0,
+                
+                fontSize: typos.fontSizeSm,
+                fontWeight: typos.fontWeightLight,
             }),
             ...children('.subPrice', {
                 gridArea: 'subPrice',
