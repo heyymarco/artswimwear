@@ -290,7 +290,37 @@ export default () => {
                                 verticalAlign : 'middle',
                             }),
                             ...children('.paymentIdentifier', {
-                                fontSize : typos.fontSizeSm,
+                                // positions:
+                                verticalAlign     : 'middle',
+                                
+                                
+                                
+                                // layouts:
+                                display           : 'inline-block',
+                                
+                                
+                                
+                                // sizes:
+                                boxSizing         : 'content-box',
+                                maxInlineSize     : '25em',
+                                
+                                
+                                
+                                // scrolls:
+                                overflow          : 'hidden',   // hide the rest text if overflowed
+                                whiteSpace        : 'nowrap',   // do not break word on [space]
+                                overflowWrap      : 'normal',   // do not break word for long_word
+                                textOverflow      : 'ellipsis', // put triple_dot after long_word...
+                                
+                                
+                                
+                                // spacings:
+                                marginInlineStart : '0.5em',
+                                
+                                
+                                
+                                // typos:
+                                fontSize          : typos.fontSizeSm,
                             }),
                         }),
                     }),

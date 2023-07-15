@@ -1705,7 +1705,7 @@ const PaymentMethodReview = () => {
     return (
         <>
             {!!brand ? <Image className='paymentProvider' alt={brand} src={`/brands/${brand}.svg`} width={42} height={26} /> : (type?.toUpperCase() ?? type)}
-            {!!identifier && <>&nbsp;({identifier})</>}
+            {!!identifier && <span className='paymentIdentifier'>({identifier})</span>}
         </>
     );
 }
