@@ -163,19 +163,19 @@ const getCurrencyRate = async (toCurrency: string): Promise<number> => {
 
 
 
-const getPaypalCurrencyConverter      = async (): Promise<{rate: number, fractionUnit: number}> => {
+const getPaypalCurrencyConverter      = async (currency?: string): Promise<{rate: number, fractionUnit: number}> => {
     return {
-        rate         : await getCurrencyRate(PAYPAL_CURRENCY),
+        rate         : await getCurrencyRate(currency || PAYPAL_CURRENCY),
         fractionUnit : PAYPAL_CURRENCY_FRACTION_UNIT,
     };
 }
-const paypalConvertCurrencyIfRequired = async <TNumber extends number|undefined>(from: TNumber): Promise<TNumber> => {
+const paypalConvertCurrencyIfRequired = async <TNumber extends number|undefined>(from: TNumber, currency?: string): Promise<TNumber> => {
     // conditions:
     if (typeof(from) !== 'number') return from;
     
     
     
-    const {rate, fractionUnit} = await getPaypalCurrencyConverter();
+    const {rate, fractionUnit} = await getPaypalCurrencyConverter(currency);
     const rawConverted         = from / rate;
     const rounding     = {
         ROUND : Math.round,
@@ -189,13 +189,13 @@ const paypalConvertCurrencyIfRequired = async <TNumber extends number|undefined>
     
     return trimNumber(stepped) as TNumber;
 }
-const paypalRevertCurrencyIfRequired  = async <TNumber extends number|undefined>(from: TNumber): Promise<TNumber> => {
+const paypalRevertCurrencyIfRequired  = async <TNumber extends number|undefined>(from: TNumber, currency?: string): Promise<TNumber> => {
     // conditions:
     if (typeof(from) !== 'number') return from;
     
     
     
-    const {rate}       = await getPaypalCurrencyConverter();
+    const {rate}       = await getPaypalCurrencyConverter(currency);
     const fractionUnit = COMMERCE_CURRENCY_FRACTION_UNIT;
     const rawReverted  = from * rate;
     const rounding     = {
@@ -1090,30 +1090,41 @@ const responseMakePayment = async (
                 const captureData = paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0];
                 console.log('captureData : ', captureData);
                 console.log('captureData.status : ', captureData?.status);
+                const paymentBreakdown      = captureData?.seller_receivable_breakdown;
+                const paymentAmountCurrency : string = paymentBreakdown?.gross_amount?.currency_code || '';
+                const paymentAmount         = Number.parseFloat(paymentBreakdown?.gross_amount?.value);
+                const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
+                const paymentFee            = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
                 
                 
                 
                 switch (captureData?.status) {
                     case 'COMPLETED' : {
                         paymentResponse = { // payment APPROVED
-                            paymentMethod : ((): PaymentMethodSchema => {
+                            paymentMethod : await (async (): Promise<PaymentMethodSchema> => {
                                 const payment_source = paypalPaymentData?.payment_source;
                                 
                                 const card = payment_source?.card;
                                 if (card) {
                                     return {
-                                        type       : 'card',
+                                        type       : 'CARD',
                                         brand      : card.brand?.toLowerCase() ?? undefined,
                                         identifier : card.last_digits ? `ending with ${card.last_digits}` : '',
+                                        
+                                        amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
+                                        fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
                                     };
                                 } //if
                                 
                                 const paypal = payment_source?.paypal;
                                 if (paypal) {
                                     return {
-                                        type       : 'paypal',
+                                        type       : 'PAYPAL',
                                         brand      : 'paypal',
                                         identifier : paypal.email_address || undefined,
+                                        
+                                        amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
+                                        fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
                                     };
                                 } //if
                                 
@@ -1121,6 +1132,9 @@ const responseMakePayment = async (
                                     type       : 'CUSTOM',
                                     brand      : '',
                                     identifier : '',
+                                    
+                                    amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
+                                    fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
                                 };
                             })(),
                             // @ts-ignore:
@@ -1142,9 +1156,12 @@ const responseMakePayment = async (
             else {
                 paymentResponse = { // paylater APPROVED (we waiting for your payment confirmation within xx days)
                     paymentMethod : {
-                        type       : 'manual',
+                        type       : 'MANUAL',
                         brand      : '',
                         identifier : '',
+                        
+                        amount     : 0,
+                        fee        : 0,
                     },
                 };
             } // if

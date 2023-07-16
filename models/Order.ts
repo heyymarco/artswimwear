@@ -9,6 +9,9 @@ const paymentMethodSchema = new Schema({
     type             : { type: String                           , required: true                },
     brand            : { type: String                           , required: false               },
     identifier       : { type: String                           , required: false               },
+    
+    amount           : { type: Number                           , required: true  , min: 0      },
+    fee              : { type: Number                           , required: true  , min: 0      },
 });
 export type PaymentMethodSchema = InferSchemaType<typeof paymentMethodSchema>;
 
