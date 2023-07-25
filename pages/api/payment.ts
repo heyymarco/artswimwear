@@ -361,7 +361,7 @@ const responsePlaceOrder = async (
             const productList = productListAdapter.addMany(
                 productListAdapter.getInitialState(),
                 await Product.find<ProductData>({
-                    visibility : { $ne: 'draft' }, // allows access to Product with visibility: 'published'|'hidden' but NOT 'draft'
+                    visibility : { $ne: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
                 }, { _id: true, name: true, price: true, shippingWeight: true, stock: true }, { session })
             );
             //#endregion fetch valid products

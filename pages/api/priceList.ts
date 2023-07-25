@@ -1,26 +1,35 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect'
 
-import { connectDB } from '@/libs/dbConn'
-import { default as Product, ProductSchema } from '@/models/Product'
+// models:
+import type {
+    Product,
+}                           from '@prisma/client'
+
+// ORMs:
+import {
+    prisma,
+}                           from '@/libs/prisma.server'
 
 
 
-try {
-    await connectDB(); // top level await
-    console.log('connected to mongoDB!');
+// types:
+export interface PricePreview
+    extends
+        Pick<Product,
+            |'id'
+            |'price'
+            |'shippingWeight'
+        >
+{
 }
-catch (error) {
-    console.log('FAILED to connect mongoDB!');
-    throw error;
-} // try
 
 
 
 const router = createRouter<
     NextApiRequest,
     NextApiResponse<
-        | Array<Required<Pick<ProductSchema, '_id'>> & Pick<ProductSchema, 'price'|'shippingWeight'>>
+        | Array<PricePreview>
         | { error: string }
     >
 >();
@@ -39,9 +48,16 @@ router
     
     
     
-    const priceList = await Product.find<Required<Pick<ProductSchema, '_id'>> & Pick<ProductSchema, 'price'|'shippingWeight'>>({
-        visibility : { $ne: 'draft' }, // allows access to Product with visibility: 'published'|'hidden' but NOT 'draft'
-    }, { _id: true, price: true, shippingWeight: true });
+    const priceList = await prisma.product.findMany({
+        where  : {
+            visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
+        },
+        select : {
+            id             : true,
+            price          : true,
+            shippingWeight : true,
+        },
+    });
     return res.json(priceList);
 });
 

@@ -75,7 +75,7 @@ router
         return res.json(
             await Product.findOne<ProductDetail>({
                 path       : req.query.path,   // find by url path
-                visibility : { $ne: 'draft' }, // allows access to Product with visibility: 'published'|'hidden' but NOT 'draft'
+                visibility : { $ne: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
             }, {
                 _id         : true,
                 
@@ -96,7 +96,7 @@ router
     
     
     const previewProducts = await Product.find<HydratedDocument<ProductPreview>>({
-        visibility: { $eq: 'published' }, // allows access to Product with visibility: 'published' but NOT 'hidden'|'draft'
+        visibility: { $eq: 'PUBLISHED' }, // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
     }, {
         _id   : true,
         
