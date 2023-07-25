@@ -7,8 +7,11 @@ import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice'
 import type { CreateOrderData } from '@paypal/paypal-js'
 import type { MatchingShipping, MatchingAddress } from '@/libs/shippings'
 import type { PaymentMethodSchema } from '@/models/Order'
-import type { ProductDetail, ProductPreview } from '@/pages/api/product'
-export type { ProductDetail, ProductPreview } from '@/pages/api/product'
+
+// apis:
+import type { CountryPreview }                  from '@/pages/api/countryList'
+import type { ProductPreview, ProductDetail}    from '@/pages/api/product'
+export type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 
 
 
@@ -25,11 +28,7 @@ const priceListAdapter = createEntityAdapter<PriceEntry>({
     selectId : (priceEntry) => priceEntry._id,
 });
 
-export interface CountryEntry {
-    code : string
-    name : string
-}
-const countryListAdapter = createEntityAdapter<CountryEntry>({
+const countryListAdapter = createEntityAdapter<CountryPreview>({
     selectId : (countryEntry) => countryEntry.code,
 });
 
@@ -127,9 +126,9 @@ export const apiSlice = createApi({
         
         
         
-        getCountryList          : builder.query<EntityState<CountryEntry>, void>({
+        getCountryList          : builder.query<EntityState<CountryPreview>, void>({
             query : () => 'countryList',
-            transformResponse(response: CountryEntry[]) {
+            transformResponse(response: CountryPreview[]) {
                 return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
             },
         }),

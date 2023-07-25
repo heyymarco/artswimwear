@@ -6,7 +6,7 @@ import { Article, Section, Main } from '@heymarco/section'
 
 import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { CountryEntry, PriceEntry, ProductPreview, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
+import { PriceEntry, ProductPreview, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import { ImageProps, Image } from '@heymarco/image'
 import Link from 'next/link'
@@ -37,6 +37,9 @@ import {
 } from '@/website.config'
 import ModalStatus from '@/components/ModalStatus'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
+
+// apis:
+import type { CountryPreview } from '@/pages/api/countryList'
 
 
 
@@ -250,7 +253,7 @@ interface ICheckoutContext {
     
     priceList                         : EntityState<PriceEntry>       | undefined
     productList                       : EntityState<ProductPreview>   | undefined
-    countryList                       : EntityState<CountryEntry>     | undefined
+    countryList                       : EntityState<CountryPreview>   | undefined
     shippingList                      : EntityState<MatchingShipping> | undefined
     
     isLoadingPage                     : boolean

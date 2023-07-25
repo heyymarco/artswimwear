@@ -1,26 +1,34 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect'
 
-import { connectDB } from '@/libs/dbConn'
-import { default as Country, CountrySchema } from '@/models/Country'
+// models:
+import type {
+    Country,
+}                           from '@prisma/client'
+
+// ORMs:
+import {
+    prisma,
+}                           from '@/libs/prisma.server'
 
 
 
-try {
-    await connectDB(); // top level await
-    console.log('connected to mongoDB!');
+// types:
+export interface CountryPreview
+    extends
+        Pick<Country,
+            |'name'
+            |'code'
+        >
+{
 }
-catch (error) {
-    console.log('FAILED to connect mongoDB!');
-    throw error;
-} // try
 
 
 
 const router = createRouter<
     NextApiRequest,
     NextApiResponse<
-        | Array<Pick<CountrySchema, 'name'|'code'>>
+        | Array<CountryPreview>
         | { error: string }
     >
 >();
@@ -39,12 +47,20 @@ router
     
     
     
-    const countryList = await Country.find<Pick<CountrySchema, 'enabled'|'name'|'code'>>({
+    const countryList = await prisma.country.findMany({
+        select: {
+            enabled : true,
+            name    : true,
+            
+            code    : true,
+        }
         // enabled: true
-    }, { _id: false, enabled: true, name: true, code: true });
+    });
     if (!countryList.length) {
         const defaultCountries = (await import('@/libs/defaultCountries')).default;
-        await Country.insertMany(defaultCountries);
+        await prisma.country.createMany({
+            data: defaultCountries,
+        });
     } // if
     
     
