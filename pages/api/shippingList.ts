@@ -3,11 +3,6 @@ import { createRouter } from 'next-connect'
 
 import { MatchingShipping, MatchingAddress, getMatchingShipping } from '@/libs/shippings'
 
-// models:
-import type {
-    ShippingProvider,
-}                           from '@prisma/client'
-
 // ORMs:
 import {
     prisma,
