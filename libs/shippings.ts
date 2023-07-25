@@ -1,16 +1,19 @@
-import type { ShippingSchema } from '@/models/Shipping'
-import type { AddressSchema } from '@/models/Address'
+// models:
+import type {
+    ShippingProvider,
+    Address
+}                           from '@prisma/client'
 
 
 
 // types:
-export type MatchingShipping = Partial<Omit<ShippingSchema, 'weightStep'|'shippingRates'|'useSpecificArea'|'countries'>> & Required<Pick<ShippingSchema, 'weightStep'|'shippingRates'>>
-export type MatchingAddress  = Pick<AddressSchema, 'country'|'zone'|'city'>
+export type MatchingShipping = Partial<Omit<ShippingProvider, 'createdAt'|'updatedAt'|'weightStep'|'shippingRates'|'useSpecificArea'|'countries'>> & Required<Pick<ShippingProvider, 'weightStep'|'shippingRates'>>
+export type MatchingAddress  = Pick<Address, 'country'|'zone'|'city'>
 
 
 
 // utilities:
-export const getMatchingShipping = (shipping: Partial<Pick<ShippingSchema, '_id'|'enabled'|'name'|'estimate'>> & Omit<ShippingSchema, '_id'|'enabled'|'name'|'estimate'>, shippingAddress: MatchingAddress): MatchingShipping|undefined => {
+export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id'|'enabled'|'name'|'estimate'>> & Omit<ShippingProvider, 'id'|'createdAt'|'updatedAt'|'enabled'|'name'|'estimate'>, shippingAddress: MatchingAddress): MatchingShipping|undefined => {
     let estimate          = shipping.estimate;
     let shippingRates     = shipping.shippingRates;
     
@@ -42,7 +45,7 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingSchema, '_id'
     
     if (!shippingRates?.length) return undefined;
     return {
-        _id             : shipping._id,        // optional
+        id              : shipping.id,         // optional
         
         enabled         : shipping.enabled,    // optional
         name            : shipping.name,       // optional

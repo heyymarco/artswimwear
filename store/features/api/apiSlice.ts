@@ -33,7 +33,7 @@ const countryListAdapter = createEntityAdapter<CountryPreview>({
 });
 
 const shippingListAdapter = createEntityAdapter<MatchingShipping>({
-    selectId : (shippingEntry) => `${shippingEntry._id}`,
+    selectId : (shippingEntry) => `${shippingEntry.id}`,
 });
 
 export type { PaymentToken }

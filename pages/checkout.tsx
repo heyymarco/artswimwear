@@ -1796,14 +1796,14 @@ const ShippingMethod = () => {
         const orderedConstAscending = (
             filteredShippingList
             ?.map((shippingEntry) => ({
-                _id                : `${shippingEntry._id}`,
+                id                 : `${shippingEntry.id}`,
                 totalShippingCosts : calculateShippingCost(totalProductWeights, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
             }))
             ?.sort((a, b) => a.totalShippingCosts - b.totalShippingCosts) // -1 means: no need to ship (digital products)
         );
         
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
-            dispatch(setShippingProvider(orderedConstAscending[0]._id));
+            dispatch(setShippingProvider(orderedConstAscending[0].id));
         } // if
     }, [selectedShipping, filteredShippingList, totalProductWeights]);
     
@@ -1815,18 +1815,18 @@ const ShippingMethod = () => {
             {!!filteredShippingList && <List theme='primary' actionCtrl={true}>
                 {filteredShippingList.map((shippingEntry) => {
                     const totalShippingCosts = calculateShippingCost(totalProductWeights, shippingEntry);
-                    const isActive           = `${shippingEntry._id}` === shippingProvider;
+                    const isActive           = `${shippingEntry.id}` === shippingProvider;
                     
                     
                     
                     // jsx:
                     return (
                         <ListItem
-                            key={`${shippingEntry._id}`}
+                            key={`${shippingEntry.id}`}
                             className={styles.optionEntryHeader}
                             
                             active={isActive}
-                            onClick={() => dispatch(setShippingProvider(`${shippingEntry._id}`))}
+                            onClick={() => dispatch(setShippingProvider(`${shippingEntry.id}`))}
                             
                             elmRef={isActive ? shippingMethodOptionRef : undefined}
                         >

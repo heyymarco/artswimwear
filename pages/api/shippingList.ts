@@ -1,20 +1,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect'
 
-import { connectDB } from '@/libs/dbConn'
-import { default as Shipping, ShippingSchema } from '@/models/Shipping'
 import { MatchingShipping, MatchingAddress, getMatchingShipping } from '@/libs/shippings'
 
+// models:
+import type {
+    ShippingProvider,
+}                           from '@prisma/client'
 
-
-try {
-    await connectDB(); // top level await
-    console.log('connected to mongoDB!');
-}
-catch (error) {
-    console.log('FAILED to connect mongoDB!');
-    throw error;
-} // try
+// ORMs:
+import {
+    prisma,
+}                           from '@/libs/prisma.server'
 
 
 
@@ -51,10 +48,27 @@ router
     
     
     
-    let shippings = await Shipping.find<Required<Pick<ShippingSchema, '_id'>> & Omit<ShippingSchema, '_id'>>(); // get all shippings including the disabled ones
+    let shippings = await prisma.shippingProvider.findMany({
+        select : {
+            id              : true, // required for identifier
+            
+            enabled         : true, // required for check conditional
+            name            : true, // required for labeling
+            
+            weightStep      : true, // required for getMatchingShipping
+            
+            estimate        : true, // optional for labeling
+            shippingRates   : true, // required for getMatchingShipping
+            
+            useSpecificArea : true, // required for getMatchingShipping
+            countries       : true, // required for getMatchingShipping
+        },
+    }); // get all shippings including the disabled ones
     if (!shippings.length) { // empty => first app setup => initialize the default shippings
         const defaultShippings = (await import('@/libs/defaultShippings')).default;
-        await Shipping.insertMany(defaultShippings);
+        await prisma.shippingProvider.createMany({
+            data: defaultShippings,
+        });
     } // if
     
     
