@@ -4,9 +4,9 @@ import Head from 'next/head'
 
 import { Article, Section, Main } from '@heymarco/section'
 
-import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
+import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, RadioProps, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { PriceEntry, ProductPreview, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
+import { PricePreview, ProductPreview, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import { ImageProps, Image } from '@heymarco/image'
 import Link from 'next/link'
@@ -47,6 +47,47 @@ import type { CountryPreview } from '@/pages/api/countryList'
 const useCheckoutStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'@/styles/checkout')
 , { id: 'checkout' });
+
+
+
+// handlers:
+const handleRadioDecorator : React.MouseEventHandler<HTMLSpanElement> = (event) => {
+    event.preventDefault();
+    event.currentTarget.parentElement?.click();
+}
+
+const RadioDecorator = (props: RadioProps) => {
+    // jsx:
+    return (
+        <Radio
+            // other props:
+            {...props}
+            
+            
+            
+            // variants:
+            outlined={props.outlined ?? true}
+            nude={props.nude ?? true}
+            
+            
+            
+            // classes:
+            className={props.className ?? 'indicator'}
+            
+            
+            
+            // accessibilities:
+            enableValidation={props.enableValidation ?? false}
+            inheritActive={props.inheritActive ?? true}
+            tabIndex={props.tabIndex ?? -1}
+            
+            
+            
+            // handlers:
+            onClick={props.onClick ?? handleRadioDecorator}
+        />
+    )
+}
 
 
 
@@ -251,7 +292,7 @@ interface ICheckoutContext {
     checkoutStep                      : CheckoutStep
     checkoutProgress                  : number
     
-    priceList                         : EntityState<PriceEntry>       | undefined
+    priceList                         : EntityState<PricePreview>     | undefined
     productList                       : EntityState<ProductPreview>   | undefined
     countryList                       : EntityState<CountryPreview>   | undefined
     shippingList                      : EntityState<MatchingShipping> | undefined
@@ -1105,8 +1146,8 @@ const ImageWithStatus = <TElement extends Element = HTMLElement>(props: ImageWit
                 // refs:
                 elmRef={setImageRef}
             />
-            <Badge theme='danger' badgeStyle='pill' floatingOn={imageRef} floatingPlacement='right-start' floatingOffset={-12} floatingShift={-3}>
-                {status}
+            <Badge theme='danger' badgeStyle='pill' floatingOn={imageRef} floatingPlacement='right-start' floatingOffset={-20} floatingShift={-3}>
+                {status}x
             </Badge>
         </>
     )
@@ -1815,6 +1856,8 @@ const ShippingMethod = () => {
             {!!filteredShippingList && <List theme='primary' actionCtrl={true}>
                 {filteredShippingList.map((shippingEntry) => {
                     const totalShippingCosts = calculateShippingCost(totalProductWeights, shippingEntry);
+                    return {...shippingEntry, totalShippingCosts};
+                }).sort(({totalShippingCosts: a}, {totalShippingCosts: b}): number => (a ?? 0) - (b ?? 0)).map(({totalShippingCosts, ...shippingEntry}) => {
                     const isActive           = `${shippingEntry.id}` === shippingProvider;
                     
                     
@@ -1830,7 +1873,7 @@ const ShippingMethod = () => {
                             
                             elmRef={isActive ? shippingMethodOptionRef : undefined}
                         >
-                            <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                            <RadioDecorator />
                             
                             <p className='name'>
                                 {shippingEntry.name}
@@ -1914,13 +1957,13 @@ const Payment = () => {
                         if (listIndex === 0) dispatch(setBillingValidation(false));
                     }} listStyle='content'>
                         <AccordionItem label={<>
-                            <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                            <RadioDecorator />
                             Same as shipping address
                         </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.billingEntry} />} >
                             <ShippingAddressReview />
                         </AccordionItem>
                         <AccordionItem label={<>
-                            <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                            <RadioDecorator />
                             Use a different billing address
                         </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} >
                             <ValidationProvider enableValidation={!billingAsShipping && billingValidation}>
@@ -2012,19 +2055,19 @@ const PaymentMethod = () => {
                 if (listIndex !== 0) dispatch(setPaymentCardValidation(false));
             }} listStyle='content'>
                 <AccordionItem label={<>
-                    <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                    <RadioDecorator />
                     Credit Card
                 </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.paymentEntryCard} elmRef={paymentCardSectionRef} />} /*lazy={true} causes error*/ >
                     <PaymentMethodCard />
                 </AccordionItem>
                 <AccordionItem label={<>
-                    <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                    <RadioDecorator />
                     PayPal
                     </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.paymentEntryPaypal} />} /*lazy={true} causes error*/ >
                     <PaymentMethodPaypal />
                 </AccordionItem>
                 <AccordionItem label={<>
-                    <Radio className='indicator' enableValidation={false} inheritActive={true} outlined={true} nude={true} tabIndex={-1} />
+                    <RadioDecorator />
                     Bank Transfer
                     </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.paymentEntryManual} />} /*lazy={true} causes error*/ >
                     <PaymentMethodManual />

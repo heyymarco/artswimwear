@@ -32,7 +32,6 @@
     "eslint": "^8.35.0",
     "eslint-config-next": "^13.2.3",
     "lexical": "^0.11.1",
-    "mongoose": "^7.3.3",
     "nanoid": "^4.0.2",
     "next": "^13.2.3",
     "next-connect": "^1.0.0",

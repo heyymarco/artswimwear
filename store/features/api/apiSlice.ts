@@ -13,6 +13,8 @@ import type {
 
 // apis:
 import type { CountryPreview }                  from '@/pages/api/countryList'
+import type { PricePreview }                    from '@/pages/api/priceList'
+export type { PricePreview }                    from '@/pages/api/priceList'
 import type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 export type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 
@@ -22,13 +24,8 @@ const productListAdapter = createEntityAdapter<ProductPreview>({
     selectId : (productPreview) => productPreview.id,
 });
 
-export interface PriceEntry {
-    _id             : string
-    price           : number
-    shippingWeight ?: number
-}
-const priceListAdapter = createEntityAdapter<PriceEntry>({
-    selectId : (priceEntry) => priceEntry._id,
+const priceListAdapter = createEntityAdapter<PricePreview>({
+    selectId : (pricePreview) => pricePreview.id,
 });
 
 const countryListAdapter = createEntityAdapter<CountryPreview>({
@@ -120,9 +117,9 @@ export const apiSlice = createApi({
         
         
         
-        getPriceList            : builder.query<EntityState<PriceEntry>, void>({
+        getPriceList            : builder.query<EntityState<PricePreview>, void>({
             query : () => 'priceList',
-            transformResponse(response: PriceEntry[]) {
+            transformResponse(response: PricePreview[]) {
                 return priceListAdapter.addMany(priceListAdapter.getInitialState(), response);
             },
         }),
