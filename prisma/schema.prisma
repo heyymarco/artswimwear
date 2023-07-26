@@ -135,6 +135,7 @@ type Address {
 enum PaymentType {
     CARD
     PAYPAL
+    CUSTOM
     MANUAL
     MANUAL_PAID
 }
