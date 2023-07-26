@@ -1,50 +1,43 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect'
 
-import { connectDB } from '@/libs/dbConn'
-import { default as Product, ProductSchema } from '@/models/Product'
-import { HydratedDocument } from 'mongoose';
-import type { WysiwygEditorState } from '@/components/WysiwygEditor'
+// models:
+import type {
+    Product,
+}                           from '@prisma/client'
+
+// ORMs:
+import {
+    prisma,
+}                           from '@/libs/prisma.server'
 
 
 
 // types:
 export interface ProductPreview
     extends
-        Pick<ProductSchema,
+        Pick<Product,
+            |'id'
             |'name'
             |'price'
             |'path'
         >
 {
-    _id         : string
-    image       : Required<ProductSchema>['images'][number]
+    image: Required<Product>['images'][number]|undefined
 }
 export interface ProductDetail
     extends
-        Pick<ProductSchema,
+        Pick<Product,
+            |'id'
             |'name'
             |'price'
             |'path'
             |'excerpt'
+            |'description'
             |'images'
         >
 {
-    _id            : string
-    
-    description    : WysiwygEditorState|null|undefined
 }
-
-
-
-try {
-    await connectDB(); // top level await
-    console.log('connected to mongoDB!');
-}
-catch (error) {
-    console.log('FAILED to connect mongoDB!');
-    throw error;
-} // try
 
 
 
@@ -73,42 +66,58 @@ router
     
     if (req.query.path) {
         return res.json(
-            await Product.findOne<ProductDetail>({
-                path       : req.query.path,   // find by url path
-                visibility : { $ne: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
-            }, {
-                _id         : true,
-                
-                name        : true,
-                
-                price       : true,
-                
-                path        : true,
-                
-                excerpt     : true,
-                description : true,
-                
-                images      : true,
+            await prisma.product.findUnique({
+                where  : {
+                    path       : req.query.path.toString(),   // find by url path
+                    visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
+                },
+                select : {
+                    id          : true,
+                    
+                    name        : true,
+                    
+                    price       : true,
+                    
+                    path        : true,
+                    
+                    excerpt     : true,
+                    description : true,
+                    
+                    images      : true,
+                },
             })
         );
     } // if
     
     
     
-    const previewProducts = await Product.find<HydratedDocument<ProductPreview>>({
-        visibility: { $eq: 'PUBLISHED' }, // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
-    }, {
-        _id   : true,
-        
-        name  : true,
-        
-        price : true,
-        
-        path  : true,
-        
-        image : { $first: "$images" },
-    });
-    return res.json(previewProducts);
+    return res.json(
+        (await prisma.product.findMany({
+            where  : {
+                visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+            },
+            select : {
+                id     : true,
+                
+                name   : true,
+                
+                price  : true,
+                
+                path   : true,
+                
+                images : true,
+            },
+        }))
+        .map((product) => {
+            const {
+                images, // take
+            ...restProduct} = product;
+            return {
+                ...restProduct,
+                image : images?.[0]
+            };
+        })
+    );
 });
 
 

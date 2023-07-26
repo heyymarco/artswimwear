@@ -11,14 +11,13 @@ import { formatCurrency } from '@/libs/formatters'
 import { Image } from '@heymarco/image'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import ReactMarkdown from 'react-markdown'
 import { useState } from 'react'
 import { addToCart } from '@/store/features/cart/cartSlice'
 import { useDispatch } from 'react-redux'
 import { QuantityInput } from '@heymarco/quantity-input'
 import { PAGE_PRODUCT_TITLE, PAGE_PRODUCT_DESCRIPTION } from '@/website.config'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
-import { WysiwygViewer } from '@/components/WysiwygEditor/WysiwygViewer'
+import { WysiwygEditorState, WysiwygViewer } from '@/components/WysiwygEditor'
 
 
 
@@ -86,10 +85,10 @@ export default function ProductDetail() {
                                 </p>
                                 <QuantityInput theme='primary' className='ctrlQty' min={1} value={addProductQty} onChange={(event) => setAddProductQty(event.target.valueAsNumber)} />
                                 <p>
-                                    <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction' onClick={() => dispatch(addToCart({productId: product._id, quantity: addProductQty}))}>Add to cart</ButtonIcon>
+                                    <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction' onClick={() => dispatch(addToCart({productId: product.id, quantity: addProductQty}))}>Add to cart</ButtonIcon>
                                 </p>
                             </section>
-                            {!!product.description && <WysiwygViewer className='desc' value={product.description} />}
+                            {!!product.description && <WysiwygViewer className='desc' value={(product.description ?? undefined) as unknown as WysiwygEditorState|undefined} />}
                         </>
                     }
                 </Section>

@@ -38,7 +38,7 @@ export default function ProductList() {
                         : (isError || !productList)
                         ? <p>Oops, an error occured!</p>
                         : Object.values(productList?.entities).filter((product): product is Exclude<typeof product, undefined> => !!product).map((product) =>
-                            <article key={product._id}>
+                            <article key={product.id}>
                                 <Image
                                     className='prodImg'
                                     

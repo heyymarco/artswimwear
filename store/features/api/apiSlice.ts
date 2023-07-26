@@ -16,7 +16,7 @@ export type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 
 
 const productListAdapter = createEntityAdapter<ProductPreview>({
-    selectId : (productPreview) => productPreview._id,
+    selectId : (productPreview) => productPreview.id,
 });
 
 export interface PriceEntry {
