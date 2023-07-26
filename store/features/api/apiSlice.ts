@@ -1,12 +1,15 @@
 import type { RootState } from '@/store/store'
 import { createEntityAdapter, EntityState } from '@reduxjs/toolkit'
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { ProductSchema } from '@/models/Product';
 import type { CartState } from '../cart/cartSlice'
 import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice'
 import type { CreateOrderData } from '@paypal/paypal-js'
 import type { MatchingShipping, MatchingAddress } from '@/libs/shippings'
-import type { PaymentMethodSchema } from '@/models/Order'
+
+// models:
+import type {
+    PaymentMethod,
+}                           from '@prisma/client'
 
 // apis:
 import type { CountryPreview }                  from '@/pages/api/countryList'
@@ -94,7 +97,7 @@ export interface AuthenticationPaymentData
 }
 export interface MakePaymentResponse
 {
-    paymentMethod : PaymentMethodSchema
+    paymentMethod : PaymentMethod
 }
 
 

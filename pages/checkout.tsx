@@ -1438,7 +1438,7 @@ const OrderSummary = () => {
         shippingProvider,
     } = useSelector(selectCheckoutState);
     
-    const selectedShipping    = shippingList?.entities?.[shippingProvider ?? ''];
+    const selectedShipping    = shippingList?.entities?.[shippingProvider ?? ''] ?? null;
     
     const totalProductPrices  = cartItems.reduce((accum, item) => {
         const productUnitPrice = priceList?.entities?.[item.productId]?.price;

@@ -13,7 +13,7 @@ export type MatchingAddress  = Pick<Address, 'country'|'zone'|'city'>
 
 
 // utilities:
-export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id'|'enabled'|'name'|'estimate'>> & Omit<ShippingProvider, 'id'|'createdAt'|'updatedAt'|'enabled'|'name'|'estimate'>, shippingAddress: MatchingAddress): MatchingShipping|undefined => {
+export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id'|'enabled'|'name'|'estimate'>> & Omit<ShippingProvider, 'id'|'createdAt'|'updatedAt'|'enabled'|'name'|'estimate'>, shippingAddress: MatchingAddress): MatchingShipping|null => {
     let estimate          = shipping.estimate;
     let shippingRates     = shipping.shippingRates;
     
@@ -43,7 +43,7 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
     
     
     
-    if (!shippingRates?.length) return undefined;
+    if (!shippingRates?.length) return null;
     return {
         id              : shipping.id,         // optional
         
@@ -56,8 +56,8 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
         shippingRates   : shippingRates,       // required
     };
 };
-export const calculateShippingCost = (totalWeight: number|undefined, {weightStep, shippingRates}: Pick<MatchingShipping, 'weightStep'|'shippingRates'>): number|undefined => {
-    if ((totalWeight === undefined) || isNaN(totalWeight) || !isFinite(totalWeight)) return undefined;
+export const calculateShippingCost = (totalWeight: number|null, {weightStep, shippingRates}: Pick<MatchingShipping, 'weightStep'|'shippingRates'>): number|null => {
+    if ((totalWeight === null) || isNaN(totalWeight) || !isFinite(totalWeight)) return null;
     
     
     
@@ -72,7 +72,7 @@ export const calculateShippingCost = (totalWeight: number|undefined, {weightStep
             
             currentRate           : typeof shippingRates[number],
             currentStartingWeight : number,
-            nextStartingWeight    : number|undefined,
+            nextStartingWeight    : number|null,
             
             currentCost           : number
         ;
@@ -86,7 +86,7 @@ export const calculateShippingCost = (totalWeight: number|undefined, {weightStep
         
         
         
-        currentWeight         = (nextStartingWeight !== undefined) ? (nextStartingWeight - currentStartingWeight) : remainingWeight;
+        currentWeight         = (nextStartingWeight !== null) ? (nextStartingWeight - currentStartingWeight) : remainingWeight;
         currentWeight         = Math.min(currentWeight, remainingWeight);
         
         currentCost           = currentWeight * currentRate.rate;

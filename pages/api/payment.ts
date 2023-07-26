@@ -1,24 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { createRouter } from 'next-connect'
 
-import { connectDB } from '@/libs/dbConn'
-import { default as Product, ProductSchema } from '@/models/Product'
 import { createEntityAdapter } from '@reduxjs/toolkit'
 import { getMatchingShipping, calculateShippingCost } from '@/libs/shippings'
-import { default as Shipping, ShippingSchema } from '@/models/Shipping'
 import type {
     PaymentToken,
     PlaceOrderResponse,
     MakePaymentResponse,
 } from '@/store/features/api/apiSlice'
-import { ClientSession, HydratedDocument, startSession, Types } from 'mongoose'
-import { default as DraftOrder, DraftOrderSchema } from '@/models/DraftOrder'
-import { default as Order, OrderSchema, PaymentMethodSchema } from '@/models/Order'
-import type { AddressSchema } from '@/models/Address'
-import type { CustomerSchema } from '@/models/Customer'
-import { CartEntrySchema } from '@/models/CartEntry'
 import { trimNumber } from '@/libs/formatters'
 import { customAlphabet } from 'nanoid/async'
+
+// models:
+import type {
+    Product,
+    
+    Customer,
+    
+    Address,
+    PaymentMethod,
+    DraftOrder,
+    DraftOrdersOnProducts,
+}                           from '@prisma/client'
+
+// ORMs:
+import {
+    prisma,
+}                           from '@/libs/prisma.server'
+
 import {
     COMMERCE_CURRENCY,
     COMMERCE_CURRENCY_FRACTION_UNIT,
@@ -34,17 +43,6 @@ import {
 interface ErrorResponse {
     error : string
 }
-
-
-
-try {
-    await connectDB(); // top level await
-    console.log('connected to mongoDB!');
-}
-catch (error) {
-    console.log('FAILED to connect mongoDB!');
-    throw error;
-} // try
 
 
 
@@ -169,7 +167,7 @@ const getPaypalCurrencyConverter      = async (currency?: string): Promise<{rate
         fractionUnit : PAYPAL_CURRENCY_FRACTION_UNIT,
     };
 }
-const paypalConvertCurrencyIfRequired = async <TNumber extends number|undefined>(from: TNumber, currency?: string): Promise<TNumber> => {
+const paypalConvertCurrencyIfRequired = async <TNumber extends number|null>(from: TNumber, currency?: string): Promise<TNumber> => {
     // conditions:
     if (typeof(from) !== 'number') return from;
     
@@ -189,7 +187,7 @@ const paypalConvertCurrencyIfRequired = async <TNumber extends number|undefined>
     
     return trimNumber(stepped) as TNumber;
 }
-const paypalRevertCurrencyIfRequired  = async <TNumber extends number|undefined>(from: TNumber, currency?: string): Promise<TNumber> => {
+const paypalRevertCurrencyIfRequired  = async <TNumber extends number|null>(from: TNumber, currency?: string): Promise<TNumber> => {
     // conditions:
     if (typeof(from) !== 'number') return from;
     
@@ -213,38 +211,91 @@ const paypalRevertCurrencyIfRequired  = async <TNumber extends number|undefined>
 
 
 
-const commitOrder = async (session: ClientSession, { draftOrder, customer, billingAddress, paymentMethod } : { draftOrder: HydratedDocument<DraftOrderSchema>, customer: CustomerSchema, billingAddress: AddressSchema|undefined, paymentMethod: PaymentMethodSchema }) => {
-    await Order.create<OrderSchema>([{
-        orderId          : draftOrder.orderId,
+type CommitCustomer = Omit<Customer,
+    |'id'
+    |'createdAt'
+    |'updatedAt'
+>
+type CommitDraftOrder = Omit<DraftOrder,
+    |'createdAt'
+    |'updatedAt'
+    
+    |'paypalOrderId'
+> & {
+    items : Omit<DraftOrdersOnProducts,
+        |'id'
         
-        customer         : customer,
-        
-        items            : draftOrder.items,
-        
-        shippingAddress  : draftOrder.shippingAddress,
-        shippingProvider : draftOrder.shippingProvider,
-        shippingCost     : draftOrder.shippingCost,
-        
-        billingAddress   : billingAddress,
-        
-        paymentMethod    : paymentMethod,
-    }], { session });
-    await draftOrder.deleteOne({ session });
+        |'draftOrderId'
+    >[]
 }
-const revertOrder = async (session: ClientSession, { draftOrder } : { draftOrder: HydratedDocument<DraftOrderSchema> }) => {
-    for (const item of draftOrder.items) {
-        const product = await Product.findById<HydratedDocument<ProductSchema>>(item.product, { stock: true }, { session });
-        if (product) { // not has been deleted
-            const productStock = product.stock;
-            if ((productStock !== undefined) && isFinite(productStock)) {
-                //#regon increase product stock
-                product.stock = (productStock + item.quantity);
-                await product.save({ session });
-                //#endregon increase product stock
-            } // if
-        } // if
+const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customer, billingAddress, paymentMethod } : { draftOrder: CommitDraftOrder, customer: CommitCustomer, billingAddress: Address|null, paymentMethod: PaymentMethod }) => {
+    await prismaTransaction.order.create({
+        data : {
+            orderId              : draftOrder.orderId,
+            
+            items                : {
+                create           : draftOrder.items,
+            },
+            
+            customer             : {
+                create           : {
+                    marketingOpt : customer.marketingOpt,
+                    
+                    nickName     : customer.nickName,
+                    email        : customer.email,
+                },
+            },
+            
+            shippingAddress      : draftOrder.shippingAddress,
+            shippingCost         : draftOrder.shippingCost,
+            shippingProvider     : !draftOrder.shippingProviderId ? undefined : {
+                connect          : {
+                    id           : draftOrder.shippingProviderId,
+                },
+            },
+            
+            billingAddress       : billingAddress,
+            paymentMethod        : paymentMethod,
+        },
+    });
+    await prismaTransaction.draftOrder.delete({
+        where  : {
+            id : draftOrder.id,
+        },
+    });
+}
+
+type RevertDraftOrder = Pick<DraftOrder,
+    |'id'
+    
+    |'orderId'
+> & {
+    items : Pick<DraftOrdersOnProducts,
+        |'productId'
+        
+        |'quantity'
+    >[]
+}
+const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder } : { draftOrder: RevertDraftOrder }) => {
+    for (const {productId, quantity} of draftOrder.items) {
+        if (!productId) continue;
+        
+        
+        
+        await prismaTransaction.product.update({
+            where  : {
+                id : productId,
+            },
+            data   : {
+                stock : { decrement: quantity }
+            },
+        });
     } // for
-    await draftOrder.deleteOne({ session });
+    await prismaTransaction.draftOrder.delete({
+        where  : {
+            id : draftOrder.id,
+        },
+    });
 }
 
 
@@ -273,13 +324,8 @@ const responsePlaceOrder = async (
     
     
     
-    // validate shipping address:
+    //#region validate shipping address
     const {
-        // cart item(s):
-        items,
-        
-        
-        
         // shippings:
         shippingFirstName,
         shippingLastName,
@@ -292,12 +338,7 @@ const responsePlaceOrder = async (
         shippingZip,
         shippingCountry,
         
-        shippingProvider,
-        
-        
-        
-        // options: pay manually | paymentSource
-        paymentSource,
+        shippingProvider : shippingProviderId,
     } = placeOrderData;
     if (
            !shippingFirstName || (typeof(shippingFirstName) !== 'string')
@@ -311,143 +352,249 @@ const responsePlaceOrder = async (
         || !shippingZip       || (typeof(shippingZip) !== 'string')
         || !shippingCountry   || (typeof(shippingCountry) !== 'string') // todo validate country id
         
-        || !shippingProvider  || (typeof(shippingProvider) !== 'string') // todo validate shipping provider
+        || !shippingProviderId  || (typeof(shippingProviderId) !== 'string') // todo validate shipping provider
     ) {
         console.log('error: invalid data format');
         return res.status(400).end(); // bad req
     } // if
+    //#endregion validate shipping address
     
     
     
-    // validate cart items + calculate total prices + calculate shipping cost
+    //#region validate cart items: check format
+    const {
+        // cart item(s):
+        items,
+    } = placeOrderData;
     if (!items || !Array.isArray(items) || !items.length) return res.status(400).end(); // bad req
     
+    type RequiredNonNullable<T> = {
+        [P in keyof T]: NonNullable<T[P]>
+    };
+    const validFormattedItems : RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'quantity'>>[] = [];
+    for (const item of items) {
+        // validations:
+        if (!item || (typeof(item) !== 'object'))  throw 'INVALID_JSON';
+        const {
+            productId,
+            quantity,
+        } = item;
+        if (typeof(productId) !== 'string')        throw 'INVALID_JSON';
+        if (!productId.length)                     throw 'INVALID_JSON';
+        if (typeof(quantity)  !== 'number')        throw 'INVALID_JSON';
+        if (!isFinite(quantity) || (quantity < 1)) throw 'INVALID_JSON';
+        if ((quantity % 1))                        throw 'INVALID_JSON';
+        
+        
+        
+        // collects:
+        validFormattedItems.push({
+            productId,
+            quantity,
+        });
+    } // for
+    //#endregion validate cart items: check format
     
     
-    let orderId       : string|undefined = undefined;
-    let paypalOrderId : string|undefined = undefined;
-    const session = await startSession();
+    
+    //#region generate a unique orderId
+    const nanoid = customAlphabet('0123456789', 16);
+    const tempOrderId = await nanoid();
+    //#endregion generate a unique orderId
+    
+    
+    
+    let orderId       : string|null = null;
+    let paypalOrderId : string|null = null;
     try {
-        await session.withTransaction(async (): Promise<void> => {
-            //#region verify shipping
-            const selectedShipping = await Shipping.findOne<Pick<ShippingSchema, 'weightStep'|'shippingRates'|'useSpecificArea'|'countries'>>({
-                _id     : shippingProvider,
-                enabled : true,
-            }, { _id: false, weightStep: true, shippingRates: true, useSpecificArea: true, countries: true });
+        await prisma.$transaction(async (prismaTransaction) => {
+            //#region batch queries
+            const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
+                prismaTransaction.shippingProvider.findUnique({
+                    where  : {
+                        id      : shippingProviderId,
+                        enabled : true,
+                    },
+                    select : {
+                        weightStep      : true,
+                        
+                        shippingRates   : true,
+                        
+                        useSpecificArea : true,
+                        countries       : true,
+                    },
+                }),
+                prismaTransaction.product.findMany({
+                    where  : {
+                        id         : { in : validFormattedItems.map((item) => item.productId) },
+                        visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
+                    },
+                    select : {
+                        id             : true,
+                        
+                        name           : true,
+                        
+                        price          : true,
+                        shippingWeight : true,
+                        
+                        stock          : true,
+                    },
+                }),
+                prismaTransaction.draftOrder.count({
+                    where : {
+                        orderId : tempOrderId,
+                    },
+                    take : 1,
+                }),
+                prismaTransaction.order.count({
+                    where : {
+                        orderId : tempOrderId,
+                    },
+                    take : 1,
+                }),
+            ]);
+            //#endregion batch queries
+            
+            
+            
+            //#region re-generate a unique orderId
+            orderId = await (async (): Promise<string> => {
+                if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) {
+                    return tempOrderId;
+                }
+                else {
+                    for (let attempts = 10; attempts > 0; attempts--) {
+                        const tempOrderId = await nanoid();
+                        const [foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
+                            prismaTransaction.draftOrder.count({
+                                where : {
+                                    orderId : tempOrderId,
+                                },
+                                take : 1,
+                            }),
+                            prismaTransaction.order.count({
+                                where : {
+                                    orderId : tempOrderId,
+                                },
+                                take : 1,
+                            }),
+                        ]);
+                        if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) return tempOrderId;
+                    } // for
+                    throw 'INTERNAL_ERROR';
+                } // if
+            })();
+            //#endregion re-generate a unique orderId
+            
+            
+            
+            //#region validate shipping
             if (!selectedShipping) throw 'BAD_SHIPPING';
             
             const matchingShipping = getMatchingShipping(selectedShipping, { city: shippingCity, zone: shippingZone, country: shippingCountry });
             if (!matchingShipping) throw 'BAD_SHIPPING';
-            //#endregion verify shipping
+            //#endregion validate shipping
             
             
             
-            //#region fetch valid products
-            type ProductData = HydratedDocument<
-                Pick<ProductSchema,
-                    |'_id'
-                    |'name'
-                    |'price'
-                    // |'shippingWeight'
-                    // |'stock'
-                > & {
-                    shippingWeight : number|null|undefined
-                    stock          : number|null|undefined
-                }
-            >
-            const productListAdapter = createEntityAdapter<ProductData>({
-                selectId : (productData) => `${productData._id}`,
-            });
-            const productList = productListAdapter.addMany(
-                productListAdapter.getInitialState(),
-                await Product.find<ProductData>({
-                    visibility : { $ne: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
-                }, { _id: true, name: true, price: true, shippingWeight: true, stock: true }, { session })
-            );
-            //#endregion fetch valid products
-            
-            
-            
+            //#region validate cart items: check existing products => check product quantities => create detailed items
+            const {
+                // options: pay manually | paymentSource
+                paymentSource,
+            } = placeOrderData;
             const usePaypal = (paymentSource !== 'manual');
             
             
             
-            //#region verify & convert items
-            const itemsConverted : (Omit<CartEntrySchema, 'shippingWeight'> & { shippingWeight : number|undefined })[] = [];
-            let totalProductPricesConverted = 0, totalProductWeights : number|undefined = undefined;
-            for (const item of items) {
-                if (!item || (typeof(item) !== 'object')) throw 'INVALID_JSON';
-                const {
-                    productId,
-                    quantity,
-                } = item;
-                if (!productId || (typeof(productId) !== 'string')) throw 'INVALID_JSON';
-                if (!quantity || (typeof(quantity) !== 'number') || !isFinite(quantity) || (quantity < 0)) throw 'INVALID_JSON';
-                if ((quantity % 1)) throw 'INVALID_JSON';
-                if (quantity === 0) continue;
-                
-                
-                
-                const product            = productList.entities[productId];
-                if (!product) throw 'INVALID_PRODUCT_ID';
-                const productStock       = product.stock;
-                if ((productStock !== undefined) && (productStock !== null) && isFinite(productStock)) {
-                    if (productStock < quantity) throw 'INSUFFICIENT_PRODUCT_STOCK';
-                    
-                    //#regon decrease product stock
-                    product.stock = (productStock - quantity);
-                    await product.save({ session });
-                    //#endregon decrease product stock
-                } // if
-                
-                
-                
-                const unitPrice          = product.price;
-                const unitPriceConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(unitPrice)) : unitPrice;
-                const unitWeight         = product.shippingWeight ?? undefined;
-                
-                
-                
-                itemsConverted.push({
-                    product        : new Types.ObjectId(productId) as any,
-                    price          : unitPriceConverted,
-                    shippingWeight : unitWeight,
-                    quantity       : quantity,
+            const detailedItems    : (Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'> & { productName: string })[] = [];
+            const reduceStockItems : (RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'>> & { quantity: number })[] = [];
+            let totalProductPricesConverted = 0, totalProductWeights : number|null = null;
+            {
+                const productListAdapter = createEntityAdapter<
+                    Pick<Product,
+                        |'id'
+                        |'name'
+                        |'price'
+                        |'shippingWeight'
+                        |'stock'
+                    >
+                >({
+                    selectId : (productData) => productData.id,
                 });
+                const productList = productListAdapter.addMany(
+                    productListAdapter.getInitialState(),
+                    validExistingProducts
+                ).entities;
                 
                 
                 
-                totalProductPricesConverted += unitPriceConverted * quantity;
-                totalProductPricesConverted  = trimNumber(totalProductPricesConverted);
-                
-                
-                
-                if (unitWeight !== undefined) {
-                    if (totalProductWeights === undefined) totalProductWeights = 0; // contains at least 1 PHYSICAL_GOODS
+                for (const { productId, quantity } of validFormattedItems) {
+                    const product = productList[productId];
+                    if (!product) throw 'INVALID_PRODUCT_ID';
                     
-                    totalProductWeights     += unitWeight         * quantity;
-                    totalProductWeights      = trimNumber(totalProductWeights);
-                } // if
-            } // for
+                    
+                    
+                    const stock = productList[productId]?.stock;
+                    if (typeof(stock) === 'number') {
+                        if (quantity > stock) throw 'INSUFFICIENT_PRODUCT_STOCK';
+                        
+                        reduceStockItems.push({
+                            productId      : productId,
+                            quantity       : quantity,
+                        });
+                    } // if
+                    
+                    
+                    
+                    const unitPrice          = product.price;
+                    const unitPriceConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(unitPrice)) : unitPrice;
+                    const unitWeight         = product.shippingWeight ?? null;
+                    
+                    
+                    
+                    detailedItems.push({
+                        productId      : productId,
+                        productName    : product.name,
+                        
+                        price          : unitPriceConverted,
+                        shippingWeight : unitWeight,
+                        quantity       : quantity,
+                    });
+                    
+                    
+                    
+                    totalProductPricesConverted += unitPriceConverted * quantity;
+                    totalProductPricesConverted  = trimNumber(totalProductPricesConverted);
+                    
+                    
+                    
+                    if (unitWeight !== null) {
+                        if (totalProductWeights === null) totalProductWeights = 0; // contains at least 1 PHYSICAL_GOODS
+                        
+                        totalProductWeights     += unitWeight         * quantity;
+                        totalProductWeights      = trimNumber(totalProductWeights);
+                    } // if
+                } // for
+            }
             const totalShippingCost          = calculateShippingCost(totalProductWeights, matchingShipping);
             const totalShippingCostConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
             const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
-            //#endregion verify & convert items
+            //#endregion validate cart items: check existing products => check product quantities => create detailed items
             
             
             
-            //#region generate a unique orderId
-            const nanoid = customAlphabet('0123456789', 16);
-            for (let attempts = 10; attempts > 0; attempts--) {
-                orderId = await nanoid();
-                if ((await Promise.all([
-                    DraftOrder.findOne<HydratedDocument<DraftOrderSchema>>({ orderId }),
-                    DraftOrder.findOne<HydratedDocument<OrderSchema>>({ orderId }),
-                ])).some((result) => !!result)) {
-                    if (!attempts) throw 'INTERNAL_ERROR';
-                } // if
+            //#region decrease product stock
+            for (const {productId, quantity} of reduceStockItems) {
+                await prismaTransaction.product.update({
+                    where  : {
+                        id : productId,
+                    },
+                    data   : {
+                        stock : { decrement: quantity }
+                    },
+                });
             } // for
-            //#endregion generate a unique orderId
+            //#endregion decrease product stock
             
             
             
@@ -507,7 +654,7 @@ const responsePlaceOrder = async (
                                     
                                     // shipping Money|undefined
                                     // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
-                                    shipping          : (totalShippingCostConverted === undefined) ? undefined : {
+                                    shipping          : (totalShippingCostConverted === null) ? undefined : {
                                         currency_code : PAYPAL_CURRENCY,
                                         value         : totalShippingCostConverted,
                                     },
@@ -536,10 +683,10 @@ const responsePlaceOrder = async (
                             
                             // items array (contains the item object)
                             // An array of items that the customer purchases from the merchant.
-                            items                     : itemsConverted.map((itemConverted) => ({
+                            items                     : detailedItems.map((detailedItem) => ({
                                 // name string required
                                 // The item name or title.
-                                name                  : productList.entities[`${itemConverted.product}`]?.name ?? `${itemConverted.product}`,
+                                name                  : detailedItem.productName,
                                 
                                 // unit_amount Money required
                                 // The item price or rate per unit.
@@ -554,17 +701,17 @@ const responsePlaceOrder = async (
                                         * An integer for currencies like JPY that are not typically fractional.
                                         * A decimal fraction for currencies like TND that are subdivided into thousandths.
                                     */
-                                    value             : itemConverted.price,
+                                    value             : detailedItem.price,
                                 },
                                 
                                 // quantity string required
                                 // The item quantity. Must be a whole number.
-                                quantity              : itemConverted.quantity,
+                                quantity              : detailedItem.quantity,
                                 
                                 // category enum|undefined
                                 // The item category type.
                                 // The possible values are: 'DIGITAL_GOODS'|'PHYSICAL_GOODS'|'DONATION'
-                                category              : (itemConverted.shippingWeight === undefined) ? 'DIGITAL_GOODS' : 'PHYSICAL_GOODS',
+                                category              : (typeof(detailedItem.shippingWeight) === 'number') ? 'PHYSICAL_GOODS' : 'DIGITAL_GOODS',
                                 
                                 // description string|undefined
                                 // The detailed item description.
@@ -693,46 +840,56 @@ const responsePlaceOrder = async (
             
             
             //#region create a newDraftOrder
-            const newDraftOrders = await DraftOrder.create<DraftOrderSchema>([{
-                orderId                : orderId,
-                
-                items                  : await Promise.all(itemsConverted.map(async (itemConverted) => {
-                    return {
-                        product        : itemConverted.product,
-                        price          : usePaypal ? (await paypalRevertCurrencyIfRequired(itemConverted.price)) : itemConverted.price,
-                        shippingWeight : itemConverted.shippingWeight,
-                        quantity       : itemConverted.quantity,
-                    };
-                })),
-                
-                shippingAddress        : {
-                    firstName          : shippingFirstName,
-                    lastName           : shippingLastName,
+            await prismaTransaction.draftOrder.create({
+                data : {
+                    expiresAt                  : new Date(Date.now() + (1 * 60 * 1000)),
                     
-                    phone              : shippingPhone,
+                    orderId                    : orderId,
+                    paypalOrderId              : paypalOrderId,
                     
-                    address            : shippingAddress,
-                    city               : shippingCity,
-                    zone               : shippingZone,
-                    zip                : shippingZip,
-                    country            : shippingCountry.toUpperCase(),
+                    items                      : {
+                        create                 : await Promise.all(detailedItems.map(async (detailedItem) => {
+                            return {
+                                product        : {
+                                    connect    : {
+                                        id     : detailedItem.productId,
+                                    },
+                                },
+                                
+                                price          : usePaypal ? (await paypalRevertCurrencyIfRequired(detailedItem.price)) : detailedItem.price,
+                                shippingWeight : detailedItem.shippingWeight,
+                                quantity       : detailedItem.quantity,
+                            };
+                        })),
+                    },
+                    
+                    shippingAddress            : {
+                        firstName              : shippingFirstName,
+                        lastName               : shippingLastName,
+                        
+                        phone                  : shippingPhone,
+                        
+                        address                : shippingAddress,
+                        city                   : shippingCity,
+                        zone                   : shippingZone,
+                        zip                    : shippingZip,
+                        country                : shippingCountry.toUpperCase(),
+                    },
+                    shippingCost               : usePaypal ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
+                    shippingProvider           : {
+                        connect                : {
+                            id                 : shippingProviderId,
+                        },
+                    },
                 },
-                shippingProvider       : shippingProvider,
-                shippingCost           : usePaypal ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
-                
-                expires                : new Date(Date.now() + (1 * 60 * 1000)),
-                
-                paypalOrderId          : paypalOrderId,
-            }], { session });
-            orderId = `#ORDER_${orderId}`;
+            });
             //#endregion create a newDraftOrder
-        }, { readConcern: 'majority', writeConcern: { w: 'majority' } });
+        }, {
+            maxWait : 2000 /* ms */,
+            timeout : 5000 /* ms */,
+        });
     }
     catch (error: any) {
-        // await session.abortTransaction(); // already implicitly aborted
-        
-        
-        
         /*
             Possible client errors:
             * bad shipping
@@ -762,17 +919,13 @@ const responsePlaceOrder = async (
                 return res.status(500).json({error: 'internal server error'});
             } break;
         } // switch
-    }
-    finally {
-        await session.endSession();
     } // try
-    if (!orderId) throw Error('unkown error');
     
     
     
     // draftOrder created:
     return res.status(200).json({
-        orderId: paypalOrderId ?? orderId,
+        orderId: paypalOrderId ?? `#ORDER_${orderId}`,
     });
 }
 
@@ -791,8 +944,8 @@ const responseMakePayment = async (
     
     
     
-    let orderId  : string|undefined = undefined;
-    let paypalOrderId : string|undefined = undefined;
+    let orderId       : string|null = null;
+    let paypalOrderId : string|null = null;
     if (rawOrderId.startsWith('#ORDER_')) {
         orderId = rawOrderId.slice(7);
         if (!orderId.length)               return res.status(400).end(); // bad req
@@ -838,33 +991,59 @@ const responseMakePayment = async (
     
     
     
-    let paymentResponse : MakePaymentResponse|ErrorResponse|undefined = undefined;
-    const session = await startSession();
+    let paymentResponse : MakePaymentResponse|ErrorResponse|null = null;
     try {
-        await session.withTransaction(async (): Promise<void> => {
+        await prisma.$transaction(async (prismaTransaction) => {
             //#region verify draftOrder_id
+            const requiredSelect = {
+                id                     : true,
+                expiresAt              : true,
+                
+                orderId                : true,
+                
+                shippingAddress        : true,
+                shippingCost           : true,
+                shippingProviderId     : true,
+                
+                items : {
+                    select : {
+                        productId      : true,
+                        
+                        price          : true,
+                        shippingWeight : true,
+                        quantity       : true,
+                    },
+                },
+            };
             const draftOrder = (
                 !!orderId
-                ? await DraftOrder.findOne<HydratedDocument<DraftOrderSchema>>({ orderId })
+                ? await prisma.draftOrder.findUnique({
+                    where  : {
+                        orderId       : orderId,
+                    },
+                    select  : requiredSelect,
+                })
                 : !!paypalOrderId
-                ? await DraftOrder.findOne<HydratedDocument<DraftOrderSchema>>({ paypalOrderId })
-                : undefined
+                ? await prisma.draftOrder.findUnique({
+                    where : {
+                        paypalOrderId : paypalOrderId
+                    },
+                    select : requiredSelect,
+                })
+                : null
             );
             if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
-            if (draftOrder.expires <= new Date()) {
+            
+            
+            
+            if (draftOrder.expiresAt <= new Date()) {
                 // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:
-                const restoreSession = await startSession();
                 try {
-                    await restoreSession.withTransaction(async (): Promise<void> => {
-                        await revertOrder(restoreSession, { draftOrder });
-                    }, { readConcern: 'majority', writeConcern: { w: 'majority' } });
+                        await revertOrder(prismaTransaction, { draftOrder });
                 }
                 catch (error: any) {
                     console.log('error: ', error);
                     /* ignore any error */
-                }
-                finally {
-                    await restoreSession.endSession();
                 } // try
                 
                 throw 'DRAFT_ORDER_EXPIRED';
@@ -1101,15 +1280,15 @@ const responseMakePayment = async (
                 switch (captureData?.status) {
                     case 'COMPLETED' : {
                         paymentResponse = { // payment APPROVED
-                            paymentMethod : await (async (): Promise<PaymentMethodSchema> => {
+                            paymentMethod : await (async (): Promise<PaymentMethod> => {
                                 const payment_source = paypalPaymentData?.payment_source;
                                 
                                 const card = payment_source?.card;
                                 if (card) {
                                     return {
                                         type       : 'CARD',
-                                        brand      : card.brand?.toLowerCase() ?? undefined,
-                                        identifier : card.last_digits ? `ending with ${card.last_digits}` : '',
+                                        brand      : card.brand?.toLowerCase() ?? null,
+                                        identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
                                         
                                         amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
                                         fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
@@ -1121,7 +1300,7 @@ const responseMakePayment = async (
                                     return {
                                         type       : 'PAYPAL',
                                         brand      : 'paypal',
-                                        identifier : paypal.email_address || undefined,
+                                        identifier : paypal.email_address || null,
                                         
                                         amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
                                         fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
@@ -1130,8 +1309,8 @@ const responseMakePayment = async (
                                 
                                 return {
                                     type       : 'CUSTOM',
-                                    brand      : '',
-                                    identifier : '',
+                                    brand      : null,
+                                    identifier : null,
                                     
                                     amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
                                     fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
@@ -1157,8 +1336,8 @@ const responseMakePayment = async (
                 paymentResponse = { // paylater APPROVED (we waiting for your payment confirmation within xx days)
                     paymentMethod : {
                         type       : 'MANUAL',
-                        brand      : '',
-                        identifier : '',
+                        brand      : null,
+                        identifier : null,
                         
                         amount     : 0,
                         fee        : 0,
@@ -1173,7 +1352,7 @@ const responseMakePayment = async (
             const paymentMethod = (paymentResponse as MakePaymentResponse)?.paymentMethod;
             if (paymentMethod) {
                 // payment APPROVED => move the `draftOrder` to `order`:
-                await commitOrder(session, {
+                await commitOrder(prismaTransaction, {
                     draftOrder       : draftOrder,
                     customer         : {
                         marketingOpt : marketingOpt,
@@ -1198,10 +1377,13 @@ const responseMakePayment = async (
             }
             else {
                 // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:
-                await revertOrder(session, { draftOrder });
+                await revertOrder(prismaTransaction, { draftOrder });
             } // if
             //#endregion save the database
-        }, { readConcern: 'majority', writeConcern: { w: 'majority' } });
+        }, {
+            maxWait : 2000 /* ms */,
+            timeout : 5000 /* ms */,
+        });
     }
     catch (error: any) {
         // await session.abortTransaction(); // already implicitly aborted
@@ -1230,9 +1412,6 @@ const responseMakePayment = async (
                 return res.status(500).json({error: 'internal server error'});
             } break;
         } // switch
-    }
-    finally {
-        await session.endSession();
     } // try
     if (!paymentResponse) throw Error('unkown error');
     
