@@ -1,6 +1,7 @@
 import '@reusable-ui/typos/dist/effects'
-import { defineTheme } from '@reusable-ui/core';
+import { defineTheme } from '@reusable-ui/core'
 import { iconConfig } from '@reusable-ui/components'
+import { imageValues } from '@heymarco/image'
 
 
 
@@ -12,3 +13,5 @@ iconConfig.image.files.push(
     { name: 'artswimwear.svg', ratio: '48/40' },
     { name: 'scrolldown.svg', ratio: '20/40' },
 );
+
+imageValues.objectFit = 'cover';

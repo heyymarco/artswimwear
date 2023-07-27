@@ -192,6 +192,10 @@ export default () => {
                 background  : 'white',
                 width       : `${imageSize}px`,
                 aspectRatio : commerces.defaultProductAspectRatio,
+                ...children('img', {
+                    width  : '100% !important',
+                    height : '100% !important',
+                }),
             }),
             ...children('.title', {
                 gridArea: 'title',

@@ -48,6 +48,10 @@ export default () => [
                 minHeight   : `${minImageHeight}px`,
                 overflow    : 'hidden',
                 aspectRatio : commerces.defaultProductAspectRatio,
+                ...children('img', {
+                    width  : '100% !important',
+                    height : '100% !important',
+                }),
                 ...children(['img', '.status'], {
                     transition : [
                         ['scale', '300ms'],
