@@ -1,10 +1,11 @@
 import type { RootState } from '@/store/store'
-import { createEntityAdapter, EntityState } from '@reduxjs/toolkit'
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import type { CartState } from '../cart/cartSlice'
-import type { PaymentToken, CheckoutState } from '../checkout/checkoutSlice'
-import type { CreateOrderData } from '@paypal/paypal-js'
-import type { MatchingShipping, MatchingAddress } from '@/libs/shippings'
+import { createEntityAdapter, EntityState }         from '@reduxjs/toolkit'
+import type { PrefetchOptions }                     from '@reduxjs/toolkit/dist/query/core/module'
+import { createApi, fetchBaseQuery }                from '@reduxjs/toolkit/query/react'
+import type { CartState }                           from '../cart/cartSlice'
+import type { PaymentToken, CheckoutState }         from '../checkout/checkoutSlice'
+import type { CreateOrderData }                     from '@paypal/paypal-js'
+import type { MatchingShipping, MatchingAddress }   from '@/libs/shippings'
 
 // models:
 import type {
@@ -187,6 +188,10 @@ export const {
     usePlaceOrderMutation              : usePlaceOrder,
     useMakePaymentMutation             : useMakePayment,
 } = apiSlice;
+
+export const usePrefetchProductList = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList', options);
+export const usePrefetchPriceList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getPriceList'  , options);
+export const usePrefetchCountryList = (options?: PrefetchOptions) => apiSlice.usePrefetch('getPriceList'  , options);
 
 
 

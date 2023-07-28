@@ -8,6 +8,8 @@ import { AccordionItem, Button, Carousel, Container, ExclusiveAccordion, Icon } 
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
 import { PAGE_HOME_TITLE, PAGE_HOME_DESCRIPTION } from '@/website.config'
+import { useEffect } from 'react'
+import { usePrefetchProductList, usePrefetchPriceList, usePrefetchCountryList } from '@/store/features/api/apiSlice'
 
 
 
@@ -20,6 +22,21 @@ const useHomeStyleSheet = dynamicStyleSheets(
 
 export default function Home() {
     const styles = useHomeStyleSheet();
+    
+    
+    
+    const prefetchProductList = usePrefetchProductList();
+    const prefetchPriceList = usePrefetchPriceList();
+    const prefetchCountryList = usePrefetchCountryList();
+    useEffect(() => {
+        prefetchProductList();
+        prefetchPriceList();
+        prefetchCountryList();
+    }, []);
+    
+    
+    
+    // jsx:
     return (
         <>
             <Head>
