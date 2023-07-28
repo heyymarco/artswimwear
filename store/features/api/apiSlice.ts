@@ -191,7 +191,7 @@ export const {
 
 export const usePrefetchProductList = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList', options);
 export const usePrefetchPriceList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getPriceList'  , options);
-export const usePrefetchCountryList = (options?: PrefetchOptions) => apiSlice.usePrefetch('getPriceList'  , options);
+export const usePrefetchCountryList = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCountryList', options);
 
 
 

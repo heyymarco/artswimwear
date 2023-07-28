@@ -29,9 +29,17 @@ export default function Home() {
     const prefetchPriceList = usePrefetchPriceList();
     const prefetchCountryList = usePrefetchCountryList();
     useEffect(() => {
-        prefetchProductList();
-        prefetchPriceList();
-        prefetchCountryList();
+        const cancelPrefetch = setTimeout(() => {
+            prefetchProductList();
+            prefetchPriceList();
+            prefetchCountryList();
+        }, 100);
+        
+        
+        
+        return () => {
+            clearTimeout(cancelPrefetch);
+        };
     }, []);
     
     
