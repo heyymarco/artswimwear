@@ -40,7 +40,7 @@ const ProductItem = ({product}: ProductItemProps) => {
             
             
             observer.disconnect();
-            prefetchProductDetail(product.id);
+            prefetchProductDetail(product.path);
         }, {
             root      : null, // defaults to the browser viewport
             threshold : 0.5,
