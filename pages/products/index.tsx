@@ -5,12 +5,13 @@ import Head from 'next/head'
 import { GenericSection, Main } from '@heymarco/section'
 import { Busy } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { useGetProductList } from '@/store/features/api/apiSlice'
+import { ProductPreview, useGetProductList, usePrefetchProductDetail } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import { Image } from '@heymarco/image'
 import Link from 'next/link'
 import { PAGE_PRODUCTS_TITLE, PAGE_PRODUCTS_DESCRIPTION } from '@/website.config'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
+import { useEffect, useRef } from 'react'
 
 
 
@@ -21,6 +22,62 @@ const useProductListStyleSheet = dynamicStyleSheets(
 
 
 
+interface ProductItemProps {
+    product : ProductPreview
+}
+const ProductItem = ({product}: ProductItemProps) => {
+    const articleRef = useRef<HTMLDivElement|null>(null);
+    const prefetchProductDetail = usePrefetchProductDetail();
+    useEffect(() => {
+        const articleElm = articleRef.current;
+        if (!articleElm) return;
+        
+        
+        
+        const observer = new IntersectionObserver((entries) => {
+            if (!entries[0]?.isIntersecting) return;
+            
+            
+            
+            observer.disconnect();
+            prefetchProductDetail(product.id);
+        }, {
+            root      : null, // defaults to the browser viewport
+            threshold : 0.5,
+        });
+        observer.observe(articleElm);
+        
+        
+        
+        return () => {
+            observer.disconnect();
+        };
+    }, []);
+    
+    
+    
+    // jsx:
+    return (
+        <article ref={articleRef} key={product.id}>
+            <Image
+                className='prodImg'
+                
+                alt={product.name ?? ''}
+                src={resolveMediaUrl(product.image)}
+                sizes='414px'
+            />
+            <header>
+                <h2 className='name h6'>
+                    {product.name}
+                </h2>
+                <span className='price h6'>
+                    {formatCurrency(product.price)}
+                </span>
+            </header>
+            <Link href={`/products/${product.path}`} />
+        </article>
+    );
+}
 export default function ProductList() {
     const styles = useProductListStyleSheet();
     const {data: productList, isLoading, isError} = useGetProductList();
@@ -38,24 +95,7 @@ export default function ProductList() {
                         : (isError || !productList)
                         ? <p>Oops, an error occured!</p>
                         : Object.values(productList?.entities).filter((product): product is Exclude<typeof product, undefined> => !!product).map((product) =>
-                            <article key={product.id}>
-                                <Image
-                                    className='prodImg'
-                                    
-                                    alt={product.name ?? ''}
-                                    src={resolveMediaUrl(product.image)}
-                                    sizes='414px'
-                                />
-                                <header>
-                                    <h2 className='name h6'>
-                                        {product.name}
-                                    </h2>
-                                    <span className='price h6'>
-                                        {formatCurrency(product.price)}
-                                    </span>
-                                </header>
-                                <Link href={`/products/${product.path}`} />
-                            </article>
+                            <ProductItem key={product.id} product={product} />
                         )
                     }
                 </GenericSection>
