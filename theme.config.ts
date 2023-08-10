@@ -1,4 +1,4 @@
-import '@reusable-ui/typos/dist/effects'
+import '@reusable-ui/typos/effects'
 import { defineTheme, colorValues } from '@reusable-ui/core'
 import { buttonValues, iconConfig } from '@reusable-ui/components'
 import { imageValues } from '@heymarco/image'
