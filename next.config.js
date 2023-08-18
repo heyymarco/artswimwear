@@ -11,6 +11,11 @@ const nextConfig = {
     ],
   },
   
+  experimental: {
+    // appDir: true,
+    esmExternals: 'loose',
+  },
+  
   reactStrictMode: true,
   // swcMinify: false,
   

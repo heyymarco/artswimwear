@@ -10,7 +10,7 @@ import { formatCurrency } from '@/libs/formatters'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
 import { useRouter } from 'next/router'
-import ModalStatus from './ModalStatus'
+import { ModalStatus } from '@heymarco/modal-status'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 
 

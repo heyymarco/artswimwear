@@ -24,6 +24,12 @@ import { CartBar } from '@/components/CartBar';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WEBSITE_FAVICON_PNG, WEBSITE_FAVICON_SVG } from '@/website.config'
 
+// heymarco components:
+import {
+    // react components:
+    DialogMessageProvider,
+}                           from '@heymarco/dialog-message'
+
 
 // styles:
 styleSheets(
@@ -72,12 +78,14 @@ const Footer = () => {
 
 export default function App({ Component, pageProps }: AppProps) {
     return (<Provider store={store}><PersistGate persistor={persistor}>
-        <Header />
-        
-        <Component {...pageProps} />
-        
-        <Footer />
-        
-        <CartBar />
+        <DialogMessageProvider>
+            <Header />
+            
+            <Component {...pageProps} />
+            
+            <Footer />
+            
+            <CartBar />
+        </DialogMessageProvider>
     </PersistGate></Provider>);
 }

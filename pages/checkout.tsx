@@ -35,7 +35,11 @@ import {
     PAGE_CHECKOUT_TITLE,
     PAGE_CHECKOUT_DESCRIPTION,
 } from '@/website.config'
-import ModalStatus from '@/components/ModalStatus'
+// heymarco components:
+import {
+    // dialogs:
+    useDialogMessage,
+}                           from '@heymarco/dialog-message'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 
 // apis:
@@ -280,12 +284,6 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
 
 
 
-interface ShowDialogMessage {
-    theme   ?: ThemeName
-    title   ?: React.ReactNode
-    message  : React.ReactNode
-    onClose ?: () => void
-}
 interface ICheckoutContext {
     cartItems                         : CartEntry[]
     hasCart                           : boolean
@@ -324,8 +322,6 @@ interface ICheckoutContext {
     handleMakePayment                 : (orderId: string) => Promise<void>
     handleOrderCompleted              : (paid: boolean) => void
     
-    showDialogMessage                 : React.Dispatch<React.SetStateAction<ShowDialogMessage|false>>
-    showDialogMessageFieldsError      : (invalidFields: ArrayLike<Element>|undefined) => void
     showDialogMessagePlaceOrderError  : (error: any) => void
     showDialogMessageMakePaymentError : (error: any) => void
     
@@ -370,8 +366,6 @@ const CheckoutContext = createContext<ICheckoutContext>({
     handleMakePayment                 : undefined as any,
     handleOrderCompleted              : undefined as any,
     
-    showDialogMessage                 : undefined as any,
-    showDialogMessageFieldsError      : undefined as any,
     showDialogMessagePlaceOrderError  : undefined as any,
     showDialogMessageMakePaymentError : undefined as any,
     
@@ -621,6 +615,13 @@ export default function Checkout() {
     
     
     
+    // dialogs:
+    const {
+        showMessageError,
+    } = useDialogMessage();
+    
+    
+    
     // handlers:
     const handleShippingAddressChanged = useEvent(async (address: MatchingAddress): Promise<boolean> => {
         try {
@@ -629,18 +630,14 @@ export default function Checkout() {
             
             
             if (!shippingList.ids.length) {
-                showDialogMessage({
-                    theme   : 'danger',
-                    title   : 'No Shipping Agency',
-                    message : <>
-                        <p>
-                            We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
-                        </p>
-                        <p>
-                            Please contact us for further assistance.
-                        </p>
-                    </>
-                });
+                showMessageError(<>
+                    <p>
+                        We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
+                    </p>
+                    <p>
+                        Please contact us for further assistance.
+                    </p>
+                </>, { title: 'No Shipping Agency' });
                 return false;
             } // if
             
@@ -649,23 +646,19 @@ export default function Checkout() {
             return true;
         }
         catch (error: any) {
-            showDialogMessage({
-                theme   : 'danger',
-                title   : 'Error Calculating Shipping Cost',
-                message : <>
-                    <p>
-                        Oops, there was an error calculating the shipping cost.
-                    </p>
-                    <p>
-                        There was a <strong>problem contacting our server</strong>.<br />
-                        Make sure your internet connection is available.
-                    </p>
-                    <p>
-                        Please try again in a few minutes.<br />
-                        If the problem still persists, please contact us manually.
-                    </p>
-                </>
-            });
+            showMessageError(<>
+                <p>
+                    Oops, there was an error calculating the shipping cost.
+                </p>
+                <p>
+                    There was a <strong>problem contacting our server</strong>.<br />
+                    Make sure your internet connection is available.
+                </p>
+                <p>
+                    Please try again in a few minutes.<br />
+                    If the problem still persists, please contact us manually.
+                </p>
+            </>, { title: 'Error Calculating Shipping Cost' });
             return false;
         } // try
     });
@@ -739,70 +732,49 @@ export default function Checkout() {
     
     
     
-    // message handlers:
-    const [dialogMessage, showDialogMessage] = useState<ShowDialogMessage|false>(false);
-    const prevDialogMessage = useRef<ShowDialogMessage|undefined>(dialogMessage || undefined);
-    if (dialogMessage) prevDialogMessage.current = dialogMessage;
-    
-    const showDialogMessageFieldsError      = useEvent((invalidFields: ArrayLike<Element>|undefined): void => {
-        // conditions:
-        if (!invalidFields?.length) return;
-        
-        
-        
-        // handlers:
-        const handleClose = (): void => {
-            // focus the first fieldError:
-            const focusableSelector = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"]), iframe';
-            const firstInvalidField = invalidFields?.[0];
-            const firstFocusableElm = (firstInvalidField.matches(focusableSelector) ? firstInvalidField : firstInvalidField?.querySelector(focusableSelector)) as HTMLElement|null;
-            firstInvalidField.scrollIntoView({
-                block    : 'start',
-                behavior : 'smooth',
-            });
-            firstFocusableElm?.focus?.({ preventScroll: true });
-        };
-        
-        
-        
-        // show message:
-        const isPlural = (invalidFields?.length > 1);
-        showDialogMessage({
-            theme   : 'danger',
-            title   : 'Error',
-            message : <>
-                <p>
-                    There {isPlural ? 'are some' : 'is an'} invalid field{isPlural ? 's' : ''} that {isPlural ? 'need' : 'needs'} to be fixed:
-                </p>
-                <List listStyle='flat'>
-                    {Array.from(invalidFields).map((invalidField, index) =>
-                        <ListItem key={index}>
-                            <>
-                                <Icon
-                                    icon={
-                                        ((invalidField.parentElement?.previousElementSibling as HTMLElement)?.children?.[0]?.children?.[0] as HTMLElement)?.style?.getPropertyValue('--icon-image')?.slice(1, -1)
-                                        ??
-                                        'text_fields'
-                                    }
-                                    theme='primary'
-                                />
-                                &nbsp;
-                                {(invalidField as HTMLElement).getAttribute('aria-label') || (invalidField.children[0] as HTMLInputElement).placeholder}
-                            </>
-                        </ListItem>
-                    )}
-                </List>
-            </>,
-            onClose : handleClose,
-        });
-    });
+    // dialogs:
     const showDialogMessagePlaceOrderError  = useEvent((error: any): void => {
-        showDialogMessage({
-            theme   : 'danger',
-            title   : 'Error Processing Your Order',
-            message : <>
+        showMessageError(<>
+            <p>
+                Oops, there was an error processing your order.
+            </p>
                 <p>
-                    Oops, there was an error processing your order.
+                    There was a <strong>problem contacting our server</strong>.<br />
+                    Make sure your internet connection is available.
+                </p>
+                <p>
+                    Please try again in a few minutes.<br />
+                    If the problem still persists, please contact us manually.
+                </p>
+        </>, { title: 'Error Processing Your Order' });
+    });
+    const showDialogMessageMakePaymentError = useEvent((error: any): void => {
+        const errorStatus = error?.status;
+        if (errorStatus === 402) {
+            showMessageError(<>
+                <p>
+                    Sorry, we were unable to process your payment.
+                </p>
+                <p>
+                    There was a <strong>problem authorizing your card</strong>.<br />
+                    Make sure your card is still valid and has not reached the transaction limit.
+                </p>
+                <p>
+                    Try using a different credit card and try again.<br />
+                    If the problem still persists, please change to another payment method.
+                </p>
+                <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
+                    <p>
+                        Make sure your funds have not been deducted.<br />
+                        If you have, please contact us for assistance.
+                    </p>
+                </Alert>
+            </>, { title: 'Error Processing Your Payment' });
+        }
+        else {
+            showMessageError(<>
+                <p>
+                    Oops, there was an error processing your payment.
                 </p>
                 <p>
                     There was a <strong>problem contacting our server</strong>.<br />
@@ -812,60 +784,13 @@ export default function Checkout() {
                     Please try again in a few minutes.<br />
                     If the problem still persists, please contact us manually.
                 </p>
-            </>
-        });
-    });
-    const showDialogMessageMakePaymentError = useEvent((error: any): void => {
-        const errorStatus = error?.status;
-        if (errorStatus === 402) {
-            showDialogMessage({
-                theme   : 'danger',
-                title   : 'Error Processing Your Payment',
-                message : <>
+                <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
                     <p>
-                        Sorry, we were unable to process your payment.
+                        Make sure your funds have not been deducted.<br />
+                        If you have, please contact us for assistance.
                     </p>
-                    <p>
-                        There was a <strong>problem authorizing your card</strong>.<br />
-                        Make sure your card is still valid and has not reached the transaction limit.
-                    </p>
-                    <p>
-                        Try using a different credit card and try again.<br />
-                        If the problem still persists, please change to another payment method.
-                    </p>
-                    <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
-                        <p>
-                            Make sure your funds have not been deducted.<br />
-                            If you have, please contact us for assistance.
-                        </p>
-                    </Alert>
-                </>
-            });
-        }
-        else {
-            showDialogMessage({
-                theme   : 'danger',
-                title   : 'Error Processing Your Payment',
-                message : <>
-                    <p>
-                        Oops, there was an error processing your payment.
-                    </p>
-                    <p>
-                        There was a <strong>problem contacting our server</strong>.<br />
-                        Make sure your internet connection is available.
-                    </p>
-                    <p>
-                        Please try again in a few minutes.<br />
-                        If the problem still persists, please contact us manually.
-                    </p>
-                    <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
-                        <p>
-                            Make sure your funds have not been deducted.<br />
-                            If you have, please contact us for assistance.
-                        </p>
-                    </Alert>
-                </>
-            });
+                </Alert>
+            </>, { title: 'Error Processing Your Payment' });
         } // if
     });
     
@@ -909,8 +834,6 @@ export default function Checkout() {
         handleMakePayment,                 // stable ref
         handleOrderCompleted,              // stable ref
         
-        showDialogMessage,                 // stable ref
-        showDialogMessageFieldsError,      // stable ref
         showDialogMessagePlaceOrderError,  // stable ref
         showDialogMessageMakePaymentError, // stable ref
         
@@ -954,8 +877,6 @@ export default function Checkout() {
         // handleMakePayment,                 // stable ref
         // handleOrderCompleted,              // stable ref
         
-        // showDialogMessage,                 // stable ref
-        // showDialogMessageFieldsError,      // stable ref
         // showDialogMessagePlaceOrderError,  // stable ref
         // showDialogMessageMakePaymentError, // stable ref
         
@@ -1076,36 +997,6 @@ export default function Checkout() {
                             <hr className={styles.vertLine} />
                         </Container>
                     , [isReadyPage, isDesktop, checkoutStep, styles])}
-                    
-                    {useMemo(() => {
-                        // jsx:
-                        return (
-                            <ModalStatus
-                                modalCardStyle='scrollable'
-                                theme={prevDialogMessage.current?.theme ?? 'primary'}
-                                
-                                lazy={true}
-                                
-                                onExpandedChange={({expanded}) => !expanded && showDialogMessage(false)}
-                                onCollapseEnd={prevDialogMessage.current?.onClose}
-                            >
-                                {!!dialogMessage && <>
-                                    <CardHeader>
-                                        {dialogMessage.title ?? 'Notification'}
-                                        <CloseButton onClick={() => showDialogMessage(false)} />
-                                    </CardHeader>
-                                    <CardBody>
-                                        {dialogMessage.message}
-                                    </CardBody>
-                                    <CardFooter>
-                                        <Button onClick={() => showDialogMessage(false)}>
-                                            Okay
-                                        </Button>
-                                    </CardFooter>
-                                </>}
-                            </ModalStatus>
-                        );
-                    }, [dialogMessage])}
                 </CheckoutContext.Provider>
             </Main>
         </>
@@ -1207,7 +1098,7 @@ const ProgressCheckout = () => {
 
 const NavCheckout = () => {
     // context:
-    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, handleShippingAddressChanged, showDialogMessageFieldsError} = useCheckout();
+    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, handleShippingAddressChanged} = useCheckout();
     const isOrderConfirmShown = ['pending', 'paid'].includes(checkoutStep);
     
     
@@ -1223,6 +1114,13 @@ const NavCheckout = () => {
         isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
+    
+    
+    
+    // dialogs:
+    const {
+        showMessageFieldError,
+    } = useDialogMessage();
     
     
     
@@ -1247,7 +1145,7 @@ const NavCheckout = () => {
             });
             const invalidFields = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
             if (invalidFields?.length) { // there is an/some invalid field
-                showDialogMessageFieldsError(invalidFields);
+                showMessageFieldError(invalidFields);
                 return;
             } // if
             
@@ -2307,7 +2205,7 @@ const PaymentMethodManual = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, handleMakePayment, handleOrderCompleted, showDialogMessageFieldsError, showDialogMessageMakePaymentError} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, handleMakePayment, handleOrderCompleted, showDialogMessageMakePaymentError} = useCheckout();
     
     
     
@@ -2347,6 +2245,13 @@ const CardPaymentButton = () => {
     
     
     
+    // dialogs:
+    const {
+        showMessageFieldError,
+    } = useDialogMessage();
+    
+    
+    
     // handlers:
     const hostedFields = usePayPalHostedFields();
     const handlePayButtonClicked = useEvent(async () => {
@@ -2366,7 +2271,7 @@ const CardPaymentButton = () => {
             ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),
         ];
         if (invalidFields?.length) { // there is an/some invalid field
-            showDialogMessageFieldsError(invalidFields);
+            showMessageFieldError(invalidFields);
             return;
         } // if
         
