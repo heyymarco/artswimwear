@@ -322,9 +322,6 @@ interface ICheckoutContext {
     handleMakePayment                 : (orderId: string) => Promise<void>
     handleOrderCompleted              : (paid: boolean) => void
     
-    showDialogMessagePlaceOrderError  : (error: any) => void
-    showDialogMessageMakePaymentError : (error: any) => void
-    
     placeOrderApi                     : ReturnType<typeof usePlaceOrder>
     makePaymentApi                    : ReturnType<typeof useMakePayment>
 }
@@ -365,9 +362,6 @@ const CheckoutContext = createContext<ICheckoutContext>({
     handlePlaceOrder                  : undefined as any,
     handleMakePayment                 : undefined as any,
     handleOrderCompleted              : undefined as any,
-    
-    showDialogMessagePlaceOrderError  : undefined as any,
-    showDialogMessageMakePaymentError : undefined as any,
     
     placeOrderApi                     : undefined as any,
     makePaymentApi                    : undefined as any,
@@ -618,6 +612,7 @@ export default function Checkout() {
     // dialogs:
     const {
         showMessageError,
+        showMessageFetchError,
     } = useDialogMessage();
     
     
@@ -692,7 +687,7 @@ export default function Checkout() {
             return placeOrderResponse.orderId;
         }
         catch (error: any) {
-            showDialogMessagePlaceOrderError(error);
+            showMessageFetchError(error, { context: 'order', title: 'Error Processing Your Order' });
             throw error;
         } // try
     });
@@ -728,70 +723,6 @@ export default function Checkout() {
     });
     const handleOrderCompleted         = useEvent((paid: boolean): void => {
         dispatch(setCheckoutStep(paid ? 'paid' : 'pending'));
-    });
-    
-    
-    
-    // dialogs:
-    const showDialogMessagePlaceOrderError  = useEvent((error: any): void => {
-        showMessageError(<>
-            <p>
-                Oops, there was an error processing your order.
-            </p>
-                <p>
-                    There was a <strong>problem contacting our server</strong>.<br />
-                    Make sure your internet connection is available.
-                </p>
-                <p>
-                    Please try again in a few minutes.<br />
-                    If the problem still persists, please contact us manually.
-                </p>
-        </>, { title: 'Error Processing Your Order' });
-    });
-    const showDialogMessageMakePaymentError = useEvent((error: any): void => {
-        const errorStatus = error?.status;
-        if (errorStatus === 402) {
-            showMessageError(<>
-                <p>
-                    Sorry, we were unable to process your payment.
-                </p>
-                <p>
-                    There was a <strong>problem authorizing your card</strong>.<br />
-                    Make sure your card is still valid and has not reached the transaction limit.
-                </p>
-                <p>
-                    Try using a different credit card and try again.<br />
-                    If the problem still persists, please change to another payment method.
-                </p>
-                <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
-                    <p>
-                        Make sure your funds have not been deducted.<br />
-                        If you have, please contact us for assistance.
-                    </p>
-                </Alert>
-            </>, { title: 'Error Processing Your Payment' });
-        }
-        else {
-            showMessageError(<>
-                <p>
-                    Oops, there was an error processing your payment.
-                </p>
-                <p>
-                    There was a <strong>problem contacting our server</strong>.<br />
-                    Make sure your internet connection is available.
-                </p>
-                <p>
-                    Please try again in a few minutes.<br />
-                    If the problem still persists, please contact us manually.
-                </p>
-                <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
-                    <p>
-                        Make sure your funds have not been deducted.<br />
-                        If you have, please contact us for assistance.
-                    </p>
-                </Alert>
-            </>, { title: 'Error Processing Your Payment' });
-        } // if
     });
     
     
@@ -834,9 +765,6 @@ export default function Checkout() {
         handleMakePayment,                 // stable ref
         handleOrderCompleted,              // stable ref
         
-        showDialogMessagePlaceOrderError,  // stable ref
-        showDialogMessageMakePaymentError, // stable ref
-        
         placeOrderApi,
         makePaymentApi,
     }), [
@@ -876,9 +804,6 @@ export default function Checkout() {
         // handlePlaceOrder,                  // stable ref
         // handleMakePayment,                 // stable ref
         // handleOrderCompleted,              // stable ref
-        
-        // showDialogMessagePlaceOrderError,  // stable ref
-        // showDialogMessageMakePaymentError, // stable ref
         
         placeOrderApi,
         makePaymentApi,
@@ -2102,13 +2027,20 @@ const PaymentMethodCard = () => {
 }
 const PaymentMethodPaypal = () => {
     // context:
-    const {handlePlaceOrder, handleMakePayment, handleOrderCompleted, showDialogMessageMakePaymentError} = useCheckout();
+    const {handlePlaceOrder, handleMakePayment, handleOrderCompleted} = useCheckout();
     
     
     
     // stores:
     const checkoutState = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
+    
+    
+    
+    // dialogs:
+    const {
+        showMessageFetchError,
+    } = useDialogMessage();
     
     
     
@@ -2125,7 +2057,7 @@ const PaymentMethodPaypal = () => {
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
-            showDialogMessageMakePaymentError(error);
+            showMessageFetchError(error, { context: 'payment', title: 'Error Processing Your Payment' });
         }
         finally {
             // update the UI:
@@ -2205,7 +2137,7 @@ const PaymentMethodManual = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, handleMakePayment, handleOrderCompleted, showDialogMessageMakePaymentError} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, handleMakePayment, handleOrderCompleted} = useCheckout();
     
     
     
@@ -2248,6 +2180,7 @@ const CardPaymentButton = () => {
     // dialogs:
     const {
         showMessageFieldError,
+        showMessageFetchError,
     } = useDialogMessage();
     
     
@@ -2325,7 +2258,7 @@ const CardPaymentButton = () => {
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
-            showDialogMessageMakePaymentError(error);
+            showMessageFetchError(error, { context: 'payment', title: 'Error Processing Your Payment' });
         }
         finally {
             // update the UI:
@@ -2344,7 +2277,7 @@ const CardPaymentButton = () => {
 }
 const ManualPaymentButton = () => {
     // context:
-    const {handlePlaceOrder, handleMakePayment, handleOrderCompleted, showDialogMessagePlaceOrderError} = useCheckout();
+    const {handlePlaceOrder, handleMakePayment, handleOrderCompleted} = useCheckout();
     
     
     
@@ -2353,6 +2286,13 @@ const ManualPaymentButton = () => {
         isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
+    
+    
+    
+    // dialogs:
+    const {
+        showMessageFetchError,
+    } = useDialogMessage();
     
     
     
@@ -2374,7 +2314,7 @@ const ManualPaymentButton = () => {
             handleOrderCompleted(/*paid:*/false);
         }
         catch (error: any) {
-            showDialogMessagePlaceOrderError(error);
+            showMessageFetchError(error, { context: 'order', title: 'Error Processing Your Order' });
         }
         finally {
             // update the UI:

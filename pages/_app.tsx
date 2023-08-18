@@ -16,7 +16,7 @@ import {
 import SiteNavbar from '../components/SiteNavbar'
 
 import Head from 'next/head'
-import { Container } from '@reusable-ui/components';
+import { Alert, Container } from '@reusable-ui/components';
 
 import { store, persistor } from '@/store/store'
 import { Provider } from 'react-redux'
@@ -27,8 +27,62 @@ import { WEBSITE_FAVICON_PNG, WEBSITE_FAVICON_SVG } from '@/website.config'
 // heymarco components:
 import {
     // react components:
-    DialogMessageProvider,
+    DialogMessageProvider, ShowMessageFetchErrorOptions,
 }                           from '@heymarco/dialog-message'
+
+
+
+// defaults:
+const fetchErrorMessageDefault : Extract<ShowMessageFetchErrorOptions['fetchErrorMessage'], Function> = ({isRequestError, isServerError, errorCode, context}) => <>
+    {(errorCode !== 402) && <p>
+        Oops, there was an error processing {
+            ((): React.ReactNode => {
+                switch (context) {
+                    case 'order'  : return <>your order</>;
+                    case 'payment': return <>your payment</>;
+                    default       : return <>the command</>;
+                } // switch
+            })()
+        }.
+    </p>}
+    {(errorCode === 402) && <>
+        <p>
+            Sorry, we were unable to process your payment.
+        </p>
+        <p>
+            There was a <strong>problem authorizing your card</strong>.
+            <br />
+            Make sure your card is still valid and has not reached the transaction limit.
+        </p>
+        <p>
+            Try using a different credit card and try again.
+            <br />
+            If the problem still persists, please change to another payment method.
+        </p>
+    </>}
+    {isRequestError && <p>
+        There was a <strong>problem contacting our server</strong>.
+        <br />
+        Make sure your internet connection is available.
+    </p>}
+    {isServerError && <p>
+        There was a <strong>problem on our server</strong>.
+        <br />
+        The server may be busy or currently under maintenance.
+    </p>}
+    {isServerError && <p>
+        Please try again in a few minutes.
+        <br />
+        If the problem still persists, please contact us manually.
+    </p>}
+    {(context === 'payment') && <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
+        <p>
+            Make sure your funds have not been deducted.<br />
+            If you have, please contact us for assistance.
+        </p>
+    </Alert>}
+</>;
+
 
 
 // styles:
@@ -78,7 +132,7 @@ const Footer = () => {
 
 export default function App({ Component, pageProps }: AppProps) {
     return (<Provider store={store}><PersistGate persistor={persistor}>
-        <DialogMessageProvider>
+        <DialogMessageProvider fetchErrorMessageDefault={fetchErrorMessageDefault}>
             <Header />
             
             <Component {...pageProps} />
