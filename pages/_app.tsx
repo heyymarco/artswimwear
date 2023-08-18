@@ -27,13 +27,20 @@ import { WEBSITE_FAVICON_PNG, WEBSITE_FAVICON_SVG } from '@/website.config'
 // heymarco components:
 import {
     // react components:
-    DialogMessageProvider, ShowMessageFetchErrorOptions,
+    DialogMessageProvider, FetchErrorTitle, FetchErrorMessage,
 }                           from '@heymarco/dialog-message'
 
 
 
 // defaults:
-const fetchErrorMessageDefault : Extract<ShowMessageFetchErrorOptions['fetchErrorMessage'], Function> = ({isRequestError, isServerError, errorCode, context}) => <>
+const fetchErrorTitleDefault   : Extract<FetchErrorTitle  , Function> = ({isRequestError, isServerError, errorCode, context}) => {
+    switch (context) {
+        case 'order'   : return 'Error Processing Your Order';
+        case 'payment' : return 'Error Processing Your Payment';
+        default        : return 'Error';
+    } // switch
+};
+const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequestError, isServerError, errorCode, context}) => <>
     {(errorCode !== 402) && <p>
         Oops, there was an error processing {
             ((): React.ReactNode => {
@@ -132,7 +139,10 @@ const Footer = () => {
 
 export default function App({ Component, pageProps }: AppProps) {
     return (<Provider store={store}><PersistGate persistor={persistor}>
-        <DialogMessageProvider fetchErrorMessageDefault={fetchErrorMessageDefault}>
+        <DialogMessageProvider
+            fetchErrorTitleDefault={fetchErrorTitleDefault}
+            fetchErrorMessageDefault={fetchErrorMessageDefault}
+        >
             <Header />
             
             <Component {...pageProps} />

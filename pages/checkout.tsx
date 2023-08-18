@@ -687,7 +687,7 @@ export default function Checkout() {
             return placeOrderResponse.orderId;
         }
         catch (error: any) {
-            showMessageFetchError(error, { context: 'order', title: 'Error Processing Your Order' });
+            showMessageFetchError(error, { context: 'order' });
             throw error;
         } // try
     });
@@ -2057,7 +2057,7 @@ const PaymentMethodPaypal = () => {
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
-            showMessageFetchError(error, { context: 'payment', title: 'Error Processing Your Payment' });
+            showMessageFetchError(error, { context: 'payment' });
         }
         finally {
             // update the UI:
@@ -2258,7 +2258,7 @@ const CardPaymentButton = () => {
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
-            showMessageFetchError(error, { context: 'payment', title: 'Error Processing Your Payment' });
+            showMessageFetchError(error, { context: 'payment' });
         }
         finally {
             // update the UI:
@@ -2314,7 +2314,7 @@ const ManualPaymentButton = () => {
             handleOrderCompleted(/*paid:*/false);
         }
         catch (error: any) {
-            showMessageFetchError(error, { context: 'order', title: 'Error Processing Your Order' });
+            showMessageFetchError(error, { context: 'order' });
         }
         finally {
             // update the UI:
