@@ -625,14 +625,17 @@ export default function Checkout() {
             
             
             if (!shippingList.ids.length) {
-                showMessageError(<>
-                    <p>
-                        We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
-                    </p>
-                    <p>
-                        Please contact us for further assistance.
-                    </p>
-                </>, { title: 'No Shipping Agency' });
+                showMessageError({
+                    title : 'No Shipping Agency',
+                    error : <>
+                        <p>
+                            We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
+                        </p>
+                        <p>
+                            Please contact us for further assistance.
+                        </p>
+                    </>,
+                });
                 return false;
             } // if
             
@@ -641,19 +644,22 @@ export default function Checkout() {
             return true;
         }
         catch (error: any) {
-            showMessageError(<>
-                <p>
-                    Oops, there was an error calculating the shipping cost.
-                </p>
-                <p>
-                    There was a <strong>problem contacting our server</strong>.<br />
-                    Make sure your internet connection is available.
-                </p>
-                <p>
-                    Please try again in a few minutes.<br />
-                    If the problem still persists, please contact us manually.
-                </p>
-            </>, { title: 'Error Calculating Shipping Cost' });
+            showMessageError({
+                title : 'Error Calculating Shipping Cost',
+                error : <>
+                    <p>
+                        Oops, there was an error calculating the shipping cost.
+                    </p>
+                    <p>
+                        There was a <strong>problem contacting our server</strong>.<br />
+                        Make sure your internet connection is available.
+                    </p>
+                    <p>
+                        Please try again in a few minutes.<br />
+                        If the problem still persists, please contact us manually.
+                    </p>
+                </>,
+            });
             return false;
         } // try
     });
@@ -687,7 +693,7 @@ export default function Checkout() {
             return placeOrderResponse.orderId;
         }
         catch (error: any) {
-            showMessageFetchError(error, { context: 'order' });
+            showMessageFetchError({ error, context: 'order' });
             throw error;
         } // try
     });
@@ -1068,9 +1074,9 @@ const NavCheckout = () => {
                     }, 0);
                 }, 0);
             });
-            const invalidFields = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
-            if (invalidFields?.length) { // there is an/some invalid field
-                showMessageFieldError(invalidFields);
+            const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
+            if (fieldErrors?.length) { // there is an/some invalid field
+                showMessageFieldError(fieldErrors);
                 return;
             } // if
             
@@ -2057,7 +2063,7 @@ const PaymentMethodPaypal = () => {
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
-            showMessageFetchError(error, { context: 'payment' });
+            showMessageFetchError({ error, context: 'payment' });
         }
         finally {
             // update the UI:
@@ -2199,12 +2205,12 @@ const CardPaymentButton = () => {
                 }, 0);
             }, 0);
         });
-        const invalidFields = [
+        const fieldErrors = [
             ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
             ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),
         ];
-        if (invalidFields?.length) { // there is an/some invalid field
-            showMessageFieldError(invalidFields);
+        if (fieldErrors?.length) { // there is an/some invalid field
+            showMessageFieldError(fieldErrors);
             return;
         } // if
         
@@ -2258,7 +2264,7 @@ const CardPaymentButton = () => {
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
-            showMessageFetchError(error, { context: 'payment' });
+            showMessageFetchError({ error, context: 'payment' });
         }
         finally {
             // update the UI:
@@ -2314,7 +2320,7 @@ const ManualPaymentButton = () => {
             handleOrderCompleted(/*paid:*/false);
         }
         catch (error: any) {
-            showMessageFetchError(error, { context: 'order' });
+            showMessageFetchError({ error, context: 'order' });
         }
         finally {
             // update the UI:
