@@ -977,10 +977,10 @@ const ImageWithStatus = <TElement extends Element = HTMLElement>(props: ImageWit
 
 
 
-interface WithDetailsProps {
+interface ResponsiveDetailsProps {
     children  : React.ReactNode
 }
-const WithDetails = ({children}: WithDetailsProps) => {
+const ResponsiveDetails = ({children}: ResponsiveDetailsProps) => {
     // context:
     const {isDesktop} = useCheckout();
     
@@ -1328,7 +1328,7 @@ const OrderSummary = () => {
     // jsx:
     return (
         <>
-            <WithDetails>
+            <ResponsiveDetails>
                 <List className='orderList' listStyle='flat'>
                     {cartItems.map((item) => {
                         const productUnitPrice = priceList?.entities?.[item.productId]?.price;
@@ -1360,7 +1360,7 @@ const OrderSummary = () => {
                         )
                     })}
                 </List>
-            </WithDetails>
+            </ResponsiveDetails>
             <hr />
             <p className='currencyBlock'>
                 Subtotal products: <span className='currency'>
