@@ -11,6 +11,7 @@ import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
 import { useRouter } from 'next/router'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
+import { useMountedFlag } from '@reusable-ui/core'
 
 
 
@@ -42,6 +43,11 @@ export const CartBarContent = () => {
     
     
     
+    // dom effects:
+    const isMounted = useMountedFlag();
+    
+    
+    
     const { showMessage } = useDialogMessage();
     const cartBodyRef     = useRef<HTMLElement|null>(null);
     const confirmAndDelete = async (productId: string): Promise<boolean> => {
@@ -64,6 +70,7 @@ export const CartBarContent = () => {
             !==
             'yes'
         ) return false;
+        if (!isMounted.current) return false; // the component was unloaded before awaiting returned => do nothing
         
         
         
