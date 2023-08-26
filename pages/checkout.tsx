@@ -4,7 +4,7 @@ import Head from 'next/head'
 
 import { Article, Section, Main } from '@heymarco/section'
 
-import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, RadioProps, TextInput, Tooltip, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
+import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, RadioProps, TextInput, Tooltip, useDialogMessage, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { PricePreview, ProductPreview, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -35,11 +35,6 @@ import {
     PAGE_CHECKOUT_TITLE,
     PAGE_CHECKOUT_DESCRIPTION,
 } from '@/website.config'
-// heymarco components:
-import {
-    // dialogs:
-    useDialogMessage,
-}                           from '@heymarco/dialog-message'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 
 // apis:
@@ -626,7 +621,7 @@ export default function Checkout() {
             
             if (!shippingList.ids.length) {
                 showMessageError({
-                    title : 'No Shipping Agency',
+                    title : <h1>No Shipping Agency</h1>,
                     error : <>
                         <p>
                             We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
@@ -645,7 +640,7 @@ export default function Checkout() {
         }
         catch (error: any) {
             showMessageError({
-                title : 'Error Calculating Shipping Cost',
+                title : <h1>Error Calculating Shipping Cost</h1>,
                 error : <>
                     <p>
                         Oops, there was an error calculating the shipping cost.

@@ -16,7 +16,7 @@ import {
 import SiteNavbar from '../components/SiteNavbar'
 
 import Head from 'next/head'
-import { Alert, Container } from '@reusable-ui/components';
+import { Alert, Container, DialogMessageProvider, FetchErrorMessage, FetchErrorTitle } from '@reusable-ui/components';
 
 import { store, persistor } from '@/store/store'
 import { Provider } from 'react-redux'
@@ -24,20 +24,14 @@ import { CartBar } from '@/components/CartBar';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WEBSITE_FAVICON_PNG, WEBSITE_FAVICON_SVG } from '@/website.config'
 
-// heymarco components:
-import {
-    // react components:
-    DialogMessageProvider, FetchErrorTitle, FetchErrorMessage,
-}                           from '@heymarco/dialog-message'
-
 
 
 // defaults:
 const fetchErrorTitleDefault   : Extract<FetchErrorTitle  , Function> = ({isRequestError, isServerError, errorCode, context}) => {
     switch (context) {
-        case 'order'   : return 'Error Processing Your Order';
-        case 'payment' : return 'Error Processing Your Payment';
-        default        : return 'Error';
+        case 'order'   : return <h1>Error Processing Your Order</h1>;
+        case 'payment' : return <h1>Error Processing Your Payment</h1>;
+        default        : return <h1>Error</h1>;
     } // switch
 };
 const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequestError, isServerError, errorCode, context}) => <>
