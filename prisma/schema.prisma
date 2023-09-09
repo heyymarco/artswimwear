@@ -17,120 +17,136 @@ enum ProductVisibility {
     DRAFT
 }
 model Product {
-    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
-    createdAt           DateTime            @default(now())
-    updatedAt           DateTime            @updatedAt
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    createdAt               DateTime                @default(now())
+    updatedAt               DateTime                @updatedAt
     
-    visibility          ProductVisibility
+    // data:
+    visibility              ProductVisibility
     
-    name                String
+    name                    String
     
-    price               Float               // min: 0
-    shippingWeight      Float?              // min: 0
+    price                   Float                   // min: 0
+    shippingWeight          Float?                  // min: 0
     
-    stock               Int?                // min: 0
+    stock                   Int?                    // min: 0
     
-    path                String              @unique
+    path                    String                  @unique
     
-    excerpt             String?
-    description         Json?
+    excerpt                 String?
+    description             Json?
     
-    images              String[]
+    images                  String[]
     
-    orders              OrdersOnProducts[]
-    draftOrders         DraftOrdersOnProducts[]
+    // relations:
+    orders                  OrdersOnProducts[]      // some Product(s) may have some related Order(s)       // many to many
+    draftOrders             DraftOrdersOnProducts[] // some Product(s) may have some related DraftOrder(s)  // many to many
 }
 
 
 
 type ShippingRate {
-    startingWeight      Float               // min: 0, max: 1000     
-    rate                Float               // min: 0, max: 999999999
+    // data:
+    startingWeight          Float                   // min: 0, max: 1000     
+    rate                    Float                   // min: 0, max: 999999999
 }
 type CoverageCity {
-    city                String              // minLength: 3, maxLength: 50
+    // data:
+    city                    String                  // minLength: 3, maxLength: 50
     
-    estimate            String?             // minLength: 2, maxLength: 50
-    shippingRates       ShippingRate[]
+    estimate                String?                 // minLength: 2, maxLength: 50
+    shippingRates           ShippingRate[]
 }
 type CoverageZone {
-    zone                String              // minLength: 3, maxLength: 50
+    // data:
+    zone                    String                  // minLength: 3, maxLength: 50
     
-    estimate            String?             // minLength: 2, maxLength: 50
-    shippingRates       ShippingRate[]
+    estimate                String?                 // minLength: 2, maxLength: 50
+    shippingRates           ShippingRate[]
     
-    useSpecificArea     Boolean?
-    cities              CoverageCity[]
+    useSpecificArea         Boolean?
+    cities                  CoverageCity[]
 }
 type CoverageCountry {
-    country             String              // minLength: 2, maxLength: 3
+    // data:
+    country                 String                  // minLength: 2, maxLength: 3
     
-    estimate            String?             // minLength: 2, maxLength: 50
-    shippingRates       ShippingRate[]
+    estimate                String?                 // minLength: 2, maxLength: 50
+    shippingRates           ShippingRate[]
     
-    useSpecificArea     Boolean?
-    zones               CoverageZone[]
+    useSpecificArea         Boolean?
+    zones                   CoverageZone[]
 }
 model ShippingProvider {
-    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
-    createdAt           DateTime            @default(now())
-    updatedAt           DateTime            @updatedAt
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    createdAt               DateTime                @default(now())
+    updatedAt               DateTime                @updatedAt
     
-    enabled             Boolean
-    name                String              // minLength: 2, maxLength: 50
+    // data:
+    enabled                 Boolean
+    name                    String                  // minLength: 2, maxLength: 50
     
-    weightStep          Float               // min: 0, max: 1000
+    weightStep              Float                   // min: 0, max: 1000
     
-    estimate            String?             // minLength: 2, maxLength: 50
-    shippingRates       ShippingRate[]
+    estimate                String?                 // minLength: 2, maxLength: 50
+    shippingRates           ShippingRate[]
     
-    useSpecificArea     Boolean?
-    countries           CoverageCountry[]
+    useSpecificArea         Boolean?
+    countries               CoverageCountry[]
     
-    orders              Order[]             @relation("OrdersOnShipping") // one Shipping can have many Order[] BUT one Order cannot have many Shipping[]
-    draftOrders         DraftOrder[]        @relation("DraftOrdersOnShipping") // one Shipping can have many DraftOrder[] BUT one DraftOrder cannot have many Shipping[]
+    // relations:
+    orders                  Order[]                 @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many
+    draftOrders             DraftOrder[]            @relation("DraftOrdersOnShipping") // one ShippingProvider may have some related DraftOrder(s)  // one  to many
 }
 
 
 
 model Customer {
-    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
-    createdAt           DateTime            @default(now())
-    updatedAt           DateTime            @updatedAt
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    createdAt               DateTime                @default(now())
+    updatedAt               DateTime                @updatedAt
     
-    marketingOpt        Boolean?
+    // data:
+    marketingOpt            Boolean?
     
-    nickName            String              // minLength: 2, maxLength: 30
-    email               String              // minLength: 5, maxLength: 50
+    nickName                String                  // minLength: 2, maxLength: 30
+    email                   String                  // minLength: 5, maxLength: 50
     
-    orders              Order[]             @relation("OrdersOnCustomer") // one Customer can have many Order[] BUT one Order cannot have many Customer[]
+    // relations:
+    orders                  Order[]                 @relation("OrdersOnCustomer") // one Customer may have some related Order(s)  // one  to many
 }
 
 
 
 model Country {
-    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
     
-    enabled             Boolean
-    name                String
+    // data:
+    enabled                 Boolean
+    name                    String
     
-    code                String              // minLength: 2 , maxLength:  3
-    dialCode            String
+    code                    String                  // minLength: 2 , maxLength:  3
+    dialCode                String
 }
 
 
 
 type Address {
-    firstName           String              // minLength: 2 , maxLength: 30
-    lastName            String              // minLength: 1 , maxLength: 30
+    // data:
+    firstName               String                  // minLength: 2 , maxLength: 30
+    lastName                String                  // minLength: 1 , maxLength: 30
     
-    phone               String              // minLength: 5 , maxLength: 15
+    phone                   String                  // minLength: 5 , maxLength: 15
     
-    address             String              // minLength: 5 , maxLength: 90
-    city                String              // minLength: 3 , maxLength: 50
-    zone                String              // minLength: 3 , maxLength: 50
-    zip                 String?             // minLength: 2 , maxLength: 11
-    country             String              // minLength: 2 , maxLength:  3
+    address                 String                  // minLength: 5 , maxLength: 90
+    city                    String                  // minLength: 3 , maxLength: 50
+    zone                    String                  // minLength: 3 , maxLength: 50
+    zip                     String?                 // minLength: 2 , maxLength: 11
+    country                 String                  // minLength: 2 , maxLength:  3
 }
 enum PaymentType {
     CARD
@@ -140,73 +156,88 @@ enum PaymentType {
     MANUAL_PAID
 }
 type PaymentMethod {
-    type                PaymentType
-    brand               String?
-    identifier          String?
+    // data:
+    type                    PaymentType
+    brand                   String?
+    identifier              String?
     
-    amount              Float               // min: 0
-    fee                 Float               // min: 0
+    amount                  Float                   // min: 0
+    fee                     Float                   // min: 0
 }
 model Order {
-    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
-    createdAt           DateTime            @default(now())
-    updatedAt           DateTime            @updatedAt
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    createdAt               DateTime                @default(now())
+    updatedAt               DateTime                @updatedAt
     
-    orderId             String              @unique // a secondary id for public identifier
+    // data:
+    orderId                 String                  @unique // a secondary id for public identifier
     
-    items               OrdersOnProducts[]
+    shippingAddress         Address?
+    shippingCost            Float?                  // min: 0
     
-    customerId          String?             @db.ObjectId
-    customer            Customer?           @relation(fields: [customerId], references: [id], "OrdersOnCustomer", onDelete: SetNull, onUpdate: Cascade) // one Customer can have many Order[] BUT one Order cannot have many Customer[]
+    billingAddress          Address?
+    paymentMethod           PaymentMethod
     
-    shippingAddress     Address?
-    shippingCost        Float?              // min: 0
-    shippingProviderId  String?             @db.ObjectId
-    shippingProvider    ShippingProvider?   @relation(fields: [shippingProviderId], references: [id], "OrdersOnShipping", onDelete: SetNull, onUpdate: Cascade) // one Shipping can have many Order[] BUT one Order cannot have many Shipping[]
+    // relations:
+    items                   OrdersOnProducts[]      // some Product(s) may have some related Order(s)  // many to many
     
-    billingAddress      Address?
-    paymentMethod       PaymentMethod
+    customerId              String?
+    customer                Customer?               @relation(fields: [customerId]         , references: [id], "OrdersOnCustomer", onDelete: SetNull) // preserve the related Order(s) if the Customer deleted
+    
+    shippingProviderId      String?
+    shippingProvider        ShippingProvider?       @relation(fields: [shippingProviderId] , references: [id], "OrdersOnShipping", onDelete: SetNull) // preserve the related Order(s) if the ShippingProvider deleted
 }
-model OrdersOnProducts { // one Product can have many Order[] AND one Order can have many Product[]
+model OrdersOnProducts {
+    // records:
     // @@id([productId, orderId])
-    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+    id                      String                  @id @default(cuid()) @map("_id")
     
-    orderId             String              @db.ObjectId
-    order               Order               @relation(fields: [orderId]  , references: [id], onDelete: Cascade, onUpdate: Cascade)
+    // data:
+    price                   Float                   // min: 0
+    shippingWeight          Float?                  // min: 0
+    quantity                Int                     // min: 1
     
-    productId           String?             @db.ObjectId
-    product             Product?            @relation(fields: [productId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+    // relations:
+    orderId                 String
+    order                   Order                   @relation(fields: [orderId]     , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
     
-    price               Float               // min: 0
-    shippingWeight      Float?              // min: 0
-    quantity            Int                 // min: 1
+    productId               String?
+    product                 Product?                @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
 }
 model DraftOrder {
-    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
-    createdAt           DateTime            @default(now())
-    expiresAt           DateTime
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    createdAt               DateTime                @default(now())
+    expiresAt               DateTime
     
-    orderId             String              @unique // a secondary id for public identifier
-    paypalOrderId       String?             @unique // a secondary id for public identifier
+    // data:
+    orderId                 String                  @unique // a secondary id for public identifier
+    paypalOrderId           String?                 @unique // a secondary id for public identifier
     
-    items               DraftOrdersOnProducts[]
+    shippingAddress         Address?
+    shippingCost            Float?                  // min: 0
     
-    shippingAddress     Address?
-    shippingCost        Float?              // min: 0
-    shippingProviderId  String?             @db.ObjectId
-    shippingProvider    ShippingProvider?   @relation(fields: [shippingProviderId], references: [id], "DraftOrdersOnShipping", onDelete: SetNull, onUpdate: Cascade) // one Shipping can have many DraftOrder[] BUT one DraftOrder cannot have many Shipping[]
+    // relations:
+    items                   DraftOrdersOnProducts[] // some Product(s) may have some related DraftOrder(s)  // many to many
+    
+    shippingProviderId      String?
+    shippingProvider        ShippingProvider?       @relation(fields: [shippingProviderId] , references: [id], "DraftOrdersOnShipping", onDelete: SetNull) // preserve the related DraftOrder(s) if the ShippingProvider deleted
 }
-model DraftOrdersOnProducts { // one Product can have many DraftOrder[] AND one DraftOrder can have many Product[]
+model DraftOrdersOnProducts {
+    // records:
     // @@id([productId, draftOrderId])
-    id                  String              @id @default(auto()) @map("_id") @db.ObjectId
+    id                      String                  @id @default(cuid()) @map("_id")
     
-    draftOrderId        String              @db.ObjectId
-    draftOrder          DraftOrder          @relation(fields: [draftOrderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+    // data:
+    price                   Float                   // min: 0
+    shippingWeight          Float?                  // min: 0
+    quantity                Int                     // min: 1
     
-    productId           String?             @db.ObjectId
-    product             Product?            @relation(fields: [productId]   , references: [id], onDelete: SetNull, onUpdate: Cascade)
+    // relations:
+    draftOrderId            String
+    draftOrder              DraftOrder              @relation(fields: [draftOrderId], references: [id], onDelete: Cascade) // delete the related DraftOrdersOnProducts(s) if the DraftOrder deleted
     
-    price               Float               // min: 0
-    shippingWeight      Float?              // min: 0
-    quantity            Int                 // min: 1
+    productId               String?
+    product                 Product?                @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
 }
