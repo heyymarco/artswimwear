@@ -454,6 +454,7 @@ const responsePlaceOrder = async (
                 }),
             ]);
             //#endregion batch queries
+            console.log('BATCH QUERIES: ', {selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder});
             
             
             
@@ -481,6 +482,7 @@ const responsePlaceOrder = async (
                         ]);
                         if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) return tempOrderId;
                     } // for
+                    console.log('INTERNAL ERROR AT GENERATE UNIQUE ID');
                     throw 'INTERNAL_ERROR';
                 } // if
             })();
@@ -584,6 +586,7 @@ const responsePlaceOrder = async (
             
             
             //#region decrease product stock
+            console.log('UPDATING PRODUCT STOCK');
             for (const {productId, quantity} of reduceStockItems) {
                 await prismaTransaction.product.update({
                     where  : {
@@ -594,6 +597,7 @@ const responsePlaceOrder = async (
                     },
                 });
             } // for
+            console.log('UPDATED PRODUCT STOCK');
             //#endregion decrease product stock
             
             
@@ -840,6 +844,7 @@ const responsePlaceOrder = async (
             
             
             //#region create a newDraftOrder
+            console.log('CREATING DRAFT ORDER');
             await prismaTransaction.draftOrder.create({
                 data : {
                     expiresAt                  : new Date(Date.now() + (1 * 60 * 1000)),
@@ -883,6 +888,7 @@ const responsePlaceOrder = async (
                     },
                 },
             });
+            console.log('CREATED DRAFT ORDER');
             //#endregion create a newDraftOrder
         });
     }
