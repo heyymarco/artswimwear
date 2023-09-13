@@ -230,7 +230,7 @@ type CommitDraftOrder = Omit<DraftOrder,
 }
 const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customer, billingAddress, paymentMethod } : { draftOrder: CommitDraftOrder, customer: CommitCustomer, billingAddress: Address|null, paymentMethod: PaymentMethod }) => {
     await prismaTransaction.order.create({
-        data : {
+        data   : {
             orderId              : draftOrder.orderId,
             
             items                : {
@@ -257,10 +257,16 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
             billingAddress       : billingAddress,
             paymentMethod        : paymentMethod,
         },
+        select : {
+            id : true,
+        },
     });
     await prismaTransaction.draftOrder.delete({
         where  : {
             id : draftOrder.id,
+        },
+        select : {
+            id : true,
         },
     });
 }
@@ -289,11 +295,17 @@ const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
             data   : {
                 stock : { decrement: quantity }
             },
+            select : {
+                id : true,
+            },
         });
     } // for
     await prismaTransaction.draftOrder.delete({
         where  : {
             id : draftOrder.id,
+        },
+        select : {
+            id : true,
         },
     });
 }
@@ -354,7 +366,6 @@ const responsePlaceOrder = async (
         
         || !shippingProviderId  || (typeof(shippingProviderId) !== 'string') // todo validate shipping provider
     ) {
-        console.log('error: invalid data format');
         return res.status(400).end(); // bad req
     } // if
     //#endregion validate shipping address
@@ -454,7 +465,6 @@ const responsePlaceOrder = async (
                 }),
             ]);
             //#endregion batch queries
-            console.log('BATCH QUERIES: ', {selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder});
             
             
             
@@ -586,7 +596,6 @@ const responsePlaceOrder = async (
             
             
             //#region decrease product stock
-            console.log('UPDATING PRODUCT STOCK');
             for (const {productId, quantity} of reduceStockItems) {
                 await prismaTransaction.product.update({
                     where  : {
@@ -600,7 +609,6 @@ const responsePlaceOrder = async (
                     },
                 });
             } // for
-            console.log('UPDATED PRODUCT STOCK');
             //#endregion decrease product stock
             
             
@@ -847,8 +855,7 @@ const responsePlaceOrder = async (
             
             
             //#region create a newDraftOrder
-            console.log('CREATING DRAFT ORDER');
-            const newDraftOrder = await prismaTransaction.draftOrder.create({
+            await prismaTransaction.draftOrder.create({
                 data : {
                     expiresAt                  : new Date(Date.now() + (1 * 60 * 1000)),
                     
@@ -891,12 +898,9 @@ const responsePlaceOrder = async (
                     },
                 },
                 select : {
-                    id: true,
-                    orderId : true,
-                    paypalOrderId: true,
+                    id : true,
                 },
             });
-            console.log('CREATED DRAFT ORDER: ', newDraftOrder);
             //#endregion create a newDraftOrder
         });
     }
