@@ -595,6 +595,9 @@ const responsePlaceOrder = async (
                     data   : {
                         stock : { decrement: quantity }
                     },
+                    select : {
+                        id : true,
+                    },
                 });
             } // for
             console.log('UPDATED PRODUCT STOCK');
@@ -845,7 +848,7 @@ const responsePlaceOrder = async (
             
             //#region create a newDraftOrder
             console.log('CREATING DRAFT ORDER');
-            await prismaTransaction.draftOrder.create({
+            const newDraftOrder = await prismaTransaction.draftOrder.create({
                 data : {
                     expiresAt                  : new Date(Date.now() + (1 * 60 * 1000)),
                     
@@ -887,8 +890,13 @@ const responsePlaceOrder = async (
                         },
                     },
                 },
+                select : {
+                    id: true,
+                    orderId : true,
+                    paypalOrderId: true,
+                },
             });
-            console.log('CREATED DRAFT ORDER');
+            console.log('CREATED DRAFT ORDER: ', newDraftOrder);
             //#endregion create a newDraftOrder
         });
     }
