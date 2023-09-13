@@ -1017,14 +1017,14 @@ const responseMakePayment = async (
             };
             const draftOrder = (
                 !!orderId
-                ? await prisma.draftOrder.findUnique({
+                ? await prismaTransaction.draftOrder.findUnique({
                     where  : {
                         orderId       : orderId,
                     },
                     select  : requiredSelect,
                 })
                 : !!paypalOrderId
-                ? await prisma.draftOrder.findUnique({
+                ? await prismaTransaction.draftOrder.findUnique({
                     where : {
                         paypalOrderId : paypalOrderId
                     },
