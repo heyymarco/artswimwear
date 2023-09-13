@@ -884,9 +884,6 @@ const responsePlaceOrder = async (
                 },
             });
             //#endregion create a newDraftOrder
-        }, {
-            maxWait : 2000 /* ms */,
-            timeout : 5000 /* ms */,
         });
     }
     catch (error: any) {
@@ -1380,9 +1377,6 @@ const responseMakePayment = async (
                 await revertOrder(prismaTransaction, { draftOrder });
             } // if
             //#endregion save the database
-        }, {
-            maxWait : 2000 /* ms */,
-            timeout : 5000 /* ms */,
         });
     }
     catch (error: any) {
