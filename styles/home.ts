@@ -34,6 +34,10 @@ export default () => [
                     
                     inlineSize : '100%',
                     blockSize  : '100%',
+                    
+                    ...children(['&', 'img'], {
+                        objectFit: 'contain',
+                    }),
                 }),
             }),
             ...children('footer', {
