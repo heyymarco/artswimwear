@@ -88,6 +88,10 @@ export default () => [
                         height: '100%',
                         ...children('ul>li>figure', {
                             background: 'white',
+                            
+                            ...children(['&', 'img'], {
+                                objectFit: 'contain',
+                            }),
                         }),
                     }),
                 }),
