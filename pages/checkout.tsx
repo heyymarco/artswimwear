@@ -315,7 +315,7 @@ interface ICheckoutContext {
     verifyShippingProviderAvailable   : (address: MatchingAddress) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string) => Promise<void>
-    handleOrderCompleted              : (paid: boolean) => void
+    gotoOrderCompleted                : (paid: boolean) => void
     
     placeOrderApi                     : ReturnType<typeof usePlaceOrder>
     makePaymentApi                    : ReturnType<typeof useMakePayment>
@@ -356,7 +356,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     verifyShippingProviderAvailable   : undefined as any,
     doPlaceOrder                      : undefined as any,
     doMakePayment                     : undefined as any,
-    handleOrderCompleted              : undefined as any,
+    gotoOrderCompleted                : undefined as any,
     
     placeOrderApi                     : undefined as any,
     makePaymentApi                    : undefined as any,
@@ -722,7 +722,7 @@ export default function Checkout() {
             billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
         }).unwrap();
     });
-    const handleOrderCompleted            = useEvent((paid: boolean): void => {
+    const gotoOrderCompleted              = useEvent((paid: boolean): void => {
         dispatch(setCheckoutStep(paid ? 'paid' : 'pending'));
     });
     
@@ -764,7 +764,7 @@ export default function Checkout() {
         verifyShippingProviderAvailable,   // stable ref
         doPlaceOrder,                      // stable ref
         doMakePayment,                     // stable ref
-        handleOrderCompleted,              // stable ref
+        gotoOrderCompleted,                // stable ref
         
         placeOrderApi,
         makePaymentApi,
@@ -804,7 +804,7 @@ export default function Checkout() {
         // verifyShippingProviderAvailable,   // stable ref
         // doPlaceOrder,                      // stable ref
         // doMakePayment,                     // stable ref
-        // handleOrderCompleted,              // stable ref
+        // gotoOrderCompleted,                // stable ref
         
         placeOrderApi,
         makePaymentApi,
@@ -2028,7 +2028,7 @@ const PaymentMethodCard = () => {
 }
 const PaymentMethodPaypal = () => {
     // context:
-    const {doPlaceOrder, doMakePayment, handleOrderCompleted} = useCheckout();
+    const {doPlaceOrder, doMakePayment, gotoOrderCompleted} = useCheckout();
     
     
     
@@ -2055,7 +2055,7 @@ const PaymentMethodPaypal = () => {
             
             // then forward the authentication to backend_API to receive the fund:
             await doMakePayment(paypalAuthentication.orderID);
-            handleOrderCompleted(/*paid:*/true);
+            gotoOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
             showMessageFetchError({ error, context: 'payment' });
@@ -2138,7 +2138,7 @@ const PaymentMethodManual = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, doMakePayment, handleOrderCompleted} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, doMakePayment, gotoOrderCompleted} = useCheckout();
     
     
     
@@ -2256,7 +2256,7 @@ const CardPaymentButton = () => {
             
             // then forward the authentication to backend_API to receive the fund:
             await doMakePayment(paypalAuthentication.orderId);
-            handleOrderCompleted(/*paid:*/true);
+            gotoOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
             showMessageFetchError({ error, context: 'payment' });
@@ -2278,7 +2278,7 @@ const CardPaymentButton = () => {
 }
 const ManualPaymentButton = () => {
     // context:
-    const {doPlaceOrder, doMakePayment, handleOrderCompleted} = useCheckout();
+    const {doPlaceOrder, doMakePayment, gotoOrderCompleted} = useCheckout();
     
     
     
@@ -2312,7 +2312,7 @@ const ManualPaymentButton = () => {
             
             // then forward the authentication to backend_API to book the order (but not paid yet):
             await doMakePayment(orderId);
-            handleOrderCompleted(/*paid:*/false);
+            gotoOrderCompleted(/*paid:*/false);
         }
         catch (error: any) {
             showMessageFetchError({ error, context: 'order' });
