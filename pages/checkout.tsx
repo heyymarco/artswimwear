@@ -313,7 +313,7 @@ interface ICheckoutContext {
     paymentToken                      : PaymentToken|undefined
     
     verifyShippingProviderAvailable   : (address: MatchingAddress) => Promise<boolean>
-    handlePlaceOrder                  : (options?: PlaceOrderOptions) => Promise<string>
+    doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     handleMakePayment                 : (orderId: string) => Promise<void>
     handleOrderCompleted              : (paid: boolean) => void
     
@@ -354,7 +354,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     paymentToken                      : undefined,
     
     verifyShippingProviderAvailable   : undefined as any,
-    handlePlaceOrder                  : undefined as any,
+    doPlaceOrder                      : undefined as any,
     handleMakePayment                 : undefined as any,
     handleOrderCompleted              : undefined as any,
     
@@ -658,7 +658,7 @@ export default function Checkout() {
             return false;
         } // try
     });
-    const handlePlaceOrder                = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
+    const doPlaceOrder                    = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
                 // cart item(s):
@@ -762,7 +762,7 @@ export default function Checkout() {
         paymentToken: existingPaymentToken,
         
         verifyShippingProviderAvailable,   // stable ref
-        handlePlaceOrder,                  // stable ref
+        doPlaceOrder,                      // stable ref
         handleMakePayment,                 // stable ref
         handleOrderCompleted,              // stable ref
         
@@ -802,7 +802,7 @@ export default function Checkout() {
         existingPaymentToken,
         
         // verifyShippingProviderAvailable,   // stable ref
-        // handlePlaceOrder,                  // stable ref
+        // doPlaceOrder,                      // stable ref
         // handleMakePayment,                 // stable ref
         // handleOrderCompleted,              // stable ref
         
@@ -1902,7 +1902,7 @@ const PaymentMethod = () => {
 }
 const PaymentMethodCard = () => {
     // context:
-    const {cardholderInputRef, handlePlaceOrder} = useCheckout();
+    const {cardholderInputRef, doPlaceOrder} = useCheckout();
     
     
     
@@ -1924,7 +1924,7 @@ const PaymentMethodCard = () => {
     
     // jsx:
     return (
-        <PayPalHostedFieldsProvider styles={hostedFieldsStyle} createOrder={handlePlaceOrder}>
+        <PayPalHostedFieldsProvider styles={hostedFieldsStyle} createOrder={doPlaceOrder}>
             <ValidationProvider enableValidation={paymentCardValidation}>
                 <Group className='number'>
                     <Label theme='secondary' mild={false} className='solid'>
@@ -2028,7 +2028,7 @@ const PaymentMethodCard = () => {
 }
 const PaymentMethodPaypal = () => {
     // context:
-    const {handlePlaceOrder, handleMakePayment, handleOrderCompleted} = useCheckout();
+    const {doPlaceOrder, handleMakePayment, handleOrderCompleted} = useCheckout();
     
     
     
@@ -2106,7 +2106,7 @@ const PaymentMethodPaypal = () => {
                 Click the PayPal button below. You will be redirected to the PayPal website to complete the payment.
             </p>
             <PayPalButtons
-                createOrder={handlePlaceOrder}
+                createOrder={doPlaceOrder}
                 onApprove={handleFundApproved}
                 onShippingChange={handleShippingChange}
             />
@@ -2278,7 +2278,7 @@ const CardPaymentButton = () => {
 }
 const ManualPaymentButton = () => {
     // context:
-    const {handlePlaceOrder, handleMakePayment, handleOrderCompleted} = useCheckout();
+    const {doPlaceOrder, handleMakePayment, handleOrderCompleted} = useCheckout();
     
     
     
@@ -2306,7 +2306,7 @@ const ManualPaymentButton = () => {
             
             
             // createOrder:
-            const orderId = await handlePlaceOrder({paymentSource: 'manual'});
+            const orderId = await doPlaceOrder({paymentSource: 'manual'});
             
             
             
