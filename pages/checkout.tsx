@@ -2380,7 +2380,7 @@ const PaymentPending = () => {
             <Section>
                 <Alert theme='success' expanded={true} controlComponent={<></>}>
                     <p className='h5'>
-                        Your order is confirmed.
+                        Your order has been confirmed.
                     </p>
                     <p>
                         You&apos;ll receive a confirmation email with your order number shortly.
@@ -2415,7 +2415,7 @@ const Paid = () => {
             <Section>
                 <Alert theme='success' expanded={true} controlComponent={<></>}>
                     <p className='h5'>
-                        Your order is confirmed and your payment is received.
+                        Your order has been confirmed and we have received your payment.
                     </p>
                     <p>
                         You&apos;ll receive a confirmation email with your order number shortly to: <strong style={{wordBreak: 'break-all'}}>{customerEmail}</strong>.
