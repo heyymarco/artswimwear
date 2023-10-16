@@ -314,7 +314,7 @@ interface ICheckoutContext {
     
     verifyShippingProviderAvailable   : (address: MatchingAddress) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
-    handleMakePayment                 : (orderId: string) => Promise<void>
+    doMakePayment                     : (orderId: string) => Promise<void>
     handleOrderCompleted              : (paid: boolean) => void
     
     placeOrderApi                     : ReturnType<typeof usePlaceOrder>
@@ -355,7 +355,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     
     verifyShippingProviderAvailable   : undefined as any,
     doPlaceOrder                      : undefined as any,
-    handleMakePayment                 : undefined as any,
+    doMakePayment                     : undefined as any,
     handleOrderCompleted              : undefined as any,
     
     placeOrderApi                     : undefined as any,
@@ -692,7 +692,7 @@ export default function Checkout() {
             throw error;
         } // try
     });
-    const handleMakePayment               = useEvent(async (orderId: string): Promise<void> => {
+    const doMakePayment                   = useEvent(async (orderId: string): Promise<void> => {
         await makePayment({
             orderId,
             
@@ -763,7 +763,7 @@ export default function Checkout() {
         
         verifyShippingProviderAvailable,   // stable ref
         doPlaceOrder,                      // stable ref
-        handleMakePayment,                 // stable ref
+        doMakePayment,                     // stable ref
         handleOrderCompleted,              // stable ref
         
         placeOrderApi,
@@ -803,7 +803,7 @@ export default function Checkout() {
         
         // verifyShippingProviderAvailable,   // stable ref
         // doPlaceOrder,                      // stable ref
-        // handleMakePayment,                 // stable ref
+        // doMakePayment,                     // stable ref
         // handleOrderCompleted,              // stable ref
         
         placeOrderApi,
@@ -2028,7 +2028,7 @@ const PaymentMethodCard = () => {
 }
 const PaymentMethodPaypal = () => {
     // context:
-    const {doPlaceOrder, handleMakePayment, handleOrderCompleted} = useCheckout();
+    const {doPlaceOrder, doMakePayment, handleOrderCompleted} = useCheckout();
     
     
     
@@ -2054,7 +2054,7 @@ const PaymentMethodPaypal = () => {
             
             
             // then forward the authentication to backend_API to receive the fund:
-            await handleMakePayment(paypalAuthentication.orderID);
+            await doMakePayment(paypalAuthentication.orderID);
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
@@ -2138,7 +2138,7 @@ const PaymentMethodManual = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, handleMakePayment, handleOrderCompleted} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, doMakePayment, handleOrderCompleted} = useCheckout();
     
     
     
@@ -2255,7 +2255,7 @@ const CardPaymentButton = () => {
             
             
             // then forward the authentication to backend_API to receive the fund:
-            await handleMakePayment(paypalAuthentication.orderId);
+            await doMakePayment(paypalAuthentication.orderId);
             handleOrderCompleted(/*paid:*/true);
         }
         catch (error: any) {
@@ -2278,7 +2278,7 @@ const CardPaymentButton = () => {
 }
 const ManualPaymentButton = () => {
     // context:
-    const {doPlaceOrder, handleMakePayment, handleOrderCompleted} = useCheckout();
+    const {doPlaceOrder, doMakePayment, handleOrderCompleted} = useCheckout();
     
     
     
@@ -2311,7 +2311,7 @@ const ManualPaymentButton = () => {
             
             
             // then forward the authentication to backend_API to book the order (but not paid yet):
-            await handleMakePayment(orderId);
+            await doMakePayment(orderId);
             handleOrderCompleted(/*paid:*/false);
         }
         catch (error: any) {
