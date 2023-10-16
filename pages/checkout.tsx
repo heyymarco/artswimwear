@@ -312,7 +312,7 @@ interface ICheckoutContext {
     
     paymentToken                      : PaymentToken|undefined
     
-    handleShippingAddressChanged      : (address: MatchingAddress) => Promise<boolean>
+    verifyShippingProviderAvailable   : (address: MatchingAddress) => Promise<boolean>
     handlePlaceOrder                  : (options?: PlaceOrderOptions) => Promise<string>
     handleMakePayment                 : (orderId: string) => Promise<void>
     handleOrderCompleted              : (paid: boolean) => void
@@ -353,7 +353,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     
     paymentToken                      : undefined,
     
-    handleShippingAddressChanged      : undefined as any,
+    verifyShippingProviderAvailable   : undefined as any,
     handlePlaceOrder                  : undefined as any,
     handleMakePayment                 : undefined as any,
     handleOrderCompleted              : undefined as any,
@@ -613,7 +613,7 @@ export default function Checkout() {
     
     
     // handlers:
-    const handleShippingAddressChanged = useEvent(async (address: MatchingAddress): Promise<boolean> => {
+    const verifyShippingProviderAvailable = useEvent(async (address: MatchingAddress): Promise<boolean> => {
         try {
             const shippingList = await getShippingByAddress(address).unwrap();
             
@@ -658,7 +658,7 @@ export default function Checkout() {
             return false;
         } // try
     });
-    const handlePlaceOrder             = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
+    const handlePlaceOrder                = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
                 // cart item(s):
@@ -692,7 +692,7 @@ export default function Checkout() {
             throw error;
         } // try
     });
-    const handleMakePayment            = useEvent(async (orderId: string): Promise<void> => {
+    const handleMakePayment               = useEvent(async (orderId: string): Promise<void> => {
         await makePayment({
             orderId,
             
@@ -722,7 +722,7 @@ export default function Checkout() {
             billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
         }).unwrap();
     });
-    const handleOrderCompleted         = useEvent((paid: boolean): void => {
+    const handleOrderCompleted            = useEvent((paid: boolean): void => {
         dispatch(setCheckoutStep(paid ? 'paid' : 'pending'));
     });
     
@@ -761,7 +761,7 @@ export default function Checkout() {
         
         paymentToken: existingPaymentToken,
         
-        handleShippingAddressChanged,      // stable ref
+        verifyShippingProviderAvailable,   // stable ref
         handlePlaceOrder,                  // stable ref
         handleMakePayment,                 // stable ref
         handleOrderCompleted,              // stable ref
@@ -801,7 +801,7 @@ export default function Checkout() {
         
         existingPaymentToken,
         
-        // handleShippingAddressChanged,      // stable ref
+        // verifyShippingProviderAvailable,   // stable ref
         // handlePlaceOrder,                  // stable ref
         // handleMakePayment,                 // stable ref
         // handleOrderCompleted,              // stable ref
@@ -1024,7 +1024,7 @@ const ProgressCheckout = () => {
 
 const NavCheckout = () => {
     // context:
-    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, handleShippingAddressChanged} = useCheckout();
+    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, verifyShippingProviderAvailable} = useCheckout();
     const isOrderConfirmShown = ['pending', 'paid'].includes(checkoutStep);
     
     
@@ -1084,7 +1084,7 @@ const NavCheckout = () => {
                 
                 
                 
-                if (await handleShippingAddressChanged({
+                if (await verifyShippingProviderAvailable({
                     city    : shippingCity,
                     zone    : shippingZone,
                     country : shippingCountry,
