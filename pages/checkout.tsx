@@ -491,11 +491,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     } = checkoutState;
     const checkoutProgress = useSelector(selectCheckoutProgress);
     const hasCart = !!cartItems.length;
-    const dispatch = useDispatch();
     
     
     
     // dispatchers:
+    const dispatch        = useDispatch();
     const setCheckoutStep = useEvent((checkoutStep: CheckoutStep): void => {
         dispatch(reduxSetCheckoutStep(checkoutStep));
     });
