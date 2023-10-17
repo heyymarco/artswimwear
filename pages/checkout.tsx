@@ -312,7 +312,7 @@ interface ICheckoutContext {
     
     paymentToken                      : PaymentToken|undefined
     
-    verifyShippingProviderAvailable   : (address: MatchingAddress) => Promise<boolean>
+    checkShippingProviderAvailability : (address: MatchingAddress) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
     
@@ -352,7 +352,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     
     paymentToken                      : undefined,
     
-    verifyShippingProviderAvailable   : undefined as any,
+    checkShippingProviderAvailability : undefined as any,
     doPlaceOrder                      : undefined as any,
     doMakePayment                     : undefined as any,
     
@@ -611,7 +611,7 @@ export default function Checkout() {
     
     
     // handlers:
-    const verifyShippingProviderAvailable = useEvent(async (address: MatchingAddress): Promise<boolean> => {
+    const checkShippingProviderAvailability = useEvent(async (address: MatchingAddress): Promise<boolean> => {
         try {
             const shippingList = await getShippingByAddress(address).unwrap();
             
@@ -656,7 +656,7 @@ export default function Checkout() {
             return false;
         } // try
     });
-    const doPlaceOrder                    = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
+    const doPlaceOrder                      = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
                 // cart item(s):
@@ -690,7 +690,7 @@ export default function Checkout() {
             throw error;
         } // try
     });
-    const doMakePayment                   = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
+    const doMakePayment                     = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
         await makePayment({
             orderId,
             
@@ -758,7 +758,7 @@ export default function Checkout() {
         
         paymentToken: existingPaymentToken,
         
-        verifyShippingProviderAvailable,   // stable ref
+        checkShippingProviderAvailability, // stable ref
         doPlaceOrder,                      // stable ref
         doMakePayment,                     // stable ref
         
@@ -797,7 +797,7 @@ export default function Checkout() {
         
         existingPaymentToken,
         
-        // verifyShippingProviderAvailable,   // stable ref
+        // checkShippingProviderAvailability, // stable ref
         // doPlaceOrder,                      // stable ref
         // doMakePayment,                     // stable ref
         
@@ -1019,7 +1019,7 @@ const ProgressCheckout = () => {
 
 const NavCheckout = () => {
     // context:
-    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, verifyShippingProviderAvailable} = useCheckout();
+    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, checkShippingProviderAvailability} = useCheckout();
     const isOrderConfirmShown = ['pending', 'paid'].includes(checkoutStep);
     
     
@@ -1079,7 +1079,7 @@ const NavCheckout = () => {
                 
                 
                 
-                if (await verifyShippingProviderAvailable({
+                if (await checkShippingProviderAvailability({
                     city    : shippingCity,
                     zone    : shippingZone,
                     country : shippingCountry,
