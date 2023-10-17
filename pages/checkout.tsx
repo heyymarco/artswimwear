@@ -1201,7 +1201,7 @@ const ProgressCheckout = () => {
 const NavCheckout = () => {
     // context:
     const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, checkShippingProviderAvailability} = useCheckoutState();
-    const isOrderConfirmShown = ['pending', 'paid'].includes(checkoutStep);
+    const isCheckoutFinished = ['pending', 'paid'].includes(checkoutStep);
     
     
     
@@ -1288,8 +1288,8 @@ const NavCheckout = () => {
     // jsx:
     return (
         <>
-            {!isOrderConfirmShown && <>
-                {!isOrderConfirmShown && <ButtonIcon
+            {!isCheckoutFinished && <>
+                {!isCheckoutFinished && <ButtonIcon
                     enabled={!isBusy}
                     
                     className='back'
@@ -1322,7 +1322,8 @@ const NavCheckout = () => {
                 </ButtonIcon>}
             </>}
             
-            {isOrderConfirmShown && <>
+            {isCheckoutFinished && <>
+                {/* TODO: remove when the finish order completed */}
                 <ButtonIcon
                     enabled={!isBusy}
                     
@@ -1338,6 +1339,7 @@ const NavCheckout = () => {
                 >
                     BACK
                 </ButtonIcon>
+                {/* TODO: re-activate when the finish order completed */}
                 {/* <p>
                     <Icon icon='help' theme='primary' size='md' /> Need help? <Button theme='primary' buttonStyle='link'><Link href='/contact'>Contact Us</Link></Button>
                 </p> */}
