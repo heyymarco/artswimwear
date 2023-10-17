@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, useIsomorphicLayoutEffect, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setIsLoadingStep, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setIsBusy, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
@@ -1163,13 +1163,13 @@ const NavCheckout = () => {
     
     // stores:
     const {
+        isBusy,
+        
+        
+        
         shippingCity,
         shippingZone,
         shippingCountry,
-        
-        
-        
-        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -1212,7 +1212,7 @@ const NavCheckout = () => {
             // next:
             try {
                 // update the UI:
-                dispatch(setIsLoadingStep(true));
+                dispatch(setIsBusy(true));
                 
                 
                 
@@ -1226,7 +1226,7 @@ const NavCheckout = () => {
             }
             finally {
                 // update the UI:
-                dispatch(setIsLoadingStep(false));
+                dispatch(setIsBusy(false));
             } // try
         }},
         { text: 'Continue to payment'  , action: () => dispatch(setCheckoutStep('payment')) },
@@ -1242,7 +1242,7 @@ const NavCheckout = () => {
         <>
             {!isOrderConfirmShown && <>
                 {!isOrderConfirmShown && <ButtonIcon
-                    enabled={!isLoadingStep}
+                    enabled={!isBusy}
                     
                     className='back'
                     theme='primary'
@@ -1258,14 +1258,14 @@ const NavCheckout = () => {
                 </ButtonIcon>}
                 
                 {(checkoutStep !== 'payment') && <ButtonIcon
-                    enabled={!isLoadingStep}
+                    enabled={!isBusy}
                     
                     className='next'
                     theme='primary'
                     size='lg'
                     gradient={true}
                     
-                    icon={!isLoadingStep ? 'arrow_forward' : 'busy'}
+                    icon={!isBusy ? 'arrow_forward' : 'busy'}
                     iconPosition='end'
                     
                     onClick={nextAction.action}
@@ -1276,7 +1276,7 @@ const NavCheckout = () => {
             
             {isOrderConfirmShown && <>
                 <ButtonIcon
-                    enabled={!isLoadingStep}
+                    enabled={!isBusy}
                     
                     className='back'
                     theme='primary'
@@ -1295,7 +1295,7 @@ const NavCheckout = () => {
                 </p> */}
                 
                 <ButtonIcon
-                    enabled={!isLoadingStep}
+                    enabled={!isBusy}
                     
                     className='next'
                     theme='primary'
@@ -1516,7 +1516,7 @@ const OrderReview = () => {
     
     // stores:
     const {
-        isLoadingStep,
+        isBusy,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -1524,7 +1524,7 @@ const OrderReview = () => {
     
     // jsx:
     return (
-        <AccessibilityProvider enabled={!isLoadingStep}>
+        <AccessibilityProvider enabled={!isBusy}>
             <table>
                 <tbody>
                     <tr>
@@ -1583,14 +1583,14 @@ const OrderReview = () => {
 const OrderReviewCompleted = () => {
     // stores:
     const {
-        isLoadingStep,
+        isBusy,
     } = useSelector(selectCheckoutState);
     
     
     
     // jsx:
     return (
-        <AccessibilityProvider enabled={!isLoadingStep}>
+        <AccessibilityProvider enabled={!isBusy}>
             <table>
                 <thead>
                     <tr>
@@ -1865,6 +1865,10 @@ const Payment = () => {
     
     // stores:
     const {
+        isBusy,
+        
+        
+        
         billingAsShipping,
         billingValidation,
         
@@ -1882,10 +1886,6 @@ const Payment = () => {
         
         
         paymentMethod,
-        
-        
-        
-        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -1902,7 +1902,7 @@ const Payment = () => {
                     <p>
                         Select the address that matches your card or payment method.
                     </p>
-                    <ExclusiveAccordion enabled={!isLoadingStep} theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
+                    <ExclusiveAccordion enabled={!isBusy} theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
                         // conditions:
                         if (!expanded) return;
                         
@@ -1977,11 +1977,11 @@ const PaymentMethod = () => {
     
     // stores:
     const {
+        isBusy,
+        
+        
+        
         paymentMethod,
-        
-        
-        
-        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -2000,7 +2000,7 @@ const PaymentMethod = () => {
             <p>
                 All transactions are secure and encrypted.
             </p>
-            <ExclusiveAccordion enabled={!isLoadingStep} theme='primary' expandedListIndex={Math.max(0, paymentMethodList.findIndex((option) => (option === paymentMethod)))} onExpandedChange={({expanded, listIndex}) => {
+            <ExclusiveAccordion enabled={!isBusy} theme='primary' expandedListIndex={Math.max(0, paymentMethodList.findIndex((option) => (option === paymentMethod)))} onExpandedChange={({expanded, listIndex}) => {
                 // conditions:
                 if (!expanded) return;
                 
@@ -2181,7 +2181,7 @@ const PaymentMethodPaypal = () => {
     const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
             // update the UI:
-            dispatch(setIsLoadingStep(true));
+            dispatch(setIsBusy(true));
             
             
             
@@ -2193,7 +2193,7 @@ const PaymentMethodPaypal = () => {
         }
         finally {
             // update the UI:
-            dispatch(setIsLoadingStep(false));
+            dispatch(setIsBusy(false));
         } // try
     });
     const handleShippingChange = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
@@ -2275,6 +2275,10 @@ const CardPaymentButton = () => {
     
     // stores:
     const {
+        isBusy,
+        
+        
+        
         shippingFirstName : _shippingFirstName, // not implemented yet, because billingFirstName is not implemented
         shippingLastName  : _shippingLastName,  // not implemented yet, because billingLastName  is not implemented
         
@@ -2300,10 +2304,6 @@ const CardPaymentButton = () => {
         billingZone,
         billingZip,
         billingCountry,
-        
-        
-        
-        isLoadingStep,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -2346,7 +2346,7 @@ const CardPaymentButton = () => {
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         try {
             // update the UI:
-            dispatch(setIsLoadingStep(true));
+            dispatch(setIsBusy(true));
             
             
             
@@ -2393,7 +2393,7 @@ const CardPaymentButton = () => {
         }
         finally {
             // update the UI:
-            dispatch(setIsLoadingStep(false));
+            dispatch(setIsBusy(false));
         } // try
     });
     
@@ -2401,7 +2401,7 @@ const CardPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon className='next payNow' enabled={!isLoadingStep} icon={!isLoadingStep ? 'monetization_on' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handlePayButtonClicked}>
+        <ButtonIcon className='next payNow' enabled={!isBusy} icon={!isBusy ? 'monetization_on' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handlePayButtonClicked}>
             Pay Now
         </ButtonIcon>
     );
@@ -2414,7 +2414,7 @@ const ManualPaymentButton = () => {
     
     // stores:
     const {
-        isLoadingStep,
+        isBusy,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
     
@@ -2431,7 +2431,7 @@ const ManualPaymentButton = () => {
     const handleFinishOrderButtonClicked = useEvent(async () => {
         try {
             // update the UI:
-            dispatch(setIsLoadingStep(true));
+            dispatch(setIsBusy(true));
             
             
             
@@ -2448,7 +2448,7 @@ const ManualPaymentButton = () => {
         }
         finally {
             // update the UI:
-            dispatch(setIsLoadingStep(false));
+            dispatch(setIsBusy(false));
         } // try
     });
     
@@ -2456,7 +2456,7 @@ const ManualPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon className='next finishOrder' enabled={!isLoadingStep} icon={!isLoadingStep ? 'done' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleFinishOrderButtonClicked}>
+        <ButtonIcon className='next finishOrder' enabled={!isBusy} icon={!isBusy ? 'done' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleFinishOrderButtonClicked}>
             Finish Order
         </ButtonIcon>
     );

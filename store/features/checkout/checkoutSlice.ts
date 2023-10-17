@@ -11,6 +11,10 @@ export interface PaymentToken {
 export type PaymentMethod = 'card'|'paypal'|'manual'
 export interface CheckoutState {
     checkoutStep           : CheckoutStep
+    isBusy                 : boolean
+    
+    
+    
     marketingOpt           : boolean
     
     
@@ -56,14 +60,14 @@ export interface CheckoutState {
     paymentMethod         ?: PaymentMethod
     paymentToken          ?: PaymentToken
     paymentCardValidation  : boolean
-    
-    
-    
-    isLoadingStep          : boolean
 }
 
 const initialState: CheckoutState = {
     checkoutStep           : 'info',
+    isBusy                 : false,
+    
+    
+    
     marketingOpt           : true,
     
     
@@ -107,10 +111,6 @@ const initialState: CheckoutState = {
     paymentMethod          : undefined,
     paymentToken           : undefined,
     paymentCardValidation  : false,
-    
-    
-    
-    isLoadingStep          : false,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
@@ -119,6 +119,12 @@ export const checkoutSlice = createSlice({
         setCheckoutStep: (state, {payload: value}: PayloadAction<CheckoutStep>) => {
             state.checkoutStep = value;
         },
+        setIsBusy      : (state, {payload: value}: PayloadAction<boolean>) => {
+            state.isBusy = value;
+        },
+        
+        
+        
         setMarketingOpt: (state, {payload: value}: PayloadAction<boolean>) => {
             state.marketingOpt = value;
         },
@@ -216,12 +222,6 @@ export const checkoutSlice = createSlice({
         setPaymentCardValidation: (state, {payload: value}: PayloadAction<boolean>) => {
             state.paymentCardValidation = value;
         },
-        
-        
-        
-        setIsLoadingStep: (state, {payload: value}: PayloadAction<boolean>) => {
-            state.isLoadingStep = value;
-        },
     },
 });
 
@@ -230,6 +230,10 @@ export const checkoutSlice = createSlice({
 export default checkoutSlice.reducer;
 export const {
     setCheckoutStep,
+    setIsBusy,
+    
+    
+    
     setMarketingOpt,
     
     
@@ -275,7 +279,6 @@ export const {
     setPaymentMethod,
     setPaymentToken,
     setPaymentCardValidation,
-    setIsLoadingStep,
 } = checkoutSlice.actions;
 
 
@@ -284,6 +287,10 @@ export const {
 export const selectCheckoutState = (state: RootState): CheckoutState => {
     const {
         checkoutStep,
+        isBusy,
+        
+        
+        
         marketingOpt,
         
         
@@ -329,14 +336,14 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         paymentMethod,
         paymentToken,
         paymentCardValidation,
-        
-        
-        
-        isLoadingStep,
     } = state.checkout;
     
     return {
         checkoutStep,
+        isBusy,
+        
+        
+        
         marketingOpt,
         
         
@@ -382,10 +389,6 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         paymentMethod,
         paymentToken,
         paymentCardValidation,
-        
-        
-        
-        isLoadingStep,
     };
 };
 
