@@ -294,9 +294,9 @@ export const {
     
     
     
+    setPaymentValidation,
     setPaymentMethod,
     setPaymentToken,
-    setPaymentValidation,
 } = checkoutSlice.actions;
 
 
