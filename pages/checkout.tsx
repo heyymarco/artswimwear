@@ -286,6 +286,8 @@ export interface CheckoutState {
     setCheckoutStep                   : (checkoutStep: CheckoutStep) => void
     checkoutProgress                  : number
     
+    isBusy                            : boolean,
+    
     isLoadingPage                     : boolean
     isErrorPage                       : boolean
     isReadyPage                       : boolean
@@ -347,6 +349,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     checkoutStep                      : 'info',
     setCheckoutStep                   : () => {},
     checkoutProgress                  : 0,
+    
+    isBusy                            : false,
     
     isLoadingPage                     : false,
     isErrorPage                       : false,
@@ -425,22 +429,24 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const cartItems        = useSelector(selectCartItems);
     const checkoutState    = useSelector(selectCheckoutState);
     const {
+        // states:
         checkoutStep,
-        paymentToken : existingPaymentToken,
-    } = checkoutState;
-    const {
-        // marketings:
+        isBusy,
+        
+        
+        
+        // extras:
         marketingOpt,
         
         
         
-        // customers:
+        // customer data:
         customerNickName,
         customerEmail,
         
         
         
-        // shippings:
+        // shipping data:
         shippingFirstName,
         shippingLastName,
         
@@ -456,7 +462,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // bilings:
+        // billing data:
         billingAsShipping,
         
         billingFirstName,
@@ -469,6 +475,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         billingZone,
         billingZip,
         billingCountry,
+        
+        
+        
+        // payment data:
+        paymentToken : existingPaymentToken,
     } = checkoutState;
     const checkoutProgress = useSelector(selectCheckoutProgress);
     const hasCart = !!cartItems.length;
@@ -721,7 +732,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 
-                // shippings:
+                // shipping data:
                 shippingFirstName,
                 shippingLastName,
                 
@@ -753,18 +764,18 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             
-            // marketings:
+            // extras:
             marketingOpt,
             
             
             
-            // customers:
+            // customer data:
             customerNickName,
             customerEmail,
             
             
             
-            // bilings:
+            // billing data:
             billingFirstName : billingAsShipping ? shippingFirstName : billingFirstName,
             billingLastName  : billingAsShipping ? shippingLastName  : billingLastName,
             
@@ -787,6 +798,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         checkoutStep,
         setCheckoutStep,                   // stable ref
         checkoutProgress,
+        
+        isBusy,
         
         isLoadingPage,
         isErrorPage,
@@ -847,6 +860,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         checkoutStep,
         // setCheckoutStep,                   // stable ref
         checkoutProgress,
+        
+        isBusy,
         
         isLoadingPage,
         isErrorPage,
@@ -1172,14 +1187,11 @@ const NavCheckout = () => {
     const {
         // states:
         setCheckoutStep,
+        isBusy,
     } = useCheckoutState();
     
     // stores:
     const {
-        isBusy,
-        
-        
-        
         shippingCity,
         shippingZone,
         shippingCountry,
@@ -1527,16 +1539,12 @@ const OrderReview = () => {
     
     
     
+    // states:
     const {
         // states:
         setCheckoutStep,
-    } = useCheckoutState();
-    
-    // stores:
-    const {
         isBusy,
-    } = useSelector(selectCheckoutState);
-    const dispatch = useDispatch();
+    } = useCheckoutState();
     
     
     
@@ -1599,10 +1607,11 @@ const OrderReview = () => {
     );
 }
 const OrderReviewCompleted = () => {
-    // stores:
+    // states:
     const {
+        // states:
         isBusy,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     
     
@@ -1881,12 +1890,16 @@ const Payment = () => {
     
     
     
+    // states:
+    const {
+        // states:
+        isBusy,
+    } = useCheckoutState();
+    
+    
+    
     // stores:
     const {
-        isBusy,
-        
-        
-        
         billingValidation,
         billingAsShipping,
         
@@ -1993,12 +2006,16 @@ const PaymentMethod = () => {
     
     
     
+    // states:
+    const {
+        // states:
+        isBusy,
+    } = useCheckoutState();
+    
+    
+    
     // stores:
     const {
-        isBusy,
-        
-        
-        
         paymentMethod,
     } = useSelector(selectCheckoutState);
     const dispatch = useDispatch();
@@ -2291,12 +2308,16 @@ const CardPaymentButton = () => {
     
     
     
+    // states:
+    const {
+        // states:
+        isBusy,
+    } = useCheckoutState();
+    
+    
+    
     // stores:
     const {
-        isBusy,
-        
-        
-        
         shippingFirstName : _shippingFirstName, // not implemented yet, because billingFirstName is not implemented
         shippingLastName  : _shippingLastName,  // not implemented yet, because billingLastName  is not implemented
         
@@ -2430,10 +2451,15 @@ const ManualPaymentButton = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // states:
         isBusy,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
+    
+    
+    
+    // stores:
     const dispatch = useDispatch();
     
     
