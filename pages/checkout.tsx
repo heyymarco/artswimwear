@@ -2476,11 +2476,6 @@ const ManualPaymentButton = () => {
     
     
     
-    // stores:
-    const dispatch = useDispatch();
-    
-    
-    
     // dialogs:
     const {
         showMessageFetchError,
