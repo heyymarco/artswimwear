@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, useIsomorphicLayoutEffect, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingValidation, setBillingAsShipping, setPaymentValidation, setIsBusy, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep as reduxSetCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingValidation, setBillingAsShipping, setPaymentValidation, setIsBusy, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
@@ -283,6 +283,7 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
 export interface CheckoutState {
     // states:
     checkoutStep                      : CheckoutStep
+    setCheckoutStep                   : (checkoutStep: CheckoutStep) => void
     checkoutProgress                  : number
     
     isLoadingPage                     : boolean
@@ -344,6 +345,7 @@ export interface CheckoutState {
 const CheckoutStateContext = createContext<CheckoutState>({
     // states:
     checkoutStep                      : 'info',
+    setCheckoutStep                   : () => {},
     checkoutProgress                  : 0,
     
     isLoadingPage                     : false,
@@ -472,6 +474,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const hasCart = !!cartItems.length;
     const dispatch = useDispatch();
     
+    const setCheckoutStep = useEvent((checkoutStep: CheckoutStep): void => {
+        dispatch(reduxSetCheckoutStep(checkoutStep));
+    });
+    
     
     
     // apis:
@@ -522,7 +528,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         } = checkoutState;
         if (!shippingCity || !shippingZone || !shippingCountry) {
             // no shippingList => go back to information page:
-            dispatch(setCheckoutStep('info'));
+            setCheckoutStep('info');
             
             
             
@@ -550,11 +556,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         if (shippingList?.ids?.length) {
             // no valid selected shippingProvider -AND- have shippingList => go back to shipping page:
-            dispatch(setCheckoutStep('shipping'));
+            setCheckoutStep('shipping');
         }
         else {
             // no valid selected shippingProvider -AND- no shippingList => go back to information page:
-            dispatch(setCheckoutStep('info'));
+            setCheckoutStep('info');
         } // if
     }, [isNeedsRecoverShippingProvider, shippingList]);
     
@@ -771,7 +777,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
         }).unwrap();
         
-        dispatch(setCheckoutStep(paid ? 'paid' : 'pending'));
+        setCheckoutStep(paid ? 'paid' : 'pending');
     });
     
     
@@ -779,6 +785,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const checkoutData = useMemo<CheckoutState>(() => ({
         // states:
         checkoutStep,
+        setCheckoutStep,                   // stable ref
         checkoutProgress,
         
         isLoadingPage,
@@ -838,6 +845,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }), [
         // states:
         checkoutStep,
+        // setCheckoutStep,                   // stable ref
         checkoutProgress,
         
         isLoadingPage,
@@ -1160,6 +1168,12 @@ const NavCheckout = () => {
     
     
     
+    // states:
+    const {
+        // states:
+        setCheckoutStep,
+    } = useCheckoutState();
+    
     // stores:
     const {
         isBusy,
@@ -1183,9 +1197,9 @@ const NavCheckout = () => {
     
     // utilities:
     const prevAction = [
-        { text: 'Return to cart'       , action: () => dispatch(showCart(true)) },
-        { text: 'Return to information', action: () => dispatch(setCheckoutStep('info')) },
-        { text: 'Return to shipping'   , action: () => dispatch(setCheckoutStep('shipping')) },
+        { text: 'Return to cart'       , action: () => dispatch(showCart(true))    },
+        { text: 'Return to information', action: () => setCheckoutStep('info')     },
+        { text: 'Return to shipping'   , action: () => setCheckoutStep('shipping') },
     ][checkoutProgress];
     
     const nextAction = [
@@ -1220,7 +1234,7 @@ const NavCheckout = () => {
                     zone    : shippingZone,
                     country : shippingCountry,
                 })) {
-                    dispatch(setCheckoutStep('shipping'));
+                    setCheckoutStep('shipping');
                 } // if
             }
             finally {
@@ -1228,7 +1242,7 @@ const NavCheckout = () => {
                 dispatch(setIsBusy(false));
             } // try
         }},
-        { text: 'Continue to payment'  , action: () => dispatch(setCheckoutStep('payment')) },
+        { text: 'Continue to payment'  , action: () => setCheckoutStep('payment') },
         { text: 'Pay Now' , action: () => {
             // payment action
         }},
@@ -1285,7 +1299,7 @@ const NavCheckout = () => {
                     icon='arrow_back'
                     iconPosition='start'
                     
-                    onClick={() => dispatch(setCheckoutStep('payment'))}
+                    onClick={() => setCheckoutStep('payment')}
                 >
                     BACK
                 </ButtonIcon>
@@ -1513,6 +1527,11 @@ const OrderReview = () => {
     
     
     
+    const {
+        // states:
+        setCheckoutStep,
+    } = useCheckoutState();
+    
     // stores:
     const {
         isBusy,
@@ -1531,7 +1550,7 @@ const OrderReview = () => {
                         <td><CustomerContactReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                dispatch(setCheckoutStep('info'));
+                                setCheckoutStep('info');
                                 setTimeout(() => {
                                     contactEmailInputRef?.current?.scrollIntoView({
                                         block    : 'start',
@@ -1547,7 +1566,7 @@ const OrderReview = () => {
                         <td><ShippingAddressReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                dispatch(setCheckoutStep('info'));
+                                setCheckoutStep('info');
                                 setTimeout(() => {
                                     shippingAddressInputRef?.current?.scrollIntoView({
                                         block    : 'start',
@@ -1563,7 +1582,7 @@ const OrderReview = () => {
                         <td><ShippingMethodReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                dispatch(setCheckoutStep('shipping'));
+                                setCheckoutStep('shipping');
                                 setTimeout(() => {
                                     shippingMethodOptionRef?.current?.scrollIntoView({
                                         block    : 'start',
