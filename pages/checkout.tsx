@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, useIsomorphicLayoutEffect, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingAsShipping, setBillingValidation, setPaymentCardValidation, setIsBusy, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingValidation, setBillingAsShipping, setPaymentValidation, setIsBusy, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
@@ -1868,8 +1868,8 @@ const Payment = () => {
         
         
         
-        billingAsShipping,
         billingValidation,
+        billingAsShipping,
         
         billingFirstName,
         billingLastName,
@@ -2007,7 +2007,7 @@ const PaymentMethod = () => {
                 
                 // actions:
                 dispatch(setPaymentMethod(paymentMethodList[listIndex]));
-                if (listIndex !== 0) dispatch(setPaymentCardValidation(false));
+                if (listIndex !== 0) dispatch(setPaymentValidation(false));
             }} listStyle='content'>
                 <AccordionItem label={<>
                     <RadioDecorator />
@@ -2039,8 +2039,8 @@ const PaymentMethodCard = () => {
     
     // stores:
     const {
+        paymentValidation,
         paymentMethod,
-        paymentCardValidation,
     } = useSelector(selectCheckoutState);
     
     
@@ -2056,7 +2056,7 @@ const PaymentMethodCard = () => {
     // jsx:
     return (
         <PayPalHostedFieldsProvider styles={hostedFieldsStyle} createOrder={doPlaceOrder}>
-            <ValidationProvider enableValidation={paymentCardValidation}>
+            <ValidationProvider enableValidation={paymentValidation}>
                 <Group className='number'>
                     <Label theme='secondary' mild={false} className='solid'>
                         <Icon icon='credit_card' theme='primary' mild={true} />
@@ -2322,7 +2322,7 @@ const CardPaymentButton = () => {
         // validate:
         // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
         if (!billingAsShipping) await dispatch(setBillingValidation(true));
-        await dispatch(setPaymentCardValidation(true));
+        await dispatch(setPaymentValidation(true));
         await new Promise<void>((resolve) => { // wait for a validation state applied
             setTimeout(() => {
                 setTimeout(() => {

@@ -10,20 +10,24 @@ export interface PaymentToken {
 }
 export type PaymentMethod = 'card'|'paypal'|'manual'
 export interface CheckoutState {
+    // states:
     checkoutStep           : CheckoutStep
     isBusy                 : boolean
     
     
     
+    // extras:
     marketingOpt           : boolean
     
     
     
+    // customer data:
     customerNickName       : string
     customerEmail          : string
     
     
     
+    // shipping data:
     shippingValidation     : boolean
     
     shippingFirstName      : string
@@ -41,8 +45,9 @@ export interface CheckoutState {
     
     
     
-    billingAsShipping      : boolean
+    // billing data:
     billingValidation      : boolean
+    billingAsShipping      : boolean
     
     billingFirstName       : string
     billingLastName        : string
@@ -57,26 +62,31 @@ export interface CheckoutState {
     
     
     
+    // payment data:
+    paymentValidation      : boolean
     paymentMethod         ?: PaymentMethod
     paymentToken          ?: PaymentToken
-    paymentCardValidation  : boolean
 }
 
 const initialState: CheckoutState = {
+    // states:
     checkoutStep           : 'info',
     isBusy                 : false,
     
     
     
+    // extras:
     marketingOpt           : true,
     
     
     
+    // customer data:
     customerNickName       : '',
     customerEmail          : '',
     
     
     
+    // shipping data:
     shippingValidation     : false,
     
     shippingFirstName      : '',
@@ -92,8 +102,9 @@ const initialState: CheckoutState = {
     
     
     
-    billingAsShipping      : true,
+    // billing data:
     billingValidation      : false,
+    billingAsShipping      : true,
     
     billingFirstName       : '',
     billingLastName        : '',
@@ -108,14 +119,16 @@ const initialState: CheckoutState = {
     
     
     
+    // payment data:
+    paymentValidation      : false,
     paymentMethod          : undefined,
     paymentToken           : undefined,
-    paymentCardValidation  : false,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
     initialState,
     reducers: {
+        // states:
         setCheckoutStep: (state, {payload: value}: PayloadAction<CheckoutStep>) => {
             state.checkoutStep = value;
         },
@@ -125,12 +138,14 @@ export const checkoutSlice = createSlice({
         
         
         
+        // extras:
         setMarketingOpt: (state, {payload: value}: PayloadAction<boolean>) => {
             state.marketingOpt = value;
         },
         
         
         
+        // customer data:
         setCustomerNickName: (state, {payload: value}: PayloadAction<string>) => {
             state.customerNickName = value;
         },
@@ -140,6 +155,7 @@ export const checkoutSlice = createSlice({
         
         
         
+        // shipping data:
         setShippingValidation: (state, {payload: value}: PayloadAction<boolean>) => {
             state.shippingValidation = value;
         },
@@ -177,11 +193,12 @@ export const checkoutSlice = createSlice({
         
         
         
-        setBillingAsShipping: (state, {payload: value}: PayloadAction<boolean>) => {
-            state.billingAsShipping = value;
-        },
+        // billing data:
         setBillingValidation: (state, {payload: value}: PayloadAction<boolean>) => {
             state.billingValidation = value;
+        },
+        setBillingAsShipping: (state, {payload: value}: PayloadAction<boolean>) => {
+            state.billingAsShipping = value;
         },
         
         setBillingFirstName: (state, {payload: value}: PayloadAction<string>) => {
@@ -213,14 +230,15 @@ export const checkoutSlice = createSlice({
         
         
         
+        // payment data:
+        setPaymentValidation: (state, {payload: value}: PayloadAction<boolean>) => {
+            state.paymentValidation = value;
+        },
         setPaymentMethod: (state, {payload: value}: PayloadAction<PaymentMethod|undefined>) => {
             state.paymentMethod = value;
         },
         setPaymentToken: (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
             state.paymentToken = value;
-        },
-        setPaymentCardValidation: (state, {payload: value}: PayloadAction<boolean>) => {
-            state.paymentCardValidation = value;
         },
     },
 });
@@ -260,8 +278,8 @@ export const {
     
     
     
-    setBillingAsShipping,
     setBillingValidation,
+    setBillingAsShipping,
     
     setBillingFirstName,
     setBillingLastName,
@@ -278,7 +296,7 @@ export const {
     
     setPaymentMethod,
     setPaymentToken,
-    setPaymentCardValidation,
+    setPaymentValidation,
 } = checkoutSlice.actions;
 
 
@@ -286,20 +304,24 @@ export const {
 // selectors:
 export const selectCheckoutState = (state: RootState): CheckoutState => {
     const {
+        // states:
         checkoutStep,
         isBusy,
         
         
         
+        // extras:
         marketingOpt,
         
         
         
+        // customer data:
         customerNickName,
         customerEmail,
         
         
         
+        // shipping data:
         shippingValidation,
         
         shippingFirstName,
@@ -317,8 +339,9 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
-        billingAsShipping,
+        // billing data:
         billingValidation,
+        billingAsShipping,
         
         billingFirstName,
         billingLastName,
@@ -333,26 +356,31 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
+        // payment data:
+        paymentValidation,
         paymentMethod,
         paymentToken,
-        paymentCardValidation,
     } = state.checkout;
     
     return {
+        // states:
         checkoutStep,
         isBusy,
         
         
         
+        // extras:
         marketingOpt,
         
         
         
+        // customer data:
         customerNickName,
         customerEmail,
         
         
         
+        // shipping data:
         shippingValidation,
         
         shippingFirstName,
@@ -370,8 +398,9 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
-        billingAsShipping,
+        // billing data:
         billingValidation,
+        billingAsShipping,
         
         billingFirstName,
         billingLastName,
@@ -386,9 +415,10 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
+        // payment data:
+        paymentValidation,
         paymentMethod,
         paymentToken,
-        paymentCardValidation,
     };
 };
 
