@@ -279,16 +279,27 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
 
 
 
-interface CheckoutState {
+// contexts:
+export interface CheckoutState {
+    // data:
     cartItems                         : CartEntry[]
     hasCart                           : boolean
-    checkoutStep                      : CheckoutStep
-    checkoutProgress                  : number
     
+    paymentToken                      : PaymentToken|undefined
+    
+    
+    
+    // relations:
     priceList                         : EntityState<PricePreview>     | undefined
     productList                       : EntityState<ProductPreview>   | undefined
     countryList                       : EntityState<CountryPreview>   | undefined
     shippingList                      : EntityState<MatchingShipping> | undefined
+    
+    
+    
+    // states:
+    checkoutStep                      : CheckoutStep
+    checkoutProgress                  : number
     
     isLoadingPage                     : boolean
     isErrorPage                       : boolean
@@ -299,36 +310,57 @@ interface CheckoutState {
     
     isDesktop                         : boolean
     
+    
+    
+    // sections:
     regularCheckoutSectionRef         : React.MutableRefObject<HTMLElement|null>      | undefined
     shippingMethodOptionRef           : React.MutableRefObject<HTMLElement|null>      | undefined
     billingAddressSectionRef          : React.MutableRefObject<HTMLElement|null>      | undefined
     paymentCardSectionRef             : React.MutableRefObject<HTMLElement|null>      | undefined
     currentStepSectionRef             : React.MutableRefObject<HTMLElement|null>      | undefined
-    navCheckoutSectionElm             : HTMLElement|null                              | undefined
+    navCheckoutSectionElm             : React.MutableRefObject<HTMLElement|null>      | undefined
     
+    
+    
+    // fields:
     contactEmailInputRef              : React.MutableRefObject<HTMLInputElement|null> | undefined
     shippingAddressInputRef           : React.MutableRefObject<HTMLInputElement|null> | undefined
     cardholderInputRef                : React.MutableRefObject<HTMLInputElement|null> | undefined
     
-    paymentToken                      : PaymentToken|undefined
     
+    
+    // actions:
     checkShippingProviderAvailability : (address: MatchingAddress) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
     
+    
+    
+    // apis:
     placeOrderApi                     : ReturnType<typeof usePlaceOrder>
     makePaymentApi                    : ReturnType<typeof useMakePayment>
 }
+
 const CheckoutStateContext = createContext<CheckoutState>({
+    // data:
     cartItems                         : [],
     hasCart                           : false,
-    checkoutStep                      : 'info',
-    checkoutProgress                  : 0,
     
+    paymentToken                      : undefined,
+    
+    
+    
+    // relations:
     priceList                         : undefined,
     productList                       : undefined,
     countryList                       : undefined,
     shippingList                      : undefined,
+    
+    
+    
+    // states:
+    checkoutStep                      : 'info',
+    checkoutProgress                  : 0,
     
     isLoadingPage                     : false,
     isErrorPage                       : false,
@@ -339,6 +371,9 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     isDesktop                         : false,
     
+    
+    
+    // sections:
     regularCheckoutSectionRef         : undefined,
     shippingMethodOptionRef           : undefined,
     billingAddressSectionRef          : undefined,
@@ -346,24 +381,41 @@ const CheckoutStateContext = createContext<CheckoutState>({
     currentStepSectionRef             : undefined,
     navCheckoutSectionElm             : undefined,
     
+    
+    
+    // fields:
     contactEmailInputRef              : undefined,
     shippingAddressInputRef           : undefined,
     cardholderInputRef                : undefined,
     
-    paymentToken                      : undefined,
     
+    
+    // actions:
     checkShippingProviderAvailability : undefined as any,
     doPlaceOrder                      : undefined as any,
     doMakePayment                     : undefined as any,
     
+    
+    
+    // apis:
     placeOrderApi                     : undefined as any,
     makePaymentApi                    : undefined as any,
 });
-const useCheckoutState = () => useContext(CheckoutStateContext);
+export const useCheckoutState = (): CheckoutState => {
+    return useContext(CheckoutStateContext);
+};
 
-export default function Checkout() {
-    // styles:
-    const styles = useCheckoutStyleSheet();
+
+
+// react components:
+export interface CheckoutStateProps {
+}
+const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps>) => {
+    // rest props:
+    const {
+        // children:
+        children,
+    } = props;
     
     
     
@@ -585,7 +637,7 @@ export default function Checkout() {
     const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
     const paymentCardSectionRef     = useRef<HTMLElement|null>(null);
     const currentStepSectionRef     = useRef<HTMLElement|null>(null);
-    const [navCheckoutSectionElm, setNavCheckoutSectionElm] = useState<HTMLElement|null>(null);
+    const navCheckoutSectionElm     = useRef<HTMLElement|null>(null);
     
     const contactEmailInputRef      = useRef<HTMLInputElement|null>(null);
     const shippingAddressInputRef   = useRef<HTMLInputElement|null>(null);
@@ -726,15 +778,25 @@ export default function Checkout() {
     
     
     const checkoutData = useMemo<CheckoutState>(() => ({
+        // data:
         cartItems,
         hasCart,
-        checkoutStep,
-        checkoutProgress,
         
+        paymentToken: existingPaymentToken,
+        
+        
+        
+        // relations:
         priceList,
         productList,
         countryList,
         shippingList,
+        
+        
+        
+        // states:
+        checkoutStep,
+        checkoutProgress,
         
         isLoadingPage,
         isErrorPage,
@@ -745,6 +807,9 @@ export default function Checkout() {
         
         isDesktop,
         
+        
+        
+        // sections:
         regularCheckoutSectionRef,         // stable ref
         shippingMethodOptionRef,           // stable ref
         billingAddressSectionRef,          // stable ref
@@ -752,28 +817,45 @@ export default function Checkout() {
         currentStepSectionRef,             // stable ref
         navCheckoutSectionElm,             // mutable ref
         
+        
+        
+        // fields:
         contactEmailInputRef,              // stable ref
         shippingAddressInputRef,           // stable ref
         cardholderInputRef,                // stable ref
         
-        paymentToken: existingPaymentToken,
         
+        
+        // actions:
         checkShippingProviderAvailability, // stable ref
         doPlaceOrder,                      // stable ref
         doMakePayment,                     // stable ref
         
+        
+        
+        // apis:
         placeOrderApi,
         makePaymentApi,
     }), [
+        // data:
         cartItems,
         hasCart,
-        checkoutStep,
-        checkoutProgress,
         
+        existingPaymentToken,
+        
+        
+        
+        // relations:
         priceList,
         productList,
         countryList,
         shippingList,
+        
+        
+        
+        // states:
+        checkoutStep,
+        checkoutProgress,
         
         isLoadingPage,
         isErrorPage,
@@ -784,6 +866,9 @@ export default function Checkout() {
         
         isDesktop,
         
+        
+        
+        // sections:
         // regularCheckoutSectionRef,         // stable ref
         // shippingMethodOptionRef,           // stable ref
         // billingAddressSectionRef,          // stable ref
@@ -791,22 +876,76 @@ export default function Checkout() {
         // currentStepSectionRef,             // stable ref
         navCheckoutSectionElm,                // mutable ref
         
+        
+        
+        // fields:
         // contactEmailInputRef,              // stable ref
         // shippingAddressInputRef,           // stable ref
         // cardholderInputRef,                // stable ref
         
-        existingPaymentToken,
         
+        
+        // actions:
         // checkShippingProviderAvailability, // stable ref
         // doPlaceOrder,                      // stable ref
         // doMakePayment,                     // stable ref
         
+        
+        
+        // apis:
         placeOrderApi,
         makePaymentApi,
     ]);
     
     
+    // jsx:
+    return (
+        <CheckoutStateContext.Provider value={checkoutData}>
+            {children}
+        </CheckoutStateContext.Provider>
+    )
+};
+export default function Checkout() {
+    // jsx:
+    return (
+        <CheckoutStateProvider>
+            <CheckoutInternal />
+        </CheckoutStateProvider>
+    );
+}
+function CheckoutInternal() {
+    // styles:
+    const styles = useCheckoutStyleSheet();
     
+    
+    
+    // states:
+    const {
+        // data:
+        hasCart,
+        
+        
+        
+        // states:
+        checkoutStep,
+        
+        isLoadingPage,
+        isErrorPage,
+        isReadyPage,
+        
+        isDesktop,
+        
+        
+        
+        // sections:
+        regularCheckoutSectionRef,
+        currentStepSectionRef,
+        navCheckoutSectionElm,
+    } = useCheckoutState();
+    
+    
+    
+    // jsx:
     return (
         <>
             <Head>
@@ -843,85 +982,83 @@ export default function Checkout() {
                 })()}
             </Head>
             <Main nude={true}>
-                <CheckoutStateContext.Provider value={checkoutData}>
-                    {(isLoadingPage || isErrorPage || !hasCart) && <Section className={styles.loading} theme='secondary'>
-                        {
-                            !hasCart
-                            ?  <>
-                                <p>
-                                    Your shopping cart is empty. Please add one/some products to buy.
-                                </p>
-                                <ButtonIcon icon='image_search' theme='primary' size='lg' gradient={true}>
-                                    <Link href='/products'>
-                                        See our product gallery
-                                    </Link>
-                                </ButtonIcon>
-                            </>
-                            : isLoadingPage
-                            ? <Busy theme='primary' size='lg' />
-                            : <p>Oops, an error occured!</p>
-                        }
-                    </Section>}
-                    
-                    {useMemo(() =>
-                        isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
-                            <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
-                                <OrderSummary />
-                            </Section>
+                {(isLoadingPage || isErrorPage || !hasCart) && <Section className={styles.loading} theme='secondary'>
+                    {
+                        !hasCart
+                        ?  <>
+                            <p>
+                                Your shopping cart is empty. Please add one/some products to buy.
+                            </p>
+                            <ButtonIcon icon='image_search' theme='primary' size='lg' gradient={true}>
+                                <Link href='/products'>
+                                    See our product gallery
+                                </Link>
+                            </ButtonIcon>
+                        </>
+                        : isLoadingPage
+                        ? <Busy theme='primary' size='lg' />
+                        : <p>Oops, an error occured!</p>
+                    }
+                </Section>}
+                
+                {useMemo(() =>
+                    isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
+                        <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
+                            <OrderSummary />
+                        </Section>
+                        
+                        <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
+                            <ProgressCheckout />
+                        </Section>
+                        
+                        <div className={styles.currentStepLayout}>
+                            {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
+                                <OrderReview />
+                            </Section>}
                             
-                            <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
-                                <ProgressCheckout />
-                            </Section>
+                            {(checkoutStep === 'info') && <Section elmRef={currentStepSectionRef} className={styles.checkout}>
+                                {/* TODO: activate */}
+                                {/* <Section className={styles.expressCheckout} title='Express Checkout'>
+                                </Section>
+                                
+                                <div className={styles.checkoutAlt}>
+                                    <hr />
+                                    <span>OR</span>
+                                    <hr />
+                                </div> */}
+                                
+                                <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
+                                    <RegularCheckout />
+                                </Section>
+                            </Section>}
                             
-                            <div className={styles.currentStepLayout}>
-                                {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
-                                    <OrderReview />
-                                </Section>}
-                                
-                                {(checkoutStep === 'info') && <Section elmRef={currentStepSectionRef} className={styles.checkout}>
-                                    {/* TODO: activate */}
-                                    {/* <Section className={styles.expressCheckout} title='Express Checkout'>
-                                    </Section>
-                                    
-                                    <div className={styles.checkoutAlt}>
-                                        <hr />
-                                        <span>OR</span>
-                                        <hr />
-                                    </div> */}
-                                    
-                                    <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
-                                        <RegularCheckout />
-                                    </Section>
-                                </Section>}
-                                
-                                {(checkoutStep === 'shipping') && <Section elmRef={currentStepSectionRef} className={styles.shippingMethod} title='Shipping Method'>
-                                    <ShippingMethod />
-                                </Section>}
-                                
-                                {(checkoutStep === 'payment') && <Section elmRef={currentStepSectionRef} className={styles.payment} title='Payment'>
-                                    <Payment />
-                                </Section>}
-                                
-                                {(checkoutStep === 'pending') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
-                                    <PaymentPending />
-                                </Section>}
-                                
-                                {(checkoutStep === 'paid') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
-                                    <Paid />
-                                </Section>}
-                            </div>
+                            {(checkoutStep === 'shipping') && <Section elmRef={currentStepSectionRef} className={styles.shippingMethod} title='Shipping Method'>
+                                <ShippingMethod />
+                            </Section>}
                             
-                            <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={setNavCheckoutSectionElm} />}>
-                                <NavCheckout />
-                            </Section>
+                            {(checkoutStep === 'payment') && <Section elmRef={currentStepSectionRef} className={styles.payment} title='Payment'>
+                                <Payment />
+                            </Section>}
                             
-                            <hr className={styles.vertLine} />
-                        </Container>
-                    , [isReadyPage, isDesktop, checkoutStep, styles])}
-                </CheckoutStateContext.Provider>
+                            {(checkoutStep === 'pending') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
+                                <PaymentPending />
+                            </Section>}
+                            
+                            {(checkoutStep === 'paid') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
+                                <Paid />
+                            </Section>}
+                        </div>
+                        
+                        <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={navCheckoutSectionElm} />}>
+                            <NavCheckout />
+                        </Section>
+                        
+                        <hr className={styles.vertLine} />
+                    </Container>
+                , [isReadyPage, isDesktop, checkoutStep, styles])}
             </Main>
         </>
-    )
+    );
 }
 
 
@@ -2333,19 +2470,21 @@ const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps) => {
     
     
     
+    // dom effects:
+    // delays the rendering of portal until the page is fully hydrated
     const [isHydrated, setIsHydrated] = useState<boolean>(false);
     useEffect(() => {
-        setIsHydrated(!!navCheckoutSectionElm);
-    }, [navCheckoutSectionElm]);
+        setIsHydrated(true);
+    }, []);
     
     
     
     // jsx:
     return (
         <>
-            {isHydrated && navCheckoutSectionElm && ReactDOM.createPortal(
+            {isHydrated && !!navCheckoutSectionElm?.current && ReactDOM.createPortal(
                 props.children,
-                navCheckoutSectionElm
+                navCheckoutSectionElm.current
             )}
         </>
     );
