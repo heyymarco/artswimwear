@@ -300,15 +300,18 @@ export interface CheckoutState {
     
     
     
-    // data:
+    // cart data:
     cartItems                         : CartEntry[]
     hasCart                           : boolean
     
+    
+    
+    // payment data:
     paymentToken                      : PaymentToken|undefined
     
     
     
-    // relations:
+    // relation data:
     priceList                         : EntityState<PricePreview>     | undefined
     productList                       : EntityState<ProductPreview>   | undefined
     countryList                       : EntityState<CountryPreview>   | undefined
@@ -365,15 +368,18 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     
-    // data:
+    // cart data:
     cartItems                         : [],
     hasCart                           : false,
     
+    
+    
+    // payment data:
     paymentToken                      : undefined,
     
     
     
-    // relations:
+    // relation data:
     priceList                         : undefined,
     productList                       : undefined,
     countryList                       : undefined,
@@ -818,15 +824,18 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // data:
+        // cart data:
         cartItems,
         hasCart,
         
+        
+        
+        // payment data:
         paymentToken: existingPaymentToken,
         
         
         
-        // relations:
+        // relation data:
         priceList,
         productList,
         countryList,
@@ -881,15 +890,18 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // data:
+        // cart data:
         cartItems,
         hasCart,
         
+        
+        
+        // payment data:
         existingPaymentToken,
         
         
         
-        // relations:
+        // relation data:
         priceList,
         productList,
         countryList,
@@ -950,7 +962,7 @@ function CheckoutInternal() {
     
     // states:
     const {
-        // data:
+        // cart data:
         hasCart,
         
         
@@ -2010,7 +2022,15 @@ const PaymentMethod = () => {
     
     
     // context:
-    const {paymentCardSectionRef, paymentToken} = useCheckoutState();
+    const {
+        // payment data:
+        paymentToken,
+        
+        
+        
+        // sections:
+        paymentCardSectionRef,
+    } = useCheckoutState();
     
     
     
