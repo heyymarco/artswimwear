@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom'
 import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, useIsomorphicLayoutEffect, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep as reduxSetCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingValidation, setBillingAsShipping, setPaymentValidation, setIsBusy, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
+import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep as reduxSetCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingValidation, setBillingAsShipping, setPaymentValidation, setIsBusy as reduxSetIsBusy, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
 import { EntityState } from '@reduxjs/toolkit'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
@@ -287,6 +287,7 @@ export interface CheckoutState {
     checkoutProgress                  : number
     
     isBusy                            : boolean,
+    setIsBusy                         : (isBusy: boolean) => void
     
     isLoadingPage                     : boolean
     isErrorPage                       : boolean
@@ -351,6 +352,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     checkoutProgress                  : 0,
     
     isBusy                            : false,
+    setIsBusy                         : () => {},
     
     isLoadingPage                     : false,
     isErrorPage                       : false,
@@ -487,6 +489,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const setCheckoutStep = useEvent((checkoutStep: CheckoutStep): void => {
         dispatch(reduxSetCheckoutStep(checkoutStep));
+    });
+    const setIsBusy       = useEvent((isBusy: boolean): void => {
+        dispatch(reduxSetIsBusy(isBusy));
     });
     
     
@@ -800,6 +805,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         checkoutProgress,
         
         isBusy,
+        setIsBusy,                         // stable ref
         
         isLoadingPage,
         isErrorPage,
@@ -862,6 +868,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         checkoutProgress,
         
         isBusy,
+        setIsBusy,                            // stable ref
         
         isLoadingPage,
         isErrorPage,
@@ -1188,6 +1195,7 @@ const NavCheckout = () => {
         // states:
         setCheckoutStep,
         isBusy,
+        setIsBusy,
     } = useCheckoutState();
     
     // stores:
@@ -1237,7 +1245,7 @@ const NavCheckout = () => {
             // next:
             try {
                 // update the UI:
-                dispatch(setIsBusy(true));
+                setIsBusy(true);
                 
                 
                 
@@ -1251,7 +1259,7 @@ const NavCheckout = () => {
             }
             finally {
                 // update the UI:
-                dispatch(setIsBusy(false));
+                setIsBusy(false);
             } // try
         }},
         { text: 'Continue to payment'  , action: () => setCheckoutStep('payment') },
@@ -2199,9 +2207,16 @@ const PaymentMethodPaypal = () => {
     
     
     
+    // states:
+    const {
+        // states:
+        setIsBusy,
+    } = useCheckoutState();
+    
+    
+    
     // stores:
     const checkoutState = useSelector(selectCheckoutState);
-    const dispatch = useDispatch();
     
     
     
@@ -2216,7 +2231,7 @@ const PaymentMethodPaypal = () => {
     const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
             // update the UI:
-            dispatch(setIsBusy(true));
+            setIsBusy(true);
             
             
             
@@ -2228,7 +2243,7 @@ const PaymentMethodPaypal = () => {
         }
         finally {
             // update the UI:
-            dispatch(setIsBusy(false));
+            setIsBusy(false);
         } // try
     });
     const handleShippingChange = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
@@ -2312,6 +2327,7 @@ const CardPaymentButton = () => {
     const {
         // states:
         isBusy,
+        setIsBusy,
     } = useCheckoutState();
     
     
@@ -2385,7 +2401,7 @@ const CardPaymentButton = () => {
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         try {
             // update the UI:
-            dispatch(setIsBusy(true));
+            setIsBusy(true);
             
             
             
@@ -2432,7 +2448,7 @@ const CardPaymentButton = () => {
         }
         finally {
             // update the UI:
-            dispatch(setIsBusy(false));
+            setIsBusy(false);
         } // try
     });
     
@@ -2455,6 +2471,7 @@ const ManualPaymentButton = () => {
     const {
         // states:
         isBusy,
+        setIsBusy,
     } = useCheckoutState();
     
     
@@ -2475,7 +2492,7 @@ const ManualPaymentButton = () => {
     const handleFinishOrderButtonClicked = useEvent(async () => {
         try {
             // update the UI:
-            dispatch(setIsBusy(true));
+            setIsBusy(true);
             
             
             
@@ -2492,7 +2509,7 @@ const ManualPaymentButton = () => {
         }
         finally {
             // update the UI:
-            dispatch(setIsBusy(false));
+            setIsBusy(false);
         } // try
     });
     
