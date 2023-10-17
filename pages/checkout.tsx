@@ -279,7 +279,7 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
 
 
 
-interface ICheckoutContext {
+interface CheckoutState {
     cartItems                         : CartEntry[]
     hasCart                           : boolean
     checkoutStep                      : CheckoutStep
@@ -319,7 +319,7 @@ interface ICheckoutContext {
     placeOrderApi                     : ReturnType<typeof usePlaceOrder>
     makePaymentApi                    : ReturnType<typeof useMakePayment>
 }
-const CheckoutContext = createContext<ICheckoutContext>({
+const CheckoutStateContext = createContext<CheckoutState>({
     cartItems                         : [],
     hasCart                           : false,
     checkoutStep                      : 'info',
@@ -359,7 +359,7 @@ const CheckoutContext = createContext<ICheckoutContext>({
     placeOrderApi                     : undefined as any,
     makePaymentApi                    : undefined as any,
 });
-const useCheckout = () => useContext(CheckoutContext);
+const useCheckoutState = () => useContext(CheckoutStateContext);
 
 export default function Checkout() {
     // styles:
@@ -725,7 +725,7 @@ export default function Checkout() {
     
     
     
-    const checkoutData = useMemo<ICheckoutContext>(() => ({
+    const checkoutData = useMemo<CheckoutState>(() => ({
         cartItems,
         hasCart,
         checkoutStep,
@@ -843,7 +843,7 @@ export default function Checkout() {
                 })()}
             </Head>
             <Main nude={true}>
-                <CheckoutContext.Provider value={checkoutData}>
+                <CheckoutStateContext.Provider value={checkoutData}>
                     {(isLoadingPage || isErrorPage || !hasCart) && <Section className={styles.loading} theme='secondary'>
                         {
                             !hasCart
@@ -918,7 +918,7 @@ export default function Checkout() {
                             <hr className={styles.vertLine} />
                         </Container>
                     , [isReadyPage, isDesktop, checkoutStep, styles])}
-                </CheckoutContext.Provider>
+                </CheckoutStateContext.Provider>
             </Main>
         </>
     )
@@ -972,7 +972,7 @@ interface ResponsiveDetailsProps {
 }
 const ResponsiveDetails = ({children}: ResponsiveDetailsProps) => {
     // context:
-    const {isDesktop} = useCheckout();
+    const {isDesktop} = useCheckoutState();
     
     
     
@@ -1001,7 +1001,7 @@ const ResponsiveDetails = ({children}: ResponsiveDetailsProps) => {
 
 const ProgressCheckout = () => {
     // context:
-    const {isDesktop, checkoutProgress} = useCheckout();
+    const {isDesktop, checkoutProgress} = useCheckoutState();
     
     
     
@@ -1019,7 +1019,7 @@ const ProgressCheckout = () => {
 
 const NavCheckout = () => {
     // context:
-    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, checkShippingProviderAvailability} = useCheckout();
+    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, checkShippingProviderAvailability} = useCheckoutState();
     const isOrderConfirmShown = ['pending', 'paid'].includes(checkoutStep);
     
     
@@ -1186,7 +1186,7 @@ const RegularCheckout = () => {
     
     
     // context:
-    const {countryList, contactEmailInputRef, shippingAddressInputRef } = useCheckout();
+    const {countryList, contactEmailInputRef, shippingAddressInputRef } = useCheckoutState();
     
     
     
@@ -1289,7 +1289,7 @@ const OrderSummary = () => {
     
     
     // context:
-    const {cartItems, priceList, productList, shippingList} = useCheckout();
+    const {cartItems, priceList, productList, shippingList} = useCheckoutState();
     
     
     
@@ -1373,7 +1373,7 @@ const OrderSummary = () => {
 }
 const OrderReview = () => {
     // context:
-    const {checkoutStep, contactEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckout();
+    const {checkoutStep, contactEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckoutState();
     
     
     
@@ -1506,7 +1506,7 @@ const CustomerContactReview = () => {
 }
 const ShippingAddressReview = () => {
     // context:
-    const {countryList} = useCheckout();
+    const {countryList} = useCheckoutState();
     
     
     
@@ -1529,7 +1529,7 @@ const ShippingAddressReview = () => {
 }
 const ShippingMethodReview = () => {
     // context:
-    const {shippingList} = useCheckout();
+    const {shippingList} = useCheckoutState();
     
     
     
@@ -1551,7 +1551,7 @@ const ShippingMethodReview = () => {
 }
 const PaymentMethodReview = () => {
     // context:
-    const {makePaymentApi} = useCheckout();
+    const {makePaymentApi} = useCheckoutState();
     
     
     
@@ -1574,7 +1574,7 @@ const PaymentMethodReview = () => {
 }
 const BillingAddressReview = () => {
     // context:
-    const {countryList} = useCheckout();
+    const {countryList} = useCheckoutState();
     
     
     
@@ -1619,7 +1619,7 @@ const ShippingMethod = () => {
     
     
     // context:
-    const {cartItems, priceList, shippingList, shippingMethodOptionRef} = useCheckout();
+    const {cartItems, priceList, shippingList, shippingMethodOptionRef} = useCheckoutState();
     
     
     
@@ -1722,7 +1722,7 @@ const Payment = () => {
     
     
     // context:
-    const {countryList, billingAddressSectionRef} = useCheckout();
+    const {countryList, billingAddressSectionRef} = useCheckoutState();
     
     
     
@@ -1834,7 +1834,7 @@ const PaymentMethod = () => {
     
     
     // context:
-    const {paymentCardSectionRef, paymentToken} = useCheckout();
+    const {paymentCardSectionRef, paymentToken} = useCheckoutState();
     
     
     
@@ -1897,7 +1897,7 @@ const PaymentMethod = () => {
 }
 const PaymentMethodCard = () => {
     // context:
-    const {cardholderInputRef, doPlaceOrder} = useCheckout();
+    const {cardholderInputRef, doPlaceOrder} = useCheckoutState();
     
     
     
@@ -2023,7 +2023,7 @@ const PaymentMethodCard = () => {
 }
 const PaymentMethodPaypal = () => {
     // context:
-    const {doPlaceOrder, doMakePayment} = useCheckout();
+    const {doPlaceOrder, doMakePayment} = useCheckoutState();
     
     
     
@@ -2132,7 +2132,7 @@ const PaymentMethodManual = () => {
 }
 const CardPaymentButton = () => {
     // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, doMakePayment} = useCheckout();
+    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, doMakePayment} = useCheckoutState();
     
     
     
@@ -2271,7 +2271,7 @@ const CardPaymentButton = () => {
 }
 const ManualPaymentButton = () => {
     // context:
-    const {doPlaceOrder, doMakePayment} = useCheckout();
+    const {doPlaceOrder, doMakePayment} = useCheckoutState();
     
     
     
@@ -2329,7 +2329,7 @@ interface PortalToNavCheckoutSectionProps {
 }
 const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps) => {
     // context:
-    const {navCheckoutSectionElm} = useCheckout();
+    const {navCheckoutSectionElm} = useCheckoutState();
     
     
     
