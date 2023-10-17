@@ -281,6 +281,21 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
 
 // contexts:
 export interface CheckoutState {
+    // states:
+    checkoutStep                      : CheckoutStep
+    checkoutProgress                  : number
+    
+    isLoadingPage                     : boolean
+    isErrorPage                       : boolean
+    isReadyPage                       : boolean
+    
+    isLoadingShipping                 : boolean
+    isErrorShipping                   : boolean
+    
+    isDesktop                         : boolean
+    
+    
+    
     // data:
     cartItems                         : CartEntry[]
     hasCart                           : boolean
@@ -294,21 +309,6 @@ export interface CheckoutState {
     productList                       : EntityState<ProductPreview>   | undefined
     countryList                       : EntityState<CountryPreview>   | undefined
     shippingList                      : EntityState<MatchingShipping> | undefined
-    
-    
-    
-    // states:
-    checkoutStep                      : CheckoutStep
-    checkoutProgress                  : number
-    
-    isLoadingPage                     : boolean
-    isErrorPage                       : boolean
-    isReadyPage                       : boolean
-    
-    isLoadingShipping                 : boolean
-    isErrorShipping                   : boolean
-    
-    isDesktop                         : boolean
     
     
     
@@ -342,6 +342,21 @@ export interface CheckoutState {
 }
 
 const CheckoutStateContext = createContext<CheckoutState>({
+    // states:
+    checkoutStep                      : 'info',
+    checkoutProgress                  : 0,
+    
+    isLoadingPage                     : false,
+    isErrorPage                       : false,
+    isReadyPage                       : false,
+    
+    isLoadingShipping                 : false,
+    isErrorShipping                   : false,
+    
+    isDesktop                         : false,
+    
+    
+    
     // data:
     cartItems                         : [],
     hasCart                           : false,
@@ -355,21 +370,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     productList                       : undefined,
     countryList                       : undefined,
     shippingList                      : undefined,
-    
-    
-    
-    // states:
-    checkoutStep                      : 'info',
-    checkoutProgress                  : 0,
-    
-    isLoadingPage                     : false,
-    isErrorPage                       : false,
-    isReadyPage                       : false,
-    
-    isLoadingShipping                 : false,
-    isErrorShipping                   : false,
-    
-    isDesktop                         : false,
     
     
     
@@ -489,6 +489,19 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isLoadingPage                  = isLoading1 || isLoading2 || isLoading3 ||  !existingPaymentToken || isNeedsRecoverShippingList;
     const isErrorPage                    = !isLoadingPage && (isError1   || isError2   || isError3   || (!existingPaymentToken && isError5));
     const isReadyPage                    = !isLoadingPage && (hasCart && !!priceList && !!productList && !!countryList && !!existingPaymentToken);
+    
+    
+    
+    // states:
+    const [isDesktop, setIsDesktop] = useState<boolean>(false); // mobile first
+    
+    const handleWindowResize = useEvent<WindowResizeCallback>(({inlineSize: mediaCurrentWidth}) => {
+        const breakpoint = breakpoints.lg;
+        const newIsDesktop = (!!breakpoint && (mediaCurrentWidth >= breakpoint));
+        if (isDesktop === newIsDesktop) return;
+        setIsDesktop(newIsDesktop);
+    });
+    useWindowResizeObserver(handleWindowResize);
     
     
     
@@ -614,20 +627,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             if (cancelRefresh) clearTimeout(cancelRefresh);
         };
     }, [newPaymentToken, isLoading5, isError5]);
-    
-    
-    
-    // states:
-    const [isDesktop, setIsDesktop] = useState<boolean>(false); // mobile first
-    
-    // dom effects:
-    const handleWindowResize = useEvent<WindowResizeCallback>(({inlineSize: mediaCurrentWidth}) => {
-        const breakpoint = breakpoints.lg;
-        const newIsDesktop = (!!breakpoint && (mediaCurrentWidth >= breakpoint));
-        if (isDesktop === newIsDesktop) return;
-        setIsDesktop(newIsDesktop);
-    });
-    useWindowResizeObserver(handleWindowResize);
     
     
     
@@ -778,6 +777,21 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     const checkoutData = useMemo<CheckoutState>(() => ({
+        // states:
+        checkoutStep,
+        checkoutProgress,
+        
+        isLoadingPage,
+        isErrorPage,
+        isReadyPage,
+        
+        isLoadingShipping,
+        isErrorShipping,
+        
+        isDesktop,
+        
+        
+        
         // data:
         cartItems,
         hasCart,
@@ -791,21 +805,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         productList,
         countryList,
         shippingList,
-        
-        
-        
-        // states:
-        checkoutStep,
-        checkoutProgress,
-        
-        isLoadingPage,
-        isErrorPage,
-        isReadyPage,
-        
-        isLoadingShipping,
-        isErrorShipping,
-        
-        isDesktop,
         
         
         
@@ -837,6 +836,21 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         placeOrderApi,
         makePaymentApi,
     }), [
+        // states:
+        checkoutStep,
+        checkoutProgress,
+        
+        isLoadingPage,
+        isErrorPage,
+        isReadyPage,
+        
+        isLoadingShipping,
+        isErrorShipping,
+        
+        isDesktop,
+        
+        
+        
         // data:
         cartItems,
         hasCart,
@@ -850,21 +864,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         productList,
         countryList,
         shippingList,
-        
-        
-        
-        // states:
-        checkoutStep,
-        checkoutProgress,
-        
-        isLoadingPage,
-        isErrorPage,
-        isReadyPage,
-        
-        isLoadingShipping,
-        isErrorShipping,
-        
-        isDesktop,
         
         
         
