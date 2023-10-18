@@ -251,6 +251,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     placeOrderApi                     : undefined as any,
     makePaymentApi                    : undefined as any,
 });
+CheckoutStateContext.displayName  = 'CheckoutState';
+
 export const useCheckoutState = (): CheckoutState => {
     return useContext(CheckoutStateContext);
 };
@@ -528,7 +530,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
-    // handlers:
+    // stable callbacks:
     const checkShippingProviderAvailability = useEvent(async (address: MatchingAddress): Promise<boolean> => {
         try {
             const shippingList = await getShippingByAddress(address).unwrap();
@@ -643,6 +645,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
+    // apis:
     const checkoutData = useMemo<CheckoutState>(() => ({
         // states:
         checkoutStep,
@@ -778,12 +781,13 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     ]);
     
     
+    
     // jsx:
     return (
         <CheckoutStateContext.Provider value={checkoutData}>
             {children}
         </CheckoutStateContext.Provider>
-    )
+    );
 };
 export {
     CheckoutStateProvider,
