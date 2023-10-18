@@ -59,7 +59,11 @@ export const useFieldState = <TField extends keyof CheckoutState, TValue extends
         );
     })
     const handleFieldChange = useEvent<React.ChangeEventHandler<TElement>>((event) => {
-        handleSetField(event.target.value as TValue);
+        handleSetField(
+            ((event.target.type === 'checkbox') || (event.target.type === 'radio'))
+            ? event.target.checked as TValue
+            : event.target.value   as TValue
+        );
     });
     
     
