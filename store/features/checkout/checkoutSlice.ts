@@ -5,8 +5,8 @@ import { RootState, AppThunk } from '../../store';
 
 export type CheckoutStep = 'info'|'shipping'|'payment'|'pending'|'paid'
 export interface PaymentToken {
-    paymentToken : string
-    expires      : number
+    value   : string
+    expires : number
 }
 export type PaymentMethod = 'card'|'paypal'|'manual'
 export interface CheckoutState {
