@@ -54,6 +54,12 @@ export interface InputWithLabelProps<TElement extends Element = HTMLSpanElement>
     groupComponent ?: React.ReactComponentElement<any, GroupProps<Element>>
     labelComponent ?: React.ReactComponentElement<any, LabelProps<Element>>
     iconComponent  ?: React.ReactComponentElement<any, IconProps<Element>>
+    
+    
+    
+    // children:
+    childrenBefore ?: React.ReactNode
+    childrenAfter  ?: React.ReactNode
 }
 const InputWithLabel = <TElement extends Element = HTMLSpanElement>(props: InputWithLabelProps<TElement>): JSX.Element|null => {
     // rest props:
@@ -107,6 +113,12 @@ const InputWithLabel = <TElement extends Element = HTMLSpanElement>(props: Input
         groupComponent = (<Group            /> as React.ReactComponentElement<any, GroupProps<Element>>),
         labelComponent = (<Label            /> as React.ReactComponentElement<any, LabelProps<Element>>),
         iconComponent  = (<Icon icon={icon} /> as React.ReactComponentElement<any, IconProps<Element>>),
+        
+        
+        
+        // children:
+        childrenBefore,
+        childrenAfter,
     ...restInputProps} = props;
     
     
@@ -187,6 +199,8 @@ const InputWithLabel = <TElement extends Element = HTMLSpanElement>(props: Input
         
         
         // children:
+        childrenBefore,
+        
         /* <Label> */
         React.cloneElement<LabelProps<Element>>(labelComponent,
             // props:
@@ -223,6 +237,7 @@ const InputWithLabel = <TElement extends Element = HTMLSpanElement>(props: Input
                 },
             ),
         ),
+        
         /* <Input> */
         React.cloneElement<InputProps<TElement>>(inputComponent,
             // props:
@@ -242,6 +257,8 @@ const InputWithLabel = <TElement extends Element = HTMLSpanElement>(props: Input
                 classes : mergedClasses,
             },
         ),
+        
+        childrenAfter,
     );
 };
 export {
