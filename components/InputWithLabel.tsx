@@ -191,6 +191,11 @@ const InputWithLabel = <TElement extends Element = HTMLSpanElement>(props: Input
         React.cloneElement<LabelProps<Element>>(labelComponent,
             // props:
             {
+                // variants:
+                mild      : labelComponent.props.mild      ?? false,
+                
+                
+                
                 // classes:
                 className : labelComponent.props.className ?? 'solid',
                 
@@ -208,7 +213,13 @@ const InputWithLabel = <TElement extends Element = HTMLSpanElement>(props: Input
                 // props:
                 {
                     // appearances:
-                    icon : iconComponent.props.icon ?? icon,
+                    icon  : iconComponent.props.icon  ?? icon,
+                    
+                    
+                    
+                    // variants:
+                    theme : iconComponent.props.theme ?? 'primary',
+                    mild  : iconComponent.props.mild  ?? true,
                 },
             ),
         ),
