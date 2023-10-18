@@ -100,6 +100,8 @@ const initialState: CheckoutState = {
     shippingZip            : '',
     shippingCountry        : '',
     
+    shippingProvider       : undefined,
+    
     
     
     // billing data:
