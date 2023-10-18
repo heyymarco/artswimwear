@@ -1,0 +1,75 @@
+'use client'
+
+// react:
+import {
+    // hooks:
+    useState,
+    useMemo,
+}                           from 'react'
+
+// redux:
+import {
+    useDispatch,
+    useSelector,
+}                           from 'react-redux'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// stores:
+import {
+    // types:
+    CheckoutState,
+    
+    
+    
+    // selectors:
+    selectCheckoutState,
+}                           from '@/store/features/checkout/checkoutSlice'
+
+
+
+export interface FieldStateOptions<TField extends keyof CheckoutState, TValue extends CheckoutState[TField]> {
+    field    : TField
+    dispatch : (value: TValue) => {
+        payload : TValue
+        type    : string
+    }
+}
+export type FieldHandlers<TElement extends HTMLInputElement = HTMLInputElement> = Required<Pick<React.InputHTMLAttributes<TElement>, 'onChange'>>
+export const useFieldState = <TField extends keyof CheckoutState, TValue extends CheckoutState[TField], TElement extends HTMLInputElement = HTMLInputElement>(options: FieldStateOptions<TField, TValue>): readonly [TValue, React.Dispatch<React.SetStateAction<TValue>>, FieldHandlers<TElement>] => {
+    // stores:
+    const state = useSelector(selectCheckoutState);
+    const field : TValue = state[options.field] as TValue;
+    const dispatch = useDispatch();
+    
+    
+    
+    // handlers:
+    const handleSetField    = useEvent<React.Dispatch<React.SetStateAction<TValue>>>((value) => {
+        dispatch(
+            options.dispatch(
+                (typeof(value) === 'function')
+                ? value(field)
+                : value
+            )
+        );
+    })
+    const handleFieldChange = useEvent<React.ChangeEventHandler<TElement>>((event) => {
+        handleSetField(event.target.value as TValue);
+    });
+    
+    
+    
+    // api:
+    return [
+        field,
+        handleSetField,
+        useMemo(() => ({ // make a stable ref object
+            onChange : handleFieldChange,
+        }), []),
+    ];
+};

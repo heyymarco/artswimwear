@@ -68,8 +68,11 @@ import {
     
     
     // dispatchers:
-    setCheckoutStep  as reduxSetCheckoutStep,
-    setIsBusy        as reduxSetIsBusy,
+    setCustomerEmail    as reduxSetCustomerEmail,
+    setCustomerNickName as reduxSetCustomerNickName,
+    
+    setCheckoutStep     as reduxSetCheckoutStep,
+    setIsBusy           as reduxSetIsBusy,
     setPaymentToken,
     
     
@@ -106,6 +109,11 @@ import type {
     MatchingShipping,
     MatchingAddress,
 }                           from '@/libs/shippings'
+import {
+    // hooks:
+    FieldHandlers,
+    useFieldState,
+}                           from '../hooks'
 
 
 
@@ -149,7 +157,10 @@ export interface CheckoutState {
     
     // customer data:
     customerNickName                  : string
+    customerNickNameHandlers          : FieldHandlers<HTMLInputElement>
+    
     customerEmail                     : string
+    customerEmailHandlers             : FieldHandlers<HTMLInputElement>
     
     
     
@@ -232,6 +243,7 @@ export interface CheckoutState {
     makePaymentApi                    : ReturnType<typeof useMakePayment>
 }
 
+const noopHandler : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
 const CheckoutStateContext = createContext<CheckoutState>({
     // states:
     checkoutStep                      : 'info',
@@ -265,7 +277,10 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     // customer data:
     customerNickName                  : '',
+    customerNickNameHandlers          : noopHandler,
+    
     customerEmail                     : '',
+    customerEmailHandlers             : noopHandler,
     
     
     
@@ -383,12 +398,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // customer data:
-        customerNickName,
-        customerEmail,
-        
-        
-        
         // shipping data:
         shippingValidation,
         
@@ -430,6 +439,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentToken,
     } = useSelector(selectCheckoutState);
     const checkoutProgress = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
+    
+    
+    
+    // customer data:
+    const [customerNickName, setCustomerNickName, customerNickNameHandlers] = useFieldState({ field: 'customerNickName', dispatch: reduxSetCustomerNickName });
+    const [customerEmail   , setCustomerEmail   , customerEmailHandlers   ] = useFieldState({ field: 'customerEmail'   , dispatch: reduxSetCustomerEmail    });
     
     
     
@@ -775,7 +790,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // customer data:
         customerNickName,
+        customerNickNameHandlers,          // stable ref
+        
         customerEmail,
+        customerEmailHandlers,             // stable ref
         
         
         
@@ -889,7 +907,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // customer data:
         customerNickName,
+        // customerNickNameHandlers,          // stable ref
+        
         customerEmail,
+        // customerEmailHandlers,             // stable ref
         
         
         

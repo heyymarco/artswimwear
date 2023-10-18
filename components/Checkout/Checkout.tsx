@@ -726,7 +726,10 @@ const RegularCheckout = () => {
         
         // customer data:
         customerNickName,
+        customerNickNameHandlers,
+        
         customerEmail,
+        customerEmailHandlers,
         
         
         
@@ -768,7 +771,33 @@ const RegularCheckout = () => {
                     
                     // components:
                     inputComponent={
-                        <TextInput  placeholder='Your Nick Name' required minLength={2} maxLength={30} autoComplete='nickname' autoCapitalize='words' value={customerNickName} onChange={({target:{value}}) => dispatch(setCustomerNickName(value))} />
+                        <TextInput
+                            // accessibilities:
+                            placeholder='Your Nick Name'
+                            
+                            
+                            
+                            // values:
+                            value={customerNickName}
+                            
+                            
+                            
+                            // validations:
+                            required={true}
+                            minLength={2}
+                            maxLength={30}
+                            
+                            
+                            
+                            // formats:
+                            autoComplete='nickname'
+                            autoCapitalize='words'
+                            
+                            
+                            
+                            // handlers:
+                            {...customerNickNameHandlers}
+                        />
                     }
                 />
                 <InputWithLabel
@@ -784,7 +813,37 @@ const RegularCheckout = () => {
                     
                     // components:
                     inputComponent={
-                        <EmailInput placeholder='Your Email'     required minLength={5} maxLength={50} autoComplete='email'    value={customerEmail}    onChange={({target:{value}}) => dispatch(setCustomerEmail(value))}    elmRef={contactEmailInputRef} />
+                        <EmailInput
+                            // refs:
+                            elmRef={contactEmailInputRef}
+                            
+                            
+                            
+                            // accessibilities:
+                            placeholder='Your Email'
+                            
+                            
+                            
+                            // values:
+                            value={customerEmail}
+                            
+                            
+                            
+                            // validations:
+                            required={true}
+                            minLength={5}
+                            maxLength={50}
+                            
+                            
+                            
+                            // formats:
+                            autoComplete='email'
+                            
+                            
+                            
+                            // handlers:
+                            {...customerEmailHandlers}
+                        />
                     }
                 />
                 <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})                 => dispatch(setMarketingOpt(active))}      >
