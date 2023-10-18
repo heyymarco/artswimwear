@@ -547,14 +547,18 @@ const NavCheckout = () => {
         setCheckoutStep,
         isBusy,
         setIsBusy,
-    } = useCheckoutState();
-    
-    // stores:
-    const {
+        
+        
+        
+        // shipping data:
         shippingCity,
         shippingZone,
         shippingCountry,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
+    
+    
+    
+    // stores:
     const dispatch = useDispatch();
     
     
@@ -713,17 +717,20 @@ const RegularCheckout = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // extra data:
         marketingOpt,
         
         
         
+        // customer data:
         customerNickName,
         customerEmail,
         
         
         
+        // shipping data:
         shippingValidation,
         
         shippingFirstName,
@@ -736,7 +743,11 @@ const RegularCheckout = () => {
         shippingZone,
         shippingZip,
         shippingCountry,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
+    
+    
+    
+    // stores:
     const dispatch = useDispatch();
     
     
@@ -836,10 +847,11 @@ const OrderSummary = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // shipping data:
         shippingProvider,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     const selectedShipping    = shippingList?.entities?.[shippingProvider ?? ''] ?? null;
     
@@ -1034,11 +1046,12 @@ const OrderReviewCompleted = () => {
     );
 }
 const CustomerContactReview = () => {
-    // stores:
+    // states:
     const {
+        // customer data:
         customerNickName,
         customerEmail,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     
     
@@ -1055,14 +1068,15 @@ const ShippingAddressReview = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // shipping data:
         shippingAddress,
         shippingCity,
         shippingZone,
         shippingZip,
         shippingCountry,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     
     
@@ -1078,10 +1092,11 @@ const ShippingMethodReview = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // shipping data:
         shippingProvider,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
     
@@ -1123,21 +1138,25 @@ const BillingAddressReview = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // shipping data:
         shippingAddress,
         shippingCity,
         shippingZone,
         shippingZip,
         shippingCountry,
         
+        
+        
+        // billing data:
         billingAsShipping,
         billingAddress,
         billingCity,
         billingZone,
         billingZip,
         billingCountry,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     const finalBillingAddress    = billingAsShipping ? shippingAddress : billingAddress;
     const finalBillingCity       = billingAsShipping ? shippingCity    : billingCity;
@@ -1168,10 +1187,11 @@ const ShippingMethod = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // shipping data:
         shippingProvider,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
     
@@ -1279,8 +1299,9 @@ const Payment = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // billing data:
         billingValidation,
         billingAsShipping,
         
@@ -1297,8 +1318,9 @@ const Payment = () => {
         
         
         
+        // payment data:
         paymentMethod,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     const dispatch = useDispatch();
     
     
@@ -1403,10 +1425,11 @@ const PaymentMethod = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // payment data:
         paymentMethod,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     const dispatch = useDispatch();
     
     
@@ -1462,11 +1485,12 @@ const PaymentMethodCard = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // payment data:
         paymentValidation,
         paymentMethod,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     
     
@@ -1660,8 +1684,8 @@ const PaymentMethodPaypal = () => {
     
     
     
-    // stores:
-    const checkoutState = useSelector(selectCheckoutState);
+    // states:
+    const checkoutState = useCheckoutState();
     
     
     
@@ -1740,10 +1764,11 @@ const PaymentMethodPaypal = () => {
     );
 }
 const PaymentMethodManual = () => {
-    // stores:
+    // states:
     const {
+        // payment data:
         paymentMethod,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     
     
@@ -1777,8 +1802,9 @@ const CardPaymentButton = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // shipping data:
         shippingFirstName : _shippingFirstName, // not implemented yet, because billingFirstName is not implemented
         shippingLastName  : _shippingLastName,  // not implemented yet, because billingLastName  is not implemented
         
@@ -1792,6 +1818,7 @@ const CardPaymentButton = () => {
         
         
         
+        // billing data:
         billingAsShipping,
         
         billingFirstName  : _billingFirstName,  // not implemented, already to use cardholderName
@@ -1804,7 +1831,7 @@ const CardPaymentButton = () => {
         billingZone,
         billingZip,
         billingCountry,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     const dispatch = useDispatch();
     
     
@@ -1999,10 +2026,11 @@ const PaymentPending = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // customer data:
         customerEmail,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     
     
@@ -2034,10 +2062,11 @@ const Paid = () => {
     
     
     
-    // stores:
+    // states:
     const {
+        // customer data:
         customerEmail,
-    } = useSelector(selectCheckoutState);
+    } = useCheckoutState();
     
     
     
