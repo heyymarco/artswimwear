@@ -737,16 +737,32 @@ const RegularCheckout = () => {
         // shipping data:
         shippingValidation,
         
+        
         shippingFirstName,
+        shippingFirstNameHandlers,
+        
         shippingLastName,
+        shippingLastNameHandlers,
+        
         
         shippingPhone,
+        shippingPhoneHandlers,
+        
         
         shippingAddress,
+        shippingAddressHandlers,
+        
         shippingCity,
+        shippingCityHandlers,
+        
         shippingZone,
+        shippingZoneHandlers,
+        
         shippingZip,
+        shippingZipHandlers,
+        
         shippingCountry,
+        shippingCountryHandlers,
     } = useCheckoutState();
     
     
@@ -897,16 +913,16 @@ const RegularCheckout = () => {
                     
                     
                     // events:
-                    onFirstNameChange = {({target:{value}}) => dispatch(setShippingFirstName(value))}
-                    onLastNameChange  = {({target:{value}}) => dispatch(setShippingLastName(value))}
+                    onFirstNameChange = {shippingFirstNameHandlers.onChange}
+                    onLastNameChange  = {shippingLastNameHandlers.onChange }
                     
-                    onPhoneChange     = {({target:{value}}) => dispatch(setShippingPhone(value))}
+                    onPhoneChange     = {shippingPhoneHandlers.onChange    }
                     
-                    onAddressChange   = {({target:{value}}) => dispatch(setShippingAddress(value))}
-                    onCityChange      = {({target:{value}}) => dispatch(setShippingCity(value))}
-                    onZoneChange      = {({target:{value}}) => dispatch(setShippingZone(value))}
-                    onZipChange       = {({target:{value}}) => dispatch(setShippingZip(value))}
-                    onCountryChange   = {({target:{value}}) => dispatch(setShippingCountry(value))}
+                    onAddressChange   = {shippingAddressHandlers.onChange  }
+                    onCityChange      = {shippingCityHandlers.onChange     }
+                    onZoneChange      = {shippingZoneHandlers.onChange     }
+                    onZipChange       = {shippingZipHandlers.onChange      }
+                    onCountryChange   = {shippingCountryHandlers.onChange  }
                 />
             </Section>
         </ValidationProvider>

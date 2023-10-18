@@ -67,13 +67,30 @@ import {
     
     
     
-    // dispatchers:
+    // states:
+    setCheckoutStep     as reduxSetCheckoutStep,
+    setIsBusy           as reduxSetIsBusy,
+    
+    // extra data:
     setMarketingOpt     as reduxSetMarketingOpt,
+    
+    // customer data:
     setCustomerEmail    as reduxSetCustomerEmail,
     setCustomerNickName as reduxSetCustomerNickName,
     
-    setCheckoutStep     as reduxSetCheckoutStep,
-    setIsBusy           as reduxSetIsBusy,
+    // shipping data:
+    setShippingFirstName as reduxSetShippingFirstName,
+    setShippingLastName  as reduxSetShippingLastName,
+    
+    setShippingPhone     as reduxSetShippingPhone,
+    
+    setShippingAddress   as reduxSetShippingAddress,
+    setShippingCity      as reduxSetShippingCity,
+    setShippingZone      as reduxSetShippingZone,
+    setShippingZip       as reduxSetShippingZip,
+    setShippingCountry   as reduxSetShippingCountry,
+    
+    // payment data:
     setPaymentToken,
     
     
@@ -169,16 +186,33 @@ export interface CheckoutState {
     // shipping data:
     shippingValidation                : boolean
     
+    
     shippingFirstName                 : string
+    shippingFirstNameHandlers         : FieldHandlers<HTMLInputElement>
+    
     shippingLastName                  : string
+    shippingLastNameHandlers          : FieldHandlers<HTMLInputElement>
+    
     
     shippingPhone                     : string
+    shippingPhoneHandlers             : FieldHandlers<HTMLInputElement>
+    
     
     shippingAddress                   : string
+    shippingAddressHandlers           : FieldHandlers<HTMLInputElement>
+    
     shippingCity                      : string
+    shippingCityHandlers              : FieldHandlers<HTMLInputElement>
+    
     shippingZone                      : string
+    shippingZoneHandlers              : FieldHandlers<HTMLInputElement>
+    
     shippingZip                       : string
+    shippingZipHandlers               : FieldHandlers<HTMLInputElement>
+    
     shippingCountry                   : string
+    shippingCountryHandlers           : FieldHandlers<HTMLInputElement>
+    
     
     shippingProvider                  : string | undefined
     
@@ -290,16 +324,28 @@ const CheckoutStateContext = createContext<CheckoutState>({
     // shipping data:
     shippingValidation                : false,
     
+    
     shippingFirstName                 : '',
+    shippingFirstNameHandlers         : noopHandler,
     shippingLastName                  : '',
+    shippingLastNameHandlers          : noopHandler,
+    
     
     shippingPhone                     : '',
+    shippingPhoneHandlers             : noopHandler,
+    
     
     shippingAddress                   : '',
+    shippingAddressHandlers           : noopHandler,
     shippingCity                      : '',
+    shippingCityHandlers              : noopHandler,
     shippingZone                      : '',
+    shippingZoneHandlers              : noopHandler,
     shippingZip                       : '',
+    shippingZipHandlers               : noopHandler,
     shippingCountry                   : '',
+    shippingCountryHandlers           : noopHandler,
+    
     
     shippingProvider                  : undefined,
     
@@ -399,17 +445,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // shipping data:
         shippingValidation,
         
-        shippingFirstName,
-        shippingLastName,
-        
-        shippingPhone,
-        
-        shippingAddress,
-        shippingCity,
-        shippingZone,
-        shippingZip,
-        shippingCountry,
-        
         shippingProvider,
         
         
@@ -441,13 +476,27 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // extra data:
-    const [marketingOpt    , , marketingOptHandlers    ] = useFieldState({ field: 'marketingOpt'    , dispatch: reduxSetMarketingOpt     });
+    const [marketingOpt     , , marketingOptHandlers     ] = useFieldState({ field: 'marketingOpt'     , dispatch: reduxSetMarketingOpt      });
     
     
     
     // customer data:
-    const [customerNickName, , customerNickNameHandlers] = useFieldState({ field: 'customerNickName', dispatch: reduxSetCustomerNickName });
-    const [customerEmail   , , customerEmailHandlers   ] = useFieldState({ field: 'customerEmail'   , dispatch: reduxSetCustomerEmail    });
+    const [customerNickName , , customerNickNameHandlers ] = useFieldState({ field: 'customerNickName' , dispatch: reduxSetCustomerNickName  });
+    const [customerEmail    , , customerEmailHandlers    ] = useFieldState({ field: 'customerEmail'    , dispatch: reduxSetCustomerEmail     });
+    
+    
+    
+    // shipping data:
+    const [shippingFirstName, , shippingFirstNameHandlers] = useFieldState({ field: 'shippingFirstName', dispatch: reduxSetShippingFirstName });
+    const [shippingLastName , , shippingLastNameHandlers ] = useFieldState({ field: 'shippingLastName' , dispatch: reduxSetShippingLastName  });
+    
+    const [shippingPhone    , , shippingPhoneHandlers    ] = useFieldState({ field: 'shippingPhone'    , dispatch: reduxSetShippingPhone     });
+    
+    const [shippingAddress  , , shippingAddressHandlers  ] = useFieldState({ field: 'shippingAddress'  , dispatch: reduxSetShippingAddress   });
+    const [shippingCity     , , shippingCityHandlers     ] = useFieldState({ field: 'shippingCity'     , dispatch: reduxSetShippingCity      });
+    const [shippingZone     , , shippingZoneHandlers     ] = useFieldState({ field: 'shippingZone'     , dispatch: reduxSetShippingZone      });
+    const [shippingZip      , , shippingZipHandlers      ] = useFieldState({ field: 'shippingZip'      , dispatch: reduxSetShippingZip       });
+    const [shippingCountry  , , shippingCountryHandlers  ] = useFieldState({ field: 'shippingCountry'  , dispatch: reduxSetShippingCountry   });
     
     
     
@@ -804,16 +853,33 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // shipping data:
         shippingValidation,
         
+        
         shippingFirstName,
+        shippingFirstNameHandlers,
+        
         shippingLastName,
+        shippingLastNameHandlers,
+        
         
         shippingPhone,
+        shippingPhoneHandlers,
+        
         
         shippingAddress,
+        shippingAddressHandlers,
+        
         shippingCity,
+        shippingCityHandlers,
+        
         shippingZone,
+        shippingZoneHandlers,
+        
         shippingZip,
+        shippingZipHandlers,
+        
         shippingCountry,
+        shippingCountryHandlers,
+        
         
         shippingProvider,
         
@@ -906,7 +972,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // extra data:
         marketingOpt,
-        marketingOptHandlers,                 // stable ref
+        // marketingOptHandlers,              // stable ref
         
         
         
@@ -922,16 +988,33 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // shipping data:
         shippingValidation,
         
+        
         shippingFirstName,
+        // shippingFirstNameHandlers,         // stable ref
+        
         shippingLastName,
+        // shippingLastNameHandlers,          // stable ref
+        
         
         shippingPhone,
+        // shippingPhoneHandlers,             // stable ref
+        
         
         shippingAddress,
+        // shippingAddressHandlers,           // stable ref
+        
         shippingCity,
+        // shippingCityHandlers,              // stable ref
+        
         shippingZone,
+        // shippingZoneHandlers,              // stable ref
+        
         shippingZip,
+        // shippingZipHandlers,               // stable ref
+        
         shippingCountry,
+        // shippingCountryHandlers,           // stable ref
+        
         
         shippingProvider,
         
