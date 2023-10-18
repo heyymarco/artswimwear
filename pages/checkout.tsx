@@ -5,6 +5,7 @@ import Head from 'next/head'
 import { Article, Section, Main } from '@heymarco/section'
 
 import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, RadioProps, TextInput, Tooltip, useDialogMessage, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
+import { InputWithLabel } from '@/components/InputWithLabel'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { PricePreview, ProductPreview, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
@@ -1408,18 +1409,38 @@ const RegularCheckout = () => {
     return (
         <ValidationProvider enableValidation={shippingValidation}>
             <Section className='contact' title='Contact Information'>
-                <Group className='nick'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='chat' theme='primary' mild={true} />
-                    </Label>
-                    <TextInput  placeholder='Your Nick Name' required minLength={2} maxLength={30} autoComplete='nickname' autoCapitalize='words' value={customerNickName} onChange={({target:{value}}) => dispatch(setCustomerNickName(value))} />
-                </Group>
-                <Group className='email'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='email' theme='primary' mild={true} />
-                    </Label>
-                    <EmailInput placeholder='Your Email'     required minLength={5} maxLength={50} autoComplete='email'    value={customerEmail}    onChange={({target:{value}}) => dispatch(setCustomerEmail(value))}    elmRef={contactEmailInputRef} />
-                </Group>
+                <InputWithLabel
+                    // appearances:
+                    icon='chat'
+                    
+                    
+                    
+                    // classes:
+                    className='nick'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <TextInput  placeholder='Your Nick Name' required minLength={2} maxLength={30} autoComplete='nickname' autoCapitalize='words' value={customerNickName} onChange={({target:{value}}) => dispatch(setCustomerNickName(value))} />
+                    }
+                />
+                <InputWithLabel
+                    // appearances:
+                    icon='email'
+                    
+                    
+                    
+                    // classes:
+                    className='email'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <EmailInput placeholder='Your Email'     required minLength={5} maxLength={50} autoComplete='email'    value={customerEmail}    onChange={({target:{value}}) => dispatch(setCustomerEmail(value))}    elmRef={contactEmailInputRef} />
+                    }
+                />
                 <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})                 => dispatch(setMarketingOpt(active))}      >
                     Email me with news and offers
                 </Check>
@@ -2126,99 +2147,163 @@ const PaymentMethodCard = () => {
     return (
         <PayPalHostedFieldsProvider styles={hostedFieldsStyle} createOrder={doPlaceOrder}>
             <ValidationProvider enableValidation={paymentValidation}>
-                <Group className='number'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='credit_card' theme='primary' mild={true} />
-                    </Label>
-                    <PayPalHostedFieldExtended
-                        className='hostedField'
-                        
-                        id='cardNumber'
-                        hostedFieldType='number'
-                        options={{
-                            selector: '#cardNumber',
-                            placeholder: 'Card Number',
-                        }}
-                    />
-                    <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
-                        <Icon icon='lock' />
-                        <Tooltip className='tooltip' theme='warning' size='sm' floatingOn={safeSignRef}>
-                            <p>
-                                All transactions are secure and encrypted.
-                            </p>
-                            <p>
-                                Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
-                            </p>
-                            <p>
-                                The card data will be forwarded to our payment gateway (PayPal).<br />
-                                We won&apos;t store your card data into our database.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                </Group>
-                <Group className='name'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='person' theme='primary' mild={true} />
-                    </Label>
-                    <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' autoCapitalize='words' elmRef={cardholderInputRef} />
-                    <Label theme='success' mild={true} className='solid' elmRef={nameSignRef}>
-                        <Icon icon='help' />
-                        <Tooltip className='tooltip' theme='warning' size='sm' floatingOn={nameSignRef}>
-                            <p>
-                                The owner name as printed on front card.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                </Group>
-                <Group className='expiry'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='date_range' theme='primary' mild={true} />
-                    </Label>
-                    <PayPalHostedFieldExtended
-                        className='hostedField'
-                        
-                        id='cardExpires'
-                        hostedFieldType='expirationDate'
-                        options={{
-                            selector: '#cardExpires',
-                            placeholder: 'MM / YY',
-                        }}
-                    />
-                    <Label theme='success' mild={true} className='solid' elmRef={dateSignRef}>
-                        <Icon icon='help' />
-                        <Tooltip className='tooltip' theme='warning' size='sm' floatingOn={dateSignRef}>
-                            <p>
-                                The expiration date as printed on front card.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                </Group>
-                <Group className='csc'>
-                    <Label theme='secondary' mild={false} className='solid'>
-                        <Icon icon='fiber_pin' theme='primary' mild={true} />
-                    </Label>
-                    <PayPalHostedFieldExtended
-                        className='hostedField'
-                        
-                        id='cardCvv'
-                        hostedFieldType='cvv'
-                        options={{
-                            selector: '#cardCvv',
-                            placeholder: 'Security Code',
-                        }}
-                    />
-                    <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
-                        <Icon icon='help' />
-                        <Tooltip className='tooltip' theme='warning' size='sm' floatingOn={cscSignRef}>
-                            <p>
-                                3-digit security code usually found on the back of your card.
-                            </p>
-                            <p>
-                                American Express cards have a 4-digit code located on the front.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                </Group>
+                <InputWithLabel
+                    // appearances:
+                    icon='credit_card'
+                    
+                    
+                    
+                    // classes:
+                    className='number'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <PayPalHostedFieldExtended
+                            className='hostedField'
+                            
+                            id='cardNumber'
+                            hostedFieldType='number'
+                            options={{
+                                selector: '#cardNumber',
+                                placeholder: 'Card Number',
+                            }}
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={
+                        <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
+                            <Icon icon='lock' />
+                            <Tooltip className='tooltip' theme='warning' floatingOn={safeSignRef}>
+                                <p>
+                                    All transactions are secure and encrypted.
+                                </p>
+                                <p>
+                                    Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
+                                </p>
+                                <p>
+                                    The card data will be forwarded to our payment gateway (PayPal).<br />
+                                    We won&apos;t store your card data into our database.
+                                </p>
+                            </Tooltip>
+                        </Label>
+                    }
+                />
+                <InputWithLabel
+                    // appearances:
+                    icon='person'
+                    
+                    
+                    
+                    // classes:
+                    className='name'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' autoCapitalize='words' elmRef={cardholderInputRef} />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={
+                        <Label theme='success' mild={true} className='solid' elmRef={nameSignRef}>
+                            <Icon icon='help' />
+                            <Tooltip className='tooltip' theme='warning' floatingOn={nameSignRef}>
+                                <p>
+                                    The owner name as printed on front card.
+                                </p>
+                            </Tooltip>
+                        </Label>
+                    }
+                />
+                <InputWithLabel
+                    // appearances:
+                    icon='date_range'
+                    
+                    
+                    
+                    // classes:
+                    className='expiry'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <PayPalHostedFieldExtended
+                            className='hostedField'
+                            
+                            id='cardExpires'
+                            hostedFieldType='expirationDate'
+                            options={{
+                                selector: '#cardExpires',
+                                placeholder: 'MM / YY',
+                            }}
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={
+                        <Label theme='success' mild={true} className='solid' elmRef={dateSignRef}>
+                            <Icon icon='help' />
+                            <Tooltip className='tooltip' theme='warning' floatingOn={dateSignRef}>
+                                <p>
+                                    The expiration date as printed on front card.
+                                </p>
+                            </Tooltip>
+                        </Label>
+                    }
+                />
+                <InputWithLabel
+                    // appearances:
+                    icon='fiber_pin'
+                    
+                    
+                    
+                    // classes:
+                    className='csc'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <PayPalHostedFieldExtended
+                            className='hostedField'
+                            
+                            id='cardCvv'
+                            hostedFieldType='cvv'
+                            options={{
+                                selector: '#cardCvv',
+                                placeholder: 'Security Code',
+                            }}
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={
+                        <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
+                            <Icon icon='help' />
+                            <Tooltip className='tooltip' theme='warning' floatingOn={cscSignRef}>
+                                <p>
+                                    3-digit security code usually found on the back of your card.
+                                </p>
+                                <p>
+                                    American Express cards have a 4-digit code located on the front.
+                                </p>
+                            </Tooltip>
+                        </Label>
+                    }
+                />
                 {((paymentMethod ?? 'card') === 'card') && <PortalToNavCheckoutSection>
                     <CardPaymentButton />
                 </PortalToNavCheckoutSection>}
