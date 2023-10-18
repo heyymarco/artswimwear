@@ -1416,7 +1416,7 @@ const PaymentMethod = () => {
     return (
         <PayPalScriptProvider options={{
             'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
-            'data-client-token' : paymentToken?.value,
+            'data-client-token' : paymentToken?.paymentToken,
             currency            : 'USD',
             intent              : 'capture',
             components          : 'hosted-fields,buttons',
