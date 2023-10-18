@@ -2,25 +2,23 @@ import Head from 'next/head'
 // import { Inter } from 'next/font/google'
 // import styles from '@/styles/Home.module.scss'
 
-import { Article, Section, Main } from '@heymarco/section'
+import { Article, Section } from '@heymarco/section'
 
-import { AccordionItem, Alert, Badge, Busy, Button, ButtonIcon, CardBody, CardFooter, CardHeader, Check, CloseButton, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Group, Icon, Label, List, ListItem, ModalCard, ModalCardProps, Radio, RadioProps, TextInput, Tooltip, useDialogMessage, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
+import { AccordionItem, Alert, Badge, Busy, ButtonIcon, Check, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Icon, Label, List, ListItem, Radio, RadioProps, TextInput, Tooltip, useDialogMessage } from '@reusable-ui/components'
 import { InputWithLabel } from '@/components/InputWithLabel'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { PricePreview, ProductPreview, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
 import { formatCurrency } from '@/libs/formatters'
 import { ImageProps, Image } from '@heymarco/image'
 import Link from '@reusable-ui/next-compat-link'
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import ReactDOM from 'react-dom'
-import { CartEntry, selectCartItems, showCart } from '@/store/features/cart/cartSlice'
+import { showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
-import { AccessibilityProvider, breakpoints, colorValues, ThemeName, typoValues, useEvent, useIsomorphicLayoutEffect, ValidationProvider } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep as reduxSetCheckoutStep, setMarketingOpt, setPaymentToken, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, PaymentToken, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingValidation, setBillingAsShipping, setPaymentValidation, setIsBusy as reduxSetIsBusy, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
-import { EntityState } from '@reduxjs/toolkit'
+import { AccessibilityProvider, colorValues, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
+import { selectCheckoutState, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingValidation, setBillingAsShipping, setPaymentValidation, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
-import { MatchingShipping, MatchingAddress, calculateShippingCost } from '@/libs/shippings'
+import { calculateShippingCost } from '@/libs/shippings'
 import { AddressFields } from '@heymarco/address-fields'
 import {
     PAGE_CHECKOUT_STEP_INFO_TITLE,
@@ -39,8 +37,6 @@ import {
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 // internals:
 import {
-    CheckoutState,
-    CheckoutStateProps,
     CheckoutStateProvider,
     useCheckoutState,
 }                           from './states/checkoutState'
