@@ -318,7 +318,3 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
     
     return restCheckoutState;
 };
-
-export const selectCheckoutProgress = ({checkout: {checkoutStep}}: RootState): number => {
-    return ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
-};
