@@ -111,18 +111,18 @@ export default function RootLayout({
             </head>
             <body>
                 <Provider store={store}><PersistGate persistor={persistor}>
-                    <Header />
-                    
                     <DialogMessageProvider
                         fetchErrorTitleDefault={fetchErrorTitleDefault}
                         fetchErrorMessageDefault={fetchErrorMessageDefault}
                     >
+                        <Header />
+                        
                         {children}
+                        
+                        <Footer />
+                        
+                        <CartBar />
                     </DialogMessageProvider>
-                    
-                    <Footer />
-                    
-                    <CartBar />
                 </PersistGate></Provider>
             </body>
         </html>
