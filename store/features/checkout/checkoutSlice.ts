@@ -16,7 +16,7 @@ export interface CheckoutState {
     
     
     
-    // extras:
+    // extra data:
     marketingOpt           : boolean
     
     
@@ -75,7 +75,7 @@ const initialState: CheckoutState = {
     
     
     
-    // extras:
+    // extra data:
     marketingOpt           : true,
     
     
@@ -138,7 +138,7 @@ export const checkoutSlice = createSlice({
         
         
         
-        // extras:
+        // extra data:
         setMarketingOpt: (state, {payload: value}: PayloadAction<boolean>) => {
             state.marketingOpt = value;
         },
@@ -247,20 +247,24 @@ export const checkoutSlice = createSlice({
 
 export default checkoutSlice.reducer;
 export const {
+    // states:
     setCheckoutStep,
     setIsBusy,
     
     
     
+    // extra data:
     setMarketingOpt,
     
     
     
+    // customer data:
     setCustomerNickName,
     setCustomerEmail,
     
     
     
+    // shipping data:
     setShippingValidation,
     
     setShippingFirstName,
@@ -278,6 +282,7 @@ export const {
     
     
     
+    // billing data:
     setBillingValidation,
     setBillingAsShipping,
     
@@ -294,6 +299,7 @@ export const {
     
     
     
+    // payment data:
     setPaymentValidation,
     setPaymentMethod,
     setPaymentToken,
@@ -310,7 +316,7 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
-        // extras:
+        // extra data:
         marketingOpt,
         
         
@@ -369,7 +375,7 @@ export const selectCheckoutState = (state: RootState): CheckoutState => {
         
         
         
-        // extras:
+        // extra data:
         marketingOpt,
         
         
