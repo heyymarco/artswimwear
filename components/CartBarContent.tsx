@@ -1,3 +1,5 @@
+'use client'
+
 import { default as React, useRef } from 'react'
 import { ButtonIcon, CardBody, CardHeader, CloseButton, Group, List, ListItem, useDialogMessage } from '@reusable-ui/components'
 
