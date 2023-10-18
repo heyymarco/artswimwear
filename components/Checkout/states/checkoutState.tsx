@@ -63,6 +63,7 @@ import {
     // types:
     CheckoutStep,
     PaymentToken,
+    PaymentMethod,
     
     
     
@@ -75,7 +76,6 @@ import {
     
     // selectors:
     selectCheckoutState,
-    selectCheckoutProgress,
 }                           from '@/store/features/checkout/checkoutSlice'
 import {
     // types:
@@ -142,8 +142,56 @@ export interface CheckoutState {
     
     
     
+    // extra data:
+    marketingOpt                      : boolean
+    
+    
+    
+    // customer data:
+    customerNickName                  : string
+    customerEmail                     : string
+    
+    
+    
+    // shipping data:
+    shippingValidation                : boolean
+    
+    shippingFirstName                 : string
+    shippingLastName                  : string
+    
+    shippingPhone                     : string
+    
+    shippingAddress                   : string
+    shippingCity                      : string
+    shippingZone                      : string
+    shippingZip                       : string
+    shippingCountry                   : string
+    
+    shippingProvider                  : string | undefined
+    
+    
+    
+    // billing data:
+    billingValidation                 : boolean
+    billingAsShipping                 : boolean
+    
+    billingFirstName                  : string
+    billingLastName                   : string
+    
+    billingPhone                      : string
+    
+    billingAddress                    : string
+    billingCity                       : string
+    billingZone                       : string
+    billingZip                        : string
+    billingCountry                    : string
+    
+    
+    
     // payment data:
-    paymentToken                      : PaymentToken|undefined
+    paymentValidation                 : boolean
+    paymentMethod                     : PaymentMethod | undefined
+    paymentToken                      : PaymentToken  | undefined
     
     
     
@@ -210,7 +258,55 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     
+    // extra data:
+    marketingOpt                      : true,
+    
+    
+    
+    // customer data:
+    customerNickName                  : '',
+    customerEmail                     : '',
+    
+    
+    
+    // shipping data:
+    shippingValidation                : false,
+    
+    shippingFirstName                 : '',
+    shippingLastName                  : '',
+    
+    shippingPhone                     : '',
+    
+    shippingAddress                   : '',
+    shippingCity                      : '',
+    shippingZone                      : '',
+    shippingZip                       : '',
+    shippingCountry                   : '',
+    
+    shippingProvider                  : undefined,
+    
+    
+    
+    // billing data:
+    billingValidation                 : false,
+    billingAsShipping                 : true,
+    
+    billingFirstName                  : '',
+    billingLastName                   : '',
+    
+    billingPhone                      : '',
+    
+    billingAddress                    : '',
+    billingCity                       : '',
+    billingZone                       : '',
+    billingZip                        : '',
+    billingCountry                    : '',
+    
+    
+    
     // payment data:
+    paymentValidation                 : false,
+    paymentMethod                     : undefined,
     paymentToken                      : undefined,
     
     
@@ -275,9 +371,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const cartItems        = useSelector(selectCartItems);
     const hasCart          = !!cartItems.length;
     
-    const checkoutState    = useSelector(selectCheckoutState);
-    const checkoutProgress = useSelector(selectCheckoutProgress);
-    
     const {
         // states:
         checkoutStep,
@@ -297,6 +390,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // shipping data:
+        shippingValidation,
+        
         shippingFirstName,
         shippingLastName,
         
@@ -313,6 +408,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // billing data:
+        billingValidation,
         billingAsShipping,
         
         billingFirstName,
@@ -329,8 +425,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // payment data:
-        paymentToken : existingPaymentToken,
-    } = checkoutState;
+        paymentValidation,
+        paymentMethod,
+        paymentToken,
+    } = useSelector(selectCheckoutState);
+    const checkoutProgress = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
     
     
     
@@ -357,9 +456,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isUninitShipping  && !isPerformedRecoverShippingList.current;
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isErrorShipping || isSuccessShipping) && !shippingList?.entities?.[shippingProvider ?? ''];
     
-    const isLoadingPage                  = isLoading1 || isLoading2 || isLoading3 ||  !existingPaymentToken || isNeedsRecoverShippingList;
-    const isErrorPage                    = !isLoadingPage && (isError1   || isError2   || isError3   || (!existingPaymentToken && isError5));
-    const isReadyPage                    = !isLoadingPage && (hasCart && !!priceList && !!productList && !!countryList && !!existingPaymentToken);
+    const isLoadingPage                  = isLoading1 || isLoading2 || isLoading3 ||  !paymentToken || isNeedsRecoverShippingList;
+    const isErrorPage                    = !isLoadingPage && (isError1   || isError2   || isError3   || (!paymentToken && isError5));
+    const isReadyPage                    = !isLoadingPage && (hasCart && !!priceList && !!productList && !!countryList && !!paymentToken);
     
     
     
@@ -386,11 +485,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // check shipping address:
-        const {
-            shippingCity,
-            shippingZone,
-            shippingCountry,
-        } = checkoutState;
         if (!shippingCity || !shippingZone || !shippingCountry) {
             // no shippingList => go back to information page:
             setCheckoutStep('info');
@@ -410,7 +504,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             zone    : shippingZone,
             country : shippingCountry,
         });
-    }, [isNeedsRecoverShippingList, checkoutState]);
+    }, [isNeedsRecoverShippingList, shippingCity, shippingZone, shippingCountry]);
     
     // go back to shipping page if the selected shippingProvider is not in shippingList:
     useEffect(() => {
@@ -674,8 +768,56 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
+        // extra data:
+        marketingOpt,
+        
+        
+        
+        // customer data:
+        customerNickName,
+        customerEmail,
+        
+        
+        
+        // shipping data:
+        shippingValidation,
+        
+        shippingFirstName,
+        shippingLastName,
+        
+        shippingPhone,
+        
+        shippingAddress,
+        shippingCity,
+        shippingZone,
+        shippingZip,
+        shippingCountry,
+        
+        shippingProvider,
+        
+        
+        
+        // billing data:
+        billingValidation,
+        billingAsShipping,
+        
+        billingFirstName,
+        billingLastName,
+        
+        billingPhone,
+        
+        billingAddress,
+        billingCity,
+        billingZone,
+        billingZip,
+        billingCountry,
+        
+        
+        
         // payment data:
-        paymentToken: existingPaymentToken,
+        paymentValidation,
+        paymentMethod,
+        paymentToken,
         
         
         
@@ -740,8 +882,56 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
+        // extra data:
+        marketingOpt,
+        
+        
+        
+        // customer data:
+        customerNickName,
+        customerEmail,
+        
+        
+        
+        // shipping data:
+        shippingValidation,
+        
+        shippingFirstName,
+        shippingLastName,
+        
+        shippingPhone,
+        
+        shippingAddress,
+        shippingCity,
+        shippingZone,
+        shippingZip,
+        shippingCountry,
+        
+        shippingProvider,
+        
+        
+        
+        // billing data:
+        billingValidation,
+        billingAsShipping,
+        
+        billingFirstName,
+        billingLastName,
+        
+        billingPhone,
+        
+        billingAddress,
+        billingCity,
+        billingZone,
+        billingZip,
+        billingCountry,
+        
+        
+        
         // payment data:
-        existingPaymentToken,
+        paymentValidation,
+        paymentMethod,
+        paymentToken,
         
         
         
