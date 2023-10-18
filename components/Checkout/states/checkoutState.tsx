@@ -443,8 +443,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // customer data:
-    const [customerNickName, setCustomerNickName, customerNickNameHandlers] = useFieldState({ field: 'customerNickName', dispatch: reduxSetCustomerNickName });
-    const [customerEmail   , setCustomerEmail   , customerEmailHandlers   ] = useFieldState({ field: 'customerEmail'   , dispatch: reduxSetCustomerEmail    });
+    const [customerNickName, , customerNickNameHandlers] = useFieldState({ field: 'customerNickName', dispatch: reduxSetCustomerNickName });
+    const [customerEmail   , , customerEmailHandlers   ] = useFieldState({ field: 'customerEmail'   , dispatch: reduxSetCustomerEmail    });
     
     
     
