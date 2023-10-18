@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom'
 import { showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch, useSelector } from 'react-redux'
 import { AccessibilityProvider, colorValues, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { selectCheckoutState, setMarketingOpt, setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingValidation, setBillingAsShipping, setPaymentValidation, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
+import { setShippingAddress, setShippingCity, setShippingCountry, setShippingFirstName, setShippingLastName, setShippingPhone, setShippingProvider, setShippingValidation, setShippingZip, setShippingZone, setPaymentMethod, setBillingAddress, setBillingCity, setBillingCountry, setBillingFirstName, setBillingLastName, setBillingPhone, setBillingZip, setBillingZone, setBillingValidation, setBillingAsShipping, setPaymentValidation, PaymentMethod, setCustomerEmail, setCustomerNickName } from '@/store/features/checkout/checkoutSlice'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/shippings'
@@ -721,6 +721,7 @@ const RegularCheckout = () => {
     const {
         // extra data:
         marketingOpt,
+        marketingOptHandlers,
         
         
         
@@ -846,7 +847,26 @@ const RegularCheckout = () => {
                         />
                     }
                 />
-                <Check      className='marketingOpt' enableValidation={false}                                             active={marketingOpt} onActiveChange={({active})                 => dispatch(setMarketingOpt(active))}      >
+                <Check
+                    // classes:
+                    className='marketingOpt'
+                    
+                    
+                    
+                    // values:
+                    active={marketingOpt}
+                    
+                    
+                    
+                    // validations:
+                    required={false}
+                    enableValidation={false}
+                    
+                    
+                    
+                    // handlers:
+                    {...marketingOptHandlers}
+                >
                     Email me with news and offers
                 </Check>
             </Section>

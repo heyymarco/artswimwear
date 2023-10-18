@@ -68,6 +68,7 @@ import {
     
     
     // dispatchers:
+    setMarketingOpt     as reduxSetMarketingOpt,
     setCustomerEmail    as reduxSetCustomerEmail,
     setCustomerNickName as reduxSetCustomerNickName,
     
@@ -152,6 +153,7 @@ export interface CheckoutState {
     
     // extra data:
     marketingOpt                      : boolean
+    marketingOptHandlers              : FieldHandlers<HTMLInputElement>
     
     
     
@@ -272,6 +274,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     // extra data:
     marketingOpt                      : true,
+    marketingOptHandlers              : noopHandler,
     
     
     
@@ -393,11 +396,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // extra data:
-        marketingOpt,
-        
-        
-        
         // shipping data:
         shippingValidation,
         
@@ -439,6 +437,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentToken,
     } = useSelector(selectCheckoutState);
     const checkoutProgress = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
+    
+    
+    
+    // extra data:
+    const [marketingOpt    , , marketingOptHandlers    ] = useFieldState({ field: 'marketingOpt'    , dispatch: reduxSetMarketingOpt     });
     
     
     
@@ -785,6 +788,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // extra data:
         marketingOpt,
+        marketingOptHandlers,              // stable ref
         
         
         
@@ -902,6 +906,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // extra data:
         marketingOpt,
+        marketingOptHandlers,                 // stable ref
         
         
         
