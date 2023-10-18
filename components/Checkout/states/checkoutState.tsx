@@ -273,7 +273,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // stores:
     const cartItems        = useSelector(selectCartItems);
+    const hasCart          = !!cartItems.length;
+    
     const checkoutState    = useSelector(selectCheckoutState);
+    const checkoutProgress = useSelector(selectCheckoutProgress);
+    
     const {
         // states:
         checkoutStep,
@@ -281,7 +285,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // extras:
+        // extra data:
         marketingOpt,
         
         
@@ -327,8 +331,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // payment data:
         paymentToken : existingPaymentToken,
     } = checkoutState;
-    const checkoutProgress = useSelector(selectCheckoutProgress);
-    const hasCart = !!cartItems.length;
     
     
     
@@ -616,7 +618,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             
-            // extras:
+            // extra data:
             marketingOpt,
             
             
