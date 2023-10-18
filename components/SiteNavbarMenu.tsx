@@ -1,3 +1,5 @@
+'use client'
+
 import Link from '@reusable-ui/next-compat-link'
 import { Badge, ButtonIcon, Collapse, HamburgerMenuButton, Icon, List, ListItem, Nav, NavbarParams, navbars, NavItem } from '@reusable-ui/components';
 import { selectCartTotalQuantity, toggleCart } from '@/store/features/cart/cartSlice';
