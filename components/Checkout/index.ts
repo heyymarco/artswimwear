@@ -1,1 +1,3 @@
-export * from './Checkout'
+export *            from './states/checkoutState'
+
+export *            from './Checkout'
