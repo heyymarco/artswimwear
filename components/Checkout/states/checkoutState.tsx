@@ -1,15 +1,111 @@
-import { useDialogMessage, useWindowResizeObserver, WindowResizeCallback } from '@reusable-ui/components'
-import { PricePreview, ProductPreview, useGeneratePaymentToken, useGetCountryList, useGetPriceList, useGetProductList, useGetMatchingShippingList, usePlaceOrder, useMakePayment, PlaceOrderOptions } from '@/store/features/api/apiSlice'
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import { CartEntry, selectCartItems } from '@/store/features/cart/cartSlice'
-import { useDispatch, useSelector } from 'react-redux'
-import { breakpoints, useEvent, useIsomorphicLayoutEffect } from '@reusable-ui/core'
-import { CheckoutStep, selectCheckoutProgress, selectCheckoutState, setCheckoutStep as reduxSetCheckoutStep, setPaymentToken, PaymentToken, setIsBusy as reduxSetIsBusy } from '@/store/features/checkout/checkoutSlice'
-import { EntityState } from '@reduxjs/toolkit'
-import { MatchingShipping, MatchingAddress } from '@/libs/shippings'
+'use client'
+
+// react:
+import {
+    // react:
+    default as React,
+    
+    
+    
+    // contexts:
+    createContext,
+    
+    
+    
+    // hooks:
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+}                           from 'react'
+
+// redux:
+import {
+    useDispatch,
+    useSelector,
+}                           from 'react-redux'
+import type {
+    EntityState
+}                           from '@reduxjs/toolkit'
+
+// reusable-ui core:
+import {
+    // a responsive management system:
+    breakpoints,
+    
+    
+    
+    // hooks:
+    useIsomorphicLayoutEffect,
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // utility-components:
+    WindowResizeCallback,
+    useWindowResizeObserver,
+    useDialogMessage,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// stores:
+import {
+    // types:
+    CartEntry,
+    
+    
+    
+    // selectors:
+    selectCartItems,
+}                           from '@/store/features/cart/cartSlice'
+import {
+    // types:
+    CheckoutStep,
+    PaymentToken,
+    
+    
+    
+    // dispatchers:
+    setCheckoutStep  as reduxSetCheckoutStep,
+    setIsBusy        as reduxSetIsBusy,
+    setPaymentToken,
+    
+    
+    
+    // selectors:
+    selectCheckoutState,
+    selectCheckoutProgress,
+}                           from '@/store/features/checkout/checkoutSlice'
+import {
+    // types:
+    PricePreview,
+    ProductPreview,
+    PlaceOrderOptions,
+    
+    
+    
+    // hooks:
+    useGetProductList,
+    useGetPriceList,
+    useGetCountryList,
+    useGetMatchingShippingList,
+    useGeneratePaymentToken,
+    usePlaceOrder,
+    useMakePayment,
+}                           from '@/store/features/api/apiSlice'
 
 // apis:
-import type { CountryPreview } from '@/pages/api/countryList'
+import type {
+    CountryPreview,
+}                           from '@/pages/api/countryList'
+
+// internals:
+import type {
+    // types:
+    MatchingShipping,
+    MatchingAddress,
+}                           from '@/libs/shippings'
 
 
 
@@ -692,5 +788,5 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
 export {
     CheckoutStateProvider,
     CheckoutStateProvider as default,
-};
+}
 //#endregion checkoutState
