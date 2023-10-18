@@ -767,11 +767,6 @@ const RegularCheckout = () => {
     
     
     
-    // stores:
-    const dispatch = useDispatch();
-    
-    
-    
     return (
         <ValidationProvider enableValidation={shippingValidation}>
             <Section className='contact' title='Contact Information'>
