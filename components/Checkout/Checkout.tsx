@@ -1931,13 +1931,11 @@ const CardPaymentButton = () => {
         doTransaction,
         doMakePayment,
     } = useCheckoutState();
-    const dispatch = useDispatch();
     
     
     
     // dialogs:
     const {
-        showMessageFieldError,
         showMessageFetchError,
     } = useDialogMessage();
     
@@ -1946,29 +1944,6 @@ const CardPaymentButton = () => {
     // handlers:
     const hostedFields = usePayPalHostedFields();
     const handlePayButtonClicked = useEvent(async () => {
-        // validate:
-        // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
-        if (!billingAsShipping) await dispatch(setBillingValidation(true));
-        await dispatch(setPaymentValidation(true));
-        await new Promise<void>((resolve) => { // wait for a validation state applied
-            setTimeout(() => {
-                setTimeout(() => {
-                    resolve();
-                }, 0);
-            }, 0);
-        });
-        const fieldErrors = [
-            ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),
-            ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
-        ];
-        if (fieldErrors?.length) { // there is an/some invalid field
-            showMessageFieldError(fieldErrors);
-            return;
-        } // if
-        
-        
-        
-        // next:
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         const submitCardData = hostedFields.cardFields?.submit;
         doTransaction(async () => {
@@ -2049,13 +2024,11 @@ const ManualPaymentButton = () => {
         doPlaceOrder,
         doMakePayment,
     } = useCheckoutState();
-    const dispatch = useDispatch();
     
     
     
     // dialogs:
     const {
-        showMessageFieldError,
         showMessageFetchError,
     } = useDialogMessage();
     
@@ -2063,27 +2036,6 @@ const ManualPaymentButton = () => {
     
     // handlers:
     const handleFinishOrderButtonClicked = useEvent(async () => {
-        // validate:
-        // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
-        if (!billingAsShipping) await dispatch(setBillingValidation(true));
-        await dispatch(setPaymentValidation(true));
-        await new Promise<void>((resolve) => { // wait for a validation state applied
-            setTimeout(() => {
-                setTimeout(() => {
-                    resolve();
-                }, 0);
-            }, 0);
-        });
-        const fieldErrors = [
-            ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
-        ];
-        if (fieldErrors?.length) { // there is an/some invalid field
-            showMessageFieldError(fieldErrors);
-            return;
-        } // if
-        
-        
-        
         doTransaction(async () => {
             try {
                 // createOrder:

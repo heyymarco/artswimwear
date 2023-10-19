@@ -150,6 +150,11 @@ import {
 
 
 
+// utilities:
+const invalidSelector = ':is(.invalidating, .invalidated)';
+
+
+
 // hooks:
 
 // states:
@@ -306,7 +311,7 @@ export interface CheckoutState {
     
     // actions:
     checkShippingProviderAvailability : (address: MatchingAddress) => Promise<boolean>
-    doTransaction                     : (transaction: (() => Promise<void>)) => Promise<void>
+    doTransaction                     : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
     
@@ -753,6 +758,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // dialogs:
     const {
         showMessageError,
+        showMessageFieldError,
         showMessageFetchError,
     } = useDialogMessage();
     
@@ -820,7 +826,52 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             dispatch(reduxSetBillingValidation(false));
         } // if
     });
-    const doTransaction                     = useEvent(async (transaction: (() => Promise<void>)): Promise<void> => {
+    const doTransaction                     = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
+        if (paymentMethod !== 'paypal') { // paymentMethod 'card' & paymentMethod 'manual' => requires valid billing fields
+            // validate:
+            // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+            if (!billingAsShipping) { // use dedicated billingAddress => enable billingAddress validation
+                dispatch(reduxSetBillingValidation(true));
+            } // if
+            dispatch(reduxSetPaymentValidation(true)); // enable paymentForm validation
+            await new Promise<void>((resolve) => { // wait for a validation state applied
+                setTimeout(() => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 0);
+                }, 0);
+            });
+            const fieldErrors = [
+                // card fields:
+                ...(
+                    (
+                        (paymentMethod === 'card')
+                        ? paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                        : undefined
+                    )
+                    ??
+                    []
+                ),
+                
+                // billing fields:
+                ...(
+                    (
+                        !billingAsShipping
+                        ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                        : undefined
+                    )
+                    ??
+                    []
+                ),
+            ];
+            if (fieldErrors?.length) { // there is an/some invalid field
+                showMessageFieldError(fieldErrors);
+                return false; // transaction aborted due to validation error
+            } // if
+        } // if
+        
+        
+        
         dispatch(reduxSetIsBusy('transaction'));
         try {
             await transaction();
@@ -828,6 +879,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         finally {
             dispatch(reduxSetIsBusy(false));
         } // try
+        
+        
+        
+        return true; // transaction completed
     });
     const doPlaceOrder                      = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
