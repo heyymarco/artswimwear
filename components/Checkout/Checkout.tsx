@@ -600,7 +600,7 @@ const NavCheckout = () => {
             // next:
             try {
                 // update the UI:
-                setIsBusy(true);
+                setIsBusy('checkShipping');
                 
                 
                 
@@ -1805,7 +1805,7 @@ const PaymentMethodPaypal = () => {
     const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
             // update the UI:
-            setIsBusy(true);
+            setIsBusy('transaction');
             
             
             
@@ -1986,7 +1986,7 @@ const CardPaymentButton = () => {
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
         try {
             // update the UI:
-            setIsBusy(true);
+            setIsBusy('transaction');
             
             
             
@@ -2106,7 +2106,7 @@ const ManualPaymentButton = () => {
         
         try {
             // update the UI:
-            setIsBusy(true);
+            setIsBusy('transaction');
             
             
             

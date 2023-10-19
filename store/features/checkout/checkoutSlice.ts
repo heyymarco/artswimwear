@@ -3,16 +3,28 @@ import { RootState, AppThunk } from '../../store';
 
 
 
-export type CheckoutStep = 'info'|'shipping'|'payment'|'pending'|'paid'
+export type CheckoutStep =
+    |'info'
+    |'shipping'
+    |'payment'
+    |'pending'
+    |'paid'
+export type BusyState =
+    | false // idle
+    | 'checkShipping'
+    | 'transaction'
+export type PaymentMethod =
+    |'card'
+    |'paypal'
+    |'manual'
 export interface PaymentToken {
     paymentToken : string
     expires      : number
 }
-export type PaymentMethod = 'card'|'paypal'|'manual'
 export interface CheckoutState {
     // states:
     checkoutStep           : CheckoutStep
-    isBusy                 : boolean
+    isBusy                 : BusyState
     
     
     
@@ -140,7 +152,7 @@ export const checkoutSlice = createSlice({
         setCheckoutStep: (state, {payload: value}: PayloadAction<CheckoutStep>) => {
             state.checkoutStep = value;
         },
-        setIsBusy      : (state, {payload: value}: PayloadAction<boolean>) => {
+        setIsBusy      : (state, {payload: value}: PayloadAction<BusyState>) => {
             state.isBusy = value;
         },
         

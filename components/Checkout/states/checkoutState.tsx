@@ -62,8 +62,9 @@ import {
 import {
     // types:
     CheckoutStep,
-    PaymentToken,
+    BusyState,
     PaymentMethod,
+    PaymentToken,
     
     
     
@@ -162,8 +163,8 @@ export interface CheckoutState {
     setCheckoutStep                   : (checkoutStep: CheckoutStep) => void
     checkoutProgress                  : number
     
-    isBusy                            : boolean,
-    setIsBusy                         : (isBusy: boolean) => void
+    isBusy                            : BusyState,
+    setIsBusy                         : (isBusy: BusyState) => void
     
     isLoadingPage                     : boolean
     isErrorPage                       : boolean
@@ -567,7 +568,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const setCheckoutStep = useEvent((checkoutStep: CheckoutStep): void => {
         dispatch(reduxSetCheckoutStep(checkoutStep));
     });
-    const setIsBusy       = useEvent((isBusy: boolean): void => {
+    const setIsBusy       = useEvent((isBusy: BusyState): void => {
         dispatch(reduxSetIsBusy(isBusy));
     });
     
