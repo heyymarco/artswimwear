@@ -69,39 +69,45 @@ import {
     
     
     // states:
-    setCheckoutStep      as reduxSetCheckoutStep,
-    setIsBusy            as reduxSetIsBusy,
+    setCheckoutStep       as reduxSetCheckoutStep,
+    setIsBusy             as reduxSetIsBusy,
     
     // extra data:
-    setMarketingOpt      as reduxSetMarketingOpt,
+    setMarketingOpt       as reduxSetMarketingOpt,
     
     // customer data:
-    setCustomerEmail     as reduxSetCustomerEmail,
-    setCustomerNickName  as reduxSetCustomerNickName,
+    setCustomerEmail      as reduxSetCustomerEmail,
+    setCustomerNickName   as reduxSetCustomerNickName,
     
     // shipping data:
-    setShippingFirstName as reduxSetShippingFirstName,
-    setShippingLastName  as reduxSetShippingLastName,
+    setShippingValidation as reduxSetShippingValidation,
     
-    setShippingPhone     as reduxSetShippingPhone,
+    setShippingFirstName  as reduxSetShippingFirstName,
+    setShippingLastName   as reduxSetShippingLastName,
     
-    setShippingAddress   as reduxSetShippingAddress,
-    setShippingCity      as reduxSetShippingCity,
-    setShippingZone      as reduxSetShippingZone,
-    setShippingZip       as reduxSetShippingZip,
-    setShippingCountry   as reduxSetShippingCountry,
+    setShippingPhone      as reduxSetShippingPhone,
+    
+    setShippingAddress    as reduxSetShippingAddress,
+    setShippingCity       as reduxSetShippingCity,
+    setShippingZone       as reduxSetShippingZone,
+    setShippingZip        as reduxSetShippingZip,
+    setShippingCountry    as reduxSetShippingCountry,
     
     // billing data:
-    setBillingValidation as reduxSetBillingValidation,
-    setBillingAsShipping as reduxSetBillingAsShipping,
-    setBillingFirstName  as reduxSetBillingFirstName,
-    setBillingLastName   as reduxSetBillingLastName,
-    setBillingPhone      as reduxSetBillingPhone,
-    setBillingAddress    as reduxSetBillingAddress,
-    setBillingCity       as reduxSetBillingCity,
-    setBillingZone       as reduxSetBillingZone,
-    setBillingZip        as reduxSetBillingZip,
-    setBillingCountry    as reduxSetBillingCountry,
+    setBillingValidation  as reduxSetBillingValidation,
+    
+    setBillingAsShipping  as reduxSetBillingAsShipping,
+    
+    setBillingFirstName   as reduxSetBillingFirstName,
+    setBillingLastName    as reduxSetBillingLastName,
+    
+    setBillingPhone       as reduxSetBillingPhone,
+    
+    setBillingAddress     as reduxSetBillingAddress,
+    setBillingCity        as reduxSetBillingCity,
+    setBillingZone        as reduxSetBillingZone,
+    setBillingZip         as reduxSetBillingZip,
+    setBillingCountry     as reduxSetBillingCountry,
     
     // payment data:
     setPaymentValidation as reduxSetPaymentValidation,
@@ -310,7 +316,7 @@ export interface CheckoutState {
     
     
     // actions:
-    checkShippingProviderAvailability : (address: MatchingAddress) => Promise<boolean>
+    gotoShippingSection               : () => Promise<boolean>
     doTransaction                     : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
@@ -466,7 +472,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // actions:
-    checkShippingProviderAvailability : noopHandler as any,
+    gotoShippingSection               : noopHandler as any,
     doTransaction                     : noopHandler as any,
     doPlaceOrder                      : noopHandler as any,
     doMakePayment                     : noopHandler as any,
@@ -765,9 +771,35 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // stable callbacks:
-    const checkShippingProviderAvailability = useEvent(async (address: MatchingAddress): Promise<boolean> => {
+    const gotoShippingSection               = useEvent(async (): Promise<boolean> => {
+        // TODO: if (totalShippingWeight !== null) // if contain a/some physical product => requires shipping
+        {
+            // validate:
+            // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+            dispatch(reduxSetShippingValidation(true)); // enable billingAddress validation
+            await new Promise<void>((resolve) => { // wait for a validation state applied
+                setTimeout(() => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 0);
+                }, 0);
+            });
+            const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
+            if (fieldErrors?.length) { // there is an/some invalid field
+                showMessageFieldError(fieldErrors);
+                return false; // transaction aborted due to validation error
+            } // if
+        } // if
+        
+        
+        
+        dispatch(reduxSetIsBusy('checkShipping'));
         try {
-            const shippingList = await getShippingByAddress(address).unwrap();
+            const shippingList = await getShippingByAddress({
+                city    : shippingCity,
+                zone    : shippingZone,
+                country : shippingCountry,
+            }).unwrap();
             
             
             
@@ -783,12 +815,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         </p>
                     </>,
                 });
-                return false;
+                return false; // transaction failed due to no_shipping_agency
             } // if
-            
-            
-            
-            return true;
         }
         catch (error: any) {
             showMessageError({
@@ -807,8 +835,19 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     </p>
                 </>,
             });
-            return false;
+            return false; // transaction failed due to fetch_error
+        }
+        finally {
+            dispatch(reduxSetIsBusy(false));
         } // try
+        
+        
+        
+        setCheckoutStep('shipping'); // TODO: make `setCheckoutStep` internal use
+        
+        
+        
+        return true; // transaction completed
     });
     const setPaymentMethod                  = useEvent((paymentMethod: PaymentMethod): void => {
         dispatch(reduxSetPaymentMethod(paymentMethod));
@@ -1102,7 +1141,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        checkShippingProviderAvailability, // stable ref
+        gotoShippingSection,               // stable ref
         doTransaction,                     // stable ref
         doPlaceOrder,                      // stable ref
         doMakePayment,                     // stable ref
@@ -1260,7 +1299,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        // checkShippingProviderAvailability, // stable ref
+        // gotoShippingSection,               // stable ref
         // doTransaction,                     // stable ref
         // doPlaceOrder,                      // stable ref
         // doMakePayment,                     // stable ref

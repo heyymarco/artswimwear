@@ -535,16 +535,13 @@ const ProgressCheckout = () => {
 
 
 const NavCheckout = () => {
-    // context:
-    const {checkoutStep, checkoutProgress, regularCheckoutSectionRef, checkShippingProviderAvailability} = useCheckoutState();
-    const isCheckoutFinished = ['pending', 'paid'].includes(checkoutStep);
-    
-    
-    
     // states:
     const {
         // states:
+        checkoutStep,
         setCheckoutStep,
+        checkoutProgress,
+        
         isBusy,
         setIsBusy,
         
@@ -554,7 +551,18 @@ const NavCheckout = () => {
         shippingCity,
         shippingZone,
         shippingCountry,
+        
+        
+        
+        // sections:
+        regularCheckoutSectionRef,
+        
+        
+        
+        // actions:
+        gotoShippingSection,
     } = useCheckoutState();
+    const isCheckoutFinished = ['pending', 'paid'].includes(checkoutStep);
     
     
     
@@ -578,42 +586,7 @@ const NavCheckout = () => {
     ][checkoutProgress];
     
     const nextAction = [
-        { text: 'Continue to shipping' , action: async () => {
-            // validate:
-            // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
-            await dispatch(setShippingValidation(true));
-            await new Promise<void>((resolve) => { // wait for a validation state applied
-                setTimeout(() => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 0);
-                }, 0);
-            });
-            const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
-            if (fieldErrors?.length) { // there is an/some invalid field
-                showMessageFieldError(fieldErrors);
-                return;
-            } // if
-            
-            
-            
-            // next:
-            // update the UI:
-            setIsBusy('checkShipping');
-            try {
-                if (await checkShippingProviderAvailability({
-                    city    : shippingCity,
-                    zone    : shippingZone,
-                    country : shippingCountry,
-                })) {
-                    setCheckoutStep('shipping');
-                } // if
-            }
-            finally {
-                // update the UI:
-                setIsBusy(false);
-            } // try
-        }},
+        { text: 'Continue to shipping' , action: gotoShippingSection },
         { text: 'Continue to payment'  , action: () => setCheckoutStep('payment') },
         { text: 'Pay Now' , action: () => {
             // payment action
