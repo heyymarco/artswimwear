@@ -67,6 +67,7 @@ export interface CheckoutState {
     paymentValidation      : boolean
     
     paymentMethod         ?: PaymentMethod
+    
     paymentToken          ?: PaymentToken
 }
 
@@ -128,6 +129,7 @@ const initialState: CheckoutState = {
     paymentValidation      : false,
     
     paymentMethod          : undefined,
+    
     paymentToken           : undefined,
 };
 export const checkoutSlice = createSlice({
@@ -245,6 +247,7 @@ export const checkoutSlice = createSlice({
         setPaymentMethod: (state, {payload: value}: PayloadAction<PaymentMethod|undefined>) => {
             state.paymentMethod = value;
         },
+        
         setPaymentToken: (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
             state.paymentToken = value;
         },
@@ -312,6 +315,7 @@ export const {
     setPaymentValidation,
     
     setPaymentMethod,
+    
     setPaymentToken,
 } = checkoutSlice.actions;
 

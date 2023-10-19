@@ -267,7 +267,9 @@ export interface CheckoutState {
     
     // payment data:
     paymentValidation                 : boolean
+    
     paymentMethod                     : PaymentMethod | undefined
+    
     paymentToken                      : PaymentToken  | undefined
     
     
@@ -419,7 +421,9 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     // payment data:
     paymentValidation                 : false,
+    
     paymentMethod                     : undefined,
+    
     paymentToken                      : undefined,
     
     
@@ -505,7 +509,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // payment data:
         paymentValidation,
+        
         paymentMethod,
+        
         paymentToken,
     } = useSelector(selectCheckoutState);
     const checkoutProgress = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
@@ -973,7 +979,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // payment data:
         paymentValidation,
+        
         paymentMethod,
+        
         paymentToken,
         
         
@@ -1127,7 +1135,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // payment data:
         paymentValidation,
+        
         paymentMethod,
+        
         paymentToken,
         
         
