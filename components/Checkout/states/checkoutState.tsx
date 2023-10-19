@@ -105,7 +105,7 @@ import {
     // payment data:
     setPaymentValidation as reduxSetPaymentValidation,
     setPaymentMethod     as reduxSetPaymentMethod,
-    setPaymentToken,
+    setPaymentToken      as reduxSetPaymentToken,
     
     
     
@@ -702,7 +702,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         }
         else if (newPaymentToken) {
             // replace the expiring one:
-            dispatch(setPaymentToken(newPaymentToken));
+            dispatch(reduxSetPaymentToken(newPaymentToken));
             
             
             
