@@ -817,7 +817,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         if (billingAsShipping) { // the billingAddress is the same as shippingAddress => reset billingAddress validation
             dispatch(reduxSetBillingValidation(false));
         } // if
-    })
+    });
     const doPlaceOrder                      = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
