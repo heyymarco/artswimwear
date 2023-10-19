@@ -598,12 +598,9 @@ const NavCheckout = () => {
             
             
             // next:
+            // update the UI:
+            setIsBusy('checkShipping');
             try {
-                // update the UI:
-                setIsBusy('checkShipping');
-                
-                
-                
                 if (await checkShippingProviderAvailability({
                     city    : shippingCity,
                     zone    : shippingZone,
@@ -1782,15 +1779,11 @@ const PaymentMethodPaypal = () => {
     
     
     // states:
-    const {
-        // states:
-        setIsBusy,
-    } = useCheckoutState();
-    
-    
-    
-    // states:
     const checkoutState = useCheckoutState();
+    const {
+        // actions:
+        doTransaction,
+    } = checkoutState;
     
     
     
@@ -1803,22 +1796,15 @@ const PaymentMethodPaypal = () => {
     
     // handlers:
     const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
-        try {
-            // update the UI:
-            setIsBusy('transaction');
-            
-            
-            
-            // then forward the authentication to backend_API to receive the fund:
-            await doMakePayment(paypalAuthentication.orderID, /*paid:*/true);
-        }
-        catch (error: any) {
-            showMessageFetchError({ error, context: 'payment' });
-        }
-        finally {
-            // update the UI:
-            setIsBusy(false);
-        } // try
+        doTransaction(async () => {
+            try {
+                // forward the authentication to backend_API to receive the fund agreement:
+                await doMakePayment(paypalAuthentication.orderID, /*paid:*/true);
+            }
+            catch (error: any) {
+                showMessageFetchError({ error, context: 'payment' });
+            } // try
+        });
     });
     const handleShippingChange = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
         console.log('data', data);
@@ -1897,7 +1883,6 @@ const CardPaymentButton = () => {
     const {
         // states:
         isBusy,
-        setIsBusy,
         
         
         
@@ -1943,6 +1928,7 @@ const CardPaymentButton = () => {
         
         
         // actions:
+        doTransaction,
         doMakePayment,
     } = useCheckoutState();
     const dispatch = useDispatch();
@@ -1984,57 +1970,51 @@ const CardPaymentButton = () => {
         
         // next:
         if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
-        try {
-            // update the UI:
-            setIsBusy('transaction');
-            
-            
-            
-            // submit card data to PayPal_API to get authentication:
-            const paypalAuthentication = await hostedFields.cardFields.submit({
-                // trigger 3D Secure authentication:
-                contingencies: ['SCA_WHEN_REQUIRED'],
-                
-                cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
-                billingAddress : {
-                    streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
-                 // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
-                    locality          : billingAsShipping ? shippingCity    : billingCity,    // city
-                    region            : billingAsShipping ? shippingZone    : billingZone,    // state
-                    postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
-                    countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
-                },
-            });
-            /*
-                example:
-                {
-                    authenticationReason: undefined
-                    authenticationStatus: "APPROVED",
-                    card: {
-                        brand: "VISA",
-                        card_type: "VISA",
-                        last_digits: "7704",
-                        type: "CREDIT",
+        const submitCardData = hostedFields.cardFields?.submit;
+        doTransaction(async () => {
+            try {
+                // submit card data to PayPal_API to get authentication:
+                const paypalAuthentication = await submitCardData({
+                    // trigger 3D Secure authentication:
+                    contingencies: ['SCA_WHEN_REQUIRED'],
+                    
+                    cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
+                    billingAddress : {
+                        streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
+                     // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
+                        locality          : billingAsShipping ? shippingCity    : billingCity,    // city
+                        region            : billingAsShipping ? shippingZone    : billingZone,    // state
+                        postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
+                        countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
                     },
-                    liabilityShift: undefined
-                    liabilityShifted: undefined
-                    orderId: "1N785713SG267310M"
-                }
-            */
-            console.log('paypalAuthentication: ', paypalAuthentication);
-            
-            
-            
-            // then forward the authentication to backend_API to receive the fund:
-            await doMakePayment(paypalAuthentication.orderId, /*paid:*/true);
-        }
-        catch (error: any) {
-            showMessageFetchError({ error, context: 'payment' });
-        }
-        finally {
-            // update the UI:
-            setIsBusy(false);
-        } // try
+                });
+                /*
+                    example:
+                    {
+                        authenticationReason: undefined
+                        authenticationStatus: "APPROVED",
+                        card: {
+                            brand: "VISA",
+                            card_type: "VISA",
+                            last_digits: "7704",
+                            type: "CREDIT",
+                        },
+                        liabilityShift: undefined
+                        liabilityShifted: undefined
+                        orderId: "1N785713SG267310M"
+                    }
+                */
+                console.log('paypalAuthentication: ', paypalAuthentication);
+                
+                
+                
+                // then forward the authentication to backend_API to receive the fund:
+                await doMakePayment(paypalAuthentication.orderId, /*paid:*/true);
+            }
+            catch (error: any) {
+                showMessageFetchError({ error, context: 'payment' });
+            } // try
+        });
     });
     
     
@@ -2051,7 +2031,6 @@ const ManualPaymentButton = () => {
     const {
         // states:
         isBusy,
-        setIsBusy,
         
         
         
@@ -2066,6 +2045,7 @@ const ManualPaymentButton = () => {
         
         
         // actions:
+        doTransaction,
         doPlaceOrder,
         doMakePayment,
     } = useCheckoutState();
@@ -2104,27 +2084,20 @@ const ManualPaymentButton = () => {
         
         
         
-        try {
-            // update the UI:
-            setIsBusy('transaction');
-            
-            
-            
-            // createOrder:
-            const orderId = await doPlaceOrder({paymentSource: 'manual'});
-            
-            
-            
-            // then forward the authentication to backend_API to book the order (but not paid yet):
-            await doMakePayment(orderId, /*paid:*/false);
-        }
-        catch (error: any) {
-            showMessageFetchError({ error, context: 'order' });
-        }
-        finally {
-            // update the UI:
-            setIsBusy(false);
-        } // try
+        doTransaction(async () => {
+            try {
+                // createOrder:
+                const orderId = await doPlaceOrder({paymentSource: 'manual'});
+                
+                
+                
+                // then forward the authentication to backend_API to book the order (but not paid yet):
+                await doMakePayment(orderId, /*paid:*/false);
+            }
+            catch (error: any) {
+                showMessageFetchError({ error, context: 'order' });
+            } // try
+        });
     });
     
     

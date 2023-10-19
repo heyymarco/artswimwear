@@ -306,6 +306,7 @@ export interface CheckoutState {
     
     // actions:
     checkShippingProviderAvailability : (address: MatchingAddress) => Promise<boolean>
+    doTransaction                     : (transaction: (() => Promise<void>)) => Promise<void>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
     
@@ -460,15 +461,16 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // actions:
-    checkShippingProviderAvailability : undefined as any,
-    doPlaceOrder                      : undefined as any,
-    doMakePayment                     : undefined as any,
+    checkShippingProviderAvailability : noopHandler as any,
+    doTransaction                     : noopHandler as any,
+    doPlaceOrder                      : noopHandler as any,
+    doMakePayment                     : noopHandler as any,
     
     
     
     // apis:
-    placeOrderApi                     : undefined as any,
-    makePaymentApi                    : undefined as any,
+    placeOrderApi                     : noopHandler as any,
+    makePaymentApi                    : noopHandler as any,
 });
 CheckoutStateContext.displayName  = 'CheckoutState';
 
@@ -818,6 +820,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             dispatch(reduxSetBillingValidation(false));
         } // if
     });
+    const doTransaction                     = useEvent(async (transaction: (() => Promise<void>)): Promise<void> => {
+        dispatch(reduxSetIsBusy('transaction'));
+        try {
+            await transaction();
+        }
+        finally {
+            dispatch(reduxSetIsBusy(false));
+        } // try
+    });
     const doPlaceOrder                      = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
@@ -1037,6 +1048,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // actions:
         checkShippingProviderAvailability, // stable ref
+        doTransaction,                     // stable ref
         doPlaceOrder,                      // stable ref
         doMakePayment,                     // stable ref
         
@@ -1194,6 +1206,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // actions:
         // checkShippingProviderAvailability, // stable ref
+        // doTransaction,                     // stable ref
         // doPlaceOrder,                      // stable ref
         // doMakePayment,                     // stable ref
         
