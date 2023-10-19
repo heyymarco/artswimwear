@@ -1393,18 +1393,36 @@ const Payment = () => {
     const {
         // billing data:
         billingValidation,
+        
         billingAsShipping,
+        setBillingAsShipping,
+        
         
         billingFirstName,
+        billingFirstNameHandlers,
+        
         billingLastName,
+        billingLastNameHandlers,
+        
         
         billingPhone,
+        billingPhoneHandlers,
+        
         
         billingAddress,
+        billingAddressHandlers,
+        
         billingCity,
+        billingCityHandlers,
+        
         billingZone,
+        billingZoneHandlers,
+        
         billingZip,
+        billingZipHandlers,
+        
         billingCountry,
+        billingCountryHandlers,
         
         
         
@@ -1433,7 +1451,7 @@ const Payment = () => {
                         
                         
                         // actions:
-                        dispatch(setBillingAsShipping(listIndex === 0));
+                        setBillingAsShipping(listIndex === 0);
                         if (listIndex === 0) dispatch(setBillingValidation(false));
                     }} listStyle='content'>
                         <AccordionItem label={<>
@@ -1469,16 +1487,16 @@ const Payment = () => {
                                     
                                     
                                     // events:
-                                    onFirstNameChange = {({target:{value}}) => dispatch(setBillingFirstName(value))}
-                                    onLastNameChange  = {({target:{value}}) => dispatch(setBillingLastName(value))}
+                                    onFirstNameChange = {billingFirstNameHandlers.onChange}
+                                    onLastNameChange  = {billingLastNameHandlers.onChange }
                                     
-                                    onPhoneChange     = {({target:{value}}) => dispatch(setBillingPhone(value))}
+                                    onPhoneChange     = {billingPhoneHandlers.onChange    }
                                     
-                                    onAddressChange   = {({target:{value}}) => dispatch(setBillingAddress(value))}
-                                    onCityChange      = {({target:{value}}) => dispatch(setBillingCity(value))}
-                                    onZoneChange      = {({target:{value}}) => dispatch(setBillingZone(value))}
-                                    onZipChange       = {({target:{value}}) => dispatch(setBillingZip(value))}
-                                    onCountryChange   = {({target:{value}}) => dispatch(setBillingCountry(value))}
+                                    onAddressChange   = {billingAddressHandlers.onChange  }
+                                    onCityChange      = {billingCityHandlers.onChange     }
+                                    onZoneChange      = {billingZoneHandlers.onChange     }
+                                    onZipChange       = {billingZipHandlers.onChange      }
+                                    onCountryChange   = {billingCountryHandlers.onChange  }
                                 />
                             </ValidationProvider>
                         </AccordionItem>

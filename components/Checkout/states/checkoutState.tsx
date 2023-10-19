@@ -68,15 +68,15 @@ import {
     
     
     // states:
-    setCheckoutStep     as reduxSetCheckoutStep,
-    setIsBusy           as reduxSetIsBusy,
+    setCheckoutStep      as reduxSetCheckoutStep,
+    setIsBusy            as reduxSetIsBusy,
     
     // extra data:
-    setMarketingOpt     as reduxSetMarketingOpt,
+    setMarketingOpt      as reduxSetMarketingOpt,
     
     // customer data:
-    setCustomerEmail    as reduxSetCustomerEmail,
-    setCustomerNickName as reduxSetCustomerNickName,
+    setCustomerEmail     as reduxSetCustomerEmail,
+    setCustomerNickName  as reduxSetCustomerNickName,
     
     // shipping data:
     setShippingFirstName as reduxSetShippingFirstName,
@@ -89,6 +89,17 @@ import {
     setShippingZone      as reduxSetShippingZone,
     setShippingZip       as reduxSetShippingZip,
     setShippingCountry   as reduxSetShippingCountry,
+    
+    // billing data:
+    setBillingAsShipping as reduxSetBillingAsShipping,
+    setBillingFirstName  as reduxSetBillingFirstName,
+    setBillingLastName   as reduxSetBillingLastName,
+    setBillingPhone      as reduxSetBillingPhone,
+    setBillingAddress    as reduxSetBillingAddress,
+    setBillingCity       as reduxSetBillingCity,
+    setBillingZone       as reduxSetBillingZone,
+    setBillingZip        as reduxSetBillingZip,
+    setBillingCountry    as reduxSetBillingCountry,
     
     // payment data:
     setPaymentToken,
@@ -220,18 +231,37 @@ export interface CheckoutState {
     
     // billing data:
     billingValidation                 : boolean
+    
+    
     billingAsShipping                 : boolean
+    setBillingAsShipping              : React.Dispatch<React.SetStateAction<boolean>>
+    
     
     billingFirstName                  : string
+    billingFirstNameHandlers          : FieldHandlers<HTMLInputElement>
+    
     billingLastName                   : string
+    billingLastNameHandlers           : FieldHandlers<HTMLInputElement>
+    
     
     billingPhone                      : string
+    billingPhoneHandlers              : FieldHandlers<HTMLInputElement>
+    
     
     billingAddress                    : string
+    billingAddressHandlers            : FieldHandlers<HTMLInputElement>
+    
     billingCity                       : string
+    billingCityHandlers               : FieldHandlers<HTMLInputElement>
+    
     billingZone                       : string
+    billingZoneHandlers               : FieldHandlers<HTMLInputElement>
+    
     billingZip                        : string
+    billingZipHandlers                : FieldHandlers<HTMLInputElement>
+    
     billingCountry                    : string
+    billingCountryHandlers            : FieldHandlers<HTMLInputElement>
     
     
     
@@ -353,18 +383,37 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     // billing data:
     billingValidation                 : false,
+    
+    
     billingAsShipping                 : true,
+    setBillingAsShipping              : noopHandler as any,
+    
     
     billingFirstName                  : '',
+    billingFirstNameHandlers          : noopHandler,
+    
     billingLastName                   : '',
+    billingLastNameHandlers           : noopHandler,
+    
     
     billingPhone                      : '',
+    billingPhoneHandlers              : noopHandler,
+    
     
     billingAddress                    : '',
+    billingAddressHandlers            : noopHandler,
+    
     billingCity                       : '',
+    billingCityHandlers               : noopHandler,
+    
     billingZone                       : '',
+    billingZoneHandlers               : noopHandler,
+    
     billingZip                        : '',
+    billingZipHandlers                : noopHandler,
+    
     billingCountry                    : '',
+    billingCountryHandlers            : noopHandler,
     
     
     
@@ -451,18 +500,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // billing data:
         billingValidation,
-        billingAsShipping,
-        
-        billingFirstName,
-        billingLastName,
-        
-        billingPhone,
-        
-        billingAddress,
-        billingCity,
-        billingZone,
-        billingZip,
-        billingCountry,
         
         
         
@@ -476,27 +513,40 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // extra data:
-    const [marketingOpt     , , marketingOptHandlers     ] = useFieldState({ field: 'marketingOpt'     , dispatch: reduxSetMarketingOpt      });
+    const [marketingOpt      , , marketingOptHandlers     ] = useFieldState({ field: 'marketingOpt'     , dispatch: reduxSetMarketingOpt      });
     
     
     
     // customer data:
-    const [customerNickName , , customerNickNameHandlers ] = useFieldState({ field: 'customerNickName' , dispatch: reduxSetCustomerNickName  });
-    const [customerEmail    , , customerEmailHandlers    ] = useFieldState({ field: 'customerEmail'    , dispatch: reduxSetCustomerEmail     });
+    const [customerNickName  , , customerNickNameHandlers ] = useFieldState({ field: 'customerNickName' , dispatch: reduxSetCustomerNickName  });
+    const [customerEmail     , , customerEmailHandlers    ] = useFieldState({ field: 'customerEmail'    , dispatch: reduxSetCustomerEmail     });
     
     
     
     // shipping data:
-    const [shippingFirstName, , shippingFirstNameHandlers] = useFieldState({ field: 'shippingFirstName', dispatch: reduxSetShippingFirstName });
-    const [shippingLastName , , shippingLastNameHandlers ] = useFieldState({ field: 'shippingLastName' , dispatch: reduxSetShippingLastName  });
+    const [shippingFirstName , , shippingFirstNameHandlers] = useFieldState({ field: 'shippingFirstName', dispatch: reduxSetShippingFirstName });
+    const [shippingLastName  , , shippingLastNameHandlers ] = useFieldState({ field: 'shippingLastName' , dispatch: reduxSetShippingLastName  });
     
-    const [shippingPhone    , , shippingPhoneHandlers    ] = useFieldState({ field: 'shippingPhone'    , dispatch: reduxSetShippingPhone     });
+    const [shippingPhone     , , shippingPhoneHandlers    ] = useFieldState({ field: 'shippingPhone'    , dispatch: reduxSetShippingPhone     });
     
-    const [shippingAddress  , , shippingAddressHandlers  ] = useFieldState({ field: 'shippingAddress'  , dispatch: reduxSetShippingAddress   });
-    const [shippingCity     , , shippingCityHandlers     ] = useFieldState({ field: 'shippingCity'     , dispatch: reduxSetShippingCity      });
-    const [shippingZone     , , shippingZoneHandlers     ] = useFieldState({ field: 'shippingZone'     , dispatch: reduxSetShippingZone      });
-    const [shippingZip      , , shippingZipHandlers      ] = useFieldState({ field: 'shippingZip'      , dispatch: reduxSetShippingZip       });
-    const [shippingCountry  , , shippingCountryHandlers  ] = useFieldState({ field: 'shippingCountry'  , dispatch: reduxSetShippingCountry   });
+    const [shippingAddress   , , shippingAddressHandlers  ] = useFieldState({ field: 'shippingAddress'  , dispatch: reduxSetShippingAddress   });
+    const [shippingCity      , , shippingCityHandlers     ] = useFieldState({ field: 'shippingCity'     , dispatch: reduxSetShippingCity      });
+    const [shippingZone      , , shippingZoneHandlers     ] = useFieldState({ field: 'shippingZone'     , dispatch: reduxSetShippingZone      });
+    const [shippingZip       , , shippingZipHandlers      ] = useFieldState({ field: 'shippingZip'      , dispatch: reduxSetShippingZip       });
+    const [shippingCountry   , , shippingCountryHandlers  ] = useFieldState({ field: 'shippingCountry'  , dispatch: reduxSetShippingCountry   });
+    
+    
+    
+    // billing data:
+    const [billingAsShipping , setBillingAsShipping       ] = useFieldState({ field: 'billingAsShipping', dispatch: reduxSetBillingAsShipping });
+    const [billingFirstName  , , billingFirstNameHandlers ] = useFieldState({ field: 'billingFirstName' , dispatch: reduxSetBillingFirstName  });
+    const [billingLastName   , , billingLastNameHandlers  ] = useFieldState({ field: 'billingLastName'  , dispatch: reduxSetBillingLastName   });
+    const [billingPhone      , , billingPhoneHandlers     ] = useFieldState({ field: 'billingPhone'     , dispatch: reduxSetBillingPhone      });
+    const [billingAddress    , , billingAddressHandlers   ] = useFieldState({ field: 'billingAddress'   , dispatch: reduxSetBillingAddress    });
+    const [billingCity       , , billingCityHandlers      ] = useFieldState({ field: 'billingCity'      , dispatch: reduxSetBillingCity       });
+    const [billingZone       , , billingZoneHandlers      ] = useFieldState({ field: 'billingZone'      , dispatch: reduxSetBillingZone       });
+    const [billingZip        , , billingZipHandlers       ] = useFieldState({ field: 'billingZip'       , dispatch: reduxSetBillingZip        });
+    const [billingCountry    , , billingCountryHandlers   ] = useFieldState({ field: 'billingCountry'   , dispatch: reduxSetBillingCountry    });
     
     
     
@@ -887,18 +937,37 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // billing data:
         billingValidation,
+        
+        
         billingAsShipping,
+        setBillingAsShipping,              // stable ref
+        
         
         billingFirstName,
+        billingFirstNameHandlers,          // stable ref
+        
         billingLastName,
+        billingLastNameHandlers,           // stable ref
+        
         
         billingPhone,
+        billingPhoneHandlers,              // stable ref
+        
         
         billingAddress,
+        billingAddressHandlers,            // stable ref
+        
         billingCity,
+        billingCityHandlers,               // stable ref
+        
         billingZone,
+        billingZoneHandlers,               // stable ref
+        
         billingZip,
+        billingZipHandlers,                // stable ref
+        
         billingCountry,
+        billingCountryHandlers,            // stable ref
         
         
         
@@ -1022,18 +1091,37 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // billing data:
         billingValidation,
+        
+        
         billingAsShipping,
+        // setBillingAsShipping,              // stable ref
+        
         
         billingFirstName,
+        // billingFirstNameHandlers,          // stable ref
+        
         billingLastName,
+        // billingLastNameHandlers,           // stable ref
+        
         
         billingPhone,
+        // billingPhoneHandlers,              // stable ref
+        
         
         billingAddress,
+        // billingAddressHandlers,            // stable ref
+        
         billingCity,
+        // billingCityHandlers,               // stable ref
+        
         billingZone,
+        // billingZoneHandlers,               // stable ref
+        
         billingZip,
+        // billingZipHandlers,                // stable ref
+        
         billingCountry,
+        // billingCountryHandlers,            // stable ref
         
         
         
