@@ -47,6 +47,7 @@ export interface CheckoutState {
     
     // billing data:
     billingValidation      : boolean
+    
     billingAsShipping      : boolean
     
     billingFirstName       : string
@@ -106,6 +107,7 @@ const initialState: CheckoutState = {
     
     // billing data:
     billingValidation      : false,
+    
     billingAsShipping      : true,
     
     billingFirstName       : '',
@@ -199,6 +201,7 @@ export const checkoutSlice = createSlice({
         setBillingValidation: (state, {payload: value}: PayloadAction<boolean>) => {
             state.billingValidation = value;
         },
+        
         setBillingAsShipping: (state, {payload: value}: PayloadAction<boolean>) => {
             state.billingAsShipping = value;
         },
@@ -286,6 +289,7 @@ export const {
     
     // billing data:
     setBillingValidation,
+    
     setBillingAsShipping,
     
     setBillingFirstName,
