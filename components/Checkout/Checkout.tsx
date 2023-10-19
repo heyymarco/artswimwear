@@ -1539,7 +1539,6 @@ const PaymentMethod = () => {
         paymentMethod,
         setPaymentMethod,
     } = useCheckoutState();
-    const dispatch = useDispatch();
     
     
     
