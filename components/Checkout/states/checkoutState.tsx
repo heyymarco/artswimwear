@@ -102,6 +102,8 @@ import {
     setBillingCountry    as reduxSetBillingCountry,
     
     // payment data:
+    setPaymentValidation,
+    setPaymentMethod     as reduxSetPaymentMethod,
     setPaymentToken,
     
     
@@ -269,6 +271,7 @@ export interface CheckoutState {
     paymentValidation                 : boolean
     
     paymentMethod                     : PaymentMethod | undefined
+    setPaymentMethod                  : (paymentMethod: PaymentMethod) => void
     
     paymentToken                      : PaymentToken  | undefined
     
@@ -423,6 +426,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     paymentValidation                 : false,
     
     paymentMethod                     : undefined,
+    setPaymentMethod                  : noopHandler as any,
     
     paymentToken                      : undefined,
     
@@ -795,6 +799,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             return false;
         } // try
     });
+    const setPaymentMethod                  = useEvent((paymentMethod: PaymentMethod): void => {
+        dispatch(reduxSetPaymentMethod(paymentMethod));
+        if (paymentMethod !== 'card') { // 'paypal' button or 'manual' button => reset payment validation (of 'card' fields)
+            dispatch(setPaymentValidation(false));
+        } // if
+    });
     const doPlaceOrder                      = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
@@ -981,6 +991,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentValidation,
         
         paymentMethod,
+        setPaymentMethod,                  // stable ref
         
         paymentToken,
         
@@ -1137,6 +1148,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentValidation,
         
         paymentMethod,
+        // setPaymentMethod,                  // stable ref
         
         paymentToken,
         

@@ -1537,6 +1537,7 @@ const PaymentMethod = () => {
     const {
         // payment data:
         paymentMethod,
+        setPaymentMethod,
     } = useCheckoutState();
     const dispatch = useDispatch();
     
@@ -1562,8 +1563,7 @@ const PaymentMethod = () => {
                 
                 
                 // actions:
-                dispatch(setPaymentMethod(paymentMethodList[listIndex]));
-                if (listIndex !== 0) dispatch(setPaymentValidation(false));
+                setPaymentMethod(paymentMethodList[listIndex]);
             }} listStyle='content'>
                 <AccordionItem label={<>
                     <RadioDecorator />
