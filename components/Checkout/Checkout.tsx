@@ -1429,7 +1429,6 @@ const Payment = () => {
         // payment data:
         paymentMethod,
     } = useCheckoutState();
-    const dispatch = useDispatch();
     
     
     
@@ -1452,7 +1451,6 @@ const Payment = () => {
                         
                         // actions:
                         setBillingAsShipping(listIndex === 0);
-                        if (listIndex === 0) dispatch(setBillingValidation(false));
                     }} listStyle='content'>
                         <AccordionItem label={<>
                             <RadioDecorator />
@@ -1895,22 +1893,14 @@ const PaymentMethodManual = () => {
     );
 }
 const CardPaymentButton = () => {
-    // context:
-    const {billingAddressSectionRef, paymentCardSectionRef, cardholderInputRef, doMakePayment} = useCheckoutState();
-    
-    
-    
     // states:
     const {
         // states:
         isBusy,
         setIsBusy,
-    } = useCheckoutState();
-    
-    
-    
-    // states:
-    const {
+        
+        
+        
         // shipping data:
         shippingFirstName : _shippingFirstName, // not implemented yet, because billingFirstName is not implemented
         shippingLastName  : _shippingLastName,  // not implemented yet, because billingLastName  is not implemented
@@ -1938,6 +1928,22 @@ const CardPaymentButton = () => {
         billingZone,
         billingZip,
         billingCountry,
+        
+        
+        
+        // sections:
+        billingAddressSectionRef,
+        paymentCardSectionRef,
+        
+        
+        
+        // fields:
+        cardholderInputRef,
+        
+        
+        
+        // actions:
+        doMakePayment,
     } = useCheckoutState();
     const dispatch = useDispatch();
     
@@ -1966,8 +1972,8 @@ const CardPaymentButton = () => {
             }, 0);
         });
         const fieldErrors = [
-            ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
             ...(paymentCardSectionRef?.current?.querySelectorAll?.(invalidSelector) ?? []),
+            ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
         ];
         if (fieldErrors?.length) { // there is an/some invalid field
             showMessageFieldError(fieldErrors);
@@ -2041,22 +2047,35 @@ const CardPaymentButton = () => {
     );
 }
 const ManualPaymentButton = () => {
-    // context:
-    const {doPlaceOrder, doMakePayment} = useCheckoutState();
-    
-    
-    
     // states:
     const {
         // states:
         isBusy,
         setIsBusy,
+        
+        
+        
+        // billing data:
+        billingAsShipping,
+        
+        
+        
+        // sections:
+        billingAddressSectionRef,
+        
+        
+        
+        // actions:
+        doPlaceOrder,
+        doMakePayment,
     } = useCheckoutState();
+    const dispatch = useDispatch();
     
     
     
     // dialogs:
     const {
+        showMessageFieldError,
         showMessageFetchError,
     } = useDialogMessage();
     
@@ -2064,6 +2083,27 @@ const ManualPaymentButton = () => {
     
     // handlers:
     const handleFinishOrderButtonClicked = useEvent(async () => {
+        // validate:
+        // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+        if (!billingAsShipping) await dispatch(setBillingValidation(true));
+        await dispatch(setPaymentValidation(true));
+        await new Promise<void>((resolve) => { // wait for a validation state applied
+            setTimeout(() => {
+                setTimeout(() => {
+                    resolve();
+                }, 0);
+            }, 0);
+        });
+        const fieldErrors = [
+            ...((!billingAsShipping ? billingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector) : undefined) ?? []),
+        ];
+        if (fieldErrors?.length) { // there is an/some invalid field
+            showMessageFieldError(fieldErrors);
+            return;
+        } // if
+        
+        
+        
         try {
             // update the UI:
             setIsBusy(true);

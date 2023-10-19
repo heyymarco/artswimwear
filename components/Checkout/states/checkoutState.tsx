@@ -91,6 +91,7 @@ import {
     setShippingCountry   as reduxSetShippingCountry,
     
     // billing data:
+    setBillingValidation as reduxSetBillingValidation,
     setBillingAsShipping as reduxSetBillingAsShipping,
     setBillingFirstName  as reduxSetBillingFirstName,
     setBillingLastName   as reduxSetBillingLastName,
@@ -102,7 +103,7 @@ import {
     setBillingCountry    as reduxSetBillingCountry,
     
     // payment data:
-    setPaymentValidation,
+    setPaymentValidation as reduxSetPaymentValidation,
     setPaymentMethod     as reduxSetPaymentMethod,
     setPaymentToken,
     
@@ -236,7 +237,7 @@ export interface CheckoutState {
     
     
     billingAsShipping                 : boolean
-    setBillingAsShipping              : React.Dispatch<React.SetStateAction<boolean>>
+    setBillingAsShipping              : (billingAsShipping: boolean) => void
     
     
     billingFirstName                  : string
@@ -509,6 +510,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // billing data:
         billingValidation,
         
+        billingAsShipping,
+        
         
         
         // payment data:
@@ -548,7 +551,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // billing data:
-    const [billingAsShipping , setBillingAsShipping       ] = useFieldState({ field: 'billingAsShipping', dispatch: reduxSetBillingAsShipping });
     const [billingFirstName  , , billingFirstNameHandlers ] = useFieldState({ field: 'billingFirstName' , dispatch: reduxSetBillingFirstName  });
     const [billingLastName   , , billingLastNameHandlers  ] = useFieldState({ field: 'billingLastName'  , dispatch: reduxSetBillingLastName   });
     const [billingPhone      , , billingPhoneHandlers     ] = useFieldState({ field: 'billingPhone'     , dispatch: reduxSetBillingPhone      });
@@ -801,10 +803,20 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     const setPaymentMethod                  = useEvent((paymentMethod: PaymentMethod): void => {
         dispatch(reduxSetPaymentMethod(paymentMethod));
+        
+        // reset:
         if (paymentMethod !== 'card') { // 'paypal' button or 'manual' button => reset payment validation (of 'card' fields)
-            dispatch(setPaymentValidation(false));
+            dispatch(reduxSetPaymentValidation(false));
         } // if
     });
+    const setBillingAsShipping              = useEvent((billingAsShipping: boolean): void => {
+        dispatch(reduxSetBillingAsShipping(billingAsShipping));
+        
+        // reset:
+        if (billingAsShipping) { // the billingAddress is the same as shippingAddress => reset billingAddress validation
+            dispatch(reduxSetBillingValidation(false));
+        } // if
+    })
     const doPlaceOrder                      = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
