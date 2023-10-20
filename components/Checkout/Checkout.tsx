@@ -547,8 +547,8 @@ const NavCheckout = () => {
         
         
         // actions:
-        gotoSectionInformation,
-        gotoSectionShipping,
+        gotoStepInformation,
+        gotoStepShipping,
     } = useCheckoutState();
     const isCheckoutFinished = ['pending', 'paid'].includes(checkoutStep);
     
@@ -569,12 +569,12 @@ const NavCheckout = () => {
     // utilities:
     const prevAction = [
         { text: 'Return to cart'       , action: () => dispatch(showCart(true))    },
-        { text: 'Return to information', action: () => gotoSectionInformation()    },
+        { text: 'Return to information', action: () => gotoStepInformation()    },
         { text: 'Return to shipping'   , action: () => setCheckoutStep('shipping') },
     ][checkoutProgress];
     
     const nextAction = [
-        { text: 'Continue to shipping' , action: gotoSectionShipping },
+        { text: 'Continue to shipping' , action: gotoStepShipping },
         { text: 'Continue to payment'  , action: () => setCheckoutStep('payment') },
         { text: 'Pay Now' , action: () => {
             // payment action
@@ -989,7 +989,7 @@ const OrderReview = () => {
         
         
         // actions:
-        gotoSectionInformation,
+        gotoStepInformation,
     } = useCheckoutState();
     
     
@@ -1004,7 +1004,7 @@ const OrderReview = () => {
                         <td><CustomerContactReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                gotoSectionInformation(/* focusTo: */'contact');
+                                gotoStepInformation(/* focusTo: */'contact');
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>
@@ -1013,7 +1013,7 @@ const OrderReview = () => {
                         <td><ShippingAddressReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                gotoSectionInformation(/* focusTo: */'shipping');
+                                gotoStepInformation(/* focusTo: */'shipping');
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>

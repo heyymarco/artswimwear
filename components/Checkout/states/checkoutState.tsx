@@ -316,8 +316,8 @@ export interface CheckoutState {
     
     
     // actions:
-    gotoSectionInformation            : (focusTo?: 'contact'|'shipping') => void
-    gotoSectionShipping               : () => Promise<boolean>
+    gotoStepInformation               : (focusTo?: 'contact'|'shipping') => void
+    gotoStepShipping                  : () => Promise<boolean>
     doTransaction                     : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
@@ -473,8 +473,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // actions:
-    gotoSectionInformation            : noopHandler as any,
-    gotoSectionShipping               : noopHandler as any,
+    gotoStepInformation               : noopHandler as any,
+    gotoStepShipping                  : noopHandler as any,
     doTransaction                     : noopHandler as any,
     doPlaceOrder                      : noopHandler as any,
     doMakePayment                     : noopHandler as any,
@@ -773,7 +773,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // stable callbacks:
-    const gotoSectionInformation            = useEvent((focusTo?: 'contact'|'shipping'): void => {
+    const gotoStepInformation               = useEvent((focusTo?: 'contact'|'shipping'): void => {
         setCheckoutStep('info'); // TODO: make `setCheckoutStep` internal use
         
         
@@ -792,7 +792,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             }, 200);
         } // if
     });
-    const gotoSectionShipping               = useEvent(async (): Promise<boolean> => {
+    const gotoStepShipping                  = useEvent(async (): Promise<boolean> => {
         // TODO: if (totalShippingWeight !== null) // if contain a/some physical product => requires shipping
         {
             // validate:
@@ -1162,8 +1162,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        gotoSectionInformation,            // stable ref
-        gotoSectionShipping,               // stable ref
+        gotoStepInformation,               // stable ref
+        gotoStepShipping,                  // stable ref
         doTransaction,                     // stable ref
         doPlaceOrder,                      // stable ref
         doMakePayment,                     // stable ref
@@ -1321,8 +1321,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        // gotoSectionInformation,            // stable ref
-        // gotoSectionShipping,               // stable ref
+        // gotoStepInformation,               // stable ref
+        // gotoStepShipping,                  // stable ref
         // doTransaction,                     // stable ref
         // doPlaceOrder,                      // stable ref
         // doMakePayment,                     // stable ref
