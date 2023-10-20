@@ -568,17 +568,14 @@ const NavCheckout = () => {
     
     // utilities:
     const prevAction = [
-        { text: 'Return to cart'       , action: () => dispatch(showCart(true))    },
-        { text: 'Return to information', action: () => gotoStepInformation()    },
-        { text: 'Return to shipping'   , action: () => setCheckoutStep('shipping') },
+        { text: 'Return to cart'       , action: () => dispatch(showCart(true))   },
+        { text: 'Return to information', action: () => gotoStepInformation()      },
+        { text: 'Return to shipping'   , action: gotoStepShipping                 },
     ][checkoutProgress];
     
     const nextAction = [
-        { text: 'Continue to shipping' , action: gotoStepShipping },
+        { text: 'Continue to shipping' , action: gotoStepShipping                 },
         { text: 'Continue to payment'  , action: () => setCheckoutStep('payment') },
-        { text: 'Pay Now' , action: () => {
-            // payment action
-        }},
     ][checkoutProgress];
     
     
@@ -603,7 +600,7 @@ const NavCheckout = () => {
                     {prevAction.text}
                 </ButtonIcon>}
                 
-                {(checkoutStep !== 'payment') && <ButtonIcon
+                {!!nextAction && <ButtonIcon
                     enabled={!isBusy}
                     
                     className='next'
@@ -990,6 +987,7 @@ const OrderReview = () => {
         
         // actions:
         gotoStepInformation,
+        gotoStepShipping,
     } = useCheckoutState();
     
     
@@ -1022,14 +1020,7 @@ const OrderReview = () => {
                         <td><ShippingMethodReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                setCheckoutStep('shipping');
-                                setTimeout(() => {
-                                    shippingMethodOptionRef?.current?.scrollIntoView({
-                                        block    : 'start',
-                                        behavior : 'smooth',
-                                    });
-                                    shippingMethodOptionRef?.current?.focus?.({ preventScroll: true });
-                                }, 200);
+                                gotoStepShipping();
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>}

@@ -793,78 +793,96 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         } // if
     });
     const gotoStepShipping                  = useEvent(async (): Promise<boolean> => {
-        // TODO: if (totalShippingWeight !== null) // if contain a/some physical product => requires shipping
-        {
-            // validate:
-            // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
-            dispatch(reduxSetShippingValidation(true)); // enable billingAddress validation
-            await new Promise<void>((resolve) => { // wait for a validation state applied
-                setTimeout(() => {
+        const goForward = (checkoutStep === 'info');
+        if (goForward) { // go forward from 'info' => do validate shipping agencies
+            // TODO: if (totalShippingWeight !== null) // if contain a/some physical product => requires shipping
+            {
+                // validate:
+                // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+                dispatch(reduxSetShippingValidation(true)); // enable billingAddress validation
+                await new Promise<void>((resolve) => { // wait for a validation state applied
                     setTimeout(() => {
-                        resolve();
+                        setTimeout(() => {
+                            resolve();
+                        }, 0);
                     }, 0);
-                }, 0);
-            });
-            const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
-            if (fieldErrors?.length) { // there is an/some invalid field
-                showMessageFieldError(fieldErrors);
-                return false; // transaction aborted due to validation error
+                });
+                const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
+                if (fieldErrors?.length) { // there is an/some invalid field
+                    showMessageFieldError(fieldErrors);
+                    return false; // transaction aborted due to validation error
+                } // if
             } // if
+            
+            
+            
+            dispatch(reduxSetIsBusy('checkShipping'));
+            try {
+                const shippingList = await getShippingByAddress({
+                    city    : shippingCity,
+                    zone    : shippingZone,
+                    country : shippingCountry,
+                }).unwrap();
+                
+                
+                
+                if (!shippingList.ids.length) {
+                    showMessageError({
+                        title : <h1>No Shipping Agency</h1>,
+                        error : <>
+                            <p>
+                                We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
+                            </p>
+                            <p>
+                                Please contact us for further assistance.
+                            </p>
+                        </>,
+                    });
+                    return false; // transaction failed due to no_shipping_agency
+                } // if
+            }
+            catch (error: any) {
+                showMessageError({
+                    title : <h1>Error Calculating Shipping Cost</h1>,
+                    error : <>
+                        <p>
+                            Oops, there was an error calculating the shipping cost.
+                        </p>
+                        <p>
+                            There was a <strong>problem contacting our server</strong>.<br />
+                            Make sure your internet connection is available.
+                        </p>
+                        <p>
+                            Please try again in a few minutes.<br />
+                            If the problem still persists, please contact us manually.
+                        </p>
+                    </>,
+                });
+                return false; // transaction failed due to fetch_error
+            }
+            finally {
+                dispatch(reduxSetIsBusy(false));
+            } // try
         } // if
         
         
         
-        dispatch(reduxSetIsBusy('checkShipping'));
-        try {
-            const shippingList = await getShippingByAddress({
-                city    : shippingCity,
-                zone    : shippingZone,
-                country : shippingCountry,
-            }).unwrap();
-            
-            
-            
-            if (!shippingList.ids.length) {
-                showMessageError({
-                    title : <h1>No Shipping Agency</h1>,
-                    error : <>
-                        <p>
-                            We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
-                        </p>
-                        <p>
-                            Please contact us for further assistance.
-                        </p>
-                    </>,
-                });
-                return false; // transaction failed due to no_shipping_agency
-            } // if
-        }
-        catch (error: any) {
-            showMessageError({
-                title : <h1>Error Calculating Shipping Cost</h1>,
-                error : <>
-                    <p>
-                        Oops, there was an error calculating the shipping cost.
-                    </p>
-                    <p>
-                        There was a <strong>problem contacting our server</strong>.<br />
-                        Make sure your internet connection is available.
-                    </p>
-                    <p>
-                        Please try again in a few minutes.<br />
-                        If the problem still persists, please contact us manually.
-                    </p>
-                </>,
-            });
-            return false; // transaction failed due to fetch_error
-        }
-        finally {
-            dispatch(reduxSetIsBusy(false));
-        } // try
-        
-        
-        
         setCheckoutStep('shipping'); // TODO: make `setCheckoutStep` internal use
+        
+        
+        
+        if (!goForward) { // go back from 'shipping'|'payment' => focus to shipping method option control
+            setTimeout(() => {
+                const focusInputElm = shippingMethodOptionRef.current;
+                if (focusInputElm) {
+                    focusInputElm.scrollIntoView({
+                        block    : 'start',
+                        behavior : 'smooth',
+                    });
+                    focusInputElm.focus({ preventScroll: true });
+                } // if
+            }, 200);
+        } // if
         
         
         
