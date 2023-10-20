@@ -656,8 +656,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const totalShippingCost = useMemo<number|null>(() => {
         // conditions:
         if (!shippingList)     return null; // the shippingList data is not available yet => nothing to calculate
-        if (!shippingProvider) return null; // no selected shippingProvider => nothing to calculate
-        const selectedShipping = shippingList.entities?.[shippingProvider];
+        const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
         if (!selectedShipping) return null; // no valid selected shippingProvider => nothing to calculate
         
         
@@ -732,9 +731,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     useEffect(() => {
         // conditions:
         if (!shippingList)     return; // the shippingList data is not available yet => nothing to select
-        if (!shippingProvider) return; // no selected shippingProvider => nothing to calculate
-        const selectedShipping = shippingList.entities?.[shippingProvider];
-        if (selectedShipping)  return; // already have selection => abort to auto_select
+        const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
+        console.log({selectedShipping})
+        if (selectedShipping)  return; // already have valid selection => abort to auto_select
         
         
         
