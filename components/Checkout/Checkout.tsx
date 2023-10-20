@@ -584,7 +584,7 @@ const NavCheckout = () => {
     return (
         <>
             {!isCheckoutFinished && <>
-                {!isCheckoutFinished && <ButtonIcon
+                {!!prevAction && <ButtonIcon
                     enabled={!isBusy}
                     
                     className='back'
