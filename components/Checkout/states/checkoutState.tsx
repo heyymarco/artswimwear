@@ -191,6 +191,7 @@ export interface CheckoutState {
     // cart data:
     cartItems                         : CartEntry[]
     hasCart                           : boolean
+    totalProductWeight                : number|null
     
     
     
@@ -353,6 +354,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     // cart data:
     cartItems                         : [],
     hasCart                           : false,
+    totalProductWeight                : null,
     
     
     
@@ -605,6 +607,22 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isErrorPage                    = !isLoadingPage && (isError1   || isError2   || isError3   || (!paymentToken && isError5));
     const isReadyPage                    = !isLoadingPage && (hasCart && !!priceList && !!productList && !!countryList && !!paymentToken);
     
+    
+    
+    // cart data:
+    const totalProductWeight = useMemo<number|null>(() => {
+        if (!cartItems.length) return null;
+        
+        let counter : number|null = null;
+        for (const {productId, quantity} of cartItems) {
+            const productUnitWeight = priceList?.entities?.[productId]?.shippingWeight;
+            if ((productUnitWeight === null) || (productUnitWeight === undefined)) continue; // not a physical product => ignore
+            
+            if (counter === null) counter = 0; // has a/some physical products => reset the counter from zero if null
+            counter += (productUnitWeight * quantity);
+        } // for
+        return counter;
+    }, [cartItems, priceList]);
     
     
     // states:
@@ -1055,6 +1073,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // cart data:
         cartItems,
         hasCart,
+        totalProductWeight,
         
         
         
@@ -1214,6 +1233,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // cart data:
         cartItems,
         hasCart,
+        totalProductWeight,
         
         
         

@@ -887,15 +887,23 @@ const OrderSummary = () => {
     
     
     
-    // context:
-    const {cartItems, priceList, productList, shippingList} = useCheckoutState();
-    
-    
-    
     // states:
     const {
+        // cart data:
+        cartItems,
+        totalProductWeight,
+        
+        
+        
         // shipping data:
         shippingProvider,
+        
+        
+        
+        // relation data:
+        priceList,
+        productList,
+        shippingList,
     } = useCheckoutState();
     
     const selectedShipping    = shippingList?.entities?.[shippingProvider ?? ''] ?? null;
@@ -906,12 +914,7 @@ const OrderSummary = () => {
         return accum + (productUnitPrice * item.quantity);
     }, 0);
     
-    const totalProductWeights = selectedShipping && cartItems.reduce((accum, item) => {
-        const productUnitWeight = priceList?.entities?.[item.productId]?.shippingWeight;
-        if (!productUnitWeight) return accum;
-        return accum + (productUnitWeight * item.quantity);
-    }, 0);
-    const totalShippingCosts  = selectedShipping && calculateShippingCost(totalProductWeights, selectedShipping);
+    const totalShippingCosts  = selectedShipping && calculateShippingCost(totalProductWeight, selectedShipping);
     
     
     
@@ -1212,15 +1215,25 @@ const ShippingMethod = () => {
     
     
     
-    // context:
-    const {cartItems, priceList, shippingList, shippingMethodOptionRef} = useCheckoutState();
-    
-    
-    
     // states:
     const {
+        // cart data:
+        totalProductWeight,
+        
+        
+        
         // shipping data:
         shippingProvider,
+        
+        
+        
+        // relation data:
+        shippingList,
+        
+        
+        
+        // sections:
+        shippingMethodOptionRef,
     } = useCheckoutState();
     
     const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
@@ -1230,14 +1243,6 @@ const ShippingMethod = () => {
     
     
     const filteredShippingList = !shippingList ? undefined : Object.values(shippingList.entities).filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry);
-    
-    
-    
-    const totalProductWeights = cartItems.reduce((accum, item) => {
-        const productUnitWeight = priceList?.entities?.[item.productId]?.shippingWeight;
-        if (!productUnitWeight) return accum;
-        return accum + (productUnitWeight * item.quantity);
-    }, 0);
     
     
     
@@ -1252,7 +1257,7 @@ const ShippingMethod = () => {
             filteredShippingList
             ?.map((shippingEntry) => ({
                 id                 : `${shippingEntry.id}`,
-                totalShippingCosts : calculateShippingCost(totalProductWeights, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
+                totalShippingCosts : calculateShippingCost(totalProductWeight, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
             }))
             ?.sort((a, b) => a.totalShippingCosts - b.totalShippingCosts) // -1 means: no need to ship (digital products)
         );
@@ -1260,7 +1265,7 @@ const ShippingMethod = () => {
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
             dispatch(setShippingProvider(orderedConstAscending[0].id));
         } // if
-    }, [selectedShipping, filteredShippingList, totalProductWeights]);
+    }, [selectedShipping, filteredShippingList, totalProductWeight]);
     
     
     
@@ -1269,7 +1274,7 @@ const ShippingMethod = () => {
         <>
             {!!filteredShippingList && <List theme='primary' actionCtrl={true}>
                 {filteredShippingList.map((shippingEntry) => {
-                    const totalShippingCosts = calculateShippingCost(totalProductWeights, shippingEntry);
+                    const totalShippingCosts = calculateShippingCost(totalProductWeight, shippingEntry);
                     return {...shippingEntry, totalShippingCosts};
                 }).sort(({totalShippingCosts: a}, {totalShippingCosts: b}): number => (a ?? 0) - (b ?? 0)).map(({totalShippingCosts, ...shippingEntry}) => {
                     const isActive           = `${shippingEntry.id}` === shippingProvider;
