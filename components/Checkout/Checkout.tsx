@@ -1226,8 +1226,6 @@ const ShippingMethod = () => {
     
     const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
     
-    const dispatch = useDispatch();
-    
     
     
     const filteredShippingList = !shippingList ? undefined : Object.values(shippingList.entities).filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry);
