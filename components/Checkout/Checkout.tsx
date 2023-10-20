@@ -892,6 +892,7 @@ const OrderSummary = () => {
         // cart data:
         cartItems,
         totalProductWeight,
+        totalProductPrice,
         
         
         
@@ -906,15 +907,8 @@ const OrderSummary = () => {
         shippingList,
     } = useCheckoutState();
     
-    const selectedShipping    = shippingList?.entities?.[shippingProvider ?? ''] ?? null;
-    
-    const totalProductPrices  = cartItems.reduce((accum, item) => {
-        const productUnitPrice = priceList?.entities?.[item.productId]?.price;
-        if (!productUnitPrice) return accum;
-        return accum + (productUnitPrice * item.quantity);
-    }, 0);
-    
-    const totalShippingCosts  = selectedShipping && calculateShippingCost(totalProductWeight, selectedShipping);
+    const selectedShipping   = shippingList?.entities?.[shippingProvider ?? ''] ?? null;
+    const totalShippingCosts = selectedShipping && calculateShippingCost(totalProductWeight, selectedShipping);
     
     
     
@@ -957,7 +951,7 @@ const OrderSummary = () => {
             <hr />
             <p className='currencyBlock'>
                 Subtotal products: <span className='currency'>
-                    {formatCurrency(totalProductPrices)}
+                    {formatCurrency(totalProductPrice)}
                 </span>
             </p>
             <p className='currencyBlock'>
@@ -968,7 +962,7 @@ const OrderSummary = () => {
             <hr />
             <p className='currencyBlock totalCost'>
                 Total: <span className='currency'>
-                    {!!selectedShipping ? formatCurrency(totalProductPrices + (totalShippingCosts ?? 0)) : 'calculated at next step'}
+                    {!!selectedShipping ? formatCurrency(totalProductPrice + (totalShippingCosts ?? 0)) : 'calculated at next step'}
                 </span>
             </p>
         </>

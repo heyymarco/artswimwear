@@ -192,6 +192,7 @@ export interface CheckoutState {
     cartItems                         : CartEntry[]
     hasCart                           : boolean
     totalProductWeight                : number|null
+    totalProductPrice                 : number
     
     
     
@@ -355,6 +356,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     cartItems                         : [],
     hasCart                           : false,
     totalProductWeight                : null,
+    totalProductPrice                 : 0,
     
     
     
@@ -610,18 +612,30 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // cart data:
-    const totalProductWeight = useMemo<number|null>(() => {
-        if (!cartItems.length) return null;
-        
-        let counter : number|null = null;
+    const {totalProductWeight, totalProductPrice} = useMemo<{totalProductWeight: number|null, totalProductPrice: number}>(() => {
+        let totalProductWeight : number|null = null;
+        let totalProductPrice  : number      = 0;
         for (const {productId, quantity} of cartItems) {
-            const productUnitWeight = priceList?.entities?.[productId]?.shippingWeight;
-            if ((productUnitWeight === null) || (productUnitWeight === undefined)) continue; // not a physical product => ignore
+            const pricePreview = priceList?.entities?.[productId];
+            if (!pricePreview) continue;
             
-            if (counter === null) counter = 0; // has a/some physical products => reset the counter from zero if null
-            counter += (productUnitWeight * quantity);
+            
+            
+            const productUnitWeight = pricePreview.shippingWeight;
+            if (productUnitWeight !== null) { // not a physical product => ignore
+                if (totalProductWeight === null) totalProductWeight = 0; // has a/some physical products => reset the counter from zero if null
+                totalProductWeight += (productUnitWeight * quantity);
+            } // if
+            
+            
+            
+            const productUnitPrice = pricePreview.price;
+            totalProductPrice += (productUnitPrice * quantity);
         } // for
-        return counter;
+        return {
+            totalProductWeight,
+            totalProductPrice,
+        };
     }, [cartItems, priceList]);
     
     
@@ -1074,6 +1088,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         cartItems,
         hasCart,
         totalProductWeight,
+        totalProductPrice,
         
         
         
@@ -1234,6 +1249,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         cartItems,
         hasCart,
         totalProductWeight,
+        totalProductPrice,
         
         
         
