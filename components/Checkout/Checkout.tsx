@@ -560,7 +560,7 @@ const NavCheckout = () => {
         
         
         // actions:
-        gotoShippingSection,
+        gotoSectionShipping,
     } = useCheckoutState();
     const isCheckoutFinished = ['pending', 'paid'].includes(checkoutStep);
     
@@ -586,7 +586,7 @@ const NavCheckout = () => {
     ][checkoutProgress];
     
     const nextAction = [
-        { text: 'Continue to shipping' , action: gotoShippingSection },
+        { text: 'Continue to shipping' , action: gotoSectionShipping },
         { text: 'Continue to payment'  , action: () => setCheckoutStep('payment') },
         { text: 'Pay Now' , action: () => {
             // payment action

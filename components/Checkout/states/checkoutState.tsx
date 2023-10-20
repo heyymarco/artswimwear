@@ -316,7 +316,7 @@ export interface CheckoutState {
     
     
     // actions:
-    gotoShippingSection               : () => Promise<boolean>
+    gotoSectionShipping               : () => Promise<boolean>
     doTransaction                     : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
@@ -472,7 +472,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // actions:
-    gotoShippingSection               : noopHandler as any,
+    gotoSectionShipping               : noopHandler as any,
     doTransaction                     : noopHandler as any,
     doPlaceOrder                      : noopHandler as any,
     doMakePayment                     : noopHandler as any,
@@ -771,7 +771,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // stable callbacks:
-    const gotoShippingSection               = useEvent(async (): Promise<boolean> => {
+    const gotoSectionShipping               = useEvent(async (): Promise<boolean> => {
         // TODO: if (totalShippingWeight !== null) // if contain a/some physical product => requires shipping
         {
             // validate:
@@ -1141,7 +1141,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        gotoShippingSection,               // stable ref
+        gotoSectionShipping,               // stable ref
         doTransaction,                     // stable ref
         doPlaceOrder,                      // stable ref
         doMakePayment,                     // stable ref
@@ -1299,7 +1299,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        // gotoShippingSection,               // stable ref
+        // gotoSectionShipping,               // stable ref
         // doTransaction,                     // stable ref
         // doPlaceOrder,                      // stable ref
         // doMakePayment,                     // stable ref
