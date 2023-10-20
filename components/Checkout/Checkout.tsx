@@ -560,6 +560,7 @@ const NavCheckout = () => {
         
         
         // actions:
+        gotoSectionInformation,
         gotoSectionShipping,
     } = useCheckoutState();
     const isCheckoutFinished = ['pending', 'paid'].includes(checkoutStep);
@@ -581,7 +582,7 @@ const NavCheckout = () => {
     // utilities:
     const prevAction = [
         { text: 'Return to cart'       , action: () => dispatch(showCart(true))    },
-        { text: 'Return to information', action: () => setCheckoutStep('info')     },
+        { text: 'Return to information', action: () => gotoSectionInformation()    },
         { text: 'Return to shipping'   , action: () => setCheckoutStep('shipping') },
     ][checkoutProgress];
     
@@ -997,6 +998,11 @@ const OrderReview = () => {
         // states:
         setCheckoutStep,
         isBusy,
+        
+        
+        
+        // actions:
+        gotoSectionInformation,
     } = useCheckoutState();
     
     
@@ -1011,14 +1017,7 @@ const OrderReview = () => {
                         <td><CustomerContactReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                setCheckoutStep('info');
-                                setTimeout(() => {
-                                    contactEmailInputRef?.current?.scrollIntoView({
-                                        block    : 'start',
-                                        behavior : 'smooth',
-                                    });
-                                    contactEmailInputRef?.current?.focus?.({ preventScroll: true });
-                                }, 200);
+                                gotoSectionInformation(/* focusTo: */'contact');
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>
@@ -1027,14 +1026,7 @@ const OrderReview = () => {
                         <td><ShippingAddressReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                setCheckoutStep('info');
-                                setTimeout(() => {
-                                    shippingAddressInputRef?.current?.scrollIntoView({
-                                        block    : 'start',
-                                        behavior : 'smooth',
-                                    });
-                                    shippingAddressInputRef?.current?.focus?.({ preventScroll: true });
-                                }, 200);
+                                gotoSectionInformation(/* focusTo: */'shipping');
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>
