@@ -92,8 +92,6 @@ const RadioDecorator = (props: RadioProps) => {
 
 
 
-const invalidSelector = ':is(.invalidating, .invalidated)';
-
 const hostedFieldsStyle = {
     // Style all elements
     input: {
