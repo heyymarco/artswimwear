@@ -539,7 +539,6 @@ const NavCheckout = () => {
     const {
         // states:
         checkoutStep,
-        setCheckoutStep,
         checkoutProgress,
         
         isBusy,
@@ -549,6 +548,7 @@ const NavCheckout = () => {
         // actions:
         gotoStepInformation,
         gotoStepShipping,
+        gotoPayment,
     } = useCheckoutState();
     const isCheckoutFinished = ['pending', 'paid'].includes(checkoutStep);
     
@@ -559,23 +559,16 @@ const NavCheckout = () => {
     
     
     
-    // dialogs:
-    const {
-        showMessageFieldError,
-    } = useDialogMessage();
-    
-    
-    
     // utilities:
     const prevAction = [
-        { text: 'Return to cart'       , action: () => dispatch(showCart(true))   },
-        { text: 'Return to information', action: () => gotoStepInformation()      },
-        { text: 'Return to shipping'   , action: gotoStepShipping                 },
+        { text: 'Return to cart'       , action: () => dispatch(showCart(true)) },
+        { text: 'Return to information', action: () => gotoStepInformation()    },
+        { text: 'Return to shipping'   , action: gotoStepShipping               },
     ][checkoutProgress];
     
     const nextAction = [
-        { text: 'Continue to shipping' , action: gotoStepShipping                 },
-        { text: 'Continue to payment'  , action: () => setCheckoutStep('payment') },
+        { text: 'Continue to shipping' , action: gotoStepShipping               },
+        { text: 'Continue to payment'  , action: gotoPayment                    },
     ][checkoutProgress];
     
     
@@ -630,7 +623,7 @@ const NavCheckout = () => {
                     icon='arrow_back'
                     iconPosition='start'
                     
-                    onClick={() => setCheckoutStep('payment')}
+                    onClick={gotoPayment}
                 >
                     BACK
                 </ButtonIcon>
@@ -1521,16 +1514,21 @@ const PaymentMethod = () => {
     );
 }
 const PaymentMethodCard = () => {
-    // context:
-    const {cardholderInputRef, doPlaceOrder} = useCheckoutState();
-    
-    
-    
     // states:
     const {
         // payment data:
         paymentValidation,
         paymentMethod,
+        
+        
+        
+        // fields:
+        cardholderInputRef,
+        
+        
+        
+        // actions:
+        doPlaceOrder,
     } = useCheckoutState();
     
     
@@ -1712,16 +1710,13 @@ const PaymentMethodCard = () => {
     );
 }
 const PaymentMethodPaypal = () => {
-    // context:
-    const {doPlaceOrder, doMakePayment} = useCheckoutState();
-    
-    
-    
     // states:
     const checkoutState = useCheckoutState();
     const {
         // actions:
         doTransaction,
+        doPlaceOrder,
+        doMakePayment,
     } = checkoutState;
     
     
@@ -1855,12 +1850,6 @@ const CardPaymentButton = () => {
         
         
         
-        // sections:
-        billingAddressSectionRef,
-        paymentCardSectionRef,
-        
-        
-        
         // fields:
         cardholderInputRef,
         
@@ -1945,16 +1934,6 @@ const ManualPaymentButton = () => {
     const {
         // states:
         isBusy,
-        
-        
-        
-        // billing data:
-        billingAsShipping,
-        
-        
-        
-        // sections:
-        billingAddressSectionRef,
         
         
         

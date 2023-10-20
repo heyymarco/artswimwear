@@ -328,6 +328,8 @@ export interface CheckoutState {
     // actions:
     gotoStepInformation               : (focusTo?: 'contactInfo'|'shippingAddress') => void
     gotoStepShipping                  : () => Promise<boolean>
+    gotoPayment                       : () => void
+    
     doTransaction                     : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
@@ -490,6 +492,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     // actions:
     gotoStepInformation               : noopHandler as any,
     gotoStepShipping                  : noopHandler as any,
+    gotoPayment                       : noopHandler as any,
+    
     doTransaction                     : noopHandler as any,
     doPlaceOrder                      : noopHandler as any,
     doMakePayment                     : noopHandler as any,
@@ -937,6 +941,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
+    const gotoPayment                       = useEvent((): void => {
+        setCheckoutStep('payment'); // TODO: make `setCheckoutStep` internal use
+    });
+    
     const setShippingProvider               = useEvent((shippingProvider: string): void => {
         dispatch(reduxSetShippingProvider(shippingProvider));
     });
@@ -956,6 +964,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             dispatch(reduxSetBillingValidation(false));
         } // if
     });
+    
     const doTransaction                     = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
         if (paymentMethod !== 'paypal') { // paymentMethod 'card' & paymentMethod 'manual' => requires valid billing fields
             // validate:
@@ -1239,6 +1248,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // actions:
         gotoStepInformation,               // stable ref
         gotoStepShipping,                  // stable ref
+        gotoPayment,                       // stable ref
+        
         doTransaction,                     // stable ref
         doPlaceOrder,                      // stable ref
         doMakePayment,                     // stable ref
@@ -1403,6 +1414,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // actions:
         // gotoStepInformation,               // stable ref
         // gotoStepShipping,                  // stable ref
+        // gotoPayment,                       // stable ref
+        
         // doTransaction,                     // stable ref
         // doPlaceOrder,                      // stable ref
         // doMakePayment,                     // stable ref
