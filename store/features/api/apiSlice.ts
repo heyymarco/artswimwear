@@ -103,7 +103,7 @@ export interface MakePaymentResponse
 export const apiSlice = createApi({
     reducerPath : 'api',
     baseQuery : fetchBaseQuery({
-        baseUrl: '/api'
+        baseUrl: `${process.env.WEBSITE_URL ?? ''}/api`
     }),
     endpoints : (builder) => ({
         getProductList          : builder.query<EntityState<ProductPreview>, void>({
