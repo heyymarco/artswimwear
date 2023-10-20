@@ -11,7 +11,7 @@ import { LoadingBar } from '@heymarco/loading-bar'
 import { formatCurrency } from '@/libs/formatters'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 import { useMountedFlag } from '@reusable-ui/core'
 
