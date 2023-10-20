@@ -316,7 +316,7 @@ export interface CheckoutState {
     
     
     // actions:
-    gotoStepInformation               : (focusTo?: 'contact'|'shipping') => void
+    gotoStepInformation               : (focusTo?: 'contactInfo'|'shippingAddress') => void
     gotoStepShipping                  : () => Promise<boolean>
     doTransaction                     : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
@@ -773,13 +773,13 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // stable callbacks:
-    const gotoStepInformation               = useEvent((focusTo?: 'contact'|'shipping'): void => {
+    const gotoStepInformation               = useEvent((focusTo?: 'contactInfo'|'shippingAddress'): void => {
         setCheckoutStep('info'); // TODO: make `setCheckoutStep` internal use
         
         
         
         if (focusTo) {
-            const focusInputRef = (focusTo === 'contact') ? contactEmailInputRef : shippingAddressInputRef;
+            const focusInputRef = (focusTo === 'contactInfo') ? contactEmailInputRef : shippingAddressInputRef;
             setTimeout(() => {
                 const focusInputElm = focusInputRef.current;
                 if (focusInputElm) {

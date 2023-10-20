@@ -1004,7 +1004,7 @@ const OrderReview = () => {
                         <td><CustomerContactReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                gotoStepInformation(/* focusTo: */'contact');
+                                gotoStepInformation(/* focusTo: */'contactInfo');
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>
@@ -1013,7 +1013,7 @@ const OrderReview = () => {
                         <td><ShippingAddressReview /></td>
                         <td>
                             <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                gotoStepInformation(/* focusTo: */'shipping');
+                                gotoStepInformation(/* focusTo: */'shippingAddress');
                             }}>Change</ButtonIcon>
                         </td>
                     </tr>
