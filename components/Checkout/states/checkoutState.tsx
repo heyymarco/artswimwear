@@ -176,7 +176,6 @@ const invalidSelector = ':is(.invalidating, .invalidated)';
 export interface CheckoutState {
     // states:
     checkoutStep                      : CheckoutStep
-    setCheckoutStep                   : (checkoutStep: CheckoutStep) => void
     checkoutProgress                  : number
     
     isBusy                            : BusyState,
@@ -345,7 +344,6 @@ const noopHandler : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
 const CheckoutStateContext = createContext<CheckoutState>({
     // states:
     checkoutStep                      : 'info',
-    setCheckoutStep                   : () => {},
     checkoutProgress                  : 0,
     
     isBusy                            : false,
@@ -859,7 +857,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // stable callbacks:
     const gotoStepInformation               = useEvent((focusTo?: 'contactInfo'|'shippingAddress'): void => {
-        setCheckoutStep('info'); // TODO: make `setCheckoutStep` internal use
+        setCheckoutStep('info');
         
         
         
@@ -952,7 +950,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        setCheckoutStep('shipping'); // TODO: make `setCheckoutStep` internal use
+        setCheckoutStep('shipping');
         
         
         
@@ -974,7 +972,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return true; // transaction completed
     });
     const gotoPayment                       = useEvent((): void => {
-        setCheckoutStep('payment'); // TODO: make `setCheckoutStep` internal use
+        setCheckoutStep('payment');
     });
     
     const setShippingProvider               = useEvent((shippingProvider: string): void => {
@@ -1128,7 +1126,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const checkoutData = useMemo<CheckoutState>(() => ({
         // states:
         checkoutStep,
-        setCheckoutStep,                   // stable ref
         checkoutProgress,
         
         isBusy,
@@ -1294,7 +1291,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }), [
         // states:
         checkoutStep,
-        // setCheckoutStep,                   // stable ref
         checkoutProgress,
         
         isBusy,
