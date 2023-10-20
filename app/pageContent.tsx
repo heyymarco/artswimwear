@@ -1,26 +1,22 @@
-import Head from 'next/head'
-// import { Inter } from 'next/font/google'
-// import styles from '@/styles/Home.module.scss'
+'use client'
 
 import { Section, HeroSection, Main } from '@heymarco/section'
 
-import { AccordionItem, Button, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
+import { AccordionItem, Carousel, Container, ExclusiveAccordion, Icon } from '@reusable-ui/components'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
-import { PAGE_HOME_TITLE, PAGE_HOME_DESCRIPTION } from '@/website.config'
 import { useEffect } from 'react'
 import { usePrefetchProductList, usePrefetchPriceList, usePrefetchCountryList } from '@/store/features/api/apiSlice'
 
 
 
-// const inter = Inter({ subsets: ['latin'] })
 const useHomeStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'@/styles/home')
 , { id: 'home' });
 
 
 
-export default function Home() {
+export default function HomePageContent() {
     const styles = useHomeStyleSheet();
     
     
@@ -47,10 +43,6 @@ export default function Home() {
     // jsx:
     return (
         <>
-            <Head>
-                <title>{PAGE_HOME_TITLE}</title>
-                <meta name='description' content={PAGE_HOME_DESCRIPTION} />
-            </Head>
             <Main nude={true}>
                 <HeroSection theme='secondary' className={styles.hero}>
                     <Carousel className='slides fill' nude={true} size='lg' theme='primary' mild={false}>
