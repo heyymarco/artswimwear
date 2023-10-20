@@ -543,19 +543,6 @@ const NavCheckout = () => {
         checkoutProgress,
         
         isBusy,
-        setIsBusy,
-        
-        
-        
-        // shipping data:
-        shippingCity,
-        shippingZone,
-        shippingCountry,
-        
-        
-        
-        // sections:
-        regularCheckoutSectionRef,
         
         
         
@@ -989,7 +976,7 @@ const OrderSummary = () => {
 }
 const OrderReview = () => {
     // context:
-    const {checkoutStep, contactEmailInputRef, shippingAddressInputRef, shippingMethodOptionRef} = useCheckoutState();
+    const {checkoutStep, shippingMethodOptionRef} = useCheckoutState();
     
     
     
