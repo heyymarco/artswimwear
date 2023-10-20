@@ -1998,13 +1998,15 @@ const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps) => {
     
     
     // jsx:
-    return (
+    if (!isHydrated) return null;
+    if (!navCheckoutSectionElm?.current) return (
         <>
-            {isHydrated && !!navCheckoutSectionElm?.current && ReactDOM.createPortal(
-                props.children,
-                navCheckoutSectionElm.current
-            )}
+            {props.children}
         </>
+    );
+    return ReactDOM.createPortal(
+        props.children,
+        navCheckoutSectionElm.current
     );
 }
 
