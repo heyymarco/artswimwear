@@ -891,24 +891,22 @@ const OrderSummary = () => {
     const {
         // cart data:
         cartItems,
-        totalProductWeight,
         totalProductPrice,
         
         
         
         // shipping data:
         shippingProvider,
+        totalShippingCost,
         
         
         
         // relation data:
         priceList,
         productList,
-        shippingList,
     } = useCheckoutState();
     
-    const selectedShipping   = shippingList?.entities?.[shippingProvider ?? ''] ?? null;
-    const totalShippingCosts = selectedShipping && calculateShippingCost(totalProductWeight, selectedShipping);
+    const hasSelectedShipping   = !!shippingProvider;
     
     
     
@@ -956,28 +954,23 @@ const OrderSummary = () => {
             </p>
             <p className='currencyBlock'>
                 Shipping: <span className='currency'>
-                    {!!selectedShipping ? formatCurrency(totalShippingCosts) : 'calculated at next step'}
+                    {!!hasSelectedShipping ? formatCurrency(totalShippingCost) : 'calculated at next step'}
                 </span>
             </p>
             <hr />
             <p className='currencyBlock totalCost'>
                 Total: <span className='currency'>
-                    {!!selectedShipping ? formatCurrency(totalProductPrice + (totalShippingCosts ?? 0)) : 'calculated at next step'}
+                    {!!hasSelectedShipping ? formatCurrency(totalProductPrice + (totalShippingCost ?? 0)) : 'calculated at next step'}
                 </span>
             </p>
         </>
     );
 }
 const OrderReview = () => {
-    // context:
-    const {checkoutStep, shippingMethodOptionRef} = useCheckoutState();
-    
-    
-    
     // states:
     const {
         // states:
-        setCheckoutStep,
+        checkoutStep,
         isBusy,
         
         
@@ -1251,9 +1244,9 @@ const ShippingMethod = () => {
             filteredShippingList
             ?.map((shippingEntry) => ({
                 id                 : `${shippingEntry.id}`,
-                totalShippingCosts : calculateShippingCost(totalProductWeight, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
+                totalShippingCost : calculateShippingCost(totalProductWeight, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
             }))
-            ?.sort((a, b) => a.totalShippingCosts - b.totalShippingCosts) // -1 means: no need to ship (digital products)
+            ?.sort((a, b) => a.totalShippingCost - b.totalShippingCost) // -1 means: no need to ship (digital products)
         );
         
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
@@ -1268,9 +1261,14 @@ const ShippingMethod = () => {
         <>
             {!!filteredShippingList && <List theme='primary' actionCtrl={true}>
                 {filteredShippingList.map((shippingEntry) => {
-                    const totalShippingCosts = calculateShippingCost(totalProductWeight, shippingEntry);
-                    return {...shippingEntry, totalShippingCosts};
-                }).sort(({totalShippingCosts: a}, {totalShippingCosts: b}): number => (a ?? 0) - (b ?? 0)).map(({totalShippingCosts, ...shippingEntry}) => {
+                    const totalShippingCost = calculateShippingCost(totalProductWeight, shippingEntry);
+                    return {
+                        totalShippingCost,
+                        ...shippingEntry,
+                    };
+                })
+                .sort(({totalShippingCost: a}, {totalShippingCost: b}): number => (a ?? 0) - (b ?? 0))
+                .map(({totalShippingCost, ...shippingEntry}) => {
                     const isActive           = `${shippingEntry.id}` === shippingProvider;
                     
                     
@@ -1297,7 +1295,7 @@ const ShippingMethod = () => {
                             </p>}
                             
                             <p className='cost'>
-                                {formatCurrency(totalShippingCosts)}
+                                {formatCurrency(totalShippingCost)}
                             </p>
                         </ListItem>
                     );

@@ -149,6 +149,9 @@ import type {
     MatchingAddress,
 }                           from '@/libs/shippings'
 import {
+    calculateShippingCost,
+}                           from '@/libs/shippings'
+import {
     // hooks:
     FieldHandlers,
     useFieldState,
@@ -243,6 +246,7 @@ export interface CheckoutState {
     
     
     shippingProvider                  : string | undefined
+    totalShippingCost                 : number|null
     
     
     
@@ -402,6 +406,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     shippingProvider                  : undefined,
+    totalShippingCost                 : null,
     
     
     
@@ -637,6 +642,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             totalProductPrice,
         };
     }, [cartItems, priceList]);
+    
+    const totalShippingCost = useMemo<number|null>(() => {
+        const selectedShipping   = shippingList?.entities?.[shippingProvider ?? ''] ?? null;
+        if (!selectedShipping) return null;
+        return calculateShippingCost(totalProductWeight, selectedShipping);
+    }, [totalProductWeight, shippingList, shippingProvider]);
     
     
     // states:
@@ -1139,6 +1150,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         shippingProvider,
+        totalShippingCost,
         
         
         
@@ -1300,6 +1312,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         shippingProvider,
+        totalShippingCost,
         
         
         
