@@ -654,8 +654,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [cartItems, priceList]);
     
     const totalShippingCost = useMemo<number|null>(() => {
-        const selectedShipping   = shippingList?.entities?.[shippingProvider ?? ''] ?? null;
-        if (!selectedShipping) return null;
+        // conditions:
+        if (!shippingList)     return null; // the shippingList data is not available yet => nothing to calculate
+        if (!shippingProvider) return null; // no selected shippingProvider => nothing to calculate
+        const selectedShipping = shippingList.entities?.[shippingProvider];
+        if (!selectedShipping) return null; // no valid selected shippingProvider => nothing to calculate
+        
+        
+        
+        // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
         return calculateShippingCost(totalProductWeight, selectedShipping);
     }, [totalProductWeight, shippingList, shippingProvider]);
     
@@ -720,6 +727,32 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             setCheckoutStep('info');
         } // if
     }, [isNeedsRecoverShippingProvider, shippingList]);
+    
+    // if no selected shipping method => auto select the cheapest one:
+    useEffect(() => {
+        // conditions:
+        if (!shippingList)     return; // the shippingList data is not available yet => nothing to select
+        if (!shippingProvider) return; // no selected shippingProvider => nothing to calculate
+        const selectedShipping = shippingList.entities?.[shippingProvider];
+        if (selectedShipping)  return; // already have selection => abort to auto_select
+        
+        
+        
+        // find the cheapest shipping cost:
+        const orderedConstAscending = (
+            Object.values(shippingList.entities)
+            .filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry)
+            ?.map((shippingEntry) => ({
+                id                 : `${shippingEntry.id}`,
+                totalShippingCost : calculateShippingCost(totalProductWeight, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
+            }))
+            ?.sort((a, b) => a.totalShippingCost - b.totalShippingCost) // -1 means: no need to ship (digital products)
+        );
+        
+        if (orderedConstAscending && orderedConstAscending.length >= 1) {
+            setShippingProvider(orderedConstAscending[0].id);
+        } // if
+    }, [shippingList, shippingProvider, totalProductWeight]);
     
     // auto scroll to top on checkoutStep changed:
     const isSubsequentStep = useRef<boolean>(false);

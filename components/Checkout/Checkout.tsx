@@ -1217,34 +1217,9 @@ const ShippingMethod = () => {
         shippingMethodOptionRef,
     } = useCheckoutState();
     
-    const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
-    
     
     
     const filteredShippingList = !shippingList ? undefined : Object.values(shippingList.entities).filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry);
-    
-    
-    
-    // if no selected shipping method => auto select the cheapest one:
-    useEffect(() => {
-        if (selectedShipping) return; // already selected => ignore
-        
-        
-        
-        // find the cheapest shipping cost:
-        const orderedConstAscending = (
-            filteredShippingList
-            ?.map((shippingEntry) => ({
-                id                 : `${shippingEntry.id}`,
-                totalShippingCost : calculateShippingCost(totalProductWeight, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
-            }))
-            ?.sort((a, b) => a.totalShippingCost - b.totalShippingCost) // -1 means: no need to ship (digital products)
-        );
-        
-        if (orderedConstAscending && orderedConstAscending.length >= 1) {
-            setShippingProvider(orderedConstAscending[0].id);
-        } // if
-    }, [selectedShipping, filteredShippingList, totalProductWeight]);
     
     
     
