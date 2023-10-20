@@ -1,6 +1,24 @@
-import type { Metadata } from 'next'
-import { PAGE_HOME_TITLE, PAGE_HOME_DESCRIPTION } from '@/website.config'
-import HomePageContent from './pageContent'
+// react:
+import {
+    // react:
+    default as React,
+}                           from 'react'
+
+// next-js:
+import type {
+    Metadata,
+}                           from 'next'
+
+// private components:
+import {
+    HomePageContent,
+}                           from './pageContent'
+
+// configs:
+import {
+    PAGE_HOME_TITLE,
+    PAGE_HOME_DESCRIPTION,
+}                           from '@/website.config'
 
 
 

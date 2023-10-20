@@ -16,7 +16,7 @@ const useHomeStyleSheet = dynamicStyleSheets(
 
 
 
-export default function HomePageContent() {
+export function HomePageContent() {
     const styles = useHomeStyleSheet();
     
     
