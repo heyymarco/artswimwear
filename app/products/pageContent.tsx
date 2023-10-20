@@ -1,6 +1,4 @@
-import Head from 'next/head'
-// import { Inter } from 'next/font/google'
-// import styles from '@/styles/Home.module.scss'
+'use client'
 
 import { GenericSection, Main } from '@heymarco/section'
 import { Busy } from '@reusable-ui/components'
@@ -9,7 +7,6 @@ import { ProductPreview, useGetProductList, usePrefetchProductDetail } from '@/s
 import { formatCurrency } from '@/libs/formatters'
 import { Image } from '@heymarco/image'
 import Link from '@reusable-ui/next-compat-link'
-import { PAGE_PRODUCTS_TITLE, PAGE_PRODUCTS_DESCRIPTION } from '@/website.config'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 import { useEffect, useRef } from 'react'
 
@@ -78,28 +75,22 @@ const ProductItem = ({product}: ProductItemProps) => {
         </article>
     );
 }
-export default function ProductList() {
+export function ProductListPageContent() {
     const styles = useProductListStyleSheet();
     const {data: productList, isLoading, isError} = useGetProductList();
     return (
-        <>
-            <Head>
-                <title>{PAGE_PRODUCTS_TITLE}</title>
-                <meta name='description' content={PAGE_PRODUCTS_DESCRIPTION} />
-            </Head>
-            <Main nude={true}>
-                <GenericSection className={`${styles.list} ${(isLoading || isError || !productList) ? 'loading' : ''}`} theme='secondary'>
-                    {
-                        isLoading
-                        ? <Busy theme='primary' size='lg' />
-                        : (isError || !productList)
-                        ? <p>Oops, an error occured!</p>
-                        : Object.values(productList?.entities).filter((product): product is Exclude<typeof product, undefined> => !!product).map((product) =>
-                            <ProductItem key={product.id} product={product} />
-                        )
-                    }
-                </GenericSection>
-            </Main>
-        </>
+        <Main nude={true}>
+            <GenericSection className={`${styles.list} ${(isLoading || isError || !productList) ? 'loading' : ''}`} theme='secondary'>
+                {
+                    isLoading
+                    ? <Busy theme='primary' size='lg' />
+                    : (isError || !productList)
+                    ? <p>Oops, an error occured!</p>
+                    : Object.values(productList?.entities).filter((product): product is Exclude<typeof product, undefined> => !!product).map((product) =>
+                        <ProductItem key={product.id} product={product} />
+                    )
+                }
+            </GenericSection>
+        </Main>
     )
 }
