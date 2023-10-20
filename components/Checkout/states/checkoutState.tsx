@@ -93,6 +93,8 @@ import {
     setShippingZip        as reduxSetShippingZip,
     setShippingCountry    as reduxSetShippingCountry,
     
+    setShippingProvider   as reduxSetShippingProvider,
+    
     // billing data:
     setBillingValidation  as reduxSetBillingValidation,
     
@@ -246,6 +248,8 @@ export interface CheckoutState {
     
     
     shippingProvider                  : string | undefined
+    setShippingProvider               : (shippingProvider: string) => void
+    
     totalShippingCost                 : number|null
     
     
@@ -406,6 +410,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     shippingProvider                  : undefined,
+    setShippingProvider               : noopHandler as any,
+    
     totalShippingCost                 : null,
     
     
@@ -931,6 +937,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
+    const setShippingProvider               = useEvent((shippingProvider: string): void => {
+        dispatch(reduxSetShippingProvider(shippingProvider));
+    });
     const setPaymentMethod                  = useEvent((paymentMethod: PaymentMethod): void => {
         dispatch(reduxSetPaymentMethod(paymentMethod));
         
@@ -1150,6 +1159,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         shippingProvider,
+        setShippingProvider,               // stable ref
+        
         totalShippingCost,
         
         
@@ -1312,6 +1323,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         shippingProvider,
+        // setShippingProvider                // stable ref,
+        
         totalShippingCost,
         
         

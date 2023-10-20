@@ -15,7 +15,7 @@ import ReactDOM from 'react-dom'
 import { showCart } from '@/store/features/cart/cartSlice'
 import { useDispatch } from 'react-redux'
 import { AccessibilityProvider, colorValues, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import { setShippingProvider, setShippingValidation, PaymentMethod } from '@/store/features/checkout/checkoutSlice'
+import type { PaymentMethod as PaymentMethodType } from '@/store/features/checkout/checkoutSlice'
 import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
 import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
 import { calculateShippingCost } from '@/libs/shippings'
@@ -1211,6 +1211,7 @@ const ShippingMethod = () => {
         
         // shipping data:
         shippingProvider,
+        setShippingProvider,
         
         
         
@@ -1250,7 +1251,7 @@ const ShippingMethod = () => {
         );
         
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
-            dispatch(setShippingProvider(orderedConstAscending[0].id));
+            setShippingProvider(orderedConstAscending[0].id);
         } // if
     }, [selectedShipping, filteredShippingList, totalProductWeight]);
     
@@ -1280,7 +1281,7 @@ const ShippingMethod = () => {
                             className={styles.optionEntryHeader}
                             
                             active={isActive}
-                            onClick={() => dispatch(setShippingProvider(`${shippingEntry.id}`))}
+                            onClick={() => setShippingProvider(`${shippingEntry.id}`)}
                             
                             elmRef={isActive ? shippingMethodOptionRef : undefined}
                         >
@@ -1478,7 +1479,7 @@ const PaymentMethod = () => {
     
     
     // jsx:
-    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'manual'];
+    const paymentMethodList : PaymentMethodType[] = ['card', 'paypal', 'manual'];
     return (
         <PayPalScriptProvider options={{
             'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
