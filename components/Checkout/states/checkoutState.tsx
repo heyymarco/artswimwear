@@ -332,7 +332,6 @@ export interface CheckoutState {
     
     
     // apis:
-    placeOrderApi                     : ReturnType<typeof usePlaceOrder>
     makePaymentApi                    : ReturnType<typeof useMakePayment>
 }
 
@@ -491,7 +490,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // apis:
-    placeOrderApi                     : noopHandler as any,
     makePaymentApi                    : noopHandler as any,
 });
 CheckoutStateContext.displayName  = 'CheckoutState';
@@ -827,8 +825,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const placeOrderApi  = usePlaceOrder();
-    const [placeOrder]   = placeOrderApi;
+    const [placeOrder]   = usePlaceOrder();
     
     const makePaymentApi = useMakePayment();
     const [makePayment] = makePaymentApi;
@@ -1271,7 +1268,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // apis:
-        placeOrderApi,
         makePaymentApi,
     }), [
         // states:
@@ -1432,7 +1428,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // apis:
-        placeOrderApi,
         makePaymentApi,
     ]);
     

@@ -658,11 +658,6 @@ const RegularCheckout = () => {
     
     
     
-    // context:
-    const {countryList, contactEmailInputRef, shippingAddressInputRef } = useCheckoutState();
-    
-    
-    
     // states:
     const {
         // extra data:
@@ -709,6 +704,17 @@ const RegularCheckout = () => {
         
         shippingCountry,
         shippingCountryHandlers,
+        
+        
+        
+        // relation data:
+        countryList,
+        
+        
+        
+        // fields:
+        contactEmailInputRef,
+        shippingAddressInputRef,
     } = useCheckoutState();
     
     
@@ -1074,11 +1080,6 @@ const CustomerContactReview = () => {
     );
 }
 const ShippingAddressReview = () => {
-    // context:
-    const {countryList} = useCheckoutState();
-    
-    
-    
     // states:
     const {
         // shipping data:
@@ -1087,6 +1088,11 @@ const ShippingAddressReview = () => {
         shippingZone,
         shippingZip,
         shippingCountry,
+        
+        
+        
+        // relation data:
+        countryList,
     } = useCheckoutState();
     
     
@@ -1122,6 +1128,7 @@ const ShippingMethodReview = () => {
 }
 const PaymentMethodReview = () => {
     // context:
+    // TODO: replace payment api with finish checkout state
     const {makePaymentApi} = useCheckoutState();
     
     
@@ -1144,11 +1151,6 @@ const PaymentMethodReview = () => {
     );
 }
 const BillingAddressReview = () => {
-    // context:
-    const {countryList} = useCheckoutState();
-    
-    
-    
     // states:
     const {
         // shipping data:
@@ -1167,6 +1169,11 @@ const BillingAddressReview = () => {
         billingZone,
         billingZip,
         billingCountry,
+        
+        
+        
+        // relation data:
+        countryList,
     } = useCheckoutState();
     
     const finalBillingAddress    = billingAsShipping ? shippingAddress : billingAddress;
@@ -1278,15 +1285,20 @@ const Payment = () => {
     
     
     
-    // context:
-    const {countryList, billingAddressSectionRef} = useCheckoutState();
-    
-    
-    
     // states:
     const {
         // states:
         isBusy,
+        
+        
+        
+        // relation data:
+        countryList,
+        
+        
+        
+        // sections:
+        billingAddressSectionRef,
     } = useCheckoutState();
     
     
