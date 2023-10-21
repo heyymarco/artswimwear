@@ -320,43 +320,43 @@ const CheckoutInternal = () => {
     
     
     
+    // dom effects:
+    useEffect(() => {
+        const titleElm = document.head.querySelector('title');
+        const metaElm  = document.head.querySelector('meta[name="description"]');
+        switch(checkoutStep) {
+            case 'info'     :
+                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_INFO_TITLE);
+                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_INFO_DESCRIPTION));
+            break;
+            
+            case 'shipping' :
+                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_SHIPPING_TITLE);
+                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_SHIPPING_DESCRIPTION));
+            break;
+            
+            case 'payment'  :
+                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAYMENT_TITLE);
+                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAYMENT_DESCRIPTION));
+            break;
+            
+            case 'pending'  :
+                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PENDING_TITLE);
+                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PENDING_DESCRIPTION));
+            break;
+            
+            case 'paid'     :
+                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAID_TITLE);
+                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAID_DESCRIPTION));
+            break;
+        } // switch
+    }, [checkoutStep]);
+    
+    
+    
     // jsx:
     return (
         <>
-            <Head>
-                {((): React.ReactNode => {
-                    switch(checkoutStep) {
-                        case 'info'     : return <>
-                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_INFO_TITLE)}</title>
-                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_INFO_DESCRIPTION)} />
-                        </>
-                        
-                        case 'shipping' : return <>
-                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_SHIPPING_TITLE)}</title>
-                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_SHIPPING_DESCRIPTION)} />
-                        </>
-                        
-                        case 'payment'  : return <>
-                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAYMENT_TITLE)}</title>
-                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAYMENT_DESCRIPTION)} />
-                        </>
-                        
-                        case 'pending'  : return <>
-                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PENDING_TITLE)}</title>
-                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PENDING_DESCRIPTION)} />
-                        </>
-                        
-                        case 'paid'     : return <>
-                            <title>{PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAID_TITLE)}</title>
-                            <meta name='description' content={PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAID_DESCRIPTION)} />
-                        </>
-                        
-                        default         : return <>
-                        </>
-                    } // switch
-                })()}
-            </Head>
-            
             {(isLoadingPage || isErrorPage || !hasCart) && <Section className={styles.loading} theme='secondary'>
                 {
                     !hasCart
