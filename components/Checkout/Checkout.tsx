@@ -54,19 +54,6 @@ import {
     ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// heymarco components:
-import {
-    Article,
-    Section,
-}                           from '@heymarco/section'
-import {
-    ImageProps,
-    Image,
-}                           from '@heymarco/image'
-import {
-    AddressFields,
-}                           from '@heymarco/address-fields'
-
 // reusable-ui components:
 import {
     // base-components:
@@ -87,8 +74,6 @@ import {
     TextInput,
     EmailInput,
     Check,
-    RadioProps,
-    Radio,
     
     
     
@@ -128,6 +113,19 @@ import {
 import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
+
+// heymarco components:
+import {
+    Article,
+    Section,
+}                           from '@heymarco/section'
+import {
+    ImageProps,
+    Image,
+}                           from '@heymarco/image'
+import {
+    AddressFields,
+}                           from '@heymarco/address-fields'
 
 // internal components:
 import {
@@ -206,7 +204,6 @@ import {
 
 
 
-// const inter = Inter({ subsets: ['latin'] })
 const useCheckoutStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'./CheckoutStyles')
 , { id: 'gdfyt2agd1' });
@@ -215,7 +212,7 @@ import './CheckoutStyles';
 
 
 const hostedFieldsStyle = {
-    // Style all elements
+    // style input element:
     input: {
         'font-size'       : typoValues.fontSizeMd,
         'font-family'     : typoValues.fontFamilySansSerief,
@@ -223,42 +220,53 @@ const hostedFieldsStyle = {
         'font-style'      : typoValues.fontStyle,
         'text-decoration' : typoValues.textDecoration,
         'line-height'     : typoValues.lineHeightMd,
+        
         'color'           : colorValues.primaryBold.toString(),
     },
     
     
-    // // Styling element state
+    // styling element states:
     // ':focus': {
-    //     'color': 'blue'
     // },
-    // '.valid': {
-    //     'color': 'green'
-    // },
-    // '.invalid': {
-    //     'color': 'red'
-    // },
-}
+    '.valid': {
+        'color'           : colorValues.successBold.toString(),
+    },
+    '.invalid': {
+        'color'           : colorValues.dangerBold.toString(),
+    },
+};
 
 interface PayPalHostedFieldExtendedProps
     extends
         EditableTextControlProps,
         Pick<PayPalHostedFieldProps,
-            |'hostedFieldType'
-            |'options'
-            |'id'
+            // identifiers:
+            |'id'              // required for stable hostedField id
+            
+            // formats:
+            |'hostedFieldType' // required for determining field type
+            
+            |'options'         // required for field options
             // |'className'
             // |'lang'
             // |'title'
             // |'style'
         >
 {
+    // formats:
+    hostedFieldType : HostedFieldsHostedFieldsFieldName
 }
 const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     // rest props:
     const {
+        // identifiers:
+        id,
+        
+        
+        
+        // formats:
         hostedFieldType,
         options,
-        id,
     ...restEditableTextControlProps} = props;
     
     
@@ -272,9 +280,9 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     // handlers:
     const handleFocusBlur    = useEvent((event: HostedFieldsEvent) => {
         // conditions:
-        const field = event.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
-        if (!field) return;
-        if (field.isFocused === isFocused) return;
+        const field = event.fields?.[hostedFieldType]; // find the field in hostedForm
+        if (!field)                        return;     // not found in hostedForm => ignore
+        if (field.isFocused === isFocused) return;     // already focused/blurred => nothing to change
         
         
         
@@ -283,9 +291,9 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     });
     const handleValidInvalid = useEvent((event: HostedFieldsEvent) => {
         // conditions:
-        const field = event.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
-        if (!field) return;
-        if (field.isValid === isValid) return;
+        const field = event.fields?.[hostedFieldType]; // find the field in hostedForm
+        if (!field)                    return;         // not found in hostedForm => ignore
+        if (field.isValid === isValid) return;         // already validated/invalidated => nothing to change
         
         
         
@@ -298,12 +306,12 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     // dom effects:
     const {cardFields} = usePayPalHostedFields();
     
+    // setup the initial state of `isFocused` & `isValid`:
     useEffect(() => {
         // conditions:
-        if (!cardFields)      return;
-        if (!hostedFieldType) return;
-        const field = cardFields.getState()?.fields?.[hostedFieldType as HostedFieldsHostedFieldsFieldName];
-        if (!field)           return;
+        if (!cardFields) return; // hostedForm not found => ignore
+        const field = cardFields.getState()?.fields?.[hostedFieldType]; // find the field in hostedForm
+        if (!field)      return; // not found in hostedForm => ignore
         
         
         
@@ -312,6 +320,7 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
         setIsFocused(field.isFocused);
     }, [cardFields, hostedFieldType]);
     
+    // setup the event handlers:
     useEffect(() => {
         // conditions:
         if (!cardFields) return;
@@ -327,6 +336,9 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
         
         // cleanups:
         return () => {
+            /*
+                off?.() : workaround for 'TypeError: cardFields.off is not a function'
+            */
             cardFields.off?.('focus'          , handleFocusBlur);
             cardFields.off?.('blur'           , handleFocusBlur);
             cardFields.off?.('validityChange' , handleValidInvalid);
@@ -348,18 +360,51 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
         prefill,
         rejectUnsupportedCards,
     } = options;
-    const optionsCached = useMemo(() => ({
-        selector,
-        placeholder,
-        type,
-        formatInput,
-        maskInput,
-        select,
-        maxlength,
-        minlength,
-        prefill,
-        rejectUnsupportedCards,
-    }), [
+    const cachedHostedField = useMemo(() => {
+        const options = {
+            selector,
+            placeholder,
+            type,
+            formatInput,
+            maskInput,
+            select,
+            maxlength,
+            minlength,
+            prefill,
+            rejectUnsupportedCards,
+        };
+        
+        
+        
+        // jsx:
+        return (
+            <PayPalHostedField
+                // identifiers:
+                id={id}
+                
+                
+                
+                // formats:
+                hostedFieldType={hostedFieldType}
+                
+                
+                
+                // options:
+                options={options}
+            />
+        );
+    }, [
+        // identifiers:
+        id,
+        
+        
+        
+        // formats:
+        hostedFieldType,
+        
+        
+        
+        // options:
         selector,
         placeholder,
         type,
@@ -377,27 +422,38 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     // jsx:
     return (
         <EditableTextControl
+            // other props:
             {...restEditableTextControlProps}
             
-            tabIndex   = {-1}
             
+            
+            // accessibilities:
+            tabIndex   = {-1}
+            aria-label = {placeholder}
+            
+            
+            
+            // states:
             focused    = {isFocused ?? false}
             isValid    = {isValid   ?? null }
-            
-            aria-label = {optionsCached.placeholder}
         >
-            {useMemo(() =>
-                <PayPalHostedField
-                    {...{
-                        hostedFieldType,
-                        options : optionsCached,
-                        id,
-                    }}
-                />
-            , [hostedFieldType, optionsCached, id])}
+            {cachedHostedField}
         </EditableTextControl>
     );
 }
+
+const cardNumberOptions  : PayPalHostedFieldExtendedProps['options'] = {
+    selector    : '#cardNumber',
+    placeholder : 'Card Number',
+};
+const cardExpiresOptions : PayPalHostedFieldExtendedProps['options'] = {
+    selector    : '#cardExpires',
+    placeholder : 'MM / YY',
+};
+const cardCvvOptions     : PayPalHostedFieldExtendedProps['options'] = {
+    selector    : '#cardCvv',
+    placeholder : 'Security Code',
+};
 
 
 
@@ -498,61 +554,59 @@ const CheckoutInternal = () => {
                 }
             </Section>}
             
-            {useMemo(() =>
-                isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
-                    <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
-                        <OrderSummary />
-                    </Section>
+            {isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
+                <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
+                    <OrderSummary />
+                </Section>
+                
+                <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
+                    <ProgressCheckout />
+                </Section>
+                
+                <div className={styles.currentStepLayout}>
+                    {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
+                        <OrderReview />
+                    </Section>}
                     
-                    <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
-                        <ProgressCheckout />
-                    </Section>
+                    {(checkoutStep === 'info') && <Section elmRef={currentStepSectionRef} className={styles.checkout}>
+                        {/* TODO: activate */}
+                        {/* <Section className={styles.expressCheckout} title='Express Checkout'>
+                        </Section>
+                        
+                        <div className={styles.checkoutAlt}>
+                            <hr />
+                            <span>OR</span>
+                            <hr />
+                        </div> */}
+                        
+                        <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
+                            <RegularCheckout />
+                        </Section>
+                    </Section>}
                     
-                    <div className={styles.currentStepLayout}>
-                        {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
-                            <OrderReview />
-                        </Section>}
-                        
-                        {(checkoutStep === 'info') && <Section elmRef={currentStepSectionRef} className={styles.checkout}>
-                            {/* TODO: activate */}
-                            {/* <Section className={styles.expressCheckout} title='Express Checkout'>
-                            </Section>
-                            
-                            <div className={styles.checkoutAlt}>
-                                <hr />
-                                <span>OR</span>
-                                <hr />
-                            </div> */}
-                            
-                            <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
-                                <RegularCheckout />
-                            </Section>
-                        </Section>}
-                        
-                        {(checkoutStep === 'shipping') && <Section elmRef={currentStepSectionRef} className={styles.shippingMethod} title='Shipping Method'>
-                            <ShippingMethod />
-                        </Section>}
-                        
-                        {(checkoutStep === 'payment') && <Section elmRef={currentStepSectionRef} className={styles.payment} title='Payment'>
-                            <Payment />
-                        </Section>}
-                        
-                        {(checkoutStep === 'pending') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
-                            <PaymentPending />
-                        </Section>}
-                        
-                        {(checkoutStep === 'paid') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
-                            <Paid />
-                        </Section>}
-                    </div>
+                    {(checkoutStep === 'shipping') && <Section elmRef={currentStepSectionRef} className={styles.shippingMethod} title='Shipping Method'>
+                        <ShippingMethod />
+                    </Section>}
                     
-                    <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={navCheckoutSectionElm} />}>
-                        <NavCheckout />
-                    </Section>
+                    {(checkoutStep === 'payment') && <Section elmRef={currentStepSectionRef} className={styles.payment} title='Payment'>
+                        <Payment />
+                    </Section>}
                     
-                    <hr className={styles.vertLine} />
-                </Container>
-            , [isReadyPage, isDesktop, checkoutStep, styles])}
+                    {(checkoutStep === 'pending') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
+                        <PaymentPending />
+                    </Section>}
+                    
+                    {(checkoutStep === 'paid') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
+                        <Paid />
+                    </Section>}
+                </div>
+                
+                <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={navCheckoutSectionElm} />}>
+                    <NavCheckout />
+                </Section>
+                
+                <hr className={styles.vertLine} />
+            </Container>}
         </>
     );
 };
@@ -1666,14 +1720,23 @@ const PaymentMethodCard = () => {
                     // components:
                     inputComponent={
                         <PayPalHostedFieldExtended
+                            // identifiers:
+                            id='cardNumber'
+                            
+                            
+                            
+                            // classes:
                             className='hostedField'
                             
-                            id='cardNumber'
+                            
+                            
+                            // formats:
                             hostedFieldType='number'
-                            options={{
-                                selector: '#cardNumber',
-                                placeholder: 'Card Number',
-                            }}
+                            
+                            
+                            
+                            // options:
+                            options={cardNumberOptions}
                         />
                     }
                     
@@ -1742,14 +1805,23 @@ const PaymentMethodCard = () => {
                     // components:
                     inputComponent={
                         <PayPalHostedFieldExtended
+                            // identifiers:
+                            id='cardExpires'
+                            
+                            
+                            
+                            // classes:
                             className='hostedField'
                             
-                            id='cardExpires'
+                            
+                            
+                            // formats:
                             hostedFieldType='expirationDate'
-                            options={{
-                                selector: '#cardExpires',
-                                placeholder: 'MM / YY',
-                            }}
+                            
+                            
+                            
+                            // options:
+                            options={cardExpiresOptions}
                         />
                     }
                     
@@ -1781,14 +1853,23 @@ const PaymentMethodCard = () => {
                     // components:
                     inputComponent={
                         <PayPalHostedFieldExtended
+                            // identifiers:
+                            id='cardCvv'
+                            
+                            
+                            
+                            // classes:
                             className='hostedField'
                             
-                            id='cardCvv'
+                            
+                            
+                            // formats:
                             hostedFieldType='cvv'
-                            options={{
-                                selector: '#cardCvv',
-                                placeholder: 'Security Code',
-                            }}
+                            
+                            
+                            
+                            // options:
+                            options={cardCvvOptions}
                         />
                     }
                     
