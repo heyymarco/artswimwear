@@ -71,6 +71,7 @@ import {
     Icon,
     Label,
     ButtonIcon,
+    inputValues,
     TextInput,
     EmailInput,
     Check,
@@ -214,26 +215,42 @@ import './CheckoutStyles';
 const hostedFieldsStyle = {
     // style input element:
     input: {
-        'font-size'       : typoValues.fontSizeMd,
-        'font-family'     : typoValues.fontFamilySansSerief,
-        'font-weight'     : typoValues.fontWeightNormal,
-        'font-style'      : typoValues.fontStyle,
-        'text-decoration' : typoValues.textDecoration,
-        'line-height'     : typoValues.lineHeightMd,
+        'font-size'        : typoValues.fontSizeMd,
+        'font-family'      : typoValues.fontFamilySansSerief,
+        'font-weight'      : typoValues.fontWeightNormal,
+        'font-style'       : typoValues.fontStyle,
+        'text-decoration'  : typoValues.textDecoration,
+        'line-height'      : typoValues.lineHeightMd,
         
-        'color'           : colorValues.primaryBold.toString(),
+        'color'            : colorValues.primaryBold.toString(),
     },
+    '::placeholder': {
+        'color'            : 'currentColor',
+        'opacity'          : inputValues.placeholderOpacity,
+    },
+    // '::selection': {
+    //     background         : colorValues.primary.toString(),     // doesn't work
+    //     color              : colorValues.primaryText.toString(), // works
+    // },
     
     
     // styling element states:
     // ':focus': {
     // },
     '.valid': {
-        'color'           : colorValues.successBold.toString(),
+        'color'            : colorValues.successBold.toString(),
     },
+    // '.valid::selection': {
+    //     'background-color' : colorValues.success.toString(),     // doesn't work
+    //     'color'            : colorValues.successText.toString(), // works
+    // },
     '.invalid': {
-        'color'           : colorValues.dangerBold.toString(),
+        'color'            : colorValues.dangerBold.toString(),
     },
+    // '.invalid::selection': {
+    //     'background-color' : colorValues.danger.toString(),     // doesn't work
+    //     'color'            : colorValues.dangerText.toString(), // works
+    // },
 };
 
 interface PayPalHostedFieldExtendedProps
