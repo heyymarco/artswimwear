@@ -1,45 +1,205 @@
-import Head from 'next/head'
-// import { Inter } from 'next/font/google'
-// import styles from '@/styles/Home.module.scss'
+'use client'
 
-import { Article, Section } from '@heymarco/section'
-
-import { AccordionItem, Alert, Badge, Busy, ButtonIcon, Check, Collapse, Container, Details, EditableTextControl, EditableTextControlProps, EmailInput, ExclusiveAccordion, Icon, Label, List, ListItem, Radio, RadioProps, TextInput, Tooltip, useDialogMessage } from '@reusable-ui/components'
-import { InputWithLabel } from '@/components/InputWithLabel'
-import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { formatCurrency } from '@/libs/formatters'
-import { ImageProps, Image } from '@heymarco/image'
-import Link from '@reusable-ui/next-compat-link'
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import ReactDOM from 'react-dom'
-import { showCart } from '@/store/features/cart/cartSlice'
-import { useDispatch } from 'react-redux'
-import { AccessibilityProvider, colorValues, typoValues, useEvent, ValidationProvider } from '@reusable-ui/core'
-import type { PaymentMethod as PaymentMethodType } from '@/store/features/checkout/checkoutSlice'
-import type { HostedFieldsEvent, HostedFieldsHostedFieldsFieldName, OnApproveActions, OnApproveData, OnShippingChangeActions, OnShippingChangeData } from '@paypal/paypal-js'
-import { PayPalScriptProvider, PayPalButtons, PayPalHostedFieldsProvider, PayPalHostedField, usePayPalHostedFields, PayPalHostedFieldProps } from '@paypal/react-paypal-js'
-import { calculateShippingCost } from '@/libs/shippings'
-import { AddressFields } from '@heymarco/address-fields'
+// react:
 import {
-    PAGE_CHECKOUT_STEP_INFO_TITLE,
-    PAGE_CHECKOUT_STEP_INFO_DESCRIPTION,
-    PAGE_CHECKOUT_STEP_SHIPPING_TITLE,
-    PAGE_CHECKOUT_STEP_SHIPPING_DESCRIPTION,
-    PAGE_CHECKOUT_STEP_PAYMENT_TITLE,
-    PAGE_CHECKOUT_STEP_PAYMENT_DESCRIPTION,
-    PAGE_CHECKOUT_STEP_PENDING_TITLE,
-    PAGE_CHECKOUT_STEP_PENDING_DESCRIPTION,
-    PAGE_CHECKOUT_STEP_PAID_TITLE,
-    PAGE_CHECKOUT_STEP_PAID_DESCRIPTION,
-    PAGE_CHECKOUT_TITLE,
-    PAGE_CHECKOUT_DESCRIPTION,
-} from '@/website.config'
-import { resolveMediaUrl } from '@/libs/mediaStorage.client'
+    // react:
+    default as React,
+    
+    
+    
+    // hooks:
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+}                           from 'react'
+import {
+    default as ReactDOM,
+}                           from 'react-dom'
+
+// redux:
+import {
+    useDispatch,
+}                           from 'react-redux'
+
+// cssfn:
+import {
+    // style sheets:
+    dynamicStyleSheets,
+}                           from '@cssfn/cssfn-react'           // writes css in react hook
+
+// reusable-ui core:
+import {
+    // a color management system:
+    colorValues,
+    
+    
+    
+    // a typography management system:
+    typoValues,
+    
+    
+    
+    // react helper hooks:
+    useEvent,
+    
+    
+    
+    // an accessibility management system:
+    AccessibilityProvider,
+    
+    
+    
+    // a validation management system:
+    ValidationProvider,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// heymarco components:
+import {
+    Article,
+    Section,
+}                           from '@heymarco/section'
+import {
+    ImageProps,
+    Image,
+}                           from '@heymarco/image'
+import {
+    AddressFields,
+}                           from '@heymarco/address-fields'
+
+// reusable-ui components:
+import {
+    // base-components:
+    EditableTextControlProps,
+    EditableTextControl,
+    
+    
+    
+    // base-content-components:
+    Container,
+    
+    
+    
+    // simple-components:
+    Icon,
+    Label,
+    ButtonIcon,
+    TextInput,
+    EmailInput,
+    Check,
+    RadioProps,
+    Radio,
+    
+    
+    
+    // layout-components:
+    ListItem,
+    List,
+    
+    
+    
+    // status-components:
+    Badge,
+    Busy,
+    
+    
+    
+    // notification-components:
+    Alert,
+    Tooltip,
+    
+    
+    
+    // menu-components:
+    Collapse,
+    
+    
+    
+    // composite-components:
+    AccordionItem,
+    ExclusiveAccordion,
+    Details,
+    
+    
+    
+    // utility-components:
+    useDialogMessage,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
+
+// internal components:
+import {
+    InputWithLabel,
+}                           from '@/components/InputWithLabel'
+
+// stores:
+import {
+    showCart,
+}                           from '@/store/features/cart/cartSlice'
+import type {
+    PaymentMethod as PaymentMethodType,
+}                           from '@/store/features/checkout/checkoutSlice'
+
+// paypal:
+import type {
+    HostedFieldsEvent,
+    HostedFieldsHostedFieldsFieldName,
+    
+    OnApproveActions,
+    OnApproveData,
+    OnShippingChangeActions,
+    OnShippingChangeData,
+}                           from '@paypal/paypal-js'
+import {
+    PayPalScriptProvider,
+    
+    PayPalButtons,
+    
+    PayPalHostedFieldsProvider,
+    PayPalHostedFieldProps,
+    PayPalHostedField,
+    usePayPalHostedFields,
+}                           from '@paypal/react-paypal-js'
+
+// utilities:
+import {
+    formatCurrency,
+}                           from '@/libs/formatters'
+import {
+    calculateShippingCost,
+}                           from '@/libs/shippings'
+import {
+    resolveMediaUrl,
+}                           from '@/libs/mediaStorage.client'
+
 // internals:
 import {
     CheckoutStateProvider,
     useCheckoutState,
 }                           from './states/checkoutState'
+
+// configs:
+import {
+    PAGE_CHECKOUT_TITLE,
+    PAGE_CHECKOUT_DESCRIPTION,
+    
+    PAGE_CHECKOUT_STEP_INFO_TITLE,
+    PAGE_CHECKOUT_STEP_INFO_DESCRIPTION,
+    
+    PAGE_CHECKOUT_STEP_SHIPPING_TITLE,
+    PAGE_CHECKOUT_STEP_SHIPPING_DESCRIPTION,
+    
+    PAGE_CHECKOUT_STEP_PAYMENT_TITLE,
+    PAGE_CHECKOUT_STEP_PAYMENT_DESCRIPTION,
+    
+    PAGE_CHECKOUT_STEP_PENDING_TITLE,
+    PAGE_CHECKOUT_STEP_PENDING_DESCRIPTION,
+    
+    PAGE_CHECKOUT_STEP_PAID_TITLE,
+    PAGE_CHECKOUT_STEP_PAID_DESCRIPTION,
+}                           from '@/website.config'
 
 
 
