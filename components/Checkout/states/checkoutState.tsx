@@ -184,9 +184,6 @@ export interface CheckoutState {
     isErrorPage                       : boolean
     isReadyPage                       : boolean
     
-    isLoadingShipping                 : boolean
-    isErrorShipping                   : boolean
-    
     isDesktop                         : boolean
     
     
@@ -350,9 +347,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     isLoadingPage                     : false,
     isErrorPage                       : false,
     isReadyPage                       : false,
-    
-    isLoadingShipping                 : false,
-    isErrorShipping                   : false,
     
     isDesktop                         : false,
     
@@ -607,7 +601,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const                        {data: countryList    , isLoading: isLoading3, isError: isError3}  = useGetCountryList();
     const [generatePaymentToken, {data: newPaymentToken, isLoading: isLoading5, isError: isError5}] = useGeneratePaymentToken();
     
-    const [getShippingByAddress, {data: shippingList   , isUninitialized: isUninitShipping, isLoading: isLoadingShipping, isError: isErrorShipping, isSuccess: isSuccessShipping}]  = useGetMatchingShippingList();
+    const [getShippingByAddress, {data: shippingList   , isUninitialized: isUninitShipping, isError: isErrorShipping, isSuccess: isSuccessShipping}]  = useGetMatchingShippingList();
     
     const isPerformedRecoverShippingList = useRef<boolean>(false);
     const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isUninitShipping  && !isPerformedRecoverShippingList.current;
@@ -1129,9 +1123,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isErrorPage,
         isReadyPage,
         
-        isLoadingShipping,
-        isErrorShipping,
-        
         isDesktop,
         
         
@@ -1292,9 +1283,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isLoadingPage,
         isErrorPage,
         isReadyPage,
-        
-        isLoadingShipping,
-        isErrorShipping,
         
         isDesktop,
         
