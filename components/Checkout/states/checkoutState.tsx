@@ -179,7 +179,6 @@ export interface CheckoutState {
     checkoutProgress                  : number
     
     isBusy                            : BusyState,
-    setIsBusy                         : (isBusy: BusyState) => void
     
     isLoadingPage                     : boolean
     isErrorPage                       : boolean
@@ -347,7 +346,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     checkoutProgress                  : 0,
     
     isBusy                            : false,
-    setIsBusy                         : () => {},
     
     isLoadingPage                     : false,
     isErrorPage                       : false,
@@ -599,9 +597,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const dispatch        = useDispatch();
     const setCheckoutStep = useEvent((checkoutStep: CheckoutStep): void => {
         dispatch(reduxSetCheckoutStep(checkoutStep));
-    });
-    const setIsBusy       = useEvent((isBusy: BusyState): void => {
-        dispatch(reduxSetIsBusy(isBusy));
     });
     
     
@@ -1129,7 +1124,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         checkoutProgress,
         
         isBusy,
-        setIsBusy,                         // stable ref
         
         isLoadingPage,
         isErrorPage,
@@ -1294,7 +1288,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         checkoutProgress,
         
         isBusy,
-        setIsBusy,                            // stable ref
         
         isLoadingPage,
         isErrorPage,
