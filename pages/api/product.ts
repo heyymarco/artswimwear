@@ -20,6 +20,7 @@ export interface ProductPreview
             |'id'
             |'name'
             |'price'
+            |'shippingWeight'
             |'path'
         >
 {
@@ -97,15 +98,16 @@ router
                 visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
             },
             select : {
-                id     : true,
+                id             : true,
                 
-                name   : true,
+                name           : true,
                 
-                price  : true,
+                price          : true,
+                shippingWeight : true,
                 
-                path   : true,
+                path           : true,
                 
-                images : true,
+                images         : true,
             },
         }))
         .map((product) => {
