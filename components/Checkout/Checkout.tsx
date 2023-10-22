@@ -725,7 +725,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                         // accessibilities:
                         title='Regular Checkout'
                     >
-                        <RegularCheckout />
+                        <EditRegularCheckout />
                     </Section>
                 </Section>}
                 
@@ -738,7 +738,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     // classes:
                     className={styles.shippingMethod} title='Shipping Method'
                 >
-                    <ShippingMethod />
+                    <EditShippingMethod />
                 </Section>}
                 
                 {(checkoutStep === 'payment' ) && <Section
@@ -1119,7 +1119,7 @@ const NavCheckout = (): JSX.Element|null => {
 
 
 
-const RegularCheckout = (): JSX.Element|null => {
+const EditRegularCheckout = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
@@ -1808,7 +1808,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
 
 
 
-const ShippingMethod = () => {
+const EditShippingMethod = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
@@ -1835,9 +1835,6 @@ const ShippingMethod = () => {
         // sections:
         shippingMethodOptionRef,
     } = useCheckoutState();
-    
-    
-    
     const filteredShippingList = !shippingList ? undefined : Object.values(shippingList.entities).filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry);
     
     
@@ -1845,51 +1842,74 @@ const ShippingMethod = () => {
     // jsx:
     return (
         <>
-            {!!filteredShippingList && <List theme='primary' actionCtrl={true}>
-                {filteredShippingList.map((shippingEntry) => {
-                    const totalShippingCost = calculateShippingCost(totalProductWeight, shippingEntry);
-                    return {
-                        totalShippingCost,
+            {!!filteredShippingList && <List
+                // variants:
+                theme='primary'
+                
+                
+                
+                // behaviors:
+                actionCtrl={true}
+            >
+                {
+                    filteredShippingList
+                    .map((shippingEntry) => ({
+                        totalShippingCost : calculateShippingCost(totalProductWeight, shippingEntry),
                         ...shippingEntry,
-                    };
-                })
-                .sort(({totalShippingCost: a}, {totalShippingCost: b}): number => (a ?? 0) - (b ?? 0))
-                .map(({totalShippingCost, ...shippingEntry}) => {
-                    const isActive           = `${shippingEntry.id}` === shippingProvider;
-                    
-                    
-                    
-                    // jsx:
-                    return (
-                        <ListItem
-                            key={`${shippingEntry.id}`}
-                            className={styles.optionEntryHeader}
-                            
-                            active={isActive}
-                            onClick={() => setShippingProvider(`${shippingEntry.id}`)}
-                            
-                            elmRef={isActive ? shippingMethodOptionRef : undefined}
-                        >
-                            <RadioDecorator />
-                            
-                            <p className='name'>
-                                {shippingEntry.name}
-                            </p>
-                            
-                            {!!shippingEntry.estimate && <p className='estimate'>
-                                Estimate: {shippingEntry.estimate}
-                            </p>}
-                            
-                            <p className='cost'>
-                                {formatCurrency(totalShippingCost)}
-                            </p>
-                        </ListItem>
-                    );
-                })}
+                    }))
+                    .sort(({totalShippingCost: a}, {totalShippingCost: b}): number => (a ?? 0) - (b ?? 0))
+                    .map(({totalShippingCost, ...shippingEntry}) => {
+                        const isActive = `${shippingEntry.id}` === shippingProvider;
+                        
+                        
+                        
+                        // jsx:
+                        return (
+                            <ListItem
+                                // identifiers:
+                                key={`${shippingEntry.id}`}
+                                
+                                
+                                
+                                // refs:
+                                elmRef={isActive ? shippingMethodOptionRef : undefined}
+                                
+                                
+                                
+                                // classes:
+                                className={styles.optionEntryHeader}
+                                
+                                
+                                
+                                // states:
+                                active={isActive}
+                                
+                                
+                                
+                                // handlers:
+                                onClick={() => setShippingProvider(`${shippingEntry.id}`)}
+                            >
+                                <RadioDecorator />
+                                
+                                <p className='name'>
+                                    {shippingEntry.name}
+                                </p>
+                                
+                                {!!shippingEntry.estimate && <p className='estimate'>
+                                    Estimate: {shippingEntry.estimate}
+                                </p>}
+                                
+                                <p className='cost'>
+                                    {formatCurrency(totalShippingCost)}
+                                </p>
+                            </ListItem>
+                        );
+                    })
+                }
             </List>}
         </>
     );
-}
+};
 
 
 
