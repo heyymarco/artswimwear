@@ -450,12 +450,6 @@ export default () => {
             alignItems: 'center',
             gap: '1rem',
             padding: '1rem',
-            ...children('.indicator', {
-                flex: '0 0 auto',
-                ...children('input', {
-                    borderColor: 'currentcolor',
-                }),
-            }),
             ...children(['.name', '.estimate', '.cost', '.icon'], {
                 flex: '0 0 auto',
                 margin: 0,
