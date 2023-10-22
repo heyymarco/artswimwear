@@ -641,7 +641,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                 // accessibilities:
                 title='Order Summary'
             >
-                <OrderSummary />
+                <ViewCart />
             </Section>
             
             <Section
@@ -675,7 +675,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     // classes:
                     className={styles.orderReview}
                 >
-                    <OrderReview />
+                    <ViewInformation />
                 </Section>}
                 
                 
@@ -1367,7 +1367,7 @@ const RegularCheckout = (): JSX.Element|null => {
 
 
 
-const OrderSummary = (): JSX.Element|null => {
+const ViewCart = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
@@ -1534,7 +1534,7 @@ const OrderSummary = (): JSX.Element|null => {
         </>
     );
 };
-const OrderReview = (): JSX.Element|null => {
+const ViewInformation = (): JSX.Element|null => {
     // states:
     const {
         // states:
@@ -1574,7 +1574,7 @@ const OrderReview = (): JSX.Element|null => {
                 <tbody>
                     <tr>
                         <th>Contact</th>
-                        <td><CustomerContactReview /></td>
+                        <td><ViewCustomerContact /></td>
                         <td>
                             <EditButton onClick={handleGotoContactInfo} />
                         </td>
@@ -1582,7 +1582,7 @@ const OrderReview = (): JSX.Element|null => {
                     
                     <tr>
                         <th>Ship To</th>
-                        <td><ShippingAddressReview /></td>
+                        <td><ViewShippingAddress /></td>
                         <td>
                             <EditButton onClick={handleGotoShippingAddress} />
                         </td>
@@ -1590,7 +1590,7 @@ const OrderReview = (): JSX.Element|null => {
                     
                     {(checkoutStep !== 'shipping') && <tr>
                         <th>Method</th>
-                        <td><ShippingMethodReview /></td>
+                        <td><ViewShippingMethod /></td>
                         <td>
                             <EditButton onClick={handleGotoShippingProvider} />
                         </td>
@@ -1600,7 +1600,7 @@ const OrderReview = (): JSX.Element|null => {
         </AccessibilityProvider>
     );
 };
-const OrderReviewCompleted = () => {
+const ViewCustomer = (): JSX.Element|null => {
     // states:
     const {
         // states:
@@ -1611,7 +1611,10 @@ const OrderReviewCompleted = () => {
     
     // jsx:
     return (
-        <AccessibilityProvider enabled={!isBusy}>
+        <AccessibilityProvider
+            // accessibilities:
+            enabled={!isBusy}
+        >
             <table>
                 <thead>
                     <tr>
@@ -1620,33 +1623,38 @@ const OrderReviewCompleted = () => {
                         </th>
                     </tr>
                 </thead>
+                
                 <tbody>
                     <tr>
                         <th>Contact</th>
-                        <td><CustomerContactReview /></td>
+                        <td><ViewCustomerContact /></td>
                     </tr>
+                    
                     <tr>
                         <th>Shipping Address</th>
-                        <td><ShippingAddressReview /></td>
+                        <td><ViewShippingAddress /></td>
                     </tr>
+                    
                     <tr>
                         <th>Shipping Method</th>
-                        <td><ShippingMethodReview /></td>
+                        <td><ViewShippingMethod /></td>
                     </tr>
+                    
                     <tr>
                         <th>Payment Method</th>
-                        <td><PaymentMethodReview /></td>
+                        <td><ViewPaymentMethod /></td>
                     </tr>
+                    
                     <tr>
                         <th>Billing Address</th>
-                        <td><BillingAddressReview /></td>
+                        <td><ViewBillingAddress /></td>
                     </tr>
                 </tbody>
             </table>
         </AccessibilityProvider>
     );
-}
-const CustomerContactReview = () => {
+};
+const ViewCustomerContact = (): JSX.Element|null => {
     // states:
     const {
         // customer data:
@@ -1662,8 +1670,8 @@ const CustomerContactReview = () => {
             {customerEmail} ({customerNickName})
         </>
     );
-}
-const ShippingAddressReview = () => {
+};
+const ViewShippingAddress = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
@@ -1681,24 +1689,24 @@ const ShippingAddressReview = () => {
     
     
     
+    // jsx:
     return (
         <>
             {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
         </>
     );
-}
-const ShippingMethodReview = () => {
-    // context:
-    const {shippingList} = useCheckoutState();
-    
-    
-    
+};
+const ViewShippingMethod = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
         shippingProvider,
+        
+        
+        
+        // relation data:
+        shippingList,
     } = useCheckoutState();
-    
     const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
     
     
@@ -1709,8 +1717,8 @@ const ShippingMethodReview = () => {
             {`${selectedShipping?.name}${!selectedShipping?.estimate ? '' : ` - ${selectedShipping?.estimate}`}`}
         </>
     );
-}
-const PaymentMethodReview = () => {
+};
+const ViewPaymentMethod = (): JSX.Element|null => {
     // context:
     // TODO: replace payment api with finish checkout state
     const {makePaymentApi} = useCheckoutState();
@@ -1729,12 +1737,33 @@ const PaymentMethodReview = () => {
     // jsx:
     return (
         <>
-            {!!brand ? <Image className='paymentProvider' alt={brand} src={`/brands/${brand}.svg`} width={42} height={26} /> : (type?.toUpperCase() ?? type)}
-            {!!identifier && <span className='paymentIdentifier'>({identifier})</span>}
+            {
+                !!brand
+                ? <Image
+                    // appearances:
+                    alt={brand}
+                    src={`/brands/${brand}.svg`}
+                    width={42}
+                    height={26}
+                    
+                    
+                    
+                    // classes:
+                    className='paymentProvider'
+                />
+                : (type?.toUpperCase() ?? type)
+            }
+            
+            {!!identifier && <span
+                // classes:
+                className='paymentIdentifier'
+            >
+                ({identifier})
+            </span>}
         </>
     );
-}
-const BillingAddressReview = () => {
+};
+const ViewBillingAddress = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
@@ -1748,6 +1777,7 @@ const BillingAddressReview = () => {
         
         // billing data:
         billingAsShipping,
+        
         billingAddress,
         billingCity,
         billingZone,
@@ -1774,7 +1804,7 @@ const BillingAddressReview = () => {
             {`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}
         </>
     );
-}
+};
 
 
 
@@ -1954,7 +1984,7 @@ const Payment = () => {
                             <RadioDecorator />
                             Same as shipping address
                         </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.billingEntry} />} >
-                            <ShippingAddressReview />
+                            <ViewShippingAddress />
                         </AccordionItem>
                         <AccordionItem label={<>
                             <RadioDecorator />
@@ -2639,7 +2669,7 @@ const PaymentPending = () => {
                 </Alert>
             </Section>
             <Section tag='aside' className={styles.orderReview}>
-                <OrderReviewCompleted />
+                <ViewCustomer />
             </Section>
         </>
     );
@@ -2672,7 +2702,7 @@ const Paid = () => {
                 </Alert>
             </Section>
             <Section tag='aside' className={styles.orderReview}>
-                <OrderReviewCompleted />
+                <ViewCustomer />
             </Section>
         </>
     );
