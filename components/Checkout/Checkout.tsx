@@ -878,24 +878,15 @@ const ResponsiveDetails = <TElement extends Element = HTMLElement, TExpandedChan
             
             
             
-            // variants:
-            theme='secondary'
-            detailsStyle='content'
-            
-            
-            
-            // classes:
-            className='orderCollapse'
-            
-            
-            
             // states:
-            expanded={showDetails}
+            expanded={props.expanded ?? showDetails}
             
             
             
             // components:
             buttonChildren={
+                props.buttonChildren
+                ??
                 <>
                     {`${showDetails ? 'Hide' : 'Show' }${isTruthyNode(title) ? ' ' : ''}`}
                     {title}
@@ -1311,6 +1302,17 @@ const OrderSummary = () => {
     return (
         <>
             <ResponsiveDetails
+                // variants:
+                theme='secondary'
+                detailsStyle='content'
+                
+                
+                
+                // classes:
+                className='orderCollapse'
+                
+                
+                
                 // accessibilities:
                 title='Order List'
             >
