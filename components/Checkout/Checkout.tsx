@@ -595,58 +595,197 @@ const CheckoutInternal = () => {
         </Section>
     );
     return (
-        <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
-            <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
+        <Container
+            // variants:
+            theme='secondary'
+            
+            
+            
+            // classes:
+            className={`${styles.layout} ${checkoutStep}`}
+        >
+            <Section
+                // semantics:
+                tag='aside'
+                
+                
+                
+                // variants:
+                theme={!isDesktop ? 'primary' : undefined}
+                
+                
+                
+                // classes:
+                className={styles.orderSummary}
+                
+                
+                
+                // accessibilities:
+                title='Order Summary'
+            >
                 <OrderSummary />
             </Section>
             
-            <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
+            <Section
+                // semantics:
+                tag='nav'
+                
+                
+                
+                // variants:
+                theme={!isDesktop ? 'primary' : undefined}
+                mild={!isDesktop ? false : undefined}
+                
+                
+                
+                // classes:
+                className={styles.progressCheckout}
+            >
                 <ProgressCheckout />
             </Section>
             
-            <div className={styles.currentStepLayout}>
-                {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
+            <div
+                // classes:
+                className={styles.currentStepLayout}
+            >
+                {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section
+                    // semantics:
+                    tag='aside'
+                    
+                    
+                    
+                    // classes:
+                    className={styles.orderReview}
+                >
                     <OrderReview />
                 </Section>}
                 
-                {(checkoutStep === 'info') && <Section elmRef={currentStepSectionRef} className={styles.checkout}>
+                
+                
+                {(checkoutStep === 'info'    ) && <Section
+                    // refs:
+                    elmRef={currentStepSectionRef}
+                    
+                    
+                    
+                    // classes:
+                    className={styles.checkout}
+                >
                     {/* TODO: activate */}
-                    {/* <Section className={styles.expressCheckout} title='Express Checkout'>
+                    {/* <Section
+                        // classes:
+                        className={styles.expressCheckout}
+                        
+                        
+                        
+                        // accessibilities:
+                        title='Express Checkout'
+                    >
+                        // TODO: express checkout
                     </Section>
                     
-                    <div className={styles.checkoutAlt}>
+                    <div
+                        // classes:
+                        className={styles.checkoutAlt}
+                    >
                         <hr />
                         <span>OR</span>
                         <hr />
                     </div> */}
                     
-                    <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
+                    <Section
+                        // refs:
+                        elmRef={regularCheckoutSectionRef}
+                        
+                        
+                        
+                        // classes:
+                        className={styles.regularCheckout}
+                        
+                        
+                        
+                        // accessibilities:
+                        title='Regular Checkout'
+                    >
                         <RegularCheckout />
                     </Section>
                 </Section>}
                 
-                {(checkoutStep === 'shipping') && <Section elmRef={currentStepSectionRef} className={styles.shippingMethod} title='Shipping Method'>
+                {(checkoutStep === 'shipping') && <Section
+                    // refs:
+                    elmRef={currentStepSectionRef}
+                    
+                    
+                    
+                    // classes:
+                    className={styles.shippingMethod} title='Shipping Method'
+                >
                     <ShippingMethod />
                 </Section>}
                 
-                {(checkoutStep === 'payment') && <Section elmRef={currentStepSectionRef} className={styles.payment} title='Payment'>
+                {(checkoutStep === 'payment' ) && <Section
+                    // refs:
+                    elmRef={currentStepSectionRef}
+                    
+                    
+                    
+                    // classes:
+                    className={styles.payment} title='Payment'
+                >
                     <Payment />
                 </Section>}
                 
-                {(checkoutStep === 'pending') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
+                {(checkoutStep === 'pending' ) && <Section
+                    // refs:
+                    elmRef={currentStepSectionRef}
+                    
+                    
+                    
+                    // classes:
+                    className={styles.paymentFinish} title='Thank You'
+                >
                     <PaymentPending />
                 </Section>}
                 
-                {(checkoutStep === 'paid') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
+                {(checkoutStep === 'paid'    ) && <Section
+                    // refs:
+                    elmRef={currentStepSectionRef}
+                    
+                    
+                    
+                    // classes:
+                    className={styles.paymentFinish} title='Thank You'
+                >
                     <Paid />
                 </Section>}
             </div>
             
-            <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={navCheckoutSectionElm} />}>
+            <Section
+                // semantics:
+                tag='nav'
+                
+                
+                
+                // classes:
+                className={styles.navCheckout}
+                
+                
+                
+                // components:
+                articleComponent={
+                    <Article
+                        // refs:
+                        elmRef={navCheckoutSectionElm}
+                    />
+                }
+            >
                 <NavCheckout />
             </Section>
             
-            <hr className={styles.vertLine} />
+            <hr
+                // classes:
+                className={styles.vertLine}
+            />
         </Container>
     );
 };
