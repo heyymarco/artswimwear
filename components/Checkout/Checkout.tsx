@@ -40,8 +40,15 @@ import {
     
     
     
+    // a set of React node utility functions:
+    isTruthyNode,
+    
+    
+    
     // react helper hooks:
     useEvent,
+    EventHandler,
+    useMergeEvents,
     
     
     
@@ -52,6 +59,11 @@ import {
     
     // a validation management system:
     ValidationProvider,
+    
+    
+    
+    // a capability of UI to expand/reduce its size or toggle the visibility:
+    ExpandedChangeEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -104,6 +116,7 @@ import {
     // composite-components:
     AccordionItem,
     ExclusiveAccordion,
+    DetailsProps,
     Details,
     
     
@@ -486,7 +499,7 @@ const Checkout = () => {
         </CheckoutStateProvider>
     );
 };
-const CheckoutInternal = () => {
+const CheckoutInternal = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
@@ -799,17 +812,56 @@ export {
 
 
 
-interface ResponsiveDetailsProps {
-    children  : React.ReactNode
+interface ResponsiveDetailsProps<TElement extends Element = HTMLElement, TExpandedChangeEvent extends ExpandedChangeEvent = ExpandedChangeEvent>
+    extends
+        // bases:
+        DetailsProps<TElement, TExpandedChangeEvent>
+{
+    // accessibilities:
+    title ?: React.ReactNode
 }
-const ResponsiveDetails = ({children}: ResponsiveDetailsProps) => {
-    // context:
-    const {isDesktop} = useCheckoutState();
+const ResponsiveDetails = <TElement extends Element = HTMLElement, TExpandedChangeEvent extends ExpandedChangeEvent = ExpandedChangeEvent>(props: ResponsiveDetailsProps<TElement, TExpandedChangeEvent>): JSX.Element|null => {
+    // rest props:
+    const {
+        // accessibilities:
+        title,
+        
+        
+        
+        // states:
+        defaultExpanded = false,
+        
+        
+        
+        // children:
+        children,
+    ...restDetailsProps} = props;
     
     
     
     // states:
-    const [showDetails, setShowDetails] = useState<boolean>(false);
+    const {
+        // states:
+        isDesktop,
+    } = useCheckoutState();
+    
+    const [showDetails, setShowDetails] = useState<boolean>(defaultExpanded);
+    
+    
+    
+    // handlers:
+    const handleExpandedChangeInternal = useEvent<EventHandler<TExpandedChangeEvent>>((event) => {
+        setShowDetails(event.expanded);
+    });
+    const handleExpandedChange         = useMergeEvents(
+        // preserves the original `onExpandedChange`:
+        props.onExpandedChange,
+        
+        
+        
+        // actions:
+        handleExpandedChangeInternal,
+    );
     
     
     
@@ -820,14 +872,45 @@ const ResponsiveDetails = ({children}: ResponsiveDetailsProps) => {
         </>
     );
     return (
-        <Details className='orderCollapse' buttonChildren={`${showDetails ? 'Hide' : 'Show' } Order List`} theme='secondary' detailsStyle='content'
+        <Details<TElement, TExpandedChangeEvent>
+            // other props:
+            {...restDetailsProps}
+            
+            
+            
+            // variants:
+            theme='secondary'
+            detailsStyle='content'
+            
+            
+            
+            // classes:
+            className='orderCollapse'
+            
+            
+            
+            // states:
             expanded={showDetails}
-            onExpandedChange={(event) => setShowDetails(event.expanded)}
+            
+            
+            
+            // components:
+            buttonChildren={
+                <>
+                    {`${showDetails ? 'Hide' : 'Show' }${isTruthyNode(title) ? ' ' : ''}`}
+                    {title}
+                </>
+            }
+            
+            
+            
+            // handlers:
+            onExpandedChange={handleExpandedChange}
         >
             {children}
         </Details>
     );
-}
+};
 
 
 
@@ -1227,7 +1310,10 @@ const OrderSummary = () => {
     // jsx:
     return (
         <>
-            <ResponsiveDetails>
+            <ResponsiveDetails
+                // accessibilities:
+                title='Order List'
+            >
                 <List className='orderList' listStyle='flat'>
                     {cartItems.map((item) => {
                         const productUnitPrice = priceList?.entities?.[item.productId]?.price;
