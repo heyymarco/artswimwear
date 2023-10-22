@@ -934,7 +934,7 @@ const ProgressCheckout = (): JSX.Element|null => {
 
 
 
-const NavCheckout = () => {
+const NavCheckout = (): JSX.Element|null => {
     // states:
     const {
         // states:
@@ -950,7 +950,7 @@ const NavCheckout = () => {
         gotoStepShipping,
         gotoPayment,
     } = useCheckoutState();
-    const isCheckoutFinished = ['pending', 'paid'].includes(checkoutStep);
+    const isCheckoutFinished = (checkoutStep === 'pending') || (checkoutStep === 'paid');
     
     
     
@@ -960,16 +960,20 @@ const NavCheckout = () => {
     
     
     // utilities:
-    const prevAction = [
-        { text: 'Return to cart'       , action: () => dispatch(showCart(true)) },
-        { text: 'Return to information', action: () => gotoStepInformation()    },
-        { text: 'Return to shipping'   , action: gotoStepShipping               },
-    ][checkoutProgress];
-    
-    const nextAction = [
-        { text: 'Continue to shipping' , action: gotoStepShipping               },
-        { text: 'Continue to payment'  , action: gotoPayment                    },
-    ][checkoutProgress];
+    const [prevAction, nextAction] = useMemo(() => {
+        const prevAction = [
+            { text: 'Return to cart'       , action: () => dispatch(showCart(true)) },
+            { text: 'Return to information', action: () => gotoStepInformation()    },
+            { text: 'Return to shipping'   , action: gotoStepShipping               },
+        ][checkoutProgress];
+        
+        const nextAction = [
+            { text: 'Continue to shipping' , action: gotoStepShipping               },
+            { text: 'Continue to payment'  , action: gotoPayment                    },
+        ][checkoutProgress];
+        
+        return [prevAction, nextAction] as const;
+    }, [checkoutProgress]);
     
     
     
@@ -978,32 +982,60 @@ const NavCheckout = () => {
         <>
             {!isCheckoutFinished && <>
                 {!!prevAction && <ButtonIcon
-                    enabled={!isBusy}
-                    
-                    className='back'
-                    theme='primary'
-                    size='md'
-                    buttonStyle='link'
-                    
+                    // appearances:
                     icon='arrow_back'
                     iconPosition='start'
                     
+                    
+                    
+                    // variants:
+                    size='md'
+                    theme='primary'
+                    buttonStyle='link'
+                    
+                    
+                    
+                    // classes:
+                    className='back'
+                    
+                    
+                    
+                    // accessibilities:
+                    enabled={!isBusy}
+                    
+                    
+                    
+                    // handlers:
                     onClick={prevAction.action}
                 >
                     {prevAction.text}
                 </ButtonIcon>}
                 
                 {!!nextAction && <ButtonIcon
-                    enabled={!isBusy}
-                    
-                    className='next'
-                    theme='primary'
-                    size='lg'
-                    gradient={true}
-                    
+                    // appearances:
                     icon={!isBusy ? 'arrow_forward' : 'busy'}
                     iconPosition='end'
                     
+                    
+                    
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                    gradient={true}
+                    
+                    
+                    
+                    // classes:
+                    className='next'
+                    
+                    
+                    
+                    // accessibilities:
+                    enabled={!isBusy}
+                    
+                    
+                    
+                    // handlers:
                     onClick={nextAction.action}
                 >
                     {nextAction.text}
@@ -1013,15 +1045,15 @@ const NavCheckout = () => {
             {isCheckoutFinished && <>
                 {/* TODO: remove when the finish order completed */}
                 <ButtonIcon
-                    enabled={!isBusy}
-                    
-                    className='back'
-                    theme='primary'
-                    size='md'
-                    buttonStyle='link'
-                    
                     icon='arrow_back'
                     iconPosition='start'
+                    
+                    size='md'
+                    theme='primary'
+                    buttonStyle='link'
+                    className='back'
+                    
+                    enabled={!isBusy}
                     
                     onClick={gotoPayment}
                 >
@@ -1029,19 +1061,49 @@ const NavCheckout = () => {
                 </ButtonIcon>
                 {/* TODO: re-activate when the finish order completed */}
                 {/* <p>
-                    <Icon icon='help' theme='primary' size='md' /> Need help? <Button theme='primary' buttonStyle='link'><Link href='/contact'>Contact Us</Link></Button>
+                    <Icon
+                        // appearances:
+                        icon='help'
+                        
+                        
+                        
+                        // variants:
+                        size='md'
+                        theme='primary'
+                    />
+                    Need help?
+                    <Button
+                        // variants:
+                        theme='primary'
+                        buttonStyle='link'
+                    >
+                        <Link href='/contact'>
+                            Contact Us
+                        </Link>
+                    </Button>
                 </p> */}
                 
                 <ButtonIcon
-                    enabled={!isBusy}
-                    
-                    className='next'
-                    theme='primary'
-                    size='lg'
-                    gradient={true}
-                    
+                    // appearances:
                     icon='shopping_bag'
                     iconPosition='end'
+                    
+                    
+                    
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                    gradient={true}
+                    
+                    
+                    
+                    // classes:
+                    className='next'
+                    
+                    
+                    
+                    // accessibilities:
+                    enabled={!isBusy}
                 >
                     <Link href='/products'>
                         Continue Shopping
@@ -1050,7 +1112,7 @@ const NavCheckout = () => {
             </>}
         </>
     );
-}
+};
 
 
 
