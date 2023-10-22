@@ -512,7 +512,6 @@ const CheckoutInternal = (): JSX.Element|null => {
         
         isLoadingPage,
         isErrorPage,
-        isReadyPage,
         
         isDesktop,
         
@@ -905,21 +904,33 @@ const ResponsiveDetails = <TElement extends Element = HTMLElement, TExpandedChan
 
 
 
-const ProgressCheckout = () => {
-    // context:
-    const {isDesktop, checkoutProgress} = useCheckoutState();
+const ProgressCheckout = (): JSX.Element|null => {
+    // states:
+    const {
+        // states:
+        checkoutProgress,
+        
+        isDesktop,
+    } = useCheckoutState();
     
     
     
     // jsx:
     return (
-        <List theme={!isDesktop ? 'secondary' : 'primary'} outlined={!isDesktop} listStyle='breadcrumb' orientation='inline' size='sm'>
+        <List
+            // variants:
+            size='sm'
+            theme={!isDesktop ? 'secondary' : 'primary'}
+            outlined={!isDesktop}
+            listStyle='breadcrumb'
+            orientation='inline'
+        >
             <ListItem active={checkoutProgress >= 0}>Information</ListItem>
             <ListItem active={checkoutProgress >= 1}>Shipping</ListItem>
             <ListItem active={checkoutProgress >= 2}>Payment</ListItem>
         </List>
     );
-}
+};
 
 
 
