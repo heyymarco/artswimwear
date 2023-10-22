@@ -491,11 +491,6 @@ const CheckoutInternal = () => {
     
     // states:
     const {
-        // cart data:
-        hasCart,
-        
-        
-        
         // states:
         checkoutStep,
         
@@ -504,6 +499,11 @@ const CheckoutInternal = () => {
         isReadyPage,
         
         isDesktop,
+        
+        
+        
+        // cart data:
+        hasCart,
         
         
         
@@ -517,32 +517,32 @@ const CheckoutInternal = () => {
     
     // dom effects:
     useEffect(() => {
-        const titleElm = document.head.querySelector('title');
-        const metaElm  = document.head.querySelector('meta[name="description"]');
+        const titleElm = document.head.querySelector('title')                    ?? document.head.appendChild(document.createElement('title'));
+        const metaElm  = document.head.querySelector('meta[name="description"]') ?? document.head.appendChild((() => { const meta = document.createElement('meta'); meta.setAttribute('name', 'description'); return meta; })());
         switch(checkoutStep) {
             case 'info'     :
-                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_INFO_TITLE);
-                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_INFO_DESCRIPTION));
+                titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_INFO_TITLE);
+                metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_INFO_DESCRIPTION));
             break;
             
             case 'shipping' :
-                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_SHIPPING_TITLE);
-                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_SHIPPING_DESCRIPTION));
+                titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_SHIPPING_TITLE);
+                metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_SHIPPING_DESCRIPTION));
             break;
             
             case 'payment'  :
-                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAYMENT_TITLE);
-                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAYMENT_DESCRIPTION));
+                titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAYMENT_TITLE);
+                metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAYMENT_DESCRIPTION));
             break;
             
             case 'pending'  :
-                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PENDING_TITLE);
-                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PENDING_DESCRIPTION));
+                titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PENDING_TITLE);
+                metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PENDING_DESCRIPTION));
             break;
             
             case 'paid'     :
-                if (titleElm) titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAID_TITLE);
-                if (metaElm) metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAID_DESCRIPTION));
+                titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAID_TITLE);
+                metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAID_DESCRIPTION));
             break;
         } // switch
     }, [checkoutStep]);
@@ -550,81 +550,104 @@ const CheckoutInternal = () => {
     
     
     // jsx:
-    return (
-        <>
-            {(isLoadingPage || isErrorPage || !hasCart) && <Section className={styles.loading} theme='secondary'>
-                {
-                    !hasCart
-                    ?  <>
-                        <p>
-                            Your shopping cart is empty. Please add one/some products to buy.
-                        </p>
-                        <ButtonIcon icon='image_search' theme='primary' size='lg' gradient={true}>
-                            <Link href='/products'>
-                                See our product gallery
-                            </Link>
-                        </ButtonIcon>
-                    </>
-                    : isLoadingPage
-                    ? <Busy theme='primary' size='lg' />
-                    : <p>Oops, an error occured!</p>
-                }
-            </Section>}
+    if (!hasCart || isLoadingPage || isErrorPage) return (
+        <Section
+            // variants:
+            theme='secondary'
             
-            {isReadyPage && <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
-                <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
-                    <OrderSummary />
-                </Section>
+            
+            
+            // classes:
+            className={styles.loading}
+        >
+            {/* empty cart => no data to show: */}
+            {!hasCart && <>
+                <p>
+                    Your shopping cart is empty. Please add one/some products to buy.
+                </p>
+                <ButtonIcon
+                    // appearances:
+                    icon='image_search'
+                    
+                    
+                    
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                    gradient={true}
+                >
+                    <Link href='/products'>
+                        See our product gallery
+                    </Link>
+                </ButtonIcon>
+            </>}
+            
+            {/* has cart => show loading indicator (if still loading), otherwise show load error status: */}
+            {hasCart && <>
+                {isLoadingPage && <Busy
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                />}
                 
-                <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
-                    <ProgressCheckout />
-                </Section>
+                {isErrorPage && <p>Oops, an error occured!</p>}
+            </>}
+        </Section>
+    );
+    return (
+        <Container className={`${styles.layout} ${checkoutStep}`} theme='secondary'>
+            <Section tag='aside' className={styles.orderSummary} title='Order Summary' theme={!isDesktop ? 'primary' : undefined}>
+                <OrderSummary />
+            </Section>
+            
+            <Section tag='nav' className={styles.progressCheckout} theme={!isDesktop ? 'primary' : undefined} mild={!isDesktop ? false : undefined}>
+                <ProgressCheckout />
+            </Section>
+            
+            <div className={styles.currentStepLayout}>
+                {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
+                    <OrderReview />
+                </Section>}
                 
-                <div className={styles.currentStepLayout}>
-                    {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section tag='aside' className={styles.orderReview}>
-                        <OrderReview />
-                    </Section>}
+                {(checkoutStep === 'info') && <Section elmRef={currentStepSectionRef} className={styles.checkout}>
+                    {/* TODO: activate */}
+                    {/* <Section className={styles.expressCheckout} title='Express Checkout'>
+                    </Section>
                     
-                    {(checkoutStep === 'info') && <Section elmRef={currentStepSectionRef} className={styles.checkout}>
-                        {/* TODO: activate */}
-                        {/* <Section className={styles.expressCheckout} title='Express Checkout'>
-                        </Section>
-                        
-                        <div className={styles.checkoutAlt}>
-                            <hr />
-                            <span>OR</span>
-                            <hr />
-                        </div> */}
-                        
-                        <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
-                            <RegularCheckout />
-                        </Section>
-                    </Section>}
+                    <div className={styles.checkoutAlt}>
+                        <hr />
+                        <span>OR</span>
+                        <hr />
+                    </div> */}
                     
-                    {(checkoutStep === 'shipping') && <Section elmRef={currentStepSectionRef} className={styles.shippingMethod} title='Shipping Method'>
-                        <ShippingMethod />
-                    </Section>}
-                    
-                    {(checkoutStep === 'payment') && <Section elmRef={currentStepSectionRef} className={styles.payment} title='Payment'>
-                        <Payment />
-                    </Section>}
-                    
-                    {(checkoutStep === 'pending') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
-                        <PaymentPending />
-                    </Section>}
-                    
-                    {(checkoutStep === 'paid') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
-                        <Paid />
-                    </Section>}
-                </div>
+                    <Section elmRef={regularCheckoutSectionRef} className={styles.regularCheckout} title='Regular Checkout'>
+                        <RegularCheckout />
+                    </Section>
+                </Section>}
                 
-                <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={navCheckoutSectionElm} />}>
-                    <NavCheckout />
-                </Section>
+                {(checkoutStep === 'shipping') && <Section elmRef={currentStepSectionRef} className={styles.shippingMethod} title='Shipping Method'>
+                    <ShippingMethod />
+                </Section>}
                 
-                <hr className={styles.vertLine} />
-            </Container>}
-        </>
+                {(checkoutStep === 'payment') && <Section elmRef={currentStepSectionRef} className={styles.payment} title='Payment'>
+                    <Payment />
+                </Section>}
+                
+                {(checkoutStep === 'pending') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
+                    <PaymentPending />
+                </Section>}
+                
+                {(checkoutStep === 'paid') && <Section elmRef={currentStepSectionRef} className={styles.paymentFinish} title='Thank You'>
+                    <Paid />
+                </Section>}
+            </div>
+            
+            <Section tag='nav' className={styles.navCheckout} articleComponent={<Article elmRef={navCheckoutSectionElm} />}>
+                <NavCheckout />
+            </Section>
+            
+            <hr className={styles.vertLine} />
+        </Container>
     );
 };
 export {
