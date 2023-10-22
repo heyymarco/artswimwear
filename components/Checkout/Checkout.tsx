@@ -135,6 +135,9 @@ import {
 import {
     RadioDecorator,
 }                           from '@/components/RadioDecorator'
+import {
+    CompoundWithBadge,
+}                           from '@/components/CompoundWithBadge'
 
 // stores:
 import {
@@ -796,47 +799,6 @@ export {
 
 
 
-interface ImageWithStatusProps<TElement extends Element = HTMLElement>
-    extends
-        // bases:
-        ImageProps<TElement>
-{
-    status : string|number
-}
-const ImageWithStatus = <TElement extends Element = HTMLElement>(props: ImageWithStatusProps<TElement>) => {
-    // refs:
-    const [imageRef, setImageRef] = useState<TElement|null>(null);
-    
-    
-    
-    // rest props:
-    const {
-        status,
-    ...restImageProps} = props;
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            <Image<TElement>
-                // other props:
-                {...restImageProps}
-                
-                
-                
-                // refs:
-                elmRef={setImageRef}
-            />
-            <Badge theme='danger' badgeStyle='pill' floatingOn={imageRef} floatingPlacement='right-start' floatingOffset={-20} floatingShift={-3}>
-                {status}x
-            </Badge>
-        </>
-    )
-}
-
-
-
 interface ResponsiveDetailsProps {
     children  : React.ReactNode
 }
@@ -1276,15 +1238,45 @@ const OrderSummary = () => {
                                 theme={!product ? 'danger' : undefined}
                                 mild={!product ? false : undefined}
                             >
-                                <h3 className='title h6'>{product?.name ?? 'PRODUCT WAS REMOVED'}</h3>
-                                <ImageWithStatus
-                                    className='prodImg'
+                                <h3 className='title h6'>{product?.name ?? 'PRODUCT DELETED'}</h3>
+                                
+                                {/* image + quantity */}
+                                <CompoundWithBadge
                                     
-                                    alt={product?.name ?? ''}
-                                    src={resolveMediaUrl(product?.image)}
-                                    sizes='64px'
                                     
-                                    status={item.quantity}
+                                    
+                                    
+                                    // components:
+                                    wrapperComponent={<React.Fragment />}
+                                    badgeComponent={
+                                        <Badge
+                                            // variants:
+                                            theme='danger'
+                                            badgeStyle='pill'
+                                            
+                                            
+                                            
+                                            // floatable:
+                                            floatingPlacement='right-start'
+                                            floatingShift={-3}
+                                            floatingOffset={-20}
+                                        >
+                                            {item.quantity}x
+                                        </Badge>
+                                    }
+                                    elementComponent={
+                                        <Image
+                                            // appearances:
+                                            alt={product?.name ?? ''}
+                                            src={resolveMediaUrl(product?.image)}
+                                            sizes='64px'
+                                            
+                                            
+                                            
+                                            // classes:
+                                            className='prodImg'
+                                        />
+                                    }
                                 />
                                 {(productUnitPrice !== undefined) && <p className='unitPrice'>
                                     @ <span className='currency secondary'>{formatCurrency(productUnitPrice)}</span>
