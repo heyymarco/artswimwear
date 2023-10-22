@@ -1364,7 +1364,7 @@ const RegularCheckout = (): JSX.Element|null => {
 
 
 
-const OrderSummary = () => {
+const OrderSummary = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
@@ -1385,11 +1385,9 @@ const OrderSummary = () => {
         
         
         // relation data:
-        priceList,
         productList,
     } = useCheckoutState();
-    
-    const hasSelectedShipping   = !!shippingProvider;
+    const hasSelectedShipping = !!shippingProvider;
     
     
     
@@ -1411,24 +1409,53 @@ const OrderSummary = () => {
                 // accessibilities:
                 title='Order List'
             >
-                <List className='orderList' listStyle='flat'>
-                    {cartItems.map((item) => {
-                        const productUnitPrice = priceList?.entities?.[item.productId]?.price;
+                <List
+                    // variants:
+                    listStyle='flat'
+                    
+                    
+                    
+                    // classes:
+                    className='orderList'
+                >
+                    {cartItems.map((item, itemIndex) => {
+                        // fn props:
                         const product          = productList?.entities?.[item.productId];
+                        const productUnitPrice = product?.price;
+                        
+                        
+                        
+                        // jsx:
                         return (
-                            <ListItem key={item.productId} className={styles.productPreview}
-                                enabled={!!product}
+                            <ListItem
+                                // identifiers:
+                                key={item.productId || itemIndex}
+                                
+                                
+                                
+                                // variants:
                                 theme={!product ? 'danger' : undefined}
                                 mild={!product ? false : undefined}
+                                
+                                
+                                
+                                // classes:
+                                className={styles.productPreview}
+                                
+                                
+                                
+                                // accessibilities:
+                                enabled={!!product}
                             >
-                                <h3 className='title h6'>{product?.name ?? 'PRODUCT DELETED'}</h3>
+                                <h3
+                                    // classes:
+                                    className='title h6'
+                                >
+                                    {product?.name ?? 'PRODUCT DELETED'}
+                                </h3>
                                 
                                 {/* image + quantity */}
                                 <CompoundWithBadge
-                                    
-                                    
-                                    
-                                    
                                     // components:
                                     wrapperComponent={<React.Fragment />}
                                     badgeComponent={
@@ -1461,30 +1488,41 @@ const OrderSummary = () => {
                                         />
                                     }
                                 />
+                                
                                 {(productUnitPrice !== undefined) && <p className='unitPrice'>
-                                    @ <span className='currency secondary'>{formatCurrency(productUnitPrice)}</span>
+                                    @ <span className='currency secondary'>
+                                        {formatCurrency(productUnitPrice)}
+                                    </span>
                                 </p>}
+                                
                                 <p className='subPrice currencyBlock'>
-                                    {!product && <>This product was removed before you purcase it</>}
-                                    <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span>
+                                    {!product && <>This product was deleted</>}
+                                    <span className='currency'>
+                                        {formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}
+                                    </span>
                                 </p>
                             </ListItem>
-                        )
+                        );
                     })}
                 </List>
             </ResponsiveDetails>
+            
             <hr />
+            
             <p className='currencyBlock'>
                 Subtotal products: <span className='currency'>
                     {formatCurrency(totalProductPrice)}
                 </span>
             </p>
+            
             <p className='currencyBlock'>
                 Shipping: <span className='currency'>
                     {!!hasSelectedShipping ? formatCurrency(totalShippingCost) : 'calculated at next step'}
                 </span>
             </p>
+            
             <hr />
+            
             <p className='currencyBlock totalCost'>
                 Total: <span className='currency'>
                     {!!hasSelectedShipping ? formatCurrency(totalProductPrice + (totalShippingCost ?? 0)) : 'calculated at next step'}
@@ -1492,7 +1530,7 @@ const OrderSummary = () => {
             </p>
         </>
     );
-}
+};
 const OrderReview = () => {
     // states:
     const {
