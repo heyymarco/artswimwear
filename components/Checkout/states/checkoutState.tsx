@@ -131,7 +131,6 @@ import {
     
     // hooks:
     useGetProductList,
-    useGetPriceList,
     useGetCountryList,
     useGetMatchingShippingList,
     useGeneratePaymentToken,
@@ -296,7 +295,6 @@ export interface CheckoutState {
     
     
     // relation data:
-    priceList                         : EntityState<PricePreview>     | undefined
     productList                       : EntityState<ProductPreview>   | undefined
     countryList                       : EntityState<CountryPreview>   | undefined
     shippingList                      : EntityState<MatchingShipping> | undefined
@@ -454,7 +452,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // relation data:
-    priceList                         : undefined,
     productList                       : undefined,
     countryList                       : undefined,
     shippingList                      : undefined,
@@ -594,10 +591,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const                        {data: priceList      , isLoading: isLoading1, isError: isError1}  = useGetPriceList();
-    const                        {data: productList    , isLoading: isLoading2, isError: isError2}  = useGetProductList();
-    const                        {data: countryList    , isLoading: isLoading3, isError: isError3}  = useGetCountryList();
-    const [generatePaymentToken, {data: newPaymentToken, isLoading: isLoading5, isError: isError5}] = useGeneratePaymentToken();
+    const                        {data: productList    , isLoading: isLoadingProduct, isError: isErrorProduct}  = useGetProductList();
+    const                        {data: countryList    , isLoading: isLoadingCountry, isError: isErrorCountry}  = useGetCountryList();
+    const [generatePaymentToken, {data: newPaymentToken, isLoading: isLoadingToken  , isError: isErrorToken  }] = useGeneratePaymentToken();
     
     const [getShippingByAddress, {data: shippingList   , isUninitialized: isUninitShipping, isError: isErrorShipping, isSuccess: isSuccessShipping}]  = useGetMatchingShippingList();
     
@@ -605,9 +601,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isUninitShipping  && !isPerformedRecoverShippingList.current;
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isErrorShipping || isSuccessShipping) && !shippingList?.entities?.[shippingProvider ?? ''];
     
-    const isLoadingPage                  = isLoading1 || isLoading2 || isLoading3 ||  !paymentToken || isNeedsRecoverShippingList;
-    const isErrorPage                    = !isLoadingPage && (isError1   || isError2   || isError3   || (!paymentToken && isError5));
-    const isReadyPage                    = !isLoadingPage && (hasCart && !!priceList && !!productList && !!countryList && !!paymentToken);
+    const isLoadingPage                  =                    isLoadingProduct || isLoadingCountry ||  !paymentToken || isNeedsRecoverShippingList;
+    const isErrorPage                    = !isLoadingPage && (isErrorProduct   || isErrorCountry   || (!paymentToken && isErrorToken));
+    const isReadyPage                    = !isLoadingPage && (hasCart && !!productList && !!countryList && !!paymentToken);
     
     
     
@@ -616,27 +612,26 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         let totalProductWeight : number|null = null;
         let totalProductPrice  : number      = 0;
         for (const {productId, quantity} of cartItems) {
-            const pricePreview = priceList?.entities?.[productId];
-            if (!pricePreview) continue;
+            const product = productList?.entities?.[productId];
+            if (!product) continue;
+            const {price, shippingWeight} = product;
             
             
             
-            const productUnitWeight = pricePreview.shippingWeight;
-            if (productUnitWeight !== null) { // not a physical product => ignore
+            if (shippingWeight !== null) { // not a physical product => ignore
                 if (totalProductWeight === null) totalProductWeight = 0; // has a/some physical products => reset the counter from zero if null
-                totalProductWeight += (productUnitWeight * quantity);
+                totalProductWeight += (shippingWeight * quantity);
             } // if
             
             
             
-            const productUnitPrice = pricePreview.price;
-            totalProductPrice += (productUnitPrice * quantity);
+            totalProductPrice += (price * quantity);
         } // for
         return {
             totalProductWeight,
             totalProductPrice,
         };
-    }, [cartItems, priceList]);
+    }, [cartItems, productList]);
     
     const totalShippingCost = useMemo<number|null>(() => {
         // conditions:
@@ -765,7 +760,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isPaymentTokenInitialized = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
-        if (isLoading5) return;
+        if (isLoadingToken) return;
         
         
         
@@ -778,7 +773,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             console.log('initial: generate a new token');
             generatePaymentToken();
         }
-        else if (isError5) {
+        else if (isErrorToken) {
             // retry to generate a new token:
             console.log('schedule retry : generate a new token');
             cancelRefresh = setTimeout(() => {
@@ -806,7 +801,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return () => {
             if (cancelRefresh) clearTimeout(cancelRefresh);
         };
-    }, [newPaymentToken, isLoading5, isError5]);
+    }, [newPaymentToken, isLoadingToken, isErrorToken]);
     
     
     
@@ -1232,7 +1227,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // relation data:
-        priceList,
         productList,
         countryList,
         shippingList,
@@ -1392,7 +1386,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // relation data:
-        priceList,
         productList,
         countryList,
         shippingList,
