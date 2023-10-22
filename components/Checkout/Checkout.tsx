@@ -1116,7 +1116,7 @@ const NavCheckout = (): JSX.Element|null => {
 
 
 
-const RegularCheckout = () => {
+const RegularCheckout = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
@@ -1183,9 +1183,21 @@ const RegularCheckout = () => {
     
     
     
+    // jsx:
     return (
-        <ValidationProvider enableValidation={shippingValidation}>
-            <Section className='contact' title='Contact Information'>
+        <ValidationProvider
+            // validations:
+            enableValidation={shippingValidation}
+        >
+            <Section
+                // classes:
+                className='contact'
+                
+                
+                
+                // accessibilities:
+                title='Contact Information'
+            >
                 <InputWithLabel
                     // appearances:
                     icon='chat'
@@ -1297,10 +1309,20 @@ const RegularCheckout = () => {
                     Email me with news and offers
                 </Check>
             </Section>
-            <Section className={styles.address} title='Shipping Address'>
+            
+            <Section
+                // classes:
+                className={styles.address}
+                
+                
+                
+                // accessibilities:
+                title='Shipping Address'
+            >
                 <AddressFields
                     // refs:
                     addressRef        = {shippingAddressInputRef}
+                    
                     
                     
                     // types:
@@ -1323,7 +1345,7 @@ const RegularCheckout = () => {
                     
                     
                     
-                    // events:
+                    // handlers:
                     onFirstNameChange = {shippingFirstNameHandlers.onChange}
                     onLastNameChange  = {shippingLastNameHandlers.onChange }
                     
@@ -1338,7 +1360,7 @@ const RegularCheckout = () => {
             </Section>
         </ValidationProvider>
     );
-}
+};
 
 
 
@@ -1906,7 +1928,7 @@ const Payment = () => {
                                     
                                     
                                     
-                                    // events:
+                                    // handlers:
                                     onFirstNameChange = {billingFirstNameHandlers.onChange}
                                     onLastNameChange  = {billingLastNameHandlers.onChange }
                                     
