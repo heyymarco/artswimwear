@@ -151,6 +151,9 @@ import {
 import {
     CompoundWithBadge,
 }                           from '@/components/CompoundWithBadge'
+import {
+    EditButton,
+}                           from '@/components/EditButton'
 
 // stores:
 import {
@@ -1531,11 +1534,12 @@ const OrderSummary = (): JSX.Element|null => {
         </>
     );
 };
-const OrderReview = () => {
+const OrderReview = (): JSX.Element|null => {
     // states:
     const {
         // states:
         checkoutStep,
+        
         isBusy,
         
         
@@ -1547,43 +1551,55 @@ const OrderReview = () => {
     
     
     
+    // handlers:
+    const handleGotoContactInfo      = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
+        gotoStepInformation(/* focusTo: */'contactInfo');
+    });
+    const handleGotoShippingAddress  = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
+        gotoStepInformation(/* focusTo: */'shippingAddress');
+    });
+    const handleGotoShippingProvider = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
+        gotoStepShipping();
+    });
+    
+    
+    
     // jsx:
     return (
-        <AccessibilityProvider enabled={!isBusy}>
+        <AccessibilityProvider
+            // accessibilities:
+            enabled={!isBusy}
+        >
             <table>
                 <tbody>
                     <tr>
                         <th>Contact</th>
                         <td><CustomerContactReview /></td>
                         <td>
-                            <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                gotoStepInformation(/* focusTo: */'contactInfo');
-                            }}>Change</ButtonIcon>
+                            <EditButton onClick={handleGotoContactInfo} />
                         </td>
                     </tr>
+                    
                     <tr>
                         <th>Ship To</th>
                         <td><ShippingAddressReview /></td>
                         <td>
-                            <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                gotoStepInformation(/* focusTo: */'shippingAddress');
-                            }}>Change</ButtonIcon>
+                            <EditButton onClick={handleGotoShippingAddress} />
                         </td>
                     </tr>
+                    
                     {(checkoutStep !== 'shipping') && <tr>
                         <th>Method</th>
                         <td><ShippingMethodReview /></td>
                         <td>
-                            <ButtonIcon icon='edit' theme='primary' size='sm' buttonStyle='link' onClick={() => {
-                                gotoStepShipping();
-                            }}>Change</ButtonIcon>
+                            <EditButton onClick={handleGotoShippingProvider} />
                         </td>
                     </tr>}
                 </tbody>
             </table>
         </AccessibilityProvider>
     );
-}
+};
 const OrderReviewCompleted = () => {
     // states:
     const {

@@ -38,11 +38,6 @@ const EditButton = (props: EditButtonProps) => {
             
             // classes:
             className={props.className ?? 'edit'}
-            
-            
-            
-            // accessibilities:
-            title={props.title ?? 'edit'}
         >
             {props.children ?? 'Edit'}
         </ButtonIcon>
