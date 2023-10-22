@@ -1,1 +1,2 @@
 [high prior] auto convert currentCurrency to USD if the currentCurrency is not supported by PayPal
+[high prior] remove priceList and API because the price is already in ProductDetail
