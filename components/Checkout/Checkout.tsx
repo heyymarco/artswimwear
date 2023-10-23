@@ -2042,8 +2042,12 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                         
                         
                         
-                        // states:
+                        // accessibilities:
                         enabled={!isBusy}
+                        
+                        
+                        
+                        // states:
                         expandedListIndex={billingAsShipping ? 0 : 1}
                         
                         
@@ -2228,8 +2232,12 @@ const EditPaymentMethod = (): JSX.Element|null => {
                 
                 
                 
-                // states:
+                // accessibilities:
                 enabled={!isBusy}
+                
+                
+                
+                // states:
                 expandedListIndex={
                     Math.max(0, paymentMethodList.findIndex((option) => (option === paymentMethod)))
                 }
@@ -2713,12 +2721,13 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 />
                 
                 {((paymentMethod ?? 'card') === 'card') && <PortalToNavCheckoutSection>
-                    <CardPaymentButton />
+                    <ButtonPaymentCard />
                 </PortalToNavCheckoutSection>}
             </ValidationProvider>
         </PayPalHostedFieldsProvider>
     );
 };
+
 const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     // states:
     const checkoutState = useCheckoutState();
@@ -2831,12 +2840,13 @@ const ViewPaymentMethodManual = (): JSX.Element|null => {
             </p>
             
             {(paymentMethod === 'manual') && <PortalToNavCheckoutSection>
-                <ManualPaymentButton />
+                <ButtonPaymentManual />
             </PortalToNavCheckoutSection>}
         </>
     );
 };
-const CardPaymentButton = () => {
+
+const ButtonPaymentCard = (): JSX.Element|null => {
     // states:
     const {
         // states:
@@ -2895,15 +2905,15 @@ const CardPaymentButton = () => {
     
     // handlers:
     const hostedFields = usePayPalHostedFields();
-    const handlePayButtonClicked = useEvent(async () => {
-        if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before using it
+    const handlePayButtonClick = useEvent(() => {
+        if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before invoke it
         const submitCardData = hostedFields.cardFields?.submit;
         doTransaction(async () => {
             try {
                 // submit card data to PayPal_API to get authentication:
                 const paypalAuthentication = await submitCardData({
                     // trigger 3D Secure authentication:
-                    contingencies: ['SCA_WHEN_REQUIRED'],
+                    contingencies  : ['SCA_WHEN_REQUIRED'],
                     
                     cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
                     billingAddress : {
@@ -2947,12 +2957,37 @@ const CardPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon className='next payNow' enabled={!isBusy} icon={!isBusy ? 'monetization_on' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handlePayButtonClicked}>
+        <ButtonIcon
+            // appearances:
+            icon={!isBusy ? 'monetization_on' : 'busy'}
+            
+            
+            
+            // variants:
+            size='lg'
+            theme='primary'
+            gradient={true}
+            
+            
+            
+            // classes:
+            className='next payNow'
+            
+            
+            
+            // accessibilities:
+            enabled={!isBusy}
+            
+            
+            
+            // handlers:
+            onClick={handlePayButtonClick}
+        >
             Pay Now
         </ButtonIcon>
     );
-}
-const ManualPaymentButton = () => {
+};
+const ButtonPaymentManual = (): JSX.Element|null => {
     // states:
     const {
         // states:
@@ -2976,7 +3011,7 @@ const ManualPaymentButton = () => {
     
     
     // handlers:
-    const handleFinishOrderButtonClicked = useEvent(async () => {
+    const handleFinishOrderButtonClick = useEvent(() => {
         doTransaction(async () => {
             try {
                 // createOrder:
@@ -2997,11 +3032,37 @@ const ManualPaymentButton = () => {
     
     // jsx:
     return (
-        <ButtonIcon className='next finishOrder' enabled={!isBusy} icon={!isBusy ? 'done' : 'busy'} theme='primary' size='lg' gradient={true} onClick={handleFinishOrderButtonClicked}>
+        <ButtonIcon
+            // appearances:
+            icon={!isBusy ? 'done' : 'busy'}
+            
+            
+            
+            // variants:
+            size='lg'
+            theme='primary'
+            gradient={true}
+            
+            
+            
+            // classes:
+            className='next finishOrder'
+            
+            
+            
+            // accessibilities:
+            enabled={!isBusy}
+            
+            
+            
+            // handlers:
+            onClick={handleFinishOrderButtonClick}
+        >
             Finish Order
         </ButtonIcon>
     );
-}
+};
+
 interface PortalToNavCheckoutSectionProps {
     children : React.ReactNode
 }
