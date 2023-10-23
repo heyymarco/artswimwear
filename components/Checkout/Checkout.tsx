@@ -134,6 +134,9 @@ import {
     EditRegularCheckout,
 }                           from './components/checkouts/EditRegularCheckout'
 import {
+    ViewShippingAddress,
+}                           from './components/informations/ViewShippingAddress'
+import {
     ViewShippingMethod,
 }                           from './components/informations/ViewShippingMethod'
 import {
@@ -672,31 +675,6 @@ const ViewCustomerContact = (): JSX.Element|null => {
     return (
         <>
             <span className={styles.data}>{customerEmail}</span> (<span className={styles.data}>{customerNickName}</span>)
-        </>
-    );
-};
-const ViewShippingAddress = (): JSX.Element|null => {
-    // states:
-    const {
-        // shipping data:
-        shippingAddress,
-        shippingCity,
-        shippingZone,
-        shippingZip,
-        shippingCountry,
-        
-        
-        
-        // relation data:
-        countryList,
-    } = useCheckoutState();
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
         </>
     );
 };
