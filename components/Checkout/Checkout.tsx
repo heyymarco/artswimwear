@@ -228,9 +228,9 @@ import {
 
 
 const useCheckoutStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */'./CheckoutStyles')
+    () => import(/* webpackPrefetch: true */'./styles/styles')
 , { id: 'gdfyt2agd1' });
-import './CheckoutStyles';
+import './styles/styles';
 
 
 
