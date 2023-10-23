@@ -2303,7 +2303,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         />
                     }
                 >
-                    <PaymentMethodPaypal />
+                    <ViewPaymentMethodPaypal />
                 </AccordionItem>
                 
                 <AccordionItem
@@ -2719,7 +2719,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
         </PayPalHostedFieldsProvider>
     );
 };
-const PaymentMethodPaypal = () => {
+const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     // states:
     const checkoutState = useCheckoutState();
     const {
@@ -2751,11 +2751,10 @@ const PaymentMethodPaypal = () => {
         });
     });
     const handleShippingChange = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
-        console.log('data', data);
         // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
         const shipping_address = data.shipping_address;
         if (shipping_address) {
-            const shippingFieldMap = new Map([
+            const shippingFieldMap = new Map<string, keyof typeof checkoutState | undefined>([
                 ['address_line_1', 'shippingAddress'],
                 ['address_line_2', undefined        ],
                 ['city'          , 'shippingCity'   ],
@@ -2765,19 +2764,31 @@ const PaymentMethodPaypal = () => {
                 ['postal_code'   , 'shippingZip'    ],
                 ['country_code'  , 'shippingCountry'],
             ]);
+            
+            
+            
             for (const [shippingField, shippingValue] of Object.entries(shipping_address)) {
                 if (shippingField === undefined) continue;
+                
+                
+                
                 const mappedShippingField = shippingFieldMap.get(shippingField);
                 if (mappedShippingField === undefined) {
-                    console.log('unknown shipping field: ', shippingField);
+                    // console.log('unknown shipping field: ', shippingField);
                     return actions.reject();
                 } // if
-                const originShippingValue = checkoutState[mappedShippingField as keyof typeof checkoutState];
+                
+                
+                
+                const originShippingValue = checkoutState[mappedShippingField];
                 if (originShippingValue !== shippingValue) {
-                    console.log(`DIFF: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
+                    // console.log(`DIFF: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
                     return actions.reject();
                 } // if
             } // for
+            
+            
+            
             return actions.resolve();
         } // if
     });
@@ -2790,14 +2801,16 @@ const PaymentMethodPaypal = () => {
             <p>
                 Click the PayPal button below. You will be redirected to the PayPal website to complete the payment.
             </p>
+            
             <PayPalButtons
+                // handlers:
                 createOrder={doPlaceOrder}
                 onApprove={handleFundApproved}
                 onShippingChange={handleShippingChange}
             />
         </>
     );
-}
+};
 const PaymentMethodManual = () => {
     // states:
     const {
@@ -2917,7 +2930,6 @@ const CardPaymentButton = () => {
                         orderId: "1N785713SG267310M"
                     }
                 */
-                console.log('paypalAuthentication: ', paypalAuthentication);
                 
                 
                 
