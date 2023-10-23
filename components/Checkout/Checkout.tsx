@@ -108,9 +108,6 @@ import {
     Section,
 }                           from '@heymarco/section'
 import {
-    Image,
-}                           from '@heymarco/image'
-import {
     AddressFields,
 }                           from '@heymarco/address-fields'
 
@@ -139,6 +136,9 @@ import {
 import {
     ViewBillingAddress,
 }                           from './components/informations/ViewBillingAddress'
+import {
+    ViewPaymentMethod,
+}                           from './components/informations/ViewPaymentMethod'
 
 // stores:
 import type {
@@ -716,51 +716,6 @@ const ViewShippingMethod = (): JSX.Element|null => {
     return (
         <>
             {`${selectedShipping?.name}${!selectedShipping?.estimate ? '' : ` - ${selectedShipping?.estimate}`}`}
-        </>
-    );
-};
-const ViewPaymentMethod = (): JSX.Element|null => {
-    // context:
-    // TODO: replace payment api with finish checkout state
-    const {makePaymentApi} = useCheckoutState();
-    
-    
-    
-    // apis:
-    const [, {data: payment}] = makePaymentApi;
-    const paymentMethod = payment?.paymentMethod;
-    const type          = paymentMethod?.type;
-    const brand         = paymentMethod?.brand || undefined;
-    const identifier    = paymentMethod?.identifier;
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            {
-                !!brand
-                ? <Image
-                    // appearances:
-                    alt={brand}
-                    src={`/brands/${brand}.svg`}
-                    width={42}
-                    height={26}
-                    
-                    
-                    
-                    // classes:
-                    className='paymentProvider'
-                />
-                : (type?.toUpperCase() ?? type)
-            }
-            
-            {!!identifier && <span
-                // classes:
-                className='paymentIdentifier'
-            >
-                ({identifier})
-            </span>}
         </>
     );
 };
