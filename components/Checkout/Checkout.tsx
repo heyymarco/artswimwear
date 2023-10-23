@@ -1658,6 +1658,11 @@ const ViewCustomer = (): JSX.Element|null => {
     );
 };
 const ViewCustomerContact = (): JSX.Element|null => {
+    // styles:
+    const styles = useCheckoutStyleSheet();
+    
+    
+    
     // states:
     const {
         // customer data:
@@ -1670,7 +1675,7 @@ const ViewCustomerContact = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            {customerEmail} ({customerNickName})
+            <span className={styles.data}>{customerEmail}</span> (<span className={styles.data}>{customerNickName}</span>)
         </>
     );
 };
@@ -3138,7 +3143,7 @@ const ViewOrderFinishedPending = (): JSX.Element|null => {
                         You&apos;ll receive a confirmation email with your order number shortly.
                     </p>
                     <p>
-                        Please <strong>follow the payment instructions</strong> sent to your email: <strong style={{wordBreak: 'break-all'}}>{customerEmail}</strong>.
+                        Please <strong>follow the payment instructions</strong> sent to your email: <strong className={styles.data}>{customerEmail}</strong>.
                     </p>
                 </Alert>
             </Section>
@@ -3193,7 +3198,7 @@ const ViewOrderFinishedPaid = (): JSX.Element|null => {
                         Your order has been confirmed and we have received your payment.
                     </p>
                     <p>
-                        You&apos;ll receive a confirmation email with your order number shortly to: <strong style={{wordBreak: 'break-all'}}>{customerEmail}</strong>.
+                        You&apos;ll receive a confirmation email with your order number shortly to: <strong className={styles.data}>{customerEmail}</strong>.
                     </p>
                 </Alert>
             </Section>

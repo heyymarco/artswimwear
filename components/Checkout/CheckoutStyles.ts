@@ -632,5 +632,9 @@ export default () => {
                 display: 'none',
             }),
         }),
+        scope('data', {
+            whiteSpace : 'nowrap',
+            wordBreak  : 'break-all',
+        }),
     ];
 };
