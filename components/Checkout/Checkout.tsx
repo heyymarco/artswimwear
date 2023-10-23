@@ -22,12 +22,6 @@ import {
     useDispatch,
 }                           from 'react-redux'
 
-// cssfn:
-import {
-    // style sheets:
-    dynamicStyleSheets,
-}                           from '@cssfn/cssfn-react'           // writes css in react hook
-
 // reusable-ui core:
 import {
     // a color management system:
@@ -200,6 +194,9 @@ import {
 
 // internals:
 import {
+    useCheckoutStyleSheet,
+}                           from './styles/loader'
+import {
     CheckoutStateProvider,
     useCheckoutState,
 }                           from './states/checkoutState'
@@ -224,13 +221,6 @@ import {
     PAGE_CHECKOUT_STEP_PAID_TITLE,
     PAGE_CHECKOUT_STEP_PAID_DESCRIPTION,
 }                           from '@/website.config'
-
-
-
-const useCheckoutStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */'./styles/styles')
-, { id: 'gdfyt2agd1' });
-import './styles/styles';
 
 
 
