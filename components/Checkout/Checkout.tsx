@@ -129,7 +129,6 @@ import {
     Section,
 }                           from '@heymarco/section'
 import {
-    ImageProps,
     Image,
 }                           from '@heymarco/image'
 import {
@@ -149,6 +148,9 @@ import {
 import {
     EditButton,
 }                           from '@/components/EditButton'
+import {
+    ProgressCheckout,
+}                           from './components/ProgressCheckout'
 
 // stores:
 import {
@@ -546,33 +548,6 @@ export {
 
 
 // navigations:
-const ProgressCheckout = (): JSX.Element|null => {
-    // states:
-    const {
-        // states:
-        checkoutProgress,
-        
-        isDesktop,
-    } = useCheckoutState();
-    
-    
-    
-    // jsx:
-    return (
-        <List
-            // variants:
-            size='sm'
-            theme={!isDesktop ? 'secondary' : 'primary'}
-            outlined={!isDesktop}
-            listStyle='breadcrumb'
-            orientation='inline'
-        >
-            <ListItem active={checkoutProgress >= 0}>Information</ListItem>
-            <ListItem active={checkoutProgress >= 1}>Shipping</ListItem>
-            <ListItem active={checkoutProgress >= 2}>Payment</ListItem>
-        </List>
-    );
-};
 const NavCheckout = (): JSX.Element|null => {
     // states:
     const {
