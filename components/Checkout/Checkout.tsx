@@ -2272,7 +2272,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         />
                     }
                 >
-                    <PaymentMethodCard />
+                    <EditPaymentMethodCard />
                 </AccordionItem>
                 
                 <AccordionItem
@@ -2340,7 +2340,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
         </PayPalScriptProvider>
     );
 };
-const PaymentMethodCard = () => {
+const EditPaymentMethodCard = (): JSX.Element|null => {
     // states:
     const {
         // payment data:
@@ -2370,8 +2370,19 @@ const PaymentMethodCard = () => {
     
     // jsx:
     return (
-        <PayPalHostedFieldsProvider styles={hostedFieldsStyle} createOrder={doPlaceOrder}>
-            <ValidationProvider enableValidation={paymentValidation}>
+        <PayPalHostedFieldsProvider
+            // styles:
+            styles={hostedFieldsStyle}
+            
+            
+            
+            // handlers:
+            createOrder={doPlaceOrder}
+        >
+            <ValidationProvider
+                // validations:
+                enableValidation={paymentValidation}
+            >
                 <InputWithLabel
                     // appearances:
                     icon='credit_card'
@@ -2410,9 +2421,40 @@ const PaymentMethodCard = () => {
                     
                     // children:
                     childrenAfter={
-                        <Label theme='success' mild={true} className='solid' elmRef={safeSignRef}>
-                            <Icon icon='lock' />
-                            <Tooltip className='tooltip' theme='warning' floatingOn={safeSignRef}>
+                        <Label
+                            // refs:
+                            elmRef={safeSignRef}
+                            
+                            
+                            
+                            // variants:
+                            theme='success'
+                            mild={true}
+                            
+                            
+                            
+                            // classes:
+                            className='solid'
+                        >
+                            <Icon
+                                // appearances:
+                                icon='lock'
+                            />
+                            
+                            <Tooltip
+                                // variants:
+                                theme='warning'
+                                
+                                
+                                
+                                // classes:
+                                className='tooltip'
+                                
+                                
+                                
+                                // floatable:
+                                floatingOn={safeSignRef}
+                            >
                                 <p>
                                     All transactions are secure and encrypted.
                                 </p>
@@ -2427,6 +2469,7 @@ const PaymentMethodCard = () => {
                         </Label>
                     }
                 />
+                
                 <InputWithLabel
                     // appearances:
                     icon='person'
@@ -2440,16 +2483,66 @@ const PaymentMethodCard = () => {
                     
                     // components:
                     inputComponent={
-                        <TextInput placeholder='Cardholder Name' inputMode='text' required autoComplete='cc-name' autoCapitalize='words' elmRef={cardholderInputRef} />
+                        <TextInput
+                            // refs:
+                            elmRef={cardholderInputRef}
+                            
+                            
+                            
+                            // accessibilities:
+                            placeholder='Cardholder Name'
+                            
+                            
+                            
+                            // validations:
+                            required={true}
+                            
+                            
+                            
+                            // formats:
+                            inputMode='text'
+                            autoComplete='cc-name'
+                            autoCapitalize='words'
+                        />
                     }
                     
                     
                     
                     // children:
                     childrenAfter={
-                        <Label theme='success' mild={true} className='solid' elmRef={nameSignRef}>
-                            <Icon icon='help' />
-                            <Tooltip className='tooltip' theme='warning' floatingOn={nameSignRef}>
+                        <Label
+                            // refs:
+                            elmRef={nameSignRef}
+                            
+                            
+                            
+                            // variants:
+                            theme='success'
+                            mild={true}
+                            
+                            
+                            
+                            // classes:
+                            className='solid'
+                        >
+                            <Icon
+                                // appearances:
+                                icon='help'
+                            />
+                            <Tooltip
+                                // variants:
+                                theme='warning'
+                                
+                                
+                                
+                                // classes:
+                                className='tooltip'
+                                
+                                
+                                
+                                // floatable:
+                                floatingOn={nameSignRef}
+                            >
                                 <p>
                                     The owner name as printed on front card.
                                 </p>
@@ -2457,6 +2550,7 @@ const PaymentMethodCard = () => {
                         </Label>
                     }
                 />
+                
                 <InputWithLabel
                     // appearances:
                     icon='date_range'
@@ -2495,9 +2589,39 @@ const PaymentMethodCard = () => {
                     
                     // children:
                     childrenAfter={
-                        <Label theme='success' mild={true} className='solid' elmRef={dateSignRef}>
-                            <Icon icon='help' />
-                            <Tooltip className='tooltip' theme='warning' floatingOn={dateSignRef}>
+                        <Label
+                            // refs:
+                            elmRef={dateSignRef}
+                            
+                            
+                            
+                            // variants:
+                            theme='success'
+                            mild={true}
+                            
+                            
+                            
+                            // classes:
+                            className='solid'
+                        >
+                            <Icon
+                                // appearances:
+                                icon='help'
+                            />
+                            <Tooltip
+                                // variants:
+                                theme='warning'
+                                
+                                
+                                
+                                // classes:
+                                className='tooltip'
+                                
+                                
+                                
+                                // floatable:
+                                floatingOn={dateSignRef}
+                            >
                                 <p>
                                     The expiration date as printed on front card.
                                 </p>
@@ -2505,6 +2629,7 @@ const PaymentMethodCard = () => {
                         </Label>
                     }
                 />
+                
                 <InputWithLabel
                     // appearances:
                     icon='fiber_pin'
@@ -2543,9 +2668,39 @@ const PaymentMethodCard = () => {
                     
                     // children:
                     childrenAfter={
-                        <Label theme='success' mild={true} className='solid' elmRef={cscSignRef}>
-                            <Icon icon='help' />
-                            <Tooltip className='tooltip' theme='warning' floatingOn={cscSignRef}>
+                        <Label
+                            // refs:
+                            elmRef={cscSignRef}
+                            
+                            
+                            
+                            // variants:
+                            theme='success'
+                            mild={true}
+                            
+                            
+                            
+                            // classes:
+                            className='solid'
+                        >
+                            <Icon
+                                // appearances:
+                                icon='help'
+                            />
+                            <Tooltip
+                                // variants:
+                                theme='warning'
+                                
+                                
+                                
+                                // classes:
+                                className='tooltip'
+                                
+                                
+                                
+                                // floatable:
+                                floatingOn={cscSignRef}
+                            >
                                 <p>
                                     3-digit security code usually found on the back of your card.
                                 </p>
@@ -2556,13 +2711,14 @@ const PaymentMethodCard = () => {
                         </Label>
                     }
                 />
+                
                 {((paymentMethod ?? 'card') === 'card') && <PortalToNavCheckoutSection>
                     <CardPaymentButton />
                 </PortalToNavCheckoutSection>}
             </ValidationProvider>
         </PayPalHostedFieldsProvider>
     );
-}
+};
 const PaymentMethodPaypal = () => {
     // states:
     const checkoutState = useCheckoutState();
