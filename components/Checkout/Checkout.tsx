@@ -136,6 +136,9 @@ import {
 import {
     EditRegularCheckout,
 }                           from './components/checkouts/EditRegularCheckout'
+import {
+    ViewBillingAddress,
+}                           from './components/informations/ViewBillingAddress'
 
 // stores:
 import type {
@@ -758,48 +761,6 @@ const ViewPaymentMethod = (): JSX.Element|null => {
             >
                 ({identifier})
             </span>}
-        </>
-    );
-};
-const ViewBillingAddress = (): JSX.Element|null => {
-    // states:
-    const {
-        // shipping data:
-        shippingAddress,
-        shippingCity,
-        shippingZone,
-        shippingZip,
-        shippingCountry,
-        
-        
-        
-        // billing data:
-        billingAsShipping,
-        
-        billingAddress,
-        billingCity,
-        billingZone,
-        billingZip,
-        billingCountry,
-        
-        
-        
-        // relation data:
-        countryList,
-    } = useCheckoutState();
-    
-    const finalBillingAddress    = billingAsShipping ? shippingAddress : billingAddress;
-    const finalBillingCity       = billingAsShipping ? shippingCity    : billingCity;
-    const finalBillingZone       = billingAsShipping ? shippingZone    : billingZone;
-    const finalBillingZip        = billingAsShipping ? shippingZip     : billingZip;
-    const finalBillingCountry    = billingAsShipping ? shippingCountry : billingCountry;
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            {`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}
         </>
     );
 };
