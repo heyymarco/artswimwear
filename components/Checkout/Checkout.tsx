@@ -817,99 +817,7 @@ export {
 
 
 
-interface ResponsiveDetailsProps<TElement extends Element = HTMLElement, TExpandedChangeEvent extends ExpandedChangeEvent = ExpandedChangeEvent>
-    extends
-        // bases:
-        DetailsProps<TElement, TExpandedChangeEvent>
-{
-    // accessibilities:
-    title ?: React.ReactNode
-}
-const ResponsiveDetails = <TElement extends Element = HTMLElement, TExpandedChangeEvent extends ExpandedChangeEvent = ExpandedChangeEvent>(props: ResponsiveDetailsProps<TElement, TExpandedChangeEvent>): JSX.Element|null => {
-    // rest props:
-    const {
-        // accessibilities:
-        title,
-        
-        
-        
-        // states:
-        defaultExpanded = false,
-        
-        
-        
-        // children:
-        children,
-    ...restDetailsProps} = props;
-    
-    
-    
-    // states:
-    const {
-        // states:
-        isDesktop,
-    } = useCheckoutState();
-    
-    const [showDetails, setShowDetails] = useState<boolean>(defaultExpanded);
-    
-    
-    
-    // handlers:
-    const handleExpandedChangeInternal = useEvent<EventHandler<TExpandedChangeEvent>>((event) => {
-        setShowDetails(event.expanded);
-    });
-    const handleExpandedChange         = useMergeEvents(
-        // preserves the original `onExpandedChange`:
-        props.onExpandedChange,
-        
-        
-        
-        // actions:
-        handleExpandedChangeInternal,
-    );
-    
-    
-    
-    // jsx:
-    if (isDesktop) return (
-        <>
-            {children}
-        </>
-    );
-    return (
-        <Details<TElement, TExpandedChangeEvent>
-            // other props:
-            {...restDetailsProps}
-            
-            
-            
-            // states:
-            expanded={props.expanded ?? showDetails}
-            
-            
-            
-            // components:
-            buttonChildren={
-                props.buttonChildren
-                ??
-                <>
-                    {`${showDetails ? 'Hide' : 'Show' }${isTruthyNode(title) ? ' ' : ''}`}
-                    {title}
-                </>
-            }
-            
-            
-            
-            // handlers:
-            onExpandedChange={handleExpandedChange}
-        >
-            {children}
-        </Details>
-    );
-};
-
-
-
+// navigations:
 const ProgressCheckout = (): JSX.Element|null => {
     // states:
     const {
@@ -937,9 +845,6 @@ const ProgressCheckout = (): JSX.Element|null => {
         </List>
     );
 };
-
-
-
 const NavCheckout = (): JSX.Element|null => {
     // states:
     const {
@@ -1122,6 +1027,268 @@ const NavCheckout = (): JSX.Element|null => {
 
 
 
+// carts:
+interface ResponsiveDetailsProps<TElement extends Element = HTMLElement, TExpandedChangeEvent extends ExpandedChangeEvent = ExpandedChangeEvent>
+    extends
+        // bases:
+        DetailsProps<TElement, TExpandedChangeEvent>
+{
+    // accessibilities:
+    title ?: React.ReactNode
+}
+const ResponsiveDetails = <TElement extends Element = HTMLElement, TExpandedChangeEvent extends ExpandedChangeEvent = ExpandedChangeEvent>(props: ResponsiveDetailsProps<TElement, TExpandedChangeEvent>): JSX.Element|null => {
+    // rest props:
+    const {
+        // accessibilities:
+        title,
+        
+        
+        
+        // states:
+        defaultExpanded = false,
+        
+        
+        
+        // children:
+        children,
+    ...restDetailsProps} = props;
+    
+    
+    
+    // states:
+    const {
+        // states:
+        isDesktop,
+    } = useCheckoutState();
+    
+    const [showDetails, setShowDetails] = useState<boolean>(defaultExpanded);
+    
+    
+    
+    // handlers:
+    const handleExpandedChangeInternal = useEvent<EventHandler<TExpandedChangeEvent>>((event) => {
+        setShowDetails(event.expanded);
+    });
+    const handleExpandedChange         = useMergeEvents(
+        // preserves the original `onExpandedChange`:
+        props.onExpandedChange,
+        
+        
+        
+        // actions:
+        handleExpandedChangeInternal,
+    );
+    
+    
+    
+    // jsx:
+    if (isDesktop) return (
+        <>
+            {children}
+        </>
+    );
+    return (
+        <Details<TElement, TExpandedChangeEvent>
+            // other props:
+            {...restDetailsProps}
+            
+            
+            
+            // states:
+            expanded={props.expanded ?? showDetails}
+            
+            
+            
+            // components:
+            buttonChildren={
+                props.buttonChildren
+                ??
+                <>
+                    {`${showDetails ? 'Hide' : 'Show' }${isTruthyNode(title) ? ' ' : ''}`}
+                    {title}
+                </>
+            }
+            
+            
+            
+            // handlers:
+            onExpandedChange={handleExpandedChange}
+        >
+            {children}
+        </Details>
+    );
+};
+const ViewCart = (): JSX.Element|null => {
+    // styles:
+    const styles = useCheckoutStyleSheet();
+    
+    
+    
+    // states:
+    const {
+        // cart data:
+        cartItems,
+        totalProductPrice,
+        
+        
+        
+        // shipping data:
+        shippingProvider,
+        totalShippingCost,
+        
+        
+        
+        // relation data:
+        productList,
+    } = useCheckoutState();
+    const hasSelectedShipping = !!shippingProvider;
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <ResponsiveDetails
+                // variants:
+                theme='secondary'
+                detailsStyle='content'
+                
+                
+                
+                // classes:
+                className='orderCollapse'
+                
+                
+                
+                // accessibilities:
+                title='Order List'
+            >
+                <List
+                    // variants:
+                    listStyle='flat'
+                    
+                    
+                    
+                    // classes:
+                    className='orderList'
+                >
+                    {cartItems.map((item, itemIndex) => {
+                        // fn props:
+                        const product          = productList?.entities?.[item.productId];
+                        const productUnitPrice = product?.price;
+                        
+                        
+                        
+                        // jsx:
+                        return (
+                            <ListItem
+                                // identifiers:
+                                key={item.productId || itemIndex}
+                                
+                                
+                                
+                                // variants:
+                                theme={!product ? 'danger' : undefined}
+                                mild={!product ? false : undefined}
+                                
+                                
+                                
+                                // classes:
+                                className={styles.productPreview}
+                                
+                                
+                                
+                                // accessibilities:
+                                enabled={!!product}
+                            >
+                                <h3
+                                    // classes:
+                                    className='title h6'
+                                >
+                                    {product?.name ?? 'PRODUCT DELETED'}
+                                </h3>
+                                
+                                {/* image + quantity */}
+                                <CompoundWithBadge
+                                    // components:
+                                    wrapperComponent={<React.Fragment />}
+                                    badgeComponent={
+                                        <Badge
+                                            // variants:
+                                            theme='danger'
+                                            badgeStyle='pill'
+                                            
+                                            
+                                            
+                                            // floatable:
+                                            floatingPlacement='right-start'
+                                            floatingShift={-3}
+                                            floatingOffset={-20}
+                                        >
+                                            {item.quantity}x
+                                        </Badge>
+                                    }
+                                    elementComponent={
+                                        <Image
+                                            // appearances:
+                                            alt={product?.name ?? ''}
+                                            src={resolveMediaUrl(product?.image)}
+                                            sizes='64px'
+                                            
+                                            
+                                            
+                                            // classes:
+                                            className='prodImg'
+                                        />
+                                    }
+                                />
+                                
+                                {(productUnitPrice !== undefined) && <p className='unitPrice'>
+                                    @ <span className='currency secondary'>
+                                        {formatCurrency(productUnitPrice)}
+                                    </span>
+                                </p>}
+                                
+                                <p className='subPrice currencyBlock'>
+                                    {!product && <>This product was deleted</>}
+                                    <span className='currency'>
+                                        {formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}
+                                    </span>
+                                </p>
+                            </ListItem>
+                        );
+                    })}
+                </List>
+            </ResponsiveDetails>
+            
+            <hr />
+            
+            <p className='currencyBlock'>
+                Subtotal products: <span className='currency'>
+                    {formatCurrency(totalProductPrice)}
+                </span>
+            </p>
+            
+            <p className='currencyBlock'>
+                Shipping: <span className='currency'>
+                    {!!hasSelectedShipping ? formatCurrency(totalShippingCost) : 'calculated at next step'}
+                </span>
+            </p>
+            
+            <hr />
+            
+            <p className='currencyBlock totalCost'>
+                Total: <span className='currency'>
+                    {!!hasSelectedShipping ? formatCurrency(totalProductPrice + (totalShippingCost ?? 0)) : 'calculated at next step'}
+                </span>
+            </p>
+        </>
+    );
+};
+
+
+
+// checkouts:
 const EditRegularCheckout = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
@@ -1370,173 +1537,7 @@ const EditRegularCheckout = (): JSX.Element|null => {
 
 
 
-const ViewCart = (): JSX.Element|null => {
-    // styles:
-    const styles = useCheckoutStyleSheet();
-    
-    
-    
-    // states:
-    const {
-        // cart data:
-        cartItems,
-        totalProductPrice,
-        
-        
-        
-        // shipping data:
-        shippingProvider,
-        totalShippingCost,
-        
-        
-        
-        // relation data:
-        productList,
-    } = useCheckoutState();
-    const hasSelectedShipping = !!shippingProvider;
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            <ResponsiveDetails
-                // variants:
-                theme='secondary'
-                detailsStyle='content'
-                
-                
-                
-                // classes:
-                className='orderCollapse'
-                
-                
-                
-                // accessibilities:
-                title='Order List'
-            >
-                <List
-                    // variants:
-                    listStyle='flat'
-                    
-                    
-                    
-                    // classes:
-                    className='orderList'
-                >
-                    {cartItems.map((item, itemIndex) => {
-                        // fn props:
-                        const product          = productList?.entities?.[item.productId];
-                        const productUnitPrice = product?.price;
-                        
-                        
-                        
-                        // jsx:
-                        return (
-                            <ListItem
-                                // identifiers:
-                                key={item.productId || itemIndex}
-                                
-                                
-                                
-                                // variants:
-                                theme={!product ? 'danger' : undefined}
-                                mild={!product ? false : undefined}
-                                
-                                
-                                
-                                // classes:
-                                className={styles.productPreview}
-                                
-                                
-                                
-                                // accessibilities:
-                                enabled={!!product}
-                            >
-                                <h3
-                                    // classes:
-                                    className='title h6'
-                                >
-                                    {product?.name ?? 'PRODUCT DELETED'}
-                                </h3>
-                                
-                                {/* image + quantity */}
-                                <CompoundWithBadge
-                                    // components:
-                                    wrapperComponent={<React.Fragment />}
-                                    badgeComponent={
-                                        <Badge
-                                            // variants:
-                                            theme='danger'
-                                            badgeStyle='pill'
-                                            
-                                            
-                                            
-                                            // floatable:
-                                            floatingPlacement='right-start'
-                                            floatingShift={-3}
-                                            floatingOffset={-20}
-                                        >
-                                            {item.quantity}x
-                                        </Badge>
-                                    }
-                                    elementComponent={
-                                        <Image
-                                            // appearances:
-                                            alt={product?.name ?? ''}
-                                            src={resolveMediaUrl(product?.image)}
-                                            sizes='64px'
-                                            
-                                            
-                                            
-                                            // classes:
-                                            className='prodImg'
-                                        />
-                                    }
-                                />
-                                
-                                {(productUnitPrice !== undefined) && <p className='unitPrice'>
-                                    @ <span className='currency secondary'>
-                                        {formatCurrency(productUnitPrice)}
-                                    </span>
-                                </p>}
-                                
-                                <p className='subPrice currencyBlock'>
-                                    {!product && <>This product was deleted</>}
-                                    <span className='currency'>
-                                        {formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}
-                                    </span>
-                                </p>
-                            </ListItem>
-                        );
-                    })}
-                </List>
-            </ResponsiveDetails>
-            
-            <hr />
-            
-            <p className='currencyBlock'>
-                Subtotal products: <span className='currency'>
-                    {formatCurrency(totalProductPrice)}
-                </span>
-            </p>
-            
-            <p className='currencyBlock'>
-                Shipping: <span className='currency'>
-                    {!!hasSelectedShipping ? formatCurrency(totalShippingCost) : 'calculated at next step'}
-                </span>
-            </p>
-            
-            <hr />
-            
-            <p className='currencyBlock totalCost'>
-                Total: <span className='currency'>
-                    {!!hasSelectedShipping ? formatCurrency(totalProductPrice + (totalShippingCost ?? 0)) : 'calculated at next step'}
-                </span>
-            </p>
-        </>
-    );
-};
+// informations:
 const ViewInformation = (): JSX.Element|null => {
     // states:
     const {
@@ -1816,6 +1817,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
 
 
 
+// shippings:
 const EditShippingMethod = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
@@ -1921,6 +1923,7 @@ const EditShippingMethod = (): JSX.Element|null => {
 
 
 
+// payments:
 const EditPaymentAndBillingAddress = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
@@ -3104,6 +3107,7 @@ const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps): JSX
 
 
 
+// orders:
 const ViewOrderFinishedPending = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
