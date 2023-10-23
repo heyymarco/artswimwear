@@ -115,6 +115,7 @@ import {
     
     // composite-components:
     AccordionItem,
+    ExclusiveExpandedChangeEvent,
     ExclusiveAccordion,
     DetailsProps,
     Details,
@@ -165,6 +166,8 @@ import type {
 
 // paypal:
 import type {
+    PayPalScriptOptions,
+    
     HostedFieldsEvent,
     HostedFieldsHostedFieldsFieldName,
     
@@ -750,7 +753,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     // classes:
                     className={styles.payment} title='Payment'
                 >
-                    <Payment />
+                    <EditPaymentAndBillingAddress />
                 </Section>}
                 
                 {(checkoutStep === 'pending' ) && <Section
@@ -1913,7 +1916,7 @@ const EditShippingMethod = (): JSX.Element|null => {
 
 
 
-const Payment = () => {
+const EditPaymentAndBillingAddress = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
@@ -1926,19 +1929,6 @@ const Payment = () => {
         
         
         
-        // relation data:
-        countryList,
-        
-        
-        
-        // sections:
-        billingAddressSectionRef,
-    } = useCheckoutState();
-    
-    
-    
-    // states:
-    const {
         // billing data:
         billingValidation,
         
@@ -1976,41 +1966,156 @@ const Payment = () => {
         
         // payment data:
         paymentMethod,
+        
+        
+        
+        // relation data:
+        countryList,
+        
+        
+        
+        // sections:
+        billingAddressSectionRef,
     } = useCheckoutState();
+    
+    
+    
+    // handlers:
+    const handleBillingAddressExpandedChange = useEvent<EventHandler<ExclusiveExpandedChangeEvent>>(({expanded, listIndex}) => {
+        // conditions:
+        if (!expanded) return;
+        
+        
+        
+        // actions:
+        setBillingAsShipping(listIndex === 0);
+    });
     
     
     
     // jsx:
     return (
         <>
-            <Section className={styles.paymentMethod} title='Payment Method'>
-                <PaymentMethod />
+            <Section
+                // classes:
+                className={styles.paymentMethod}
+                
+                
+                
+                // accessibilities:
+                title='Payment Method'
+            >
+                <EditPaymentMethod />
             </Section>
-            <Collapse className='collapse' expanded={paymentMethod !== 'paypal'} lazy={true}>
-                <Section title='Billing Address' elmRef={billingAddressSectionRef}>
+            
+            <Collapse
+                // classes:
+                className='collapse'
+                
+                
+                
+                // behaviors:
+                lazy={true}
+                
+                
+                
+                // states:
+                expanded={paymentMethod !== 'paypal'} // the billingAddress is required for 'card' and 'manual'
+            >
+                <Section
+                    // refs:
+                    elmRef={billingAddressSectionRef}
+                    
+                    
+                    
+                    // accessibilities:
+                    title='Billing Address'
+                >
                     <p>
                         Select the address that matches your card or payment method.
                     </p>
-                    <ExclusiveAccordion enabled={!isBusy} theme='primary' expandedListIndex={billingAsShipping ? 0 : 1} onExpandedChange={({expanded, listIndex}) => {
-                        // conditions:
-                        if (!expanded) return;
+                    
+                    <ExclusiveAccordion
+                        // variants:
+                        theme='primary'
+                        listStyle='content'
                         
                         
                         
-                        // actions:
-                        setBillingAsShipping(listIndex === 0);
-                    }} listStyle='content'>
-                        <AccordionItem label={<>
-                            <RadioDecorator />
-                            Same as shipping address
-                        </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.billingEntry} />} >
+                        // states:
+                        enabled={!isBusy}
+                        expandedListIndex={billingAsShipping ? 0 : 1}
+                        
+                        
+                        
+                        // handlers:
+                        onExpandedChange={handleBillingAddressExpandedChange}
+                    >
+                        <AccordionItem
+                            // accessibilities:
+                            label={
+                                <>
+                                    <RadioDecorator />
+                                    Same as shipping address
+                                </>
+                            }
+                            
+                            
+                            
+                            // behaviors:
+                            lazy={true}
+                            
+                            
+                            
+                            // components:
+                            listItemComponent={
+                                <ListItem
+                                    // classes:
+                                    className={styles.optionEntryHeader}
+                                />
+                            }
+                            bodyComponent={
+                                <Section
+                                    // classes:
+                                    className={styles.billingEntry}
+                                />
+                            }
+                        >
                             <ViewShippingAddress />
                         </AccordionItem>
-                        <AccordionItem label={<>
-                            <RadioDecorator />
-                            Use a different billing address
-                        </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={`${styles.billingEntry} ${styles.address}`} />} >
-                            <ValidationProvider enableValidation={!billingAsShipping && billingValidation}>
+                        
+                        <AccordionItem
+                            // accessibilities:
+                            label={<>
+                                <RadioDecorator />
+                                Use a different billing address
+                            </>}
+                            
+                            
+                            
+                            // behaviors:
+                            lazy={true}
+                            
+                            
+                            
+                            // components:
+                            listItemComponent={
+                                <ListItem
+                                    // classes:
+                                    className={styles.optionEntryHeader}
+                                />
+                            }
+                            bodyComponent={
+                                <Section
+                                    // classes:
+                                    className={`${styles.billingEntry} ${styles.address}`}
+                                />
+                            }
+                        >
+                            <ValidationProvider
+                                // validations:
+                                enableValidation={!billingAsShipping && billingValidation}
+                            >
                                 <AddressFields
                                     // types:
                                     addressType       = 'billing'
@@ -2051,16 +2156,23 @@ const Payment = () => {
             </Collapse>
         </>
     );
-}
-const PaymentMethod = () => {
+};
+const EditPaymentMethod = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
     
     
-    // context:
+    // states:
     const {
+        // states:
+        isBusy,
+        
+        
+        
         // payment data:
+        paymentMethod,
+        setPaymentMethod,
         paymentToken,
         
         
@@ -2071,67 +2183,163 @@ const PaymentMethod = () => {
     
     
     
-    // states:
-    const {
-        // states:
-        isBusy,
-    } = useCheckoutState();
+    // payment method options:
+    const paymentMethodList : PaymentMethodType[] = ['card', 'paypal', 'manual'];
     
     
     
-    // states:
-    const {
-        // payment data:
-        paymentMethod,
-        setPaymentMethod,
-    } = useCheckoutState();
+    // handlers:
+    const handlePaymentMethodExpandedChange = useEvent<EventHandler<ExclusiveExpandedChangeEvent>>(({expanded, listIndex}) => {
+        // conditions:
+        if (!expanded) return;
+        
+        
+        
+        // actions:
+        setPaymentMethod(paymentMethodList[listIndex]);
+    });
+    
+    
+    
+    // paypal options:
+    const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
+        'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
+        'data-client-token' : paymentToken?.paymentToken,
+        currency            : 'USD',
+        intent              : 'capture',
+        components          : 'hosted-fields,buttons',
+    }), [paymentToken?.paymentToken]);
     
     
     
     // jsx:
-    const paymentMethodList : PaymentMethodType[] = ['card', 'paypal', 'manual'];
     return (
-        <PayPalScriptProvider options={{
-            'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
-            'data-client-token' : paymentToken?.paymentToken,
-            currency            : 'USD',
-            intent              : 'capture',
-            components          : 'hosted-fields,buttons',
-        }}>
+        <PayPalScriptProvider
+            options={paypalOptions}
+        >
             <p>
                 All transactions are secure and encrypted.
             </p>
-            <ExclusiveAccordion enabled={!isBusy} theme='primary' expandedListIndex={Math.max(0, paymentMethodList.findIndex((option) => (option === paymentMethod)))} onExpandedChange={({expanded, listIndex}) => {
-                // conditions:
-                if (!expanded) return;
+            
+            <ExclusiveAccordion
+                // variants:
+                theme='primary'
+                listStyle='content'
                 
                 
                 
-                // actions:
-                setPaymentMethod(paymentMethodList[listIndex]);
-            }} listStyle='content'>
-                <AccordionItem label={<>
-                    <RadioDecorator />
-                    Credit Card
-                </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.paymentEntryCard} elmRef={paymentCardSectionRef} />} /*lazy={true} causes error*/ >
+                // states:
+                enabled={!isBusy}
+                expandedListIndex={
+                    Math.max(0, paymentMethodList.findIndex((option) => (option === paymentMethod)))
+                }
+                
+                
+                
+                // handlers:
+                onExpandedChange={handlePaymentMethodExpandedChange}
+            >
+                <AccordionItem
+                    // accessibilities:
+                    label={<>
+                        <RadioDecorator />
+                        Credit Card
+                    </>}
+                    
+                    
+                    
+                    // behaviors:
+                    // lazy={true} // causes error
+                    
+                    
+                    
+                    // components:
+                    listItemComponent={
+                        <ListItem
+                            // classes:
+                            className={styles.optionEntryHeader}
+                        />
+                    }
+                    bodyComponent={
+                        <Section
+                            // refs:
+                            elmRef={paymentCardSectionRef}
+                            
+                            
+                            
+                            // classes:
+                            className={styles.paymentEntryCard}
+                        />
+                    }
+                >
                     <PaymentMethodCard />
                 </AccordionItem>
-                <AccordionItem label={<>
-                    <RadioDecorator />
-                    PayPal
-                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.paymentEntryPaypal} />} /*lazy={true} causes error*/ >
+                
+                <AccordionItem
+                    // accessibilities:
+                    label={<>
+                        <RadioDecorator />
+                        PayPal
+                    </>}
+                    
+                    
+                    
+                    // behaviors:
+                    // lazy={true} // causes error
+                    
+                    
+                    
+                    // components:
+                    listItemComponent={
+                        <ListItem
+                            // classes:
+                            className={styles.optionEntryHeader}
+                        />
+                    }
+                    bodyComponent={
+                        <Section
+                            // classes:
+                            className={styles.paymentEntryPaypal}
+                        />
+                    }
+                >
                     <PaymentMethodPaypal />
                 </AccordionItem>
-                <AccordionItem label={<>
-                    <RadioDecorator />
-                    Bank Transfer
-                    </>} listItemComponent={<ListItem className={styles.optionEntryHeader} />} bodyComponent={<Section className={styles.paymentEntryManual} />} /*lazy={true} causes error*/ >
+                
+                <AccordionItem
+                    // accessibilities:
+                    label={<>
+                        <RadioDecorator />
+                        Bank Transfer
+                    </>}
+                    
+                    
+                    
+                    // behaviors:
+                    lazy={true}
+                    
+                    
+                    
+                    // components:
+                    listItemComponent={
+                        <ListItem
+                            // classes:
+                            className={styles.optionEntryHeader}
+                        />
+                    }
+                    bodyComponent={
+                        <Section
+                            // classes:
+                            className={styles.paymentEntryManual}
+                        />
+                    }
+                >
                     <PaymentMethodManual />
                 </AccordionItem>
             </ExclusiveAccordion>
         </PayPalScriptProvider>
     );
-}
+};
 const PaymentMethodCard = () => {
     // states:
     const {
