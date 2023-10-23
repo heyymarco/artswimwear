@@ -134,11 +134,14 @@ import {
     EditRegularCheckout,
 }                           from './components/checkouts/EditRegularCheckout'
 import {
-    ViewBillingAddress,
-}                           from './components/informations/ViewBillingAddress'
+    ViewShippingMethod,
+}                           from './components/informations/ViewShippingMethod'
 import {
     ViewPaymentMethod,
 }                           from './components/informations/ViewPaymentMethod'
+import {
+    ViewBillingAddress,
+}                           from './components/informations/ViewBillingAddress'
 
 // stores:
 import type {
@@ -694,28 +697,6 @@ const ViewShippingAddress = (): JSX.Element|null => {
     return (
         <>
             {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
-        </>
-    );
-};
-const ViewShippingMethod = (): JSX.Element|null => {
-    // states:
-    const {
-        // shipping data:
-        shippingProvider,
-        
-        
-        
-        // relation data:
-        shippingList,
-    } = useCheckoutState();
-    const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            {`${selectedShipping?.name}${!selectedShipping?.estimate ? '' : ` - ${selectedShipping?.estimate}`}`}
         </>
     );
 };
