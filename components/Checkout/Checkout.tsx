@@ -2334,7 +2334,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         />
                     }
                 >
-                    <PaymentMethodManual />
+                    <ViewPaymentMethodManual />
                 </AccordionItem>
             </ExclusiveAccordion>
         </PayPalScriptProvider>
@@ -2811,7 +2811,7 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
         </>
     );
 };
-const PaymentMethodManual = () => {
+const ViewPaymentMethodManual = (): JSX.Element|null => {
     // states:
     const {
         // payment data:
@@ -2829,12 +2829,13 @@ const PaymentMethodManual = () => {
             <p>
                 We&apos;ll send <em>payment instructions</em> to your (billing) email after you&apos;ve <em>finished the order</em>.
             </p>
+            
             {(paymentMethod === 'manual') && <PortalToNavCheckoutSection>
                 <ManualPaymentButton />
             </PortalToNavCheckoutSection>}
         </>
     );
-}
+};
 const CardPaymentButton = () => {
     // states:
     const {
