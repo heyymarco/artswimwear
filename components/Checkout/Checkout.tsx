@@ -765,7 +765,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     // classes:
                     className={styles.paymentFinish} title='Thank You'
                 >
-                    <PaymentPending />
+                    <ViewOrderFinishedPending />
                 </Section>}
                 
                 {(checkoutStep === 'paid'    ) && <Section
@@ -777,7 +777,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     // classes:
                     className={styles.paymentFinish} title='Thank You'
                 >
-                    <Paid />
+                    <ViewOrderFinishedPaid />
                 </Section>}
             </div>
             
@@ -3099,7 +3099,7 @@ const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps): JSX
 
 
 
-const PaymentPending = () => {
+const ViewOrderFinishedPending = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
@@ -3117,7 +3117,20 @@ const PaymentPending = () => {
     return (
         <>
             <Section>
-                <Alert theme='success' expanded={true} controlComponent={<></>}>
+                <Alert
+                    // variants:
+                    theme='success'
+                    
+                    
+                    
+                    // states:
+                    expanded={true}
+                    
+                    
+                    
+                    // components:
+                    controlComponent={<React.Fragment />}
+                >
                     <p className='h5'>
                         Your order has been confirmed.
                     </p>
@@ -3129,13 +3142,22 @@ const PaymentPending = () => {
                     </p>
                 </Alert>
             </Section>
-            <Section tag='aside' className={styles.orderReview}>
+            
+            <Section
+                // semantics:
+                tag='aside'
+                
+                
+                
+                // classes:
+                className={styles.orderReview}
+            >
                 <ViewCustomer />
             </Section>
         </>
     );
-}
-const Paid = () => {
+};
+const ViewOrderFinishedPaid = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
     
@@ -3153,7 +3175,20 @@ const Paid = () => {
     return (
         <>
             <Section>
-                <Alert theme='success' expanded={true} controlComponent={<></>}>
+                <Alert
+                    // variants:
+                    theme='success'
+                    
+                    
+                    
+                    // states:
+                    expanded={true}
+                    
+                    
+                    
+                    // components:
+                    controlComponent={<React.Fragment />}
+                >
                     <p className='h5'>
                         Your order has been confirmed and we have received your payment.
                     </p>
@@ -3162,9 +3197,18 @@ const Paid = () => {
                     </p>
                 </Alert>
             </Section>
-            <Section tag='aside' className={styles.orderReview}>
+            
+            <Section
+                // semantics:
+                tag='aside'
+                
+                
+                
+                // classes:
+                className={styles.orderReview}
+            >
                 <ViewCustomer />
             </Section>
         </>
     );
-}
+};
