@@ -15,6 +15,11 @@ export default () => {
     
     
     return [
+        scope('data', {
+            whiteSpace : 'nowrap',
+            wordBreak  : 'break-all',
+        }),
+        
         scope('loading', {
             ...children('article', {
                 display: 'grid',
@@ -349,13 +354,13 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scope('expressCheckout', {
+        scope('expressCheckout', { // TODO: implement
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
         }, {specificityWeight: 2}),
-        scope('checkoutAlt', {
+        scope('checkoutAlt', { // TODO: implement
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'center',
@@ -631,10 +636,6 @@ export default () => {
             ...ifScreenWidthSmallerThan('lg', {
                 display: 'none',
             }),
-        }),
-        scope('data', {
-            whiteSpace : 'nowrap',
-            wordBreak  : 'break-all',
         }),
     ];
 };
