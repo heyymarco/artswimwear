@@ -3067,8 +3067,11 @@ interface PortalToNavCheckoutSectionProps {
     children : React.ReactNode
 }
 const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps): JSX.Element|null => {
-    // context:
-    const {navCheckoutSectionElm} = useCheckoutState();
+    // states:
+    const {
+        // sections:
+        navCheckoutSectionElm,
+    } = useCheckoutState();
     
     
     
