@@ -3066,7 +3066,7 @@ const ButtonPaymentManual = (): JSX.Element|null => {
 interface PortalToNavCheckoutSectionProps {
     children : React.ReactNode
 }
-const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps) => {
+const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps): JSX.Element|null => {
     // context:
     const {navCheckoutSectionElm} = useCheckoutState();
     
@@ -3092,7 +3092,7 @@ const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps) => {
         props.children,
         navCheckoutSectionElm.current
     );
-}
+};
 
 
 
