@@ -150,7 +150,7 @@ import {
 }                           from '@/components/EditButton'
 import {
     ProgressCheckout,
-}                           from './components/ProgressCheckout'
+}                           from './components/navigations/ProgressCheckout'
 
 // stores:
 import {
