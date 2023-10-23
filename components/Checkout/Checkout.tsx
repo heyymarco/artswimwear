@@ -134,6 +134,9 @@ import {
     EditRegularCheckout,
 }                           from './components/checkouts/EditRegularCheckout'
 import {
+    ViewCustomerContact,
+}                           from './components/informations/ViewCustomerContact'
+import {
     ViewShippingAddress,
 }                           from './components/informations/ViewShippingAddress'
 import {
@@ -654,28 +657,6 @@ const ViewCustomer = (): JSX.Element|null => {
                 </tbody>
             </table>
         </AccessibilityProvider>
-    );
-};
-const ViewCustomerContact = (): JSX.Element|null => {
-    // styles:
-    const styles = useCheckoutStyleSheet();
-    
-    
-    
-    // states:
-    const {
-        // customer data:
-        customerNickName,
-        customerEmail,
-    } = useCheckoutState();
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            <span className={styles.data}>{customerEmail}</span> (<span className={styles.data}>{customerNickName}</span>)
-        </>
     );
 };
 
