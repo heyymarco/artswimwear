@@ -1,16 +1,85 @@
-import { commerces } from "@/config";
-import { children, descendants, fallback, rule, scope, style, switchOf, vars } from "@cssfn/core";
-import { basics, containers, iconElm, usesIcon, usesIconFontLayout } from "@reusable-ui/components";
-import { borders, ifNeutralize, ifScreenWidthAtLeast, ifScreenWidthBetween, ifScreenWidthSmallerThan, markValid, themes, typos, usesBackground, usesBorder, usesGroupable, usesPadding, usesValidationIcon } from "@reusable-ui/core";
+// cssfn:
+import {
+    // writes css in javascript:
+    rule,
+    fallback,
+    descendants,
+    children,
+    scope,
+    
+    
+    
+    // strongly typed of css variables:
+    switchOf,
+}                           from '@cssfn/core'                  // writes css in javascript
+
+// reusable-ui core:
+import {
+    // a border (stroke) management system:
+    borders,
+    
+    
+    
+    // a responsive management system:
+    ifScreenWidthAtLeast,
+    ifScreenWidthSmallerThan,
+    ifScreenWidthBetween,
+    
+    
+    
+    // a typography management system:
+    typos,
+    
+    
+    
+    // background stuff of UI:
+    usesBackground,
+    
+    
+    
+    // border (stroke) stuff of UI:
+    usesBorder,
+    
+    
+    
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
+    
+    
+    
+    // groups a list of UIs into a single UI:
+    usesGroupable,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // base-components:
+    basics,
+    
+    
+    
+    // base-content-components:
+    containers,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// configs:
+import {
+    commerces,
+}                           from '@/config'
 
 
 
 const imageSize = 64;  // 64px
 export default () => {
-    const {paddingVars   } = usesPadding();
-    const {groupableVars } = usesGroupable();
-    const {borderVars    } = usesBorder();
+    // dependencies:
+    
+    // features:
     const {backgroundVars} = usesBackground();
+    const {borderVars    } = usesBorder();
+    const {paddingVars   } = usesPadding();
+    
+    // capabilities:
+    const {groupableVars } = usesGroupable();
     
     
     
