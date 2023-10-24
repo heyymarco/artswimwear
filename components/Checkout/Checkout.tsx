@@ -128,6 +128,9 @@ import {
     PayPalHostedFieldExtendedProps,
     PayPalHostedFieldExtended,
 }                           from './components/payments/PayPalHostedFieldExtended'
+import {
+    ButtonPaymentManual,
+}                           from './components/payments/ButtonPaymentManual'
 
 // stores:
 import type {
@@ -1587,81 +1590,6 @@ const ButtonPaymentCard = (): JSX.Element|null => {
             onClick={handlePayButtonClick}
         >
             Pay Now
-        </ButtonIcon>
-    );
-};
-const ButtonPaymentManual = (): JSX.Element|null => {
-    // states:
-    const {
-        // states:
-        isBusy,
-        
-        
-        
-        // actions:
-        doTransaction,
-        doPlaceOrder,
-        doMakePayment,
-    } = useCheckoutState();
-    
-    
-    
-    // dialogs:
-    const {
-        showMessageFetchError,
-    } = useDialogMessage();
-    
-    
-    
-    // handlers:
-    const handleFinishOrderButtonClick = useEvent(() => {
-        doTransaction(async () => {
-            try {
-                // createOrder:
-                const orderId = await doPlaceOrder({paymentSource: 'manual'});
-                
-                
-                
-                // then forward the authentication to backend_API to book the order (but not paid yet):
-                await doMakePayment(orderId, /*paid:*/false);
-            }
-            catch (error: any) {
-                showMessageFetchError({ error, context: 'order' });
-            } // try
-        });
-    });
-    
-    
-    
-    // jsx:
-    return (
-        <ButtonIcon
-            // appearances:
-            icon={!isBusy ? 'done' : 'busy'}
-            
-            
-            
-            // variants:
-            size='lg'
-            theme='primary'
-            gradient={true}
-            
-            
-            
-            // classes:
-            className='next finishOrder'
-            
-            
-            
-            // accessibilities:
-            enabled={!isBusy}
-            
-            
-            
-            // handlers:
-            onClick={handleFinishOrderButtonClick}
-        >
-            Finish Order
         </ButtonIcon>
     );
 };
