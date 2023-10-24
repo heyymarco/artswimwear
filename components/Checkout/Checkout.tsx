@@ -132,8 +132,8 @@ import {
     ButtonPaymentCard,
 }                           from './components/payments/ButtonPaymentCard'
 import {
-    ButtonPaymentManual,
-}                           from './components/payments/ButtonPaymentManual'
+    ViewPaymentMethodManual,
+}                           from './components/payments/ViewPaymentMethodManual'
 
 // stores:
 import type {
@@ -1425,31 +1425,6 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
                 onApprove={handleFundApproved}
                 onShippingChange={handleShippingChange}
             />
-        </>
-    );
-};
-const ViewPaymentMethodManual = (): JSX.Element|null => {
-    // states:
-    const {
-        // payment data:
-        paymentMethod,
-    } = useCheckoutState();
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            <p>
-                Pay manually via <strong>bank transfer</strong>.
-            </p>
-            <p>
-                We&apos;ll send <em>payment instructions</em> to your (billing) email after you&apos;ve <em>finished the order</em>.
-            </p>
-            
-            {(paymentMethod === 'manual') && <PortalToNavCheckoutSection>
-                <ButtonPaymentManual />
-            </PortalToNavCheckoutSection>}
         </>
     );
 };
