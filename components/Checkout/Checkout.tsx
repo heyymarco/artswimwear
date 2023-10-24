@@ -66,6 +66,9 @@ import {
 import {
     EditPaymentAndBillingAddress,
 }                           from './components/payments/EditPaymentAndBillingAddress'
+import {
+    ViewOrderFinishedPending,
+}                           from './components/orders/ViewOrderFinishedPending'
 
 // internals:
 import {
@@ -421,64 +424,6 @@ export {
 
 
 // orders:
-const ViewOrderFinishedPending = (): JSX.Element|null => {
-    // styles:
-    const styles = useCheckoutStyleSheet();
-    
-    
-    
-    // states:
-    const {
-        // customer data:
-        customerEmail,
-    } = useCheckoutState();
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            <Section>
-                <Alert
-                    // variants:
-                    theme='success'
-                    
-                    
-                    
-                    // states:
-                    expanded={true}
-                    
-                    
-                    
-                    // components:
-                    controlComponent={<React.Fragment />}
-                >
-                    <p className='h5'>
-                        Your order has been confirmed.
-                    </p>
-                    <p>
-                        You&apos;ll receive a confirmation email with your order number shortly.
-                    </p>
-                    <p>
-                        Please <strong>follow the payment instructions</strong> sent to your email: <strong className={styles.data}>{customerEmail}</strong>.
-                    </p>
-                </Alert>
-            </Section>
-            
-            <Section
-                // semantics:
-                tag='aside'
-                
-                
-                
-                // classes:
-                className={styles.orderReview}
-            >
-                <ViewCustomer />
-            </Section>
-        </>
-    );
-};
 const ViewOrderFinishedPaid = (): JSX.Element|null => {
     // styles:
     const styles = useCheckoutStyleSheet();
