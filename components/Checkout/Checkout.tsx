@@ -143,11 +143,8 @@ import {
     ViewShippingMethod,
 }                           from './components/informations/ViewShippingMethod'
 import {
-    ViewPaymentMethod,
-}                           from './components/informations/ViewPaymentMethod'
-import {
-    ViewBillingAddress,
-}                           from './components/informations/ViewBillingAddress'
+    ViewCustomer,
+}                           from './components/informations/ViewCustomer'
 
 // stores:
 import type {
@@ -600,60 +597,6 @@ const ViewInformation = (): JSX.Element|null => {
                             <EditButton onClick={handleGotoShippingProvider} />
                         </td>
                     </tr>}
-                </tbody>
-            </table>
-        </AccessibilityProvider>
-    );
-};
-const ViewCustomer = (): JSX.Element|null => {
-    // states:
-    const {
-        // states:
-        isBusy,
-    } = useCheckoutState();
-    
-    
-    
-    // jsx:
-    return (
-        <AccessibilityProvider
-            // accessibilities:
-            enabled={!isBusy}
-        >
-            <table>
-                <thead>
-                    <tr>
-                        <th colSpan={2}>
-                            Customer Information
-                        </th>
-                    </tr>
-                </thead>
-                
-                <tbody>
-                    <tr>
-                        <th>Contact</th>
-                        <td><ViewCustomerContact /></td>
-                    </tr>
-                    
-                    <tr>
-                        <th>Shipping Address</th>
-                        <td><ViewShippingAddress /></td>
-                    </tr>
-                    
-                    <tr>
-                        <th>Shipping Method</th>
-                        <td><ViewShippingMethod /></td>
-                    </tr>
-                    
-                    <tr>
-                        <th>Payment Method</th>
-                        <td><ViewPaymentMethod /></td>
-                    </tr>
-                    
-                    <tr>
-                        <th>Billing Address</th>
-                        <td><ViewBillingAddress /></td>
-                    </tr>
                 </tbody>
             </table>
         </AccessibilityProvider>
