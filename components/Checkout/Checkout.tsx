@@ -11,11 +11,7 @@ import {
     useEffect,
     useMemo,
     useRef,
-    useState,
 }                           from 'react'
-import {
-    default as ReactDOM,
-}                           from 'react-dom'
 
 // reusable-ui core:
 import {
@@ -101,6 +97,9 @@ import {
 import {
     NavCheckout,
 }                           from './components/navigations/NavCheckout'
+import {
+    PortalToNavCheckoutSection,
+}                           from './components/navigations/PortalToNavCheckoutSection'
 import {
     ViewCart,
 }                           from './components/carts/ViewCart'
@@ -1664,40 +1663,6 @@ const ButtonPaymentManual = (): JSX.Element|null => {
         >
             Finish Order
         </ButtonIcon>
-    );
-};
-
-interface PortalToNavCheckoutSectionProps {
-    children : React.ReactNode
-}
-const PortalToNavCheckoutSection = (props: PortalToNavCheckoutSectionProps): JSX.Element|null => {
-    // states:
-    const {
-        // sections:
-        navCheckoutSectionElm,
-    } = useCheckoutState();
-    
-    
-    
-    // dom effects:
-    // delays the rendering of portal until the page is fully hydrated
-    const [isHydrated, setIsHydrated] = useState<boolean>(false);
-    useEffect(() => {
-        setIsHydrated(true);
-    }, []);
-    
-    
-    
-    // jsx:
-    if (!isHydrated) return null;
-    if (!navCheckoutSectionElm?.current) return (
-        <>
-            {props.children}
-        </>
-    );
-    return ReactDOM.createPortal(
-        props.children,
-        navCheckoutSectionElm.current
     );
 };
 
