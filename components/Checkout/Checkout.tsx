@@ -55,8 +55,8 @@ import {
     EditRegularCheckout,
 }                           from './components/checkouts/EditRegularCheckout'
 import {
-    ViewInformation,
-}                           from './components/informations/ViewInformation'
+    ViewCollectedInformation,
+}                           from './components/informations/ViewCollectedInformation'
 import {
     ViewCustomer,
 }                           from './components/informations/ViewCustomer'
@@ -281,7 +281,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     // classes:
                     className={styles.orderReview}
                 >
-                    <ViewInformation />
+                    <ViewCollectedInformation />
                 </Section>}
                 
                 

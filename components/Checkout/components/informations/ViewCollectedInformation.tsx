@@ -39,7 +39,7 @@ import {
 
 
 // react components:
-const ViewInformation = (): JSX.Element|null => {
+const ViewCollectedInformation = (): JSX.Element|null => {
     // states:
     const {
         // states:
@@ -106,6 +106,6 @@ const ViewInformation = (): JSX.Element|null => {
     );
 };
 export {
-    ViewInformation,
-    ViewInformation as default,
+    ViewCollectedInformation,
+    ViewCollectedInformation as default,
 };
