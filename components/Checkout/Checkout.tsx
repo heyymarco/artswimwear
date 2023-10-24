@@ -35,11 +35,6 @@ import {
     
     
     
-    // an accessibility management system:
-    AccessibilityProvider,
-    
-    
-    
     // a validation management system:
     ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -119,9 +114,6 @@ import {
     RadioDecorator,
 }                           from '@/components/RadioDecorator'
 import {
-    EditButton,
-}                           from '@/components/EditButton'
-import {
     ProgressCheckout,
 }                           from './components/navigations/ProgressCheckout'
 import {
@@ -134,17 +126,14 @@ import {
     EditRegularCheckout,
 }                           from './components/checkouts/EditRegularCheckout'
 import {
-    ViewCustomerContact,
-}                           from './components/informations/ViewCustomerContact'
-import {
     ViewShippingAddress,
 }                           from './components/informations/ViewShippingAddress'
 import {
-    ViewShippingMethod,
-}                           from './components/informations/ViewShippingMethod'
-import {
     ViewCustomer,
 }                           from './components/informations/ViewCustomer'
+import {
+    ViewInformation,
+}                           from './components/informations/ViewInformation'
 
 // stores:
 import type {
@@ -531,76 +520,6 @@ const CheckoutInternal = (): JSX.Element|null => {
 export {
     Checkout,
     Checkout as default,
-};
-
-
-
-// informations:
-const ViewInformation = (): JSX.Element|null => {
-    // states:
-    const {
-        // states:
-        checkoutStep,
-        
-        isBusy,
-        
-        
-        
-        // actions:
-        gotoStepInformation,
-        gotoStepShipping,
-    } = useCheckoutState();
-    
-    
-    
-    // handlers:
-    const handleGotoContactInfo      = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
-        gotoStepInformation(/* focusTo: */'contactInfo');
-    });
-    const handleGotoShippingAddress  = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
-        gotoStepInformation(/* focusTo: */'shippingAddress');
-    });
-    const handleGotoShippingProvider = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
-        gotoStepShipping();
-    });
-    
-    
-    
-    // jsx:
-    return (
-        <AccessibilityProvider
-            // accessibilities:
-            enabled={!isBusy}
-        >
-            <table>
-                <tbody>
-                    <tr>
-                        <th>Contact</th>
-                        <td><ViewCustomerContact /></td>
-                        <td>
-                            <EditButton onClick={handleGotoContactInfo} />
-                        </td>
-                    </tr>
-                    
-                    <tr>
-                        <th>Ship To</th>
-                        <td><ViewShippingAddress /></td>
-                        <td>
-                            <EditButton onClick={handleGotoShippingAddress} />
-                        </td>
-                    </tr>
-                    
-                    {(checkoutStep !== 'shipping') && <tr>
-                        <th>Method</th>
-                        <td><ViewShippingMethod /></td>
-                        <td>
-                            <EditButton onClick={handleGotoShippingProvider} />
-                        </td>
-                    </tr>}
-                </tbody>
-            </table>
-        </AccessibilityProvider>
-    );
 };
 
 
