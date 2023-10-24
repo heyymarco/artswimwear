@@ -139,7 +139,7 @@ import {
 
 // stores:
 import type {
-    PaymentMethod as PaymentMethodType,
+    PaymentMethod,
 }                           from '@/store/features/checkout/checkoutSlice'
 
 // paypal:
@@ -1051,7 +1051,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     
     // payment method options:
-    const paymentMethodList : PaymentMethodType[] = ['card', 'paypal', 'manual'];
+    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'manual'];
     
     
     
