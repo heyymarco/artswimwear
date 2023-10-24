@@ -25,11 +25,6 @@ import {
     
     // status-components:
     Busy,
-    
-    
-    
-    // notification-components:
-    Alert,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 import {
     Link,
@@ -58,9 +53,6 @@ import {
     ViewCollectedInformation,
 }                           from './components/informations/ViewCollectedInformation'
 import {
-    ViewCustomer,
-}                           from './components/informations/ViewCustomer'
-import {
     EditShippingMethod,
 }                           from './components/shippings/EditShippingMethod'
 import {
@@ -69,6 +61,9 @@ import {
 import {
     ViewOrderFinishedPending,
 }                           from './components/orders/ViewOrderFinishedPending'
+import {
+    ViewOrderFinishedPaid,
+}                           from './components/orders/ViewOrderFinishedPaid'
 
 // internals:
 import {
@@ -419,63 +414,4 @@ const CheckoutInternal = (): JSX.Element|null => {
 export {
     Checkout,
     Checkout as default,
-};
-
-
-
-// orders:
-const ViewOrderFinishedPaid = (): JSX.Element|null => {
-    // styles:
-    const styles = useCheckoutStyleSheet();
-    
-    
-    
-    // states:
-    const {
-        // customer data:
-        customerEmail,
-    } = useCheckoutState();
-    
-    
-    
-    // jsx:
-    return (
-        <>
-            <Section>
-                <Alert
-                    // variants:
-                    theme='success'
-                    
-                    
-                    
-                    // states:
-                    expanded={true}
-                    
-                    
-                    
-                    // components:
-                    controlComponent={<React.Fragment />}
-                >
-                    <p className='h5'>
-                        Your order has been confirmed and we have received your payment.
-                    </p>
-                    <p>
-                        You&apos;ll receive a confirmation email with your order number shortly to: <strong className={styles.data}>{customerEmail}</strong>.
-                    </p>
-                </Alert>
-            </Section>
-            
-            <Section
-                // semantics:
-                tag='aside'
-                
-                
-                
-                // classes:
-                className={styles.orderReview}
-            >
-                <ViewCustomer />
-            </Section>
-        </>
-    );
 };
