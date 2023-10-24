@@ -10,11 +10,6 @@ import {
 import {
     // react helper hooks:
     useEvent,
-    
-    
-    
-    // an accessibility management system:
-    AccessibilityProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // internal components:
@@ -45,8 +40,6 @@ const ViewCollectedInformation = (): JSX.Element|null => {
         // states:
         checkoutStep,
         
-        isBusy,
-        
         
         
         // actions:
@@ -71,38 +64,33 @@ const ViewCollectedInformation = (): JSX.Element|null => {
     
     // jsx:
     return (
-        <AccessibilityProvider
-            // accessibilities:
-            enabled={!isBusy}
-        >
-            <table>
-                <tbody>
-                    <tr>
-                        <th>Contact</th>
-                        <td><ViewCustomerContact /></td>
-                        <td>
-                            <EditButton onClick={handleGotoContactInfo} />
-                        </td>
-                    </tr>
-                    
-                    <tr>
-                        <th>Ship To</th>
-                        <td><ViewShippingAddress /></td>
-                        <td>
-                            <EditButton onClick={handleGotoShippingAddress} />
-                        </td>
-                    </tr>
-                    
-                    {(checkoutStep !== 'shipping') && <tr>
-                        <th>Method</th>
-                        <td><ViewShippingMethod /></td>
-                        <td>
-                            <EditButton onClick={handleGotoShippingProvider} />
-                        </td>
-                    </tr>}
-                </tbody>
-            </table>
-        </AccessibilityProvider>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Contact</th>
+                    <td><ViewCustomerContact /></td>
+                    <td>
+                        <EditButton onClick={handleGotoContactInfo} />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th>Ship To</th>
+                    <td><ViewShippingAddress /></td>
+                    <td>
+                        <EditButton onClick={handleGotoShippingAddress} />
+                    </td>
+                </tr>
+                
+                {(checkoutStep !== 'shipping') && <tr>
+                    <th>Method</th>
+                    <td><ViewShippingMethod /></td>
+                    <td>
+                        <EditButton onClick={handleGotoShippingProvider} />
+                    </td>
+                </tr>}
+            </tbody>
+        </table>
     );
 };
 export {

@@ -36,9 +36,14 @@ import {
     
     
     
-    // hooks:
+    // react helper hooks:
     useIsomorphicLayoutEffect,
     useEvent,
+    
+    
+    
+    // an accessibility management system:
+    AccessibilityProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -1429,7 +1434,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // jsx:
     return (
         <CheckoutStateContext.Provider value={checkoutData}>
-            {children}
+            <AccessibilityProvider
+                // accessibilities:
+                enabled={!isBusy} // disabled if busy
+            >
+                {children}
+            </AccessibilityProvider>
         </CheckoutStateContext.Provider>
     );
 };
