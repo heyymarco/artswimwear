@@ -107,13 +107,18 @@ export const CartBarContent = () => {
                     </ListItem>}
                     
                     {isCartDataReady && cartItems.map(({productId, quantity}) => {
-                        const productUnitPrice = priceList?.entities?.[productId]?.price ?? undefined;
-                        const product = productList?.entities?.[productId];
+                        // fn props:
+                        const product          = productList?.entities?.[productId];
+                        const productUnitPrice = product?.price;
+                        const isProductDeleted = !product;
+                        
+                        
+                        
+                        // jsx:
                         return (
                             <ListItem key={productId} className={styles.productPreview}
-                                enabled={!!product}
-                                theme={!product ? 'danger' : undefined}
-                                mild={!product ? false : undefined}
+                                theme = {isProductDeleted ? 'danger' : undefined}
+                                mild  = {isProductDeleted ?  false   : undefined}
                             >
                                 <h2 className='title h6'>{product?.name}</h2>
                                 <Image
@@ -123,20 +128,65 @@ export const CartBarContent = () => {
                                     src={resolveMediaUrl(product?.image)}
                                     sizes='64px'
                                 />
-                                <Group className='quantity' title='Quantity' theme='primary' size='sm'>
-                                    <ButtonIcon icon='delete' title='remove from cart' onClick={() => confirmAndDelete(productId)} />
-                                    <QuantityInput min={0} max={99} value={quantity} onChange={({target:{valueAsNumber}}) => {
-                                        if (valueAsNumber > 0) {
-                                            dispatch(setCartItemQuantity({ productId: productId, quantity: valueAsNumber}));
-                                        }
-                                        else {
-                                            confirmAndDelete(productId);
-                                        } // if
-                                    }} />
+                                <Group
+                                    // variants:
+                                    size='sm'
+                                    theme='primary'
+                                    
+                                    
+                                    
+                                    // classes:
+                                    className='quantity'
+                                    
+                                    
+                                    
+                                    // accessibilities:
+                                    title='Quantity'
+                                >
+                                    <ButtonIcon
+                                        // appearances:
+                                        icon='delete'
+                                        
+                                        
+                                        
+                                        // accessibilities:
+                                        title='remove from cart'
+                                        
+                                        
+                                        
+                                        // handlers:
+                                        onClick={() => confirmAndDelete(productId)}
+                                    />
+                                    <QuantityInput
+                                        // accessibilities:
+                                        enabled={!isProductDeleted}
+                                        
+                                        
+                                        
+                                        // values:
+                                        value={quantity}
+                                        onChange={({target:{valueAsNumber}}) => {
+                                            if (valueAsNumber > 0) {
+                                                dispatch(setCartItemQuantity({
+                                                    productId : productId,
+                                                    quantity  : valueAsNumber,
+                                                }));
+                                            }
+                                            else {
+                                                confirmAndDelete(productId);
+                                            } // if
+                                        }}
+                                        
+                                        
+                                        
+                                        // validations:
+                                        min={0}
+                                        max={99}
+                                    />
                                 </Group>
                                 <p className='subPrice'>
-                                    {!product && <>This product was removed before you purcase it</>}
-                                    {!!product && <>
+                                    { isProductDeleted && <>This product was removed before you purcase it</>}
+                                    {!isProductDeleted && <>
                                         Subtotal price: <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * quantity) : undefined)}</span>
                                     </>}
                                 </p>
