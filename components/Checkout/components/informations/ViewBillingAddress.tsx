@@ -8,6 +8,9 @@ import {
 
 // internals:
 import {
+    useCheckoutStyleSheet,
+}                           from '../../styles/loader'
+import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -15,6 +18,11 @@ import {
 
 // react components:
 const ViewBillingAddress = (): JSX.Element|null => {
+    // styles:
+    const styles = useCheckoutStyleSheet();
+    
+    
+    
     // states:
     const {
         // shipping data:
@@ -52,7 +60,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            {`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}
+            <span className={styles.data}>{`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}</span>
         </>
     );
 };
