@@ -23,6 +23,11 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// internal components:
+import {
+    ButtonWithBusy,
+}                           from '../ButtonWithBusy'
+
 // internals:
 import {
     useCheckoutState,
@@ -34,11 +39,6 @@ import {
 const ButtonPaymentManual = (): JSX.Element|null => {
     // states:
     const {
-        // states:
-        isBusy,
-        
-        
-        
         // actions:
         doTransaction,
         doPlaceOrder,
@@ -76,29 +76,34 @@ const ButtonPaymentManual = (): JSX.Element|null => {
     
     // jsx:
     return (
-        <ButtonIcon
-            // appearances:
-            icon={!isBusy ? 'done' : 'busy'}
-            
-            
-            
-            // variants:
-            size='lg'
-            theme='primary'
-            gradient={true}
-            
-            
-            
-            // classes:
-            className='next finishOrder'
-            
-            
-            
-            // handlers:
-            onClick={handleFinishOrderButtonClick}
-        >
-            Finish Order
-        </ButtonIcon>
+        <ButtonWithBusy
+            // components:
+            buttonComponent={
+                <ButtonIcon
+                    // appearances:
+                    icon='done'
+                    
+                    
+                    
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                    gradient={true}
+                    
+                    
+                    
+                    // classes:
+                    className='next finishOrder'
+                    
+                    
+                    
+                    // handlers:
+                    onClick={handleFinishOrderButtonClick}
+                >
+                    Finish Order
+                </ButtonIcon>
+            }
+        />
     );
 };
 export {
