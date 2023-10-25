@@ -6,12 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// reusable-ui core:
-import {
-    // an accessibility management system:
-    AccessibilityProvider,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
-
 // reusable-ui components:
 import {
     // layout-components:
@@ -86,124 +80,121 @@ const ViewCart = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            <AccessibilityProvider
+            <ResponsiveDetails
+                // variants:
+                theme='secondary'
+                detailsStyle='content'
+                
+                
+                
+                // classes:
+                className='orderCollapse'
+                
+                
+                
                 // accessibilities:
+                title='Order List'
+                
                 enabled={true}         // always enabled
                 inheritEnabled={false} // always enabled
             >
-                <ResponsiveDetails
+                <List
                     // variants:
-                    theme='secondary'
-                    detailsStyle='content'
+                    listStyle='flat'
                     
                     
                     
                     // classes:
-                    className='orderCollapse'
-                    
-                    
-                    
-                    // accessibilities:
-                    title='Order List'
+                    className='orderList'
                 >
-                    <List
-                        // variants:
-                        listStyle='flat'
+                    {cartItems.map((item, itemIndex) => {
+                        // fn props:
+                        const product          = productList?.entities?.[item.productId];
+                        const productUnitPrice = product?.price;
                         
                         
                         
-                        // classes:
-                        className='orderList'
-                    >
-                        {cartItems.map((item, itemIndex) => {
-                            // fn props:
-                            const product          = productList?.entities?.[item.productId];
-                            const productUnitPrice = product?.price;
-                            
-                            
-                            
-                            // jsx:
-                            return (
-                                <ListItem
-                                    // identifiers:
-                                    key={item.productId || itemIndex}
-                                    
-                                    
-                                    
-                                    // variants:
-                                    theme={!product ? 'danger' : undefined}
-                                    mild={!product ? false : undefined}
-                                    
-                                    
-                                    
+                        // jsx:
+                        return (
+                            <ListItem
+                                // identifiers:
+                                key={item.productId || itemIndex}
+                                
+                                
+                                
+                                // variants:
+                                theme={!product ? 'danger' : undefined}
+                                mild={!product ? false : undefined}
+                                
+                                
+                                
+                                // classes:
+                                className={styles.productPreview}
+                                
+                                
+                                
+                                // accessibilities:
+                                enabled={!!product}
+                            >
+                                <h3
                                     // classes:
-                                    className={styles.productPreview}
-                                    
-                                    
-                                    
-                                    // accessibilities:
-                                    enabled={!!product}
+                                    className='title h6'
                                 >
-                                    <h3
-                                        // classes:
-                                        className='title h6'
-                                    >
-                                        {product?.name ?? 'PRODUCT DELETED'}
-                                    </h3>
-                                    
-                                    {/* image + quantity */}
-                                    <CompoundWithBadge
-                                        // components:
-                                        wrapperComponent={<React.Fragment />}
-                                        badgeComponent={
-                                            <Badge
-                                                // variants:
-                                                theme='danger'
-                                                badgeStyle='pill'
-                                                
-                                                
-                                                
-                                                // floatable:
-                                                floatingPlacement='right-start'
-                                                floatingShift={-3}
-                                                floatingOffset={-20}
-                                            >
-                                                {item.quantity}x
-                                            </Badge>
-                                        }
-                                        elementComponent={
-                                            <Image
-                                                // appearances:
-                                                alt={product?.name ?? ''}
-                                                src={resolveMediaUrl(product?.image)}
-                                                sizes='64px'
-                                                
-                                                
-                                                
-                                                // classes:
-                                                className='prodImg'
-                                            />
-                                        }
-                                    />
-                                    
-                                    {(productUnitPrice !== undefined) && <p className='unitPrice'>
-                                        @ <span className='currency secondary'>
-                                            {formatCurrency(productUnitPrice)}
-                                        </span>
-                                    </p>}
-                                    
-                                    <p className='subPrice currencyBlock'>
-                                        {!product && <>This product was deleted</>}
-                                        <span className='currency'>
-                                            {formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}
-                                        </span>
-                                    </p>
-                                </ListItem>
-                            );
-                        })}
-                    </List>
-                </ResponsiveDetails>
-            </AccessibilityProvider>
+                                    {product?.name ?? 'PRODUCT DELETED'}
+                                </h3>
+                                
+                                {/* image + quantity */}
+                                <CompoundWithBadge
+                                    // components:
+                                    wrapperComponent={<React.Fragment />}
+                                    badgeComponent={
+                                        <Badge
+                                            // variants:
+                                            theme='danger'
+                                            badgeStyle='pill'
+                                            
+                                            
+                                            
+                                            // floatable:
+                                            floatingPlacement='right-start'
+                                            floatingShift={-3}
+                                            floatingOffset={-20}
+                                        >
+                                            {item.quantity}x
+                                        </Badge>
+                                    }
+                                    elementComponent={
+                                        <Image
+                                            // appearances:
+                                            alt={product?.name ?? ''}
+                                            src={resolveMediaUrl(product?.image)}
+                                            sizes='64px'
+                                            
+                                            
+                                            
+                                            // classes:
+                                            className='prodImg'
+                                        />
+                                    }
+                                />
+                                
+                                {(productUnitPrice !== undefined) && <p className='unitPrice'>
+                                    @ <span className='currency secondary'>
+                                        {formatCurrency(productUnitPrice)}
+                                    </span>
+                                </p>}
+                                
+                                <p className='subPrice currencyBlock'>
+                                    {!product && <>This product was deleted</>}
+                                    <span className='currency'>
+                                        {formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}
+                                    </span>
+                                </p>
+                            </ListItem>
+                        );
+                    })}
+                </List>
+            </ResponsiveDetails>
             
             <hr />
             
