@@ -25,6 +25,11 @@ import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
 
+// internal components:
+import {
+    ButtonWithBusy,
+}                           from '../ButtonWithBusy'
+
 // stores:
 import {
     showCart,
@@ -44,8 +49,6 @@ const NavCheckout = (): JSX.Element|null => {
         // states:
         checkoutStep,
         checkoutProgress,
-        
-        isBusy,
         
         
         
@@ -110,30 +113,35 @@ const NavCheckout = (): JSX.Element|null => {
                     {prevAction.text}
                 </ButtonIcon>}
                 
-                {!!nextAction && <ButtonIcon
-                    // appearances:
-                    icon={!isBusy ? 'arrow_forward' : 'busy'}
-                    iconPosition='end'
-                    
-                    
-                    
-                    // variants:
-                    size='lg'
-                    theme='primary'
-                    gradient={true}
-                    
-                    
-                    
-                    // classes:
-                    className='next'
-                    
-                    
-                    
-                    // handlers:
-                    onClick={nextAction.action}
-                >
-                    {nextAction.text}
-                </ButtonIcon>}
+                {!!nextAction && <ButtonWithBusy
+                    // components:
+                    buttonComponent={
+                        <ButtonIcon
+                            // appearances:
+                            icon='arrow_forward'
+                            iconPosition='end'
+                            
+                            
+                            
+                            // variants:
+                            size='lg'
+                            theme='primary'
+                            gradient={true}
+                            
+                            
+                            
+                            // classes:
+                            className='next'
+                            
+                            
+                            
+                            // handlers:
+                            onClick={nextAction.action}
+                        >
+                            {nextAction.text}
+                        </ButtonIcon>
+                    }
+                />}
             </>}
             
             {isCheckoutFinished && <>
