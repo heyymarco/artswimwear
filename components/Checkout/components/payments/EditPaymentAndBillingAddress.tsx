@@ -74,11 +74,6 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
     
     // states:
     const {
-        // states:
-        isBusy,
-        
-        
-        
         // billing data:
         billingValidation,
         
@@ -189,11 +184,6 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                         // variants:
                         theme='primary'
                         listStyle='content'
-                        
-                        
-                        
-                        // accessibilities:
-                        enabled={!isBusy}
                         
                         
                         
