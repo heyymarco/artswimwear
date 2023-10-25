@@ -94,11 +94,6 @@ const ButtonPaymentManual = (): JSX.Element|null => {
             
             
             
-            // accessibilities:
-            enabled={!isBusy}
-            
-            
-            
             // handlers:
             onClick={handleFinishOrderButtonClick}
         >
