@@ -106,11 +106,11 @@ export const CartBarContent = () => {
                         {isError && <p>Oops, an error occured!</p>}
                     </ListItem>}
                     
-                    {isCartDataReady && cartItems.map((item) => {
-                        const productUnitPrice = priceList?.entities?.[item.productId]?.price ?? undefined;
-                        const product = productList?.entities?.[item.productId];
+                    {isCartDataReady && cartItems.map(({productId, quantity}) => {
+                        const productUnitPrice = priceList?.entities?.[productId]?.price ?? undefined;
+                        const product = productList?.entities?.[productId];
                         return (
-                            <ListItem key={item.productId} className={styles.productPreview}
+                            <ListItem key={productId} className={styles.productPreview}
                                 enabled={!!product}
                                 theme={!product ? 'danger' : undefined}
                                 mild={!product ? false : undefined}
@@ -124,20 +124,20 @@ export const CartBarContent = () => {
                                     sizes='64px'
                                 />
                                 <Group className='quantity' title='Quantity' theme='primary' size='sm'>
-                                    <ButtonIcon icon='delete' title='remove from cart' onClick={() => confirmAndDelete(item.productId)} />
-                                    <QuantityInput min={0} max={99} value={item.quantity} onChange={({target:{valueAsNumber}}) => {
+                                    <ButtonIcon icon='delete' title='remove from cart' onClick={() => confirmAndDelete(productId)} />
+                                    <QuantityInput min={0} max={99} value={quantity} onChange={({target:{valueAsNumber}}) => {
                                         if (valueAsNumber > 0) {
-                                            dispatch(setCartItemQuantity({ productId: item.productId, quantity: valueAsNumber}));
+                                            dispatch(setCartItemQuantity({ productId: productId, quantity: valueAsNumber}));
                                         }
                                         else {
-                                            confirmAndDelete(item.productId);
+                                            confirmAndDelete(productId);
                                         } // if
                                     }} />
                                 </Group>
                                 <p className='subPrice'>
                                     {!product && <>This product was removed before you purcase it</>}
                                     {!!product && <>
-                                        Subtotal price: <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * item.quantity) : undefined)}</span>
+                                        Subtotal price: <span className='currency'>{formatCurrency(productUnitPrice ? (productUnitPrice * quantity) : undefined)}</span>
                                     </>}
                                 </p>
                             </ListItem>
