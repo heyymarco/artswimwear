@@ -165,11 +165,6 @@ const ButtonPaymentCard = (): JSX.Element|null => {
             
             
             
-            // accessibilities:
-            enabled={!isBusy}
-            
-            
-            
             // handlers:
             onClick={handlePayButtonClick}
         >
