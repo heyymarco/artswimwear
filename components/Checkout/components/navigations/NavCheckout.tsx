@@ -104,11 +104,6 @@ const NavCheckout = (): JSX.Element|null => {
                     
                     
                     
-                    // accessibilities:
-                    enabled={!isBusy}
-                    
-                    
-                    
                     // handlers:
                     onClick={prevAction.action}
                 >
@@ -134,11 +129,6 @@ const NavCheckout = (): JSX.Element|null => {
                     
                     
                     
-                    // accessibilities:
-                    enabled={!isBusy}
-                    
-                    
-                    
                     // handlers:
                     onClick={nextAction.action}
                 >
@@ -156,8 +146,6 @@ const NavCheckout = (): JSX.Element|null => {
                     theme='primary'
                     buttonStyle='link'
                     className='back'
-                    
-                    enabled={!isBusy}
                     
                     onClick={gotoPayment}
                 >
@@ -203,11 +191,6 @@ const NavCheckout = (): JSX.Element|null => {
                     
                     // classes:
                     className='next'
-                    
-                    
-                    
-                    // accessibilities:
-                    enabled={!isBusy}
                 >
                     <Link href='/products'>
                         Continue Shopping
