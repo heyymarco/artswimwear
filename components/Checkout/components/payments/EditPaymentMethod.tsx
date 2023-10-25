@@ -82,11 +82,6 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     // states:
     const {
-        // states:
-        isBusy,
-        
-        
-        
         // payment data:
         paymentMethod,
         setPaymentMethod,
@@ -142,11 +137,6 @@ const EditPaymentMethod = (): JSX.Element|null => {
                 // variants:
                 theme='primary'
                 listStyle='content'
-                
-                
-                
-                // accessibilities:
-                enabled={!isBusy}
                 
                 
                 
