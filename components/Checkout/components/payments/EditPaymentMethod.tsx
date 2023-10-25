@@ -50,11 +50,6 @@ import {
     ViewPaymentMethodManual,
 }                           from '../payments/ViewPaymentMethodManual'
 
-// stores:
-import type {
-    PaymentMethod,
-}                           from '@/store/features/checkout/checkoutSlice'
-
 // paypal:
 import type {
     PayPalScriptOptions,
@@ -68,6 +63,12 @@ import {
     useCheckoutStyleSheet,
 }                           from '../../styles/loader'
 import {
+    // types:
+    PaymentMethod,
+    
+    
+    
+    // states:
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
