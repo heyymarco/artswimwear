@@ -85,7 +85,7 @@ export default () => {
     
     return [
         scope('data', {
-            whiteSpace : 'nowrap',
+            whiteSpace : 'normal',
             wordBreak  : 'break-all',
         }),
         
