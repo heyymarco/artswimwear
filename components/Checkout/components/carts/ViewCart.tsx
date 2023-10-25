@@ -29,7 +29,7 @@ import {
 }                           from '@/components/CompoundWithBadge'
 import {
     ResponsiveDetails,
-}                           from './ResponsiveDetails'
+}                           from '../ResponsiveDetails'
 
 // utilities:
 import {
