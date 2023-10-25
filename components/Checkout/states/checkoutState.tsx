@@ -175,6 +175,8 @@ export type {
     ProductPreview,
     PlaceOrderOptions,
     
+    CountryPreview,
+    
     MatchingShipping,
 }
 
