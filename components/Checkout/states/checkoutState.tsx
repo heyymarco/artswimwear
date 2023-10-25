@@ -128,7 +128,6 @@ import {
 }                           from '@/store/features/checkout/checkoutSlice'
 import {
     // types:
-    PricePreview,
     ProductPreview,
     PlaceOrderOptions,
     
@@ -152,7 +151,6 @@ import type {
 import type {
     // types:
     MatchingShipping,
-    MatchingAddress,
 }                           from '@/libs/shippings'
 import {
     calculateShippingCost,
@@ -167,7 +165,6 @@ import {
 
 // types:
 export type {
-    // types:
     CartEntry,
     
     CheckoutStep,
@@ -177,6 +174,8 @@ export type {
     
     ProductPreview,
     PlaceOrderOptions,
+    
+    MatchingShipping,
 }
 
 
