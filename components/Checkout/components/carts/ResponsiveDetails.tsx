@@ -25,6 +25,11 @@ import {
     
     
     
+    // an accessibility management system:
+    AccessibilityProvider,
+    
+    
+    
     // a capability of UI to expand/reduce its size or toggle the visibility:
     ExpandedChangeEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -99,9 +104,12 @@ const ResponsiveDetails = <TElement extends Element = HTMLElement, TExpandedChan
     
     // jsx:
     if (isDesktop) return (
-        <>
+        <AccessibilityProvider
+            // states:
+            {...restDetailsProps}
+        >
             {children}
-        </>
+        </AccessibilityProvider>
     );
     return (
         <Details<TElement, TExpandedChangeEvent>
