@@ -23,6 +23,11 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// internal components:
+import {
+    ButtonWithBusy,
+}                           from '../ButtonWithBusy'
+
 // paypal:
 import {
     usePayPalHostedFields,
@@ -39,11 +44,6 @@ import {
 const ButtonPaymentCard = (): JSX.Element|null => {
     // states:
     const {
-        // states:
-        isBusy,
-        
-        
-        
         // shipping data:
         shippingFirstName : _shippingFirstName, // not implemented yet, because billingFirstName is not implemented
         shippingLastName  : _shippingLastName,  // not implemented yet, because billingLastName  is not implemented
@@ -147,29 +147,34 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     // jsx:
     return (
-        <ButtonIcon
-            // appearances:
-            icon={!isBusy ? 'monetization_on' : 'busy'}
-            
-            
-            
-            // variants:
-            size='lg'
-            theme='primary'
-            gradient={true}
-            
-            
-            
-            // classes:
-            className='next payNow'
-            
-            
-            
-            // handlers:
-            onClick={handlePayButtonClick}
-        >
-            Pay Now
-        </ButtonIcon>
+        <ButtonWithBusy
+            // components:
+            buttonComponent={
+                <ButtonIcon
+                    // appearances:
+                    icon='monetization_on'
+                    
+                    
+                    
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                    gradient={true}
+                    
+                    
+                    
+                    // classes:
+                    className='next payNow'
+                    
+                    
+                    
+                    // handlers:
+                    onClick={handlePayButtonClick}
+                >
+                    Pay Now
+                </ButtonIcon>
+            }
+        />
     );
 };
 export {
