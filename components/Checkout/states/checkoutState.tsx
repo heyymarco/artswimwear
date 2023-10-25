@@ -165,6 +165,22 @@ import {
 
 
 
+// types:
+export type {
+    // types:
+    CartEntry,
+    
+    CheckoutStep,
+    BusyState,
+    PaymentMethod,
+    PaymentToken,
+    
+    ProductPreview,
+    PlaceOrderOptions,
+}
+
+
+
 // utilities:
 const invalidSelector = ':is(.invalidating, .invalidated)';
 
