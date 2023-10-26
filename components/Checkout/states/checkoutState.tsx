@@ -213,318 +213,318 @@ const invalidSelector = ':is(.invalidating, .invalidated)';
 // contexts:
 export interface CheckoutState {
     // states:
-    checkoutStep                      : CheckoutStep
-    checkoutProgress                  : number
+    checkoutStep              : CheckoutStep
+    checkoutProgress          : number
     
-    isBusy                            : BusyState,
+    isBusy                    : BusyState,
     
-    isLoadingPage                     : boolean
-    isErrorPage                       : boolean
-    isReadyPage                       : boolean
+    isLoadingPage             : boolean
+    isErrorPage               : boolean
+    isReadyPage               : boolean
     
-    isDesktop                         : boolean
+    isDesktop                 : boolean
     
     
     
     // cart data:
-    cartItems                         : CartEntry[]
-    hasCart                           : boolean
-    totalProductWeight                : number|null
-    totalProductPrice                 : number
+    cartItems                 : CartEntry[]
+    hasCart                   : boolean
+    totalProductWeight        : number|null
+    totalProductPrice         : number
     
     
     
     // extra data:
-    marketingOpt                      : boolean
-    marketingOptHandlers              : FieldHandlers<HTMLInputElement>
+    marketingOpt              : boolean
+    marketingOptHandlers      : FieldHandlers<HTMLInputElement>
     
     
     
     // customer data:
-    customerNickName                  : string
-    customerNickNameHandlers          : FieldHandlers<HTMLInputElement>
+    customerNickName          : string
+    customerNickNameHandlers  : FieldHandlers<HTMLInputElement>
     
-    customerEmail                     : string
-    customerEmailHandlers             : FieldHandlers<HTMLInputElement>
+    customerEmail             : string
+    customerEmailHandlers     : FieldHandlers<HTMLInputElement>
     
     
     
     // shipping data:
-    shippingValidation                : boolean
+    shippingValidation        : boolean
     
     
-    shippingFirstName                 : string
-    shippingFirstNameHandlers         : FieldHandlers<HTMLInputElement>
+    shippingFirstName         : string
+    shippingFirstNameHandlers : FieldHandlers<HTMLInputElement>
     
-    shippingLastName                  : string
-    shippingLastNameHandlers          : FieldHandlers<HTMLInputElement>
-    
-    
-    shippingPhone                     : string
-    shippingPhoneHandlers             : FieldHandlers<HTMLInputElement>
+    shippingLastName          : string
+    shippingLastNameHandlers  : FieldHandlers<HTMLInputElement>
     
     
-    shippingAddress                   : string
-    shippingAddressHandlers           : FieldHandlers<HTMLInputElement>
-    
-    shippingCity                      : string
-    shippingCityHandlers              : FieldHandlers<HTMLInputElement>
-    
-    shippingZone                      : string
-    shippingZoneHandlers              : FieldHandlers<HTMLInputElement>
-    
-    shippingZip                       : string
-    shippingZipHandlers               : FieldHandlers<HTMLInputElement>
-    
-    shippingCountry                   : string
-    shippingCountryHandlers           : FieldHandlers<HTMLInputElement>
+    shippingPhone             : string
+    shippingPhoneHandlers     : FieldHandlers<HTMLInputElement>
     
     
-    shippingProvider                  : string | undefined
-    setShippingProvider               : (shippingProvider: string) => void
+    shippingAddress           : string
+    shippingAddressHandlers   : FieldHandlers<HTMLInputElement>
     
-    totalShippingCost                 : number|null
+    shippingCity              : string
+    shippingCityHandlers      : FieldHandlers<HTMLInputElement>
+    
+    shippingZone              : string
+    shippingZoneHandlers      : FieldHandlers<HTMLInputElement>
+    
+    shippingZip               : string
+    shippingZipHandlers       : FieldHandlers<HTMLInputElement>
+    
+    shippingCountry           : string
+    shippingCountryHandlers   : FieldHandlers<HTMLInputElement>
+    
+    
+    shippingProvider          : string | undefined
+    setShippingProvider       : (shippingProvider: string) => void
+    
+    totalShippingCost         : number|null
     
     
     
     // billing data:
-    billingValidation                 : boolean
+    billingValidation         : boolean
     
     
-    billingAsShipping                 : boolean
-    setBillingAsShipping              : (billingAsShipping: boolean) => void
+    billingAsShipping         : boolean
+    setBillingAsShipping      : (billingAsShipping: boolean) => void
     
     
-    billingFirstName                  : string
-    billingFirstNameHandlers          : FieldHandlers<HTMLInputElement>
+    billingFirstName          : string
+    billingFirstNameHandlers  : FieldHandlers<HTMLInputElement>
     
-    billingLastName                   : string
-    billingLastNameHandlers           : FieldHandlers<HTMLInputElement>
-    
-    
-    billingPhone                      : string
-    billingPhoneHandlers              : FieldHandlers<HTMLInputElement>
+    billingLastName           : string
+    billingLastNameHandlers   : FieldHandlers<HTMLInputElement>
     
     
-    billingAddress                    : string
-    billingAddressHandlers            : FieldHandlers<HTMLInputElement>
+    billingPhone              : string
+    billingPhoneHandlers      : FieldHandlers<HTMLInputElement>
     
-    billingCity                       : string
-    billingCityHandlers               : FieldHandlers<HTMLInputElement>
     
-    billingZone                       : string
-    billingZoneHandlers               : FieldHandlers<HTMLInputElement>
+    billingAddress            : string
+    billingAddressHandlers    : FieldHandlers<HTMLInputElement>
     
-    billingZip                        : string
-    billingZipHandlers                : FieldHandlers<HTMLInputElement>
+    billingCity               : string
+    billingCityHandlers       : FieldHandlers<HTMLInputElement>
     
-    billingCountry                    : string
-    billingCountryHandlers            : FieldHandlers<HTMLInputElement>
+    billingZone               : string
+    billingZoneHandlers       : FieldHandlers<HTMLInputElement>
+    
+    billingZip                : string
+    billingZipHandlers        : FieldHandlers<HTMLInputElement>
+    
+    billingCountry            : string
+    billingCountryHandlers    : FieldHandlers<HTMLInputElement>
     
     
     
     // payment data:
-    paymentValidation                 : boolean
+    paymentValidation         : boolean
     
-    paymentMethod                     : PaymentMethod | undefined
-    setPaymentMethod                  : (paymentMethod: PaymentMethod) => void
+    paymentMethod             : PaymentMethod | undefined
+    setPaymentMethod          : (paymentMethod: PaymentMethod) => void
     
-    paymentToken                      : PaymentToken  | undefined
+    paymentToken              : PaymentToken  | undefined
     
-    paymentType                       : string|undefined
-    paymentBrand                      : string|null|undefined
-    paymentIdentifier                 : string|null|undefined
+    paymentType               : string|undefined
+    paymentBrand              : string|null|undefined
+    paymentIdentifier         : string|null|undefined
     
     
     
     // relation data:
-    productList                       : EntityState<ProductPreview>   | undefined
-    countryList                       : EntityState<CountryPreview>   | undefined
-    shippingList                      : EntityState<MatchingShipping> | undefined
+    productList               : EntityState<ProductPreview>   | undefined
+    countryList               : EntityState<CountryPreview>   | undefined
+    shippingList              : EntityState<MatchingShipping> | undefined
     
     
     
     // sections:
-    regularCheckoutSectionRef         : React.MutableRefObject<HTMLElement|null>      | undefined
-    shippingMethodOptionRef           : React.MutableRefObject<HTMLElement|null>      | undefined
-    billingAddressSectionRef          : React.MutableRefObject<HTMLElement|null>      | undefined
-    paymentCardSectionRef             : React.MutableRefObject<HTMLElement|null>      | undefined
-    currentStepSectionRef             : React.MutableRefObject<HTMLElement|null>      | undefined
-    navCheckoutSectionElm             : React.MutableRefObject<HTMLElement|null>      | undefined
+    regularCheckoutSectionRef : React.MutableRefObject<HTMLElement|null>      | undefined
+    shippingMethodOptionRef   : React.MutableRefObject<HTMLElement|null>      | undefined
+    billingAddressSectionRef  : React.MutableRefObject<HTMLElement|null>      | undefined
+    paymentCardSectionRef     : React.MutableRefObject<HTMLElement|null>      | undefined
+    currentStepSectionRef     : React.MutableRefObject<HTMLElement|null>      | undefined
+    navCheckoutSectionElm     : React.MutableRefObject<HTMLElement|null>      | undefined
     
     
     
     // fields:
-    contactEmailInputRef              : React.MutableRefObject<HTMLInputElement|null> | undefined
-    shippingAddressInputRef           : React.MutableRefObject<HTMLInputElement|null> | undefined
-    cardholderInputRef                : React.MutableRefObject<HTMLInputElement|null> | undefined
+    contactEmailInputRef      : React.MutableRefObject<HTMLInputElement|null> | undefined
+    shippingAddressInputRef   : React.MutableRefObject<HTMLInputElement|null> | undefined
+    cardholderInputRef        : React.MutableRefObject<HTMLInputElement|null> | undefined
     
     
     
     // actions:
-    gotoStepInformation               : (focusTo?: 'contactInfo'|'shippingAddress') => void
-    gotoStepShipping                  : () => Promise<boolean>
-    gotoPayment                       : () => void
+    gotoStepInformation       : (focusTo?: 'contactInfo'|'shippingAddress') => void
+    gotoStepShipping          : () => Promise<boolean>
+    gotoPayment               : () => void
     
-    doTransaction                     : (transaction: (() => Promise<void>)) => Promise<boolean>
-    doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
-    doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
+    doTransaction             : (transaction: (() => Promise<void>)) => Promise<boolean>
+    doPlaceOrder              : (options?: PlaceOrderOptions) => Promise<string>
+    doMakePayment             : (orderId: string, paid: boolean) => Promise<void>
 }
 
 const noopHandler : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
 const CheckoutStateContext = createContext<CheckoutState>({
     // states:
-    checkoutStep                      : 'info',
-    checkoutProgress                  : 0,
+    checkoutStep              : 'info',
+    checkoutProgress          : 0,
     
-    isBusy                            : false,
+    isBusy                    : false,
     
-    isLoadingPage                     : false,
-    isErrorPage                       : false,
-    isReadyPage                       : false,
+    isLoadingPage             : false,
+    isErrorPage               : false,
+    isReadyPage               : false,
     
-    isDesktop                         : false,
+    isDesktop                 : false,
     
     
     
     // cart data:
-    cartItems                         : [],
-    hasCart                           : false,
-    totalProductWeight                : null,
-    totalProductPrice                 : 0,
+    cartItems                 : [],
+    hasCart                   : false,
+    totalProductWeight        : null,
+    totalProductPrice         : 0,
     
     
     
     // extra data:
-    marketingOpt                      : true,
-    marketingOptHandlers              : noopHandler,
+    marketingOpt              : true,
+    marketingOptHandlers      : noopHandler,
     
     
     
     // customer data:
-    customerNickName                  : '',
-    customerNickNameHandlers          : noopHandler,
+    customerNickName          : '',
+    customerNickNameHandlers  : noopHandler,
     
-    customerEmail                     : '',
-    customerEmailHandlers             : noopHandler,
+    customerEmail             : '',
+    customerEmailHandlers     : noopHandler,
     
     
     
     // shipping data:
-    shippingValidation                : false,
+    shippingValidation        : false,
     
     
-    shippingFirstName                 : '',
-    shippingFirstNameHandlers         : noopHandler,
-    shippingLastName                  : '',
-    shippingLastNameHandlers          : noopHandler,
+    shippingFirstName         : '',
+    shippingFirstNameHandlers : noopHandler,
+    shippingLastName          : '',
+    shippingLastNameHandlers  : noopHandler,
     
     
-    shippingPhone                     : '',
-    shippingPhoneHandlers             : noopHandler,
+    shippingPhone             : '',
+    shippingPhoneHandlers     : noopHandler,
     
     
-    shippingAddress                   : '',
-    shippingAddressHandlers           : noopHandler,
-    shippingCity                      : '',
-    shippingCityHandlers              : noopHandler,
-    shippingZone                      : '',
-    shippingZoneHandlers              : noopHandler,
-    shippingZip                       : '',
-    shippingZipHandlers               : noopHandler,
-    shippingCountry                   : '',
-    shippingCountryHandlers           : noopHandler,
+    shippingAddress           : '',
+    shippingAddressHandlers   : noopHandler,
+    shippingCity              : '',
+    shippingCityHandlers      : noopHandler,
+    shippingZone              : '',
+    shippingZoneHandlers      : noopHandler,
+    shippingZip               : '',
+    shippingZipHandlers       : noopHandler,
+    shippingCountry           : '',
+    shippingCountryHandlers   : noopHandler,
     
     
-    shippingProvider                  : undefined,
-    setShippingProvider               : noopHandler as any,
+    shippingProvider          : undefined,
+    setShippingProvider       : noopHandler as any,
     
-    totalShippingCost                 : null,
+    totalShippingCost         : null,
     
     
     
     // billing data:
-    billingValidation                 : false,
+    billingValidation         : false,
     
     
-    billingAsShipping                 : true,
-    setBillingAsShipping              : noopHandler as any,
+    billingAsShipping         : true,
+    setBillingAsShipping      : noopHandler as any,
     
     
-    billingFirstName                  : '',
-    billingFirstNameHandlers          : noopHandler,
+    billingFirstName          : '',
+    billingFirstNameHandlers  : noopHandler,
     
-    billingLastName                   : '',
-    billingLastNameHandlers           : noopHandler,
-    
-    
-    billingPhone                      : '',
-    billingPhoneHandlers              : noopHandler,
+    billingLastName           : '',
+    billingLastNameHandlers   : noopHandler,
     
     
-    billingAddress                    : '',
-    billingAddressHandlers            : noopHandler,
+    billingPhone              : '',
+    billingPhoneHandlers      : noopHandler,
     
-    billingCity                       : '',
-    billingCityHandlers               : noopHandler,
     
-    billingZone                       : '',
-    billingZoneHandlers               : noopHandler,
+    billingAddress            : '',
+    billingAddressHandlers    : noopHandler,
     
-    billingZip                        : '',
-    billingZipHandlers                : noopHandler,
+    billingCity               : '',
+    billingCityHandlers       : noopHandler,
     
-    billingCountry                    : '',
-    billingCountryHandlers            : noopHandler,
+    billingZone               : '',
+    billingZoneHandlers       : noopHandler,
+    
+    billingZip                : '',
+    billingZipHandlers        : noopHandler,
+    
+    billingCountry            : '',
+    billingCountryHandlers    : noopHandler,
     
     
     
     // payment data:
-    paymentValidation                 : false,
+    paymentValidation         : false,
     
-    paymentMethod                     : undefined,
-    setPaymentMethod                  : noopHandler as any,
+    paymentMethod             : undefined,
+    setPaymentMethod          : noopHandler as any,
     
-    paymentToken                      : undefined,
+    paymentToken              : undefined,
     
-    paymentType                       : undefined,
-    paymentBrand                      : undefined,
-    paymentIdentifier                 : undefined,
+    paymentType               : undefined,
+    paymentBrand              : undefined,
+    paymentIdentifier         : undefined,
     
     
     
     // relation data:
-    productList                       : undefined,
-    countryList                       : undefined,
-    shippingList                      : undefined,
+    productList               : undefined,
+    countryList               : undefined,
+    shippingList              : undefined,
     
     
     
     // sections:
-    regularCheckoutSectionRef         : undefined,
-    shippingMethodOptionRef           : undefined,
-    billingAddressSectionRef          : undefined,
-    paymentCardSectionRef             : undefined,
-    currentStepSectionRef             : undefined,
-    navCheckoutSectionElm             : undefined,
+    regularCheckoutSectionRef : undefined,
+    shippingMethodOptionRef   : undefined,
+    billingAddressSectionRef  : undefined,
+    paymentCardSectionRef     : undefined,
+    currentStepSectionRef     : undefined,
+    navCheckoutSectionElm     : undefined,
     
     
     
     // fields:
-    contactEmailInputRef              : undefined,
-    shippingAddressInputRef           : undefined,
-    cardholderInputRef                : undefined,
+    contactEmailInputRef      : undefined,
+    shippingAddressInputRef   : undefined,
+    cardholderInputRef        : undefined,
     
     
     
     // actions:
-    gotoStepInformation               : noopHandler as any,
-    gotoStepShipping                  : noopHandler as any,
-    gotoPayment                       : noopHandler as any,
+    gotoStepInformation       : noopHandler as any,
+    gotoStepShipping          : noopHandler as any,
+    gotoPayment               : noopHandler as any,
     
-    doTransaction                     : noopHandler as any,
-    doPlaceOrder                      : noopHandler as any,
-    doMakePayment                     : noopHandler as any,
+    doTransaction             : noopHandler as any,
+    doPlaceOrder              : noopHandler as any,
+    doMakePayment             : noopHandler as any,
 });
 CheckoutStateContext.displayName  = 'CheckoutState';
 
@@ -887,7 +887,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // stable callbacks:
-    const gotoStepInformation               = useEvent((focusTo?: 'contactInfo'|'shippingAddress'): void => {
+    const gotoStepInformation  = useEvent((focusTo?: 'contactInfo'|'shippingAddress'): void => {
         setCheckoutStep('info');
         
         
@@ -906,7 +906,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             }, 200);
         } // if
     });
-    const gotoStepShipping                  = useEvent(async (): Promise<boolean> => {
+    const gotoStepShipping     = useEvent(async (): Promise<boolean> => {
         const goForward = (checkoutStep === 'info');
         if (goForward) { // go forward from 'info' => do validate shipping agencies
             // TODO: if (totalShippingWeight !== null) // if contain a/some physical product => requires shipping
@@ -1002,14 +1002,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const gotoPayment                       = useEvent((): void => {
+    const gotoPayment          = useEvent((): void => {
         setCheckoutStep('payment');
     });
     
-    const setShippingProvider               = useEvent((shippingProvider: string): void => {
+    const setShippingProvider  = useEvent((shippingProvider: string): void => {
         dispatch(reduxSetShippingProvider(shippingProvider));
     });
-    const setPaymentMethod                  = useEvent((paymentMethod: PaymentMethod): void => {
+    const setPaymentMethod     = useEvent((paymentMethod: PaymentMethod): void => {
         dispatch(reduxSetPaymentMethod(paymentMethod));
         
         // reset:
@@ -1017,7 +1017,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             dispatch(reduxSetPaymentValidation(false));
         } // if
     });
-    const setBillingAsShipping              = useEvent((billingAsShipping: boolean): void => {
+    const setBillingAsShipping = useEvent((billingAsShipping: boolean): void => {
         dispatch(reduxSetBillingAsShipping(billingAsShipping));
         
         // reset:
@@ -1026,7 +1026,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         } // if
     });
     
-    const doTransaction                     = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
+    const doTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
         if (paymentMethod !== 'paypal') { // paymentMethod 'card' & paymentMethod 'manual' => requires valid billing fields
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
@@ -1084,7 +1084,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const doPlaceOrder                      = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
+    const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const placeOrderResponse = await placeOrder({
                 // cart item(s):
@@ -1118,7 +1118,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             throw error;
         } // try
     });
-    const doMakePayment                     = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
+    const doMakePayment        = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
         const paymentState = await makePayment({
             orderId,
             
@@ -1191,16 +1191,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // extra data:
         marketingOpt,
-        marketingOptHandlers,              // stable ref
+        marketingOptHandlers,      // stable ref
         
         
         
         // customer data:
         customerNickName,
-        customerNickNameHandlers,          // stable ref
+        customerNickNameHandlers,  // stable ref
         
         customerEmail,
-        customerEmailHandlers,             // stable ref
+        customerEmailHandlers,     // stable ref
         
         
         
@@ -1236,7 +1236,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         shippingProvider,
-        setShippingProvider,               // stable ref
+        setShippingProvider,       // stable ref
         
         totalShippingCost,
         
@@ -1247,34 +1247,34 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         billingAsShipping,
-        setBillingAsShipping,              // stable ref
+        setBillingAsShipping,      // stable ref
         
         
         billingFirstName,
-        billingFirstNameHandlers,          // stable ref
+        billingFirstNameHandlers,  // stable ref
         
         billingLastName,
-        billingLastNameHandlers,           // stable ref
+        billingLastNameHandlers,   // stable ref
         
         
         billingPhone,
-        billingPhoneHandlers,              // stable ref
+        billingPhoneHandlers,      // stable ref
         
         
         billingAddress,
-        billingAddressHandlers,            // stable ref
+        billingAddressHandlers,    // stable ref
         
         billingCity,
-        billingCityHandlers,               // stable ref
+        billingCityHandlers,       // stable ref
         
         billingZone,
-        billingZoneHandlers,               // stable ref
+        billingZoneHandlers,       // stable ref
         
         billingZip,
-        billingZipHandlers,                // stable ref
+        billingZipHandlers,        // stable ref
         
         billingCountry,
-        billingCountryHandlers,            // stable ref
+        billingCountryHandlers,    // stable ref
         
         
         
@@ -1282,7 +1282,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentValidation,
         
         paymentMethod,
-        setPaymentMethod,                  // stable ref
+        setPaymentMethod,          // stable ref
         
         paymentToken,
         
@@ -1300,30 +1300,30 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // sections:
-        regularCheckoutSectionRef,         // stable ref
-        shippingMethodOptionRef,           // stable ref
-        billingAddressSectionRef,          // stable ref
-        paymentCardSectionRef,             // stable ref
-        currentStepSectionRef,             // stable ref
-        navCheckoutSectionElm,             // mutable ref
+        regularCheckoutSectionRef, // stable ref
+        shippingMethodOptionRef,   // stable ref
+        billingAddressSectionRef,  // stable ref
+        paymentCardSectionRef,     // stable ref
+        currentStepSectionRef,     // stable ref
+        navCheckoutSectionElm,     // stable ref
         
         
         
         // fields:
-        contactEmailInputRef,              // stable ref
-        shippingAddressInputRef,           // stable ref
-        cardholderInputRef,                // stable ref
+        contactEmailInputRef,      // stable ref
+        shippingAddressInputRef,   // stable ref
+        cardholderInputRef,        // stable ref
         
         
         
         // actions:
-        gotoStepInformation,               // stable ref
-        gotoStepShipping,                  // stable ref
-        gotoPayment,                       // stable ref
+        gotoStepInformation,       // stable ref
+        gotoStepShipping,          // stable ref
+        gotoPayment,               // stable ref
         
-        doTransaction,                     // stable ref
-        doPlaceOrder,                      // stable ref
-        doMakePayment,                     // stable ref
+        doTransaction,             // stable ref
+        doPlaceOrder,              // stable ref
+        doMakePayment,             // stable ref
     }), [
         // states:
         checkoutStep,
@@ -1349,16 +1349,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // extra data:
         marketingOpt,
-        // marketingOptHandlers,              // stable ref
+        // marketingOptHandlers,      // stable ref
         
         
         
         // customer data:
         customerNickName,
-        // customerNickNameHandlers,          // stable ref
+        // customerNickNameHandlers,  // stable ref
         
         customerEmail,
-        // customerEmailHandlers,             // stable ref
+        // customerEmailHandlers,     // stable ref
         
         
         
@@ -1367,34 +1367,34 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         shippingFirstName,
-        // shippingFirstNameHandlers,         // stable ref
+        // shippingFirstNameHandlers, // stable ref
         
         shippingLastName,
-        // shippingLastNameHandlers,          // stable ref
+        // shippingLastNameHandlers,  // stable ref
         
         
         shippingPhone,
-        // shippingPhoneHandlers,             // stable ref
+        // shippingPhoneHandlers,     // stable ref
         
         
         shippingAddress,
-        // shippingAddressHandlers,           // stable ref
+        // shippingAddressHandlers,   // stable ref
         
         shippingCity,
-        // shippingCityHandlers,              // stable ref
+        // shippingCityHandlers,      // stable ref
         
         shippingZone,
-        // shippingZoneHandlers,              // stable ref
+        // shippingZoneHandlers,      // stable ref
         
         shippingZip,
-        // shippingZipHandlers,               // stable ref
+        // shippingZipHandlers,       // stable ref
         
         shippingCountry,
-        // shippingCountryHandlers,           // stable ref
+        // shippingCountryHandlers,   // stable ref
         
         
         shippingProvider,
-        // setShippingProvider                // stable ref,
+        // setShippingProvider        // stable ref,
         
         totalShippingCost,
         
@@ -1405,34 +1405,34 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         billingAsShipping,
-        // setBillingAsShipping,              // stable ref
+        // setBillingAsShipping,      // stable ref
         
         
         billingFirstName,
-        // billingFirstNameHandlers,          // stable ref
+        // billingFirstNameHandlers,  // stable ref
         
         billingLastName,
-        // billingLastNameHandlers,           // stable ref
+        // billingLastNameHandlers,   // stable ref
         
         
         billingPhone,
-        // billingPhoneHandlers,              // stable ref
+        // billingPhoneHandlers,      // stable ref
         
         
         billingAddress,
-        // billingAddressHandlers,            // stable ref
+        // billingAddressHandlers,    // stable ref
         
         billingCity,
-        // billingCityHandlers,               // stable ref
+        // billingCityHandlers,       // stable ref
         
         billingZone,
-        // billingZoneHandlers,               // stable ref
+        // billingZoneHandlers,       // stable ref
         
         billingZip,
-        // billingZipHandlers,                // stable ref
+        // billingZipHandlers,        // stable ref
         
         billingCountry,
-        // billingCountryHandlers,            // stable ref
+        // billingCountryHandlers,    // stable ref
         
         
         
@@ -1440,7 +1440,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentValidation,
         
         paymentMethod,
-        // setPaymentMethod,                  // stable ref
+        // setPaymentMethod,          // stable ref
         
         paymentToken,
         
@@ -1458,30 +1458,30 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // sections:
-        // regularCheckoutSectionRef,         // stable ref
-        // shippingMethodOptionRef,           // stable ref
-        // billingAddressSectionRef,          // stable ref
-        // paymentCardSectionRef,             // stable ref
-        // currentStepSectionRef,             // stable ref
-        navCheckoutSectionElm,                // mutable ref
+        // regularCheckoutSectionRef, // stable ref
+        // shippingMethodOptionRef,   // stable ref
+        // billingAddressSectionRef,  // stable ref
+        // paymentCardSectionRef,     // stable ref
+        // currentStepSectionRef,     // stable ref
+        // navCheckoutSectionElm,     // stable ref
         
         
         
         // fields:
-        // contactEmailInputRef,              // stable ref
-        // shippingAddressInputRef,           // stable ref
-        // cardholderInputRef,                // stable ref
+        // contactEmailInputRef,      // stable ref
+        // shippingAddressInputRef,   // stable ref
+        // cardholderInputRef,        // stable ref
         
         
         
         // actions:
-        // gotoStepInformation,               // stable ref
-        // gotoStepShipping,                  // stable ref
-        // gotoPayment,                       // stable ref
+        // gotoStepInformation,       // stable ref
+        // gotoStepShipping,          // stable ref
+        // gotoPayment,               // stable ref
         
-        // doTransaction,                     // stable ref
-        // doPlaceOrder,                      // stable ref
-        // doMakePayment,                     // stable ref
+        // doTransaction,             // stable ref
+        // doPlaceOrder,              // stable ref
+        // doMakePayment,             // stable ref
     ]);
     
     
