@@ -9,7 +9,6 @@ import {
 // redux:
 import {
     useDispatch,
-    useSelector,
 }                           from 'react-redux'
 
 // reusable-ui core:
@@ -19,20 +18,17 @@ import {
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // stores:
-import {
+import type {
     // types:
     CheckoutState,
-    
-    
-    
-    // selectors:
-    selectCheckoutState,
 }                           from '@/store/features/checkout/checkoutSlice'
 
 
 
 export interface FieldStateOptions<TField extends keyof CheckoutState, TValue extends CheckoutState[TField]> {
     field    : TField
+    
+    state    : CheckoutState
     dispatch : (value: TValue) => {
         payload : TValue
         type    : string
@@ -41,8 +37,7 @@ export interface FieldStateOptions<TField extends keyof CheckoutState, TValue ex
 export type FieldHandlers<TElement extends HTMLInputElement = HTMLInputElement> = Required<Pick<React.InputHTMLAttributes<TElement>, 'onChange'>>
 export const useFieldState = <TField extends keyof CheckoutState, TValue extends CheckoutState[TField], TElement extends HTMLInputElement = HTMLInputElement>(options: FieldStateOptions<TField, TValue>): readonly [TValue, React.Dispatch<React.SetStateAction<TValue>>, FieldHandlers<TElement>] => {
     // stores:
-    const state = useSelector(selectCheckoutState);
-    const field : TValue = state[options.field] as TValue;
+    const field : TValue = options.state[options.field] as TValue;
     const dispatch = useDispatch();
     
     
