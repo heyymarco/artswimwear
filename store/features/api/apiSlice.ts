@@ -1,4 +1,3 @@
-import type { RootState } from '@/store/store'
 import { createEntityAdapter, EntityState }         from '@reduxjs/toolkit'
 import type { PrefetchOptions }                     from '@reduxjs/toolkit/dist/query/core/module'
 import { createApi, fetchBaseQuery }                from '@reduxjs/toolkit/query/react'
@@ -14,8 +13,6 @@ import type {
 
 // apis:
 import type { CountryPreview }                  from '@/pages/api/countryList'
-import type { PricePreview }                    from '@/pages/api/priceList'
-export type { PricePreview }                    from '@/pages/api/priceList'
 import type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 export type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 
@@ -23,10 +20,6 @@ export type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 
 const productListAdapter = createEntityAdapter<ProductPreview>({
     selectId : (productPreview) => productPreview.id,
-});
-
-const priceListAdapter = createEntityAdapter<PricePreview>({
-    selectId : (pricePreview) => pricePreview.id,
 });
 
 const countryListAdapter = createEntityAdapter<CountryPreview>({
@@ -118,15 +111,6 @@ export const apiSlice = createApi({
         
         
         
-        getPriceList            : builder.query<EntityState<PricePreview>, void>({
-            query : () => 'priceList',
-            transformResponse(response: PricePreview[]) {
-                return priceListAdapter.addMany(priceListAdapter.getInitialState(), response);
-            },
-        }),
-        
-        
-        
         getCountryList          : builder.query<EntityState<CountryPreview>, void>({
             query : () => 'countryList',
             transformResponse(response: CountryPreview[]) {
@@ -178,8 +162,6 @@ export const {
     useGetProductListQuery             : useGetProductList,
     useGetProductDetailQuery           : useGetProductDetail,
     
-    useGetPriceListQuery               : useGetPriceList,
-    
     useGetCountryListQuery             : useGetCountryList,
     
     useGetMatchingShippingListMutation : useGetMatchingShippingList,
@@ -191,7 +173,6 @@ export const {
 
 export const usePrefetchProductList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList'  , options);
 export const usePrefetchProductDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail', options);
-export const usePrefetchPriceList     = (options?: PrefetchOptions) => apiSlice.usePrefetch('getPriceList'    , options);
 export const usePrefetchCountryList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCountryList'  , options);
 
 

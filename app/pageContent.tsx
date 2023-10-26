@@ -6,7 +6,7 @@ import { AccordionItem, Carousel, Container, ExclusiveAccordion, Icon } from '@r
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
 import { useEffect } from 'react'
-import { usePrefetchProductList, usePrefetchPriceList, usePrefetchCountryList } from '@/store/features/api/apiSlice'
+import { usePrefetchProductList, usePrefetchCountryList } from '@/store/features/api/apiSlice'
 
 
 
@@ -22,12 +22,10 @@ export function HomePageContent() {
     
     
     const prefetchProductList = usePrefetchProductList();
-    const prefetchPriceList = usePrefetchPriceList();
     const prefetchCountryList = usePrefetchCountryList();
     useEffect(() => {
         const cancelPrefetch = setTimeout(() => {
             prefetchProductList();
-            prefetchPriceList();
             prefetchCountryList();
         }, 100);
         
