@@ -1,5 +1,14 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../store';
+// redux:
+import {
+    createSlice,
+    PayloadAction,
+}                           from '@reduxjs/toolkit'
+
+// stores:
+import type {
+    // types:
+    RootState,
+}                           from '../../store'
 
 
 
@@ -23,153 +32,153 @@ export interface PaymentToken {
 }
 export interface CheckoutState {
     // states:
-    checkoutStep           : CheckoutStep
-    isBusy                 : BusyState
+    checkoutStep       : CheckoutStep
+    isBusy             : BusyState
     
     
     
     // extra data:
-    marketingOpt           : boolean
+    marketingOpt       : boolean
     
     
     
     // customer data:
-    customerNickName       : string
-    customerEmail          : string
+    customerNickName   : string
+    customerEmail      : string
     
     
     
     // shipping data:
-    shippingValidation     : boolean
+    shippingValidation : boolean
     
-    shippingFirstName      : string
-    shippingLastName       : string
+    shippingFirstName  : string
+    shippingLastName   : string
     
-    shippingPhone          : string
+    shippingPhone      : string
     
-    shippingAddress        : string
-    shippingCity           : string
-    shippingZone           : string
-    shippingZip            : string
-    shippingCountry        : string
+    shippingAddress    : string
+    shippingCity       : string
+    shippingZone       : string
+    shippingZip        : string
+    shippingCountry    : string
     
-    shippingProvider      ?: string
+    shippingProvider  ?: string
     
     
     
     // billing data:
-    billingValidation      : boolean
+    billingValidation  : boolean
     
-    billingAsShipping      : boolean
+    billingAsShipping  : boolean
     
-    billingFirstName       : string
-    billingLastName        : string
+    billingFirstName   : string
+    billingLastName    : string
     
-    billingPhone           : string
+    billingPhone       : string
     
-    billingAddress         : string
-    billingCity            : string
-    billingZone            : string
-    billingZip             : string
-    billingCountry         : string
+    billingAddress     : string
+    billingCity        : string
+    billingZone        : string
+    billingZip         : string
+    billingCountry     : string
     
     
     
     // payment data:
-    paymentValidation      : boolean
+    paymentValidation  : boolean
     
-    paymentMethod         ?: PaymentMethod
+    paymentMethod     ?: PaymentMethod
     
-    paymentToken          ?: PaymentToken
+    paymentToken      ?: PaymentToken
 }
 
-const initialState: CheckoutState = {
+const initialState : CheckoutState = {
     // states:
-    checkoutStep           : 'info',
-    isBusy                 : false,
+    checkoutStep       : 'info',
+    isBusy             : false,
     
     
     
     // extra data:
-    marketingOpt           : true,
+    marketingOpt       : true,
     
     
     
     // customer data:
-    customerNickName       : '',
-    customerEmail          : '',
+    customerNickName   : '',
+    customerEmail      : '',
     
     
     
     // shipping data:
-    shippingValidation     : false,
+    shippingValidation : false,
     
-    shippingFirstName      : '',
-    shippingLastName       : '',
+    shippingFirstName  : '',
+    shippingLastName   : '',
     
-    shippingPhone          : '',
+    shippingPhone      : '',
     
-    shippingAddress        : '',
-    shippingCity           : '',
-    shippingZone           : '',
-    shippingZip            : '',
-    shippingCountry        : '',
+    shippingAddress    : '',
+    shippingCity       : '',
+    shippingZone       : '',
+    shippingZip        : '',
+    shippingCountry    : '',
     
-    shippingProvider       : undefined,
+    shippingProvider   : undefined,
     
     
     
     // billing data:
-    billingValidation      : false,
+    billingValidation  : false,
     
-    billingAsShipping      : true,
+    billingAsShipping  : true,
     
-    billingFirstName       : '',
-    billingLastName        : '',
+    billingFirstName   : '',
+    billingLastName    : '',
     
-    billingPhone           : '',
+    billingPhone       : '',
     
-    billingAddress         : '',
-    billingCity            : '',
-    billingZone            : '',
-    billingZip             : '',
-    billingCountry         : '',
+    billingAddress     : '',
+    billingCity        : '',
+    billingZone        : '',
+    billingZip         : '',
+    billingCountry     : '',
     
     
     
     // payment data:
-    paymentValidation      : false,
+    paymentValidation  : false,
     
-    paymentMethod          : undefined,
+    paymentMethod      : undefined,
     
-    paymentToken           : undefined,
+    paymentToken       : undefined,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
     initialState,
     reducers: {
         // states:
-        setCheckoutStep: (state, {payload: value}: PayloadAction<CheckoutStep>) => {
+        setCheckoutStep      : (state, {payload: value}: PayloadAction<CheckoutStep>) => {
             state.checkoutStep = value;
         },
-        setIsBusy      : (state, {payload: value}: PayloadAction<BusyState>) => {
+        setIsBusy            : (state, {payload: value}: PayloadAction<BusyState>) => {
             state.isBusy = value;
         },
         
         
         
         // extra data:
-        setMarketingOpt: (state, {payload: value}: PayloadAction<boolean>) => {
+        setMarketingOpt      : (state, {payload: value}: PayloadAction<boolean>) => {
             state.marketingOpt = value;
         },
         
         
         
         // customer data:
-        setCustomerNickName: (state, {payload: value}: PayloadAction<string>) => {
+        setCustomerNickName  : (state, {payload: value}: PayloadAction<string>) => {
             state.customerNickName = value;
         },
-        setCustomerEmail: (state, {payload: value}: PayloadAction<string>) => {
+        setCustomerEmail     : (state, {payload: value}: PayloadAction<string>) => {
             state.customerEmail = value;
         },
         
@@ -180,87 +189,87 @@ export const checkoutSlice = createSlice({
             state.shippingValidation = value;
         },
         
-        setShippingFirstName: (state, {payload: value}: PayloadAction<string>) => {
+        setShippingFirstName : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingFirstName = value;
         },
-        setShippingLastName: (state, {payload: value}: PayloadAction<string>) => {
+        setShippingLastName  : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingLastName = value;
         },
         
-        setShippingPhone: (state, {payload: value}: PayloadAction<string>) => {
+        setShippingPhone     : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingPhone = value;
         },
         
-        setShippingAddress : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingAddress   : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingAddress = value;
         },
-        setShippingCity: (state, {payload: value}: PayloadAction<string>) => {
+        setShippingCity      : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingCity = value;
         },
-        setShippingZone: (state, {payload: value}: PayloadAction<string>) => {
+        setShippingZone      : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingZone = value;
         },
-        setShippingZip: (state, {payload: value}: PayloadAction<string>) => {
+        setShippingZip       : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingZip = value;
         },
-        setShippingCountry : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingCountry   : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingCountry = value;
         },
         
-        setShippingProvider: (state, {payload: value}: PayloadAction<string>) => {
+        setShippingProvider  : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingProvider = value;
         },
         
         
         
         // billing data:
-        setBillingValidation: (state, {payload: value}: PayloadAction<boolean>) => {
+        setBillingValidation : (state, {payload: value}: PayloadAction<boolean>) => {
             state.billingValidation = value;
         },
         
-        setBillingAsShipping: (state, {payload: value}: PayloadAction<boolean>) => {
+        setBillingAsShipping : (state, {payload: value}: PayloadAction<boolean>) => {
             state.billingAsShipping = value;
         },
         
-        setBillingFirstName: (state, {payload: value}: PayloadAction<string>) => {
+        setBillingFirstName  : (state, {payload: value}: PayloadAction<string>) => {
             state.billingFirstName = value;
         },
-        setBillingLastName : (state, {payload: value}: PayloadAction<string>) => {
+        setBillingLastName   : (state, {payload: value}: PayloadAction<string>) => {
             state.billingLastName = value;
         },
         
-        setBillingPhone: (state, {payload: value}: PayloadAction<string>) => {
+        setBillingPhone      : (state, {payload: value}: PayloadAction<string>) => {
             state.billingPhone = value;
         },
         
-        setBillingAddress: (state, {payload: value}: PayloadAction<string>) => {
+        setBillingAddress    : (state, {payload: value}: PayloadAction<string>) => {
             state.billingAddress = value;
         },
-        setBillingCity: (state, {payload: value}: PayloadAction<string>) => {
+        setBillingCity       : (state, {payload: value}: PayloadAction<string>) => {
             state.billingCity = value;
         },
-        setBillingZone: (state, {payload: value}: PayloadAction<string>) => {
+        setBillingZone       : (state, {payload: value}: PayloadAction<string>) => {
             state.billingZone = value;
         },
-        setBillingZip: (state, {payload: value}: PayloadAction<string>) => {
+        setBillingZip        : (state, {payload: value}: PayloadAction<string>) => {
             state.billingZip = value;
         },
-        setBillingCountry: (state, {payload: value}: PayloadAction<string>) => {
+        setBillingCountry    : (state, {payload: value}: PayloadAction<string>) => {
             state.billingCountry = value;
         },
         
         
         
         // payment data:
-        setPaymentValidation: (state, {payload: value}: PayloadAction<boolean>) => {
+        setPaymentValidation : (state, {payload: value}: PayloadAction<boolean>) => {
             state.paymentValidation = value;
         },
         
-        setPaymentMethod: (state, {payload: value}: PayloadAction<PaymentMethod|undefined>) => {
+        setPaymentMethod     : (state, {payload: value}: PayloadAction<PaymentMethod|undefined>) => {
             state.paymentMethod = value;
         },
         
-        setPaymentToken: (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
+        setPaymentToken      : (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
             state.paymentToken = value;
         },
     },
