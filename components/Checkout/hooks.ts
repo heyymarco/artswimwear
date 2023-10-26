@@ -26,10 +26,10 @@ import type {
 
 
 export interface FieldStateOptions<TField extends keyof CheckoutState, TValue extends CheckoutState[TField]> {
-    field    : TField
+    state : CheckoutState
     
-    state    : CheckoutState
-    dispatch : (value: TValue) => {
+    get   : TField
+    set   : (newValue: TValue) => {
         payload : TValue
         type    : string
     }
@@ -37,23 +37,23 @@ export interface FieldStateOptions<TField extends keyof CheckoutState, TValue ex
 export type FieldHandlers<TElement extends HTMLInputElement = HTMLInputElement> = Required<Pick<React.InputHTMLAttributes<TElement>, 'onChange'>>
 export const useFieldState = <TField extends keyof CheckoutState, TValue extends CheckoutState[TField], TElement extends HTMLInputElement = HTMLInputElement>(options: FieldStateOptions<TField, TValue>): readonly [TValue, React.Dispatch<React.SetStateAction<TValue>>, FieldHandlers<TElement>] => {
     // stores:
-    const field : TValue = options.state[options.field] as TValue;
+    const value    : TValue = options.state[options.get] as TValue;
     const dispatch = useDispatch();
     
     
     
     // handlers:
-    const handleSetField    = useEvent<React.Dispatch<React.SetStateAction<TValue>>>((value) => {
+    const handleSetValue    = useEvent<React.Dispatch<React.SetStateAction<TValue>>>((newValue) => {
         dispatch(
-            options.dispatch(
-                (typeof(value) === 'function')
-                ? value(field)
-                : value
+            options.set(
+                (typeof(newValue) === 'function')
+                ? newValue(value)
+                : newValue
             )
         );
     })
-    const handleFieldChange = useEvent<React.ChangeEventHandler<TElement>>((event) => {
-        handleSetField(
+    const handleValueChange = useEvent<React.ChangeEventHandler<TElement>>((event) => {
+        handleSetValue(
             ((event.target.type === 'checkbox') || (event.target.type === 'radio'))
             ? event.target.checked as TValue
             : event.target.value   as TValue
@@ -64,10 +64,10 @@ export const useFieldState = <TField extends keyof CheckoutState, TValue extends
     
     // api:
     return [
-        field,
-        handleSetField,
+        value,
+        handleSetValue,
         useMemo(() => ({ // make a stable ref object
-            onChange : handleFieldChange,
+            onChange : handleValueChange,
         }), []),
     ];
 };

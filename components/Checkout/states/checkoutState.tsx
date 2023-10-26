@@ -569,39 +569,39 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // extra data:
-    const [marketingOpt      , , marketingOptHandlers     ] = useFieldState({ field: 'marketingOpt'     , state: checkoutState, dispatch: reduxSetMarketingOpt      });
+    const [marketingOpt      , , marketingOptHandlers     ] = useFieldState({ state: checkoutState, get: 'marketingOpt'     , set: reduxSetMarketingOpt      });
     
     
     
     // customer data:
-    const [customerNickName  , , customerNickNameHandlers ] = useFieldState({ field: 'customerNickName' , state: checkoutState, dispatch: reduxSetCustomerNickName  });
-    const [customerEmail     , , customerEmailHandlers    ] = useFieldState({ field: 'customerEmail'    , state: checkoutState, dispatch: reduxSetCustomerEmail     });
+    const [customerNickName  , , customerNickNameHandlers ] = useFieldState({ state: checkoutState, get: 'customerNickName' , set: reduxSetCustomerNickName  });
+    const [customerEmail     , , customerEmailHandlers    ] = useFieldState({ state: checkoutState, get: 'customerEmail'    , set: reduxSetCustomerEmail     });
     
     
     
     // shipping data:
-    const [shippingFirstName , , shippingFirstNameHandlers] = useFieldState({ field: 'shippingFirstName', state: checkoutState, dispatch: reduxSetShippingFirstName });
-    const [shippingLastName  , , shippingLastNameHandlers ] = useFieldState({ field: 'shippingLastName' , state: checkoutState, dispatch: reduxSetShippingLastName  });
+    const [shippingFirstName , , shippingFirstNameHandlers] = useFieldState({ state: checkoutState, get: 'shippingFirstName', set: reduxSetShippingFirstName });
+    const [shippingLastName  , , shippingLastNameHandlers ] = useFieldState({ state: checkoutState, get: 'shippingLastName' , set: reduxSetShippingLastName  });
     
-    const [shippingPhone     , , shippingPhoneHandlers    ] = useFieldState({ field: 'shippingPhone'    , state: checkoutState, dispatch: reduxSetShippingPhone     });
+    const [shippingPhone     , , shippingPhoneHandlers    ] = useFieldState({ state: checkoutState, get: 'shippingPhone'    , set: reduxSetShippingPhone     });
     
-    const [shippingAddress   , , shippingAddressHandlers  ] = useFieldState({ field: 'shippingAddress'  , state: checkoutState, dispatch: reduxSetShippingAddress   });
-    const [shippingCity      , , shippingCityHandlers     ] = useFieldState({ field: 'shippingCity'     , state: checkoutState, dispatch: reduxSetShippingCity      });
-    const [shippingZone      , , shippingZoneHandlers     ] = useFieldState({ field: 'shippingZone'     , state: checkoutState, dispatch: reduxSetShippingZone      });
-    const [shippingZip       , , shippingZipHandlers      ] = useFieldState({ field: 'shippingZip'      , state: checkoutState, dispatch: reduxSetShippingZip       });
-    const [shippingCountry   , , shippingCountryHandlers  ] = useFieldState({ field: 'shippingCountry'  , state: checkoutState, dispatch: reduxSetShippingCountry   });
+    const [shippingAddress   , , shippingAddressHandlers  ] = useFieldState({ state: checkoutState, get: 'shippingAddress'  , set: reduxSetShippingAddress   });
+    const [shippingCity      , , shippingCityHandlers     ] = useFieldState({ state: checkoutState, get: 'shippingCity'     , set: reduxSetShippingCity      });
+    const [shippingZone      , , shippingZoneHandlers     ] = useFieldState({ state: checkoutState, get: 'shippingZone'     , set: reduxSetShippingZone      });
+    const [shippingZip       , , shippingZipHandlers      ] = useFieldState({ state: checkoutState, get: 'shippingZip'      , set: reduxSetShippingZip       });
+    const [shippingCountry   , , shippingCountryHandlers  ] = useFieldState({ state: checkoutState, get: 'shippingCountry'  , set: reduxSetShippingCountry   });
     
     
     
     // billing data:
-    const [billingFirstName  , , billingFirstNameHandlers ] = useFieldState({ field: 'billingFirstName' , state: checkoutState, dispatch: reduxSetBillingFirstName  });
-    const [billingLastName   , , billingLastNameHandlers  ] = useFieldState({ field: 'billingLastName'  , state: checkoutState, dispatch: reduxSetBillingLastName   });
-    const [billingPhone      , , billingPhoneHandlers     ] = useFieldState({ field: 'billingPhone'     , state: checkoutState, dispatch: reduxSetBillingPhone      });
-    const [billingAddress    , , billingAddressHandlers   ] = useFieldState({ field: 'billingAddress'   , state: checkoutState, dispatch: reduxSetBillingAddress    });
-    const [billingCity       , , billingCityHandlers      ] = useFieldState({ field: 'billingCity'      , state: checkoutState, dispatch: reduxSetBillingCity       });
-    const [billingZone       , , billingZoneHandlers      ] = useFieldState({ field: 'billingZone'      , state: checkoutState, dispatch: reduxSetBillingZone       });
-    const [billingZip        , , billingZipHandlers       ] = useFieldState({ field: 'billingZip'       , state: checkoutState, dispatch: reduxSetBillingZip        });
-    const [billingCountry    , , billingCountryHandlers   ] = useFieldState({ field: 'billingCountry'   , state: checkoutState, dispatch: reduxSetBillingCountry    });
+    const [billingFirstName  , , billingFirstNameHandlers ] = useFieldState({ state: checkoutState, get: 'billingFirstName' , set: reduxSetBillingFirstName  });
+    const [billingLastName   , , billingLastNameHandlers  ] = useFieldState({ state: checkoutState, get: 'billingLastName'  , set: reduxSetBillingLastName   });
+    const [billingPhone      , , billingPhoneHandlers     ] = useFieldState({ state: checkoutState, get: 'billingPhone'     , set: reduxSetBillingPhone      });
+    const [billingAddress    , , billingAddressHandlers   ] = useFieldState({ state: checkoutState, get: 'billingAddress'   , set: reduxSetBillingAddress    });
+    const [billingCity       , , billingCityHandlers      ] = useFieldState({ state: checkoutState, get: 'billingCity'      , set: reduxSetBillingCity       });
+    const [billingZone       , , billingZoneHandlers      ] = useFieldState({ state: checkoutState, get: 'billingZone'      , set: reduxSetBillingZone       });
+    const [billingZip        , , billingZipHandlers       ] = useFieldState({ state: checkoutState, get: 'billingZip'       , set: reduxSetBillingZip        });
+    const [billingCountry    , , billingCountryHandlers   ] = useFieldState({ state: checkoutState, get: 'billingCountry'   , set: reduxSetBillingCountry    });
     
     
     
