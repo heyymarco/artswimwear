@@ -9,23 +9,23 @@ import { QuantityInput } from '@heymarco/quantity-input'
 import { useGetProductList } from '@/store/features/api/apiSlice'
 import { LoadingBar } from '@heymarco/loading-bar'
 import { formatCurrency } from '@/libs/formatters'
-import { dynamicStyleSheets } from '@cssfn/cssfn-react'
 import { Image } from '@heymarco/image'
 import { useRouter } from 'next/navigation'
 import { resolveMediaUrl } from '@/libs/mediaStorage.client'
 import { useMountedFlag } from '@reusable-ui/core'
 
-
-
-export const useCartBarStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */'@/styles/cartBar')
-, { id: 'e8rintwvqx' });
-import '@/styles/cartBar';
+// internals:
+import {
+    useCartBarStyleSheet,
+}                           from './styles/loader'
 
 
 
 export const CartBarContent = () => {
     const styles = useCartBarStyleSheet();
+    
+    
+    
     const cartItems   = useSelector(selectCartItems);
     const hasCart = !!cartItems.length;
     const dispatch = useDispatch();

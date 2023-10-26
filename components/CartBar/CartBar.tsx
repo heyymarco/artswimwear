@@ -2,12 +2,20 @@ import { ModalSide } from '@reusable-ui/components';
 
 import { useDispatch, useSelector } from 'react-redux'
 import { selectIsCartShown, showCart } from '@/store/features/cart/cartSlice';
-import { CartBarContent, useCartBarStyleSheet } from './CartBarContent';
+import { CartBarContent } from './CartBarContent'
+
+// internals:
+import {
+    useCartBarStyleSheet,
+}                           from './styles/loader'
 
 
 
 export const CartBar = () => {
     const styles = useCartBarStyleSheet();
+    
+    
+    
     const isCartShown = useSelector(selectIsCartShown);
     const dispatch = useDispatch();
     
