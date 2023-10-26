@@ -272,6 +272,13 @@ export const checkoutSlice = createSlice({
         setPaymentToken       : (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
             state.paymentToken = value;
         },
+        
+        
+        
+        // actions:
+        resetCheckoutData     : (state) => {
+            Object.assign(state, initialState);
+        },
     },
 });
 
@@ -338,6 +345,11 @@ export const {
     setPaymentMethod,
     
     setPaymentToken,
+    
+    
+    
+    // actions:
+    resetCheckoutData,
 } = checkoutSlice.actions;
 
 
