@@ -6,7 +6,7 @@ import { ButtonIcon, CardBody, CardHeader, CloseButton, Group, List, ListItem, u
 import { useDispatch, useSelector } from 'react-redux'
 import { removeFromCart, selectCartItems, setCartItemQuantity, showCart } from '@/store/features/cart/cartSlice'
 import { QuantityInput } from '@heymarco/quantity-input'
-import { useGetPriceList, useGetProductList } from '@/store/features/api/apiSlice'
+import { useGetProductList } from '@/store/features/api/apiSlice'
 import { LoadingBar } from '@heymarco/loading-bar'
 import { formatCurrency } from '@/libs/formatters'
 import { dynamicStyleSheets } from '@cssfn/cssfn-react'
@@ -19,7 +19,8 @@ import { useMountedFlag } from '@reusable-ui/core'
 
 export const useCartBarStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'@/styles/cartBar')
-, { id: 'cart-bar' });
+, { id: 'e8rintwvqx' });
+import '@/styles/cartBar';
 
 
 
@@ -28,11 +29,8 @@ export const CartBarContent = () => {
     const cartItems   = useSelector(selectCartItems);
     const hasCart = !!cartItems.length;
     const dispatch = useDispatch();
-    const {data: priceList, isLoading: isLoading1, isError: isError1} = useGetPriceList();
-    const {data: productList, isLoading: isLoading2, isError: isError2} = useGetProductList();
-    const isLoading = isLoading1 || isLoading2;
-    const isError = isError1 || isError2;
-    const isCartDataReady = hasCart && !!priceList && !!productList;
+    const {data: productList, isLoading, isError} = useGetProductList();
+    const isCartDataReady = hasCart && !!productList;
     const router = useRouter();
     
     
@@ -101,7 +99,7 @@ export const CartBarContent = () => {
                     
                     {!hasCart && <ListItem enabled={false}>--- the cart is empty ---</ListItem>}
                     
-                    {hasCart && (isLoading || isError || !priceList || !productList) && <ListItem>
+                    {hasCart && (isLoading || isError || !productList) && <ListItem>
                         {isLoading && <LoadingBar theme='primary' />}
                         {isError && <p>Oops, an error occured!</p>}
                     </ListItem>}
@@ -203,7 +201,7 @@ export const CartBarContent = () => {
                     </ListItem>}
                 </List>
                 <p className={styles.shippingInfo}>Tax included and <u>shipping calculated</u> at checkout.</p>
-                <ButtonIcon enabled={isCartDataReady} icon={(hasCart && !isCartDataReady) ? 'busy' : 'shopping_bag'} theme='primary' size='lg' gradient={true} onClick={() => {
+                <ButtonIcon enabled={isCartDataReady} icon={(hasCart && isLoading) ? 'busy' : 'shopping_bag'} theme='primary' size='lg' gradient={true} onClick={() => {
                     dispatch(showCart(false));
                     router.push('/checkout');
                 }}>
