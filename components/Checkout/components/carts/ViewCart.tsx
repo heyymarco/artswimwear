@@ -47,6 +47,11 @@ import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
+// configs:
+import {
+    COMMERCE_CURRENCY,
+}                           from '@/commerce.config'
+
 
 
 // react components:
@@ -199,22 +204,34 @@ const ViewCart = (): JSX.Element|null => {
             <hr />
             
             <p className='currencyBlock'>
-                Subtotal products: <span className='currency'>
+                Subtotal <span className='currency'>
                     {formatCurrency(totalProductPrice)}
                 </span>
             </p>
             
             <p className='currencyBlock'>
-                Shipping: <span className='currency'>
-                    {!!hasSelectedShipping ? formatCurrency(totalShippingCost) : 'calculated at next step'}
+                Shipping <span className='currency'>
+                    {
+                        !!hasSelectedShipping
+                        ? formatCurrency(totalShippingCost)
+                        : 'calculated at next step'
+                    }
                 </span>
             </p>
             
             <hr />
             
             <p className='currencyBlock totalCost'>
-                Total: <span className='currency'>
-                    {!!hasSelectedShipping ? formatCurrency(totalProductPrice + (totalShippingCost ?? 0)) : 'calculated at next step'}
+                Total <span className='currency'>
+                    {
+                        !!hasSelectedShipping
+                        ? <>
+                            {formatCurrency(totalProductPrice + (totalShippingCost ?? 0))}
+                            {' '}
+                            <span>{COMMERCE_CURRENCY}</span>
+                        </>
+                        : 'calculated at next step'
+                    }
                 </span>
             </p>
         </>
