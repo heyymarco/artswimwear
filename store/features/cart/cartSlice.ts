@@ -17,18 +17,29 @@ export interface CartEntry {
     quantity  : number
 }
 export interface CartState {
+    // cart items:
     items     : CartEntry[],
+    
+    
+    
+    // cart dialogs:
     showCart  : boolean
 }
 
 const initialState : CartState = {
-    items    : [],
-    showCart : false,
+    // cart items:
+    items     : [],
+    
+    
+    
+    // cart dialogs:
+    showCart  : false,
 };
 export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
+        // cart items:
         addToCart           : ({items}, {payload: {productId, quantity = 1}}: PayloadAction<CartEntry>) => {
             const existingEntry = items.find((entry) => entry.productId === productId);
             if (!existingEntry) {
@@ -73,6 +84,7 @@ export const cartSlice = createSlice({
         
         
         
+        // cart dialogs:
         toggleCart          : (state) => {
             state.showCart = !state.showCart;
         },
@@ -86,6 +98,7 @@ export const cartSlice = createSlice({
 
 export default cartSlice.reducer;
 export const {
+    // cart items:
     addToCart,
     removeFromCart,
     setCartItemQuantity,
@@ -93,6 +106,7 @@ export const {
     
     
     
+    // cart dialogs:
     toggleCart,
     showCart,
 } = cartSlice.actions;
