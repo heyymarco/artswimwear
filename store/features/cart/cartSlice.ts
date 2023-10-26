@@ -1,5 +1,14 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from '../../store';
+// redux:
+import {
+    createSlice,
+    PayloadAction,
+}                           from '@reduxjs/toolkit'
+
+// stores:
+import type {
+    // types:
+    RootState,
+}                           from '../../store'
 
 
 
@@ -8,11 +17,11 @@ export interface CartEntry {
     quantity  : number
 }
 export interface CartState {
-    items    : CartEntry[],
-    showCart : boolean
+    items     : CartEntry[],
+    showCart  : boolean
 }
 
-const initialState: CartState = {
+const initialState : CartState = {
     items    : [],
     showCart : false,
 };
@@ -58,10 +67,12 @@ export const cartSlice = createSlice({
                 } // if
             } // if
         },
-        clearCart: (state) => {
-            state.items.splice(0); // remove all
-            if (!state.items.length) state.showCart = false;
+        clearCart: ({items}) => {
+            items.splice(0); // remove all
         },
+        
+        
+        
         toggleCart: (state) => {
             state.showCart = !state.showCart;
         },
@@ -74,7 +85,17 @@ export const cartSlice = createSlice({
 
 
 export default cartSlice.reducer;
-export const { addToCart, removeFromCart, setCartItemQuantity, clearCart, toggleCart, showCart } = cartSlice.actions;
+export const {
+    addToCart,
+    removeFromCart,
+    setCartItemQuantity,
+    clearCart,
+    
+    
+    
+    toggleCart,
+    showCart,
+} = cartSlice.actions;
 
 
 
