@@ -17,7 +17,7 @@ export interface CartEntry {
     quantity  : number
 }
 export interface CartState {
-    // cart items:
+    // cart data:
     items     : CartEntry[],
     
     
@@ -27,7 +27,7 @@ export interface CartState {
 }
 
 const initialState : CartState = {
-    // cart items:
+    // cart data:
     items     : [],
     
     
@@ -39,7 +39,7 @@ export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
-        // cart items:
+        // cart data:
         addToCart           : ({items}, {payload: {productId, quantity = 1}}: PayloadAction<CartEntry>) => {
             const existingEntry = items.find((entry) => entry.productId === productId);
             if (!existingEntry) {
@@ -98,7 +98,7 @@ export const cartSlice = createSlice({
 
 export default cartSlice.reducer;
 export const {
-    // cart items:
+    // cart data:
     addToCart,
     removeFromCart,
     setCartItemQuantity,
