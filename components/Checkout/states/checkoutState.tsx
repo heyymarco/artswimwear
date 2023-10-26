@@ -61,6 +61,11 @@ import {
     
     
     
+    // cart data:
+    clearCart as reduxClearCart,
+    
+    
+    
     // selectors:
     selectCartItems,
 }                           from '@/store/features/cart/cartSlice'
@@ -70,6 +75,7 @@ import {
     BusyState,
     PaymentMethod,
     PaymentToken,
+    CheckoutState         as ReduxCheckoutState,
     
     
     
@@ -117,9 +123,12 @@ import {
     setBillingCountry     as reduxSetBillingCountry,
     
     // payment data:
-    setPaymentValidation as reduxSetPaymentValidation,
-    setPaymentMethod     as reduxSetPaymentMethod,
-    setPaymentToken      as reduxSetPaymentToken,
+    setPaymentValidation  as reduxSetPaymentValidation,
+    setPaymentMethod      as reduxSetPaymentMethod,
+    setPaymentToken       as reduxSetPaymentToken,
+    
+    // actions:
+    resetCheckoutData     as reduxResetCheckoutData,
     
     
     
@@ -130,6 +139,7 @@ import {
     // types:
     ProductPreview,
     PlaceOrderOptions,
+    MakePaymentResponse,
     
     
     
@@ -174,10 +184,17 @@ export type {
     
     ProductPreview,
     PlaceOrderOptions,
+    MakePaymentResponse,
     
     CountryPreview,
     
     MatchingShipping,
+}
+
+interface FinishedOrderState {
+    cartItems     : CartEntry[]
+    checkoutState : ReduxCheckoutState
+    paymentState  : MakePaymentResponse
 }
 
 
@@ -531,11 +548,18 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
-    // stores:
-    const cartItems     = useSelector(selectCartItems);
-    const hasCart       = !!cartItems.length;
+    // states:
+    const [finishedOrderState, setFinishedOrderState] = useState<FinishedOrderState|undefined>(undefined);
     
-    const checkoutState = useSelector(selectCheckoutState);
+    
+    
+    // stores:
+    const reduxCartItems     = useSelector(selectCartItems);
+    const cartItems          = finishedOrderState?.cartItems     ?? reduxCartItems;
+    const hasCart            = !!cartItems.length;
+    
+    const reduxCheckoutState = useSelector(selectCheckoutState);
+    const checkoutState      = finishedOrderState?.checkoutState ?? reduxCheckoutState;
     const {
         // states:
         checkoutStep,
@@ -564,7 +588,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         paymentToken,
     } = checkoutState;
-    const checkoutProgress = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
+    const checkoutProgress   = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
     
     
     
@@ -1092,7 +1116,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         } // try
     });
     const doMakePayment                     = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
-        await makePayment({
+        const paymentState = await makePayment({
             orderId,
             
             
@@ -1121,7 +1145,19 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
         }).unwrap();
         
+        
+        
+        // save the finished order states:
         setCheckoutStep(paid ? 'paid' : 'pending');
+        setFinishedOrderState({ // backup the cart & checkout states in redux
+            cartItems,
+            checkoutState,
+            paymentState,
+        });
+        
+        // clear the cart & checkout states in redux:
+        dispatch(reduxClearCart());
+        dispatch(reduxResetCheckoutData());
     });
     
     
