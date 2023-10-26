@@ -29,7 +29,7 @@ export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
-        addToCart: ({items}, {payload: {productId, quantity = 1}}: PayloadAction<CartEntry>) => {
+        addToCart           : ({items}, {payload: {productId, quantity = 1}}: PayloadAction<CartEntry>) => {
             const existingEntry = items.find((entry) => entry.productId === productId);
             if (!existingEntry) {
                 if (quantity > 0) {
@@ -43,11 +43,11 @@ export const cartSlice = createSlice({
                 existingEntry.quantity += quantity;
             } // if
         },
-        removeFromCart: ({items}, {payload: {productId}}: PayloadAction<Pick<CartEntry, 'productId'>>) => {
+        removeFromCart      : ({items}, {payload: {productId}}: PayloadAction<Pick<CartEntry, 'productId'>>) => {
             const itemIndex = items.findIndex((entry) => entry.productId === productId);
             if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
         },
-        setCartItemQuantity: ({items}, {payload: {productId, quantity}}: PayloadAction<CartEntry>) => {
+        setCartItemQuantity : ({items}, {payload: {productId, quantity}}: PayloadAction<CartEntry>) => {
             const existingEntry = items.find((entry) => entry.productId === productId);
             if (!existingEntry) {
                 if (quantity > 0) {
@@ -67,16 +67,16 @@ export const cartSlice = createSlice({
                 } // if
             } // if
         },
-        clearCart: ({items}) => {
+        clearCart           : ({items}) => {
             items.splice(0); // remove all
         },
         
         
         
-        toggleCart: (state) => {
+        toggleCart          : (state) => {
             state.showCart = !state.showCart;
         },
-        showCart: (state, {payload: setShown}: PayloadAction<boolean>) => {
+        showCart            : (state, {payload: setShown}: PayloadAction<boolean>) => {
             state.showCart = setShown;
         },
     },
@@ -105,9 +105,9 @@ export const selectCartTotalQuantity = (state: RootState) => {
     for (const item of state.cart.items) counter += item.quantity;
     return counter;
 };
-export const selectCartItems = (state: RootState) => {
+export const selectCartItems         = (state: RootState) => {
     return state.cart.items;
 };
-export const selectIsCartShown = (state: RootState) => {
+export const selectIsCartShown       = (state: RootState) => {
     return state.cart.showCart;
 };
