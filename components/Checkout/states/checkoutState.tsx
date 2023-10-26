@@ -1151,10 +1151,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // save the finished order states:
-        setCheckoutStep(paid ? 'paid' : 'pending');
+        // setCheckoutStep(paid ? 'paid' : 'pending'); // not needed this code, already handled by `setFinishedOrderState` below:
         setFinishedOrderState({ // backup the cart & checkout states in redux
             cartItems,
-            checkoutState,
+            checkoutState : {
+                ...checkoutState,
+                checkoutStep : (paid ? 'paid' : 'pending'),
+                isBusy       : false,
+            },
             paymentState,
         });
         
