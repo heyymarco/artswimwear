@@ -20,18 +20,13 @@ import {
 
 // react components:
 const ViewPaymentMethod = (): JSX.Element|null => {
-    // context:
-    // TODO: replace payment api with finish checkout state
-    const {makePaymentApi} = useCheckoutState();
-    
-    
-    
-    // apis:
-    const [, {data: payment}] = makePaymentApi;
-    const paymentMethod = payment?.paymentMethod;
-    const type          = paymentMethod?.type;
-    const brand         = paymentMethod?.brand || undefined;
-    const identifier    = paymentMethod?.identifier;
+    // states:
+    const {
+        // payment data:
+        paymentType,
+        paymentBrand,
+        paymentIdentifier,
+    } = useCheckoutState();
     
     
     
@@ -39,11 +34,11 @@ const ViewPaymentMethod = (): JSX.Element|null => {
     return (
         <>
             {
-                !!brand
+                !!paymentBrand
                 ? <Image
                     // appearances:
-                    alt={brand}
-                    src={`/brands/${brand}.svg`}
+                    alt={paymentBrand}
+                    src={`/brands/${paymentBrand}.svg`}
                     width={42}
                     height={26}
                     
@@ -52,14 +47,14 @@ const ViewPaymentMethod = (): JSX.Element|null => {
                     // classes:
                     className='paymentProvider'
                 />
-                : (type?.toUpperCase() ?? type)
+                : (paymentType?.toUpperCase() ?? paymentType)
             }
             
-            {!!identifier && <span
+            {!!paymentIdentifier && <span
                 // classes:
                 className='paymentIdentifier'
             >
-                ({identifier})
+                ({paymentIdentifier})
             </span>}
         </>
     );
