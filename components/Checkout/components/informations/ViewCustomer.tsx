@@ -26,17 +26,29 @@ import {
 
 
 // react components:
-const ViewCustomer = (): JSX.Element|null => {
+export interface ViewCustomerProps {
+    // accessibilities:
+    title ?: React.ReactNode
+}
+const ViewCustomer = (props: ViewCustomerProps): JSX.Element|null => {
+    // rest props:
+    const {
+        // accessibilities:
+        title = 'Customer Information',
+    } = props;
+    
+    
+    
     // jsx:
     return (
         <table>
-            <thead>
+            {!!title && <thead>
                 <tr>
                     <th colSpan={2}>
-                        Customer Information
+                        {title}
                     </th>
                 </tr>
-            </thead>
+            </thead>}
             
             <tbody>
                 <tr>
