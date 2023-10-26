@@ -369,11 +369,6 @@ export interface CheckoutState {
     doTransaction                     : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                      : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment                     : (orderId: string, paid: boolean) => Promise<void>
-    
-    
-    
-    // apis:
-    makePaymentApi                    : ReturnType<typeof useMakePayment>
 }
 
 const noopHandler : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
@@ -530,11 +525,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     doTransaction                     : noopHandler as any,
     doPlaceOrder                      : noopHandler as any,
     doMakePayment                     : noopHandler as any,
-    
-    
-    
-    // apis:
-    makePaymentApi                    : noopHandler as any,
 });
 CheckoutStateContext.displayName  = 'CheckoutState';
 
@@ -882,10 +872,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const [placeOrder]   = usePlaceOrder();
-    
-    const makePaymentApi = useMakePayment();
-    const [makePayment] = makePaymentApi;
+    const [placeOrder]  = usePlaceOrder();
+    const [makePayment] = useMakePayment();
     
     
     
@@ -1336,11 +1324,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         doTransaction,                     // stable ref
         doPlaceOrder,                      // stable ref
         doMakePayment,                     // stable ref
-        
-        
-        
-        // apis:
-        makePaymentApi,
     }), [
         // states:
         checkoutStep,
@@ -1499,11 +1482,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // doTransaction,                     // stable ref
         // doPlaceOrder,                      // stable ref
         // doMakePayment,                     // stable ref
-        
-        
-        
-        // apis:
-        makePaymentApi,
     ]);
     
     
