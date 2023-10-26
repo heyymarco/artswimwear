@@ -19,6 +19,8 @@ import {
 // reusable-ui components:
 import {
     // simple-components:
+    Icon,
+    Button,
     ButtonIcon,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 import {
@@ -145,22 +147,7 @@ const NavCheckout = (): JSX.Element|null => {
             </>}
             
             {isCheckoutFinished && <>
-                {/* TODO: remove when the finish order completed */}
-                <ButtonIcon
-                    icon='arrow_back'
-                    iconPosition='start'
-                    
-                    size='md'
-                    theme='primary'
-                    buttonStyle='link'
-                    className='back'
-                    
-                    onClick={gotoPayment}
-                >
-                    BACK
-                </ButtonIcon>
-                {/* TODO: re-activate when the finish order completed */}
-                {/* <p>
+                <p>
                     <Icon
                         // appearances:
                         icon='help'
@@ -171,7 +158,7 @@ const NavCheckout = (): JSX.Element|null => {
                         size='md'
                         theme='primary'
                     />
-                    Need help?
+                    {' '}Need help?{' '}
                     <Button
                         // variants:
                         theme='primary'
@@ -181,7 +168,7 @@ const NavCheckout = (): JSX.Element|null => {
                             Contact Us
                         </Link>
                     </Button>
-                </p> */}
+                </p>
                 
                 <ButtonIcon
                     // appearances:
