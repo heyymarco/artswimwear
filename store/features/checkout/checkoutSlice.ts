@@ -158,118 +158,118 @@ export const checkoutSlice = createSlice({
     initialState,
     reducers: {
         // states:
-        setCheckoutStep      : (state, {payload: value}: PayloadAction<CheckoutStep>) => {
+        setCheckoutStep       : (state, {payload: value}: PayloadAction<CheckoutStep>) => {
             state.checkoutStep = value;
         },
-        setIsBusy            : (state, {payload: value}: PayloadAction<BusyState>) => {
+        setIsBusy             : (state, {payload: value}: PayloadAction<BusyState>) => {
             state.isBusy = value;
         },
         
         
         
         // extra data:
-        setMarketingOpt      : (state, {payload: value}: PayloadAction<boolean>) => {
+        setMarketingOpt       : (state, {payload: value}: PayloadAction<boolean>) => {
             state.marketingOpt = value;
         },
         
         
         
         // customer data:
-        setCustomerNickName  : (state, {payload: value}: PayloadAction<string>) => {
+        setCustomerNickName   : (state, {payload: value}: PayloadAction<string>) => {
             state.customerNickName = value;
         },
-        setCustomerEmail     : (state, {payload: value}: PayloadAction<string>) => {
+        setCustomerEmail      : (state, {payload: value}: PayloadAction<string>) => {
             state.customerEmail = value;
         },
         
         
         
         // shipping data:
-        setShippingValidation: (state, {payload: value}: PayloadAction<boolean>) => {
+        setShippingValidation : (state, {payload: value}: PayloadAction<boolean>) => {
             state.shippingValidation = value;
         },
         
-        setShippingFirstName : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingFirstName  : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingFirstName = value;
         },
-        setShippingLastName  : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingLastName   : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingLastName = value;
         },
         
-        setShippingPhone     : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingPhone      : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingPhone = value;
         },
         
-        setShippingAddress   : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingAddress    : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingAddress = value;
         },
-        setShippingCity      : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingCity       : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingCity = value;
         },
-        setShippingZone      : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingZone       : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingZone = value;
         },
-        setShippingZip       : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingZip        : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingZip = value;
         },
-        setShippingCountry   : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingCountry    : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingCountry = value;
         },
         
-        setShippingProvider  : (state, {payload: value}: PayloadAction<string>) => {
+        setShippingProvider   : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingProvider = value;
         },
         
         
         
         // billing data:
-        setBillingValidation : (state, {payload: value}: PayloadAction<boolean>) => {
+        setBillingValidation  : (state, {payload: value}: PayloadAction<boolean>) => {
             state.billingValidation = value;
         },
         
-        setBillingAsShipping : (state, {payload: value}: PayloadAction<boolean>) => {
+        setBillingAsShipping  : (state, {payload: value}: PayloadAction<boolean>) => {
             state.billingAsShipping = value;
         },
         
-        setBillingFirstName  : (state, {payload: value}: PayloadAction<string>) => {
+        setBillingFirstName   : (state, {payload: value}: PayloadAction<string>) => {
             state.billingFirstName = value;
         },
-        setBillingLastName   : (state, {payload: value}: PayloadAction<string>) => {
+        setBillingLastName    : (state, {payload: value}: PayloadAction<string>) => {
             state.billingLastName = value;
         },
         
-        setBillingPhone      : (state, {payload: value}: PayloadAction<string>) => {
+        setBillingPhone       : (state, {payload: value}: PayloadAction<string>) => {
             state.billingPhone = value;
         },
         
-        setBillingAddress    : (state, {payload: value}: PayloadAction<string>) => {
+        setBillingAddress     : (state, {payload: value}: PayloadAction<string>) => {
             state.billingAddress = value;
         },
-        setBillingCity       : (state, {payload: value}: PayloadAction<string>) => {
+        setBillingCity        : (state, {payload: value}: PayloadAction<string>) => {
             state.billingCity = value;
         },
-        setBillingZone       : (state, {payload: value}: PayloadAction<string>) => {
+        setBillingZone        : (state, {payload: value}: PayloadAction<string>) => {
             state.billingZone = value;
         },
-        setBillingZip        : (state, {payload: value}: PayloadAction<string>) => {
+        setBillingZip         : (state, {payload: value}: PayloadAction<string>) => {
             state.billingZip = value;
         },
-        setBillingCountry    : (state, {payload: value}: PayloadAction<string>) => {
+        setBillingCountry     : (state, {payload: value}: PayloadAction<string>) => {
             state.billingCountry = value;
         },
         
         
         
         // payment data:
-        setPaymentValidation : (state, {payload: value}: PayloadAction<boolean>) => {
+        setPaymentValidation  : (state, {payload: value}: PayloadAction<boolean>) => {
             state.paymentValidation = value;
         },
         
-        setPaymentMethod     : (state, {payload: value}: PayloadAction<PaymentMethod|undefined>) => {
+        setPaymentMethod      : (state, {payload: value}: PayloadAction<PaymentMethod|undefined>) => {
             state.paymentMethod = value;
         },
         
-        setPaymentToken      : (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
+        setPaymentToken       : (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
             state.paymentToken = value;
         },
     },
