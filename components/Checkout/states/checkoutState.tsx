@@ -596,6 +596,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         identifier : paymentIdentifier,
     } = finishedOrderState?.paymentState?.paymentMethod ?? {};
     
+    const dispatch           = useDispatch();
+    const setCheckoutStep    = useEvent((checkoutStep: CheckoutStep): void => {
+        dispatch(reduxSetCheckoutStep(checkoutStep));
+    });
+    
     
     
     // extra data:
@@ -632,14 +637,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const [billingZone       , , billingZoneHandlers      ] = useFieldState({ state: checkoutState, get: 'billingZone'      , set: reduxSetBillingZone       });
     const [billingZip        , , billingZipHandlers       ] = useFieldState({ state: checkoutState, get: 'billingZip'       , set: reduxSetBillingZip        });
     const [billingCountry    , , billingCountryHandlers   ] = useFieldState({ state: checkoutState, get: 'billingCountry'   , set: reduxSetBillingCountry    });
-    
-    
-    
-    // dispatchers:
-    const dispatch        = useDispatch();
-    const setCheckoutStep = useEvent((checkoutStep: CheckoutStep): void => {
-        dispatch(reduxSetCheckoutStep(checkoutStep));
-    });
     
     
     
