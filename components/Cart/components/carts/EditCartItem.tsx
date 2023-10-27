@@ -115,6 +115,12 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     
     // states:
     const {
+        // states:
+        isLoadingPage,
+        isErrorPage,
+        
+        
+        
         // relation data:
         productList,
     } = useCartState();
@@ -124,7 +130,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     // fn props:
     const product          = productList?.entities?.[productId];
     const productUnitPrice = product?.price;
-    const isProductDeleted = !product;
+    const isProductDeleted = !product && !isLoadingPage && !isErrorPage;
     
     
     
@@ -154,8 +160,8 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             
             
             // variants:
-            theme={!product ? 'danger' : undefined}
-            mild={!product ? false : undefined}
+            theme={isProductDeleted ? 'danger' : undefined}
+            mild={isProductDeleted ? false : undefined}
             
             
             
@@ -165,7 +171,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             
             
             // accessibilities:
-            enabled={!!product}
+            enabled={!isProductDeleted}
         >
             <h3
                 // classes:
@@ -173,7 +179,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             >
                 {
                     !isProductDeleted
-                    ? product.name
+                    ? product?.name
                     : 'PRODUCT DELETED'
                 }
             </h3>
