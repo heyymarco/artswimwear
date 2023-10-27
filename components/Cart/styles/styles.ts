@@ -1,6 +1,32 @@
-import { commerces } from "@/config";
-import { children, descendants, scope } from "@cssfn/core";
-import { horzRules, ifScreenWidthAtLeast, typos } from "@reusable-ui/core";
+// cssfn:
+import {
+    // writes css in javascript:
+    rule,
+    descendants,
+    children,
+    scope,
+}                           from '@cssfn/core'   
+
+import {
+    // a spacer (gap) management system:
+    spacers,
+    
+    
+    
+    // a responsive management system:
+    ifScreenWidthAtLeast,
+    
+    
+    
+    // a typography management system:
+    typos,
+    horzRules,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// configs:
+import {
+    commerces,
+}                           from '@/config'
 
 
 
@@ -12,8 +38,36 @@ export default () => [
         margin: 0,
     }),
     scope('cartBody', {
-        display: 'flex',
-        flexDirection: 'column',
+        // layouts:
+        display       : 'flex',
+        flexDirection : 'column',
+        
+        
+        
+        // spacings:
+        gap : spacers.sm,
+        
+        
+        
+        // children:
+        ...descendants('.currencyBlock', {
+            // layouts:
+            display: 'flex',
+        }),
+        ...descendants('.currency', {
+            // spacings:
+            marginInlineStart: 'auto',
+            
+            
+            
+            // typos:
+            fontSize   : typos.fontSizeMd,
+            fontWeight : typos.fontWeightSemibold,
+        }),
+        ...descendants(['.currencyBlock', 'hr'], {
+            // spacings:
+            margin: '0px',
+        }),
     }, {specificityWeight: 3}),
     
     scope('cartList', {
@@ -63,14 +117,6 @@ export default () => [
         
         
         // children:
-        ...descendants('.currencyBlock', {
-            // layouts:
-            display: 'flex',
-        }),
-        ...descendants('.currency', {
-            // spacings:
-            marginInlineStart: 'auto',
-        }),
         ...children('.prodImg', {
             // positions:
             gridArea    : 'image',
@@ -140,8 +186,10 @@ export default () => [
             
             
             // typos:
-            fontSize    : typos.fontSizeSm,
-            fontWeight  : typos.fontWeightLight,
+            ...children(['&', '.currency'], {
+                fontSize    : typos.fontSizeSm,
+                fontWeight  : typos.fontWeightLight,
+            }),
         }),
         ...children('.quantity', {
             // positions:
