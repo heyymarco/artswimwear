@@ -44,8 +44,8 @@ import {
     NavCheckout,
 }                           from './components/navigations/NavCheckout'
 import {
-    ViewCart,
-}                           from './components/carts/ViewCart'
+    EditCart,
+}                           from './components/carts/EditCart'
 import {
     EditRegularCheckout,
 }                           from './components/checkouts/EditRegularCheckout'
@@ -245,7 +245,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                 // accessibilities:
                 title='Order Summary'
             >
-                <ViewCart />
+                <EditCart />
             </Section>
             
             <Section

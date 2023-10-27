@@ -1,0 +1,300 @@
+'use client'
+
+// react:
+import {
+    // react:
+    default as React,
+}                           from 'react'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+    
+    
+    
+    // an accessibility management system:
+    usePropReadOnly,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // simple-components:
+    Label,
+    ButtonIcon,
+    
+    
+    
+    // layout-components:
+    ListItemProps,
+    ListItem,
+    
+    
+    
+    // status-components:
+    Badge,
+    
+    
+    
+    // composite-components:
+    Group,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// heymarco components:
+import {
+    Image,
+}                           from '@heymarco/image'
+import {
+    QuantityInput,
+}                           from '@heymarco/quantity-input'
+
+// internal components:
+import {
+    CompoundWithBadge,
+}                           from '@/components/CompoundWithBadge'
+
+// stores:
+import type {
+    // types:
+    CartEntry,
+}                           from '@/store/features/cart/cartSlice'
+
+// utilities:
+import {
+    formatCurrency,
+}                           from '@/libs/formatters'
+import {
+    resolveMediaUrl,
+}                           from '@/libs/mediaStorage.client'
+
+// internals:
+import {
+    useCheckoutStyleSheet,
+}                           from '../../styles/loader'
+import {
+    useCheckoutState,
+}                           from '../../states/checkoutState'
+
+
+
+// react components:
+export interface EditCartItemProps
+    extends
+        // bases:
+        Omit<ListItemProps,
+            // values:
+            |'onChange' // already taken over
+        >
+{
+    // data:
+    cartEntry : CartEntry
+    
+    
+    
+    // handlers:
+    onChange  : (productId: string, quantity: number) => void
+    onDelete  : (productId: string) => void
+}
+const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
+    // styles:
+    const styles = useCheckoutStyleSheet();
+    
+    
+    
+    // rest props:
+    const {
+        // data:
+        cartEntry : {
+            productId,
+            quantity,
+        },
+        
+        
+        
+        // handlers:
+        onChange,
+        onDelete,
+    ...restListItemProps} = props;
+    
+    
+    
+    // accessibilities:
+    const propReadOnly = usePropReadOnly(props);
+    
+    
+    
+    // states:
+    const {
+        // relation data:
+        productList,
+    } = useCheckoutState();
+    
+    
+    
+    // fn props:
+    const product          = productList?.entities?.[productId];
+    const productUnitPrice = product?.price;
+    const isProductDeleted = !product;
+    
+    
+    
+    // handlers:
+    const handleChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber}}): void => {
+        // actions:
+        if (valueAsNumber > 0) {
+            onChange(productId, valueAsNumber);
+        }
+        else {
+            handleDelete();
+        } // if
+    });
+    const handleDelete = useEvent((): void => {
+        // actions:
+        onDelete(productId);
+    });
+    
+    
+    
+    // jsx:
+    return (
+        <ListItem
+            // other props:
+            {...restListItemProps}
+            
+            
+            
+            // variants:
+            theme={!product ? 'danger' : undefined}
+            mild={!product ? false : undefined}
+            
+            
+            
+            // classes:
+            className={styles.productPreview}
+            
+            
+            
+            // accessibilities:
+            enabled={!!product}
+        >
+            <h3
+                // classes:
+                className='title h6'
+            >
+                {
+                    !isProductDeleted
+                    ? product.name
+                    : 'PRODUCT DELETED'
+                }
+            </h3>
+            
+            {/* image + quantity */}
+            <CompoundWithBadge
+                // components:
+                wrapperComponent={<React.Fragment />}
+                badgeComponent={
+                    <Badge
+                        // variants:
+                        theme='danger'
+                        badgeStyle='pill'
+                        
+                        
+                        
+                        // floatable:
+                        floatingPlacement='right-start'
+                        floatingShift={-3}
+                        floatingOffset={-20}
+                    >
+                        {quantity}x
+                    </Badge>
+                }
+                elementComponent={
+                    <Image
+                        // appearances:
+                        alt={product?.name ?? ''}
+                        src={resolveMediaUrl(product?.image)}
+                        sizes='64px'
+                        
+                        
+                        
+                        // classes:
+                        className='prodImg'
+                    />
+                }
+            />
+            
+            {(productUnitPrice !== undefined) && <p className='unitPrice'>
+                @ <span className='currency secondary'>
+                    {formatCurrency(productUnitPrice)}
+                </span>
+            </p>}
+            
+            {propReadOnly && <p className='quantity'>
+                qty <span className='number'>
+                    {quantity}
+                </span>
+            </p>}
+            {!propReadOnly && <Group
+                // variants:
+                size='sm'
+                theme='primary'
+                
+                
+                
+                // classes:
+                className='quantity'
+                
+                
+                
+                // accessibilities:
+                title='Quantity'
+            >
+                <Label>
+                    Qty
+                </Label>
+                <ButtonIcon
+                    // appearances:
+                    icon='delete'
+                    
+                    
+                    
+                    // accessibilities:
+                    title='remove from cart'
+                    
+                    
+                    
+                    // handlers:
+                    onClick={handleDelete}
+                />
+                <QuantityInput
+                    // accessibilities:
+                    enabled={!isProductDeleted}
+                    
+                    
+                    
+                    // values:
+                    value={quantity}
+                    onChange={handleChange}
+                    
+                    
+                    
+                    // validations:
+                    min={0}
+                    max={99}
+                />
+            </Group>}
+            
+            <p className='subPrice currencyBlock'>
+                {isProductDeleted && <>This product was deleted</>}
+                
+                <span className='currency'>
+                    {formatCurrency(productUnitPrice ? (productUnitPrice * quantity) : undefined)}
+                </span>
+            </p>
+        </ListItem>
+    );
+};
+export {
+    EditCartItem,
+    EditCartItem as default,
+};
