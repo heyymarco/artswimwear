@@ -371,7 +371,8 @@ export interface CheckoutState {
     doMakePayment             : (orderId: string, paid: boolean) => Promise<void>
 }
 
-const noopHandler : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
+const noopHandler  : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
+const noopCallback = () => {};
 const CheckoutStateContext = createContext<CheckoutState>({
     // states:
     checkoutStep              : 'info',
@@ -437,7 +438,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     shippingProvider          : undefined,
-    setShippingProvider       : noopHandler as any,
+    setShippingProvider       : noopCallback,
     
     totalShippingCost         : null,
     
@@ -448,7 +449,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     billingAsShipping         : true,
-    setBillingAsShipping      : noopHandler as any,
+    setBillingAsShipping      : noopCallback,
     
     
     billingFirstName          : '',
@@ -483,7 +484,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     paymentValidation         : false,
     
     paymentMethod             : undefined,
-    setPaymentMethod          : noopHandler as any,
+    setPaymentMethod          : noopCallback,
     
     paymentToken              : undefined,
     
@@ -518,13 +519,13 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // actions:
-    gotoStepInformation       : noopHandler as any,
-    gotoStepShipping          : noopHandler as any,
-    gotoPayment               : noopHandler as any,
+    gotoStepInformation       : noopCallback,
+    gotoStepShipping          : noopCallback as any,
+    gotoPayment               : noopCallback,
     
-    doTransaction             : noopHandler as any,
-    doPlaceOrder              : noopHandler as any,
-    doMakePayment             : noopHandler as any,
+    doTransaction             : noopCallback as any,
+    doPlaceOrder              : noopCallback as any,
+    doMakePayment             : noopCallback as any,
 });
 CheckoutStateContext.displayName  = 'CheckoutState';
 
