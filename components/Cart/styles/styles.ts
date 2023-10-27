@@ -74,7 +74,8 @@ export default () => [
         ...children('.prodImg', {
             // positions:
             gridArea    : 'image',
-            alignSelf   : 'center',
+            justifySelf : 'center', // center horizontally
+            alignSelf   : 'center', // center vertically
             
             
             
@@ -98,7 +99,11 @@ export default () => [
         }),
         ...children('.title', {
             // positions:
-            gridArea: 'title',
+            gridArea    : 'title',
+            justifySelf : 'center', // center horizontally
+            ...ifScreenWidthAtLeast('sm', {
+                justifySelf : 'stretch', // stretch horizontally
+            }),
             
             
             
@@ -122,7 +127,10 @@ export default () => [
         ...children('.unitPrice', {
             // positions:
             gridArea    : 'unitPrice',
-            justifySelf : 'start',
+            justifySelf : 'center', // center horizontally
+            ...ifScreenWidthAtLeast('sm', {
+                justifySelf : 'start', // place to the left
+            }),
             
             
             
@@ -138,7 +146,10 @@ export default () => [
         ...children('.quantity', {
             // positions:
             gridArea    : 'quantity',
-            justifySelf : 'start',
+            justifySelf : 'center', // center horizontally
+            ...ifScreenWidthAtLeast('sm', {
+                justifySelf : 'start', // place to the left
+            }),
         }),
         ...children('.subPrice', {
             // positions:
