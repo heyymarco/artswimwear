@@ -6,11 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// redux:
-import {
-    useDispatch,
-}                           from 'react-redux'
-
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -46,12 +41,6 @@ import {
 import {
     EditCartItem,
 }                           from './EditCartItem'
-
-// stores:
-import {
-    removeFromCart,
-    setCartItemQuantity,
-}                           from '@/store/features/cart/cartSlice'
 
 // utilities:
 import {
@@ -101,6 +90,12 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         
         // relation data:
         productList,
+        
+        
+        
+        // actions:
+        deleteItem,
+        changeItem,
     } = useCartState();
     const {
         // shipping data:
@@ -108,11 +103,6 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         totalShippingCost,
     } = useCheckoutState();
     const hasSelectedShipping = !!shippingProvider;
-    
-    
-    
-    // stores:
-    const dispatch = useDispatch();
     
     
     
@@ -131,7 +121,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     // handlers:
     const handleChange = useEvent((productId, quantity) => {
         // actions:
-        dispatch(setCartItemQuantity({ productId, quantity }));
+        changeItem(productId, quantity);
     });
     const handleDelete = useEvent(async (productId: string): Promise<void> => {
         // conditions:
@@ -158,7 +148,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         
         
         // actions:
-        dispatch(removeFromCart({ productId }));
+        deleteItem(productId);
     });
     
     
