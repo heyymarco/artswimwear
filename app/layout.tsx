@@ -10,6 +10,7 @@ import '@/theme.config'
 import './layoutStyles.scss'
 
 import { CartBar } from '@/components/CartBar'
+import { CartStateProvider } from '@/components/Cart'
 import { Header } from './Header'
 import { Footer } from './Footer'
 
@@ -115,13 +116,15 @@ export default function RootLayout({
                         fetchErrorTitleDefault={fetchErrorTitleDefault}
                         fetchErrorMessageDefault={fetchErrorMessageDefault}
                     >
-                        <Header />
-                        
-                        {children}
-                        
-                        <Footer />
-                        
-                        <CartBar />
+                        <CartStateProvider>
+                            <Header />
+                            
+                            {children}
+                            
+                            <Footer />
+                            
+                            <CartBar />
+                        </CartStateProvider>
                     </DialogMessageProvider>
                 </PersistGate></Provider>
             </body>
