@@ -758,12 +758,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [isNeedsRecoverShippingProvider, shippingList]);
     
     // if no selected shipping method => auto select the cheapest one:
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (!shippingList)     return; // the shippingList data is not available yet => nothing to select
+        if (checkoutStep !== 'shipping') return; // only auto select when at shipping step
+        if (!shippingList)               return; // the shippingList data is not available yet => nothing to select
         const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
-        console.log({selectedShipping})
-        if (selectedShipping)  return; // already have valid selection => abort to auto_select
+        if (selectedShipping)            return; // already have valid selection => abort to auto_select
         
         
         
@@ -781,7 +781,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
             setShippingProvider(orderedConstAscending[0].id);
         } // if
-    }, [shippingList, shippingProvider, totalProductWeight]);
+    }, [checkoutStep, shippingList, shippingProvider, totalProductWeight]);
     
     // auto scroll to top on checkoutStep changed:
     const isSubsequentStep = useRef<boolean>(false);
