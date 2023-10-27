@@ -60,6 +60,9 @@ import {
 
 // internals:
 import {
+    useCartState,
+}                           from '@/components/Cart' // TODO: use relative path
+import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -96,14 +99,13 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         
         
         
+        // relation data:
+        productList,
+    } = useCartState();
+    const {
         // shipping data:
         shippingProvider,
         totalShippingCost,
-        
-        
-        
-        // relation data:
-        productList,
     } = useCheckoutState();
     const hasSelectedShipping = !!shippingProvider;
     

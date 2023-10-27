@@ -62,8 +62,8 @@ import {
     useCheckoutStyleSheet,
 }                           from '../../styles/loader'
 import {
-    useCheckoutState,
-}                           from '../../states/checkoutState'
+    useCartState,
+}                           from '@/components/Cart' // TODO: use relative path
 
 
 
@@ -117,7 +117,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     const {
         // relation data:
         productList,
-    } = useCheckoutState();
+    } = useCartState();
     
     
     
