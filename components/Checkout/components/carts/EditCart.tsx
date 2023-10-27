@@ -10,7 +10,6 @@ import {
 import {
     // react helper hooks:
     useEvent,
-    useMountedFlag,
     
     
     
@@ -20,18 +19,8 @@ import {
 
 // reusable-ui components:
 import {
-    // simple-components:
-    ButtonIcon,
-    
-    
-    
     // layout-components:
     List,
-    
-    
-    
-    // utility-components:
-    useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
@@ -88,11 +77,6 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         
         
         
-        // relation data:
-        productList,
-        
-        
-        
         // actions:
         deleteItem,
         changeItem,
@@ -106,47 +90,12 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     
     
     
-    // dom effects:
-    const isMounted = useMountedFlag();
-    
-    
-    
-    // dialogs:
-    const {
-        showMessage,
-    } = useDialogMessage();
-    
-    
-    
     // handlers:
     const handleChange = useEvent((productId, quantity) => {
         // actions:
         changeItem(productId, quantity);
     });
     const handleDelete = useEvent(async (productId: string): Promise<void> => {
-        // conditions:
-        if (
-            (await showMessage<'yes'|'no'>({
-                theme    : 'warning',
-                size     : 'sm',
-                title    : <h1>Delete Confirmation</h1>,
-                message  : <p>
-                    Are you sure to remove product:<br />
-                    <strong>{productList?.entities?.[productId]?.name ?? 'UNKNOWN PRODUCT'}</strong><br />from the cart?
-                </p>,
-                options  : {
-                    yes  : <ButtonIcon icon='check'          theme='primary'>Yes</ButtonIcon>,
-                    no   : <ButtonIcon icon='not_interested' theme='secondary' autoFocus={true}>No</ButtonIcon>,
-                },
-                // viewport : cartBodyRef,
-            }))
-            !==
-            'yes'
-        ) return;
-        if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-        
-        
-        
         // actions:
         deleteItem(productId);
     });
