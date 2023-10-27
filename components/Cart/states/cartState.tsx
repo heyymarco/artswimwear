@@ -74,6 +74,13 @@ import {
 
 
 
+// types:
+export type {
+    CartEntry,
+}
+
+
+
 // hooks:
 
 // states:
@@ -103,13 +110,13 @@ export interface CartState {
     
     
     // actions:
-    addItem                   : (productId : string, quantity ?: number) => void
-    deleteItem                : (productId : string) => void
-    changeItem                : (productId : string, quantity  : number) => void
+    addItem                   : (productId: string, quantity?: number) => void
+    deleteItem                : (productId: string) => void
+    changeItem                : (productId: string, quantity: number) => void
     clearItems                : () => void
 }
 
-const noopHandler = () => {};
+const noopCallback = () => {};
 const CartStateContext = createContext<CartState>({
     // states:
     isLoadingPage             : false,
@@ -132,10 +139,10 @@ const CartStateContext = createContext<CartState>({
     
     
     // actions:
-    addItem                   : noopHandler,
-    deleteItem                : noopHandler,
-    changeItem                : noopHandler,
-    clearItems                : noopHandler,
+    addItem                   : noopCallback,
+    deleteItem                : noopCallback,
+    changeItem                : noopCallback,
+    clearItems                : noopCallback,
 });
 CartStateContext.displayName  = 'CartState';
 
@@ -160,6 +167,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // stores:
     const cartItems = useSelector(selectCartItems);
     const hasCart   = !!cartItems.length;
+    
+    const dispatch  = useDispatch();
     
     
     
@@ -200,11 +209,6 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     
-    // dispatchers:
-    const dispatch  = useDispatch();
-    
-    
-    
     // dom effects:
     const isMounted = useMountedFlag();
     
@@ -218,7 +222,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stable callbacks:
-    const addItem    = useEvent((productId: string, quantity: number = 1) => {
+    const addItem    = useEvent((productId: string, quantity: number = 1): void => {
         // actions:
         dispatch(reduxAddToCart({ productId, quantity }));
     });
@@ -249,7 +253,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // actions:
         dispatch(reduxRemoveFromCart({ productId }));
     });
-    const changeItem = useEvent((productId: string, quantity: number) => {
+    const changeItem = useEvent((productId: string, quantity: number): void => {
         // actions:
         if (quantity > 0) {
             dispatch(reduxSetCartItemQuantity({ productId, quantity }));
@@ -258,7 +262,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             deleteItem(productId);
         } // if
     });
-    const clearItems = useEvent(() => {
+    const clearItems = useEvent((): void => {
         // actions:
         dispatch(reduxClearCart());
     });
