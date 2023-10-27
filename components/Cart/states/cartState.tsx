@@ -90,59 +90,59 @@ export type {
 // contexts:
 export interface CartState {
     // states:
-    isLoadingPage             : boolean
-    isErrorPage               : boolean
-    isReadyPage               : boolean
+    isLoadingPage      : boolean
+    isErrorPage        : boolean
+    isReadyPage        : boolean
     
     
     
     // cart data:
-    cartItems                 : CartEntry[]
-    hasCart                   : boolean
-    totalProductWeight        : number|null
-    totalProductPrice         : number
+    cartItems          : CartEntry[]
+    hasCart            : boolean
+    totalProductWeight : number|null
+    totalProductPrice  : number
     
     
     
     // relation data:
-    productList               : EntityState<ProductPreview>   | undefined
+    productList        : EntityState<ProductPreview>   | undefined
     
     
     
     // actions:
-    addItem                   : (productId: string, quantity?: number) => void
-    deleteItem                : (productId: string) => void
-    changeItem                : (productId: string, quantity: number) => void
-    clearItems                : () => void
+    addItem            : (productId: string, quantity?: number) => void
+    deleteItem         : (productId: string) => void
+    changeItem         : (productId: string, quantity: number) => void
+    clearItems         : () => void
 }
 
 const noopCallback = () => {};
 const CartStateContext = createContext<CartState>({
     // states:
-    isLoadingPage             : false,
-    isErrorPage               : false,
-    isReadyPage               : false,
+    isLoadingPage      : false,
+    isErrorPage        : false,
+    isReadyPage        : false,
     
     
     
     // cart data:
-    cartItems                 : [],
-    hasCart                   : false,
-    totalProductWeight        : null,
-    totalProductPrice         : 0,
+    cartItems          : [],
+    hasCart            : false,
+    totalProductWeight : null,
+    totalProductPrice  : 0,
     
     
     
     // relation data:
-    productList               : undefined,
+    productList        : undefined,
     
     
     
     // actions:
-    addItem                   : noopCallback,
-    deleteItem                : noopCallback,
-    changeItem                : noopCallback,
-    clearItems                : noopCallback,
+    addItem            : noopCallback,
+    deleteItem         : noopCallback,
+    changeItem         : noopCallback,
+    clearItems         : noopCallback,
 });
 CartStateContext.displayName  = 'CartState';
 
