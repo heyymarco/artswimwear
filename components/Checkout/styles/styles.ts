@@ -254,7 +254,7 @@ export default () => {
                     fontSize   : typos.fontSizeMd,
                     fontWeight : typos.fontWeightSemibold,
                 }),
-                ...descendants(['.currencyBlock', 'hr'], {
+                ...descendants(['.title', '.unitPrice', '.currencyBlock', '.quantity', 'hr'], {
                     // spacings:
                     margin: '0px',
                 }),
@@ -269,68 +269,6 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scope('productPreview', {
-            gridArea: 'orderSummary',
-            
-            display: 'grid',
-            gridTemplate: [[
-                '"image     title" max-content',
-                '"image unitPrice" max-content',
-                '"image  subPrice" max-content',
-                '"image  ........" auto',
-                '/',
-                `${imageSize}px auto`,
-            ]],
-            gapInline: '1rem',
-            gapBlock: '0.25rem',
-            padding: 0,
-            ...children('.prodImg', {
-                gridArea    : 'image',
-                alignSelf   : 'center',
-                
-                background  : 'white',
-                width       : `${imageSize}px`,
-                aspectRatio : commerces.defaultProductAspectRatio,
-                ...children('img', {
-                    width  : '100% !important',
-                    height : '100% !important',
-                }),
-            }),
-            ...children('.title', {
-                gridArea: 'title',
-                
-                fontWeight: typos.fontWeightNormal,
-                margin: 0,
-                // maxInlineSize: '15em',
-                whiteSpace: 'normal',
-                textOverflow : 'ellipsis', // long text...
-                wordBreak    : 'break-word',
-                overflowWrap : 'break-word',
-                // overflow: 'hidden',
-            }),
-            ...children('.unitPrice', {
-                // positions:
-                gridArea: 'unitPrice',
-                
-                
-                
-                // spacings:
-                margin: 0,
-                
-                
-                
-                // typos:
-                ...children(['&', '.currency'], {
-                    fontSize    : typos.fontSizeSm,
-                    fontWeight  : typos.fontWeightLight,
-                }),
-            }),
-            ...children('.subPrice', {
-                gridArea: 'subPrice',
-                
-                margin: 0,
-            }),
-        }, { specificityWeight: 2 }),
         
         scope('orderReview', {
             ...descendants('table', {
