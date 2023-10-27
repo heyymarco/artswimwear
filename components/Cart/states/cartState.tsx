@@ -158,8 +158,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stores:
-    const cartItems          = useSelector(selectCartItems);
-    const hasCart            = !!cartItems.length;
+    const cartItems = useSelector(selectCartItems);
+    const hasCart   = !!cartItems.length;
     
     
     
