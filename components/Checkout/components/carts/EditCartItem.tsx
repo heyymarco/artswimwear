@@ -31,11 +31,6 @@ import {
     
     
     
-    // status-components:
-    Badge,
-    
-    
-    
     // composite-components:
     Group,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
@@ -47,11 +42,6 @@ import {
 import {
     QuantityInput,
 }                           from '@heymarco/quantity-input'
-
-// internal components:
-import {
-    CompoundWithBadge,
-}                           from '@/components/CompoundWithBadge'
 
 // stores:
 import type {
@@ -188,39 +178,16 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                 }
             </h3>
             
-            {/* image + quantity */}
-            <CompoundWithBadge
-                // components:
-                wrapperComponent={<React.Fragment />}
-                badgeComponent={
-                    <Badge
-                        // variants:
-                        theme='danger'
-                        badgeStyle='pill'
-                        
-                        
-                        
-                        // floatable:
-                        floatingPlacement='right-start'
-                        floatingShift={-3}
-                        floatingOffset={-20}
-                    >
-                        {quantity}x
-                    </Badge>
-                }
-                elementComponent={
-                    <Image
-                        // appearances:
-                        alt={product?.name ?? ''}
-                        src={resolveMediaUrl(product?.image)}
-                        sizes='64px'
-                        
-                        
-                        
-                        // classes:
-                        className='prodImg'
-                    />
-                }
+            <Image
+                // appearances:
+                alt={product?.name ?? ''}
+                src={resolveMediaUrl(product?.image)}
+                sizes='64px'
+                
+                
+                
+                // classes:
+                className='prodImg'
             />
             
             {(productUnitPrice !== undefined) && <p className='unitPrice'>
