@@ -150,6 +150,11 @@ export default () => [
             ...ifScreenWidthAtLeast('sm', {
                 justifySelf : 'start', // place to the left
             }),
+            
+            
+            
+            // spacings:
+            margin      : 0,
         }),
         ...children('.subPrice', {
             // positions:
