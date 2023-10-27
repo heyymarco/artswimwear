@@ -63,7 +63,7 @@ import {
 }                           from '../../styles/loader'
 import {
     useCartState,
-}                           from '@/components/Cart' // TODO: use relative path
+}                           from '../../states/cartState'
 
 
 
@@ -216,7 +216,10 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                 // accessibilities:
                 title='Quantity'
             >
-                <Label>
+                <Label
+                    // variants:
+                    theme='inherit'
+                >
                     Qty
                 </Label>
                 <ButtonIcon
@@ -254,9 +257,9 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             <p className='subPrice currencyBlock'>
                 {isProductDeleted && <>This product was deleted</>}
                 
-                <span className='currency'>
+                {!isProductDeleted && <span className='currency'>
                     {formatCurrency(productUnitPrice ? (productUnitPrice * quantity) : undefined)}
-                </span>
+                </span>}
             </p>
         </ListItem>
     );

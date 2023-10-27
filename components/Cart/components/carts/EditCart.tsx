@@ -26,6 +26,9 @@ import {
 
 // internals:
 import {
+    useCartStyleSheet,
+}                           from '../../styles/loader'
+import {
     useCartState,
 }                           from '../../states/cartState'
 
@@ -40,6 +43,11 @@ export interface EditCartProps
     /* no props yet */
 }
 const EditCart = (props: EditCartProps): JSX.Element|null => {
+    // styles:
+    const styles = useCartStyleSheet();
+    
+    
+    
     // rest props:
     const {
         /* no props yet */
@@ -82,12 +90,12 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
             
             
             // variants:
-            listStyle='flat'
+            listStyle='flush'
             
             
             
             // classes:
-            className='orderList'
+            className={`orderList ${styles.productList}`}
         >
             {cartItems.map((cartEntry, itemIndex) =>
                 <EditCartItem
