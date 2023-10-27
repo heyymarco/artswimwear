@@ -20,6 +20,11 @@ import {
     
     
     
+    // a spacer (gap) management system:
+    spacers,
+    
+    
+    
     // a responsive management system:
     ifScreenWidthAtLeast,
     ifScreenWidthSmallerThan,
@@ -212,27 +217,47 @@ export default () => {
                     [paddingVars.paddingBlock ] : containers.paddingBlock,
                 }),
             }),
-            
-            ...descendants('.currencyBlock', {
-                display: 'flex',
-                
-                ...rule('.totalCost', {
-                    ...descendants(['&', '.currency'], {
-                        fontSize: typos.fontSizeLg,
-                        fontWeight: typos.fontWeightSemibold,
-                    }),
-                })
-            }),
-            ...descendants('.currency', {
-                marginInlineStart: 'auto',
-                fontSize: typos.fontSizeMd,
-                fontWeight: typos.fontWeightSemibold,
-                ...rule('.secondary', {
-                    fontSize: typos.fontSizeSm,
-                    fontWeight: typos.fontWeightLight,
-                }),
-            }),
             ...children('article', {
+                // layouts:
+                display       : 'flex',
+                flexDirection : 'column',
+                
+                
+                
+                // spacings:
+                gap : spacers.sm,
+                
+                
+                
+                ...descendants('.currencyBlock', {
+                    // layouts:
+                    display: 'flex',
+                    
+                    
+                    
+                    // specifics:
+                    ...rule('.totalCost', {
+                        ...descendants(['&', '.currency'], {
+                            // typos:
+                            fontSize   : typos.fontSizeLg,
+                            fontWeight : typos.fontWeightSemibold,
+                        }),
+                    })
+                }),
+                ...descendants('.currency', {
+                    // spacings:
+                    marginInlineStart: 'auto',
+                    
+                    
+                    
+                    // typos:
+                    fontSize   : typos.fontSizeMd,
+                    fontWeight : typos.fontWeightSemibold,
+                }),
+                ...descendants(['.currencyBlock', 'hr'], {
+                    // spacings:
+                    margin: '0px',
+                }),
                 ...children('.orderCollapse', {
                     ...children('[role="button"]', {
                         textAlign: 'center',
@@ -284,12 +309,21 @@ export default () => {
                 // overflow: 'hidden',
             }),
             ...children('.unitPrice', {
+                // positions:
                 gridArea: 'unitPrice',
                 
+                
+                
+                // spacings:
                 margin: 0,
                 
-                fontSize: typos.fontSizeSm,
-                fontWeight: typos.fontWeightLight,
+                
+                
+                // typos:
+                ...children(['&', '.currency'], {
+                    fontSize    : typos.fontSizeSm,
+                    fontWeight  : typos.fontWeightLight,
+                }),
             }),
             ...children('.subPrice', {
                 gridArea: 'subPrice',
