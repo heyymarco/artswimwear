@@ -128,7 +128,7 @@ export default () => {
                     '"navCheckout      vertLine orderSummary" auto',
                     '"...........      vertLine orderSummary" auto',
                     '/',
-                    '9fr min-content 3fr'
+                    '8fr min-content 4fr'
                 ]],
             }),
             ...ifScreenWidthAtLeast('xl', {
