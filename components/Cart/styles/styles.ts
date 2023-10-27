@@ -64,7 +64,7 @@ export default () => [
             fontSize   : typos.fontSizeMd,
             fontWeight : typos.fontWeightSemibold,
         }),
-        ...descendants(['.currencyBlock', 'hr'], {
+        ...descendants(['.title', '.unitPrice', '.currencyBlock', '.quantity', 'hr'], {
             // spacings:
             margin: '0px',
         }),
@@ -158,11 +158,6 @@ export default () => [
             
             
             
-            // spacings:
-            margin: 0,
-            
-            
-            
             // typos:
             whiteSpace   : 'normal',
             textOverflow : 'ellipsis', // long text...
@@ -180,11 +175,6 @@ export default () => [
             
             
             
-            // spacings:
-            margin      : 0,
-            
-            
-            
             // typos:
             ...children(['&', '.currency'], {
                 fontSize    : typos.fontSizeSm,
@@ -198,21 +188,11 @@ export default () => [
             ...ifScreenWidthAtLeast('sm', {
                 justifySelf : 'start', // place to the left
             }),
-            
-            
-            
-            // spacings:
-            margin      : 0,
         }),
         ...children('.subPrice', {
             // positions:
             gridArea    : 'subPrice',
             justifySelf : 'end',
-            
-            
-            
-            // spacings:
-            margin: 0,
         }),
     }, {specificityWeight: 2}),
     
