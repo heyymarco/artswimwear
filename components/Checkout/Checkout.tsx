@@ -253,7 +253,14 @@ const CheckoutInternal = (): JSX.Element|null => {
                 // accessibilities:
                 title='Order Summary'
             >
-                <EditCart />
+                <EditCart
+                    // accessibilities:
+                    readOnly={
+                        (checkoutStep === 'pending')
+                        ||
+                        (checkoutStep === 'paid')
+                    }
+                />
                 <ViewTotalCart
                     // data:
                     totalShippingCost={totalShippingCost}
