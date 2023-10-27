@@ -14,7 +14,7 @@ import {
 // internals:
 import {
     useCartState,
-}                           from '@/components/Cart' // TODO: use relative path
+}                           from '../../states/cartState'
 
 // configs:
 import {
