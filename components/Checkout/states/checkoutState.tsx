@@ -283,7 +283,7 @@ export interface CheckoutState {
     shippingProvider          : string | undefined
     setShippingProvider       : (shippingProvider: string) => void
     
-    totalShippingCost         : number|null
+    totalShippingCost         : number|null|undefined // undefined: not selected yet; null: no shipping required (non physical product)
     
     
     
@@ -440,7 +440,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     shippingProvider          : undefined,
     setShippingProvider       : noopCallback,
     
-    totalShippingCost         : null,
+    totalShippingCost         : undefined,
     
     
     
@@ -683,11 +683,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         };
     }, [cartItems, productList]);
     
-    const totalShippingCost = useMemo<number|null>(() => {
+    const totalShippingCost = useMemo<number|null|undefined>(() => {
         // conditions:
-        if (!shippingList)     return null; // the shippingList data is not available yet => nothing to calculate
+        if (!shippingList)               return undefined; // the shippingList data is not available yet => nothing to calculate
         const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
-        if (!selectedShipping) return null; // no valid selected shippingProvider => nothing to calculate
+        if (!selectedShipping)           return undefined; // no valid selected shippingProvider => nothing to calculate
+        if (totalProductWeight === null) return null;      // non physical product => no shipping required
         
         
         
