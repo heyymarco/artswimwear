@@ -59,6 +59,11 @@ import {
     
     
     
+    // cart dialogs:
+    showCart            as reduxShowCart,
+    
+    
+    
     // selectors:
     selectCartItems,
 }                           from '@/store/features/cart/cartSlice'
@@ -114,6 +119,9 @@ export interface CartState {
     deleteItem         : (productId: string) => void
     changeItem         : (productId: string, quantity: number) => void
     clearItems         : () => void
+    
+    showCart           : () => void
+    hideCart           : () => void
 }
 
 const noopCallback = () => {};
@@ -143,6 +151,9 @@ const CartStateContext = createContext<CartState>({
     deleteItem         : noopCallback,
     changeItem         : noopCallback,
     clearItems         : noopCallback,
+    
+    showCart           : noopCallback,
+    hideCart           : noopCallback,
 });
 CartStateContext.displayName  = 'CartState';
 
@@ -267,6 +278,15 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         dispatch(reduxClearCart());
     });
     
+    const showCart   = useEvent((): void => {
+        // actions:
+        dispatch(reduxShowCart(true));
+    });
+    const hideCart   = useEvent((): void => {
+        // actions:
+        dispatch(reduxShowCart(false));
+    });
+    
     
     
     // apis:
@@ -296,6 +316,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         deleteItem, // stable ref
         changeItem, // stable ref
         clearItems, // stable ref
+        
+        showCart,   // stable ref
+        hideCart,   // stable ref
     }), [
         // states:
         isLoadingPage,
@@ -322,6 +345,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // deleteItem, // stable ref
         // changeItem, // stable ref
         // clearItems, // stable ref
+        
+        // showCart,   // stable ref
+        // hideCart,   // stable ref
     ]);
     
     
