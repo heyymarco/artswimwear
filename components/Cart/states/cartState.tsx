@@ -66,6 +66,7 @@ import {
     
     // selectors:
     selectCartItems,
+    selectIsCartShown,
 }                           from '@/store/features/cart/cartSlice'
 import {
     // types:
@@ -95,6 +96,8 @@ export type {
 // contexts:
 export interface CartState {
     // states:
+    isCartShown        : boolean
+    
     isLoadingPage      : boolean
     isErrorPage        : boolean
     isReadyPage        : boolean
@@ -127,6 +130,8 @@ export interface CartState {
 const noopCallback = () => {};
 const CartStateContext = createContext<CartState>({
     // states:
+    isCartShown        : false,
+    
     isLoadingPage      : false,
     isErrorPage        : false,
     isReadyPage        : false,
@@ -176,10 +181,12 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stores:
-    const cartItems = useSelector(selectCartItems);
-    const hasCart   = !!cartItems.length;
+    const cartItems   = useSelector(selectCartItems);
+    const hasCart     = !!cartItems.length;
     
-    const dispatch  = useDispatch();
+    const isCartShown = useSelector(selectIsCartShown);
+    
+    const dispatch    = useDispatch();
     
     
     
@@ -292,6 +299,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // apis:
     const cartData = useMemo<CartState>(() => ({
         // states:
+        isCartShown,
+        
         isLoadingPage,
         isErrorPage,
         isReadyPage,
@@ -321,6 +330,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         hideCart,   // stable ref
     }), [
         // states:
+        isCartShown,
+        
         isLoadingPage,
         isErrorPage,
         isReadyPage,
