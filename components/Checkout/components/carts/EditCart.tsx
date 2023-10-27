@@ -40,9 +40,6 @@ import {
 import {
     useCartState,
 }                           from '@/components/Cart' // TODO: use relative path
-import {
-    useCheckoutState,
-}                           from '../../states/checkoutState'
 
 // configs:
 import {
@@ -59,10 +56,17 @@ export interface EditCartProps
             |'readOnly'
         >
 {
+    // data:
+    totalShippingCost ?: number|null|undefined
 }
 const EditCart = (props: EditCartProps): JSX.Element|null => {
     // rest props:
     const {
+        // data:
+        totalShippingCost,
+        
+        
+        
         // accessibilities:
         readOnly = false,
     } = props;
@@ -81,12 +85,8 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         deleteItem,
         changeItem,
     } = useCartState();
-    const {
-        // shipping data:
-        shippingProvider,
-        totalShippingCost,
-    } = useCheckoutState();
-    const hasSelectedShipping = !!shippingProvider;
+    const isPhysicalProduct     = (totalShippingCost !== null);
+    const isNotShippingSelected = (totalShippingCost === undefined);
     
     
     
@@ -162,22 +162,22 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
                 </span>
             </p>
             
-            <p className='currencyBlock'>
+            {isPhysicalProduct && <p className='currencyBlock'>
                 Shipping <span className='currency'>
                     {
-                        !!hasSelectedShipping
+                        !isNotShippingSelected
                         ? formatCurrency(totalShippingCost)
                         : 'calculated at next step'
                     }
                 </span>
-            </p>
+            </p>}
             
             <hr />
             
             <p className='currencyBlock totalCost'>
                 Total <span className='currency'>
                     {
-                        !!hasSelectedShipping
+                        !isNotShippingSelected
                         ? <>
                             {formatCurrency(totalProductPrice + (totalShippingCost ?? 0))}
                             {' '}

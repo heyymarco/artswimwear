@@ -129,6 +129,11 @@ const CheckoutInternal = (): JSX.Element|null => {
         
         
         
+        // shipping data:
+        totalShippingCost,
+        
+        
+        
         // sections:
         regularCheckoutSectionRef,
         currentStepSectionRef,
@@ -245,7 +250,10 @@ const CheckoutInternal = (): JSX.Element|null => {
                 // accessibilities:
                 title='Order Summary'
             >
-                <EditCart />
+                <EditCart
+                    // data:
+                    totalShippingCost={totalShippingCost}
+                />
             </Section>
             
             <Section
