@@ -772,10 +772,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             Object.values(shippingList.entities)
             .filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry)
             ?.map((shippingEntry) => ({
-                id                 : `${shippingEntry.id}`,
-                totalShippingCost : calculateShippingCost(totalProductWeight, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
+                id                  : `${shippingEntry.id}`,
+                previewShippingCost : calculateShippingCost(totalProductWeight, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
             }))
-            ?.sort((a, b) => a.totalShippingCost - b.totalShippingCost) // -1 means: no need to ship (digital products)
+            ?.sort((a, b) => a.previewShippingCost - b.previewShippingCost) // -1 means: no need to ship (digital products)
         );
         
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
