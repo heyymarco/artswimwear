@@ -1,0 +1,115 @@
+'use client'
+
+// react:
+import {
+    // react:
+    default as React,
+}                           from 'react'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // layout-components:
+    ListProps,
+    List,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// internal components:
+import {
+    EditCartItem,
+}                           from './EditCartItem'
+
+// internals:
+import {
+    useCartState,
+}                           from '../../states/cartState'
+
+
+
+// react components:
+export interface EditCartProps
+    extends
+        // bases:
+        ListProps
+{
+    /* no props yet */
+}
+const EditCart = (props: EditCartProps): JSX.Element|null => {
+    // rest props:
+    const {
+        /* no props yet */
+    ...restListProps} = props;
+    
+    
+    
+    // states:
+    const {
+        // cart data:
+        cartItems,
+        
+        
+        
+        // actions:
+        deleteItem,
+        changeItem,
+    } = useCartState();
+    
+    
+    
+    // handlers:
+    const handleChange = useEvent((productId, quantity) => {
+        // actions:
+        changeItem(productId, quantity);
+    });
+    const handleDelete = useEvent(async (productId: string): Promise<void> => {
+        // actions:
+        deleteItem(productId);
+    });
+    
+    
+    
+    // jsx:
+    return (
+        <List
+            // other props:
+            {...restListProps}
+            
+            
+            
+            // variants:
+            listStyle='flat'
+            
+            
+            
+            // classes:
+            className='orderList'
+        >
+            {cartItems.map((cartEntry, itemIndex) =>
+                <EditCartItem
+                    // identifiers:
+                    key={cartEntry.productId || itemIndex}
+                    
+                    
+                    
+                    // data:
+                    cartEntry={cartEntry}
+                    
+                    
+                    
+                    // handlers:
+                    onChange={handleChange}
+                    onDelete={handleDelete}
+                />
+            )}
+        </List>
+    );
+};
+export {
+    EditCart,
+    EditCart as default,
+};
