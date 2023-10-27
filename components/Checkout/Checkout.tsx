@@ -47,6 +47,9 @@ import {
     EditCart,
 }                           from './components/carts/EditCart'
 import {
+    ViewTotalCart,
+}                           from './components/carts/ViewTotalCart'
+import {
     EditRegularCheckout,
 }                           from './components/checkouts/EditRegularCheckout'
 import {
@@ -250,7 +253,8 @@ const CheckoutInternal = (): JSX.Element|null => {
                 // accessibilities:
                 title='Order Summary'
             >
-                <EditCart
+                <EditCart />
+                <ViewTotalCart
                     // data:
                     totalShippingCost={totalShippingCost}
                 />
