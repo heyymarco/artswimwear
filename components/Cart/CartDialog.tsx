@@ -4,11 +4,6 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useRef,
 }                           from 'react'
 
 // next-js:
@@ -109,11 +104,6 @@ export const CartDialog = () => {
     
     
     
-    // refs:
-    const cartBodyRef = useRef<HTMLElement|null>(null);
-    
-    
-    
     // jsx:
     return (
         <ModalSide
@@ -146,11 +136,6 @@ export const CartDialog = () => {
                 />
             </CardHeader>
             <CardBody
-                // refs:
-                elmRef={cartBodyRef}
-                
-                
-                
                 // classes:
                 className={styles.cartBody}
             >
