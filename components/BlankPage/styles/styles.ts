@@ -9,7 +9,7 @@ import {
 
 
 // styles:
-export const usesBlankSectionLayout = () => {
+export const usesBlankPageLayout = () => {
     return style({
         // layouts:
         display        : 'grid',
@@ -53,5 +53,5 @@ export const usesBlankSectionLayout = () => {
 
 export default () => style({
     // layouts:
-    ...usesBlankSectionLayout(),
+    ...usesBlankPageLayout(),
 });

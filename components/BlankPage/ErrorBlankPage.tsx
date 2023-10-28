@@ -14,35 +14,35 @@ import {
 
 // internal components:
 import {
-    BlankSectionProps,
-    BlankSection,
-}                           from './BlankSection'
+    BlankPageProps,
+    BlankPage,
+}                           from './BlankPage'
 
 
 
 // react components:
-export interface ErrorBlankSectionProps
+export interface ErrorBlankPageProps
     extends
         // bases:
-        BlankSectionProps
+        BlankPageProps
 {
     // handlers:
     onRetry ?: React.MouseEventHandler<HTMLButtonElement>
 }
-const ErrorBlankSection = (props: ErrorBlankSectionProps) => {
+const ErrorBlankPage = (props: ErrorBlankPageProps) => {
     // rest props:
     const {
         // handlers:
         onRetry,
-    ...restBlankSectionProps} = props;
+    ...restBlankPageProps} = props;
     
     
     
     // jsx:
     return (
-        <BlankSection
+        <BlankPage
             // other props:
-            {...restBlankSectionProps}
+            {...restBlankPageProps}
             
             
             
@@ -75,10 +75,10 @@ const ErrorBlankSection = (props: ErrorBlankSectionProps) => {
                     </ButtonIcon>
                 </>}
             </div>}
-        </BlankSection>
+        </BlankPage>
     );
 }
 export {
-    ErrorBlankSection,
-    ErrorBlankSection as default,
+    ErrorBlankPage,
+    ErrorBlankPage as default,
 };

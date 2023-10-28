@@ -14,27 +14,28 @@ import {
 
 // heymarco components:
 import {
+    Main,
     SectionProps,
     Section,
 }                           from '@heymarco/section'
 
 // internals:
 import {
-    useBlankSectionStyleSheet,
+    useBlankPageStyleSheet,
 }                           from './styles/loader'
 
 
 
 // react components:
-export interface BlankSectionProps
+export interface BlankPageProps
     extends
         // bases:
         SectionProps
 {
 }
-const BlankSection = (props: BlankSectionProps) => {
+const BlankPage = (props: BlankPageProps) => {
     // styles:
-    const styleSheet = useBlankSectionStyleSheet();
+    const styleSheet = useBlankPageStyleSheet();
     
     
     
@@ -53,23 +54,25 @@ const BlankSection = (props: BlankSectionProps) => {
     
     // jsx:
     return (
-        <Section
-            // other props:
-            {...props}
-            
-            
-            
-            // variants:
-            theme={props.theme ?? 'primary'}
-            
-            
-            
-            // classes:
-            classes={mergedClasses}
-        />
+        <Main>
+            <Section
+                // other props:
+                {...props}
+                
+                
+                
+                // variants:
+                theme={props.theme ?? 'primary'}
+                
+                
+                
+                // classes:
+                classes={mergedClasses}
+            />
+        </Main>
     );
 }
 export {
-    BlankSection,
-    BlankSection as default,
+    BlankPage,
+    BlankPage as default,
 };

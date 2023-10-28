@@ -14,23 +14,23 @@ import {
 
 // internal components:
 import {
-    BlankSectionProps,
-    BlankSection,
-}                           from './BlankSection'
+    BlankPageProps,
+    BlankPage,
+}                           from './BlankPage'
 
 
 
 // react components:
-export interface LoadingBlankSectionProps
+export interface LoadingBlankPageProps
     extends
         // bases:
-        BlankSectionProps
+        BlankPageProps
 {
 }
-const LoadingBlankSection = (props: LoadingBlankSectionProps) => {
+const LoadingBlankPage = (props: LoadingBlankPageProps) => {
     // jsx:
     return (
-        <BlankSection
+        <BlankPage
             // other props:
             {...props}
         >
@@ -43,10 +43,10 @@ const LoadingBlankSection = (props: LoadingBlankSectionProps) => {
                 // classes:
                 className='loadingIndicator'
             />}
-        </BlankSection>
+        </BlankPage>
     );
 }
 export {
-    LoadingBlankSection,
-    LoadingBlankSection as default,
+    LoadingBlankPage,
+    LoadingBlankPage as default,
 };

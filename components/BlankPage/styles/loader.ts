@@ -6,7 +6,7 @@ import {
 
 
 
-export const useBlankSectionStyleSheet = dynamicStyleSheet(
+export const useBlankPageStyleSheet = dynamicStyleSheet(
     () => import(/* webpackPrefetch: true */'./styles')
 , { id: 'yek4fdwnqr' });
 import './styles';
