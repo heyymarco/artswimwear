@@ -11,6 +11,12 @@ import {
     useEffect,
 }                           from 'react'
 
+// cssfn:
+import {
+    // style sheets:
+    dynamicStyleSheets,
+}                           from '@cssfn/cssfn-react'           // writes css in react hook
+
 // heymarco components:
 import {
     Section,
@@ -21,12 +27,6 @@ import {
 import {
     Image,
 }                           from '@heymarco/image'
-
-// cssfn:
-import {
-    // style sheets:
-    dynamicStyleSheets,
-}                           from '@cssfn/cssfn-react'    
 
 // reusable-ui components:
 import {
