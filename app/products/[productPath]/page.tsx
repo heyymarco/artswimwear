@@ -60,5 +60,5 @@ export default function ProductDetailPage({ params: { productPath } }: { params:
             // params:
             productPath={productPath}
         />
-    )
+    );
 }
