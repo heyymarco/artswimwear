@@ -6,6 +6,12 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useMergeClasses,
+}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
+
 // heymarco components:
 import {
     SectionProps,
@@ -32,6 +38,19 @@ const BlankSection = (props: BlankSectionProps) => {
     
     
     
+    // classes:
+    const mergedClasses  = useMergeClasses(
+        // preserves the original `classes`:
+        props.classes,
+        
+        
+        
+        // classes:
+        styleSheet.main, // style
+    );
+    
+    
+    
     // jsx:
     return (
         <Section
@@ -46,7 +65,7 @@ const BlankSection = (props: BlankSectionProps) => {
             
             
             // classes:
-            mainClass={props.mainClass ?? styleSheet.main}
+            classes={mergedClasses}
         />
     );
 }
