@@ -27,4 +27,3 @@ export function CheckoutPageContent(): JSX.Element|null {
         </Main>
     );
 }
-
