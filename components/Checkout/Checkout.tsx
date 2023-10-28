@@ -101,7 +101,7 @@ import {
 
 
 // react components:
-const Checkout = () => {
+const Checkout = (): JSX.Element|null => {
     // jsx:
     return (
         <CheckoutStateProvider>
