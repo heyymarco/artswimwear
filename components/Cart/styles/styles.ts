@@ -1,12 +1,12 @@
 // cssfn:
 import {
     // writes css in javascript:
-    rule,
     descendants,
     children,
     scope,
 }                           from '@cssfn/core'   
 
+// reusable-ui core:
 import {
     // a spacer (gap) management system:
     spacers,
@@ -14,7 +14,9 @@ import {
     
     
     // a responsive management system:
+    breakpoints,
     ifScreenWidthAtLeast,
+    ifScreenWidthSmallerThan,
     
     
     
@@ -23,14 +25,24 @@ import {
     horzRules,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// reusable-ui components:
+import {
+    // base-content-components:
+    contents,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
 // configs:
 import {
     commerces,
 }                           from '@/config'
 
 
-
+// defaults:
 const imageSize = 64;  // 64px
+const maxMobileTextWidth = `calc(${breakpoints.sm}px - (2 * ${contents.paddingInline}))`;
+
+
+
 export default () => [
     scope('cartWindow', {
     }),
@@ -154,7 +166,10 @@ export default () => [
             
             
             // sizes:
-            // maxInlineSize: '15em',
+            ...ifScreenWidthSmallerThan('sm', {
+                boxSizing     : 'border-box',
+                maxInlineSize : maxMobileTextWidth,
+            }),
             
             
             
@@ -164,6 +179,9 @@ export default () => [
             wordBreak    : 'break-word',
             overflowWrap : 'break-word',
             overflow     : 'hidden',
+            ...ifScreenWidthSmallerThan('sm', {
+                textAlign: 'center',
+            }),
         }),
         ...children('.unitPrice', {
             // positions:
@@ -197,7 +215,16 @@ export default () => [
     }, {specificityWeight: 2}),
     
     scope('shippingInfo', {
-        fontSize: typos.fontSizeMd,
-        marginBlockStart: 'auto',
+        // spacings:
+        marginBlockStart : 'auto', // place to very bottom
+        
+        
+        
+        // typos:
+        fontSize : typos.fontSizeMd,
+        ...ifScreenWidthSmallerThan('sm', {
+            boxSizing     : 'border-box',
+            maxInlineSize : maxMobileTextWidth,
+        }),
     }),
 ];

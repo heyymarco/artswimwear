@@ -1,5 +1,21 @@
 'use client'
 
+// react:
+import {
+    // react:
+    default as React,
+    
+    
+    
+    // hooks:
+    useRef,
+}                           from 'react'
+
+// next-js:
+import {
+    useRouter,
+}                           from 'next/navigation'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -8,6 +24,18 @@ import {
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 import {
+    // simple-components:
+    ButtonIcon,
+    CloseButton,
+    
+    
+    
+    // layout-components:
+    CardHeader,
+    CardBody,
+    
+    
+    
     // dialog-components:
     ModalExpandedChangeEvent,
     ModalSide,
@@ -43,11 +71,24 @@ export const CartDialog = () => {
         // states:
         isCartShown,
         
+        isLoadingPage,
+        isReadyPage,
+        
+        
+        
+        // cart data:
+        hasCart,
+        
         
         
         // actions:
         hideCart,
     } = useCartState();
+    
+    
+    
+    // navigations:
+    const router = useRouter();
     
     
     
@@ -61,6 +102,15 @@ export const CartDialog = () => {
         // actions:
         hideCart();
     });
+    const handleClick          = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
+        hideCart();
+        router.push('/checkout');
+    });
+    
+    
+    
+    // refs:
+    const cartBodyRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -91,8 +141,65 @@ export const CartDialog = () => {
             // handlers:
             onExpandedChange={handleExpandedChange}
         >
-            <EditCart />
-            <ViewSubtotalCart />
+            <CardHeader>
+                <h1
+                    // classes:
+                    className={`h5 ${styles.cartListTitle}`}
+                >
+                    My Shopping Cart
+                </h1>
+                <CloseButton
+                    // handlers:
+                    onClick={hideCart}
+                />
+            </CardHeader>
+            <CardBody
+                // refs:
+                elmRef={cartBodyRef}
+                
+                
+                
+                // classes:
+                className={styles.cartBody}
+            >
+                <EditCart />
+                <ViewSubtotalCart />
+                
+                <p
+                    // classes:
+                    className={styles.shippingInfo}
+                >
+                    Tax included and <u>shipping calculated</u> at checkout.
+                </p>
+                
+                <ButtonIcon
+                    // appearances:
+                    icon={
+                        (hasCart && isLoadingPage)
+                        ? 'busy'
+                        : 'shopping_bag'
+                    }
+                    
+                    
+                    
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                    gradient={true}
+                    
+                    
+                    
+                    // accessibilities:
+                    enabled={isReadyPage}
+                    
+                    
+                    
+                    // handlers:
+                    onClick={handleClick}
+                >
+                    Place My Order
+                </ButtonIcon>
+            </CardBody>
         </ModalSide>
     )
 };
