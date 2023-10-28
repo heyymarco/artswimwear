@@ -63,8 +63,8 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         
         
         // actions:
-        deleteItem,
-        changeItem,
+        deleteProductFromCart,
+        changeProductFromCart,
     } = useCartState();
     
     
@@ -72,11 +72,11 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     // handlers:
     const handleChange = useEvent((productId, quantity) => {
         // actions:
-        changeItem(productId, quantity);
+        changeProductFromCart(productId, quantity);
     });
     const handleDelete = useEvent(async (productId: string): Promise<void> => {
         // actions:
-        deleteItem(productId);
+        deleteProductFromCart(productId);
     });
     
     

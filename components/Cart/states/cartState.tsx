@@ -96,69 +96,69 @@ export type {
 // contexts:
 export interface CartState {
     // states:
-    isCartShown        : boolean
+    isCartShown           : boolean
     
-    isLoadingPage      : boolean
-    isErrorPage        : boolean
-    isReadyPage        : boolean
+    isLoadingPage         : boolean
+    isErrorPage           : boolean
+    isReadyPage           : boolean
     
     
     
     // cart data:
-    cartItems          : CartEntry[]
-    hasCart            : boolean
-    totalProductWeight : number|null
-    totalProductPrice  : number
+    cartItems             : CartEntry[]
+    hasCart               : boolean
+    totalProductWeight    : number|null
+    totalProductPrice     : number
     
     
     
     // relation data:
-    productList        : EntityState<ProductPreview>   | undefined
+    productList           : EntityState<ProductPreview>   | undefined
     
     
     
     // actions:
-    addItem            : (productId: string, quantity?: number) => void
-    deleteItem         : (productId: string) => void
-    changeItem         : (productId: string, quantity: number) => void
-    clearItems         : () => void
+    addProductToCart      : (productId: string, quantity?: number) => void
+    deleteProductFromCart : (productId: string) => void
+    changeProductFromCart : (productId: string, quantity: number) => void
+    clearProductsFromCart : () => void
     
-    showCart           : () => void
-    hideCart           : () => void
+    showCart              : () => void
+    hideCart              : () => void
 }
 
 const noopCallback = () => {};
 const CartStateContext = createContext<CartState>({
     // states:
-    isCartShown        : false,
+    isCartShown           : false,
     
-    isLoadingPage      : false,
-    isErrorPage        : false,
-    isReadyPage        : false,
+    isLoadingPage         : false,
+    isErrorPage           : false,
+    isReadyPage           : false,
     
     
     
     // cart data:
-    cartItems          : [],
-    hasCart            : false,
-    totalProductWeight : null,
-    totalProductPrice  : 0,
+    cartItems             : [],
+    hasCart               : false,
+    totalProductWeight    : null,
+    totalProductPrice     : 0,
     
     
     
     // relation data:
-    productList        : undefined,
+    productList           : undefined,
     
     
     
     // actions:
-    addItem            : noopCallback,
-    deleteItem         : noopCallback,
-    changeItem         : noopCallback,
-    clearItems         : noopCallback,
+    addProductToCart      : noopCallback,
+    deleteProductFromCart : noopCallback,
+    changeProductFromCart : noopCallback,
+    clearProductsFromCart : noopCallback,
     
-    showCart           : noopCallback,
-    hideCart           : noopCallback,
+    showCart              : noopCallback,
+    hideCart              : noopCallback,
 });
 CartStateContext.displayName  = 'CartState';
 
@@ -240,11 +240,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stable callbacks:
-    const addItem    = useEvent((productId: string, quantity: number = 1): void => {
+    const addProductToCart      = useEvent((productId: string, quantity: number = 1): void => {
         // actions:
         dispatch(reduxAddToCart({ productId, quantity }));
     });
-    const deleteItem = useEvent(async (productId: string): Promise<void> => {
+    const deleteProductFromCart = useEvent(async (productId: string): Promise<void> => {
         // conditions:
         if (
             (await showMessage<'yes'|'no'>({
@@ -271,25 +271,25 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // actions:
         dispatch(reduxRemoveFromCart({ productId }));
     });
-    const changeItem = useEvent((productId: string, quantity: number): void => {
+    const changeProductFromCart = useEvent((productId: string, quantity: number): void => {
         // actions:
         if (quantity > 0) {
             dispatch(reduxSetCartItemQuantity({ productId, quantity }));
         }
         else {
-            deleteItem(productId);
+            deleteProductFromCart(productId);
         } // if
     });
-    const clearItems = useEvent((): void => {
+    const clearProductsFromCart = useEvent((): void => {
         // actions:
         dispatch(reduxClearCart());
     });
     
-    const showCart   = useEvent((): void => {
+    const showCart              = useEvent((): void => {
         // actions:
         dispatch(reduxShowCart(true));
     });
-    const hideCart   = useEvent((): void => {
+    const hideCart              = useEvent((): void => {
         // actions:
         dispatch(reduxShowCart(false));
     });
@@ -321,13 +321,13 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // actions:
-        addItem,    // stable ref
-        deleteItem, // stable ref
-        changeItem, // stable ref
-        clearItems, // stable ref
+        addProductToCart,      // stable ref
+        deleteProductFromCart, // stable ref
+        changeProductFromCart, // stable ref
+        clearProductsFromCart, // stable ref
         
-        showCart,   // stable ref
-        hideCart,   // stable ref
+        showCart,              // stable ref
+        hideCart,              // stable ref
     }), [
         // states:
         isCartShown,
@@ -352,13 +352,13 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // actions:
-        // addItem,    // stable ref
-        // deleteItem, // stable ref
-        // changeItem, // stable ref
-        // clearItems, // stable ref
+        // addProductToCart,      // stable ref
+        // deleteProductFromCart, // stable ref
+        // changeProductFromCart, // stable ref
+        // clearProductsFromCart, // stable ref
         
-        // showCart,   // stable ref
-        // hideCart,   // stable ref
+        // showCart,              // stable ref
+        // hideCart,              // stable ref
     ]);
     
     
