@@ -1,21 +1,27 @@
 // cssfn:
 import {
     // writes css in javascript:
-    rule,
-    globalScope,
-}                           from '@cssfn/core'          // writes css in javascript
+    mainScope,
+}                           from '@cssfn/core'              // writes css in javascript
 
-import { spacers } from '@reusable-ui/core'
-import { navbars } from '@reusable-ui/components'
+// reusable-ui core:
+import {
+    // reusable-ui configs:
+    spacers,
+}                           from '@reusable-ui/core'        // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // composite-components:
+    navbars,
+}                           from '@reusable-ui/components'  // a set of official Reusable-UI components
 
 
 
 // styles:
 export default [
-    globalScope({
-        ...rule('html', {
-            // scrolls:
-            scrollPaddingBlockStart : `calc(${navbars.blockSize} + ${spacers.sm})`,
-        }),
+    mainScope({
+        // scrolls:
+        scrollPaddingBlockStart : `calc(${navbars.blockSize} + ${spacers.sm})`,
     }),
 ];
