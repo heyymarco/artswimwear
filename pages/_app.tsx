@@ -20,7 +20,7 @@ import { Alert, Container, DialogMessageProvider, FetchErrorMessage, FetchErrorT
 
 import { store, persistor } from '@/store/store'
 import { Provider } from 'react-redux'
-import { CartBar } from '@/components/CartBar';
+// import { CartBar } from '@/components/CartBar';
 import { PersistGate } from 'redux-persist/integration/react';
 import { WEBSITE_FAVICON_PNG, WEBSITE_FAVICON_SVG } from '@/website.config'
 
@@ -143,7 +143,7 @@ export default function App({ Component, pageProps }: AppProps) {
             
             <Footer />
             
-            <CartBar />
+            {/* <CartBar /> */}
         </DialogMessageProvider>
     </PersistGate></Provider>);
 }

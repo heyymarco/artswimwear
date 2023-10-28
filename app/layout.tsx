@@ -9,8 +9,7 @@ import '@/theme.config'
 
 import './layoutStyles.scss'
 
-import { CartBar } from '@/components/CartBar'
-import { CartStateProvider } from '@/components/Cart'
+import { CartStateProvider, CartDialog } from '@/components/Cart'
 import { Header } from './Header'
 import { Footer } from './Footer'
 
@@ -123,7 +122,7 @@ export default function RootLayout({
                             
                             <Footer />
                             
-                            <CartBar />
+                            <CartDialog />
                         </CartStateProvider>
                     </DialogMessageProvider>
                 </PersistGate></Provider>
