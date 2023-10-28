@@ -30,7 +30,10 @@ export interface LoadingBlankSectionProps
 const LoadingBlankSection = (props: LoadingBlankSectionProps) => {
     // jsx:
     return (
-        <BlankSection>
+        <BlankSection
+            // other props:
+            {...props}
+        >
             {props.children ?? <Busy
                 // variants:
                 size='lg'
