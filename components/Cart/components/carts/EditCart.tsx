@@ -95,7 +95,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
             
             
             // classes:
-            className={`orderList ${styles.productList}`}
+            className={`orderList ${styles.editCart}`}
         >
             {cartItems.map((cartEntry, itemIndex) =>
                 <EditCartItem

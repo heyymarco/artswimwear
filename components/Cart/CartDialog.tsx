@@ -123,11 +123,6 @@ export const CartDialog = () => {
             
             
             
-            // classes:
-            className={styles.cartWindow}
-            
-            
-            
             // behaviors:
             lazy={true}
             
@@ -142,10 +137,7 @@ export const CartDialog = () => {
             onExpandedChange={handleExpandedChange}
         >
             <CardHeader>
-                <h1
-                    // classes:
-                    className={`h5 ${styles.cartListTitle}`}
-                >
+                <h1>
                     My Shopping Cart
                 </h1>
                 <CloseButton
@@ -167,7 +159,7 @@ export const CartDialog = () => {
                 
                 <p
                     // classes:
-                    className={styles.shippingInfo}
+                    className={styles.shippingTips}
                 >
                     Tax included and <u>shipping calculated</u> at checkout.
                 </p>

@@ -166,7 +166,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             
             
             // classes:
-            className={styles.productPreview}
+            className={styles.editCartItem}
             
             
             

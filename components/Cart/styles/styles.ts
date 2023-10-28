@@ -44,11 +44,6 @@ const maxMobileTextWidth = `calc(${breakpoints.sm}px - (2 * ${contents.paddingIn
 
 
 export default () => [
-    scope('cartWindow', {
-    }),
-    scope('cartListTitle', {
-        margin: 0,
-    }),
     scope('cartBody', {
         // layouts:
         display       : 'flex',
@@ -82,21 +77,14 @@ export default () => [
         }),
     }, {specificityWeight: 3}),
     
-    scope('cartList', {
-    }, {specificityWeight: 2}),
-    scope('cartTitle', {
-        textAlign: 'center',
-        fontSize: typos.fontSizeLg,
-    }, {specificityWeight: 2}),
-    
-    scope('productList', {
+    scope('editCart', {
         // children:
         ...children('*', { // <li>
             // appearances:
             borderColor : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`,
         }),
     }),
-    scope('productPreview', {
+    scope('editCartItem', {
         // layouts:
         display      : 'grid',
         gridTemplate : [[
@@ -213,8 +201,8 @@ export default () => [
             justifySelf : 'end',
         }),
     }, {specificityWeight: 2}),
-    
-    scope('shippingInfo', {
+
+    scope('shippingTips', {
         // spacings:
         marginBlockStart : 'auto', // place to very bottom
         
