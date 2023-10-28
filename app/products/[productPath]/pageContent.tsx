@@ -58,6 +58,10 @@ import {
 
 // internal components:
 import {
+    LoadingBlankPage,
+    ErrorBlankPage,
+}                           from '@/components/BlankPage'
+import {
     WysiwygEditorState,
     WysiwygViewer,
 }                           from '@/components/WysiwygEditor'
@@ -92,7 +96,7 @@ import './pageStyles';
 // react components:
 export function ProductDetailPageContent({ productPath }: { productPath: string }) {
     // styles:
-    const styles = useProductDetailStyleSheet();
+    const styleSheet = useProductDetailStyleSheet();
     
     
     
@@ -109,9 +113,9 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     // apis:
     const {data: productDetail, isLoading: isLoadingProduct, isError: isErrorProduct} = useGetProductDetail(productPath as any ?? '');
     
-    const isLoadingPage =                    isLoadingProduct;
-    const isErrorPage   = !isLoadingPage && (isErrorProduct);
-    const isReadyPage   = !isLoadingPage && (!!productDetail);
+    const isLoadingPage = isLoadingProduct;
+    const isErrorPage   = isErrorProduct || !productDetail;
+    const isReadyPage   = !isLoadingPage && !isErrorPage;
     
     
     
@@ -132,168 +136,162 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     
     
     // jsx:
+    if (isLoadingPage) return <LoadingBlankPage />;
+    if (isErrorPage)   return <ErrorBlankPage />;
     return (
-        <Main nude={true}>
+        <Main
+            // classes:
+            className={styleSheet.main}
+        >
             <Section
-                // variants:
-                theme='secondary'
-                
-                
-                
                 // classes:
-                className={`${styles.prodDtl} ${(isLoadingPage || isErrorPage || !productDetail) ? 'loading' : ''}`}
+                className={styleSheet.nav}
             >
-                {
-                    isLoadingPage
-                    ? <Busy theme='primary' size='lg' />
-                    : (isErrorPage || !productDetail)
-                    ? <p>Oops, an error occured!</p>
-                    : <>
-                        <section
-                            // classes:
-                            className='nav'
-                        >
-                            <Nav
-                                // variants:
-                                theme='primary'
-                                listStyle='breadcrumb'
-                                orientation='inline'
-                            >
-                                <NavItem end>
-                                    <Link href='/'>
-                                        Home
-                                    </Link>
-                                </NavItem>
-                                
-                                <NavItem end>
-                                    <Link href='/products'>
-                                        Products
-                                    </Link>
-                                </NavItem>
-                                
-                                {!!productDetail.path && <NavItem end>
-                                    <Link href={`/products/${productDetail.path}`} >
-                                        {productDetail.name}
-                                    </Link>
-                                </NavItem>}
-                            </Nav>
-                        </section>
-                        <section
-                            // classes:
-                            className='images'
-                        >
-                            <Carousel
-                                // variants:
-                                size='lg'
-                                theme='primary'
-                                
-                                
-                                
-                                // classes:
-                                className='slides'
-                            >
-                                {productDetail.images?.map((image: string, index: number) =>
-                                    <Image
-                                        // identifiers:
-                                        key={index}
-                                        
-                                        
-                                        
-                                        // appearances:
-                                        alt={`image #${index + 1} of ${productDetail.name}`}
-                                        src={resolveMediaUrl(image)}
-                                        sizes='100vw'
-                                        
-                                        priority={true}
-                                    />
-                                )}
-                            </Carousel>
-                        </section>
-                        <section
-                            // classes:
-                            className='addToCart'
-                        >
-                            <h1
-                                // classes:
-                                className='name h4'
-                            >
-                                {productDetail.name}
-                            </h1>
-                            <span
-                                // classes:
-                                className='price h5'
-                            >
-                                {formatCurrency(productDetail.price)}
-                            </span>
-                            
-                            <p style={{marginBlockEnd: 0}}>
-                                Quantity:
-                            </p>
-                            <QuantityInput
-                                // variants:
-                                theme='primary'
-                                
-                                
-                                
-                                // classes:
-                                className='ctrlQty'
-                                
-                                
-                                
-                                // values:
-                                value={addProductQty}
-                                
-                                
-                                
-                                // validations:
-                                min={1}
-                                max={99}
-                                
-                                
-                                
-                                // handlers:
-                                onChange={handleQuantityChange}
-                            />
-                            
-                            <p>
-                                <ButtonIcon
-                                    // appearances:
-                                    icon='add_shopping_cart'
-                                    
-                                    
-                                    
-                                    // variants:
-                                    size='lg'
-                                    theme='primary'
-                                    gradient={true}
-                                    
-                                    
-                                    
-                                    // classes:
-                                    className='ctrlAction'
-                                    
-                                    
-                                    
-                                    // handlers:
-                                    onClick={handleBuyButtonClick}
-                                >
-                                    Add to cart
-                                </ButtonIcon>
-                            </p>
-                        </section>
-                        
-                        {!!productDetail.description && <WysiwygViewer
-                            // classes:
-                            className='desc'
-                            
-                            
-                            
-                            // values:
-                            value={(productDetail.description ?? undefined) as unknown as WysiwygEditorState|undefined}
-                        />}
-                    </>
-                }
+                <Nav
+                    // variants:
+                    theme='primary'
+                    listStyle='breadcrumb'
+                    orientation='inline'
+                >
+                    <NavItem end>
+                        <Link href='/'>
+                            Home
+                        </Link>
+                    </NavItem>
+                    
+                    <NavItem end>
+                        <Link href='/products'>
+                            Products
+                        </Link>
+                    </NavItem>
+                    
+                    {!!productDetail.path && <NavItem end>
+                        <Link href={`/products/${productDetail.path}`} >
+                            {productDetail.name}
+                        </Link>
+                    </NavItem>}
+                </Nav>
             </Section>
+            
+            <Section
+                // classes:
+                className={styleSheet.gallery}
+            >
+                <Carousel
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                    
+                    
+                    
+                    // classes:
+                    className='slides'
+                >
+                    {productDetail.images?.map((image: string, index: number) =>
+                        <Image
+                            // identifiers:
+                            key={index}
+                            
+                            
+                            
+                            // appearances:
+                            alt={`image #${index + 1} of ${productDetail.name}`}
+                            src={resolveMediaUrl(image)}
+                            sizes='100vw'
+                            
+                            priority={true}
+                        />
+                    )}
+                </Carousel>
+            </Section>
+            
+            <Section
+                // classes:
+                className={styleSheet.actions}
+            >
+                <h1
+                    // classes:
+                    className='name h4'
+                >
+                    {productDetail.name}
+                </h1>
+                <span
+                    // classes:
+                    className='price h5'
+                >
+                    {formatCurrency(productDetail.price)}
+                </span>
+                
+                <p style={{marginBlockEnd: 0}}>
+                    Quantity:
+                </p>
+                <QuantityInput
+                    // variants:
+                    theme='primary'
+                    
+                    
+                    
+                    // classes:
+                    className='ctrlQty'
+                    
+                    
+                    
+                    // values:
+                    value={addProductQty}
+                    
+                    
+                    
+                    // validations:
+                    min={1}
+                    max={99}
+                    
+                    
+                    
+                    // handlers:
+                    onChange={handleQuantityChange}
+                />
+                
+                <p>
+                    <ButtonIcon
+                        // appearances:
+                        icon='add_shopping_cart'
+                        
+                        
+                        
+                        // variants:
+                        size='lg'
+                        theme='primary'
+                        gradient={true}
+                        
+                        
+                        
+                        // classes:
+                        className='ctrlAction'
+                        
+                        
+                        
+                        // handlers:
+                        onClick={handleBuyButtonClick}
+                    >
+                        Add to cart
+                    </ButtonIcon>
+                </p>
+            </Section>
+            
+            {!!productDetail.description && <Section
+                    // classes:
+                    className={styleSheet.desc}
+            >
+                <WysiwygViewer
+                    // variants:
+                    nude={true}
+                    
+                    
+                    
+                    // values:
+                    value={(productDetail.description ?? undefined) as unknown as WysiwygEditorState|undefined}
+                />
+            </Section>}
         </Main>
     );
 }
