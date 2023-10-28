@@ -32,8 +32,6 @@ export const metadata: Metadata = {
 export default function HomePage() {
     // jsx:
     return (
-        <>
-            <HomePageContent />
-        </>
-    )
+        <HomePageContent />
+    );
 }
