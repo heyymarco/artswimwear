@@ -41,8 +41,12 @@ export const usesBlankSectionLayout = () => {
             
             // children:
             ...children('.loadingIndicator', {
-                fontSize: '4rem',
+                fontSize  : '4rem',
             }),
+            ...children('.statusMessage', {
+                // typos:
+                textAlign : 'center',
+            })
         }),
     });
 };
