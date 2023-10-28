@@ -55,7 +55,7 @@ import {
 
 
 // react components:
-export const CartDialog = () => {
+const CartDialog = () => {
     // styles:
     const styles = useCartStyleSheet();
     
@@ -179,4 +179,8 @@ export const CartDialog = () => {
             </CardBody>
         </ModalSide>
     )
+}
+export {
+    CartDialog,
+    CartDialog as default,
 };
