@@ -56,8 +56,9 @@ export async function generateMetadata(props: MetadataProps, parent: ResolvingMe
 export default function ProductDetailPage({ params: { productPath } }: { params: { productPath: string } }) {
     // jsx:
     return (
-        <>
-            <ProductDetailPageContent productPath={productPath} />
-        </>
+        <ProductDetailPageContent
+            // params:
+            productPath={productPath}
+        />
     )
 }
