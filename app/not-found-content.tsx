@@ -15,7 +15,6 @@ import {
 // heymarco components:
 import {
     GenericSection,
-    Main,
 }                           from '@heymarco/section'
 import {
     Image,
