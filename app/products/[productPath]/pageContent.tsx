@@ -185,7 +185,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     
                     
                     // classes:
-                    className='slides'
+                    className={styleSheet.slides}
                 >
                     {productDetail.images?.map((image: string, index: number) =>
                         <Image
@@ -222,7 +222,10 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     {formatCurrency(productDetail.price)}
                 </span>
                 
-                <p style={{marginBlockEnd: 0}}>
+                <p
+                    // classes:
+                    className={styleSheet.paraQty}
+                >
                     Quantity:
                 </p>
                 <QuantityInput
@@ -232,7 +235,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     
                     
                     // classes:
-                    className='ctrlQty'
+                    className={styleSheet.ctrlQty}
                     
                     
                     
@@ -266,7 +269,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                         
                         
                         // classes:
-                        className='ctrlAction'
+                        className={styleSheet.ctrlAction}
                         
                         
                         

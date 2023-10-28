@@ -49,10 +49,12 @@ export default () => [
             padding: '0px',
         }),
     }),
+    
     scope('nav', {
         // positions:
         gridArea : 'nav',
     }),
+    
     scope('gallery', {
         // positions:
         gridArea : 'gallery',
@@ -72,60 +74,64 @@ export default () => [
             
             // children:
             ...children('.slides', {
-                // children:
-                ...children('ul>li>figure', {
-                    // layouts:
-                    display        : 'flex',
-                    justifyContent : 'center',
-                    alignItems     : 'center',
-                    
-                    
-                    
-                    // sizes:
-                    width          : '100%',
-                    height         : '100%',
-                    
-                    
-                    
-                    // backgrounds:
-                    background     : 'white',
-                    
-                    
-                    
-                    // children:
-                    ...children(['&', 'img'], {
-                        // appearances:
-                        objectFit : 'contain',
-                    }),
-                }),
             }),
         }),
     }),
+    scope('slides', {
+        // children:
+        ...children('ul>li>figure', {
+            // layouts:
+            display        : 'flex',
+            justifyContent : 'center',
+            alignItems     : 'center',
+            
+            
+            
+            // sizes:
+            width          : '100%',
+            height         : '100%',
+            
+            
+            
+            // backgrounds:
+            background     : 'white',
+            
+            
+            
+            // children:
+            ...children(['&', 'img'], {
+                // appearances:
+                objectFit : 'contain',
+            }),
+        }),
+    }),
+    
     scope('actions', {
         // positions:
         gridArea : 'actions',
-        
-        
-        
-        // children:
-        ...descendants('.ctrlQty', {
-            // sizes:
-            ...descendants('input', {
-                boxSizing : 'content-box',
-                width     : '2em', // fit for number 99
-                
-                
-                
-                // typos:
-                textAlign : 'center',
-            }),
-        }),
-        ...descendants('.ctrlAction', {
-            // sizes:
-            boxSizing : 'border-box',
-            width     : '100%',
+    }),
+    scope('paraQty', {
+        // spacings:
+        marginBlockEnd: '0px',
+    }),
+    scope('ctrlQty', {
+        // sizes:
+        ...descendants('input', {
+            boxSizing : 'content-box',
+            width     : '2em', // fit for number 99
+            
+            
+            
+            // typos:
+            textAlign : 'center',
         }),
     }),
+    scope('ctrlAction', {
+        // sizes:
+        boxSizing : 'border-box',
+        width     : '100%',
+    }),
+    
     scope('desc', {
         // positions:
         gridArea : 'desc',
