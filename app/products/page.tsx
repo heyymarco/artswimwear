@@ -32,8 +32,6 @@ export const metadata: Metadata = {
 export default function ProductListPage() {
     // jsx:
     return (
-        <>
-            <ProductListPageContent />
-        </>
-    )
+        <ProductListPageContent />
+    );
 }
