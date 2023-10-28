@@ -12,9 +12,7 @@ import {
 export const usesBlankPageLayout = () => {
     return style({
         // layouts:
-        display        : 'grid',
-        justifyContent : 'stretch', // stretch items horizontally
-        alignContent   : 'stretch', // stretch items vertically
+        display : 'grid',
         
         
         
@@ -31,22 +29,32 @@ export const usesBlankPageLayout = () => {
         
         
         // children:
-        ...children('article', {
+        ...children('section', {
             // layouts:
             display        : 'grid',
-            justifyContent : 'center', // center items horizontally
-            alignContent   : 'center', // center items vertically
+            justifyContent : 'stretch', // stretch items horizontally
+            alignContent   : 'stretch', // stretch items vertically
             
             
             
             // children:
-            ...children('.loadingIndicator', {
-                fontSize  : '4rem',
+            ...children('article', {
+                // layouts:
+                display        : 'grid',
+                justifyContent : 'center', // center items horizontally
+                alignContent   : 'center', // center items vertically
+                
+                
+                
+                // children:
+                ...children('.loadingIndicator', {
+                    fontSize  : '4rem',
+                }),
+                ...children('.statusMessage', {
+                    // typos:
+                    textAlign : 'center',
+                })
             }),
-            ...children('.statusMessage', {
-                // typos:
-                textAlign : 'center',
-            })
         }),
     });
 };

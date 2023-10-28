@@ -6,12 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// reusable-ui core:
-import {
-    // react helper hooks:
-    useMergeClasses,
-}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
-
 // heymarco components:
 import {
     Main,
@@ -39,35 +33,20 @@ const BlankPage = (props: BlankPageProps) => {
     
     
     
-    // classes:
-    const mergedClasses  = useMergeClasses(
-        // preserves the original `classes`:
-        props.classes,
-        
-        
-        
-        // classes:
-        styleSheet.main, // style
-    );
-    
-    
-    
     // jsx:
     return (
-        <Main>
+        <Main
+            // variants:
+            theme={props.theme ?? 'primary'}
+            
+            
+            
+            // classes:
+            className={styleSheet.main}
+        >
             <Section
                 // other props:
                 {...props}
-                
-                
-                
-                // variants:
-                theme={props.theme ?? 'primary'}
-                
-                
-                
-                // classes:
-                classes={mergedClasses}
             />
         </Main>
     );
