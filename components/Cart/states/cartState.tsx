@@ -249,7 +249,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         if (
             (await showMessage<'yes'|'no'>({
                 theme    : 'warning',
-                size     : 'sm',
+                // si ze     : 'sm',
                 title    : <h1>Delete Confirmation</h1>,
                 message  : <p>
                     Are you sure to remove product:<br />
