@@ -1,60 +1,206 @@
 'use client'
 
-import { Section, Main } from '@heymarco/section'
+// react:
+import {
+    // react:
+    default as React,
+    
+    
+    
+    // hooks:
+    useState,
+}                           from 'react'
 
-import { Busy, ButtonIcon, Carousel, Nav, NavItem } from '@reusable-ui/components'
-import { dynamicStyleSheets } from '@cssfn/cssfn-react'
-import { useGetProductDetail } from '@/store/features/api/apiSlice'
-import { formatCurrency } from '@/libs/formatters'
-import { Image } from '@heymarco/image'
-import Link from '@reusable-ui/next-compat-link'
-import { useState } from 'react'
-import { addToCart } from '@/store/features/cart/cartSlice'
-import { useDispatch } from 'react-redux'
-import { QuantityInput } from '@heymarco/quantity-input'
-import { resolveMediaUrl } from '@/libs/mediaStorage.client'
-import { WysiwygEditorState, WysiwygViewer } from '@/components/WysiwygEditor'
+// cssfn:
+import {
+    // style sheets:
+    dynamicStyleSheets,
+}                           from '@cssfn/cssfn-react'           // writes css in react hook
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // simple-components:
+    ButtonIcon,
+    
+    
+    
+    // status-components:
+    Busy,
+    
+    
+    
+    // composite-components:
+    NavItem,
+    Nav,
+    Carousel,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
+
+// heymarco components:
+import {
+    Section,
+    Main,
+}                           from '@heymarco/section'
+import {
+    Image,
+}                           from '@heymarco/image'
+import {
+    QuantityInput,
+}                           from '@heymarco/quantity-input'
+
+// internal components:
+import {
+    WysiwygEditorState,
+    WysiwygViewer,
+}                           from '@/components/WysiwygEditor'
+
+// internals:
+import {
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
+
+// stores:
+import {
+    useGetProductDetail,
+}                           from '@/store/features/api/apiSlice'
+
+// utilities:
+import {
+    formatCurrency,
+}                           from '@/libs/formatters'
+import {
+    resolveMediaUrl,
+}                           from '@/libs/mediaStorage.client'
 
 
 
-// const inter = Inter({ subsets: ['latin'] })
 const useProductDetailStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */'@/styles/productDetail')
-, { id: 'prod-dtl' });
+    () => import(/* webpackPrefetch: true */'./pageStyles')
+, { id: 'ihi965eoyu' });
+import './pageStyles';
 
 
 
+// react components:
 export function ProductDetailPageContent({ productPath }: { productPath: string }) {
+    // styles:
     const styles = useProductDetailStyleSheet();
-    const {data: product, isLoading, isError} = useGetProductDetail(productPath as any ?? '');
+    
+    
+    
+    // states:
+    const {
+        // actions:
+        addProductToCart,
+    } = useCartState();
+    
     const [addProductQty, setAddProductQty] = useState(1);
-    const dispatch = useDispatch();
     
     
     
+    // apis:
+    const {data: productDetail, isLoading: isLoadingProduct, isError: isErrorProduct} = useGetProductDetail(productPath as any ?? '');
+    
+    const isLoadingPage =                    isLoadingProduct;
+    const isErrorPage   = !isLoadingPage && (isErrorProduct);
+    const isReadyPage   = !isLoadingPage && (!!productDetail);
+    
+    
+    
+    // handlers:
+    const handleQuantityChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber}}) => {
+        setAddProductQty(valueAsNumber);
+    });
+    const handleBuyButtonClick = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
+        // conditions:
+        if (!isReadyPage) return; // the page is not fully loaded => ignore
+        
+        
+        
+        // actions:
+        addProductToCart(productDetail.id, addProductQty);
+    });
+    
+    
+    
+    // jsx:
     return (
         <Main nude={true}>
-            <Section className={`${styles.prodDtl} ${(isLoading || isError || !product) ? 'loading' : ''}`} theme='secondary'>
+            <Section
+                // variants:
+                theme='secondary'
+                
+                
+                
+                // classes:
+                className={`${styles.prodDtl} ${(isLoadingPage || isErrorPage || !productDetail) ? 'loading' : ''}`}
+            >
                 {
-                    isLoading
+                    isLoadingPage
                     ? <Busy theme='primary' size='lg' />
-                    : (isError || !product)
+                    : (isErrorPage || !productDetail)
                     ? <p>Oops, an error occured!</p>
                     : <>
-                        <section className='nav'>
-                            <Nav orientation='inline' theme='primary' listStyle='breadcrumb'>
-                                <NavItem end><Link href='/'>Home</Link></NavItem>
-                                <NavItem end><Link href='/products'>Products</Link></NavItem>
-                                {!!product.path && <NavItem end><Link href={`/products/${product.path}`} >{product.name}</Link></NavItem>}
+                        <section
+                            // classes:
+                            className='nav'
+                        >
+                            <Nav
+                                // variants:
+                                theme='primary'
+                                listStyle='breadcrumb'
+                                orientation='inline'
+                            >
+                                <NavItem end>
+                                    <Link href='/'>
+                                        Home
+                                    </Link>
+                                </NavItem>
+                                
+                                <NavItem end>
+                                    <Link href='/products'>
+                                        Products
+                                    </Link>
+                                </NavItem>
+                                
+                                {!!productDetail.path && <NavItem end>
+                                    <Link href={`/products/${productDetail.path}`} >
+                                        {productDetail.name}
+                                    </Link>
+                                </NavItem>}
                             </Nav>
                         </section>
-                        <section className='images'>
-                            <Carousel className='slides' size='lg' theme='primary'>
-                                {product.images?.map((image: string, index: number) =>
+                        <section
+                            // classes:
+                            className='images'
+                        >
+                            <Carousel
+                                // variants:
+                                size='lg'
+                                theme='primary'
+                                
+                                
+                                
+                                // classes:
+                                className='slides'
+                            >
+                                {productDetail.images?.map((image: string, index: number) =>
                                     <Image
+                                        // identifiers:
                                         key={index}
                                         
-                                        alt={`image #${index + 1} of ${product.name}`}
+                                        
+                                        
+                                        // appearances:
+                                        alt={`image #${index + 1} of ${productDetail.name}`}
                                         src={resolveMediaUrl(image)}
                                         sizes='100vw'
                                         
@@ -63,22 +209,88 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                                 )}
                             </Carousel>
                         </section>
-                        <section className='addToCart'>
-                            <h1 className='name h4'>
-                                {product.name}
+                        <section
+                            // classes:
+                            className='addToCart'
+                        >
+                            <h1
+                                // classes:
+                                className='name h4'
+                            >
+                                {productDetail.name}
                             </h1>
-                            <span className='price h5'>
-                                {formatCurrency(product.price)}
+                            <span
+                                // classes:
+                                className='price h5'
+                            >
+                                {formatCurrency(productDetail.price)}
                             </span>
+                            
                             <p style={{marginBlockEnd: 0}}>
                                 Quantity:
                             </p>
-                            <QuantityInput theme='primary' className='ctrlQty' min={1} value={addProductQty} onChange={(event) => setAddProductQty(event.target.valueAsNumber)} />
+                            <QuantityInput
+                                // variants:
+                                theme='primary'
+                                
+                                
+                                
+                                // classes:
+                                className='ctrlQty'
+                                
+                                
+                                
+                                // values:
+                                value={addProductQty}
+                                
+                                
+                                
+                                // validations:
+                                min={1}
+                                max={99}
+                                
+                                
+                                
+                                // handlers:
+                                onChange={handleQuantityChange}
+                            />
+                            
                             <p>
-                                <ButtonIcon icon='add_shopping_cart' size='lg' gradient={true} theme='primary' className='ctrlAction' onClick={() => dispatch(addToCart({productId: product.id, quantity: addProductQty}))}>Add to cart</ButtonIcon>
+                                <ButtonIcon
+                                    // appearances:
+                                    icon='add_shopping_cart'
+                                    
+                                    
+                                    
+                                    // variants:
+                                    size='lg'
+                                    theme='primary'
+                                    gradient={true}
+                                    
+                                    
+                                    
+                                    // classes:
+                                    className='ctrlAction'
+                                    
+                                    
+                                    
+                                    // handlers:
+                                    onClick={handleBuyButtonClick}
+                                >
+                                    Add to cart
+                                </ButtonIcon>
                             </p>
                         </section>
-                        {!!product.description && <WysiwygViewer className='desc' value={(product.description ?? undefined) as unknown as WysiwygEditorState|undefined} />}
+                        
+                        {!!productDetail.description && <WysiwygViewer
+                            // classes:
+                            className='desc'
+                            
+                            
+                            
+                            // values:
+                            value={(productDetail.description ?? undefined) as unknown as WysiwygEditorState|undefined}
+                        />}
                     </>
                 }
             </Section>
