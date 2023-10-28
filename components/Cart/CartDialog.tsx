@@ -178,7 +178,7 @@ const CartDialog = () => {
                 </ButtonIcon>
             </CardBody>
         </ModalSide>
-    )
+    );
 }
 export {
     CartDialog,
