@@ -195,7 +195,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // apis:
-    const {data: productList, isLoading: isLoadingProduct, isError: isErrorProduct, refetch} = useGetProductList();
+    const {data: productList, isFetching: isLoadingProduct, isError: isErrorProduct, refetch} = useGetProductList();
     
     const isLoadingPage =                    isLoadingProduct;
     const isErrorPage   = !isLoadingPage && (isErrorProduct);
