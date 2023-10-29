@@ -22,6 +22,11 @@ import {
 const ViewSubtotalCart = (): JSX.Element|null => {
     // states:
     const {
+        // states:
+        isReadyPage,
+        
+        
+        
         // cart data:
         totalProductPrice,
     } = useCartState();
@@ -29,6 +34,7 @@ const ViewSubtotalCart = (): JSX.Element|null => {
     
     
     // jsx:
+    if (!isReadyPage) return null;
     return (
         <>
             <hr />
