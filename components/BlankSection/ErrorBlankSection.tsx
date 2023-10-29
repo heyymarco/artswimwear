@@ -59,7 +59,7 @@ const ErrorBlankSection = (props: ErrorBlankSectionProps) => {
             // variants:
             theme={props.theme ?? 'danger'}
         >
-            {props.children ?? <div className={styleSheet.statusMessage}>
+            {props.children ?? <div className={styleSheet.errorMessage}>
                 <h5>
                     Oops, an error occured!
                 </h5>

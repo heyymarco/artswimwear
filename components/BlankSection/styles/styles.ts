@@ -31,9 +31,9 @@ export default () => [
         
         // typos:
         fontSize    : '4rem',
-    }),
+    }, {specificityWeight: 2}),
     
-    scope('statusMessage', {
+    scope('errorMessage', {
         // layouts:
         display      : 'grid',
         justifyItems : 'center', // center items horizontally
