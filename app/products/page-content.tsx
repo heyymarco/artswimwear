@@ -53,7 +53,7 @@ export function ProductListPageContent(): JSX.Element|null {
     
     
     // apis:
-    const {data: productList, isLoading: isLoadingProduct, isError: isErrorProduct} = useGetProductList();
+    const {data: productList, isLoading: isLoadingProduct, isError: isErrorProduct, refetch} = useGetProductList();
     
     const isLoadingPage = isLoadingProduct;
     const isErrorPage   = isErrorProduct || !productList;
@@ -62,8 +62,15 @@ export function ProductListPageContent(): JSX.Element|null {
     
     
     // jsx:
-    if (isLoadingPage) return <LoadingBlankPage />;
-    if (isErrorPage)   return <ErrorBlankPage />;
+    if (isLoadingPage) return (
+        <LoadingBlankPage />
+    );
+    if (isErrorPage)   return (
+        <ErrorBlankPage
+            // handlers:
+            onRetry={refetch}
+        />
+    );
     return (
         <Main
             // classes:
