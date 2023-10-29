@@ -9,10 +9,10 @@ import type {
     Metadata,
 }                           from 'next'
 
-// private components:
+// internal components:
 import {
-    NotFoundPageContent,
-}                           from './not-found-content'
+    UnderConstructionBlankPage,
+}                           from '@/components/BlankPage'
 
 // configs:
 import {
@@ -33,6 +33,6 @@ export const metadata: Metadata = {
 export default function NotFoundPage(): JSX.Element|null {
     // jsx:
     return (
-        <NotFoundPageContent />
+        <UnderConstructionBlankPage />
     );
 }
