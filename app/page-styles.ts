@@ -15,6 +15,7 @@ import {
 
 
 
+// styles:
 export default () => [
     scope('hero', {
         // children:
