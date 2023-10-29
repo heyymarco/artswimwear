@@ -12,7 +12,10 @@ export const PAGE_NOTFOUND_TITLE                     = `Page Not Found or Under 
 export const PAGE_NOTFOUND_DESCRIPTION               = "Sorry. The page you're looking for is not found or under construction."
 
 export const PAGE_LOADING_TITLE                      = 'Loading...'
-export const PAGE_LOADING_DESCRIPTION                = "Loading page. Please wait..."
+export const PAGE_LOADING_DESCRIPTION                = 'Loading page. Please wait...'
+
+export const PAGE_ERROR_TITLE                        = 'Error'
+export const PAGE_ERROR_DESCRIPTION                  = 'Oops, an error occured!'
 
 export const PAGE_PRODUCTS_TITLE                     = `Products - ${WEBSITE_TITLE}`
 export const PAGE_PRODUCTS_DESCRIPTION               = 'Our product gallery.'
