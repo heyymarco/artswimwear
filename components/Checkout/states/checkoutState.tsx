@@ -369,6 +369,8 @@ export interface CheckoutState {
     doTransaction             : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder              : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment             : (orderId: string, paid: boolean) => Promise<void>
+    
+    refetch                   : () => void
 }
 
 const noopHandler  : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
@@ -526,6 +528,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     doTransaction             : noopCallback as any,
     doPlaceOrder              : noopCallback as any,
     doMakePayment             : noopCallback as any,
+    
+    refetch                   : noopCallback,
 });
 CheckoutStateContext.displayName  = 'CheckoutState';
 
@@ -641,8 +645,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const                        {data: productList    , isFetching: isLoadingProduct, isError: isErrorProduct}  = useGetProductList();
-    const                        {data: countryList    , isFetching: isLoadingCountry, isError: isErrorCountry}  = useGetCountryList();
+    const                        {data: productList    , isFetching: isLoadingProduct, isError: isErrorProduct, refetch: refetchProduct}  = useGetProductList();
+    const                        {data: countryList    , isFetching: isLoadingCountry, isError: isErrorCountry, refetch: refetchCountry}  = useGetCountryList();
     const [generatePaymentToken, {data: newPaymentToken, isLoading : isLoadingToken  , isError: isErrorToken  }] = useGeneratePaymentToken();
     
     const [getShippingByAddress, {data: shippingList   , isUninitialized: isUninitShipping, isError: isErrorShipping, isSuccess: isSuccessShipping}]  = useGetMatchingShippingList();
@@ -1177,6 +1181,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         dispatch(reduxClearCart());
         dispatch(reduxResetCheckoutData());
     });
+    const refetch              = useEvent((): void => {
+        refetchProduct();
+        refetchCountry();
+        generatePaymentToken();
+    });
     
     
     
@@ -1339,6 +1348,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         doTransaction,             // stable ref
         doPlaceOrder,              // stable ref
         doMakePayment,             // stable ref
+        
+        refetch,                   // stable ref
     }), [
         // states:
         checkoutStep,
@@ -1497,6 +1508,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // doTransaction,             // stable ref
         // doPlaceOrder,              // stable ref
         // doMakePayment,             // stable ref
+        
+        refetch,                      // stable ref
     ]);
     
     
