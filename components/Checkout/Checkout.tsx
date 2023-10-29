@@ -185,24 +185,7 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     
     // jsx:
-    if (isLoadingPage) return (
-        <LoadingBlankSection
-            // classes:
-            className={styleSheet.blank}
-        />
-    );
-    if (isErrorPage)   return (
-        <ErrorBlankSection
-            // classes:
-            className={styleSheet.blank}
-            
-            
-            
-            // handlers:
-            onRetry={refetch}
-        />
-    );
-    if (!hasCart) return (
+    if (!hasCart) return ( // empty cart => never loading|error
         <BlankSection
             // classes:
             className={styleSheet.blank}
@@ -229,6 +212,23 @@ const CheckoutInternal = (): JSX.Element|null => {
                 </ButtonIcon>
             </div>
         </BlankSection>
+    );
+    if (isLoadingPage) return (
+        <LoadingBlankSection
+            // classes:
+            className={styleSheet.blank}
+        />
+    );
+    if (isErrorPage)   return (
+        <ErrorBlankSection
+            // classes:
+            className={styleSheet.blank}
+            
+            
+            
+            // handlers:
+            onRetry={refetch}
+        />
     );
     return (
         <Container
