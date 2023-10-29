@@ -201,7 +201,7 @@ export default () => [
             justifySelf : 'end',
         }),
     }, {specificityWeight: 2}),
-
+    
     scope('shippingTips', {
         // spacings:
         marginBlockStart : 'auto', // place to very bottom
@@ -214,5 +214,5 @@ export default () => [
             boxSizing     : 'border-box',
             maxInlineSize : maxMobileTextWidth,
         }),
-    }),
+    }, {specificityWeight: 2}),
 ];
