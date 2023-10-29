@@ -18,6 +18,11 @@ import {
     BlankSection,
 }                           from './BlankSection'
 
+// internals:
+import {
+    useBlankSectionStyleSheet,
+}                           from './styles/loader'
+
 
 
 // react components:
@@ -30,6 +35,11 @@ export interface ErrorBlankSectionProps
     onRetry ?: React.MouseEventHandler<HTMLButtonElement>
 }
 const ErrorBlankSection = (props: ErrorBlankSectionProps) => {
+    // styles:
+    const styleSheet = useBlankSectionStyleSheet();
+    
+    
+    
     // rest props:
     const {
         // handlers:
@@ -49,7 +59,7 @@ const ErrorBlankSection = (props: ErrorBlankSectionProps) => {
             // variants:
             theme={props.theme ?? 'danger'}
         >
-            {props.children ?? <div className='statusMessage'>
+            {props.children ?? <div className={styleSheet.statusMessage}>
                 <h5>
                     Oops, an error occured!
                 </h5>

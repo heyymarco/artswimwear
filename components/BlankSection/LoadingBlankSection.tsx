@@ -18,6 +18,11 @@ import {
     BlankSection,
 }                           from './BlankSection'
 
+// internals:
+import {
+    useBlankSectionStyleSheet,
+}                           from './styles/loader'
+
 
 
 // react components:
@@ -28,6 +33,11 @@ export interface LoadingBlankSectionProps
 {
 }
 const LoadingBlankSection = (props: LoadingBlankSectionProps) => {
+    // styles:
+    const styleSheet = useBlankSectionStyleSheet();
+    
+    
+    
     // jsx:
     return (
         <BlankSection
@@ -41,7 +51,7 @@ const LoadingBlankSection = (props: LoadingBlankSectionProps) => {
                 
                 
                 // classes:
-                className='loadingIndicator'
+                className={styleSheet.loadingIndicator}
             />}
         </BlankSection>
     );
