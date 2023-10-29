@@ -11,8 +11,6 @@ import {
     LoadingBlankSectionProps,
     LoadingBlankSection,
 }                           from '@/components/BlankSection'
-
-// internal components:
 import {
     BlankPageProps,
     BlankPage,

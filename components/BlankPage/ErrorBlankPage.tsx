@@ -11,8 +11,6 @@ import {
     ErrorBlankSectionProps,
     ErrorBlankSection,
 }                           from '@/components/BlankSection'
-
-// internal components:
 import {
     BlankPageProps,
     BlankPage,
