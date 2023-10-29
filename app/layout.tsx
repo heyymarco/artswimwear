@@ -25,7 +25,7 @@ import {
 import {
     StylesSSR,
 }                           from './StylesSSR'                  // server_side_rendering CSS (optional)
-import './layoutStyles.scss'
+import './layout-styles.scss'
 
 // reusable-ui components:
 import {
@@ -68,9 +68,9 @@ import {
 
 // styles:
 const useDocumentStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */ './layoutStyles')
+    () => import(/* webpackPrefetch: true */ './layout-styles')
 , { id: 'edtsxmzhph' }); // a unique salt for SSR support, ensures the server-side & client-side have the same generated class names
-import './layoutStyles';
+import './layout-styles';
 
 
 
