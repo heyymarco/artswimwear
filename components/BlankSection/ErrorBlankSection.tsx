@@ -50,9 +50,9 @@ const ErrorBlankSection = (props: ErrorBlankSectionProps) => {
             theme={props.theme ?? 'danger'}
         >
             {props.children ?? <div className='statusMessage'>
-                <h3>
+                <h5>
                     Oops, an error occured!
-                </h3>
+                </h5>
                 {!!onRetry && <>
                     <p>
                         We were unable to retrieve data from the server.
