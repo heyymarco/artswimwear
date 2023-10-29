@@ -100,12 +100,6 @@ export default () => {
                 minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
             }),
         }),
-        scope('emptyMessage', {
-            display        : 'flex',
-            flexDirection  : 'column',
-            justifyContent : 'center', // center items vertically
-            alignItems     : 'center', // center items horizontally
-        }),
         
         scope('layout', {
             display: 'grid',

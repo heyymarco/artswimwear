@@ -36,6 +36,7 @@ import {
     BlankSection,
     LoadingBlankSection,
     ErrorBlankSection,
+    EmptyProductBlankSection,
 }                           from '@/components/BlankSection'
 import {
     ProgressCheckout,
@@ -186,32 +187,10 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     // jsx:
     if (!hasCart) return ( // empty cart => never loading|error
-        <BlankSection
+        <EmptyProductBlankSection
             // classes:
             className={styleSheet.blankSection}
-        >
-            <div className={styleSheet.emptyMessage}>
-                <p>
-                        Your shopping cart is empty. Please add one/some products to buy.
-                </p>
-                
-                <ButtonIcon
-                    // appearances:
-                    icon='image_search'
-                    
-                    
-                    
-                    // variants:
-                    size='lg'
-                    theme='primary'
-                    gradient={true}
-                >
-                    <Link href='/products'>
-                        See our product gallery
-                    </Link>
-                </ButtonIcon>
-            </div>
-        </BlankSection>
+        />
     );
     if (isLoadingPage) return (
         <LoadingBlankSection
