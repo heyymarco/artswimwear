@@ -39,7 +39,10 @@ const LoadingBlankPage = (props: LoadingBlankPageProps) => {
             blankSectionComponent={
                 props.blankSectionComponent
                 ??
-                <LoadingBlankSection />
+                <LoadingBlankSection
+                    // identifiers:
+                    key='busy' // avoids re-creating a similar dom during loading transition in different components
+                />
             }
         />
     );
