@@ -94,8 +94,23 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     
     
     // jsx:
-    if (isLoadingPage) return <LoadingBlankSection />;
-    if (isErrorPage)   return <ErrorBlankSection onRetry={refetch} />;
+    if (isLoadingPage) return (
+        <LoadingBlankSection
+            // classes:
+            className={props.className}
+        />
+    );
+    if (isErrorPage)   return (
+        <ErrorBlankSection
+            // classes:
+            className={props.className}
+            
+            
+            
+            // handlers:
+            onRetry={refetch}
+        />
+    );
     return (
         <List
             // other props:
