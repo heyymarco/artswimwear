@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 
 // react components:
-export default function HomePage() {
+export default function HomePage(): JSX.Element|null {
     // jsx:
     return (
         <HomePageContent />
