@@ -23,7 +23,7 @@ import {
 
 
 // styles:
-const useNotFoundStyleSheet = dynamicStyleSheets(
+const useNotFoundPageStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'./not-found-styles')
 , { id: 's4wft44ho1' });
 import './not-found-styles';
@@ -33,7 +33,7 @@ import './not-found-styles';
 // react components:
 export function NotFoundPageContent() {
     // styles:
-    const styleSheet = useNotFoundStyleSheet();
+    const styleSheet = useNotFoundPageStyleSheet();
     
     
     
