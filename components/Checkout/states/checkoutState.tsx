@@ -854,6 +854,18 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         };
     }, [newPaymentToken, isLoadingToken, isErrorToken]);
     
+    // auto clear finished checkout states in redux:
+    useEffect(() => {
+        // conditions:
+        if ((checkoutStep !== 'pending') && (checkoutStep !== 'paid')) return; // auto clear when state is 'pending' or 'paid'
+        
+        
+        
+        // actions:
+        if (reduxCartItems    ) dispatch(reduxClearCart());
+        if (reduxCheckoutState) dispatch(reduxResetCheckoutData());
+    }, [checkoutStep, reduxCartItems, reduxCheckoutState]);
+    
     
     
     // refs:
