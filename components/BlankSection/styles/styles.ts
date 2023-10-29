@@ -11,28 +11,51 @@ import {
 export const usesBlankSectionLayout = () => {
     return style({
         // layouts:
-        display        : 'grid',
-        justifyContent : 'stretch', // stretch items horizontally
-        alignContent   : 'stretch', // stretch items vertically
+        display : 'grid',
         
         
         
         // children:
         ...children('article', {
             // layouts:
-            display        : 'grid',
-            justifyContent : 'center', // center items horizontally
-            alignContent   : 'center', // center items vertically
+            display : 'grid',
             
             
             
             // children:
             ...children('.loadingIndicator', {
-                fontSize  : '4rem',
+                // positions:
+                justifySelf : 'center', // center self horizontally
+                alignSelf   : 'center', // center self vertically
+                
+                
+                
+                // typos:
+                fontSize    : '4rem',
             }),
             ...children('.statusMessage', {
-                // typos:
-                textAlign : 'center',
+                // layouts:
+                display      : 'grid',
+                justifyItems : 'center', // center items horizontally
+                alignItems   : 'center', // center items vertically
+                
+                
+                
+                // children:
+                ...children(['h5', 'p'], {
+                    // positions:
+                    justifySelf : 'stretch', // stretch self horizontally
+                    
+                    
+                    
+                    // sizes:
+                    contain     : 'inline-size',
+                    
+                    
+                    
+                    // typos:
+                    textAlign   : 'center',
+                }),
             })
         }),
     });
