@@ -30,6 +30,11 @@ export interface BlankPageProps
         // bases:
         BlankSectionProps
 {
+    // variants:
+    fullWidth             ?: boolean
+    
+    
+    
     // components:
     blankSectionComponent ?: React.ReactComponentElement<any, BlankSectionProps>
 }
@@ -41,6 +46,11 @@ const BlankPage = (props: BlankPageProps) => {
     
     // rest props:
     const {
+        // variants:
+        fullWidth = false,
+        
+        
+        
         // components:
         blankSectionComponent = <BlankSection />,
     ...restBlankSectionProps} = props;
@@ -52,6 +62,7 @@ const BlankPage = (props: BlankPageProps) => {
         <Main
             // variants:
             theme={props.theme ?? 'primary'}
+            nude={fullWidth}
             
             
             
