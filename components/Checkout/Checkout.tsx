@@ -207,25 +207,27 @@ const CheckoutInternal = (): JSX.Element|null => {
             // classes:
             className={styleSheet.blank}
         >
-            <p>
-                    Your shopping cart is empty. Please add one/some products to buy.
-            </p>
-            
-            <ButtonIcon
-                // appearances:
-                icon='image_search'
+            <div className='statusMessage'>
+                <p>
+                        Your shopping cart is empty. Please add one/some products to buy.
+                </p>
                 
-                
-                
-                // variants:
-                size='lg'
-                theme='primary'
-                gradient={true}
-            >
-                <Link href='/products'>
-                    See our product gallery
-                </Link>
-            </ButtonIcon>
+                <ButtonIcon
+                    // appearances:
+                    icon='image_search'
+                    
+                    
+                    
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                    gradient={true}
+                >
+                    <Link href='/products'>
+                        See our product gallery
+                    </Link>
+                </ButtonIcon>
+            </div>
         </BlankSection>
     );
     return (
