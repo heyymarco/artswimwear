@@ -125,6 +125,8 @@ export interface CartState {
     
     showCart              : () => void
     hideCart              : () => void
+    
+    refetch               : () => void
 }
 
 const noopCallback = () => {};
@@ -159,6 +161,8 @@ const CartStateContext = createContext<CartState>({
     
     showCart              : noopCallback,
     hideCart              : noopCallback,
+    
+    refetch               : noopCallback,
 });
 CartStateContext.displayName  = 'CartState';
 
@@ -191,7 +195,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // apis:
-    const {data: productList, isLoading: isLoadingProduct, isError: isErrorProduct} = useGetProductList();
+    const {data: productList, isLoading: isLoadingProduct, isError: isErrorProduct, refetch} = useGetProductList();
     
     const isLoadingPage =                    isLoadingProduct;
     const isErrorPage   = !isLoadingPage && (isErrorProduct);
@@ -328,6 +332,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         showCart,              // stable ref
         hideCart,              // stable ref
+        
+        refetch,               // stable ref
     }), [
         // states:
         isCartShown,
@@ -359,6 +365,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // showCart,              // stable ref
         // hideCart,              // stable ref
+        
+        refetch,                  // stable ref
     ]);
     
     
