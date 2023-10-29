@@ -6,14 +6,23 @@ import {
     default as React,
 }                           from 'react'
 
+// next-js:
+import {
+    useRouter,
+}                           from 'next/navigation'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+    useMergeEvents,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
 import {
     // simple-components:
     ButtonIcon,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-import {
-    Link,
-}                           from '@reusable-ui/next-compat-link'
 
 // internal components:
 import {
@@ -34,6 +43,8 @@ export interface EmptyProductBlankSectionProps
         // bases:
         BlankSectionProps
 {
+    // handlers:
+    onNavigate ?: React.MouseEventHandler<HTMLButtonElement>
 }
 const EmptyProductBlankSection = (props: EmptyProductBlankSectionProps) => {
     // styles:
@@ -41,11 +52,42 @@ const EmptyProductBlankSection = (props: EmptyProductBlankSectionProps) => {
     
     
     
+    // rest props:
+    const {
+        // handlers:
+        onNavigate,
+    ...restBlankSectionProps} = props;
+    
+    
+    
+    // navigations:
+    const router = useRouter();
+    
+    
+    
+    // handlers:
+    const handleNavigateInternal = useEvent<React.MouseEventHandler<HTMLButtonElement>>((event) => {
+        // conditions:
+        if (event.defaultPrevented) return; // already handled => ignore
+        
+        
+        
+        // actions:
+        router.push('/checkout');
+    });
+    const handleNavigate         = useMergeEvents(
+        // actions:
+        onNavigate,
+        handleNavigateInternal,
+    );
+    
+    
+    
     // jsx:
     return (
         <BlankSection
             // other props:
-            {...props}
+            {...restBlankSectionProps}
         >
             {props.children ?? <div className={styleSheet.errorMessage}>
                 <p>
@@ -62,10 +104,13 @@ const EmptyProductBlankSection = (props: EmptyProductBlankSectionProps) => {
                     size='lg'
                     theme='primary'
                     gradient={true}
+                    
+                    
+                    
+                    // handlers:
+                    onClick={handleNavigate}
                 >
-                    <Link href='/products'>
-                        See our product gallery
-                    </Link>
+                    See our product gallery
                 </ButtonIcon>
             </div>}
         </BlankSection>

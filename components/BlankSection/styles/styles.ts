@@ -57,5 +57,10 @@ export default () => [
             // typos:
             textAlign   : 'center',
         }),
+        ...children(['button', '.button', '[role="button"]'], {
+            // typos:
+            flexWrap   : 'nowrap', // fix <ModalSide>'s collapsing animation
+            whiteSpace : 'nowrap', // fix <ModalSide>'s collapsing animation
+        }),
     }),
 ];
