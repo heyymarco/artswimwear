@@ -29,6 +29,7 @@ export const metadata: Metadata = {
 
 
 
+// react components:
 export default function HomePage() {
     // jsx:
     return (
