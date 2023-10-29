@@ -6,11 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
-// reusable-ui components:
+// internal components:
 import {
-    // simple-components:
-    ButtonIcon,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+    ErrorBlankSectionProps,
+    ErrorBlankSection,
+}                           from '@/components/BlankSection'
 
 // internal components:
 import {
@@ -24,58 +24,31 @@ import {
 export interface ErrorBlankPageProps
     extends
         // bases:
-        BlankPageProps
+        BlankPageProps,
+        ErrorBlankSectionProps
 {
-    // handlers:
-    onRetry ?: React.MouseEventHandler<HTMLButtonElement>
 }
 const ErrorBlankPage = (props: ErrorBlankPageProps) => {
-    // rest props:
-    const {
-        // handlers:
-        onRetry,
-    ...restBlankPageProps} = props;
-    
-    
-    
     // jsx:
     return (
         <BlankPage
             // other props:
-            {...restBlankPageProps}
+            {...props}
             
             
             
             // variants:
             theme={props.theme ?? 'danger'}
-        >
-            {props.children ?? <div className='statusMessage'>
-                <h3>
-                    Oops, an error occured!
-                </h3>
-                {!!onRetry && <>
-                    <p>
-                        We were unable to retrieve data from the server.
-                    </p>
-                    <ButtonIcon
-                        // appearances:
-                        icon='refresh'
-                        
-                        
-                        
-                        // variants:
-                        theme='success'
-                        
-                        
-                        
-                        // handlers:
-                        onClick={onRetry}
-                    >
-                        Retry
-                    </ButtonIcon>
-                </>}
-            </div>}
-        </BlankPage>
+            
+            
+            
+            // components:
+            blankSectionComponent={
+                props.blankSectionComponent
+                ??
+                <ErrorBlankSection />
+            }
+        />
     );
 }
 export {

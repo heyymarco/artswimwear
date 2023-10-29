@@ -9,9 +9,13 @@ import {
 // heymarco components:
 import {
     Main,
-    SectionProps,
-    Section,
 }                           from '@heymarco/section'
+
+// internal components:
+import {
+    BlankSectionProps,
+    BlankSection,
+}                           from '@/components/BlankSection'
 
 // internals:
 import {
@@ -24,12 +28,22 @@ import {
 export interface BlankPageProps
     extends
         // bases:
-        SectionProps
+        BlankSectionProps
 {
+    // components:
+    blankSectionComponent ?: React.ReactComponentElement<any, BlankSectionProps>
 }
 const BlankPage = (props: BlankPageProps) => {
     // styles:
     const styleSheet = useBlankPageStyleSheet();
+    
+    
+    
+    // rest props:
+    const {
+        // components:
+        blankSectionComponent = <BlankSection />,
+    ...restBlankSectionProps} = props;
     
     
     
@@ -44,10 +58,19 @@ const BlankPage = (props: BlankPageProps) => {
             // classes:
             className={styleSheet.main}
         >
-            <Section
-                // other props:
-                {...props}
-            />
+            {React.cloneElement<BlankSectionProps>(blankSectionComponent,
+                // props:
+                {
+                    // other props:
+                    ...restBlankSectionProps,
+                    ...blankSectionComponent.props, // overwrites restBlankSectionProps (if any conflics)
+                    
+                    
+                    
+                    // variants:
+                    theme : blankSectionComponent.props.theme ?? props.theme ?? 'inherit',
+                },
+            )}
         </Main>
     );
 }

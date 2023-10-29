@@ -2,7 +2,6 @@
 import {
     // writes css in javascript:
     fallback,
-    children,
     style,
 }                           from '@cssfn/core'                  // writes css in javascript
 
@@ -24,37 +23,6 @@ export const usesBlankPageLayout = () => {
         }),
         ...fallback({
             minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
-        }),
-        
-        
-        
-        // children:
-        ...children('section', {
-            // layouts:
-            display        : 'grid',
-            justifyContent : 'stretch', // stretch items horizontally
-            alignContent   : 'stretch', // stretch items vertically
-            
-            
-            
-            // children:
-            ...children('article', {
-                // layouts:
-                display        : 'grid',
-                justifyContent : 'center', // center items horizontally
-                alignContent   : 'center', // center items vertically
-                
-                
-                
-                // children:
-                ...children('.loadingIndicator', {
-                    fontSize  : '4rem',
-                }),
-                ...children('.statusMessage', {
-                    // typos:
-                    textAlign : 'center',
-                })
-            }),
         }),
     });
 };

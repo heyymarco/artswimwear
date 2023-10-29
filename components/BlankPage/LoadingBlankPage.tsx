@@ -6,11 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
-// reusable-ui components:
+// internal components:
 import {
-    // status-components:
-    Busy,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+    LoadingBlankSectionProps,
+    LoadingBlankSection,
+}                           from '@/components/BlankSection'
 
 // internal components:
 import {
@@ -24,7 +24,8 @@ import {
 export interface LoadingBlankPageProps
     extends
         // bases:
-        BlankPageProps
+        BlankPageProps,
+        LoadingBlankSectionProps
 {
 }
 const LoadingBlankPage = (props: LoadingBlankPageProps) => {
@@ -33,17 +34,16 @@ const LoadingBlankPage = (props: LoadingBlankPageProps) => {
         <BlankPage
             // other props:
             {...props}
-        >
-            {props.children ?? <Busy
-                // variants:
-                size='lg'
-                
-                
-                
-                // classes:
-                className='loadingIndicator'
-            />}
-        </BlankPage>
+            
+            
+            
+            // components:
+            blankSectionComponent={
+                props.blankSectionComponent
+                ??
+                <LoadingBlankSection />
+            }
+        />
     );
 }
 export {
