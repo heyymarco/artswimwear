@@ -45,6 +45,11 @@ const LoadingBlankSection = (props: LoadingBlankSectionProps) => {
             {...props}
         >
             {props.children ?? <Busy
+                // identifiers:
+                key='busy' // avoids re-creating a similar dom during loading transition in different components
+                
+                
+                
                 // variants:
                 size='lg'
                 
