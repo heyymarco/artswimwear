@@ -22,7 +22,10 @@ import {
 export function CheckoutPageContent(): JSX.Element|null {
     // jsx:
     return (
-        <Main nude={true}>
+        <Main
+            // variants:
+            nude={true}
+        >
             <Checkout />
         </Main>
     );

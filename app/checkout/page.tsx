@@ -12,7 +12,14 @@ import type {
 // private components:
 import {
     CheckoutPageContent,
-}                           from './pageContent'
+}                           from './page-content'
+
+
+
+export const metadata: Metadata = {
+    title       : 'Checkout',
+    description : 'Checkout',
+}
 
 
 
@@ -23,10 +30,3 @@ export default function CheckoutPage(): JSX.Element|null {
         <CheckoutPageContent />
     );
 }
-
-
-
-export const metadata : Metadata = {
-    title       : 'Checkout',
-    description : 'Checkout',
-};
