@@ -194,6 +194,14 @@ export default () => [
             ...ifScreenWidthAtLeast('sm', {
                 justifySelf : 'start', // place to the left
             }),
+            
+            
+            
+            // children:
+            ...children('.label', {
+                fontSize    : typos.fontSizeSm,
+                fontWeight  : typos.fontWeightLight,
+            }),
         }),
         ...children('.subPrice', {
             // positions:

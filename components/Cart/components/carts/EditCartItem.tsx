@@ -203,7 +203,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             </p>}
             
             {propReadOnly && <p className='quantity'>
-                x <span className='number'>
+                <span className='label'>qty: </span>x<span className='number'>
                     {quantity}
                 </span>
             </p>}
