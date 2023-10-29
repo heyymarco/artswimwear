@@ -73,7 +73,7 @@ const EmptyProductBlankSection = (props: EmptyProductBlankSectionProps) => {
         
         
         // actions:
-        router.push('/checkout');
+        router.push('/products');
     });
     const handleNavigate         = useMergeEvents(
         // actions:
