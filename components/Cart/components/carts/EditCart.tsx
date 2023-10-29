@@ -78,6 +78,8 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         deleteProductFromCart,
         changeProductFromCart,
         
+        hideCart,
+        
         refetch,
     } = useCartState();
     
@@ -100,6 +102,11 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         <EmptyProductBlankSection
             // classes:
             className={props.className}
+            
+            
+            
+            // handlers:
+            onNavigate={hideCart}
         />
     );
     if (isLoadingPage) return (
