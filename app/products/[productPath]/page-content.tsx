@@ -107,7 +107,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     
     
     // apis:
-    const {data: productDetail, isLoading: isLoadingProduct, isError: isErrorProduct} = useGetProductDetail(productPath as any ?? '');
+    const {data: productDetail, isLoading: isLoadingProduct, isError: isErrorProduct, refetch} = useGetProductDetail(productPath as any ?? '');
     
     const isLoadingPage = isLoadingProduct;
     const isErrorPage   = isErrorProduct || !productDetail;
@@ -132,8 +132,15 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     
     
     // jsx:
-    if (isLoadingPage) return <LoadingBlankPage />;
-    if (isErrorPage)   return <ErrorBlankPage />;
+    if (isLoadingPage) return (
+        <LoadingBlankPage />
+    );
+    if (isErrorPage)   return (
+        <ErrorBlankPage
+            // handlers:
+            onRetry={refetch}
+        />
+    );
     return (
         <Main
             // classes:
