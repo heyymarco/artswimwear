@@ -31,7 +31,7 @@ import './not-found-styles';
 
 
 // react components:
-export function NotFoundPageContent() {
+export function NotFoundPageContent(): JSX.Element|null {
     // styles:
     const styleSheet = useNotFoundPageStyleSheet();
     
