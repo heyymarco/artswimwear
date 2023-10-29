@@ -13,7 +13,7 @@ import type {
 // private components:
 import {
     ProductDetailPageContent,
-}                           from './pageContent'
+}                           from './page-content'
 
 // stores:
 import {
@@ -53,7 +53,8 @@ export async function generateMetadata(props: MetadataProps, parent: ResolvingMe
 
 
 
-export default function ProductDetailPage({ params: { productPath } }: { params: { productPath: string } }) {
+// react components:
+export default function ProductDetailPage({ params: { productPath } }: { params: { productPath: string } }): JSX.Element|null {
     // jsx:
     return (
         <ProductDetailPageContent

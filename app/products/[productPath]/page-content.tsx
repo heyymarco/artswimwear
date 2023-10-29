@@ -82,17 +82,17 @@ import {
 
 
 // styles:
-const useProductDetailStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */'./pageStyles')
+const useProductDetailPageStyleSheet = dynamicStyleSheets(
+    () => import(/* webpackPrefetch: true */'./page-styles')
 , { id: 'ihi965eoyu' });
-import './pageStyles';
+import './page-styles';
 
 
 
 // react components:
-export function ProductDetailPageContent({ productPath }: { productPath: string }) {
+export function ProductDetailPageContent({ productPath }: { productPath: string }): JSX.Element|null {
     // styles:
-    const styleSheet = useProductDetailStyleSheet();
+    const styleSheet = useProductDetailPageStyleSheet();
     
     
     
