@@ -166,6 +166,11 @@ const CartDialog = () => {
                     
                     
                     
+                    // classes:
+                    className={styleSheet.placeOrderBtn}
+                    
+                    
+                    
                     // accessibilities:
                     enabled={isReadyPage}
                     

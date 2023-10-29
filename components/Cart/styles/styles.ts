@@ -223,4 +223,14 @@ export default () => [
             maxInlineSize : maxMobileTextWidth,
         }),
     }, {specificityWeight: 2}),
+    scope('placeOrderBtn', {
+        // sizes:
+        minInlineSize : 'fit-content', // fix <ModalSide>'s collapsing animation
+        
+        
+        
+        // typos:
+        flexWrap   : 'nowrap',         // fix <ModalSide>'s collapsing animation
+        whiteSpace : 'nowrap',         // fix <ModalSide>'s collapsing animation
+    }, {specificityWeight: 2}),
 ];
