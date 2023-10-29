@@ -138,7 +138,7 @@ export default function RootLayout({
     children,
 }: {
     children: React.ReactNode
-}) {
+}): JSX.Element|null {
     // styles:
     const styleSheet = useDocumentStyleSheet();
     
