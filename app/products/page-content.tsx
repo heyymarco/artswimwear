@@ -46,7 +46,7 @@ import './page-styles';
 
 
 // react components:
-export function ProductListPageContent() {
+export function ProductListPageContent(): JSX.Element|null {
     // styles:
     const styleSheet = useProductListPageStyleSheet();
     

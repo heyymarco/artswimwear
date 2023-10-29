@@ -21,6 +21,7 @@ const minImageHeight = 255; // 255px
 
 
 
+// styles:
 export default () => [
     scope('main', {
         // layouts:
