@@ -67,14 +67,9 @@ import {
     containers,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// configs:
-import {
-    commerces,
-}                           from '@/config'
 
 
-
-const imageSize = 64;  // 64px
+// const imageSize = 64;  // 64px
 export default () => {
     // dependencies:
     
@@ -94,25 +89,15 @@ export default () => {
             wordBreak  : 'break-all',
         }),
         
-        scope('loading', {
-            ...children('article', {
-                display: 'grid',
-                
-                boxSizing: 'border-box',
-                // minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
-                ...fallback({
-                    minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
-                }),
-                ...fallback({
-                    minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
-                }),
-                
-                justifyContent: 'center',
-                alignContent: 'center',
-                
-                ...children('[role="status"]', {
-                    fontSize: '4rem',
-                }),
+        scope('blank', {
+            // sizes:
+            boxSizing: 'border-box',
+            // minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
+            ...fallback({
+                minHeight: `calc(100dvh - var(--site-header) - var(--site-footer))`,
+            }),
+            ...fallback({
+                minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
             }),
         }),
         

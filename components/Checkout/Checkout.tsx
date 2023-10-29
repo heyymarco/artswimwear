@@ -20,11 +20,6 @@ import {
     
     // simple-components:
     ButtonIcon,
-    
-    
-    
-    // status-components:
-    Busy,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 import {
     Link,
@@ -37,6 +32,11 @@ import {
 }                           from '@heymarco/section'
 
 // internal components:
+import {
+    BlankSection,
+    LoadingBlankSection,
+    ErrorBlankSection,
+}                           from '@/components/BlankSection'
 import {
     ProgressCheckout,
 }                           from './components/navigations/ProgressCheckout'
@@ -141,6 +141,11 @@ const CheckoutInternal = (): JSX.Element|null => {
         regularCheckoutSectionRef,
         currentStepSectionRef,
         navCheckoutSectionElm,
+        
+        
+        
+        // actions:
+        refetch,
     } = useCheckoutState();
     
     
@@ -180,49 +185,48 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     
     // jsx:
-    if (!hasCart || isLoadingPage || isErrorPage) return (
-        <Section
-            // variants:
-            theme='secondary'
-            
-            
-            
+    if (isLoadingPage) return (
+        <LoadingBlankSection
             // classes:
-            className={styleSheet.loading}
-        >
-            {/* empty cart => no data to show: */}
-            {!hasCart && <>
-                <p>
-                    Your shopping cart is empty. Please add one/some products to buy.
-                </p>
-                <ButtonIcon
-                    // appearances:
-                    icon='image_search'
-                    
-                    
-                    
-                    // variants:
-                    size='lg'
-                    theme='primary'
-                    gradient={true}
-                >
-                    <Link href='/products'>
-                        See our product gallery
-                    </Link>
-                </ButtonIcon>
-            </>}
+            className={styleSheet.blank}
+        />
+    );
+    if (isErrorPage)   return (
+        <ErrorBlankSection
+            // classes:
+            className={styleSheet.blank}
             
-            {/* has cart => show loading indicator (if still loading), otherwise show load error status: */}
-            {hasCart && <>
-                {isLoadingPage && <Busy
-                    // variants:
-                    size='lg'
-                    theme='primary'
-                />}
+            
+            
+            // handlers:
+            onRetry={refetch}
+        />
+    );
+    if (!hasCart) return (
+        <BlankSection
+            // classes:
+            className={styleSheet.blank}
+        >
+            <p>
+                    Your shopping cart is empty. Please add one/some products to buy.
+            </p>
+            
+            <ButtonIcon
+                // appearances:
+                icon='image_search'
                 
-                {isErrorPage && <p>Oops, an error occured!</p>}
-            </>}
-        </Section>
+                
+                
+                // variants:
+                size='lg'
+                theme='primary'
+                gradient={true}
+            >
+                <Link href='/products'>
+                    See our product gallery
+                </Link>
+            </ButtonIcon>
+        </BlankSection>
     );
     return (
         <Container
