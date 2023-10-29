@@ -38,17 +38,17 @@ import {
 
 
 // styles:
-const useProductListStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */'./pageStyles')
+const useProductListPageStyleSheet = dynamicStyleSheets(
+    () => import(/* webpackPrefetch: true */'./page-styles')
 , { id: 'mfvzha989y' });
-import './pageStyles';
+import './page-styles';
 
 
 
 // react components:
 export function ProductListPageContent() {
     // styles:
-    const styleSheet = useProductListStyleSheet();
+    const styleSheet = useProductListPageStyleSheet();
     
     
     
