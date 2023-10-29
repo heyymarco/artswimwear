@@ -39,7 +39,7 @@ import {
 // react components:
 const EditShippingMethod = (): JSX.Element|null => {
     // styles:
-    const styles = useCheckoutStyleSheet();
+    const styleSheet = useCheckoutStyleSheet();
     
     
     
@@ -106,7 +106,7 @@ const EditShippingMethod = (): JSX.Element|null => {
                                 
                                 
                                 // classes:
-                                className={styles.optionEntryHeader}
+                                className={styleSheet.optionEntryHeader}
                                 
                                 
                                 

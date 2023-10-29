@@ -77,7 +77,7 @@ import {
 // react components:
 const EditPaymentMethod = (): JSX.Element|null => {
     // styles:
-    const styles = useCheckoutStyleSheet();
+    const styleSheet = useCheckoutStyleSheet();
     
     
     
@@ -169,7 +169,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                     listItemComponent={
                         <ListItem
                             // classes:
-                            className={styles.optionEntryHeader}
+                            className={styleSheet.optionEntryHeader}
                         />
                     }
                     bodyComponent={
@@ -180,7 +180,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                             
                             
                             // classes:
-                            className={styles.paymentEntryCard}
+                            className={styleSheet.paymentEntryCard}
                         />
                     }
                 >
@@ -205,13 +205,13 @@ const EditPaymentMethod = (): JSX.Element|null => {
                     listItemComponent={
                         <ListItem
                             // classes:
-                            className={styles.optionEntryHeader}
+                            className={styleSheet.optionEntryHeader}
                         />
                     }
                     bodyComponent={
                         <Section
                             // classes:
-                            className={styles.paymentEntryPaypal}
+                            className={styleSheet.paymentEntryPaypal}
                         />
                     }
                 >
@@ -236,13 +236,13 @@ const EditPaymentMethod = (): JSX.Element|null => {
                     listItemComponent={
                         <ListItem
                             // classes:
-                            className={styles.optionEntryHeader}
+                            className={styleSheet.optionEntryHeader}
                         />
                     }
                     bodyComponent={
                         <Section
                             // classes:
-                            className={styles.paymentEntryManual}
+                            className={styleSheet.paymentEntryManual}
                         />
                     }
                 >

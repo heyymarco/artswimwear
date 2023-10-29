@@ -19,7 +19,7 @@ import {
 // react components:
 const ViewCustomerContact = (): JSX.Element|null => {
     // styles:
-    const styles = useCheckoutStyleSheet();
+    const styleSheet = useCheckoutStyleSheet();
     
     
     
@@ -35,7 +35,7 @@ const ViewCustomerContact = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            <span className={styles.data}>{customerEmail}</span> (<span className={styles.data}>{customerNickName}</span>)
+            <span className={styleSheet.data}>{customerEmail}</span> (<span className={styleSheet.data}>{customerNickName}</span>)
         </>
     );
 };

@@ -111,7 +111,7 @@ const Checkout = (): JSX.Element|null => {
 };
 const CheckoutInternal = (): JSX.Element|null => {
     // styles:
-    const styles = useCheckoutStyleSheet();
+    const styleSheet = useCheckoutStyleSheet();
     
     
     
@@ -188,7 +188,7 @@ const CheckoutInternal = (): JSX.Element|null => {
             
             
             // classes:
-            className={styles.loading}
+            className={styleSheet.loading}
         >
             {/* empty cart => no data to show: */}
             {!hasCart && <>
@@ -232,7 +232,7 @@ const CheckoutInternal = (): JSX.Element|null => {
             
             
             // classes:
-            className={`${styles.layout} ${checkoutStep}`}
+            className={`${styleSheet.layout} ${checkoutStep}`}
         >
             <Section
                 // semantics:
@@ -246,7 +246,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                 
                 
                 // classes:
-                className={styles.orderSummary}
+                className={styleSheet.orderSummary}
                 
                 
                 
@@ -280,14 +280,14 @@ const CheckoutInternal = (): JSX.Element|null => {
                 
                 
                 // classes:
-                className={styles.progressCheckout}
+                className={styleSheet.progressCheckout}
             >
                 <ProgressCheckout />
             </Section>
             
             <div
                 // classes:
-                className={styles.currentStepLayout}
+                className={styleSheet.currentStepLayout}
             >
                 {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section
                     // semantics:
@@ -296,7 +296,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styles.orderReview}
+                    className={styleSheet.orderReview}
                 >
                     <ViewCollectedInformation />
                 </Section>}
@@ -310,7 +310,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styles.checkout}
+                    className={styleSheet.checkout}
                 >
                     {/* TODO: activate */}
                     {/* <Section
@@ -341,7 +341,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                         
                         
                         // classes:
-                        className={styles.regularCheckout}
+                        className={styleSheet.regularCheckout}
                         
                         
                         
@@ -359,7 +359,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styles.shippingMethod} title='Shipping Method'
+                    className={styleSheet.shippingMethod} title='Shipping Method'
                 >
                     <EditShippingMethod />
                 </Section>}
@@ -371,7 +371,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styles.payment} title='Payment'
+                    className={styleSheet.payment} title='Payment'
                 >
                     <EditPaymentAndBillingAddress />
                 </Section>}
@@ -383,7 +383,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styles.paymentFinish} title='Thank You'
+                    className={styleSheet.paymentFinish} title='Thank You'
                 >
                     <ViewOrderFinishedPending />
                 </Section>}
@@ -395,7 +395,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styles.paymentFinish} title='Thank You'
+                    className={styleSheet.paymentFinish} title='Thank You'
                 >
                     <ViewOrderFinishedPaid />
                 </Section>}
@@ -408,7 +408,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                 
                 
                 // classes:
-                className={styles.navCheckout}
+                className={styleSheet.navCheckout}
                 
                 
                 
@@ -425,7 +425,7 @@ const CheckoutInternal = (): JSX.Element|null => {
             
             <hr
                 // classes:
-                className={styles.vertLine}
+                className={styleSheet.vertLine}
             />
         </Container>
     );

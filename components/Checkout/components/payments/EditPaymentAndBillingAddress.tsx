@@ -68,7 +68,7 @@ import {
 // react components:
 const EditPaymentAndBillingAddress = (): JSX.Element|null => {
     // styles:
-    const styles = useCheckoutStyleSheet();
+    const styleSheet = useCheckoutStyleSheet();
     
     
     
@@ -143,7 +143,7 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
         <>
             <Section
                 // classes:
-                className={styles.paymentMethod}
+                className={styleSheet.paymentMethod}
                 
                 
                 
@@ -215,13 +215,13 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                             listItemComponent={
                                 <ListItem
                                     // classes:
-                                    className={styles.optionEntryHeader}
+                                    className={styleSheet.optionEntryHeader}
                                 />
                             }
                             bodyComponent={
                                 <Section
                                     // classes:
-                                    className={styles.billingEntry}
+                                    className={styleSheet.billingEntry}
                                 />
                             }
                         >
@@ -246,13 +246,13 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                             listItemComponent={
                                 <ListItem
                                     // classes:
-                                    className={styles.optionEntryHeader}
+                                    className={styleSheet.optionEntryHeader}
                                 />
                             }
                             bodyComponent={
                                 <Section
                                     // classes:
-                                    className={`${styles.billingEntry} ${styles.address}`}
+                                    className={`${styleSheet.billingEntry} ${styleSheet.address}`}
                                 />
                             }
                         >

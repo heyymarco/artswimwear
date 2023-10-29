@@ -35,7 +35,7 @@ import {
 // react components:
 const ViewOrderFinishedPending = (): JSX.Element|null => {
     // styles:
-    const styles = useCheckoutStyleSheet();
+    const styleSheet = useCheckoutStyleSheet();
     
     
     
@@ -72,7 +72,7 @@ const ViewOrderFinishedPending = (): JSX.Element|null => {
                         You&apos;ll receive a confirmation email with your order number shortly.
                     </p>
                     <p>
-                        Please <strong>follow the payment instructions</strong> sent to your email: <strong className={styles.data}>{customerEmail}</strong>.
+                        Please <strong>follow the payment instructions</strong> sent to your email: <strong className={styleSheet.data}>{customerEmail}</strong>.
                     </p>
                 </Alert>
             </Section>
@@ -84,7 +84,7 @@ const ViewOrderFinishedPending = (): JSX.Element|null => {
                 
                 
                 // classes:
-                className={styles.orderReview}
+                className={styleSheet.orderReview}
             >
                 <ViewCustomer />
             </Section>

@@ -19,7 +19,7 @@ import {
 // react components:
 const ViewBillingAddress = (): JSX.Element|null => {
     // styles:
-    const styles = useCheckoutStyleSheet();
+    const styleSheet = useCheckoutStyleSheet();
     
     
     
@@ -60,7 +60,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            <span className={styles.data}>{`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}</span>
+            <span className={styleSheet.data}>{`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}</span>
         </>
     );
 };

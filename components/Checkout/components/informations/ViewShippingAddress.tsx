@@ -19,7 +19,7 @@ import {
 // react components:
 const ViewShippingAddress = (): JSX.Element|null => {
     // styles:
-    const styles = useCheckoutStyleSheet();
+    const styleSheet = useCheckoutStyleSheet();
     
     
     
@@ -43,7 +43,7 @@ const ViewShippingAddress = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            <span className={styles.data}>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}</span>
+            <span className={styleSheet.data}>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}</span>
         </>
     );
 };

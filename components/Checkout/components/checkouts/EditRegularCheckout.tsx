@@ -46,7 +46,7 @@ import {
 // react components:
 const EditRegularCheckout = (): JSX.Element|null => {
     // styles:
-    const styles = useCheckoutStyleSheet();
+    const styleSheet = useCheckoutStyleSheet();
     
     
     
@@ -240,7 +240,7 @@ const EditRegularCheckout = (): JSX.Element|null => {
             
             <Section
                 // classes:
-                className={styles.address}
+                className={styleSheet.address}
                 
                 
                 
