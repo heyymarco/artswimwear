@@ -89,7 +89,7 @@ export default () => {
             wordBreak  : 'break-all',
         }),
         
-        scope('blank', {
+        scope('blankSection', {
             // sizes:
             boxSizing: 'border-box',
             // minHeight:     `calc(100svh - var(--site-header) - var(--site-footer))`,
@@ -99,6 +99,12 @@ export default () => {
             ...fallback({
                 minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
             }),
+        }),
+        scope('emptyMessage', {
+            display        : 'flex',
+            flexDirection  : 'column',
+            justifyContent : 'center', // center items vertically
+            alignItems     : 'center', // center items horizontally
         }),
         
         scope('layout', {

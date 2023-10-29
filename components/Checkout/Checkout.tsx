@@ -188,9 +188,9 @@ const CheckoutInternal = (): JSX.Element|null => {
     if (!hasCart) return ( // empty cart => never loading|error
         <BlankSection
             // classes:
-            className={styleSheet.blank}
+            className={styleSheet.blankSection}
         >
-            <div className='statusMessage'>
+            <div className={styleSheet.emptyMessage}>
                 <p>
                         Your shopping cart is empty. Please add one/some products to buy.
                 </p>
@@ -216,13 +216,13 @@ const CheckoutInternal = (): JSX.Element|null => {
     if (isLoadingPage) return (
         <LoadingBlankSection
             // classes:
-            className={styleSheet.blank}
+            className={styleSheet.blankSection}
         />
     );
     if (isErrorPage)   return (
         <ErrorBlankSection
             // classes:
-            className={styleSheet.blank}
+            className={styleSheet.blankSection}
             
             
             
