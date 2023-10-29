@@ -641,9 +641,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const                        {data: productList    , isLoading: isLoadingProduct, isError: isErrorProduct}  = useGetProductList();
-    const                        {data: countryList    , isLoading: isLoadingCountry, isError: isErrorCountry}  = useGetCountryList();
-    const [generatePaymentToken, {data: newPaymentToken, isLoading: isLoadingToken  , isError: isErrorToken  }] = useGeneratePaymentToken();
+    const                        {data: productList    , isFetching: isLoadingProduct, isError: isErrorProduct}  = useGetProductList();
+    const                        {data: countryList    , isFetching: isLoadingCountry, isError: isErrorCountry}  = useGetCountryList();
+    const [generatePaymentToken, {data: newPaymentToken, isLoading : isLoadingToken  , isError: isErrorToken  }] = useGeneratePaymentToken();
     
     const [getShippingByAddress, {data: shippingList   , isUninitialized: isUninitShipping, isError: isErrorShipping, isSuccess: isSuccessShipping}]  = useGetMatchingShippingList();
     
