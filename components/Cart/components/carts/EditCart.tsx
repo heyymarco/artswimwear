@@ -21,6 +21,10 @@ import {
 
 // internal components:
 import {
+    LoadingBlankSection,
+    ErrorBlankSection,
+}                           from '@/components/BlankSection'
+import {
     EditCartItem,
 }                           from './EditCartItem'
 
@@ -57,6 +61,12 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     
     // states:
     const {
+        // states:
+        isLoadingPage,
+        isErrorPage,
+        
+        
+        
         // cart data:
         cartItems,
         
@@ -65,6 +75,8 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         // actions:
         deleteProductFromCart,
         changeProductFromCart,
+        
+        refetch,
     } = useCartState();
     
     
@@ -82,6 +94,8 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     
     
     // jsx:
+    if (isLoadingPage) return <LoadingBlankSection />;
+    if (isErrorPage)   return <ErrorBlankSection onRetry={refetch} />;
     return (
         <List
             // other props:
