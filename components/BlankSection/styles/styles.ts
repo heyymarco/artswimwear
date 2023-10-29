@@ -58,9 +58,14 @@ export default () => [
             textAlign   : 'center',
         }),
         ...children(['button', '.button', '[role="button"]'], {
+            // sizes:
+            inlineSize : 'fit-content', // fix <ModalSide>'s collapsing animation
+            
+            
+            
             // typos:
-            flexWrap   : 'nowrap', // fix <ModalSide>'s collapsing animation
-            whiteSpace : 'nowrap', // fix <ModalSide>'s collapsing animation
+            flexWrap   : 'nowrap',      // fix <ModalSide>'s collapsing animation
+            whiteSpace : 'nowrap',      // fix <ModalSide>'s collapsing animation
         }),
     }),
 ];
