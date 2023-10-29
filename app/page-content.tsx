@@ -55,17 +55,17 @@ import {
 
 
 // styles:
-const useHomeStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */'./pageStyles')
+const useHomePageStyleSheet = dynamicStyleSheets(
+    () => import(/* webpackPrefetch: true */'./page-styles')
 , { id: 'yjnwv3r1s5' });
-import './pageStyles';
+import './page-styles';
 
 
 
 // react components:
 export function HomePageContent() {
     // styles:
-    const styleSheet = useHomeStyleSheet();
+    const styleSheet = useHomePageStyleSheet();
     
     
     

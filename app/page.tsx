@@ -12,7 +12,7 @@ import type {
 // private components:
 import {
     HomePageContent,
-}                           from './pageContent'
+}                           from './page-content'
 
 // configs:
 import {
