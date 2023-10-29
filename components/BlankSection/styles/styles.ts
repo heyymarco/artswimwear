@@ -38,6 +38,7 @@ export const usesBlankSectionLayout = () => {
                 display      : 'grid',
                 justifyItems : 'center', // center items horizontally
                 alignItems   : 'center', // center items vertically
+                alignContent : 'center', // center items group vertically (in case of full screen height)
                 
                 
                 

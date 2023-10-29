@@ -46,7 +46,7 @@ const BlankSection = (props: BlankSectionProps) => {
             
             
             // classes:
-            className={styleSheet.main}
+            className={`${styleSheet.main} ${props.className}`}
         />
     );
 }
