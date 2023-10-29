@@ -16,15 +16,15 @@ import {
 
 // configs:
 import {
-    PAGE_404_TITLE,
-    PAGE_404_DESCRIPTION,
+    PAGE_NOTFOUND_TITLE,
+    PAGE_NOTFOUND_DESCRIPTION,
 }                           from '@/website.config'
 
 
 
 export const metadata: Metadata = {
-    title       : PAGE_404_TITLE,
-    description : PAGE_404_DESCRIPTION,
+    title       : PAGE_NOTFOUND_TITLE,
+    description : PAGE_NOTFOUND_DESCRIPTION,
 }
 
 
