@@ -63,7 +63,7 @@ import './page-styles';
 
 
 // react components:
-export function HomePageContent() {
+export function HomePageContent(): JSX.Element|null {
     // styles:
     const styleSheet = useHomePageStyleSheet();
     
