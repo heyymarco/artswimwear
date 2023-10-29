@@ -23,6 +23,7 @@ import {
 import {
     LoadingBlankSection,
     ErrorBlankSection,
+    EmptyProductBlankSection,
 }                           from '@/components/BlankSection'
 import {
     EditCartItem,
@@ -69,6 +70,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         
         // cart data:
         cartItems,
+        hasCart,
         
         
         
@@ -94,6 +96,12 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     
     
     // jsx:
+    if (!hasCart) return ( // empty cart => never loading|error
+        <EmptyProductBlankSection
+            // classes:
+            className={props.className}
+        />
+    );
     if (isLoadingPage) return (
         <LoadingBlankSection
             // classes:
