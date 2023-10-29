@@ -2,14 +2,14 @@
 import {
     // writes css in javascript:
     fallback,
-    style,
+    scope,
 }                           from '@cssfn/core'                  // writes css in javascript
 
 
 
 // styles:
-export const usesBlankPageLayout = () => {
-    return style({
+export default () => [
+    scope('main', {
         // layouts:
         display : 'grid',
         
@@ -24,10 +24,5 @@ export const usesBlankPageLayout = () => {
         ...fallback({
             minHeight: `calc(100vh  - var(--site-header) - var(--site-footer))`,
         }),
-    });
-};
-
-export default () => style({
-    // layouts:
-    ...usesBlankPageLayout(),
-});
+    }),
+];
