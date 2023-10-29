@@ -63,7 +63,10 @@ export function ProductListPageContent(): JSX.Element|null {
     
     // jsx:
     if (isLoadingPage) return (
-        <LoadingBlankPage />
+        <LoadingBlankPage
+            // identifiers:
+            key='busy' // avoids re-creating a similar dom during loading transition in different components
+        />
     );
     if (isErrorPage)   return (
         <ErrorBlankPage
