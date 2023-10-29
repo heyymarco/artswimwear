@@ -51,14 +51,10 @@ const usesMainLayout = () => {
         gridTemplate : [[
             '"illus shared content"', '1fr',
             '/',
-            '2fr', '1fr', '1fr'
+            ' 2fr   1fr    1fr'
         ]],
         ...ifScreenWidthAtLeast('sm', {
-            gridTemplateColumns : [['1fr', '1fr', '1fr']],
-            gridTemplateRows    : [['1fr']],
-            gridTemplateAreas   : [[
-                '"illus shared content"',
-            ]],
+            gridTemplateColumns : '1fr   1fr    1fr',
         }),
         justifyItems : 'center',
         alignItems   : 'center',
@@ -67,12 +63,12 @@ const usesMainLayout = () => {
         
         // sizes:
         boxSizing  : 'border-box',
-        // height  : `calc(100svh - var(--site-header))`, // too small when the browser's navigation is hidden
+        // blockSize  : `calc(100svh - var(--site-header))`, // too small when the browser's navigation is hidden
         ...fallback({
-            height : `calc(100dvh - var(--site-header))`,
+            blockSize : `calc(100dvh - var(--site-header))`,
         }),
         ...fallback({
-            height : `calc(100vh  - var(--site-header))`,
+            blockSize : `calc(100vh  - var(--site-header))`,
         }),
         
         
@@ -86,11 +82,11 @@ const usesMainLayout = () => {
         // children:
         ...children('.illustration', {
             // positions:
-            gridArea : 'illus/illus / content/content',
+            gridArea       : 'illus/illus / content/content',
             ...ifScreenWidthAtLeast('sm', {
-                gridArea : 'illus/illus / shared/shared',
+                gridArea   : 'illus/illus / shared/shared',
             }),
-            position : 'absolute', // do not taking space
+            position       : 'absolute', // do not taking space
             // justifySelf : 'stretch',
             // alignSelf   : 'stretch',
             
@@ -109,11 +105,11 @@ const usesMainLayout = () => {
         }),
         ...children('article', {
             // positions:
-            gridArea  : 'shared/shared / content/content',
+            gridArea     : 'shared/shared / content/content',
             ...ifScreenWidthAtLeast('sm', {
                 gridArea : 'shared/shared / content/content',
             }),
-            alignSelf : 'end',
+            alignSelf    : 'end',
             
             
             
@@ -132,13 +128,13 @@ const usesMainLayout = () => {
             
             // sizes:
             boxSizing  : 'border-box',
-            // inlineSize: `calc(100% + (2 * ${containers.paddingInline}))`
+            // inlineSize : `calc(100% + (2 * ${containers.paddingInline}))`
             inlineSize : '100%',
             
             
             
             // backgrounds:
-            backgroundImage: [
+            backgroundImage : [
                 `linear-gradient(${colors.secondaryThin}, ${colors.secondaryThin})`,
                 'linear-gradient(rgba(255,255,255, 0.2), rgba(255,255,255, 0.2))'
             ],
@@ -146,7 +142,7 @@ const usesMainLayout = () => {
             
             
             // borders:
-            border: `solid 1px ${colors.white}`,
+            border : `solid 1px ${colors.white}`,
             
             
             
