@@ -44,7 +44,7 @@ export interface EditCartProps
 }
 const EditCart = (props: EditCartProps): JSX.Element|null => {
     // styles:
-    const styles = useCartStyleSheet();
+    const styleSheet = useCartStyleSheet();
     
     
     
@@ -95,7 +95,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
             
             
             // classes:
-            className={`orderList ${styles.editCart}`}
+            className={`orderList ${styleSheet.editCart}`}
         >
             {cartItems.map((cartEntry, itemIndex) =>
                 <EditCartItem

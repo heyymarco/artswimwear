@@ -87,7 +87,7 @@ export interface EditCartItemProps
 }
 const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     // styles:
-    const styles = useCartStyleSheet();
+    const styleSheet = useCartStyleSheet();
     
     
     
@@ -166,7 +166,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             
             
             // classes:
-            className={styles.editCartItem}
+            className={styleSheet.editCartItem}
             
             
             

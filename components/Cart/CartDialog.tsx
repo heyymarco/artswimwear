@@ -57,7 +57,7 @@ import {
 // react components:
 const CartDialog = () => {
     // styles:
-    const styles = useCartStyleSheet();
+    const styleSheet = useCartStyleSheet();
     
     
     
@@ -137,14 +137,14 @@ const CartDialog = () => {
             </CardHeader>
             <CardBody
                 // classes:
-                className={styles.cartBody}
+                className={styleSheet.cartBody}
             >
                 <EditCart />
                 <ViewSubtotalCart />
                 
                 <p
                     // classes:
-                    className={styles.shippingTips}
+                    className={styleSheet.shippingTips}
                 >
                     Tax included and <u>shipping calculated</u> at checkout.
                 </p>
