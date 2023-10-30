@@ -94,7 +94,7 @@ export type {
 //#region checkoutState
 
 // contexts:
-export interface CartState {
+export interface CartStateBase {
     // states:
     isCartShown           : boolean
     
@@ -129,6 +129,52 @@ export interface CartState {
     
     refetch               : () => void
 }
+
+export type PickAlways<T, K extends keyof T, V> = {
+    [P in K] : Extract<T[P], V>
+}
+export type CartState =
+    &Omit<CartStateBase, 'isCartEmpty'|'isCartLoading'|'isCartError'|'isCartReady' | 'productList'>
+    &(
+        |(
+            &PickAlways<CartStateBase, 'isCartEmpty'                              , true   > // if   the cart is  empty
+            &PickAlways<CartStateBase, 'isCartLoading'|'isCartError'|'isCartReady', false  > // then the cart is  never loading|error|ready
+        )
+        |(
+            &PickAlways<CartStateBase, 'isCartEmpty'                              , false  > // if   the cart not empty
+            &PickAlways<CartStateBase, 'isCartLoading'|'isCartError'|'isCartReady', boolean> // then the cart is  maybe loading|error|ready
+        )
+    )
+    &(
+        |(
+            &PickAlways<CartStateBase, 'isCartLoading'            , true   > // if   the cart is  loading
+            &PickAlways<CartStateBase, 'isCartError'|'isCartReady', false  > // then the cart is  never error|ready
+        )
+        |(
+            &PickAlways<CartStateBase, 'isCartLoading'            , false  > // if   the cart not loading
+            &PickAlways<CartStateBase, 'isCartError'|'isCartReady', boolean> // then the cart is  maybe error|ready
+        )
+    )
+    &(
+        |(
+            &PickAlways<CartStateBase, 'isCartError', true   > // if   the cart is  error
+            &PickAlways<CartStateBase, 'isCartReady', false  > // then the cart is  never ready
+        )
+        |(
+            &PickAlways<CartStateBase, 'isCartError', false  > // if   the cart not error
+            &PickAlways<CartStateBase, 'isCartReady', boolean> // then the cart is  maybe ready
+        )
+    )
+    &(
+        |(
+            &PickAlways<CartStateBase, 'isCartReady', true        > // if   the cart is  ready
+            &PickAlways<CartStateBase, 'productList', {}          > // then the cart is  always having_data
+        )
+        |(
+            &PickAlways<CartStateBase, 'isCartReady', false       > // if   the cart not ready
+            &PickAlways<CartStateBase, 'productList', {}|undefined> // then the cart is  maybe  having_data
+        )
+    )
 
 const noopCallback = () => {};
 const CartStateContext = createContext<CartState>({
@@ -316,10 +362,10 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // states:
         isCartShown,
         
-        isCartEmpty,
-        isCartLoading,
-        isCartError,
-        isCartReady,
+        isCartEmpty   : isCartEmpty   as any,
+        isCartLoading : isCartLoading as any,
+        isCartError   : isCartError   as any,
+        isCartReady   : isCartReady   as any,
         
         
         
