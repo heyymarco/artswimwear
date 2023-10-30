@@ -66,13 +66,8 @@ const CartDialog = () => {
         // states:
         isCartShown,
         
-        isLoadingPage,
-        isReadyPage,
-        
-        
-        
-        // cart data:
-        hasCart,
+        isCartLoading,
+        isCartReady,
         
         
         
@@ -152,7 +147,7 @@ const CartDialog = () => {
                 <ButtonIcon
                     // appearances:
                     icon={
-                        (hasCart && isLoadingPage)
+                        isCartLoading
                         ? 'busy'
                         : 'shopping_bag'
                     }
@@ -172,7 +167,7 @@ const CartDialog = () => {
                     
                     
                     // accessibilities:
-                    enabled={isReadyPage}
+                    enabled={isCartReady}
                     
                     
                     

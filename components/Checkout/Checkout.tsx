@@ -115,7 +115,7 @@ const CheckoutInternal = (): JSX.Element|null => {
     // contexts:
     const {
         // cart data:
-        hasCart,
+        isCartEmpty,
     } = useCartState();
     
     const {
@@ -187,7 +187,7 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     
     // jsx:
-    if (!hasCart && !isCheckoutFinished) return ( // empty cart => never loading|error
+    if (isCartEmpty && !isCheckoutFinished) return ( // empty cart => never loading|error
         <EmptyProductBlankSection
             // classes:
             className={styleSheet.blankSection}

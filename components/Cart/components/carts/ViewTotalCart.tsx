@@ -40,7 +40,7 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
     // states:
     const {
         // states:
-        isReadyPage,
+        isCartReady,
         
         
         
@@ -53,7 +53,7 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
     
     
     // jsx:
-    if (!isReadyPage) return null;
+    if (!isCartReady) return null;
     return (
         <>
             <hr />

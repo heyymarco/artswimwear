@@ -98,15 +98,15 @@ export interface CartState {
     // states:
     isCartShown           : boolean
     
-    isLoadingPage         : boolean
-    isErrorPage           : boolean
-    isReadyPage           : boolean
+    isCartEmpty           : boolean
+    isCartLoading         : boolean
+    isCartError           : boolean
+    isCartReady           : boolean
     
     
     
     // cart data:
     cartItems             : CartEntry[]
-    hasCart               : boolean
     totalProductWeight    : number|null
     totalProductPrice     : number
     
@@ -134,15 +134,15 @@ const CartStateContext = createContext<CartState>({
     // states:
     isCartShown           : false,
     
-    isLoadingPage         : false,
-    isErrorPage           : false,
-    isReadyPage           : false,
+    isCartEmpty           : true,
+    isCartLoading         : false,
+    isCartError           : false,
+    isCartReady           : false,
     
     
     
     // cart data:
     cartItems             : [],
-    hasCart               : false,
     totalProductWeight    : null,
     totalProductPrice     : 0,
     
@@ -186,7 +186,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     // stores:
     const cartItems   = useSelector(selectCartItems);
-    const hasCart     = !!cartItems.length;
+    const isCartEmpty = !cartItems.length;
     
     const isCartShown = useSelector(selectIsCartShown);
     
@@ -197,9 +197,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // apis:
     const {data: productList, isFetching: isLoadingProduct, isError: isErrorProduct, refetch} = useGetProductList();
     
-    const isLoadingPage =                    isLoadingProduct;
-    const isErrorPage   = !isLoadingPage && (isErrorProduct);
-    const isReadyPage   = !isLoadingPage && (hasCart && !!productList);
+    const isCartLoading = !isCartEmpty   && (isLoadingProduct); // do not report the loading state if the cart is empty
+    const isCartError   = !isCartLoading && (isErrorProduct);
+    const isCartReady   = !isCartLoading && (!isCartEmpty && !!productList);
     
     
     
@@ -305,15 +305,15 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // states:
         isCartShown,
         
-        isLoadingPage,
-        isErrorPage,
-        isReadyPage,
+        isCartEmpty,
+        isCartLoading,
+        isCartError,
+        isCartReady,
         
         
         
         // cart data:
         cartItems,
-        hasCart,
         totalProductWeight,
         totalProductPrice,
         
@@ -338,15 +338,15 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // states:
         isCartShown,
         
-        isLoadingPage,
-        isErrorPage,
-        isReadyPage,
+        isCartEmpty,
+        isCartLoading,
+        isCartError,
+        isCartReady,
         
         
         
         // cart data:
         cartItems,
-        hasCart,
         totalProductWeight,
         totalProductPrice,
         

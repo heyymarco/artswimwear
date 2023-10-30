@@ -63,14 +63,14 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     // states:
     const {
         // states:
-        isLoadingPage,
-        isErrorPage,
+        isCartEmpty,
+        isCartLoading,
+        isCartError,
         
         
         
         // cart data:
         cartItems,
-        hasCart,
         
         
         
@@ -98,7 +98,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     
     
     // jsx:
-    if (!hasCart) return ( // empty cart => never loading|error
+    if (isCartEmpty) return ( // empty cart => never loading|error
         <EmptyProductBlankSection
             // classes:
             className={props.className}
@@ -109,13 +109,13 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
             onNavigate={hideCart}
         />
     );
-    if (isLoadingPage) return (
+    if (isCartLoading) return (
         <LoadingBlankSection
             // classes:
             className={props.className}
         />
     );
-    if (isErrorPage)   return (
+    if (isCartError)   return (
         <ErrorBlankSection
             // classes:
             className={props.className}

@@ -23,7 +23,7 @@ const ViewSubtotalCart = (): JSX.Element|null => {
     // states:
     const {
         // states:
-        isReadyPage,
+        isCartReady,
         
         
         
@@ -34,7 +34,7 @@ const ViewSubtotalCart = (): JSX.Element|null => {
     
     
     // jsx:
-    if (!isReadyPage) return null;
+    if (!isCartReady) return null;
     return (
         <>
             <hr />
