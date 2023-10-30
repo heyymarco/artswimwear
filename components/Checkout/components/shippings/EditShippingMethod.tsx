@@ -23,7 +23,7 @@ import {
     RadioDecorator,
 }                           from '@/components/RadioDecorator'
 
-// states:
+// contexts:
 import {
     useCartState,
 }                           from '@/components/Cart'
@@ -48,7 +48,7 @@ const EditShippingMethod = (): JSX.Element|null => {
     
     
     
-    // states:
+    // contexts:
     const {
         // cart data:
         totalProductWeight,
