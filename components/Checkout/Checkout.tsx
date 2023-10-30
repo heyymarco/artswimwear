@@ -65,7 +65,7 @@ import {
     ViewOrderFinishedPaid,
 }                           from './components/orders/ViewOrderFinishedPaid'
 
-// states:
+// contexts:
 import {
     useCartState,
 }                           from '@/components/Cart'
@@ -112,7 +112,7 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     
     
-    // states:
+    // contexts:
     const {
         // cart data:
         hasCart,
