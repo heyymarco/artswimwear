@@ -201,7 +201,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     const isCartLoading = !isCartEmpty   && (isLoadingProduct); // do not report the loading state if the cart is empty
     const isCartError   = !isCartLoading && (isErrorProduct);
-    const isCartReady   = !isCartLoading && (!isCartEmpty && !!productList);
+    const hasData       = (!!productList);
+    const isCartReady   = !isCartLoading && !isCartEmpty && hasData;
     
     
     
