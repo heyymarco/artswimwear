@@ -545,7 +545,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         clearProductsFromCart,
     } = useCartState();
     const cartItems          = finishedOrderState?.cartItems     ?? reduxCartItems;
-    const hasCart            = !!cartItems.length;
+    const isCheckoutEmpty    = !cartItems.length;
     
     
     
@@ -644,9 +644,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isUninitShipping  && !isPerformedRecoverShippingList.current;
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isErrorShipping || isSuccessShipping) && !shippingList?.entities?.[shippingProvider ?? ''];
     
-    const isLoadingPage                  =                    isLoadingProduct || isLoadingCountry ||  !paymentToken || isNeedsRecoverShippingList;
-    const isErrorPage                    = !isLoadingPage && (isErrorProduct   || isErrorCountry   || (!paymentToken && isErrorToken));
-    const isReadyPage                    = !isLoadingPage && (hasCart && !!productList && !!countryList && !!paymentToken);
+    const isLoadingPage                  = !isCheckoutEmpty &&  isLoadingProduct || isLoadingCountry ||  !paymentToken || isNeedsRecoverShippingList;
+    const isErrorPage                    = !isLoadingPage   && (isErrorProduct   || isErrorCountry   || (!paymentToken && isErrorToken));
+    const isReadyPage                    = !isLoadingPage   && (!isCheckoutEmpty && !!productList && !!countryList && !!paymentToken);
     
     
     
