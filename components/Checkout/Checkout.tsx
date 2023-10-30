@@ -67,9 +67,6 @@ import {
 
 // contexts:
 import {
-    useCartState,
-}                           from '@/components/Cart'
-import {
     CheckoutStateProvider,
     useCheckoutState,
 }                           from './states/checkoutState'
@@ -114,14 +111,10 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     // contexts:
     const {
-        // cart data:
-        isCartEmpty,
-    } = useCartState();
-    
-    const {
         // states:
         checkoutStep,
         
+        isCheckoutEmpty,
         isLoadingPage,
         isErrorPage,
         
@@ -187,7 +180,7 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     
     // jsx:
-    if (isCartEmpty && !isCheckoutFinished) return ( // empty cart => never loading|error
+    if (isCheckoutEmpty) return ( // empty checkout => never loading|error
         <EmptyProductBlankSection
             // classes:
             className={styleSheet.blankSection}
