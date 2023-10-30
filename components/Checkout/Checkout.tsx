@@ -112,7 +112,7 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     
     
-    // states:
+    // contexts:
     const {
         // cart data:
         hasCart,
