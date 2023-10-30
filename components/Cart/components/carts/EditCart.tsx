@@ -98,7 +98,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     
     
     // jsx:
-    if (isCartEmpty) return ( // empty cart => never loading|error
+    if (isCartEmpty  ) return ( // empty cart => never loading|error
         <EmptyProductBlankSection
             // classes:
             className={props.className}
@@ -115,7 +115,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
             className={props.className}
         />
     );
-    if (isCartError)   return (
+    if (isCartError  ) return (
         <ErrorBlankSection
             // classes:
             className={props.className}
