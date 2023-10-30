@@ -636,8 +636,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const                        {data: productList    , isFetching: isProductLoading, isError: isProductError, refetch: refetchProduct}  = useGetProductList();
-    const                        {data: countryList    , isFetching: isCountryLoading, isError: isCountryError, refetch: refetchCountry}  = useGetCountryList();
+    const                        {data: productList    , isFetching: isProductLoading, isError: isProductError, refetch: productRefetch}  = useGetProductList();
+    const                        {data: countryList    , isFetching: isCountryLoading, isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
     const [generatePaymentToken, {data: newPaymentToken, isLoading : isTokenLoading  , isError: isTokenError  }] = useGeneratePaymentToken();
     
     const [getShippingByAddress, {data: shippingList   , isUninitialized: isShippingUninitialized, isError: isShippingError, isSuccess: isShippingSuccess}]  = useGetMatchingShippingList();
@@ -1152,8 +1152,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         dispatch(reduxResetCheckoutData());
     });
     const refetch              = useEvent((): void => {
-        refetchProduct();
-        refetchCountry();
+        productRefetch();
+        countryRefetch();
         generatePaymentToken();
     });
     
