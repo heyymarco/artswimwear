@@ -214,7 +214,7 @@ export interface CheckoutState {
     isCheckoutEmpty           : boolean
     isCheckoutLoading         : boolean
     isCheckoutError           : boolean
-    isReadyPage               : boolean
+    isCheckoutReady           : boolean
     
     isDesktop                 : boolean
     
@@ -371,7 +371,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     isCheckoutEmpty           : true,
     isCheckoutLoading         : false,
     isCheckoutError           : false,
-    isReadyPage               : false,
+    isCheckoutReady           : false,
     
     isDesktop                 : false,
     
@@ -648,7 +648,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const isCheckoutLoading              = !isCheckoutEmpty   &&  isLoadingProduct || isLoadingCountry ||  !paymentToken || isNeedsRecoverShippingList; // do not report the loading state if the checkout is empty
     const isCheckoutError                = !isCheckoutLoading && (isErrorProduct   || isErrorCountry   || (!paymentToken && isErrorToken));
-    const isReadyPage                    = !isCheckoutLoading && (!isCheckoutEmpty && !!productList && !!countryList && !!paymentToken);
+    const hasData                        = (!!productList && !!countryList && !!paymentToken);
+    const isCheckoutReady                = !isCheckoutLoading && !isCheckoutEmpty  && hasData;
     
     
     
@@ -1169,7 +1170,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isCheckoutEmpty,
         isCheckoutLoading,
         isCheckoutError,
-        isReadyPage,
+        isCheckoutReady,
         
         isDesktop,
         
@@ -1322,7 +1323,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isCheckoutEmpty,
         isCheckoutLoading,
         isCheckoutError,
-        isReadyPage,
+        isCheckoutReady,
         
         isDesktop,
         
