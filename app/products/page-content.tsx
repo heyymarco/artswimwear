@@ -56,8 +56,8 @@ export function ProductListPageContent(): JSX.Element|null {
     const {data: productList, isLoading: isProductLoading, isError: isProductError, refetch} = useGetProductList();
     
     const isPageLoading = isProductLoading;
-    const isPageError   = isProductError || !productList;
-    // const hasData       = (!!productList);
+    const hasData       = (!!productList);
+    const isPageError   = (!isPageLoading && (isProductError)) || !hasData;
     // const isPageReady   = !isPageLoading && !isPageError && hasData;
     
     
@@ -85,7 +85,7 @@ export function ProductListPageContent(): JSX.Element|null {
                 className={styleSheet.list}
             >
                 {
-                    Object.values(productList?.entities)
+                    Object.values(productList.entities)
                     .filter((product): product is Exclude<typeof product, undefined> => !!product)
                     .map((product) =>
                         <ProductItem
