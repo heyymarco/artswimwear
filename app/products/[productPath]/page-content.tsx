@@ -110,8 +110,8 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     const {data: productDetail, isLoading: isProductLoading, isError: isProductError, refetch} = useGetProductDetail(productPath as any ?? '');
     
     const isPageLoading = isProductLoading;
-    const isPageError   = isProductError || !productDetail;
     const hasData       = (!!productDetail);
+    const isPageError   = (!isPageLoading && (isProductError)) || !hasData;
     const isPageReady   = !isPageLoading && !isPageError && hasData;
     
     
