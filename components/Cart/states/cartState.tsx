@@ -206,18 +206,21 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // cart data:
-    const {totalProductQuantity, totalProductWeight, totalProductPrice} = useMemo<{totalProductQuantity: number, totalProductWeight: number|null, totalProductPrice: number}>(() => {
-        let totalProductQuantity : number      = 0;
-        let totalProductWeight   : number|null = null;
-        let totalProductPrice    : number      = 0;
+    const totalProductQuantity = useMemo<number>(() => {
+        let totalProductQuantity : number = 0;
+        for (const {quantity} of cartItems) {
+            totalProductQuantity += quantity;
+        } // for
+        return totalProductQuantity;
+    }, [cartItems]);
+    
+    const {totalProductWeight, totalProductPrice} = useMemo<{totalProductWeight: number|null, totalProductPrice: number}>(() => {
+        let totalProductWeight : number|null = null;
+        let totalProductPrice  : number      = 0;
         for (const {productId, quantity} of cartItems) {
             const product = productList?.entities?.[productId];
             if (!product) continue;
             const {price, shippingWeight} = product;
-            
-            
-            
-            totalProductQuantity += quantity;
             
             
             
@@ -231,7 +234,6 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             totalProductPrice += (price * quantity);
         } // for
         return {
-            totalProductQuantity,
             totalProductWeight,
             totalProductPrice,
         };
