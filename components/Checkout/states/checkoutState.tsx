@@ -647,9 +647,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
     
     const isCheckoutLoading              = !isCheckoutEmpty   &&  isProductLoading || isCountryLoading ||  !paymentToken || isNeedsRecoverShippingList; // do not report the loading state if the checkout is empty
-    const isCheckoutError                = !isCheckoutLoading && (isProductError   || isCountryError   || (!paymentToken && isTokenError));
     const hasData                        = (!!productList && !!countryList && !!paymentToken);
-    const isCheckoutReady                = !isCheckoutLoading && !isCheckoutEmpty && hasData;
+    const isCheckoutError                = (!isCheckoutLoading && (isProductError  || isCountryError   || (isTokenError && !paymentToken /* do not considered as token_error if still have old_token */))) || !hasData /* considered as error if no data */;
+    const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
     
     
     
