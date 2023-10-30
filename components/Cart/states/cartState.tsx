@@ -197,10 +197,10 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // apis:
-    const {data: productList, isFetching: isLoadingProduct, isError: isErrorProduct, refetch} = useGetProductList();
+    const {data: productList, isFetching: isProductLoading, isError: isProductError, refetch} = useGetProductList();
     
-    const isCartLoading = !isCartEmpty   && (isLoadingProduct); // do not report the loading state if the cart is empty
-    const isCartError   = !isCartLoading && (isErrorProduct);
+    const isCartLoading = !isCartEmpty   && (isProductLoading); // do not report the loading state if the cart is empty
+    const isCartError   = !isCartLoading && (isProductError);
     const hasData       = (!!productList);
     const isCartReady   = !isCartLoading && !isCartEmpty && hasData;
     
