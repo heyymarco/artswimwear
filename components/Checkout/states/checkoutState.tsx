@@ -649,7 +649,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isCheckoutLoading              = !isCheckoutEmpty   &&  isProductLoading || isCountryLoading ||  !paymentToken || isNeedsRecoverShippingList; // do not report the loading state if the checkout is empty
     const isCheckoutError                = !isCheckoutLoading && (isProductError   || isCountryError   || (!paymentToken && isTokenError));
     const hasData                        = (!!productList && !!countryList && !!paymentToken);
-    const isCheckoutReady                = !isCheckoutLoading && !isCheckoutEmpty  && hasData;
+    const isCheckoutReady                = !isCheckoutLoading && !isCheckoutEmpty && hasData;
     
     
     
