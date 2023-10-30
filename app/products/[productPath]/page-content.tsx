@@ -111,8 +111,8 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     
     const isPageLoading = isProductLoading;
     const hasData       = (!!productDetail);
-    const isPageError   = (!isPageLoading && (isProductError)) || !hasData;
-    const isPageReady   = !isPageLoading && !isPageError && hasData;
+    const isPageError   = (!isPageLoading && (isProductError)) || !hasData /* considered as error if no data */;
+    const isPageReady   = !isPageLoading && !isPageError;
     
     
     
