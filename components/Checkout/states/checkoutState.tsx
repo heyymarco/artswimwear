@@ -204,7 +204,7 @@ const invalidSelector = ':is(.invalidating, .invalidated)';
 //#region checkoutState
 
 // contexts:
-export interface CheckoutState {
+export interface CheckoutStateBase {
     // states:
     checkoutStep              : CheckoutStep
     checkoutProgress          : number
@@ -358,6 +358,52 @@ export interface CheckoutState {
     
     refetch                   : () => void
 }
+
+export type PickAlways<T, K extends keyof T, V> = {
+    [P in K] : Extract<T[P], V>
+}
+export type CheckoutState =
+    &Omit<CheckoutStateBase, 'isCheckoutEmpty'|'isCheckoutLoading'|'isCheckoutError'|'isCheckoutReady' | 'countryList'|'paymentToken'>
+    &(
+        |(
+            &PickAlways<CheckoutStateBase, 'isCheckoutEmpty'                              , true   > // if   the checkout is  empty
+            &PickAlways<CheckoutStateBase, 'isCheckoutLoading'|'isCheckoutError'|'isCheckoutReady', false  > // then the checkout is  never loading|error|ready
+        )
+        |(
+            &PickAlways<CheckoutStateBase, 'isCheckoutEmpty'                              , false  > // if   the checkout not empty
+            &PickAlways<CheckoutStateBase, 'isCheckoutLoading'|'isCheckoutError'|'isCheckoutReady', boolean> // then the checkout is  maybe loading|error|ready
+        )
+    )
+    &(
+        |(
+            &PickAlways<CheckoutStateBase, 'isCheckoutLoading'            , true   > // if   the checkout is  loading
+            &PickAlways<CheckoutStateBase, 'isCheckoutError'|'isCheckoutReady', false  > // then the checkout is  never error|ready
+        )
+        |(
+            &PickAlways<CheckoutStateBase, 'isCheckoutLoading'            , false  > // if   the checkout not loading
+            &PickAlways<CheckoutStateBase, 'isCheckoutError'|'isCheckoutReady', boolean> // then the checkout is  maybe error|ready
+        )
+    )
+    &(
+        |(
+            &PickAlways<CheckoutStateBase, 'isCheckoutError', true   > // if   the checkout is  error
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady', false  > // then the checkout is  never ready
+        )
+        |(
+            &PickAlways<CheckoutStateBase, 'isCheckoutError', false  > // if   the checkout not error
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady', boolean> // then the checkout is  maybe ready
+        )
+    )
+    &(
+        |(
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady', true                   > // if   the checkout is  ready
+            &PickAlways<CheckoutStateBase, 'countryList'|'paymentToken', {}          > // then the checkout is  always having_data
+        )
+        |(
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady', false                  > // if   the checkout not ready
+            &PickAlways<CheckoutStateBase, 'countryList'|'paymentToken', {}|undefined> // then the checkout is  maybe  having_data
+        )
+    )
 
 const noopHandler  : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
 const noopCallback = () => {};
@@ -1167,10 +1213,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         isBusy,
         
-        isCheckoutEmpty,
-        isCheckoutLoading,
-        isCheckoutError,
-        isCheckoutReady,
+        isCheckoutEmpty   : isCheckoutEmpty   as any,
+        isCheckoutLoading : isCheckoutLoading as any,
+        isCheckoutError   : isCheckoutError   as any,
+        isCheckoutReady   : isCheckoutReady   as any,
         
         isDesktop,
         
