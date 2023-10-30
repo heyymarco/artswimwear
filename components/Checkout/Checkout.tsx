@@ -117,6 +117,7 @@ const CheckoutInternal = (): JSX.Element|null => {
         isCheckoutEmpty,
         isCheckoutLoading,
         isCheckoutError,
+        isCheckoutFinished,
         
         isDesktop,
         
@@ -137,11 +138,6 @@ const CheckoutInternal = (): JSX.Element|null => {
         // actions:
         refetchCheckout,
     } = useCheckoutState();
-    const isCheckoutFinished = (
-        (checkoutStep === 'pending')
-        ||
-        (checkoutStep === 'paid')
-    );
     
     
     

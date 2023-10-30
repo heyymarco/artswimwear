@@ -214,6 +214,7 @@ export interface CheckoutStateBase {
     isCheckoutLoading         : boolean
     isCheckoutError           : boolean
     isCheckoutReady           : boolean
+    isCheckoutFinished        : boolean
     
     isDesktop                 : boolean
     
@@ -416,6 +417,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     isCheckoutLoading         : false,
     isCheckoutError           : false,
     isCheckoutReady           : false,
+    isCheckoutFinished        : false,
     
     isDesktop                 : false,
     
@@ -705,6 +707,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const hasData                        = (!!productList      && !!countryList    && !!paymentToken);
     const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError   || (isTokenError && !paymentToken /* do not considered as token_error if still have old_token */))) || !hasData /* considered as error if no data */;
     const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
+    const isCheckoutFinished             = isCheckoutReady && ((checkoutStep === 'pending') || (checkoutStep === 'paid'));
     
     
     
@@ -1226,6 +1229,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isCheckoutLoading : isCheckoutLoading as any,
         isCheckoutError   : isCheckoutError   as any,
         isCheckoutReady   : isCheckoutReady   as any,
+        isCheckoutFinished,
         
         isDesktop,
         
@@ -1378,6 +1382,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isCheckoutLoading,
         isCheckoutError,
         isCheckoutReady,
+        isCheckoutFinished,
         
         isDesktop,
         

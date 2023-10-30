@@ -49,8 +49,9 @@ const NavCheckout = (): JSX.Element|null => {
     // states:
     const {
         // states:
-        checkoutStep,
         checkoutProgress,
+        
+        isCheckoutFinished,
         
         
         
@@ -59,7 +60,6 @@ const NavCheckout = (): JSX.Element|null => {
         gotoStepShipping,
         gotoPayment,
     } = useCheckoutState();
-    const isCheckoutFinished = (checkoutStep === 'pending') || (checkoutStep === 'paid');
     
     
     
