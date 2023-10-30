@@ -57,8 +57,8 @@ export function ProductListPageContent(): JSX.Element|null {
     
     const isPageLoading = isProductLoading;
     const hasData       = (!!productList);
-    const isPageError   = (!isPageLoading && (isProductError)) || !hasData;
-    // const isPageReady   = !isPageLoading && !isPageError && hasData;
+    const isPageError   = (!isPageLoading && (isProductError)) || !hasData /* considered as error if no data */;
+    // const isPageReady   = !isPageLoading && !isPageError;
     
     
     
