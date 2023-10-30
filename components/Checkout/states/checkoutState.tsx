@@ -212,7 +212,7 @@ export interface CheckoutState {
     isBusy                    : BusyState,
     
     isCheckoutEmpty           : boolean
-    isLoadingPage             : boolean
+    isCheckoutLoading         : boolean
     isErrorPage               : boolean
     isReadyPage               : boolean
     
@@ -369,7 +369,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     isBusy                    : false,
     
     isCheckoutEmpty           : true,
-    isLoadingPage             : false,
+    isCheckoutLoading         : false,
     isErrorPage               : false,
     isReadyPage               : false,
     
@@ -646,9 +646,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isUninitShipping  && !isPerformedRecoverShippingList.current;
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isErrorShipping || isSuccessShipping) && !shippingList?.entities?.[shippingProvider ?? ''];
     
-    const isLoadingPage                  = !isCheckoutEmpty &&  isLoadingProduct || isLoadingCountry ||  !paymentToken || isNeedsRecoverShippingList;
-    const isErrorPage                    = !isLoadingPage   && (isErrorProduct   || isErrorCountry   || (!paymentToken && isErrorToken));
-    const isReadyPage                    = !isLoadingPage   && (!isCheckoutEmpty && !!productList && !!countryList && !!paymentToken);
+    const isCheckoutLoading              = !isCheckoutEmpty   &&  isLoadingProduct || isLoadingCountry ||  !paymentToken || isNeedsRecoverShippingList; // do not report the loading state if the checkout is empty
+    const isErrorPage                    = !isCheckoutLoading && (isErrorProduct   || isErrorCountry   || (!paymentToken && isErrorToken));
+    const isReadyPage                    = !isCheckoutLoading && (!isCheckoutEmpty && !!productList && !!countryList && !!paymentToken);
     
     
     
@@ -1167,7 +1167,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isBusy,
         
         isCheckoutEmpty,
-        isLoadingPage,
+        isCheckoutLoading,
         isErrorPage,
         isReadyPage,
         
@@ -1320,7 +1320,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isBusy,
         
         isCheckoutEmpty,
-        isLoadingPage,
+        isCheckoutLoading,
         isErrorPage,
         isReadyPage,
         
