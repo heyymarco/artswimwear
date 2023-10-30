@@ -144,6 +144,11 @@ const CheckoutInternal = (): JSX.Element|null => {
         // actions:
         refetch,
     } = useCheckoutState();
+    const isCheckoutFinished = (
+        (checkoutStep === 'pending')
+        ||
+        (checkoutStep === 'paid')
+    );
     
     
     
@@ -182,7 +187,7 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     
     // jsx:
-    if (!hasCart) return ( // empty cart => never loading|error
+    if (!hasCart && !isCheckoutFinished) return ( // empty cart => never loading|error
         <EmptyProductBlankSection
             // classes:
             className={styleSheet.blankSection}
@@ -236,11 +241,7 @@ const CheckoutInternal = (): JSX.Element|null => {
             >
                 <EditCart
                     // accessibilities:
-                    readOnly={
-                        (checkoutStep === 'pending')
-                        ||
-                        (checkoutStep === 'paid')
-                    }
+                    readOnly={isCheckoutFinished}
                 />
                 <ViewTotalCart
                     // data:
