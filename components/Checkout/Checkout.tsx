@@ -11,6 +11,11 @@ import {
     useEffect,
 }                           from 'react'
 
+// cssfn:
+import {
+    useCheckoutStyleSheet,
+}                           from './styles/loader'
+
 // reusable-ui components:
 import {
     // base-content-components:
@@ -60,10 +65,10 @@ import {
     ViewOrderFinishedPaid,
 }                           from './components/orders/ViewOrderFinishedPaid'
 
-// internals:
+// contexts:
 import {
-    useCheckoutStyleSheet,
-}                           from './styles/loader'
+    useCartState,
+}                           from '@/components/Cart'
 import {
     CheckoutStateProvider,
     useCheckoutState,
@@ -109,6 +114,11 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     // states:
     const {
+        // cart data:
+        hasCart,
+    } = useCartState();
+    
+    const {
         // states:
         checkoutStep,
         
@@ -116,11 +126,6 @@ const CheckoutInternal = (): JSX.Element|null => {
         isErrorPage,
         
         isDesktop,
-        
-        
-        
-        // cart data:
-        hasCart,
         
         
         
