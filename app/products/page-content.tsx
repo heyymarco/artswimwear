@@ -53,22 +53,23 @@ export function ProductListPageContent(): JSX.Element|null {
     
     
     // apis:
-    const {data: productList, isLoading: isLoadingProduct, isError: isErrorProduct, refetch} = useGetProductList();
+    const {data: productList, isLoading: isProductLoading, isError: isProductError, refetch} = useGetProductList();
     
-    const isLoadingPage = isLoadingProduct;
-    const isErrorPage   = isErrorProduct || !productList;
-    // const isReadyPage   = !isLoadingPage && !isErrorPage;
+    const isPageLoading = isProductLoading;
+    const isPageError   = isProductError || !productList;
+    // const hasData       = (!!productList);
+    // const isPageReady   = !isPageLoading && !isPageError && hasData;
     
     
     
     // jsx:
-    if (isLoadingPage) return (
+    if (isPageLoading) return (
         <LoadingBlankPage
             // identifiers:
             key='busy' // avoids re-creating a similar dom during loading transition in different components
         />
     );
-    if (isErrorPage)   return (
+    if (isPageError)   return (
         <ErrorBlankPage
             // handlers:
             onRetry={refetch}
