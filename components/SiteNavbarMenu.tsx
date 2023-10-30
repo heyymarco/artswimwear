@@ -1,22 +1,66 @@
 'use client'
 
-import Link from '@reusable-ui/next-compat-link'
-import { Badge, ButtonIcon, Collapse, HamburgerMenuButton, Icon, List, ListItem, Nav, NavbarParams, navbars, NavItem } from '@reusable-ui/components';
-import { selectCartTotalQuantity, toggleCart } from '@/store/features/cart/cartSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { useEvent } from '@reusable-ui/core';
-import { useEffect, useInsertionEffect, useState } from 'react';
+// react:
+import {
+    // react:
+    default as React,
+    
+    
+    
+    // hooks:
+    useInsertionEffect,
+    useEffect,
+    useState,
+}                           from 'react'
+
+// reusable-ui components:
+import {
+    // simple-components:
+    Icon,
+    ButtonIcon,
+    HamburgerMenuButton,
+    
+    
+    
+    // layout-components:
+    ListItem,
+    
+    
+    
+    // status-components:
+    Badge,
+    
+    
+    
+    // menu-components:
+    Collapse,
+    
+    
+    
+    // composite-components:
+    NavItem,
+    Nav,
+    NavbarParams,
+    navbars,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
+
+// internal components:
+import {
+    SiteLogo,
+}                           from './SiteLogo'
+
+// contexts:
+import {
+    // hooks:
+    useCartState,
+}                           from '@/components/Cart'
 
 
 
-const SiteLogo = () => {
-    return (
-        <Link href='/'>
-            <Icon icon='artswimwear' size='xl' />
-        </Link>
-    );
-}
-
+// react components:
 const SiteNavbarMenu = ({
         basicVariantProps,
         navbarExpanded,
@@ -26,54 +70,146 @@ const SiteNavbarMenu = ({
     
     
     
-    const cartTotalQuantity = useSelector(selectCartTotalQuantity);
-    const hasCart = !!cartTotalQuantity;
-    const dispatch = useDispatch();
-    const handleToggleCart = useEvent(() => {
-        dispatch(toggleCart());
-    });
+    // contexts:
+    const {
+        // states:
+        isCartEmpty,
+        
+        
+        
+        // cart data:
+        totalProductQuantity,
+        
+        
+        
+        // actions:
+        showCart,
+    } = useCartState();
     
     
     
+    // dom effects:
+    
+    // dynamically modify <Navbar> layout when the <CartButton> shown:
     useInsertionEffect(() => {
-        navbars.listGridAreaCollapse = (!hasCart ? '2/1/2/3' : '2/1/2/4') as any;
-    }, [hasCart]);
+        navbars.listGridAreaCollapse = (isCartEmpty ? '2/1/2/3' : '2/1/2/4') as any;
+    }, [isCartEmpty]);
     
-    
-    
-    const [cartTogglerRef, setCartTogglerRef] = useState<HTMLElement|null>(null);
+    // animate <CartButton> when the `totalProductQuantity` changed:
+    const [cartTogglerRef   , setCartTogglerRef   ] = useState<HTMLElement|null>(null);
     const [cartStatusExcited, setCartStatusExcited] = useState<boolean>(false)
-    const CartStatus = () => <Badge excited={cartStatusExcited} onExcitedChange={({excited}) => setCartStatusExcited(excited)} floatingOn={cartTogglerRef} theme='danger' badgeStyle='pill' floatingPlacement='right-start' floatingOffset={!navbarExpanded ? -16 : -24} floatingShift={!navbarExpanded ? 3 : 10}>{cartTotalQuantity}</Badge>
+    const CartStatus = () => <Badge excited={cartStatusExcited} onExcitedChange={({excited}) => setCartStatusExcited(excited)} floatingOn={cartTogglerRef} theme='danger' badgeStyle='pill' floatingPlacement='right-start' floatingOffset={!navbarExpanded ? -16 : -24} floatingShift={!navbarExpanded ? 3 : 10}>{totalProductQuantity}</Badge>
     useEffect(() => {
-        if (!hasCart) return;
-        if (!cartTotalQuantity) return;
+        if (isCartEmpty) return;
+        if (!totalProductQuantity) return;
         
         
         
         setCartStatusExcited(true);
-    }, [hasCart, cartTotalQuantity]); // if the quantity changes => make an animation
+    }, [isCartEmpty, totalProductQuantity]); // if the quantity changes => make an animation
     
     
     
+    // jsx:
     return (
         <>
             <SiteLogo />
             
-            {!navbarExpanded && hasCart && <ButtonIcon icon='shopping_cart' elmRef={setCartTogglerRef} size='lg' onClick={handleToggleCart}>
+            {!navbarExpanded && !isCartEmpty && <ButtonIcon
+                // refs:
+                elmRef={setCartTogglerRef}
+                
+                
+                
+                // appearances:
+                icon='shopping_cart'
+                
+                
+                
+                // variants:
+                size='lg'
+                
+                
+                
+                // handlers:
+                onClick={showCart}
+            >
                 <CartStatus />
             </ButtonIcon>}
             
-            {!navbarExpanded && <HamburgerMenuButton {...basicVariantProps} className='toggler' active={listExpanded} onClick={handleClickToToggleList} />}
+            {!navbarExpanded && <HamburgerMenuButton
+                // variants:
+                {...basicVariantProps}
+                
+                
+                
+                // classes:
+                className='toggler'
+                
+                
+                
+                // states:
+                active={listExpanded}
+                
+                
+                
+                // handlers:
+                onClick={handleClickToToggleList}
+            />}
             
-            <Collapse className='list' mainClass={navbarExpanded ? '' : undefined} expanded={listExpanded}>
-                <Nav tag='ul' role='' {...basicVariantProps} orientation={navbarExpanded ? 'inline' : 'block'} listStyle='flat' gradient={navbarExpanded ? 'inherit' : false}>
+            <Collapse
+                // classes:
+                mainClass={navbarExpanded ? '' : undefined}
+                className='list'
+                
+                
+                
+                // states:
+                expanded={listExpanded}
+            >
+                <Nav
+                    // semantics:
+                    tag='ul'
+                    role=''
+                    
+                    
+                    
+                    // variants:
+                    {...basicVariantProps}
+                    gradient={navbarExpanded ? 'inherit' : false}
+                    listStyle='flat'
+                    orientation={navbarExpanded ? 'inline' : 'block'}
+                >
                     <NavItem><Link href='/'>Home</Link></NavItem>
                     <NavItem><Link href='/products'>Products</Link></NavItem>
                     <NavItem><Link href='/about'>About</Link></NavItem>
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
                     <NavItem href='https://www.instagram.com/'><Icon icon='instagram' size='lg' /></NavItem>
                     
-                    {navbarExpanded && hasCart && <ListItem<HTMLElement> className='cartBtn' {...basicVariantProps} elmRef={setCartTogglerRef} actionCtrl={true} onClick={handleToggleCart}>
+                    {navbarExpanded && !isCartEmpty && <ListItem<HTMLElement>
+                        // refs:
+                        elmRef={setCartTogglerRef}
+                        
+                        
+                        
+                        // variants:
+                        {...basicVariantProps}
+                        
+                        
+                        
+                        // classes:
+                        className='cartBtn'
+                        
+                        
+                        
+                        // behaviors:
+                        actionCtrl={true}
+                        
+                        
+                        
+                        // handlers:
+                        onClick={showCart}
+                    >
                         <Icon icon='shopping_cart' size='lg' />
                         <CartStatus />
                     </ListItem>}
