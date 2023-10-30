@@ -80,7 +80,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         
         hideCart,
         
-        refetch,
+        refetchCart,
     } = useCartState();
     
     
@@ -123,7 +123,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
             
             
             // handlers:
-            onRetry={refetch}
+            onRetry={refetchCart}
         />
     );
     return (

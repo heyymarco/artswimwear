@@ -127,7 +127,7 @@ export interface CartStateBase {
     showCart              : () => void
     hideCart              : () => void
     
-    refetch               : () => void
+    refetchCart           : () => void
 }
 
 export type PickAlways<T, K extends keyof T, V> = {
@@ -210,7 +210,7 @@ const CartStateContext = createContext<CartState>({
     showCart              : noopCallback,
     hideCart              : noopCallback,
     
-    refetch               : noopCallback,
+    refetchCart           : noopCallback,
 });
 CartStateContext.displayName  = 'CartState';
 
@@ -243,7 +243,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // apis:
-    const {data: productList, isFetching: isProductLoading, isError: isProductError, refetch} = useGetProductList();
+    const {data: productList, isFetching: isProductLoading, isError: isProductError, refetch: refetchCart} = useGetProductList();
     
     const isCartLoading = !isCartEmpty   && (isProductLoading); // do not report the loading state if the cart is empty
     const hasData       = (!!productList);
@@ -391,7 +391,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         showCart,              // stable ref
         hideCart,              // stable ref
         
-        refetch,               // stable ref
+        refetchCart,           // stable ref
     }), [
         // states:
         isCartShown,
@@ -425,7 +425,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // showCart,              // stable ref
         // hideCart,              // stable ref
         
-        refetch,                  // stable ref
+        refetchCart,              // stable ref
     ]);
     
     
