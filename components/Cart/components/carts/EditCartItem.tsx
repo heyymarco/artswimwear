@@ -116,9 +116,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     // states:
     const {
         // states:
-        isCartEmpty,
-        isCartLoading,
-        isCartError,
+        isCartReady,
         
         
         
@@ -131,7 +129,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     // fn props:
     const product          = productList?.entities?.[productId];
     const productUnitPrice = product?.price;
-    const isProductDeleted = !isCartEmpty && !isCartLoading && !isCartError && !product;
+    const isProductDeleted = isCartReady && !product;
     
     
     
