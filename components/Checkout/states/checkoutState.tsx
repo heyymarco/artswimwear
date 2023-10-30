@@ -211,6 +211,7 @@ export interface CheckoutState {
     
     isBusy                    : BusyState,
     
+    isCheckoutEmpty           : boolean
     isLoadingPage             : boolean
     isErrorPage               : boolean
     isReadyPage               : boolean
@@ -367,6 +368,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     isBusy                    : false,
     
+    isCheckoutEmpty           : true,
     isLoadingPage             : false,
     isErrorPage               : false,
     isReadyPage               : false,
@@ -1164,6 +1166,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         isBusy,
         
+        isCheckoutEmpty,
         isLoadingPage,
         isErrorPage,
         isReadyPage,
@@ -1316,6 +1319,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         isBusy,
         
+        isCheckoutEmpty,
         isLoadingPage,
         isErrorPage,
         isReadyPage,
