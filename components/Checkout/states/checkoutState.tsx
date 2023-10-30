@@ -636,18 +636,18 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const                        {data: productList    , isFetching: isLoadingProduct, isError: isErrorProduct, refetch: refetchProduct}  = useGetProductList();
-    const                        {data: countryList    , isFetching: isLoadingCountry, isError: isErrorCountry, refetch: refetchCountry}  = useGetCountryList();
-    const [generatePaymentToken, {data: newPaymentToken, isLoading : isLoadingToken  , isError: isErrorToken  }] = useGeneratePaymentToken();
+    const                        {data: productList    , isFetching: isProductLoading, isError: isProductError, refetch: refetchProduct}  = useGetProductList();
+    const                        {data: countryList    , isFetching: isCountryLoading, isError: isCountryError, refetch: refetchCountry}  = useGetCountryList();
+    const [generatePaymentToken, {data: newPaymentToken, isLoading : isTokenLoading  , isError: isTokenError  }] = useGeneratePaymentToken();
     
-    const [getShippingByAddress, {data: shippingList   , isUninitialized: isUninitShipping, isError: isErrorShipping, isSuccess: isSuccessShipping}]  = useGetMatchingShippingList();
+    const [getShippingByAddress, {data: shippingList   , isUninitialized: isShippingUninitialized, isError: isShippingError, isSuccess: isShippingSuccess}]  = useGetMatchingShippingList();
     
     const isPerformedRecoverShippingList = useRef<boolean>(false);
-    const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isUninitShipping  && !isPerformedRecoverShippingList.current;
-    const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isErrorShipping || isSuccessShipping) && !shippingList?.entities?.[shippingProvider ?? ''];
+    const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
+    const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
     
-    const isCheckoutLoading              = !isCheckoutEmpty   &&  isLoadingProduct || isLoadingCountry ||  !paymentToken || isNeedsRecoverShippingList; // do not report the loading state if the checkout is empty
-    const isCheckoutError                = !isCheckoutLoading && (isErrorProduct   || isErrorCountry   || (!paymentToken && isErrorToken));
+    const isCheckoutLoading              = !isCheckoutEmpty   &&  isProductLoading || isCountryLoading ||  !paymentToken || isNeedsRecoverShippingList; // do not report the loading state if the checkout is empty
+    const isCheckoutError                = !isCheckoutLoading && (isProductError   || isCountryError   || (!paymentToken && isTokenError));
     const hasData                        = (!!productList && !!countryList && !!paymentToken);
     const isCheckoutReady                = !isCheckoutLoading && !isCheckoutEmpty  && hasData;
     
@@ -782,7 +782,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isPaymentTokenInitialized = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
-        if (isLoadingToken) return;
+        if (isTokenLoading) return;
         
         
         
@@ -795,7 +795,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             console.log('initial: generate a new token');
             generatePaymentToken();
         }
-        else if (isErrorToken) {
+        else if (isTokenError) {
             // retry to generate a new token:
             console.log('schedule retry : generate a new token');
             cancelRefresh = setTimeout(() => {
@@ -823,7 +823,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return () => {
             if (cancelRefresh) clearTimeout(cancelRefresh);
         };
-    }, [newPaymentToken, isLoadingToken, isErrorToken]);
+    }, [newPaymentToken, isTokenLoading, isTokenError]);
     
     // auto clear finished checkout states in redux:
     useEffect(() => {
