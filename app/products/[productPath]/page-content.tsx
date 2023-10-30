@@ -107,11 +107,12 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     
     
     // apis:
-    const {data: productDetail, isLoading: isLoadingProduct, isError: isErrorProduct, refetch} = useGetProductDetail(productPath as any ?? '');
+    const {data: productDetail, isLoading: isProductLoading, isError: isProductError, refetch} = useGetProductDetail(productPath as any ?? '');
     
-    const isLoadingPage = isLoadingProduct;
-    const isErrorPage   = isErrorProduct || !productDetail;
-    const isReadyPage   = !isLoadingPage && !isErrorPage;
+    const isPageLoading = isProductLoading;
+    const isPageError   = isProductError || !productDetail;
+    const hasData       = (!!productDetail);
+    const isPageReady   = !isPageLoading && !isPageError && hasData;
     
     
     
@@ -121,7 +122,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     });
     const handleBuyButtonClick = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         // conditions:
-        if (!isReadyPage) return; // the page is not fully loaded => ignore
+        if (!isPageReady) return; // the page is not fully loaded => ignore
         
         
         
@@ -132,13 +133,13 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     
     
     // jsx:
-    if (isLoadingPage) return (
+    if (isPageLoading) return (
         <LoadingBlankPage
             // identifiers:
             key='busy' // avoids re-creating a similar dom during loading transition in different components
         />
     );
-    if (isErrorPage)   return (
+    if (isPageError)   return (
         <ErrorBlankPage
             // handlers:
             onRetry={refetch}
