@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// cssfn:
+import {
+    useCheckoutStyleSheet,
+}                           from '../../styles/loader'
+
 // reusable-ui components:
 import {
     // layout-components:
@@ -18,6 +23,14 @@ import {
     RadioDecorator,
 }                           from '@/components/RadioDecorator'
 
+// contexts:
+import {
+    useCartState,
+}                           from '@/components/Cart'
+import {
+    useCheckoutState,
+}                           from '../../states/checkoutState'
+
 // utilities:
 import {
     formatCurrency,
@@ -25,14 +38,6 @@ import {
 import {
     calculateShippingCost,
 }                           from '@/libs/shippings'
-
-// internals:
-import {
-    useCheckoutStyleSheet,
-}                           from '../../styles/loader'
-import {
-    useCheckoutState,
-}                           from '../../states/checkoutState'
 
 
 
@@ -47,9 +52,9 @@ const EditShippingMethod = (): JSX.Element|null => {
     const {
         // cart data:
         totalProductWeight,
-        
-        
-        
+    } = useCartState();
+    
+    const {
         // shipping data:
         shippingProvider,
         setShippingProvider,
