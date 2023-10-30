@@ -48,7 +48,7 @@ const EditShippingMethod = (): JSX.Element|null => {
     
     
     
-    // states:
+    // contexts:
     const {
         // cart data:
         totalProductWeight,
