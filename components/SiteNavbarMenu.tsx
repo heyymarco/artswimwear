@@ -9,7 +9,6 @@ import {
     
     // hooks:
     useInsertionEffect,
-    useEffect,
     useState,
 }                           from 'react'
 
@@ -24,11 +23,6 @@ import {
     
     // layout-components:
     ListItem,
-    
-    
-    
-    // status-components:
-    Badge,
     
     
     
@@ -56,6 +50,11 @@ import {
 import {
     // hooks:
     useCartState,
+    
+    
+    
+    // react components:
+    CartStatus,
 }                           from '@/components/Cart'
 
 
@@ -77,11 +76,6 @@ const SiteNavbarMenu = ({
         
         
         
-        // cart data:
-        totalProductQuantity,
-        
-        
-        
         // actions:
         showCart,
     } = useCartState();
@@ -89,24 +83,15 @@ const SiteNavbarMenu = ({
     
     
     // dom effects:
-    
     // dynamically modify <Navbar> layout when the <CartButton> shown:
     useInsertionEffect(() => {
         navbars.listGridAreaCollapse = (isCartEmpty ? '2/1/2/3' : '2/1/2/4') as any;
     }, [isCartEmpty]);
     
-    // animate <CartButton> when the `totalProductQuantity` changed:
-    const [cartTogglerRef   , setCartTogglerRef   ] = useState<HTMLElement|null>(null);
-    const [cartStatusExcited, setCartStatusExcited] = useState<boolean>(false)
-    const CartStatus = () => <Badge excited={cartStatusExcited} onExcitedChange={({excited}) => setCartStatusExcited(excited)} floatingOn={cartTogglerRef} theme='danger' badgeStyle='pill' floatingPlacement='right-start' floatingOffset={!navbarExpanded ? -16 : -24} floatingShift={!navbarExpanded ? 3 : 10}>{totalProductQuantity}</Badge>
-    useEffect(() => {
-        if (isCartEmpty) return;
-        if (!totalProductQuantity) return;
-        
-        
-        
-        setCartStatusExcited(true);
-    }, [isCartEmpty, totalProductQuantity]); // if the quantity changes => make an animation
+    
+    
+    // refs:
+    const [cartTogglerRef, setCartTogglerRef] = useState<HTMLElement|null>(null);
     
     
     
@@ -134,7 +119,13 @@ const SiteNavbarMenu = ({
                 // handlers:
                 onClick={showCart}
             >
-                <CartStatus />
+                <CartStatus
+                    // floatable:
+                    floatingOn={cartTogglerRef}
+                    floatingPlacement='right-start'
+                    floatingOffset={-16}
+                    floatingShift={3}
+                />
             </ButtonIcon>}
             
             {!navbarExpanded && <HamburgerMenuButton
@@ -211,7 +202,13 @@ const SiteNavbarMenu = ({
                         onClick={showCart}
                     >
                         <Icon icon='shopping_cart' size='lg' />
-                        <CartStatus />
+                        <CartStatus
+                            // floatable:
+                            floatingOn={cartTogglerRef}
+                            floatingPlacement='right-start'
+                            floatingOffset={-24}
+                            floatingShift={10}
+                        />
                     </ListItem>}
                 </Nav>
             </Collapse>
