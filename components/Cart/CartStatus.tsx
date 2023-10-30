@@ -52,11 +52,6 @@ const CartStatus = (props: CartStatusProps) => {
     
     // contexts:
     const {
-        // states:
-        isCartEmpty,
-        
-        
-        
         // cart data:
         totalProductQuantity,
     } = useCartState();
@@ -67,13 +62,12 @@ const CartStatus = (props: CartStatusProps) => {
     // animate <CartButton> when the `totalProductQuantity` changed:
     const [cartStatusExcited, setCartStatusExcited] = useState<boolean>(false)
     useEffect(() => {
-        if (isCartEmpty) return;
         if (!totalProductQuantity) return;
         
         
         
         setCartStatusExcited(true);
-    }, [isCartEmpty, totalProductQuantity]); // if the quantity changes => make an animation
+    }, [totalProductQuantity]); // if the quantity changes => make an animation
     
     
     
@@ -99,6 +93,7 @@ const CartStatus = (props: CartStatusProps) => {
             
             
             // states:
+            expanded={!!totalProductQuantity}
             excited={cartStatusExcited}
             
             
