@@ -116,7 +116,7 @@ const CheckoutInternal = (): JSX.Element|null => {
         
         isCheckoutEmpty,
         isCheckoutLoading,
-        isErrorPage,
+        isCheckoutError,
         
         isDesktop,
         
@@ -180,7 +180,7 @@ const CheckoutInternal = (): JSX.Element|null => {
     
     
     // jsx:
-    if (isCheckoutEmpty) return ( // empty checkout => never loading|error
+    if (isCheckoutEmpty  ) return ( // empty checkout => never loading|error
         <EmptyProductBlankSection
             // classes:
             className={styleSheet.blankSection}
@@ -192,7 +192,7 @@ const CheckoutInternal = (): JSX.Element|null => {
             className={styleSheet.blankSection}
         />
     );
-    if (isErrorPage)   return (
+    if (isCheckoutError  ) return (
         <ErrorBlankSection
             // classes:
             className={styleSheet.blankSection}

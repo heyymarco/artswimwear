@@ -213,7 +213,7 @@ export interface CheckoutState {
     
     isCheckoutEmpty           : boolean
     isCheckoutLoading         : boolean
-    isErrorPage               : boolean
+    isCheckoutError           : boolean
     isReadyPage               : boolean
     
     isDesktop                 : boolean
@@ -370,7 +370,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     isCheckoutEmpty           : true,
     isCheckoutLoading         : false,
-    isErrorPage               : false,
+    isCheckoutError           : false,
     isReadyPage               : false,
     
     isDesktop                 : false,
@@ -647,7 +647,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isErrorShipping || isSuccessShipping) && !shippingList?.entities?.[shippingProvider ?? ''];
     
     const isCheckoutLoading              = !isCheckoutEmpty   &&  isLoadingProduct || isLoadingCountry ||  !paymentToken || isNeedsRecoverShippingList; // do not report the loading state if the checkout is empty
-    const isErrorPage                    = !isCheckoutLoading && (isErrorProduct   || isErrorCountry   || (!paymentToken && isErrorToken));
+    const isCheckoutError                = !isCheckoutLoading && (isErrorProduct   || isErrorCountry   || (!paymentToken && isErrorToken));
     const isReadyPage                    = !isCheckoutLoading && (!isCheckoutEmpty && !!productList && !!countryList && !!paymentToken);
     
     
@@ -1168,7 +1168,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         isCheckoutEmpty,
         isCheckoutLoading,
-        isErrorPage,
+        isCheckoutError,
         isReadyPage,
         
         isDesktop,
@@ -1321,7 +1321,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         isCheckoutEmpty,
         isCheckoutLoading,
-        isErrorPage,
+        isCheckoutError,
         isReadyPage,
         
         isDesktop,
