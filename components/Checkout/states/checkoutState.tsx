@@ -57,20 +57,6 @@ import {
 // stores:
 import {
     // types:
-    CartEntry,
-    
-    
-    
-    // cart data:
-    clearCart as reduxClearCart,
-    
-    
-    
-    // selectors:
-    selectCartItems,
-}                           from '@/store/features/cart/cartSlice'
-import {
-    // types:
     CheckoutStep,
     BusyState,
     PaymentMethod,
@@ -137,6 +123,7 @@ import {
 }                           from '@/store/features/checkout/checkoutSlice'
 import {
     // types:
+    CountryPreview,
     ProductPreview,
     PlaceOrderOptions,
     MakePaymentResponse,
@@ -152,10 +139,16 @@ import {
     useMakePayment,
 }                           from '@/store/features/api/apiSlice'
 
-// apis:
-import type {
-    CountryPreview,
-}                           from '@/pages/api/countryList'
+// contexts:
+import {
+    // types:
+    CartEntry,
+    
+    
+    
+    // hooks:
+    useCartState,
+}                           from '@/components/Cart'
 
 // internals:
 import type {
@@ -223,14 +216,6 @@ export interface CheckoutState {
     isReadyPage               : boolean
     
     isDesktop                 : boolean
-    
-    
-    
-    // cart data:
-    cartItems                 : CartEntry[]
-    hasCart                   : boolean
-    totalProductWeight        : number|null
-    totalProductPrice         : number
     
     
     
@@ -387,14 +372,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     isReadyPage               : false,
     
     isDesktop                 : false,
-    
-    
-    
-    // cart data:
-    cartItems                 : [],
-    hasCart                   : false,
-    totalProductWeight        : null,
-    totalProductPrice         : 0,
     
     
     
@@ -556,11 +533,23 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
-    // stores:
-    const reduxCartItems     = useSelector(selectCartItems);
+    // contexts:
+    const {
+        // cart data:
+        cartItems : reduxCartItems,
+        totalProductWeight,
+        
+        
+        
+        // actions:
+        clearProductsFromCart,
+    } = useCartState();
     const cartItems          = finishedOrderState?.cartItems     ?? reduxCartItems;
     const hasCart            = !!cartItems.length;
     
+    
+    
+    // stores:
     const reduxCheckoutState = useSelector(selectCheckoutState);
     const checkoutState      = finishedOrderState?.checkoutState ?? reduxCheckoutState;
     const {
@@ -662,31 +651,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // cart data:
-    const {totalProductWeight, totalProductPrice} = useMemo<{totalProductWeight: number|null, totalProductPrice: number}>(() => {
-        let totalProductWeight : number|null = null;
-        let totalProductPrice  : number      = 0;
-        for (const {productId, quantity} of cartItems) {
-            const product = productList?.entities?.[productId];
-            if (!product) continue;
-            const {price, shippingWeight} = product;
-            
-            
-            
-            if (shippingWeight !== null) { // not a physical product => ignore
-                if (totalProductWeight === null) totalProductWeight = 0; // has a/some physical products => reset the counter from zero if null
-                totalProductWeight += (shippingWeight * quantity);
-            } // if
-            
-            
-            
-            totalProductPrice += (price * quantity);
-        } // for
-        return {
-            totalProductWeight,
-            totalProductPrice,
-        };
-    }, [cartItems, productList]);
-    
     const totalShippingCost = useMemo<number|null|undefined>(() => {
         // conditions:
         if (!shippingList)               return undefined; // the shippingList data is not available yet => nothing to calculate
@@ -866,7 +830,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        if (reduxCartItems    ) dispatch(reduxClearCart());
+        // clear the cart & checkout states in redux:
+        if (reduxCartItems    ) clearProductsFromCart();
         if (reduxCheckoutState) dispatch(reduxResetCheckoutData());
     }, [checkoutStep, reduxCartItems, reduxCheckoutState]);
     
@@ -1177,8 +1142,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             paymentState,
         });
         
+        
+        
         // clear the cart & checkout states in redux:
-        dispatch(reduxClearCart());
+        clearProductsFromCart();
         dispatch(reduxResetCheckoutData());
     });
     const refetch              = useEvent((): void => {
@@ -1202,14 +1169,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isReadyPage,
         
         isDesktop,
-        
-        
-        
-        // cart data:
-        cartItems,
-        hasCart,
-        totalProductWeight,
-        totalProductPrice,
         
         
         
@@ -1362,14 +1321,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isReadyPage,
         
         isDesktop,
-        
-        
-        
-        // cart data:
-        cartItems,
-        hasCart,
-        totalProductWeight,
-        totalProductPrice,
         
         
         
