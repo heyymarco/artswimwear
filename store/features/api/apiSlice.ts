@@ -13,6 +13,7 @@ import type {
 
 // apis:
 import type { CountryPreview }                  from '@/pages/api/countryList'
+export type { CountryPreview }                  from '@/pages/api/countryList'
 import type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 export type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 
