@@ -135,7 +135,7 @@ const CheckoutInternal = (): JSX.Element|null => {
         
         
         // actions:
-        refetch,
+        refetchCheckout,
     } = useCheckoutState();
     const isCheckoutFinished = (
         (checkoutStep === 'pending')
@@ -200,7 +200,7 @@ const CheckoutInternal = (): JSX.Element|null => {
             
             
             // handlers:
-            onRetry={refetch}
+            onRetry={refetchCheckout}
         />
     );
     return (

@@ -131,7 +131,6 @@ import {
     
     
     // hooks:
-    useGetProductList,
     useGetCountryList,
     useGetMatchingShippingList,
     useGeneratePaymentToken,
@@ -324,7 +323,6 @@ export interface CheckoutStateBase {
     
     
     // relation data:
-    productList               : EntityState<ProductPreview>   | undefined
     countryList               : EntityState<CountryPreview>   | undefined
     shippingList              : EntityState<MatchingShipping> | undefined
     
@@ -356,7 +354,7 @@ export interface CheckoutStateBase {
     doPlaceOrder              : (options?: PlaceOrderOptions) => Promise<string>
     doMakePayment             : (orderId: string, paid: boolean) => Promise<void>
     
-    refetch                   : () => void
+    refetchCheckout           : () => void
 }
 
 export type PickAlways<T, K extends keyof T, V> = {
@@ -522,7 +520,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // relation data:
-    productList               : undefined,
     countryList               : undefined,
     shippingList              : undefined,
     
@@ -554,7 +551,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     doPlaceOrder              : noopCallback as any,
     doMakePayment             : noopCallback as any,
     
-    refetch                   : noopCallback,
+    refetchCheckout           : noopCallback,
 });
 CheckoutStateContext.displayName  = 'CheckoutState';
 
@@ -583,14 +580,27 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // contexts:
     const {
+        // states:
+        isCartLoading,
+        isCartError,
+        
+        
+        
         // cart data:
         cartItems : reduxCartItems,
         totalProductWeight,
         
         
         
+        // relation data:
+        productList,
+        
+        
+        
         // actions:
         clearProductsFromCart,
+        
+        refetchCart,
     } = useCartState();
     const cartItems          = finishedOrderState?.cartItems     ?? reduxCartItems;
     const isCheckoutEmpty    = !cartItems.length;
@@ -682,7 +692,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const                        {data: productList    , isFetching: isProductLoading, isError: isProductError, refetch: productRefetch}  = useGetProductList();
     const                        {data: countryList    , isFetching: isCountryLoading, isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
     const [generatePaymentToken, {data: newPaymentToken, isLoading : isTokenLoading  , isError: isTokenError  }] = useGeneratePaymentToken();
     
@@ -692,10 +701,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
     
-    const isCheckoutLoading              =  !isCheckoutEmpty    && isProductLoading ||  isCountryLoading || !paymentToken || isNeedsRecoverShippingList; // do not report the loading state if the checkout is empty
-    const hasData                        = (!!productList && !!countryList && !!paymentToken);
-    const isCheckoutError                = (!isCheckoutLoading && (isProductError   ||  isCountryError   || (isTokenError && !paymentToken /* do not considered as token_error if still have old_token */))) || !hasData /* considered as error if no data */;
-    const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError  && !isCheckoutEmpty;
+    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isCountryLoading || !paymentToken || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
+    const hasData                        = (!!productList      && !!countryList    && !!paymentToken);
+    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError   || (isTokenError && !paymentToken /* do not considered as token_error if still have old_token */))) || !hasData /* considered as error if no data */;
+    const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
     
     
     
@@ -1197,8 +1206,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         clearProductsFromCart();
         dispatch(reduxResetCheckoutData());
     });
-    const refetch              = useEvent((): void => {
-        productRefetch();
+    const refetchCheckout      = useEvent((): void => {
+        refetchCart();
         countryRefetch();
         generatePaymentToken();
     });
@@ -1326,7 +1335,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // relation data:
-        productList,
         countryList,
         shippingList,
         
@@ -1358,7 +1366,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         doPlaceOrder,              // stable ref
         doMakePayment,             // stable ref
         
-        refetch,                   // stable ref
+        refetchCheckout,           // stable ref
     }), [
         // states:
         checkoutStep,
@@ -1479,7 +1487,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // relation data:
-        productList,
         countryList,
         shippingList,
         
@@ -1511,7 +1518,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // doPlaceOrder,              // stable ref
         // doMakePayment,             // stable ref
         
-        refetch,                      // stable ref
+        refetchCheckout,              // stable ref
     ]);
     
     
