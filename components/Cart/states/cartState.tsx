@@ -107,6 +107,7 @@ export interface CartState {
     
     // cart data:
     cartItems             : CartEntry[]
+    totalProductQuantity  : number
     totalProductWeight    : number|null
     totalProductPrice     : number
     
@@ -143,6 +144,7 @@ const CartStateContext = createContext<CartState>({
     
     // cart data:
     cartItems             : [],
+    totalProductQuantity  : 0,
     totalProductWeight    : null,
     totalProductPrice     : 0,
     
@@ -204,13 +206,18 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // cart data:
-    const {totalProductWeight, totalProductPrice} = useMemo<{totalProductWeight: number|null, totalProductPrice: number}>(() => {
-        let totalProductWeight : number|null = null;
-        let totalProductPrice  : number      = 0;
+    const {totalProductQuantity, totalProductWeight, totalProductPrice} = useMemo<{totalProductQuantity: number, totalProductWeight: number|null, totalProductPrice: number}>(() => {
+        let totalProductQuantity : number      = 0;
+        let totalProductWeight   : number|null = null;
+        let totalProductPrice    : number      = 0;
         for (const {productId, quantity} of cartItems) {
             const product = productList?.entities?.[productId];
             if (!product) continue;
             const {price, shippingWeight} = product;
+            
+            
+            
+            totalProductQuantity += quantity;
             
             
             
@@ -224,6 +231,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             totalProductPrice += (price * quantity);
         } // for
         return {
+            totalProductQuantity,
             totalProductWeight,
             totalProductPrice,
         };
@@ -314,6 +322,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // cart data:
         cartItems,
+        totalProductQuantity,
         totalProductWeight,
         totalProductPrice,
         
@@ -347,6 +356,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // cart data:
         cartItems,
+        totalProductQuantity,
         totalProductWeight,
         totalProductPrice,
         
