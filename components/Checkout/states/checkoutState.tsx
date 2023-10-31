@@ -933,7 +933,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // stable callbacks:
     const setIsBusy            = useEvent((isBusy: BusyState) => {
-        checkoutContext.isBusy = isBusy; /* instant update without waiting for (slow|delayed) re-render */
+        checkoutState.isBusy = isBusy; /* instant update without waiting for (slow|delayed) re-render */
         setIsBusyInternal(isBusy);
     });
     
@@ -1226,7 +1226,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const checkoutContext = useMemo<CheckoutState>(() => ({
+    const checkoutState = useMemo<CheckoutState>(() => ({
         // states:
         checkoutStep,
         checkoutProgress,
@@ -1538,7 +1538,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // jsx:
     return (
-        <CheckoutStateContext.Provider value={checkoutContext}>
+        <CheckoutStateContext.Provider value={checkoutState}>
             <AccessibilityProvider
                 // accessibilities:
                 enabled={!isBusy} // disabled if busy
