@@ -18,10 +18,6 @@ export type CheckoutStep =
     |'payment'
     |'pending'
     |'paid'
-export type BusyState =
-    | false // idle
-    | 'checkShipping'
-    | 'transaction'
 export type PaymentMethod =
     |'card'
     |'paypal'
@@ -33,7 +29,6 @@ export interface PaymentToken {
 export interface CheckoutState {
     // states:
     checkoutStep       : CheckoutStep
-    isBusy             : BusyState
     
     
     
@@ -95,7 +90,6 @@ export interface CheckoutState {
 const initialState : CheckoutState = {
     // states:
     checkoutStep       : 'info',
-    isBusy             : false,
     
     
     
@@ -160,9 +154,6 @@ export const checkoutSlice = createSlice({
         // states:
         setCheckoutStep       : (state, {payload: value}: PayloadAction<CheckoutStep>) => {
             state.checkoutStep = value;
-        },
-        setIsBusy             : (state, {payload: value}: PayloadAction<BusyState>) => {
-            state.isBusy = value;
         },
         
         
@@ -288,7 +279,6 @@ export default checkoutSlice.reducer;
 export const {
     // states:
     setCheckoutStep,
-    setIsBusy,
     
     
     

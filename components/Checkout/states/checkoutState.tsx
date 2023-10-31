@@ -58,7 +58,6 @@ import {
 import {
     // types:
     CheckoutStep,
-    BusyState,
     PaymentMethod,
     PaymentToken,
     CheckoutState         as ReduxCheckoutState,
@@ -67,7 +66,6 @@ import {
     
     // states:
     setCheckoutStep       as reduxSetCheckoutStep,
-    setIsBusy             as reduxSetIsBusy,
     
     // extra data:
     setMarketingOpt       as reduxSetMarketingOpt,
@@ -170,7 +168,6 @@ export type {
     CartEntry,
     
     CheckoutStep,
-    BusyState,
     PaymentMethod,
     PaymentToken,
     
@@ -182,6 +179,11 @@ export type {
     
     MatchingShipping,
 }
+
+export type BusyState =
+    | false // idle
+    | 'checkShipping'
+    | 'transaction'
 
 interface FinishedOrderState {
     cartItems     : CartEntry[]
@@ -578,6 +580,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // states:
+    const [isBusy            , setIsBusyInternal    ] = useState<BusyState>(false);
     const [finishedOrderState, setFinishedOrderState] = useState<FinishedOrderState|undefined>(undefined);
     
     
@@ -617,7 +620,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const {
         // states:
         checkoutStep,
-        isBusy,
         
         
         
@@ -930,6 +932,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // stable callbacks:
+    const setIsBusy            = useEvent((isBusy: BusyState) => {
+        checkoutContext.isBusy = isBusy; /* instant update without waiting for (slow|delayed) re-render */
+        setIsBusyInternal(isBusy);
+    });
+    
     const gotoStepInformation  = useEvent((focusTo?: 'contactInfo'|'shippingAddress'): void => {
         setCheckoutStep('info');
         
@@ -973,7 +980,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             
-            dispatch(reduxSetIsBusy('checkShipping'));
+            setIsBusy('checkShipping');
             try {
                 const shippingList = await getShippingByAddress({
                     city    : shippingCity,
@@ -1018,7 +1025,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 return false; // transaction failed due to fetch_error
             }
             finally {
-                dispatch(reduxSetIsBusy(false));
+                setIsBusy(false);
             } // try
         } // if
         
@@ -1115,12 +1122,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        dispatch(reduxSetIsBusy('transaction'));
+        setIsBusy('transaction');
         try {
             await transaction();
         }
         finally {
-            dispatch(reduxSetIsBusy(false));
+            setIsBusy(false);
         } // try
         
         
@@ -1200,7 +1207,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             checkoutState : {
                 ...checkoutState,
                 checkoutStep : (paid ? 'paid' : 'pending'),
-                isBusy       : false,
             },
             paymentState,
         });
@@ -1220,7 +1226,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const checkoutData = useMemo<CheckoutState>(() => ({
+    const checkoutContext = useMemo<CheckoutState>(() => ({
         // states:
         checkoutStep,
         checkoutProgress,
@@ -1532,7 +1538,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // jsx:
     return (
-        <CheckoutStateContext.Provider value={checkoutData}>
+        <CheckoutStateContext.Provider value={checkoutContext}>
             <AccessibilityProvider
                 // accessibilities:
                 enabled={!isBusy} // disabled if busy
