@@ -129,7 +129,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     // fn props:
     const product          = productList?.entities?.[productId];
     const productUnitPrice = product?.price;
-    const isProductDeleted = isCartReady && !product;
+    const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
     
     
     
@@ -263,7 +263,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                 {isProductDeleted && <>This product was deleted</>}
                 
                 {!isProductDeleted && <span className='currency'>
-                    {formatCurrency(productUnitPrice ? (productUnitPrice * quantity) : undefined)}
+                    {formatCurrency((productUnitPrice !== undefined) ? (productUnitPrice * quantity) : undefined)}
                 </span>}
             </p>
         </ListItem>
