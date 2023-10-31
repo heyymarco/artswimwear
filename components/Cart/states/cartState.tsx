@@ -358,7 +358,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // apis:
-    const cartData = useMemo<CartState>(() => ({
+    const cartState = useMemo<CartState>(() => ({
         // states:
         isCartShown,
         
@@ -432,7 +432,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     // jsx:
     return (
-        <CartStateContext.Provider value={cartData}>
+        <CartStateContext.Provider value={cartState}>
             {children}
         </CartStateContext.Provider>
     );
