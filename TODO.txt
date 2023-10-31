@@ -1,6 +1,4 @@
 auto reset validation on first load (if checkoutStep <= currentStep)
 auto reset validation on checkoutStep change backward
-rename CartState     to CartContext
-rename CheckoutState to CheckoutContext
 
 [high prior] auto convert currentCurrency to USD if the currentCurrency is not supported by PayPal
