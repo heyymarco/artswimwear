@@ -1077,6 +1077,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     
     const doTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
+        // conditions:
+        if (checkoutState.isBusy) return false; // ignore when busy /* instant update without waiting for (slow|delayed) re-render */
+        
+        
+        
         if (paymentMethod !== 'paypal') { // paymentMethod 'card' & paymentMethod 'manual' => requires valid billing fields
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
@@ -1217,6 +1222,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         clearProductsFromCart();
         dispatch(reduxResetCheckoutData());
     });
+    
     const refetchCheckout      = useEvent((): void => {
         refetchCart();
         countryRefetch();
