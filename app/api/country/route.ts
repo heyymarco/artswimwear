@@ -62,7 +62,7 @@ router
     
     
     
-    let allCountryList = await prisma.country.findMany({
+    let allCountries = await prisma.country.findMany({
         select : {
             enabled : true,
             name    : true,
@@ -71,12 +71,12 @@ router
         },
         // enabled: true
     });
-    if (!allCountryList.length) {
+    if (!allCountries.length) {
         const defaultCountries = (await import('@/libs/defaultCountries')).default;
         await prisma.country.createMany({
             data : defaultCountries,
         });
-        allCountryList = defaultCountries.map((country) => ({
+        allCountries = defaultCountries.map((country) => ({
             enabled : country.enabled,
             name    : country.name,
             
@@ -87,7 +87,7 @@ router
     
     
     const countryList : CountryPreview[] = (
-        allCountryList
+        allCountries
         .filter((country) => country.enabled)
         .map((country) => ({
             name : country.name,
