@@ -43,11 +43,11 @@ const router  = createEdgeRouter<NextRequest, RequestContext>();
 const handler = async (req: NextRequest, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
 export {
     handler as GET,
-    handler as POST,
-    handler as PUT,
-    handler as PATCH,
-    handler as DELETE,
-    handler as HEAD,
+    // handler as POST,
+    // handler as PUT,
+    // handler as PATCH,
+    // handler as DELETE,
+    // handler as HEAD,
 }
 
 router
