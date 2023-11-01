@@ -843,6 +843,28 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep]);
     
     // auto renew payment token:
+    const performRefreshPaymentToken = useEvent(async (): Promise<number> => {
+        try {
+            // retry to generate a new token:
+            const newPaymentToken = await generatePaymentToken().unwrap();
+            
+            
+            
+            // replace the expiring one:
+            console.log('update paymentToken: ', newPaymentToken);
+            dispatch(reduxSetPaymentToken(newPaymentToken));
+            
+            
+            
+            // report the next refresh duration:
+            return Math.max(0, newPaymentToken.refreshAt - Date.now());
+        }
+        catch {
+            // report the next retry duration:
+            return (60 * 1000);
+        } // try
+    });
+    
     const paymentTokenRefreshAt = paymentToken?.refreshAt ?? 0;
     useEffect(() => {
         console.log('paymentToken changed: ', paymentTokenRefreshAt);
@@ -850,28 +872,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // setups:
-        const performRefreshPaymentToken = async (): Promise<number> => {
-            try {
-                // retry to generate a new token:
-                const newPaymentToken = await generatePaymentToken().unwrap();
-                
-                
-                
-                // replace the expiring one:
-                console.log('update paymentToken: ', newPaymentToken);
-                dispatch(reduxSetPaymentToken(newPaymentToken));
-                
-                
-                
-                // report the next refresh duration:
-                return Math.max(0, newPaymentToken.refreshAt - Date.now());
-            }
-            catch {
-                // report the next retry duration:
-                return (60 * 1000);
-            } // try
-        };
-        
         let cancelRefresh : ReturnType<typeof setTimeout>|undefined = undefined;
         const scheduleRefreshPaymentToken = async (): Promise<void> => {
             // determine the next refresh duration:
