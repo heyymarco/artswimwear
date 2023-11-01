@@ -123,7 +123,7 @@ export const apiSlice = createApi({
         
         getMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, MatchingAddress>({
             query : (address) => ({
-                url    : 'shippingList',
+                url    : 'shipping',
                 method : 'POST',
                 body   : address,
             }),
