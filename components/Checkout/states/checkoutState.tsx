@@ -842,7 +842,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep]);
     
     // auto renew payment token:
-    const lastPaymentToken = useRef<PaymentToken|undefined|'uninit'>('uninit'); // ensures the payment token not re-refreshed twice (especially in dev mode)
+    const lastPaymentToken = useRef<PaymentToken|undefined|0>(0/* 0 = uninit */); // ensures the payment token not re-refreshed twice (especially in dev mode)
     useEffect(() => {
         // conditions:
         if (lastPaymentToken.current === paymentToken) return; // no change => ignore
