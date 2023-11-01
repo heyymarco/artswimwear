@@ -1,5 +1,13 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { createRouter } from 'next-connect'
+// next-js:
+import {
+    NextRequest,
+    NextResponse,
+}                           from 'next/server'
+
+// next-connect:
+import {
+    createEdgeRouter,
+}                           from 'next-connect'
 
 // models:
 import type {
@@ -42,34 +50,40 @@ export interface ProductDetail
 
 
 
-const router = createRouter<
-    NextApiRequest,
-    NextApiResponse<
-        |ProductDetail|null
-        |Array<ProductPreview>
-        |{ error: string }
-    >
->();
-
-
+// routers:
+interface RequestContext {
+    params: {
+        /* no params yet */
+    }
+}
+const router  = createEdgeRouter<NextRequest, RequestContext>();
+const handler = async (req: NextRequest, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
+export {
+    handler as GET,
+    // handler as POST,
+    // handler as PUT,
+    // handler as PATCH,
+    // handler as DELETE,
+    // handler as HEAD,
+}
 
 router
-.get(async (req, res) => {
-    if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
-        await new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
-    } // if
+.get(async (req) => {
+    /* required for displaying related_products in orders page */
     
     
     
-    if (req.query.path) {
-        return res.json(
+    //#region parsing request
+    const path = req.nextUrl.searchParams.get('path');
+    //#endregion parsing request
+    
+    
+    
+    if (path) {
+        const productDetail : ProductDetail|null = (
             await prisma.product.findUnique({
                 where  : {
-                    path       : req.query.path.toString(),   // find by url path
+                    path       : path, // find by url path
                     visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
                 },
                 select : {
@@ -88,11 +102,19 @@ router
                 },
             })
         );
+        
+        if (!productDetail) {
+            return NextResponse.json({
+                error: `The product with specified path "${path}" is not found.`,
+            }, { status: 404 }); // handled with error
+        } // if
+        
+        return NextResponse.json(productDetail); // handled with success
     } // if
     
     
     
-    return res.json(
+    const productPreviews : ProductPreview[] = (
         (await prisma.product.findMany({
             where  : {
                 visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
@@ -120,16 +142,5 @@ router
             };
         })
     );
-});
-
-
-
-export default router.handler({
-    onError: (err: any, req, res) => {
-        console.error(err.stack);
-        res.status(err.statusCode || 500).end(err.message);
-    },
-    onNoMatch: (req, res) => {
-        res.status(404).json({ error: 'Page is not found' });
-    },
+    return NextResponse.json(productPreviews); // handled with success
 });
