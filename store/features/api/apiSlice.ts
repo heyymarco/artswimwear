@@ -12,8 +12,8 @@ import type {
 }                           from '@prisma/client'
 
 // apis:
-import type { CountryPreview }                  from '@/pages/api/countryList'
-export type { CountryPreview }                  from '@/pages/api/countryList'
+import type { CountryPreview }                  from '@/app/api/country-list/route'
+export type { CountryPreview }                  from '@/app/api/country-list/route'
 import type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 export type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 
@@ -113,7 +113,7 @@ export const apiSlice = createApi({
         
         
         getCountryList          : builder.query<EntityState<CountryPreview>, void>({
-            query : () => 'countryList',
+            query : () => 'country-list',
             transformResponse(response: CountryPreview[]) {
                 return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
             },
