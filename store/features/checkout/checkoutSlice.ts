@@ -25,6 +25,7 @@ export type PaymentMethod =
 export interface PaymentToken {
     paymentToken : string
     expiresAt    : number
+    refreshAt    : number
 }
 export interface CheckoutState {
     // states:

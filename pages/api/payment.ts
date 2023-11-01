@@ -110,9 +110,12 @@ const generatePaymentToken = async (): Promise<PaymentToken> => {
     console.log('created: paymentTokenData');
     // console.log('created: paymentTokenData: ', paymentTokenData);
     if (!paymentTokenData || paymentTokenData.error) throw paymentTokenData?.error_description ?? paymentTokenData?.error ?? Error('Fetch paymentToken failed.');
+    
+    const expiresIn = (paymentTokenData.expires_in ?? 3600) * 1000;
     return {
         paymentToken : paymentTokenData.client_token,
-        expiresAt    : Date.now() + ((paymentTokenData.expires_in ?? 3600) * 1000 * paymentTokenExpiresThreshold),
+        expiresAt    : Date.now() +  expiresIn,
+        refreshAt    : Date.now() + (expiresIn * paymentTokenExpiresThreshold),
     };
 }
 
