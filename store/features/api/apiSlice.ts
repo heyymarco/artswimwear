@@ -113,7 +113,7 @@ export const apiSlice = createApi({
         
         
         getCountryList          : builder.query<EntityState<CountryPreview>, void>({
-            query : () => 'country-list',
+            query : () => 'country',
             transformResponse(response: CountryPreview[]) {
                 return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
             },
