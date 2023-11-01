@@ -645,6 +645,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentToken,
     } = localCheckoutState;
     const checkoutProgress    = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
+    const isPaymentTokenValid = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
     
     const {
         // payment data:
@@ -707,9 +708,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
     
-    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isCountryLoading || !paymentToken || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
-    const hasData                        = (!!productList      && !!countryList    && !!paymentToken);
-    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError   || (isTokenError && !paymentToken /* do not considered as token_error if still have old_token */))) || !hasData /* considered as error if no data */;
+    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */) || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
+    const hasData                        = (!!productList      && !!countryList    && isPaymentTokenValid);
+    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError)) || !hasData /* considered as error if no data */;
     const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
     const isCheckoutFinished             = isCheckoutReady && ((checkoutStep === 'pending') || (checkoutStep === 'paid'));
     
@@ -844,7 +845,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isPaymentTokenInitialized = useRef<boolean>(false);
     useEffect(() => {
         // conditions:
-        if (isTokenLoading) return;
+        if (isTokenLoading) return; // the token renew is still in progress => ignore
         
         
         
