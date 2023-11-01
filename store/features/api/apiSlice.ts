@@ -12,8 +12,8 @@ import type {
 }                           from '@prisma/client'
 
 // apis:
-import type { CountryPreview }                  from '@/app/api/country-list/route'
-export type { CountryPreview }                  from '@/app/api/country-list/route'
+import type { CountryPreview }                  from '@/app/api/country/route'
+export type { CountryPreview }                  from '@/app/api/country/route'
 import type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 export type { ProductPreview, ProductDetail}    from '@/pages/api/product'
 
