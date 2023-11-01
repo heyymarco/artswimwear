@@ -1,15 +1,18 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { createRouter } from 'next-connect'
+// redux:
+import {
+    createEntityAdapter
+}                           from '@reduxjs/toolkit'
 
-import { createEntityAdapter } from '@reduxjs/toolkit'
-import { getMatchingShipping, calculateShippingCost } from '@/libs/shippings'
-import type {
-    PaymentToken,
-    PlaceOrderResponse,
-    MakePaymentResponse,
-} from '@/store/features/api/apiSlice'
-import { trimNumber } from '@/libs/formatters'
-import { customAlphabet } from 'nanoid/async'
+// next-js:
+import {
+    NextRequest,
+    NextResponse,
+}                           from 'next/server'
+
+// next-connect:
+import {
+    createEdgeRouter,
+}                           from 'next-connect'
 
 // models:
 import type {
@@ -28,6 +31,15 @@ import {
     prisma,
 }                           from '@/libs/prisma.server'
 
+// stores:
+import type {
+    // types:
+    PaymentToken,
+    PlaceOrderResponse,
+    MakePaymentResponse,
+}                           from '@/store/features/api/apiSlice'
+
+// configs:
 import {
     COMMERCE_CURRENCY,
     COMMERCE_CURRENCY_FRACTION_UNIT,
@@ -36,15 +48,25 @@ import {
     PAYPAL_CURRENCY,
     PAYPAL_CURRENCY_FRACTION_UNIT,
     PAYPAL_CURRENCY_FRACTION_ROUNDING,
-} from '../../commerce.config'
+} from '@/commerce.config'
+
+// others:
+import {
+    customAlphabet,
+}                           from 'nanoid/async'
+
+// utilities:
+import {
+    trimNumber,
+}                           from '@/libs/formatters'
+import {
+    getMatchingShipping,
+    calculateShippingCost,
+}                           from '@/libs/shippings'
 
 
 
-interface ErrorResponse {
-    error : string
-}
-
-
+// utilities:
 
 const basePaypalURL = {
     development : 'https://api-m.sandbox.paypal.com',
@@ -315,27 +337,50 @@ const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
 
 
 
+// types:
+interface ErrorResponse {
+    error : string
+}
+
+
+
+// routers:
+interface RequestContext {
+    params: {
+        /* no params yet */
+    }
+}
+const router  = createEdgeRouter<NextRequest, RequestContext>();
+const handler = async (req: NextRequest, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
+export {
+    handler as GET,
+    handler as POST,
+    // handler as PUT,
+    handler as PATCH,
+    // handler as DELETE,
+    // handler as HEAD,
+}
+
+router
+
 /**
  * intialize paymentToken
  */
-const responseGeneratePaymentToken = async (
-    req : NextApiRequest,
-    res : NextApiResponse<PaymentToken|ErrorResponse>
-) => {
-    return res.status(200).json( // OK
-        await generatePaymentToken(),
-    );
-}
+.get(async (req) => {
+    const paymentToken : PaymentToken = await generatePaymentToken();
+    return NextResponse.json(paymentToken); // handled with success
+})
 
 /**
  * place the order and calculate the total price (not relying priceList on the client_side)
  */
-const responsePlaceOrder = async (
-    req : NextApiRequest,
-    res : NextApiResponse<PlaceOrderResponse|ErrorResponse>
-) => {
-    const placeOrderData = req.body;
-    if (typeof(placeOrderData) !== 'object') return res.status(400).end(); // bad req
+.post(async (req) => {
+    const placeOrderData = await req.json();
+    if (typeof(placeOrderData) !== 'object') {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
     
     
     
@@ -369,7 +414,9 @@ const responsePlaceOrder = async (
         
         || !shippingProviderId  || (typeof(shippingProviderId) !== 'string') // todo validate shipping provider
     ) {
-        return res.status(400).end(); // bad req
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
     } // if
     //#endregion validate shipping address
     
@@ -380,7 +427,11 @@ const responsePlaceOrder = async (
         // cart item(s):
         items,
     } = placeOrderData;
-    if (!items || !Array.isArray(items) || !items.length) return res.status(400).end(); // bad req
+    if (!items || !Array.isArray(items) || !items.length) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
     
     type RequiredNonNullable<T> = {
         [P in keyof T]: NonNullable<T[P]>
@@ -929,12 +980,16 @@ const responsePlaceOrder = async (
             case 'INVALID_PRODUCT_ID'         :
             case 'INSUFFICIENT_PRODUCT_STOCK' : {
                 console.log('ERROR: ', error);
-                return res.status(400).json({error: error});
+                return NextResponse.json({
+                    error: error,
+                }, { status: 400 }); // handled with error
             } break;
             
             default                           : {
                 console.log('ERROR: ', error);
-                return res.status(500).json({error: 'internal server error'});
+                return NextResponse.json({
+                    error: 'internal server error',
+                }, { status: 500 }); // handled with error
             } break;
         } // switch
     } // try
@@ -942,23 +997,30 @@ const responsePlaceOrder = async (
     
     
     // draftOrder created:
-    return res.status(200).json({
+    const placeOrderResponse : PlaceOrderResponse = {
         orderId: paypalOrderId ?? `#ORDER_${orderId}`,
-    });
-}
+    };
+    return NextResponse.json(placeOrderResponse); // handled with success
+})
 
 /**
  * purchase the previously posted order
  */
-const responseMakePayment = async (
-    req : NextApiRequest,
-    res : NextApiResponse<MakePaymentResponse|ErrorResponse>
-) => {
-    const paymentData = req.body;
+.patch(async (req) => {
+    const paymentData = await req.json();
     console.log('paymentData: ', paymentData);
-    if (typeof(paymentData) !== 'object')  return res.status(400).end(); // bad req
+    if (typeof(paymentData) !== 'object') {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    
     const rawOrderId = paymentData.orderId;
-    if (typeof(rawOrderId) !== 'string')   return res.status(400).end(); // bad req
+    if (typeof(rawOrderId) !== 'string') {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
     
     
     
@@ -966,7 +1028,11 @@ const responseMakePayment = async (
     let paypalOrderId : string|null = null;
     if (rawOrderId.startsWith('#ORDER_')) {
         orderId = rawOrderId.slice(7);
-        if (!orderId.length)               return res.status(400).end(); // bad req
+        if (!orderId.length) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
     }
     else {
         paypalOrderId = rawOrderId;
@@ -1004,7 +1070,9 @@ const responseMakePayment = async (
         || !customerNickName || (typeof(customerNickName) !== 'string')
         || !customerEmail    || (typeof(customerEmail) !== 'string') // TODO: validate email
     ) {
-        return res.status(400).end(); // bad req
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
     } // if
     
     
@@ -1420,11 +1488,15 @@ const responseMakePayment = async (
         switch (error) {
             case 'DRAFT_ORDER_NOT_FOUND' :
             case 'DRAFT_ORDER_EXPIRED'   : {
-                return res.status(400).json({error: error});
+                return NextResponse.json({
+                    error: error,
+                }, { status: 400 }); // handled with error
             } break;
             
             default                      : {
-                return res.status(500).json({error: 'internal server error'});
+                return NextResponse.json({
+                    error: 'internal server error',
+                }, { status: 500 }); // handled with error
             } break;
         } // switch
     } // try
@@ -1433,35 +1505,11 @@ const responseMakePayment = async (
     
     
     // payment approved -or- rejected:
-    return res.status(
-        (paymentResponse as ErrorResponse)?.error
-        ? 402 // payment DECLINED
-        : 200 // payment APPROVED
-    ).json(paymentResponse);
-}
-
-
-
-const router = createRouter<
-    NextApiRequest,
-    NextApiResponse
->();
-
-
-
-router
-.get(responseGeneratePaymentToken)
-.post(responsePlaceOrder)
-.patch(responseMakePayment);
-
-
-
-export default router.handler({
-    onError: (err: any, req, res) => {
-        console.error(err.stack);
-        res.status(err.statusCode || 500).end(err.message);
-    },
-    onNoMatch: (req, res) => {
-        res.status(404).json({ error: 'Page is not found' });
-    },
+    return NextResponse.json(paymentResponse, {
+        status : (
+            (paymentResponse as ErrorResponse)?.error
+            ? 402 // payment DECLINED
+            : 200 // payment APPROVED
+        ),
+    });
 });
