@@ -1,4 +1,3 @@
-auto reset validation on first load (if checkoutStep <= currentStep)
-auto reset validation on checkoutStep change backward
+move checkoutState to local if guess mode
 
 [high prior] auto convert currentCurrency to USD if the currentCurrency is not supported by PayPal
