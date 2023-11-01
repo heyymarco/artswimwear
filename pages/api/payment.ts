@@ -89,7 +89,7 @@ const generateAccessToken = async () => {
 /**
  * Call this function to create your client token (paymentToken).
  */
-const generatePaymentToken = async () => {
+const generatePaymentToken = async (): Promise<PaymentToken> => {
     const accessToken = await generateAccessToken();
     const response    = await fetch(`${paypalURL}/v1/identity/generate-token`, {
         method  : 'POST',
@@ -112,7 +112,7 @@ const generatePaymentToken = async () => {
     if (!paymentTokenData || paymentTokenData.error) throw paymentTokenData?.error_description ?? paymentTokenData?.error ?? Error('Fetch paymentToken failed.');
     return {
         paymentToken : paymentTokenData.client_token,
-        expires      : Date.now() + ((paymentTokenData.expires_in ?? 3600) * 1000 * paymentTokenExpiresThreshold)
+        expiresAt    : Date.now() + ((paymentTokenData.expires_in ?? 3600) * 1000 * paymentTokenExpiresThreshold),
     };
 }
 

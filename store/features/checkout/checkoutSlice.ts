@@ -24,7 +24,7 @@ export type PaymentMethod =
     |'manual'
 export interface PaymentToken {
     paymentToken : string
-    expires      : number
+    expiresAt    : number
 }
 export interface CheckoutState {
     // states:

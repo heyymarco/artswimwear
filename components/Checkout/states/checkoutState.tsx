@@ -876,7 +876,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             cancelRefresh = setTimeout(() => {
                 console.log('renew : generate a new token');
                 generatePaymentToken();
-            }, (newPaymentToken.expires - Date.now()) * 1000);
+            }, (newPaymentToken.expiresAt - Date.now()) * 1000);
         } // if
         
         
