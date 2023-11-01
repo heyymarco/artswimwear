@@ -18,6 +18,7 @@ import {
     useMemo,
     useRef,
     useState,
+    use,
 }                           from 'react'
 
 // redux:
@@ -708,9 +709,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
     
-    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */) || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
+    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */)   || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
     const hasData                        = (!!productList      && !!countryList    && isPaymentTokenValid);
-    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError)) || !hasData /* considered as error if no data */;
+    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError   || (isTokenError   && !isPaymentTokenValid /* silently token error   if still have old_valid_token */))) || !hasData /* considered as error if no data */;
     const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
     const isCheckoutFinished             = isCheckoutReady && ((checkoutStep === 'pending') || (checkoutStep === 'paid'));
     
@@ -842,43 +843,50 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep]);
     
     // auto renew payment token:
-    const isPaymentTokenInitialized = useRef<boolean>(false);
+    const paymentTokenRefreshAt = paymentToken?.refreshAt ?? 0;
     useEffect(() => {
-        // conditions:
-        if (isTokenLoading) return; // the token renew is still in progress => ignore
+        console.log('paymentToken changed: ', paymentTokenRefreshAt);
         
         
         
         // setups:
+        const performRefreshPaymentToken = async (): Promise<number> => {
+            try {
+                // retry to generate a new token:
+                const newPaymentToken = await generatePaymentToken().unwrap();
+                
+                
+                
+                // replace the expiring one:
+                console.log('update paymentToken: ', newPaymentToken);
+                dispatch(reduxSetPaymentToken(newPaymentToken));
+                
+                
+                
+                // report the next refresh duration:
+                return Math.max(0, newPaymentToken.refreshAt - Date.now());
+            }
+            catch {
+                // report the next retry duration:
+                return (60 * 1000);
+            } // try
+        };
+        
         let cancelRefresh : ReturnType<typeof setTimeout>|undefined = undefined;
-        if (!isPaymentTokenInitialized.current) {
-            isPaymentTokenInitialized.current = true;
+        const scheduleRefreshPaymentToken = async (): Promise<void> => {
+            // determine the next refresh duration:
+            const paymentTokenRemainingAge = (paymentTokenRefreshAt - Date.now());
+            const nextRefreshDuration = (
+                (paymentTokenRemainingAge > 0)
+                ? paymentTokenRemainingAge
+                : await performRefreshPaymentToken()
+            );
             
-            // the first time to generate a new token:
-            console.log('initial: generate a new token');
-            generatePaymentToken();
-        }
-        else if (isTokenError) {
-            // retry to generate a new token:
-            console.log('schedule retry : generate a new token');
-            cancelRefresh = setTimeout(() => {
-                console.log('retry : generate a new token');
-                generatePaymentToken();
-            }, 60 * 1000);
-        }
-        else if (newPaymentToken) {
-            // replace the expiring one:
-            dispatch(reduxSetPaymentToken(newPaymentToken));
-            
-            
-            
-            // schedule to generate a new token:
-            console.log('schedule renew : generate a new token');
-            cancelRefresh = setTimeout(() => {
-                console.log('renew : generate a new token');
-                generatePaymentToken();
-            }, (newPaymentToken.expiresAt - Date.now()) * 1000);
-        } // if
+            // schedule to refresh:
+            // console.log(`schedule refresh token in ${nextRefreshDuration/1000} seconds`);
+            cancelRefresh = setTimeout(scheduleRefreshPaymentToken, nextRefreshDuration);
+        };
+        scheduleRefreshPaymentToken();
         
         
         
@@ -886,7 +894,53 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return () => {
             if (cancelRefresh) clearTimeout(cancelRefresh);
         };
-    }, [newPaymentToken, isTokenLoading, isTokenError]);
+    }, [paymentTokenRefreshAt]);
+    
+    // const isPaymentTokenInitialized = useRef<boolean>(false);
+    // useEffect(() => {
+    //     // conditions:
+    //     if (isTokenLoading) return; // the token renew is still in progress => ignore
+    //     
+    //     
+    //     
+    //     // setups:
+    //     let cancelRefresh : ReturnType<typeof setTimeout>|undefined = undefined;
+    //     if (!isPaymentTokenInitialized.current) {
+    //         isPaymentTokenInitialized.current = true;
+    //         
+    //         // the first time to generate a new token:
+    //         console.log('initial: generate a new token');
+    //         generatePaymentToken();
+    //     }
+    //     else if (isTokenError) {
+    //         // retry to generate a new token:
+    //         console.log('schedule retry : generate a new token');
+    //         cancelRefresh = setTimeout(() => {
+    //             console.log('retry : generate a new token');
+    //             generatePaymentToken();
+    //         }, 60 * 1000);
+    //     }
+    //     else if (newPaymentToken) {
+    //         // replace the expiring one:
+    //         dispatch(reduxSetPaymentToken(newPaymentToken));
+    //         
+    //         
+    //         
+    //         // schedule to generate a new token:
+    //         console.log('schedule renew : generate a new token');
+    //         cancelRefresh = setTimeout(() => {
+    //             console.log('renew : generate a new token');
+    //             generatePaymentToken();
+    //         }, (newPaymentToken.expiresAt - Date.now()) * 1000);
+    //     } // if
+    //     
+    //     
+    //     
+    //     // cleanups:
+    //     return () => {
+    //         if (cancelRefresh) clearTimeout(cancelRefresh);
+    //     };
+    // }, [newPaymentToken, isTokenLoading, isTokenError]);
     
     // auto clear finished checkout states in redux:
     useEffect(() => {
@@ -1227,7 +1281,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const refetchCheckout      = useEvent((): void => {
         refetchCart();
         countryRefetch();
-        generatePaymentToken();
     });
     
     
