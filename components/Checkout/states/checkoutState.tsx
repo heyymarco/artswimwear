@@ -879,7 +879,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // determine the next refresh duration:
             const nextRefreshDuration = (
                 !!paymentToken
-                ? (paymentToken.refreshAt - Date.now()) // payment token remaining age
+                ? Math.max(0, paymentToken.refreshAt - Date.now()) // payment token remaining age
                 : await performRefreshPaymentToken()
             );
             
