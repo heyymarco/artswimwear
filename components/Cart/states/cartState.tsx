@@ -114,7 +114,7 @@ export interface CartStateBase {
     
     
     // relation data:
-    productList           : EntityState<ProductPreview>   | undefined
+    productList           : EntityState<ProductPreview> | undefined
     
     
     
