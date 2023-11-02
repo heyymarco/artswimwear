@@ -3,7 +3,7 @@ export const commerceConfig = {
     EMAIL_ORDER_PAID_MESSAGE : <>
         <section>
             <h1>
-                Thank You For Your Order!
+                Thanks For Your Order!
             </h1>
             
             <p>
@@ -12,14 +12,22 @@ export const commerceConfig = {
             
             <p>
                 Thank you for placing an order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
-                We are pleased to confirm that we have received your order:
+                We are pleased to confirm that we have received your order{<> and it is currently being processed</>}.
             </p>
+        </section>
+        
+        <hr />
+        
+        <section>
+            <h2>
+                Order Summary
+            </h2>
             
             <table>
                 <tbody>
                     <tr>
                         <td>
-                            Order number
+                            Order Number
                         </td>
                         <td>
                             :
@@ -30,7 +38,7 @@ export const commerceConfig = {
                     </tr>
                     <tr>
                         <td>
-                            Order date
+                            Order Date
                         </td>
                         <td>
                             :
@@ -41,20 +49,24 @@ export const commerceConfig = {
                     </tr>
                 </tbody>
             </table>
-        </section>
-        
-        <hr />
-        
-        <section>
-            <h2>
-                Order Summary
-            </h2>
             
-            {/* <ViewCart /> */}
+            <hr />
+            
+            {/* <Order.Items /> */}
+            
+            <hr />
+            
+            {/* <Order.Subtotal /> */}
+            
+            <hr />
+            
+            {/* <Order.Total /> */}
+            
+            <hr />
             
             <p>
                 (physical product):
-                Please allow 24 hours to track your order.
+                We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
             </p>
         </section>
         
@@ -62,10 +74,30 @@ export const commerceConfig = {
         
         <section>
             <h2>
-                Customer Information
+                Shipping Info
             </h2>
             
-            {/* <ViewCustomer title={null} /> */}
+            {/* <Shipping.Info /> */}
+        </section>
+        
+        <hr />
+        
+        <section>
+            <h2>
+                Payment Info
+            </h2>
+            
+            {/* <Payment.Info /> */}
+        </section>
+        
+        <hr />
+        
+        <section>
+            <h2>
+                Customer Info
+            </h2>
+            
+            {/* <Customer.Info /> */}
         </section>
         
         <hr />
