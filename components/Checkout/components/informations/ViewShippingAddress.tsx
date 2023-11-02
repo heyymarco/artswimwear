@@ -26,6 +26,11 @@ const ViewShippingAddress = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
+        shippingFirstName,
+        shippingLastName,
+        
+        shippingPhone,
+        
         shippingAddress,
         shippingCity,
         shippingZone,
@@ -43,7 +48,12 @@ const ViewShippingAddress = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            <span className={styleSheet.data}>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}</span>
+            <p>
+                <span className={styleSheet.data}>{shippingFirstName} {shippingLastName} ({shippingPhone})</span>
+            </p>
+            <p>
+                <span className={styleSheet.data}>{`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}</span>
+            </p>
         </>
     );
 };

@@ -26,6 +26,11 @@ const ViewBillingAddress = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
+        shippingFirstName,
+        shippingLastName,
+        
+        shippingPhone,
+        
         shippingAddress,
         shippingCity,
         shippingZone,
@@ -36,6 +41,11 @@ const ViewBillingAddress = (): JSX.Element|null => {
         
         // billing data:
         billingAsShipping,
+        
+        billingFirstName,
+        billingLastName,
+        
+        billingPhone,
         
         billingAddress,
         billingCity,
@@ -49,18 +59,28 @@ const ViewBillingAddress = (): JSX.Element|null => {
         countryList,
     } = useCheckoutState();
     
-    const finalBillingAddress    = billingAsShipping ? shippingAddress : billingAddress;
-    const finalBillingCity       = billingAsShipping ? shippingCity    : billingCity;
-    const finalBillingZone       = billingAsShipping ? shippingZone    : billingZone;
-    const finalBillingZip        = billingAsShipping ? shippingZip     : billingZip;
-    const finalBillingCountry    = billingAsShipping ? shippingCountry : billingCountry;
+    const finalBillingFirstName  = billingAsShipping ? shippingFirstName : billingFirstName;
+    const finalBillingLastName   = billingAsShipping ? shippingLastName  : billingLastName;
+    
+    const finalBillingPhone      = billingAsShipping ? shippingPhone     : billingPhone;
+    
+    const finalBillingAddress    = billingAsShipping ? shippingAddress   : billingAddress;
+    const finalBillingCity       = billingAsShipping ? shippingCity      : billingCity;
+    const finalBillingZone       = billingAsShipping ? shippingZone      : billingZone;
+    const finalBillingZip        = billingAsShipping ? shippingZip       : billingZip;
+    const finalBillingCountry    = billingAsShipping ? shippingCountry   : billingCountry;
     
     
     
     // jsx:
     return (
         <>
-            <span className={styleSheet.data}>{`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}</span>
+            <p>
+                <span className={styleSheet.data}>{finalBillingFirstName} {finalBillingLastName} ({finalBillingPhone})</span>
+            </p>
+            <p>
+                <span className={styleSheet.data}>{`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}</span>
+            </p>
         </>
     );
 };
