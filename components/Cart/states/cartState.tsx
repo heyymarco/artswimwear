@@ -222,10 +222,19 @@ export const useCartState = (): CartState => {
 
 // react components:
 export interface CartStateProps {
+    // mocks:
+    mockCartItems   ?: CartState['cartItems'  ]
+    mockProductList ?: CartState['productList']
 }
 const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // rest props:
     const {
+        // mocks:
+        mockCartItems,
+        mockProductList,
+        
+        
+        
         // children:
         children,
     } = props;
@@ -233,17 +242,22 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stores:
-    const cartItems   = useSelector(selectCartItems);
-    const isCartEmpty = !cartItems.length;
+    const realCartItems = useSelector(selectCartItems);
+    const cartItems     = mockCartItems ?? realCartItems;
+    const isCartEmpty   = !cartItems.length;
     
-    const isCartShown = useSelector(selectIsCartShown);
+    const isCartShown   = useSelector(selectIsCartShown);
     
-    const dispatch    = useDispatch();
+    const dispatch      = useDispatch();
     
     
     
     // apis:
-    const {data: productList, isFetching: isProductLoading, isError: isProductError, refetch: refetchCart} = useGetProductList();
+    const {data: realProductList, isFetching: realIsProductLoading, isError: realIsProductError, refetch: realRefetchCart} = useGetProductList();
+    const productList      = mockProductList        ??        realProductList;
+    const isProductLoading = mockProductList ?    false     : realIsProductLoading;
+    const isProductError   = mockProductList ?    false     : realIsProductError;
+    const refetchCart      = mockProductList ? noopCallback : realRefetchCart;
     
     const isCartLoading =  !isCartEmpty   && (isProductLoading); // do not report the loading state if the cart is empty
     const hasData       = (!!productList);
