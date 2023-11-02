@@ -47,6 +47,11 @@ const ViewOrderFinishedPending = (): JSX.Element|null => {
     
     // states:
     const {
+        // states:
+        isCheckoutFinished,
+        
+        
+        
         // customer data:
         customerEmail,
     } = useCheckoutState();
@@ -92,8 +97,14 @@ const ViewOrderFinishedPending = (): JSX.Element|null => {
                 // classes:
                 className={styleSheet.info}
             >
-                <ViewCustomerInfo />
-                <ViewShippingInfo />
+                <ViewCustomerInfo
+                    // accessibilities:
+                    readOnly={isCheckoutFinished}
+                />
+                <ViewShippingInfo
+                    // accessibilities:
+                    readOnly={isCheckoutFinished}
+                />
                 <ViewPaymentInfo />
             </Section>
         </>

@@ -30,13 +30,15 @@ import {
 // react components:
 export interface ViewCustomerInfoProps {
     // accessibilities:
-    title ?: React.ReactNode
+    title    ?: React.ReactNode
+    readOnly ?: boolean
 }
 const ViewCustomerInfo = (props: ViewCustomerInfoProps): JSX.Element|null => {
     // rest props:
     const {
         // accessibilities:
-        title = 'Customer Info',
+        title    = 'Customer Info',
+        readOnly = false,
     } = props;
     
     
@@ -69,11 +71,11 @@ const ViewCustomerInfo = (props: ViewCustomerInfoProps): JSX.Element|null => {
             
             <tbody>
                 <tr>
-                    <th>Contact</th>
+                    <th>Account</th>
                     <td><ViewCustomerContact /></td>
-                    <td>
+                    {!readOnly && <td>
                         <EditButton onClick={handleGotoContactInfo} />
-                    </td>
+                    </td>}
                 </tr>
             </tbody>
         </table>

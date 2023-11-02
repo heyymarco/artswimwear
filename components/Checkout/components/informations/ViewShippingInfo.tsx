@@ -33,13 +33,15 @@ import {
 // react components:
 export interface ViewShippingInfoProps {
     // accessibilities:
-    title ?: React.ReactNode
+    title    ?: React.ReactNode
+    readOnly ?: boolean
 }
 const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
     // rest props:
     const {
         // accessibilities:
-        title = 'Shipping Info',
+        title    = 'Shipping Info',
+        readOnly = false,
     } = props;
     
     
@@ -83,17 +85,17 @@ const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
                 <tr>
                     <th>Ship To</th>
                     <td><ViewShippingAddress /></td>
-                    <td>
+                    {!readOnly && <td>
                         <EditButton onClick={handleGotoShippingAddress} />
-                    </td>
+                    </td>}
                 </tr>
                 
                 {(checkoutStep !== 'shipping') && <tr>
-                    <th>Method</th>
+                    <th>Ship By</th>
                     <td><ViewShippingMethod /></td>
-                    <td>
+                    {!readOnly && <td>
                         <EditButton onClick={handleGotoShippingProvider} />
-                    </td>
+                    </td>}
                 </tr>}
             </tbody>
         </table>
