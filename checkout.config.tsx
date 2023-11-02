@@ -11,7 +11,7 @@ export const commerceConfig = {
             </p>
             
             <p>
-                Thank you for placing an order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
+                Thank you for placing an order on {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
                 We are pleased to confirm that we have received your order{<> and it is currently being processed</>}.
             </p>
         </section>
