@@ -122,7 +122,6 @@ import {
 import {
     // types:
     CountryPreview,
-    ProductPreview,
     PlaceOrderOptions,
     MakePaymentResponse,
     
@@ -140,11 +139,18 @@ import {
 import {
     // types:
     CartEntry,
+    ProductPreview,
+    CartState,
     
     
     
     // hooks:
     useCartState,
+    
+    
+    
+    // react components:
+    CartStateProvider,
 }                           from '@/components/Cart'
 
 // internals:
@@ -186,7 +192,8 @@ export type BusyState =
     | 'transaction'
 
 interface FinishedOrderState {
-    cartItems     : CartEntry[]
+    cartItems     : CartState['cartItems'  ]
+    productList   : CartState['productList']
     checkoutState : ReduxCheckoutState
     paymentState  : MakePaymentResponse
 }
@@ -594,13 +601,13 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // cart data:
-        cartItems : reduxCartItems,
+        cartItems : globalCartItems,
         totalProductWeight,
         
         
         
         // relation data:
-        productList,
+        productList: globalProductList,
         
         
         
@@ -609,8 +616,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         refetchCart,
     } = useCartState();
-    const cartItems           = finishedOrderState?.cartItems     ?? reduxCartItems;
+    const cartItems           = finishedOrderState?.cartItems     ?? globalCartItems;
     const isCheckoutEmpty     = !cartItems.length;
+    
+    const productList         = finishedOrderState?.productList   ?? globalProductList;
     
     
     
@@ -911,9 +920,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // actions:
         // clear the cart & checkout states in redux:
-        if (reduxCartItems     ) clearProductsFromCart();
+        if (globalCartItems    ) clearProductsFromCart();
         if (globalCheckoutState) dispatch(reduxResetCheckoutData());
-    }, [checkoutStep, reduxCartItems, globalCheckoutState]);
+    }, [checkoutStep, globalCartItems, globalCheckoutState]);
     
     
     
@@ -1224,6 +1233,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // setCheckoutStep(paid ? 'paid' : 'pending'); // not needed this code, already handled by `setFinishedOrderState` below:
         setFinishedOrderState({ // backup the cart & checkout states in redux
             cartItems,
+            productList,
+            
             checkoutState : {
                 ...localCheckoutState,
                 checkoutStep : (paid ? 'paid' : 'pending'),
@@ -1557,13 +1568,24 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // jsx:
+    const ConditionalCartStateProvider = (
+        finishedOrderState
+        ? CartStateProvider
+        : React.Fragment
+    );
     return (
         <CheckoutStateContext.Provider value={checkoutState}>
             <AccessibilityProvider
                 // accessibilities:
                 enabled={!isBusy} // disabled if busy
             >
-                {children}
+                <ConditionalCartStateProvider
+                    // mocks:
+                    mockCartItems   = {cartItems}
+                    mockProductList = {productList}
+                >
+                    {children}
+                </ConditionalCartStateProvider>
             </AccessibilityProvider>
         </CheckoutStateContext.Provider>
     );
