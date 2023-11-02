@@ -877,9 +877,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         let cancelRefresh : ReturnType<typeof setTimeout>|undefined = undefined;
         const scheduleRefreshPaymentToken = async (): Promise<void> => {
             // determine the next refresh duration:
-            const nextRefreshDuration = (
+            const paymentTokenRemainingAge = (
                 !!paymentToken
-                ? Math.max(0, paymentToken.refreshAt - Date.now()) // payment token remaining age
+                ? Math.max(0, paymentToken.refreshAt - Date.now())
+                : 0
+            );
+            const nextRefreshDuration = (
+                (paymentTokenRemainingAge > 0)
+                ? paymentTokenRemainingAge
                 : await performRefreshPaymentToken()
             );
             
