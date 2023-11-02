@@ -50,8 +50,11 @@ import {
     EditRegularCheckout,
 }                           from './components/checkouts/EditRegularCheckout'
 import {
-    ViewCollectedInformation,
-}                           from './components/informations/ViewCollectedInformation'
+    ViewCustomerInfo,
+}                           from './components/informations/ViewCustomerInfo'
+import {
+    ViewShippingInfo,
+}                           from './components/informations/ViewShippingInfo'
 import {
     EditShippingMethod,
 }                           from './components/shippings/EditShippingMethod'
@@ -267,9 +270,10 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styleSheet.orderReview}
+                    className={styleSheet.info}
                 >
-                    <ViewCollectedInformation />
+                    <ViewCustomerInfo />
+                    <ViewShippingInfo />
                 </Section>}
                 
                 
@@ -354,7 +358,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styleSheet.paymentFinish} title='Thank You'
+                    className={styleSheet.paymentFinish} title='Thanks For Your Order!'
                 >
                     <ViewOrderFinishedPending />
                 </Section>}
@@ -366,7 +370,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styleSheet.paymentFinish} title='Thank You'
+                    className={styleSheet.paymentFinish} title='Thanks For Your Order!'
                 >
                     <ViewOrderFinishedPaid />
                 </Section>}

@@ -81,7 +81,7 @@ const ViewOrderFinishedPaid = (): JSX.Element|null => {
                 
                 
                 // classes:
-                className={styleSheet.orderReview}
+                className={styleSheet.info}
             >
                 <ViewCustomer />
             </Section>

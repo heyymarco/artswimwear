@@ -255,107 +255,134 @@ export default () => {
             }),
         }, {specificityWeight: 2}),
         
-        scope('orderReview', {
-            ...descendants('table', {
-                borderCollapse: 'collapse',
-                tableLayout: 'auto',
-                // tableLayout: 'fixed',
-                border: borderVars.border,
-                borderWidth: borders.defaultWidth,
-                width: '100%',
+        scope('info', {
+            ...children('article', {
+                display: 'flex',
+                flexDirection: 'column',
+                gap: spacers.default,
                 
                 
                 
-                ...children(['thead', 'tbody'], {
-                    ...children('tr', {
+                // children:
+                ...children('table', {
+                    borderCollapse: 'collapse',
+                    tableLayout: 'auto',
+                    // tableLayout: 'fixed',
+                    border: borderVars.border,
+                    borderWidth: borders.defaultWidth,
+                    width: '100%',
+                    
+                    
+                    
+                    ...children(['thead', 'tbody'], {
+                        ...children('tr', {
+                            ...ifScreenWidthSmallerThan('sm', {
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                padding: '1rem',
+                            }),
+                            ...rule(':not(:last-child)', {
+                                borderBlockEnd: borderVars.border,
+                                borderBlockEndWidth: borders.defaultWidth,
+                            }),
+                            ...children(['th', 'td'], {
+                                ...ifScreenWidthSmallerThan('sm', {
+                                    padding: '0rem',
+                                }),
+                                padding: '0.75rem',
+                            }),
+                            ...children('th', {
+                                fontWeight: typos.fontWeightSemibold,
+                            }),
+                            ...children('td', {
+                                wordBreak    : 'break-word',
+                                overflowWrap : 'anywhere',
+                            }),
+                        }),
+                    }),
+                    ...children('thead', {
+                        ...children('tr', {
+                            backgroundColor     : backgroundVars.altBackgColor,
+                            borderBlockEnd      : borderVars.border,
+                            borderBlockEndWidth : borders.defaultWidth,
+                            ...children('th', {
+                                textAlign: 'center',
+                            }),
+                        }),
+                    }),
+                    ...children('tbody', {
                         ...ifScreenWidthSmallerThan('sm', {
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: 'center',
-                            padding: '1rem',
                         }),
-                        ...rule(':not(:last-child)', {
-                            borderBlockEnd: borderVars.border,
-                            borderBlockEndWidth: borders.defaultWidth,
-                        }),
-                        ...children(['th', 'td'], {
-                            ...ifScreenWidthSmallerThan('sm', {
-                                padding: '0rem',
-                            }),
-                            padding: '0.75rem',
-                        }),
-                        ...children('th', {
-                            fontWeight: typos.fontWeightSemibold,
-                        }),
-                        ...children('td', {
-                            wordBreak    : 'break-word',
-                            overflowWrap : 'anywhere',
-                        }),
-                    }),
-                }),
-                ...children('thead', {
-                    ...children('tr', {
-                        backgroundColor     : backgroundVars.altBackgColor,
-                        borderBlockEnd      : borderVars.border,
-                        borderBlockEndWidth : borders.defaultWidth,
-                        ...children(['th'], {
-                            textAlign: 'center',
-                        }),
-                    }),
-                }),
-                ...children('tbody', {
-                    ...ifScreenWidthSmallerThan('sm', {
-                        display: 'flex',
-                        flexDirection: 'column',
-                    }),
-                    ...children('tr', {
-                        ...children('th', {
-                            textAlign: 'end',
-                            ...ifScreenWidthSmallerThan('sm', {
-                                textAlign: 'center',
-                            }),
-                        }),
-                        ...children('td', {
-                            textAlign: 'start',
-                            ...ifScreenWidthSmallerThan('sm', {
-                                textAlign: 'center',
-                            }),
-                            ...children('.paymentProvider', {
-                                width         : '42px',
-                                verticalAlign : 'middle',
-                            }),
-                            ...children('.paymentIdentifier', {
-                                // positions:
-                                verticalAlign     : 'middle',
-                                
-                                
-                                
-                                // layouts:
-                                display           : 'inline-block',
-                                
-                                
-                                
-                                // sizes:
-                                boxSizing         : 'content-box',
-                                maxInlineSize     : '25em',
-                                
-                                
-                                
-                                // scrolls:
-                                overflow          : 'hidden',   // hide the rest text if overflowed
-                                whiteSpace        : 'nowrap',   // do not break word on [space]
-                                overflowWrap      : 'normal',   // do not break word for long_word
-                                textOverflow      : 'ellipsis', // put triple_dot after long_word...
-                                
-                                
-                                
-                                // spacings:
-                                marginInlineStart : '0.5em',
-                                
-                                
-                                
+                        ...children('tr', {
+                            // layouts:
+                            display       : 'flex',
+                            flexDirection : 'row',
+                            
+                            
+                            
+                            ...children('td', {
                                 // typos:
-                                fontSize          : typos.fontSizeSm,
+                                textAlign: 'start',
+                                ...ifScreenWidthSmallerThan('sm', {
+                                    textAlign: 'center',
+                                }),
+                                
+                                
+                                
+                                // children:
+                                ...children('.paymentProvider', {
+                                    width         : '42px',
+                                    verticalAlign : 'middle',
+                                }),
+                                ...children('.paymentIdentifier', {
+                                    // positions:
+                                    verticalAlign     : 'middle',
+                                    
+                                    
+                                    
+                                    // layouts:
+                                    display           : 'inline-block',
+                                    
+                                    
+                                    
+                                    // sizes:
+                                    boxSizing         : 'content-box',
+                                    maxInlineSize     : '25em',
+                                    
+                                    
+                                    
+                                    // scrolls:
+                                    overflow          : 'hidden',   // hide the rest text if overflowed
+                                    whiteSpace        : 'nowrap',   // do not break word on [space]
+                                    overflowWrap      : 'normal',   // do not break word for long_word
+                                    textOverflow      : 'ellipsis', // put triple_dot after long_word...
+                                    
+                                    
+                                    
+                                    // spacings:
+                                    marginInlineStart : '0.5em',
+                                    
+                                    
+                                    
+                                    // typos:
+                                    fontSize          : typos.fontSizeSm,
+                                }),
+                            }),
+                            ...children('th', {
+                                boxSizing  : 'content-box',
+                                inlineSize : '4em',
+                                flex       : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
+                            }),
+                            ...children('td:nth-child(2)', {
+                                flex       : [[1, 1, 'auto']], // growable, shrinkable, initial from it's width
+                            }),
+                            ...children('td:nth-child(3)', {
+                                boxSizing  : 'content-box',
+                                inlineSize : 'max-content',
+                                flex       : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
                             }),
                         }),
                     }),

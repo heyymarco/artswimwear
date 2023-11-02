@@ -19,12 +19,6 @@ import {
 import {
     ViewCustomerContact,
 }                           from '../informations/ViewCustomerContact'
-import {
-    ViewShippingAddress,
-}                           from '../informations/ViewShippingAddress'
-import {
-    ViewShippingMethod,
-}                           from '../informations/ViewShippingMethod'
 
 // internals:
 import {
@@ -34,17 +28,23 @@ import {
 
 
 // react components:
-const ViewCollectedInformation = (): JSX.Element|null => {
+export interface ViewCustomerInfoProps {
+    // accessibilities:
+    title ?: React.ReactNode
+}
+const ViewCustomerInfo = (props: ViewCustomerInfoProps): JSX.Element|null => {
+    // rest props:
+    const {
+        // accessibilities:
+        title = 'Customer Info',
+    } = props;
+    
+    
+    
     // states:
     const {
-        // states:
-        checkoutStep,
-        
-        
-        
         // actions:
         gotoStepInformation,
-        gotoStepShipping,
     } = useCheckoutState();
     
     
@@ -53,18 +53,20 @@ const ViewCollectedInformation = (): JSX.Element|null => {
     const handleGotoContactInfo      = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         gotoStepInformation(/* focusTo: */'contactInfo');
     });
-    const handleGotoShippingAddress  = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
-        gotoStepInformation(/* focusTo: */'shippingAddress');
-    });
-    const handleGotoShippingProvider = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
-        gotoStepShipping();
-    });
     
     
     
     // jsx:
     return (
         <table>
+            {!!title && <thead>
+                <tr>
+                    <th colSpan={3}>
+                        {title}
+                    </th>
+                </tr>
+            </thead>}
+            
             <tbody>
                 <tr>
                     <th>Contact</th>
@@ -73,27 +75,11 @@ const ViewCollectedInformation = (): JSX.Element|null => {
                         <EditButton onClick={handleGotoContactInfo} />
                     </td>
                 </tr>
-                
-                <tr>
-                    <th>Ship To</th>
-                    <td><ViewShippingAddress /></td>
-                    <td>
-                        <EditButton onClick={handleGotoShippingAddress} />
-                    </td>
-                </tr>
-                
-                {(checkoutStep !== 'shipping') && <tr>
-                    <th>Method</th>
-                    <td><ViewShippingMethod /></td>
-                    <td>
-                        <EditButton onClick={handleGotoShippingProvider} />
-                    </td>
-                </tr>}
             </tbody>
         </table>
     );
 };
 export {
-    ViewCollectedInformation,
-    ViewCollectedInformation as default,
+    ViewCustomerInfo,
+    ViewCustomerInfo as default,
 };
