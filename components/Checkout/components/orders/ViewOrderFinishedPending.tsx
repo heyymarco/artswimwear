@@ -27,9 +27,6 @@ import {
 import {
     ViewPaymentInfo,
 }                           from '../informations/ViewPaymentInfo'
-import {
-    ViewCustomer,
-}                           from '../informations/ViewCustomer'
 
 // internals:
 import {
@@ -98,7 +95,6 @@ const ViewOrderFinishedPending = (): JSX.Element|null => {
                 <ViewCustomerInfo />
                 <ViewShippingInfo />
                 <ViewPaymentInfo />
-                <ViewCustomer />
             </Section>
         </>
     );
