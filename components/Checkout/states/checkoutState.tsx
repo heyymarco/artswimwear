@@ -570,7 +570,7 @@ export const useCheckoutState = (): CheckoutState => {
 // react components:
 export interface CheckoutStateProps {
 }
-const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps>) => {
+const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps>): JSX.Element|null => {
     // rest props:
     const {
         // children:
