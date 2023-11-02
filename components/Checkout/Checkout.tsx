@@ -62,11 +62,8 @@ import {
     EditPaymentAndBillingAddress,
 }                           from './components/payments/EditPaymentAndBillingAddress'
 import {
-    ViewOrderFinishedPending,
-}                           from './components/orders/ViewOrderFinishedPending'
-import {
-    ViewOrderFinishedPaid,
-}                           from './components/orders/ViewOrderFinishedPaid'
+    ViewOrderFinished,
+}                           from './components/orders/ViewOrderFinished'
 
 // contexts:
 import {
@@ -334,7 +331,12 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styleSheet.shippingMethod} title='Shipping Method'
+                    className={styleSheet.shippingMethod}
+                    
+                    
+                    
+                    // accessibilities:
+                    title='Shipping Method'
                 >
                     <EditShippingMethod />
                 </Section>}
@@ -346,33 +348,34 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={styleSheet.payment} title='Payment'
+                    className={styleSheet.payment}
+                    
+                    
+                    
+                    // accessibilities:
+                    title='Payment'
                 >
                     <EditPaymentAndBillingAddress />
                 </Section>}
                 
-                {(checkoutStep === 'pending' ) && <Section
+                {((checkoutStep === 'pending') || (checkoutStep === 'paid')) && <Section
                     // refs:
                     elmRef={currentStepSectionRef}
                     
                     
                     
                     // classes:
-                    className={styleSheet.paymentFinish} title='Thanks For Your Order!'
+                    className={styleSheet.paymentFinish}
+                    
+                    
+                    
+                    // accessibilities:
+                    title='Thanks For Your Order!'
                 >
-                    <ViewOrderFinishedPending />
-                </Section>}
-                
-                {(checkoutStep === 'paid'    ) && <Section
-                    // refs:
-                    elmRef={currentStepSectionRef}
-                    
-                    
-                    
-                    // classes:
-                    className={styleSheet.paymentFinish} title='Thanks For Your Order!'
-                >
-                    <ViewOrderFinishedPaid />
+                    <ViewOrderFinished
+                        // data:
+                        paid={(checkoutStep === 'paid')}
+                    />
                 </Section>}
             </div>
             

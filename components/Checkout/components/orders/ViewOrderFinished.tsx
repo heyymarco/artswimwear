@@ -39,9 +39,21 @@ import {
 
 
 // react components:
-const ViewOrderFinishedPaid = (): JSX.Element|null => {
+export interface ViewOrderFinishedProps {
+    // data:
+    paid   : boolean
+}
+const ViewOrderFinished = (props: ViewOrderFinishedProps): JSX.Element|null => {
     // styles:
     const styleSheet = useCheckoutStyleSheet();
+    
+    
+    
+    // rest props:
+    const {
+        // data:
+        paid,
+    } = props;
     
     
     
@@ -62,6 +74,15 @@ const ViewOrderFinishedPaid = (): JSX.Element|null => {
     return (
         <>
             <Section>
+                <p>
+                    Dear {/* <Customer.Name /> */},
+                </p>
+                
+                <p>
+                    Thank you for placing an order on {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
+                    We are pleased to confirm that we have received your order{paid && <> and it is <strong>currently being processed</strong></>}{!paid && <> and are <strong>waiting for your payment</strong> so that your order can be processed further</>}.
+                </p>
+                
                 <Alert
                     // variants:
                     theme='success'
@@ -76,11 +97,17 @@ const ViewOrderFinishedPaid = (): JSX.Element|null => {
                     // components:
                     controlComponent={<React.Fragment />}
                 >
-                    <p className='h5'>
-                        Your order has been confirmed and we have received your payment.
-                    </p>
                     <p>
-                        You&apos;ll receive a confirmation email with your order number shortly to: <strong className={styleSheet.data}>{customerEmail}</strong>.
+                        {paid && <>
+                            We have sent an order confirmation to your email:
+                            <br />
+                            <strong className={styleSheet.data}>{customerEmail}</strong>
+                        </>}
+                        {!paid && <>
+                            Please <strong>follow the payment instructions</strong> sent to your email: <strong className={styleSheet.data}>{customerEmail}</strong>.
+                        </>}
+                        <br />
+                        If the email has not been received, please wait a few more moments.
                     </p>
                 </Alert>
             </Section>
@@ -98,16 +125,18 @@ const ViewOrderFinishedPaid = (): JSX.Element|null => {
                     // accessibilities:
                     readOnly={isCheckoutFinished}
                 />
+                
                 <ViewShippingInfo
                     // accessibilities:
                     readOnly={isCheckoutFinished}
                 />
+                
                 <ViewPaymentInfo />
             </Section>
         </>
     );
 };
 export {
-    ViewOrderFinishedPaid,
-    ViewOrderFinishedPaid as default,
+    ViewOrderFinished,
+    ViewOrderFinished as default,
 };
