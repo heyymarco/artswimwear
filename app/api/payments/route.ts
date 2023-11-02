@@ -1077,9 +1077,9 @@ router
     
     
     
-    let paymentResponse : MakePaymentResponse|ErrorResponse|null = null;
+    let paymentResponse : MakePaymentResponse|ErrorResponse;
     try {
-        await prisma.$transaction(async (prismaTransaction) => {
+        paymentResponse = await prisma.$transaction(async (prismaTransaction): Promise<MakePaymentResponse|ErrorResponse> => {
             //#region verify draftOrder_id
             const requiredSelect = {
                 id                     : true,
@@ -1139,6 +1139,7 @@ router
             
             
             //#region process the payment
+            let paymentResponse : MakePaymentResponse|ErrorResponse;
             if (paypalOrderId) {
                 const accessToken = await generateAccessToken();
                 const url = `${paypalURL}/v2/checkout/orders/${paypalOrderId}/capture`;
@@ -1435,7 +1436,7 @@ router
             
             
             //#region save the database
-            const paymentMethod = (paymentResponse as MakePaymentResponse)?.paymentMethod;
+            const paymentMethod = !('error' in paymentResponse) ? paymentResponse.paymentMethod : undefined;
             if (paymentMethod) {
                 // payment APPROVED => move the `draftOrder` to `order`:
                 await commitOrder(prismaTransaction, {
@@ -1466,6 +1467,11 @@ router
                 await revertOrder(prismaTransaction, { draftOrder });
             } // if
             //#endregion save the database
+            
+            
+            
+            // report the payment result:
+            return paymentResponse;
         });
     }
     catch (error: any) {
@@ -1500,14 +1506,13 @@ router
             } break;
         } // switch
     } // try
-    if (!paymentResponse) throw Error('unkown error');
     
     
     
     // payment approved -or- rejected:
     return NextResponse.json(paymentResponse, {
         status : (
-            (paymentResponse as ErrorResponse)?.error
+            ('error' in paymentResponse)
             ? 402 // payment DECLINED
             : 200 // payment APPROVED
         ),
