@@ -12,10 +12,10 @@ import type {
 }                           from '@prisma/client'
 
 // apis:
-import type { CountryPreview }                  from '@/app/api/country/route'
-export type { CountryPreview }                  from '@/app/api/country/route'
-import type { ProductPreview, ProductDetail}    from '@/app/api/product/route'
-export type { ProductPreview, ProductDetail}    from '@/app/api/product/route'
+import type { CountryPreview }                  from '@/app/api/countries/route'
+export type { CountryPreview }                  from '@/app/api/countries/route'
+import type { ProductPreview, ProductDetail}    from '@/app/api/products/route'
+export type { ProductPreview, ProductDetail}    from '@/app/api/products/route'
 
 
 
@@ -101,19 +101,19 @@ export const apiSlice = createApi({
     }),
     endpoints : (builder) => ({
         getProductList          : builder.query<EntityState<ProductPreview>, void>({
-            query : () => 'product',
+            query : () => 'products',
             transformResponse(response: ProductPreview[]) {
                 return productListAdapter.addMany(productListAdapter.getInitialState(), response);
             },
         }),
         getProductDetail        : builder.query<ProductDetail, string>({
-            query : (productPath: string) => `product?path=${productPath}`,
+            query : (productPath: string) => `products?path=${productPath}`,
         }),
         
         
         
         getCountryList          : builder.query<EntityState<CountryPreview>, void>({
-            query : () => 'country',
+            query : () => 'countries',
             transformResponse(response: CountryPreview[]) {
                 return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
             },
@@ -123,7 +123,7 @@ export const apiSlice = createApi({
         
         getMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, MatchingAddress>({
             query : (address) => ({
-                url    : 'shipping',
+                url    : 'shippings',
                 method : 'POST',
                 body   : address,
             }),
@@ -136,20 +136,20 @@ export const apiSlice = createApi({
         
         generatePaymentToken    : builder.mutation<PaymentToken, void>({
             query : () => ({
-                url    : 'payment',
+                url    : 'payments',
                 method : 'GET',
             }),
         }),
         placeOrder              : builder.mutation<PlaceOrderResponse, PlaceOrderData>({
             query : (orderData) => ({
-                url    : 'payment',
+                url    : 'payments',
                 method : 'POST',
                 body   : orderData,
             }),
         }),
         makePayment             : builder.mutation<MakePaymentResponse, AuthenticationPaymentData>({
             query : (paymentData) => ({
-                url    : 'payment',
+                url    : 'payments',
                 method : 'PATCH',
                 body   : paymentData,
             }),
