@@ -1482,6 +1482,11 @@ router
             
             
             
+            //#region send email confirmation
+            //#endregion send email confirmation
+            
+            
+            
             // report the payment result:
             return paymentResponse;
         });
