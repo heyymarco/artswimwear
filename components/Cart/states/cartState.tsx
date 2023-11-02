@@ -83,6 +83,7 @@ import {
 // types:
 export type {
     CartEntry,
+    ProductPreview,
 }
 
 
