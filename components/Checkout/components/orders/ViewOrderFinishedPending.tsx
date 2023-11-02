@@ -19,6 +19,15 @@ import {
 
 // internal components:
 import {
+    ViewCustomerInfo,
+}                           from '../informations/ViewCustomerInfo'
+import {
+    ViewShippingInfo,
+}                           from '../informations/ViewShippingInfo'
+import {
+    ViewPaymentInfo,
+}                           from '../informations/ViewPaymentInfo'
+import {
     ViewCustomer,
 }                           from '../informations/ViewCustomer'
 
@@ -86,6 +95,9 @@ const ViewOrderFinishedPending = (): JSX.Element|null => {
                 // classes:
                 className={styleSheet.info}
             >
+                <ViewCustomerInfo />
+                <ViewShippingInfo />
+                <ViewPaymentInfo />
                 <ViewCustomer />
             </Section>
         </>
