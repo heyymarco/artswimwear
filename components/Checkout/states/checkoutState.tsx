@@ -1568,10 +1568,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // jsx:
-    const ConditionalCartStateProvider = (
+    const conditionalChildren = (
         finishedOrderState
-        ? CartStateProvider
-        : React.Fragment
+        ? <CartStateProvider
+            // mocks
+            mockCartItems   = {cartItems}
+            mockProductList = {productList}
+        >
+            {children}
+        </CartStateProvider>
+        : children
     );
     return (
         <CheckoutStateContext.Provider value={checkoutState}>
@@ -1579,13 +1585,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 // accessibilities:
                 enabled={!isBusy} // disabled if busy
             >
-                <ConditionalCartStateProvider
-                    // mocks:
-                    mockCartItems   = {cartItems}
-                    mockProductList = {productList}
-                >
-                    {children}
-                </ConditionalCartStateProvider>
+                {conditionalChildren}
             </AccessibilityProvider>
         </CheckoutStateContext.Provider>
     );
