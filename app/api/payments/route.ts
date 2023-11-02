@@ -469,10 +469,10 @@ router
     
     
     
-    let orderId       : string|null = null;
-    let paypalOrderId : string|null = null;
+    let orderId       : string;
+    let paypalOrderId : string|null;
     try {
-        await prisma.$transaction(async (prismaTransaction) => {
+        ({orderId, paypalOrderId} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string, paypalOrderId: string|null }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 prismaTransaction.shippingProvider.findUnique({
@@ -523,7 +523,7 @@ router
             
             
             //#region re-generate a unique orderId
-            orderId = await (async (): Promise<string> => {
+            const orderId = await (async (): Promise<string> => {
                 if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) {
                     return tempOrderId;
                 }
@@ -668,6 +668,7 @@ router
             
             
             //#region fetch paypal API
+            let paypalOrderId : string|null;
             if (usePaypal) {
                 const accessToken = await generateAccessToken();
                 const url = `${paypalURL}/v2/checkout/orders`;
@@ -903,6 +904,9 @@ router
                     throw Error('unexpected API response');
                 } // if
                 paypalOrderId = paypalOrderData?.id;
+            }
+            else {
+                paypalOrderId = null;
             } // if
             //#endregion fetch paypal API
             
@@ -956,7 +960,15 @@ router
                 },
             });
             //#endregion create a newDraftOrder
-        });
+            
+            
+            
+            // report the createOrder result:
+            return {
+                orderId,
+                paypalOrderId,
+            };
+        }));
     }
     catch (error: any) {
         /*
