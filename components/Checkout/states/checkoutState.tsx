@@ -661,7 +661,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         type       : paymentType,
         brand      : paymentBrand,
         identifier : paymentIdentifier,
-    } = finishedOrderState?.paymentState?.paymentMethod ?? {};
+    } = finishedOrderState?.paymentState?.payment ?? {};
     
     const dispatch            = useDispatch();
     const setCheckoutStep     = useEvent((checkoutStep: CheckoutStep): void => {

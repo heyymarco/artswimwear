@@ -20,8 +20,7 @@ import type {
     
     Customer,
     
-    Address,
-    PaymentMethod,
+    Payment,
     DraftOrder,
     DraftOrdersOnProducts,
 }                           from '@prisma/client'
@@ -253,16 +252,16 @@ type CommitDraftOrder = Omit<DraftOrder,
         |'draftOrderId'
     >[]
 }
-const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customer, billingAddress, paymentMethod } : { draftOrder: CommitDraftOrder, customer: CommitCustomer, billingAddress: Address|null, paymentMethod: PaymentMethod }) => {
+const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customer, payment } : { draftOrder: CommitDraftOrder, customer: CommitCustomer, payment: Payment }) => {
     await prismaTransaction.order.create({
         data   : {
-            orderId              : draftOrder.orderId,
+            orderId          : draftOrder.orderId,
             
-            items                : {
+            items            : {
                 create           : draftOrder.items,
             },
             
-            customer             : {
+            customer         : {
                 create           : {
                     marketingOpt : customer.marketingOpt,
                     
@@ -271,16 +270,15 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
                 },
             },
             
-            shippingAddress      : draftOrder.shippingAddress,
-            shippingCost         : draftOrder.shippingCost,
-            shippingProvider     : !draftOrder.shippingProviderId ? undefined : {
+            shippingAddress  : draftOrder.shippingAddress,
+            shippingCost     : draftOrder.shippingCost,
+            shippingProvider : !draftOrder.shippingProviderId ? undefined : {
                 connect          : {
                     id           : draftOrder.shippingProviderId,
                 },
             },
             
-            billingAddress       : billingAddress,
-            paymentMethod        : paymentMethod,
+            payment          : payment,
         },
         select : {
             id : true,
@@ -1379,7 +1377,7 @@ router
                 switch (captureData?.status) {
                     case 'COMPLETED' : {
                         paymentResponse = { // payment APPROVED
-                            paymentMethod : await (async (): Promise<PaymentMethod> => {
+                            payment : await (async (): Promise<Omit<Payment, 'billingAddress'>> => {
                                 const payment_source = paypalPaymentData?.payment_source;
                                 
                                 const card = payment_source?.card;
@@ -1433,7 +1431,7 @@ router
             }
             else {
                 paymentResponse = { // paylater APPROVED (we waiting for your payment confirmation within xx days)
-                    paymentMethod : {
+                    payment : {
                         type       : 'MANUAL',
                         brand      : null,
                         identifier : null,
@@ -1448,30 +1446,32 @@ router
             
             
             //#region save the database
-            const paymentMethod = !('error' in paymentResponse) ? paymentResponse.paymentMethod : undefined;
-            if (paymentMethod) {
+            const paymentPartial = !('error' in paymentResponse) ? paymentResponse.payment : undefined;
+            if (paymentPartial) {
                 // payment APPROVED => move the `draftOrder` to `order`:
                 await commitOrder(prismaTransaction, {
-                    draftOrder       : draftOrder,
-                    customer         : {
-                        marketingOpt : marketingOpt,
+                    draftOrder         : draftOrder,
+                    customer           : {
+                        marketingOpt   : marketingOpt,
                         
-                        nickName     : customerNickName,
-                        email        : customerEmail,
+                        nickName       : customerNickName,
+                        email          : customerEmail,
                     },
-                    billingAddress   : {
-                        firstName    : billingFirstName,
-                        lastName     : billingLastName,
-                        
-                        phone        : billingPhone,
-                        
-                        address      : billingAddress,
-                        city         : billingCity,
-                        zone         : billingZone,
-                        zip          : billingZip,
-                        country      : billingCountry,
+                    payment            : {
+                        ...paymentPartial,
+                        billingAddress : {
+                            firstName  : billingFirstName,
+                            lastName   : billingLastName,
+                            
+                            phone      : billingPhone,
+                            
+                            address    : billingAddress,
+                            city       : billingCity,
+                            zone       : billingZone,
+                            zip        : billingZip,
+                            country    : billingCountry,
+                        },
                     },
-                    paymentMethod    : paymentMethod,
                 });
             }
             else {

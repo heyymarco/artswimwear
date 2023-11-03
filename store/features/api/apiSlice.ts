@@ -8,7 +8,7 @@ import type { MatchingShipping, MatchingAddress }   from '@/libs/shippings'
 
 // models:
 import type {
-    PaymentMethod,
+    Payment,
 }                           from '@prisma/client'
 
 // apis:
@@ -89,7 +89,7 @@ export interface AuthenticationPaymentData
 }
 export interface MakePaymentResponse
 {
-    paymentMethod : PaymentMethod
+    payment : Omit<Payment, 'billingAddress'>
 }
 
 

@@ -155,7 +155,7 @@ enum PaymentType {
     MANUAL
     MANUAL_PAID
 }
-type PaymentMethod {
+type Payment {
     // data:
     type                    PaymentType
     brand                   String?
@@ -163,6 +163,8 @@ type PaymentMethod {
     
     amount                  Float                   // min: 0
     fee                     Float                   // min: 0
+    
+    billingAddress          Address?
 }
 model Order {
     // records:
@@ -176,8 +178,7 @@ model Order {
     shippingAddress         Address?
     shippingCost            Float?                  // min: 0
     
-    billingAddress          Address?
-    paymentMethod           PaymentMethod
+    payment                 Payment
     
     // relations:
     items                   OrdersOnProducts[]      // some Product(s) may have some related Order(s)  // many to many
