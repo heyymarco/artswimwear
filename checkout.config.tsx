@@ -7,6 +7,10 @@ import {
     // react components:
     Shipping,
 }                           from '@/components/Checkout/templates/Shipping'
+import {
+    // react components:
+    Payment,
+}                           from '@/components/Checkout/templates/Payment'
 
 
 
@@ -99,7 +103,7 @@ export const commerceConfig = {
                 Payment Info
             </h2>
             
-            {/* <Payment.Info /> */}
+            <Payment.Info />
         </section>
         
         <hr />
