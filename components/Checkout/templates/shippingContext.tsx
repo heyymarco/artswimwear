@@ -17,7 +17,6 @@ import type {
 // models:
 import type {
     Address,
-    // ShippingProvider,
     Order,
 }                           from '@prisma/client'
 
