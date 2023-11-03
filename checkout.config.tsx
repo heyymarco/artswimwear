@@ -3,6 +3,10 @@ import {
     // react components:
     Customer,
 }                           from '@/components/Checkout/templates/Customer'
+import {
+    // react components:
+    Shipping,
+}                           from '@/components/Checkout/templates/Shipping'
 
 
 
@@ -85,7 +89,7 @@ export const commerceConfig = {
                 Shipping Info
             </h2>
             
-            {/* <Shipping.Info /> */}
+            <Shipping.Info />
         </section>
         
         <hr />
