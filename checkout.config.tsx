@@ -1,3 +1,11 @@
+// templates:
+import {
+    // react components:
+    Customer,
+}                           from '@/components/Checkout/templates/Customer'
+
+
+
 export const commerceConfig = {
     EMAIL_ORDER_PAID_SUBJECT : `Your Order at ${process.env.BUSINESS_NAME || process.env.WEBSITE_URL}`,
     EMAIL_ORDER_PAID_MESSAGE : <>
@@ -7,7 +15,7 @@ export const commerceConfig = {
             </h1>
             
             <p>
-                Dear {/* <Customer.Name /> */},
+                Dear <Customer.Name />,
             </p>
             
             <p>
@@ -97,7 +105,7 @@ export const commerceConfig = {
                 Customer Info
             </h2>
             
-            {/* <Customer.Info /> */}
+            <Customer.Info />
         </section>
         
         <hr />
