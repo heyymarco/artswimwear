@@ -72,7 +72,7 @@ export const commerceConfig = {
             
             <hr />
             
-            {/* <Order.Items /> */}
+            <Order.Items />
             
             <hr />
             

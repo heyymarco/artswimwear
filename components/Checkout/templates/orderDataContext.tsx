@@ -22,6 +22,7 @@ import type {
 import type {
     // types:
     CountryPreview,
+    ProductPreview,
 }                           from '@/store/features/api/apiSlice'
 
 // internals:
@@ -51,6 +52,7 @@ export interface OrderDataApi {
     
     // relation data:
     countryList        : EntityState<CountryPreview>|undefined
+    productList        : EntityState<ProductPreview>|undefined
 }
 const OrderDataContext = createContext<OrderDataApi>({
     order              : undefined as any,
@@ -64,6 +66,7 @@ const OrderDataContext = createContext<OrderDataApi>({
     
     // relation data:
     countryList        : undefined,
+    productList        : undefined,
 });
 
 
@@ -89,6 +92,7 @@ export interface OrderDataContextProviderProps {
     
     // relation data:
     countryList        : EntityState<CountryPreview>|undefined
+    productList        : EntityState<ProductPreview>|undefined
 }
 export const OrderDataContextProvider = (props: React.PropsWithChildren<OrderDataContextProviderProps>): JSX.Element|null => {
     // jsx:

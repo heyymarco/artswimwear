@@ -95,10 +95,51 @@ const OrderTotal = (): React.ReactNode => {
         </>
     );
 };
+const OrderItems = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        items,
+        productList,
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    return (
+        <ul style={{
+            listStyleType : 'none',
+            margin        : 'unset',
+            padding       : 'unset',
+        }}>
+            {items.map(({productId, price, quantity}, itemIndex) => {
+                // fn props:
+                const product          = productList?.entities?.[productId ?? ''];
+                const productUnitPrice = product?.price;
+                
+                
+                
+                // jsx:
+                return (
+                    <li
+                        // identifiers:
+                        key={productId || itemIndex}
+                    >
+                        <h6>{product?.name}</h6>
+                        <p>@ {formatCurrency(productUnitPrice)}</p>
+                        <p>qty: x{quantity}</p>
+                        <p>{formatCurrency((productUnitPrice !== undefined) ? (productUnitPrice * quantity) : undefined)}</p>
+                    </li>
+                );
+            })}
+        </ul>
+    );
+};
 
 export const Order = {
     Id        : OrderId,
     CreatedAt : OrderCreatedAt,
     Subtotal  : OrderSubtotal,
     Total     : OrderTotal,
+    Items     : OrderItems,
 };
