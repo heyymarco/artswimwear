@@ -18,7 +18,7 @@ import {
 
 
 
-export const commerceConfig = {
+export const checkoutConfig = {
     EMAIL_ORDER_PAID_SUBJECT : `Your Order at ${process.env.BUSINESS_NAME || process.env.WEBSITE_URL}`,
     EMAIL_ORDER_PAID_MESSAGE : <>
         <section>
