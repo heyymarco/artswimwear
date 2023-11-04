@@ -23,6 +23,10 @@ import {
     // react components:
     IfNotPaid,
 }                           from '@/components/Checkout/templates/IfNotPaid'
+import {
+    // react components:
+    IfPhysicalProduct,
+}                           from '@/components/Checkout/templates/IfPhysicalProduct'
 
 
 
@@ -107,10 +111,11 @@ export const checkoutConfig = {
             
             <hr />
             
-            <p>
-                (physical product):
-                We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
-            </p>
+            <IfPhysicalProduct>
+                <p>
+                    We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
+                </p>
+            </IfPhysicalProduct>
         </section>
         
         <hr />
