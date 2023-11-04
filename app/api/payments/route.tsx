@@ -1590,6 +1590,7 @@ router
                                     // relation data:
                                     countryList={countryList}
                                 >
+                                    {checkoutConfig.EMAIL_CHECKOUT_MESSAGE}
                                 </OrderDataContextProvider>
                             ),
                         });
@@ -1598,7 +1599,8 @@ router
                         transporter.close();
                     } // try
                 }
-                catch {
+                catch (error: any) {
+                    console.log('ERROR: ', error);
                     // ignore send email error
                 } // try
             } // if
