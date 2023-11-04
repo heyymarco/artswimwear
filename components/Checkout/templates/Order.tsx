@@ -10,6 +10,22 @@ import {
     useOrderDataContext,
 }                           from './orderDataContext'
 
+// utilities:
+import {
+    formatCurrency,
+}                           from '@/libs/formatters'
+
+
+
+// utilities:
+const getTotalProductPrice = (items: ReturnType<typeof useOrderDataContext>['items']): number => {
+    let totalProductPrice = 0;
+    for (const {price, quantity} of items) {
+        totalProductPrice += (price * quantity);
+    } // for
+    return totalProductPrice;
+};
+
 
 
 // react components:
@@ -42,19 +58,47 @@ const OrderCreatedAt = (): React.ReactNode => {
     // jsx:
     return createdAt.toISOString();
 };
-// const OrderSubtotal = (): React.ReactNode => {
-//     // jsx:
-//     return (
-//         <>
-//             Subtotal <span className='currency'>
-//                 {formatCurrency(totalProductPrice)}
-//             </span>
-//         </>
-//     );
-// };
+const OrderSubtotal = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        items,
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            Subtotal <span className='currency'>
+                {formatCurrency(getTotalProductPrice(items))}
+            </span>
+        </>
+    );
+};
+const OrderTotal = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        items,
+        shippingCost,
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            Subtotal <span className='currency'>
+                {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
+            </span>
+        </>
+    );
+};
 
 export const Order = {
     Id        : OrderId,
     CreatedAt : OrderCreatedAt,
-    // Subtotal  : OrderSubtotal,
+    Subtotal  : OrderSubtotal,
+    Total     : OrderTotal,
 };

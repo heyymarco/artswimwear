@@ -76,11 +76,11 @@ export const commerceConfig = {
             
             <hr />
             
-            {/* <Order.Subtotal /> */}
+            <Order.Subtotal />
             
             <hr />
             
-            {/* <Order.Total /> */}
+            <Order.Total />
             
             <hr />
             

@@ -14,6 +14,7 @@ import type {
     ShippingProvider,
     Customer,
     Address,
+    OrdersOnProducts,
     Order,
 }                           from '@prisma/client'
 
@@ -41,8 +42,10 @@ export interface OrderDataApi {
     // data:
     order              : Order
     shippingAddress    : Address|null
+    shippingCost       : number|null
     customer           : Customer|null
     shippingProvider   : ShippingProvider|null
+    items              : Pick<OrdersOnProducts, 'price'|'quantity'|'productId'>[]
     
     
     
@@ -52,8 +55,10 @@ export interface OrderDataApi {
 const OrderDataContext = createContext<OrderDataApi>({
     order              : undefined as any,
     shippingAddress    : null,
+    shippingCost       : null,
     customer           : null,
     shippingProvider   : null,
+    items              : [],
     
     
     
@@ -75,8 +80,10 @@ export interface OrderDataContextProviderProps {
     // data:
     order              : Order
     shippingAddress    : Address|null
+    shippingCost       : number|null
     customer           : Customer|null
     shippingProvider   : ShippingProvider|null
+    items              : Pick<OrdersOnProducts, 'price'|'shippingWeight'|'quantity'|'productId'>[]
     
     
     
