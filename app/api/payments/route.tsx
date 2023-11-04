@@ -3,6 +3,11 @@ import {
     createEntityAdapter
 }                           from '@reduxjs/toolkit'
 
+// redux:
+import type {
+    EntityState
+}                           from '@reduxjs/toolkit'
+
 // next-js:
 import {
     NextRequest,
@@ -1146,8 +1151,17 @@ router
     
     
     let paymentResponse : MakePaymentResponse|ErrorResponse;
+    let newOrder        : OrderAndData|undefined = undefined;
+    let countryList     : EntityState<CountryPreview>;
     try {
-        paymentResponse = await prisma.$transaction(async (prismaTransaction): Promise<MakePaymentResponse|ErrorResponse> => {
+        const newCustomer : CommitCustomer = {
+            marketingOpt   : marketingOpt,
+            
+            nickName       : customerNickName,
+            email          : customerEmail,
+        };
+        
+        ([paymentResponse, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [MakePaymentResponse|ErrorResponse, OrderAndData|undefined, EntityState<CountryPreview>]> => {
             //#region verify draftOrder_id
             const requiredSelect = {
                 id                     : true,
@@ -1524,12 +1538,6 @@ router
             
             
             //#region save the database
-            const newCustomer : CommitCustomer = {
-                marketingOpt   : marketingOpt,
-                
-                nickName       : customerNickName,
-                email          : customerEmail,
-            };
             let newOrder : OrderAndData|undefined = undefined;
             const paymentPartial = !('error' in paymentResponse) ? paymentResponse.payment : undefined;
             if (paymentPartial) {
@@ -1562,63 +1570,63 @@ router
             
             
             
-            //#region send email confirmation
-            if (newOrder) {
-                try {
-                    const { renderToStaticMarkup } = await import('react-dom/server');
-                    const orderDataContextProviderProps : OrderDataContextProviderProps = {
-                        // data:
-                        order       : newOrder,
-                        customer    : newCustomer,
-                        isPaid      : (paymentPartial?.type !== 'MANUAL'),
-                        
-                        
-                        
-                        // relation data:
-                        countryList : countryList,
-                    };
-                    
-                    const transporter = nodemailer.createTransport({
-                        host     :  process.env.EMAIL_CHECKOUT_SERVER_HOST ?? '',
-                        port     : Number.parseInt(process.env.EMAIL_CHECKOUT_SERVER_PORT ?? '465'),
-                        secure   : (process.env.EMAIL_CHECKOUT_SERVER_SECURE === 'true'),
-                        auth     : {
-                            user :  process.env.EMAIL_CHECKOUT_SERVER_USERNAME,
-                            pass :  process.env.EMAIL_CHECKOUT_SERVER_PASSWORD,
-                        },
-                    });
-                    try {
-                        await transporter.sendMail({
-                            from    : process.env.EMAIL_CHECKOUT_FROM, // sender address
-                            to      : customerEmail, // list of receivers
-                            subject : renderToStaticMarkup(
-                                <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                    {checkoutConfig.EMAIL_CHECKOUT_SUBJECT}
-                                </OrderDataContextProvider>
-                            ),
-                            html    : renderToStaticMarkup(
-                                <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                    {checkoutConfig.EMAIL_CHECKOUT_MESSAGE}
-                                </OrderDataContextProvider>
-                            ),
-                        });
-                    }
-                    finally {
-                        transporter.close();
-                    } // try
-                }
-                catch (error: any) {
-                    console.log('ERROR: ', error);
-                    // ignore send email error
-                } // try
-            } // if
-            //#endregion send email confirmation
-            
-            
-            
             // report the payment result:
-            return paymentResponse;
-        });
+            return [paymentResponse, newOrder, countryList];
+        }));
+        
+        
+        
+        //#region send email confirmation
+        if (newOrder) {
+            try {
+                const { renderToStaticMarkup } = await import('react-dom/server');
+                const orderDataContextProviderProps : OrderDataContextProviderProps = {
+                    // data:
+                    order       : newOrder,
+                    customer    : newCustomer,
+                    isPaid      : !('error' in paymentResponse) && (paymentResponse.payment.type !== 'MANUAL'),
+                    
+                    
+                    
+                    // relation data:
+                    countryList : countryList,
+                };
+                
+                const transporter = nodemailer.createTransport({
+                    host     :  process.env.EMAIL_CHECKOUT_SERVER_HOST ?? '',
+                    port     : Number.parseInt(process.env.EMAIL_CHECKOUT_SERVER_PORT ?? '465'),
+                    secure   : (process.env.EMAIL_CHECKOUT_SERVER_SECURE === 'true'),
+                    auth     : {
+                        user :  process.env.EMAIL_CHECKOUT_SERVER_USERNAME,
+                        pass :  process.env.EMAIL_CHECKOUT_SERVER_PASSWORD,
+                    },
+                });
+                try {
+                    await transporter.sendMail({
+                        from    : process.env.EMAIL_CHECKOUT_FROM, // sender address
+                        to      : customerEmail, // list of receivers
+                        subject : renderToStaticMarkup(
+                            <OrderDataContextProvider {...orderDataContextProviderProps}>
+                                {checkoutConfig.EMAIL_CHECKOUT_SUBJECT}
+                            </OrderDataContextProvider>
+                        ),
+                        html    : renderToStaticMarkup(
+                            <OrderDataContextProvider {...orderDataContextProviderProps}>
+                                {checkoutConfig.EMAIL_CHECKOUT_MESSAGE}
+                            </OrderDataContextProvider>
+                        ),
+                    });
+                }
+                finally {
+                    transporter.close();
+                } // try
+            }
+            catch (error: any) {
+                console.log('ERROR: ', error);
+                // ignore send email error
+            } // try
+        } // if
+        //#endregion send email confirmation
     }
     catch (error: any) {
         // await session.abortTransaction(); // already implicitly aborted
