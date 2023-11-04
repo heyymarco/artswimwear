@@ -7,8 +7,8 @@ import {
 // internals:
 import {
     // hooks:
-    useCustomerContext,
-}                           from './customerContext.js'
+    useOrderDataContext,
+}                           from './orderDataContext'
 
 
 
@@ -16,24 +16,32 @@ import {
 
 const CustomerName = (): React.ReactNode => {
     // contexts:
-    const model = useCustomerContext();
+    const {
+        // data:
+        customer,
+    } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!customer) return null;
     return (
-        model.nickName ?? null
+        customer.nickName ?? null
     );
 };
 const CustomerEmail = (): React.ReactNode => {
     // contexts:
-    const model = useCustomerContext();
+    const {
+        // data:
+        customer,
+    } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!customer) return null;
     return (
-        model.email ?? null
+        customer.email ?? null
     );
 };
 
@@ -53,11 +61,15 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
     
     
     // contexts:
-    const model = useCustomerContext();
+    const {
+        // data:
+        customer,
+    } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!customer) return null;
     return (
         <table>
             {!!title && <thead>
@@ -72,7 +84,7 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                 <tr>
                     <th>Account</th>
                     <td>
-                        {model.email} ({model.nickName})
+                        {customer.email} ({customer.nickName})
                     </td>
                 </tr>
             </tbody>
@@ -83,5 +95,5 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
 export const Customer = {
     Name  : CustomerName,
     Email : CustomerEmail,
-    Info : CustomerInfo,
+    Info  : CustomerInfo,
 };
