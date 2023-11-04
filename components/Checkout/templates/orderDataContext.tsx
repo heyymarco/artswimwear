@@ -34,6 +34,10 @@ import {
     // hooks:
     useContext,
 }                           from '../hooks/mock-context'
+import type {
+    // types:
+    MatchingShipping,
+}                           from '@/libs/shippings'
 
 
 
@@ -42,7 +46,8 @@ export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'> & {
     product : Pick<Product, 'name'>|null
 }
 export type OrderAndData = Order & {
-    items : OrderItemsAndData[]
+    items            : OrderItemsAndData[]
+    shippingProvider : MatchingShipping
 }
 export interface OrderDataApi {
     // data:
@@ -52,8 +57,6 @@ export interface OrderDataApi {
     
     
     // relation data:
-    shippingProvider   : ShippingProvider|null
-    
     countryList        : EntityState<CountryPreview>|undefined
 }
 const OrderDataContext = createContext<OrderDataApi>({
@@ -63,8 +66,6 @@ const OrderDataContext = createContext<OrderDataApi>({
     
     
     // relation data:
-    shippingProvider   : null,
-    
     countryList        : undefined,
 });
 
@@ -86,8 +87,6 @@ export interface OrderDataContextProviderProps {
     
     
     // relation data:
-    shippingProvider   : ShippingProvider|null
-    
     countryList        : EntityState<CountryPreview>|undefined
 }
 export const OrderDataContextProvider = (props: React.PropsWithChildren<OrderDataContextProviderProps>): JSX.Element|null => {

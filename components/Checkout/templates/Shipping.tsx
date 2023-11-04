@@ -60,7 +60,9 @@ const ShippingMethod = (): React.ReactNode => {
     // contexts:
     const {
         // data:
-        shippingProvider,
+        order : {
+            shippingProvider,
+        },
     } = useOrderDataContext();
     
     
