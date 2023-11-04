@@ -52,6 +52,7 @@ import {
     
     
     // react components:
+    OrderDataContextProviderProps,
     OrderDataContextProvider,
 }                           from '@/components/Checkout/templates/orderDataContext'
 
@@ -1565,6 +1566,17 @@ router
             if (newOrder) {
                 try {
                     const { renderToStaticMarkup } = await import('react-dom/server');
+                    const orderDataContextProviderProps : OrderDataContextProviderProps = {
+                        // data:
+                        order       : newOrder,
+                        customer    : newCustomer,
+                        
+                        
+                        
+                        // relation data:
+                        countryList : countryList,
+                    };
+                    
                     const transporter = nodemailer.createTransport({
                         host     :  process.env.EMAIL_CHECKOUT_SERVER_HOST ?? '',
                         port     : Number.parseInt(process.env.EMAIL_CHECKOUT_SERVER_PORT ?? '465'),
@@ -1578,18 +1590,13 @@ router
                         await transporter.sendMail({
                             from    : process.env.EMAIL_CHECKOUT_FROM, // sender address
                             to      : customerEmail, // list of receivers
-                            subject : checkoutConfig.EMAIL_CHECKOUT_SUBJECT,
+                            subject : renderToStaticMarkup(
+                                <OrderDataContextProvider {...orderDataContextProviderProps}>
+                                    {checkoutConfig.EMAIL_CHECKOUT_SUBJECT}
+                                </OrderDataContextProvider>
+                            ),
                             html    : renderToStaticMarkup(
-                                <OrderDataContextProvider
-                                    // data:
-                                    order={newOrder}
-                                    customer={newCustomer}
-                                    
-                                    
-                                    
-                                    // relation data:
-                                    countryList={countryList}
-                                >
+                                <OrderDataContextProvider {...orderDataContextProviderProps}>
                                     {checkoutConfig.EMAIL_CHECKOUT_MESSAGE}
                                 </OrderDataContextProvider>
                             ),
