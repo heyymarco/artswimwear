@@ -57,7 +57,7 @@ export const checkoutConfig = {
                 </h2>
                 
                 <p>
-                    TODO: write the transfer instruction here.
+                    TODO: write a transfer instruction here.
                 </p>
             </section>
         </IfNotPaid>
