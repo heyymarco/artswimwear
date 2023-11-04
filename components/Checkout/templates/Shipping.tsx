@@ -19,6 +19,11 @@ const ShippingAddress = (): React.ReactNode => {
     const {
         // data:
         shippingAddress : address,
+        
+        
+        
+        // relation data:
+        countryList,
     } = useOrderDataContext();
     
     
@@ -36,11 +41,7 @@ const ShippingAddress = (): React.ReactNode => {
         city      : shippingCity,
         zone      : shippingZone,
         zip       : shippingZip,
-        
-        
-        
-        // relation data:
-        country,
+        country   : shippingCountry,
     } = address;
     return (
         <>
@@ -48,7 +49,7 @@ const ShippingAddress = (): React.ReactNode => {
                 {shippingFirstName} {shippingLastName} ({shippingPhone})
             </p>
             <p>
-                {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${country}`}
+                {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
             </p>
         </>
     );

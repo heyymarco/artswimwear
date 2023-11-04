@@ -7,8 +7,8 @@ import {
 // internals:
 import {
     // hooks:
-    usePaymentContext,
-}                           from './paymentContext.js'
+    useOrderDataContext,
+}                           from './orderDataContext'
 
 
 
@@ -17,14 +17,18 @@ import {
 const BillingAddress = (): React.ReactNode => {
     // contexts:
     const {
-        // billing data:
-        billingAddress : address,
+        // data:
+        order : {
+            payment : {
+                billingAddress : address,
+            },
+        },
         
         
         
         // relation data:
         countryList,
-    } = usePaymentContext();
+    } = useOrderDataContext();
     
     
     
@@ -57,11 +61,16 @@ const BillingAddress = (): React.ReactNode => {
 const PaymentMethod = (): React.ReactNode => {
     // contexts:
     const {
-        // payment data:
-        paymentType,
-        paymentBrand,
-        paymentIdentifier,
-    } = usePaymentContext();
+        // data:
+        order : {
+            payment : {
+                // payment data:
+                type       : paymentType,
+                brand      : paymentBrand,
+                identifier : paymentIdentifier,
+            },
+        },
+    } = useOrderDataContext();
     
     
     

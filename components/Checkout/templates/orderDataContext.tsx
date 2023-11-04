@@ -4,12 +4,24 @@ import {
     default as React,
 }                           from 'react'
 
+// redux:
+import type {
+    EntityState
+}                           from '@reduxjs/toolkit'
+
 // models:
 import type {
     ShippingProvider,
     Customer,
     Address,
+    Order,
 }                           from '@prisma/client'
+
+// stores:
+import type {
+    // types:
+    CountryPreview,
+}                           from '@/store/features/api/apiSlice'
 
 // internals:
 import {
@@ -27,6 +39,7 @@ import {
 // contexts:
 export interface OrderDataApi {
     // data:
+    order              : Order
     shippingAddress    : Address|null
     customer           : Customer|null
     shippingProvider   : ShippingProvider|null
@@ -34,9 +47,10 @@ export interface OrderDataApi {
     
     
     // relation data:
-    country            : string|undefined
+    countryList        : EntityState<CountryPreview>|undefined
 }
 const OrderDataContext = createContext<OrderDataApi>({
+    order              : undefined as any,
     shippingAddress    : null,
     customer           : null,
     shippingProvider   : null,
@@ -44,7 +58,7 @@ const OrderDataContext = createContext<OrderDataApi>({
     
     
     // relation data:
-    country            : undefined,
+    countryList        : undefined,
 });
 
 
@@ -59,6 +73,7 @@ export const useOrderDataContext = () => {
 // react components:
 export interface OrderDataContextProviderProps {
     // data:
+    order              : Order
     shippingAddress    : Address|null
     customer           : Customer|null
     shippingProvider   : ShippingProvider|null
@@ -66,7 +81,7 @@ export interface OrderDataContextProviderProps {
     
     
     // relation data:
-    country            : string|undefined
+    countryList        : EntityState<CountryPreview>|undefined
 }
 export const OrderDataContextProvider = (props: React.PropsWithChildren<OrderDataContextProviderProps>): JSX.Element|null => {
     // jsx:
