@@ -18,7 +18,7 @@ import {
 
 
 // utilities:
-const getTotalProductPrice = (items: ReturnType<typeof useOrderDataContext>['items']): number => {
+const getTotalProductPrice = (items: ReturnType<typeof useOrderDataContext>['order']['items']): number => {
     let totalProductPrice = 0;
     for (const {price, quantity} of items) {
         totalProductPrice += (price * quantity);
@@ -62,7 +62,9 @@ const OrderSubtotal = (): React.ReactNode => {
     // contexts:
     const {
         // data:
-        items,
+        order : {
+            items,
+        },
     } = useOrderDataContext();
     
     
@@ -82,8 +84,8 @@ const OrderTotal = (): React.ReactNode => {
         // data:
         order : {
             shippingCost,
+            items,
         },
-        items,
     } = useOrderDataContext();
     
     
@@ -101,7 +103,9 @@ const OrderItems = (): React.ReactNode => {
     // contexts:
     const {
         // data:
-        items,
+        order : {
+            items,
+        },
         productList,
     } = useOrderDataContext();
     

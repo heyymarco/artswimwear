@@ -38,15 +38,17 @@ import {
 
 
 // contexts:
+export type OrderAndItems = Order & {
+    items : Pick<OrdersOnProducts, 'price'|'quantity'|'productId'>[]
+}
 export interface OrderDataApi {
     // data:
-    order              : Order
+    order              : OrderAndItems
     customer           : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
     
     
     
     // relation data:
-    items              : Pick<OrdersOnProducts, 'price'|'quantity'|'productId'>[]
     shippingProvider   : ShippingProvider|null
     
     countryList        : EntityState<CountryPreview>|undefined
@@ -59,7 +61,6 @@ const OrderDataContext = createContext<OrderDataApi>({
     
     
     // relation data:
-    items              : [],
     shippingProvider   : null,
     
     countryList        : undefined,
@@ -78,13 +79,12 @@ export const useOrderDataContext = () => {
 // react components:
 export interface OrderDataContextProviderProps {
     // data:
-    order              : Order
+    order              : OrderAndItems
     customer           : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
     
     
     
     // relation data:
-    items              : Pick<OrdersOnProducts, 'price'|'shippingWeight'|'quantity'|'productId'>[]
     shippingProvider   : ShippingProvider|null
     
     countryList        : EntityState<CountryPreview>|undefined
