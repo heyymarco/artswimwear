@@ -11,6 +11,10 @@ import {
     // react components:
     Payment,
 }                           from '@/components/Checkout/templates/Payment'
+import {
+    // react components:
+    Order,
+}                           from '@/components/Checkout/templates/Order'
 
 
 
@@ -49,7 +53,7 @@ export const commerceConfig = {
                             :
                         </td>
                         <td>
-                            {/* <Order.OrderId /> */}
+                            <Order.Id />
                         </td>
                     </tr>
                     <tr>
@@ -60,7 +64,7 @@ export const commerceConfig = {
                             :
                         </td>
                         <td>
-                            {/* <Order.CreatedAt /> */}
+                            <Order.CreatedAt />
                         </td>
                     </tr>
                 </tbody>
