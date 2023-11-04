@@ -109,9 +109,9 @@ export const checkoutConfig = {
             
             <Order.Total />
             
-            <hr />
-            
             <IfPhysicalProduct>
+                <hr />
+                
                 <p>
                     We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
                 </p>
