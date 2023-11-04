@@ -79,13 +79,7 @@ const PaymentMethod = (): React.ReactNode => {
         <>
             {
                 !!paymentBrand
-                ? <img
-                    // appearances:
-                    alt={paymentBrand}
-                    src={`/brands/${paymentBrand}.svg`}
-                    width={42}
-                    height={26}
-                />
+                ? <>{paymentBrand}</>
                 : (paymentType?.toUpperCase() ?? paymentType)
             }
             
