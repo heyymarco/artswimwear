@@ -14,6 +14,7 @@ import type {
 // apis:
 import type { CountryPreview }                  from '@/app/api/countries/route'
 export type { CountryPreview }                  from '@/app/api/countries/route'
+export type { ShippingPreview }                 from '@/app/api/shippings/route'
 import type { ProductPreview, ProductDetail}    from '@/app/api/products/route'
 export type { ProductPreview, ProductDetail}    from '@/app/api/products/route'
 
