@@ -41,7 +41,7 @@ import {
 export interface OrderDataApi {
     // data:
     order              : Order
-    customer           : Customer|null
+    customer           : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
     
     
     
@@ -79,7 +79,7 @@ export const useOrderDataContext = () => {
 export interface OrderDataContextProviderProps {
     // data:
     order              : Order
-    customer           : Customer|null
+    customer           : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
     
     
     
