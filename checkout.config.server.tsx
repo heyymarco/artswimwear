@@ -31,7 +31,7 @@ import {
 
 
 export const checkoutConfig = {
-    EMAIL_CHECKOUT_SUBJECT : `Your Order at ${process.env.BUSINESS_NAME || process.env.WEBSITE_URL}`,
+    EMAIL_CHECKOUT_SUBJECT : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
     EMAIL_CHECKOUT_MESSAGE : <article>
         <section>
             <h1>
