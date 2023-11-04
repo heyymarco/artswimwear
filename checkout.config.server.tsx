@@ -99,6 +99,7 @@ export const checkoutConfig = {
             <hr />
             
             <Order.Subtotal />
+            <Order.Shipping />
             
             <hr />
             

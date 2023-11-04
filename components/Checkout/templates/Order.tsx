@@ -58,7 +58,18 @@ const OrderCreatedAt = (): React.ReactNode => {
     // jsx:
     return createdAt.toISOString();
 };
-const OrderSubtotal = (): React.ReactNode => {
+export interface OrderSubtotalProps {
+    label ?: React.ReactNode
+}
+const OrderSubtotal = (props: OrderSubtotalProps): React.ReactNode => {
+    // rest props:
+    const {
+        // accessibilities:
+        label = <span>Subtotal</span>,
+    } = props;
+    
+    
+    
     // contexts:
     const {
         // data:
@@ -72,13 +83,56 @@ const OrderSubtotal = (): React.ReactNode => {
     // jsx:
     return (
         <>
-            Subtotal <span className='currency'>
+            {label} <span className='currency'>
                 {formatCurrency(getTotalProductPrice(items))}
             </span>
         </>
     );
 };
-const OrderTotal = (): React.ReactNode => {
+export interface OrderShippingProps {
+    label ?: React.ReactNode
+}
+const OrderShipping = (props: OrderShippingProps): React.ReactNode => {
+    // rest props:
+    const {
+        // accessibilities:
+        label = <span>Shipping</span>,
+    } = props;
+    
+    
+    
+    // contexts:
+    const {
+        // data:
+        order : {
+            shippingCost,
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    if (shippingCost === null) return null;
+    return (
+        <>
+            {label} <span className='currency'>
+                {formatCurrency(shippingCost)}
+            </span>
+        </>
+    );
+};
+export interface OrderTotalProps {
+    label ?: React.ReactNode
+}
+const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
+    // rest props:
+    const {
+        // accessibilities:
+        label = <span>Total</span>,
+    } = props;
+    
+    
+    
     // contexts:
     const {
         // data:
@@ -93,7 +147,7 @@ const OrderTotal = (): React.ReactNode => {
     // jsx:
     return (
         <>
-            Subtotal <span className='currency'>
+            {label} <span className='currency'>
                 {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
             </span>
         </>
@@ -139,6 +193,7 @@ export const Order = {
     Id        : OrderId,
     CreatedAt : OrderCreatedAt,
     Subtotal  : OrderSubtotal,
+    Shipping  : OrderShipping,
     Total     : OrderTotal,
     Items     : OrderItems,
 };
