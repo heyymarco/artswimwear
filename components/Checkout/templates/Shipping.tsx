@@ -7,8 +7,8 @@ import {
 // internals:
 import {
     // hooks:
-    useShippingContext,
-}                           from './shippingContext.js'
+    useOrderDataContext,
+}                           from './orderDataContext'
 
 
 
@@ -17,14 +17,9 @@ import {
 const ShippingAddress = (): React.ReactNode => {
     // contexts:
     const {
-        // shipping data:
+        // data:
         shippingAddress : address,
-        
-        
-        
-        // relation data:
-        countryList,
-    } = useShippingContext();
+    } = useOrderDataContext();
     
     
     
@@ -41,7 +36,11 @@ const ShippingAddress = (): React.ReactNode => {
         city      : shippingCity,
         zone      : shippingZone,
         zip       : shippingZip,
-        country   : shippingCountry,
+        
+        
+        
+        // relation data:
+        country,
     } = address;
     return (
         <>
@@ -49,7 +48,7 @@ const ShippingAddress = (): React.ReactNode => {
                 {shippingFirstName} {shippingLastName} ({shippingPhone})
             </p>
             <p>
-                {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
+                {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${country}`}
             </p>
         </>
     );
@@ -57,24 +56,18 @@ const ShippingAddress = (): React.ReactNode => {
 const ShippingMethod = (): React.ReactNode => {
     // contexts:
     const {
-        // shipping data:
-        shippingProviderId,
-        
-        
-        
-        // relation data:
-        shippingList,
-    } = useShippingContext();
+        // data:
+        shippingProvider,
+    } = useOrderDataContext();
     
     
     
     // jsx:
-    if (!shippingProviderId) return null;
-    const selectedShipping = shippingList?.entities?.[shippingProviderId ?? ''];
+    if (!shippingProvider) return null;
     return (
         <>
             <p>
-            {`${selectedShipping?.name}${!selectedShipping?.estimate ? '' : ` - ${selectedShipping?.estimate}`}`}
+            {`${shippingProvider.name}${!shippingProvider.estimate ? '' : ` - ${shippingProvider.estimate}`}`}
             </p>
         </>
     );
