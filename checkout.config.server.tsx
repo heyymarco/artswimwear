@@ -48,9 +48,9 @@ export const checkoutConfig = {
             </p>
         </section>
         
-        <hr />
-        
         <IfNotPaid>
+            <hr />
+            
             <section>
                 <h2>
                     Payment Instruction
@@ -60,9 +60,9 @@ export const checkoutConfig = {
                     TODO: write the transfer instruction here.
                 </p>
             </section>
-            
-            <hr />
         </IfNotPaid>
+        
+        <hr />
         
         <section>
             <h2>
@@ -128,9 +128,9 @@ export const checkoutConfig = {
             <Shipping.Info title={null} />
         </section>
         
-        <hr />
-        
         <IfPaid>
+            <hr />
+            
             <section>
                 <h2>
                     Payment Info
@@ -138,9 +138,9 @@ export const checkoutConfig = {
                 
                 <Payment.Info title={null} />
             </section>
-            
-            <hr />
         </IfPaid>
+        
+        <hr />
         
         <section>
             <h2>
