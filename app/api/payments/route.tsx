@@ -14,6 +14,11 @@ import {
     createEdgeRouter,
 }                           from 'next-connect'
 
+// webs:
+import {
+    default as nodemailer,
+}                           from 'nodemailer'
+
 // models:
 import type {
     Product,
@@ -33,10 +38,22 @@ import {
 // stores:
 import type {
     // types:
+    CountryPreview,
     PaymentToken,
     PlaceOrderResponse,
     MakePaymentResponse,
 }                           from '@/store/features/api/apiSlice'
+
+// templates:
+import {
+    // types:
+    OrderAndData,
+    
+    
+    
+    // react components:
+    OrderDataContextProvider,
+}                           from '@/components/Checkout/templates/orderDataContext'
 
 // configs:
 import {
@@ -47,7 +64,10 @@ import {
     PAYPAL_CURRENCY,
     PAYPAL_CURRENCY_FRACTION_UNIT,
     PAYPAL_CURRENCY_FRACTION_ROUNDING,
-} from '@/commerce.config'
+}                           from '@/commerce.config'
+import {
+    checkoutConfig,
+}                           from '@/checkout.config.server'
 
 // others:
 import {
@@ -252,8 +272,8 @@ type CommitDraftOrder = Omit<DraftOrder,
         |'draftOrderId'
     >[]
 }
-const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customer, payment } : { draftOrder: CommitDraftOrder, customer: CommitCustomer, payment: Payment }) => {
-    await prismaTransaction.order.create({
+const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customer, payment } : { draftOrder: CommitDraftOrder, customer: CommitCustomer, payment: Payment }): Promise<OrderAndData> => {
+    const newOrder = await prismaTransaction.order.create({
         data   : {
             orderId          : draftOrder.orderId,
             
@@ -280,8 +300,35 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
             
             payment          : payment,
         },
-        select : {
-            id : true,
+        // select : {
+        //     id : true,
+        // },
+        include : {
+            items : {
+                select : {
+                    // data:
+                    price          : true,
+                    shippingWeight : true,
+                    quantity       : true,
+                    
+                    // relations:
+                    product        : {
+                        select : {
+                            name   : true,
+                        },
+                    },
+                },
+            },
+            shippingProvider : {
+                select : {
+                    weightStep      : true,
+                    
+                    shippingRates   : true,
+                    
+                    useSpecificArea : true,
+                    countries       : true,
+                },
+            },
         },
     });
     await prismaTransaction.draftOrder.delete({
@@ -292,6 +339,16 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
             id : true,
         },
     });
+    const shippingAddress  = newOrder.shippingAddress;
+    const shippingProvider = newOrder.shippingProvider;
+    return {
+        ...newOrder,
+        shippingProvider : (
+            (shippingAddress && shippingProvider)
+            ? getMatchingShipping(shippingProvider, { city: shippingAddress.city, zone: shippingAddress.zone, country: shippingAddress.country })
+            : null
+        ),
+    };
 }
 
 type RevertDraftOrder = Pick<DraftOrder,
@@ -1148,6 +1205,26 @@ router
             
             
             
+            //#region related data
+            const allCountries = await prismaTransaction.country.findMany({
+                select : {
+                    name    : true,
+                    
+                    code    : true,
+                },
+                // enabled: true
+            });
+            const countryListAdapter = createEntityAdapter<CountryPreview>({
+                selectId : (countryEntry) => countryEntry.code,
+            });
+            const countryList = countryListAdapter.addMany(
+                countryListAdapter.getInitialState(),
+                allCountries
+            );
+            //#endregion related data
+            
+            
+            
             //#region process the payment
             let paymentResponse : MakePaymentResponse|ErrorResponse;
             if (paypalOrderId) {
@@ -1446,17 +1523,19 @@ router
             
             
             //#region save the database
+            const newCustomer : CommitCustomer = {
+                marketingOpt   : marketingOpt,
+                
+                nickName       : customerNickName,
+                email          : customerEmail,
+            };
+            let newOrder : OrderAndData|undefined = undefined;
             const paymentPartial = !('error' in paymentResponse) ? paymentResponse.payment : undefined;
             if (paymentPartial) {
                 // payment APPROVED => move the `draftOrder` to `order`:
-                await commitOrder(prismaTransaction, {
+                newOrder = await commitOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
-                    customer           : {
-                        marketingOpt   : marketingOpt,
-                        
-                        nickName       : customerNickName,
-                        email          : customerEmail,
-                    },
+                    customer           : newCustomer,
                     payment            : {
                         ...paymentPartial,
                         billingAddress : {
@@ -1483,6 +1562,46 @@ router
             
             
             //#region send email confirmation
+            if (newOrder) {
+                try {
+                    const { renderToStaticMarkup } = await import('react-dom/server');
+                    const transporter = nodemailer.createTransport({
+                        host     :  process.env.EMAIL_CHECKOUT_SERVER_HOST ?? '',
+                        port     : Number.parseInt(process.env.EMAIL_CHECKOUT_SERVER_PORT ?? '465'),
+                        secure   : (process.env.EMAIL_CHECKOUT_SERVER_SECURE === 'true'),
+                        auth     : {
+                            user :  process.env.EMAIL_CHECKOUT_SERVER_USERNAME,
+                            pass :  process.env.EMAIL_CHECKOUT_SERVER_PASSWORD,
+                        },
+                    });
+                    try {
+                        await transporter.sendMail({
+                            from    : process.env.EMAIL_CHECKOUT_FROM, // sender address
+                            to      : customerEmail, // list of receivers
+                            subject : checkoutConfig.EMAIL_CHECKOUT_SUBJECT,
+                            html    : renderToStaticMarkup(
+                                <OrderDataContextProvider
+                                    // data:
+                                    order={newOrder}
+                                    customer={newCustomer}
+                                    
+                                    
+                                    
+                                    // relation data:
+                                    countryList={countryList}
+                                >
+                                </OrderDataContextProvider>
+                            ),
+                        });
+                    }
+                    finally {
+                        transporter.close();
+                    } // try
+                }
+                catch {
+                    // ignore send email error
+                } // try
+            } // if
             //#endregion send email confirmation
             
             
