@@ -38,7 +38,7 @@ import {
 
 
 // contexts:
-export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'|'productId'> & {
+export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'> & {
     product : Pick<Product, 'name'>|null
 }
 export type OrderAndData = Order & {
