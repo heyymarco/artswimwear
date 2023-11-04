@@ -32,7 +32,7 @@ import {
 
 export const checkoutConfig = {
     EMAIL_CHECKOUT_SUBJECT : `Your Order at ${process.env.BUSINESS_NAME || process.env.WEBSITE_URL}`,
-    EMAIL_CHECKOUT_MESSAGE : <>
+    EMAIL_CHECKOUT_MESSAGE : <article>
         <section>
             <h1>
                 Thanks For Your Order!
@@ -125,7 +125,7 @@ export const checkoutConfig = {
                 Shipping Info
             </h2>
             
-            <Shipping.Info />
+            <Shipping.Info title={null} />
         </section>
         
         <hr />
@@ -136,7 +136,7 @@ export const checkoutConfig = {
                     Payment Info
                 </h2>
                 
-                <Payment.Info />
+                <Payment.Info title={null} />
             </section>
             
             <hr />
@@ -147,7 +147,7 @@ export const checkoutConfig = {
                 Customer Info
             </h2>
             
-            <Customer.Info />
+            <Customer.Info title={null} />
         </section>
         
         <hr />
@@ -161,5 +161,5 @@ export const checkoutConfig = {
                 Need help? Please reply this email.
             </p>
         </section>
-    </>
+    </article>
 };
