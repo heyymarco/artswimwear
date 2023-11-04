@@ -178,7 +178,7 @@ const OrderItems = (): React.ReactNode => {
                         // identifiers:
                         key={itemIndex}
                     >
-                        <h6>{product?.name}</h6>
+                        <h3>{product?.name}</h3>
                         <p>@ {formatCurrency(price)}</p>
                         <p>qty: x{quantity}</p>
                         <p>{formatCurrency((price !== undefined) ? (price * quantity) : undefined)}</p>
