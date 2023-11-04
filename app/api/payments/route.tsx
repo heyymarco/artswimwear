@@ -1646,6 +1646,7 @@ router
             } break;
             
             default                      : {
+                console.log('UNKNOWN ERROR: ',  error)
                 return NextResponse.json({
                     error: 'internal server error',
                 }, { status: 500 }); // handled with error
