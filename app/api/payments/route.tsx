@@ -1155,10 +1155,10 @@ router
     let countryList     : EntityState<CountryPreview>;
     try {
         const newCustomer : CommitCustomer = {
-            marketingOpt   : marketingOpt,
+            marketingOpt  : marketingOpt,
             
-            nickName       : customerNickName,
-            email          : customerEmail,
+            nickName      : customerNickName,
+            email         : customerEmail,
         };
         
         ([paymentResponse, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [MakePaymentResponse|ErrorResponse, OrderAndData|undefined, EntityState<CountryPreview>]> => {
