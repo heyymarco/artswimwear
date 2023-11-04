@@ -18,7 +18,9 @@ const ShippingAddress = (): React.ReactNode => {
     // contexts:
     const {
         // data:
-        shippingAddress : address,
+        order : {
+            shippingAddress : address,
+        },
         
         
         

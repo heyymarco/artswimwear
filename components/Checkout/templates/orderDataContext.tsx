@@ -13,7 +13,6 @@ import type {
 import type {
     ShippingProvider,
     Customer,
-    Address,
     OrdersOnProducts,
     Order,
 }                           from '@prisma/client'
@@ -42,29 +41,27 @@ import {
 export interface OrderDataApi {
     // data:
     order              : Order
-    shippingAddress    : Address|null
-    shippingCost       : number|null
     customer           : Customer|null
-    shippingProvider   : ShippingProvider|null
-    items              : Pick<OrdersOnProducts, 'price'|'quantity'|'productId'>[]
     
     
     
     // relation data:
+    items              : Pick<OrdersOnProducts, 'price'|'quantity'|'productId'>[]
+    shippingProvider   : ShippingProvider|null
+    
     countryList        : EntityState<CountryPreview>|undefined
     productList        : EntityState<ProductPreview>|undefined
 }
 const OrderDataContext = createContext<OrderDataApi>({
     order              : undefined as any,
-    shippingAddress    : null,
-    shippingCost       : null,
     customer           : null,
-    shippingProvider   : null,
-    items              : [],
     
     
     
     // relation data:
+    items              : [],
+    shippingProvider   : null,
+    
     countryList        : undefined,
     productList        : undefined,
 });
@@ -82,15 +79,14 @@ export const useOrderDataContext = () => {
 export interface OrderDataContextProviderProps {
     // data:
     order              : Order
-    shippingAddress    : Address|null
-    shippingCost       : number|null
     customer           : Customer|null
-    shippingProvider   : ShippingProvider|null
-    items              : Pick<OrdersOnProducts, 'price'|'shippingWeight'|'quantity'|'productId'>[]
     
     
     
     // relation data:
+    items              : Pick<OrdersOnProducts, 'price'|'shippingWeight'|'quantity'|'productId'>[]
+    shippingProvider   : ShippingProvider|null
+    
     countryList        : EntityState<CountryPreview>|undefined
     productList        : EntityState<ProductPreview>|undefined
 }

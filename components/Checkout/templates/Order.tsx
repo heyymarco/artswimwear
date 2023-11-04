@@ -80,8 +80,10 @@ const OrderTotal = (): React.ReactNode => {
     // contexts:
     const {
         // data:
+        order : {
+            shippingCost,
+        },
         items,
-        shippingCost,
     } = useOrderDataContext();
     
     
