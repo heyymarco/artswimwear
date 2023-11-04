@@ -1570,6 +1570,7 @@ router
                         // data:
                         order       : newOrder,
                         customer    : newCustomer,
+                        isPaid      : (paymentPartial?.type !== 'MANUAL'),
                         
                         
                         

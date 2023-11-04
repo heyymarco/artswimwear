@@ -52,6 +52,7 @@ export interface OrderDataApi {
     // data:
     order             : OrderAndData
     customer          : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
+    isPaid            : boolean
     
     
     
@@ -61,6 +62,7 @@ export interface OrderDataApi {
 const OrderDataContext = createContext<OrderDataApi>({
     order             : undefined as any,
     customer          : null,
+    isPaid            : false,
     
     
     
@@ -82,6 +84,7 @@ export interface OrderDataContextProviderProps {
     // data:
     order             : OrderAndData
     customer          : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
+    isPaid            : boolean
     
     
     

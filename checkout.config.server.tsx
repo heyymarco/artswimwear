@@ -15,6 +15,14 @@ import {
     // react components:
     Order,
 }                           from '@/components/Checkout/templates/Order'
+import {
+    // react components:
+    IfPaid,
+}                           from '@/components/Checkout/templates/IfPaid'
+import {
+    // react components:
+    IfNotPaid,
+}                           from '@/components/Checkout/templates/IfNotPaid'
 
 
 
@@ -32,11 +40,25 @@ export const checkoutConfig = {
             
             <p>
                 Thank you for placing an order on {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
-                We are pleased to confirm that we have received your order{<> and it is currently being processed</>}.
+                We are pleased to confirm that we have received your order<IfPaid> and it is <strong>currently being processed</strong></IfPaid><IfNotPaid> and are <strong>waiting for your payment</strong> so that your order can be processed further</IfNotPaid>.
             </p>
         </section>
         
         <hr />
+        
+        <IfNotPaid>
+            <section>
+                <h2>
+                    Payment Instruction
+                </h2>
+                
+                <p>
+                    TODO: write the transfer instruction here.
+                </p>
+            </section>
+            
+            <hr />
+        </IfNotPaid>
         
         <section>
             <h2>
@@ -102,15 +124,17 @@ export const checkoutConfig = {
         
         <hr />
         
-        <section>
-            <h2>
-                Payment Info
-            </h2>
+        <IfPaid>
+            <section>
+                <h2>
+                    Payment Info
+                </h2>
+                
+                <Payment.Info />
+            </section>
             
-            <Payment.Info />
-        </section>
-        
-        <hr />
+            <hr />
+        </IfPaid>
         
         <section>
             <h2>
