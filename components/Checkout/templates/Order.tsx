@@ -106,7 +106,6 @@ const OrderItems = (): React.ReactNode => {
         order : {
             items,
         },
-        productList,
     } = useOrderDataContext();
     
     
@@ -118,23 +117,17 @@ const OrderItems = (): React.ReactNode => {
             margin        : 'unset',
             padding       : 'unset',
         }}>
-            {items.map(({productId, price, quantity}, itemIndex) => {
-                // fn props:
-                const product          = productList?.entities?.[productId ?? ''];
-                const productUnitPrice = product?.price;
-                
-                
-                
+            {items.map(({price, quantity, product}, itemIndex) => {
                 // jsx:
                 return (
                     <li
                         // identifiers:
-                        key={productId || itemIndex}
+                        key={itemIndex}
                     >
                         <h6>{product?.name}</h6>
-                        <p>@ {formatCurrency(productUnitPrice)}</p>
+                        <p>@ {formatCurrency(price)}</p>
                         <p>qty: x{quantity}</p>
-                        <p>{formatCurrency((productUnitPrice !== undefined) ? (productUnitPrice * quantity) : undefined)}</p>
+                        <p>{formatCurrency((price !== undefined) ? (price * quantity) : undefined)}</p>
                     </li>
                 );
             })}

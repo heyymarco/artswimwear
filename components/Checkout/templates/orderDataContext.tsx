@@ -11,6 +11,7 @@ import type {
 
 // models:
 import type {
+    Product,
     ShippingProvider,
     Customer,
     OrdersOnProducts,
@@ -21,7 +22,6 @@ import type {
 import type {
     // types:
     CountryPreview,
-    ProductPreview,
 }                           from '@/store/features/api/apiSlice'
 
 // internals:
@@ -38,12 +38,15 @@ import {
 
 
 // contexts:
-export type OrderAndItems = Order & {
-    items : Pick<OrdersOnProducts, 'price'|'quantity'|'productId'>[]
+export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'|'productId'> & {
+    product : Pick<Product, 'name'>|null
+}
+export type OrderAndData = Order & {
+    items : OrderItemsAndData[]
 }
 export interface OrderDataApi {
     // data:
-    order              : OrderAndItems
+    order              : OrderAndData
     customer           : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
     
     
@@ -52,7 +55,6 @@ export interface OrderDataApi {
     shippingProvider   : ShippingProvider|null
     
     countryList        : EntityState<CountryPreview>|undefined
-    productList        : EntityState<ProductPreview>|undefined
 }
 const OrderDataContext = createContext<OrderDataApi>({
     order              : undefined as any,
@@ -64,7 +66,6 @@ const OrderDataContext = createContext<OrderDataApi>({
     shippingProvider   : null,
     
     countryList        : undefined,
-    productList        : undefined,
 });
 
 
@@ -79,7 +80,7 @@ export const useOrderDataContext = () => {
 // react components:
 export interface OrderDataContextProviderProps {
     // data:
-    order              : OrderAndItems
+    order              : OrderAndData
     customer           : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
     
     
@@ -88,7 +89,6 @@ export interface OrderDataContextProviderProps {
     shippingProvider   : ShippingProvider|null
     
     countryList        : EntityState<CountryPreview>|undefined
-    productList        : EntityState<ProductPreview>|undefined
 }
 export const OrderDataContextProvider = (props: React.PropsWithChildren<OrderDataContextProviderProps>): JSX.Element|null => {
     // jsx:
