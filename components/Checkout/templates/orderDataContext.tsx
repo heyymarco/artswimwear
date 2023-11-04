@@ -47,7 +47,7 @@ export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'> & {
 }
 export type OrderAndData = Order & {
     items            : OrderItemsAndData[]
-    shippingProvider : MatchingShipping
+    shippingProvider : MatchingShipping|null
 }
 export interface OrderDataApi {
     // data:
