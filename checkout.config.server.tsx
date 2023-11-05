@@ -1,3 +1,6 @@
+// styles:
+import * as styles          from '@/components/Checkout/templates/styles'
+
 // templates:
 import {
     // react components:
@@ -32,67 +35,41 @@ import {
 
 export const checkoutConfig = {
     EMAIL_CHECKOUT_SUBJECT : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
-    EMAIL_CHECKOUT_MESSAGE : <article
-        style={{
-            // typos:
-            fontSize : '1rem',
-            color    : 'initial',
-        }}
-    >
+    EMAIL_CHECKOUT_MESSAGE : <article style={styles.document}>
         <section>
-            <h1
-                // styles:
-                style={{
-                    // typos:
-                    fontSize   : '2rem',
-                    fontWeight : 'bold',
-                }}
-            >
+            <h1 style={styles.heading1}>
                 Thanks For Your Order!
             </h1>
             
-            <p>
+            <p style={styles.paragraph}>
                 Dear <Customer.Name />,
             </p>
             
-            <p>
+            <p style={styles.paragraphLast}>
                 Thank you for placing an order on {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
+                <br />
                 We are pleased to confirm that we have received your order<IfPaid> and it is <strong>currently being processed</strong></IfPaid><IfNotPaid> and are <strong>waiting for your payment</strong> so that your order can be processed further</IfNotPaid>.
             </p>
         </section>
         
         <IfNotPaid>
-            <hr />
+            <hr style={styles.horzRule} />
             
             <section>
-                <h2
-                    // styles:
-                    style={{
-                        // typos:
-                        fontSize   : '1.75rem',
-                        fontWeight : 'bold',
-                    }}
-                >
+                <h2 style={styles.heading2}>
                     Payment Instruction
                 </h2>
                 
-                <p>
+                <p style={styles.paragraphLast}>
                     TODO: write a transfer instruction here.
                 </p>
             </section>
         </IfNotPaid>
         
-        <hr />
+        <hr style={styles.horzRule} />
         
         <section>
-            <h2
-                // styles:
-                style={{
-                    // typos:
-                    fontSize   : '1.75rem',
-                    fontWeight : 'bold',
-                }}
-            >
+            <h2 style={styles.heading2}>
                 Order Summary
             </h2>
             
@@ -100,92 +77,38 @@ export const checkoutConfig = {
                 // styles:
                 style={{
                     // sizes:
-                    // inlineSize: 'fit-content', // not supported by GMail
                     width: 'fit-content',
-                    
-                    
-                    
-                    // typos:
-                    color: 'initial',
                 }}
             >
                 <table
                     // styles:
                     style={{
-                        // layouts:
-                        tableLayout: 'auto',
-                        
-                        
-                        
-                        // borders:
-                        borderCollapse: 'collapse',
+                        // bases:
+                        ...styles.tableReset,
                         
                         
                         
                         // spacings:
-                        // marginBlockEnd : '1rem', // not supported by GMail
                         marginBottom   : '1rem',
                     }}
                 >
                     <tbody>
                         <tr>
-                            <td
-                                // styles:
-                                style={{
-                                    // appearances:
-                                    opacity : 0.6,
-                                }}
-                            >
+                            <td style={styles.secondaryText}>
                                 Order Number
                             </td>
-                            <td
-                                // styles:
-                                style={{
-                                    // appearances:
-                                    opacity : 0.6,
-                                    
-                                    
-                                    
-                                    // spacings:
-                                    paddingLeft  : '0.5em',
-                                    paddingRight : '0.5em',
-                                }}
-                            >
+                            <td style={styles.colonSeparator}>
                                 :
                             </td>
-                            <td
-                                // styles:
-                                style={{
-                                    // typos:
-                                    fontWeight : 'bold',
-                                }}
-                            >
+                            <td style={styles.boldText}>
                                 <Order.Id />
                             </td>
                         </tr>
                         <tr>
-                            <td
-                                // styles:
-                                style={{
-                                    // appearances:
-                                    opacity : 0.6,
-                                }}
-                            >
+                            <td  style={styles.secondaryText}>
                                 Order Date
                             </td>
-                            <td
-                                // styles:
-                                style={{
-                                    // appearances:
-                                    opacity : 0.6,
-                                    
-                                    
-                                    
-                                    // spacings:
-                                    paddingLeft  : '0.5em',
-                                    paddingRight : '0.5em',
-                                }}
-                            >
+                            <td style={styles.colonSeparator}>
                                 :
                             </td>
                             <td>
@@ -195,42 +118,35 @@ export const checkoutConfig = {
                     </tbody>
                 </table>
                 
-                <hr />
+                <hr style={styles.horzRule} />
                 
                 <Order.Items />
                 
-                <hr />
+                <hr style={styles.horzRule} />
                 
                 <Order.Subtotal />
                 <Order.Shipping />
                 
-                <hr />
+                <hr style={styles.horzRule} />
                 
                 <Order.Total />
                 
                 <IfPhysicalProduct>
-                    <hr />
+                    <hr style={styles.horzRule} />
                 </IfPhysicalProduct>
             </div>
             
             <IfPhysicalProduct>
-                <p>
+                <p style={styles.paragraphLast}>
                     We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
                 </p>
             </IfPhysicalProduct>
         </section>
         
-        <hr />
+        <hr style={styles.horzRule} />
         
         <section>
-            <h2
-                // styles:
-                style={{
-                    // typos:
-                    fontSize   : '1.75rem',
-                    fontWeight : 'bold',
-                }}
-            >
+            <h2 style={styles.heading2}>
                 Shipping Info
             </h2>
             
@@ -238,17 +154,10 @@ export const checkoutConfig = {
         </section>
         
         <IfPaid>
-            <hr />
+            <hr style={styles.horzRule} />
             
             <section>
-                <h2
-                    // styles:
-                    style={{
-                        // typos:
-                        fontSize   : '1.75rem',
-                        fontWeight : 'bold',
-                    }}
-                >
+                <h2 style={styles.heading2}>
                     Payment Info
                 </h2>
                 
@@ -256,38 +165,24 @@ export const checkoutConfig = {
             </section>
         </IfPaid>
         
-        <hr />
+        <hr style={styles.horzRule} />
         
         <section>
-            <h2
-                // styles:
-                style={{
-                    // typos:
-                    fontSize   : '1.75rem',
-                    fontWeight : 'bold',
-                }}
-            >
+            <h2 style={styles.heading2}>
                 Customer Info
             </h2>
             
             <Customer.Info title={null} />
         </section>
         
-        <hr />
+        <hr style={styles.horzRule} />
         
         <section>
-            <h2
-                // styles:
-                style={{
-                    // typos:
-                    fontSize   : '1.75rem',
-                    fontWeight : 'bold',
-                }}
-            >
+            <h2 style={styles.heading2}>
                 Customer Care Support
             </h2>
             
-            <p>
+            <p style={styles.paragraphLast}>
                 Need help? Please reply this email.
             </p>
         </section>

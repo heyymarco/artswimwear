@@ -4,6 +4,9 @@ import {
     default as React,
 }                           from 'react'
 
+// styles:
+import * as styles          from '@/components/Checkout/templates/styles'
+
 // internals:
 import {
     // hooks:
@@ -47,10 +50,10 @@ const ShippingAddress = (): React.ReactNode => {
     } = address;
     return (
         <>
-            <p>
+            <p style={styles.paragraph}>
                 {shippingFirstName} {shippingLastName} ({shippingPhone})
             </p>
-            <p>
+            <p style={styles.paragraphLast}>
                 {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
             </p>
         </>
@@ -71,8 +74,8 @@ const ShippingMethod = (): React.ReactNode => {
     if (!shippingProvider) return null;
     return (
         <>
-            <p>
-            {`${shippingProvider.name}${!shippingProvider.estimate ? '' : ` - ${shippingProvider.estimate}`}`}
+            <p style={styles.paragraphLast}>
+                {`${shippingProvider.name}${!shippingProvider.estimate ? '' : ` - ${shippingProvider.estimate}`}`}
             </p>
         </>
     );
@@ -95,52 +98,10 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
     
     // jsx:
     return (
-        <table
-            // styles:
-            style={{
-                // layouts:
-                tableLayout: 'auto',
-                
-                
-                
-                // borders:
-                borderCollapse: 'collapse',
-                
-                
-                
-                // typos:
-                color: 'initial',
-            }}
-        >
+        <table style={styles.tableReset}>
             {!!title && <thead>
                 <tr>
-                    <th colSpan={3}
-                        // styles:
-                        style={{
-                            // positions:
-                            verticalAlign : 'middle',
-                            
-                            
-                            
-                            // sizes:
-                            boxSizing  : 'content-box',
-                            // inlineSize : '4em', // not supported by GMail
-                            width      : '4em',
-                            
-                            
-                            
-                            // spacings:
-                            // paddingInlineEnd : '1.5em', // not supported by GMail
-                            paddingRight     : '1.5em',
-                            
-                            
-                            
-                            // typos:
-                            fontSize   : '1rem',
-                            fontWeight : 'bold',
-                            textAlign  : 'end',
-                        }}
-                    >
+                    <th colSpan={2} style={styles.tableTitleCenter}>
                         {title}
                     </th>
                 </tr>
@@ -148,65 +109,21 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
             
             <tbody>
                 <tr>
-                    <th
-                        // styles:
-                        style={{
-                            // positions:
-                            verticalAlign : 'middle',
-                            
-                            
-                            
-                            // sizes:
-                            boxSizing  : 'content-box',
-                            // inlineSize : '4em', // not supported by GMail
-                            width      : '4em',
-                            
-                            
-                            
-                            // spacings:
-                            // paddingInlineEnd : '1.5em', // not supported by GMail
-                            paddingRight     : '1.5em',
-                            
-                            
-                            
-                            // typos:
-                            fontSize   : '1rem',
-                            fontWeight : 'bold',
-                            textAlign  : 'end',
-                        }}
-                    >Ship To</th>
-                    <td><ShippingAddress /></td>
+                    <th style={styles.tableTitleSide}>
+                        Ship To
+                    </th>
+                    <td>
+                        <ShippingAddress />
+                    </td>
                 </tr>
                 
                 <tr>
-                    <th
-                        // styles:
-                        style={{
-                            // positions:
-                            verticalAlign : 'middle',
-                            
-                            
-                            
-                            // sizes:
-                            boxSizing  : 'content-box',
-                            // inlineSize : '4em', // not supported by GMail
-                            width      : '4em',
-                            
-                            
-                            
-                            // spacings:
-                            // paddingInlineEnd : '1.5em', // not supported by GMail
-                            paddingRight     : '1.5em',
-                            
-                            
-                            
-                            // typos:
-                            fontSize   : '1rem',
-                            fontWeight : 'bold',
-                            textAlign  : 'end',
-                        }}
-                    >Ship By</th>
-                    <td><ShippingMethod /></td>
+                    <th style={styles.tableTitleSide}>
+                        Ship By
+                    </th>
+                    <td>
+                        <ShippingMethod />
+                    </td>
                 </tr>
             </tbody>
         </table>

@@ -4,6 +4,9 @@ import {
     default as React,
 }                           from 'react'
 
+// styles:
+import * as styles          from '@/components/Checkout/templates/styles'
+
 // internals:
 import {
     // hooks:
@@ -87,29 +90,14 @@ const OrderSubtotal = (props: OrderSubtotalProps): React.ReactNode => {
     
     // jsx:
     return (
-        <p
-            // styles:
-            style={{
-                // layouts:
-                display: 'flex',
-                
-                
-                
-                // spacings:
-                margin: 0,
-            }}
-        >
-            {label} <span
+        <p style={styles.paragraphCurrency}>
+            {label}
+            <span
                 // styles:
                 style={{
-                    // spacings:
-                    marginLeft: 'auto',
-                    
-                    
-                    
-                    // typos:
-                    fontSize   : '1rem',
-                    fontWeight : 'bold',
+                    // bases:
+                    ...styles.boldText,
+                    ...styles.numberCurrency,
                 }}
             >
                 {formatCurrency(getTotalProductPrice(items))}
@@ -142,29 +130,14 @@ const OrderShipping = (props: OrderShippingProps): React.ReactNode => {
     // jsx:
     if (shippingCost === null) return null;
     return (
-        <p
-            // styles:
-            style={{
-                // layouts:
-                display: 'flex',
-                
-                
-                
-                // spacings:
-                margin: 0,
-            }}
-        >
-            {label} <span
+        <p style={styles.paragraphCurrency}>
+            {label}
+            <span
                 // styles:
                 style={{
-                    // spacings:
-                    marginLeft: 'auto',
-                    
-                    
-                    
-                    // typos:
-                    fontSize   : '1rem',
-                    fontWeight : 'bold',
+                    // bases:
+                    ...styles.boldText,
+                    ...styles.numberCurrency,
                 }}
             >
                 {formatCurrency(shippingCost)}
@@ -200,31 +173,18 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
         <p
             // styles:
             style={{
-                // layouts:
-                display: 'flex',
-                
-                
-                
-                // spacings:
-                margin: 0,
-                
-                
-                
-                // typos:
-                fontSize   : '1.25rem',
+                // bases:
+                ...styles.paragraphCurrency,
+                ...styles.bigText,
             }}
         >
-            {label} <span
+            {label}
+            <span
                 // styles:
                 style={{
-                    // spacings:
-                    marginLeft: 'auto',
-                    
-                    
-                    
-                    // typos:
-                    // fontSize   : '1rem',
-                    fontWeight : 'bold',
+                    // bases:
+                    ...styles.boldText,
+                    ...styles.numberCurrency,
                 }}
             >
                 {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
@@ -259,23 +219,13 @@ const OrderItems = (): React.ReactNode => {
                         
                         // styles:
                         style={{
-                            // layouts:
-                            tableLayout: 'auto',
+                            // bases:
+                            ...styles.tableReset,
                             
                             
                             
                             // sizes:
                             width : '100%', // consistent width across item(s)
-                            
-                            
-                            
-                            // borders:
-                            borderCollapse: 'collapse',
-                            
-                            
-                            
-                            // typos:
-                            color: 'initial',
                         }}
                     >
                         <tbody>
@@ -284,8 +234,10 @@ const OrderItems = (): React.ReactNode => {
                                     // styles:
                                     style={{
                                         // spacings:
-                                        // paddingInlineEnd : '1em', // not supported by GMail
-                                        paddingRight     : '1em',
+                                        // a spacer between product image and the product contents:
+                                        paddingRight       : '1em', // fallback for GMail
+                                        paddingInlineStart : 0,
+                                        paddingInlineEnd   : '1em',
                                     }}
                                 >
                                     {!!product?.imageId && <img
@@ -298,90 +250,50 @@ const OrderItems = (): React.ReactNode => {
                                         // styles:
                                         style={{
                                             // positions:
-                                            verticalAlign: 'middle',
+                                            // center product image vertically:
+                                            verticalAlign  : 'middle',
                                         }}
                                     />}
                                 </td>
                                 <th
                                     // styles:
                                     style={{
-                                        // positions:
-                                        verticalAlign : 'middle',
+                                        // bases:
+                                        ...styles.tableTitle,
                                         
                                         
                                         
                                         // sizes:
-                                        width : '100%', // fill the available table width
-                                        
-                                        
-                                        
-                                        // typos:
-                                        fontSize   : '1rem',
-                                        fontWeight : 'bold',
-                                        textAlign  : 'start',
+                                        width : '100%', // the product title fills the available table width
                                     }}
                                 >
                                     {product?.name}
                                 </th>
                             </tr>
                             <tr>
-                                <td
-                                    // styles:
-                                    style={{
-                                        // appearances:
-                                        opacity    : 0.6,
-                                        
-                                        
-                                        
-                                        // typos:
-                                        fontSize   : '0.75rem',
-                                        fontWeight : 'lighter',
-                                    }}
-                                >
+                                <td style={styles.smallText}>
                                     @ {formatCurrency(price)}
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <span
-                                        style={{
-                                            // positions:
-                                            verticalAlign : 'middle',
-                                            
-                                            
-                                            
-                                            // appearances:
-                                            opacity    : 0.6,
-                                            
-                                            
-                                            
-                                            // typos:
-                                            fontSize      : '0.75rem',
-                                            fontWeight    : 'lighter',
-                                        }}
-                                    >qty: </span>
-                                    <span
-                                        style={{
-                                            // positions:
-                                            verticalAlign : 'middle',
-                                            
-                                            
-                                            
-                                            // typos:
-                                            fontSize      : '1rem',
-                                            fontWeight    : 'normal',
-                                        }}
-                                    >x{quantity}</span>
+                                    <span style={styles.smallText}>qty: </span>
+                                    <span style={styles.normalText}>
+                                        x{quantity}
+                                    </span>
                                 </td>
                             </tr>
                             <tr>
                                 <td
                                     // styles:
                                     style={{
+                                        // bases:
+                                        ...styles.boldText,
+                                        
+                                        
+                                        
                                         // typos:
-                                        fontSize   : '1rem',
-                                        fontWeight : 'bold',
-                                        textAlign  : 'end',
+                                        textAlign  : 'end', // align to right_most
                                     }}
                                 >
                                     {formatCurrency((price !== undefined) ? (price * quantity) : undefined)}
@@ -389,7 +301,7 @@ const OrderItems = (): React.ReactNode => {
                             </tr>
                             {(itemIndex < (itemsCount - 1)) && <tr>
                                 <td colSpan={2}>
-                                    <hr />
+                                    <hr style={styles.horzRule} />
                                 </td>
                             </tr>}
                         </tbody>

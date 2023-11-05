@@ -4,6 +4,9 @@ import {
     default as React,
 }                           from 'react'
 
+// styles:
+import * as styles          from '@/components/Checkout/templates/styles'
+
 // internals:
 import {
     // hooks:
@@ -71,52 +74,10 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
     // jsx:
     if (!customer) return null;
     return (
-        <table
-            // styles:
-            style={{
-                // layouts:
-                tableLayout: 'auto',
-                
-                
-                
-                // borders:
-                borderCollapse: 'collapse',
-                
-                
-                
-                // typos:
-                color: 'initial',
-            }}
-        >
+        <table style={styles.tableReset}>
             {!!title && <thead>
                 <tr>
-                    <th colSpan={3}
-                        // styles:
-                        style={{
-                            // positions:
-                            verticalAlign : 'middle',
-                            
-                            
-                            
-                            // sizes:
-                            boxSizing  : 'content-box',
-                            // inlineSize : '4em', // not supported by GMail
-                            width      : '4em',
-                            
-                            
-                            
-                            // spacings:
-                            // paddingInlineEnd : '1.5em', // not supported by GMail
-                            paddingRight     : '1.5em',
-                            
-                            
-                            
-                            // typos:
-                            fontSize   : '1rem',
-                            fontWeight : 'bold',
-                            textAlign  : 'end',
-                        }}
-                    >
+                    <th colSpan={2} style={styles.tableTitleCenter}>
                         {title}
                     </th>
                 </tr>
@@ -124,35 +85,11 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
             
             <tbody>
                 <tr>
-                    <th
-                        // styles:
-                        style={{
-                            // positions:
-                            verticalAlign : 'middle',
-                            
-                            
-                            
-                            // sizes:
-                            boxSizing  : 'content-box',
-                            // inlineSize : '4em', // not supported by GMail
-                            width      : '4em',
-                            
-                            
-                            
-                            // spacings:
-                            // paddingInlineEnd : '1.5em', // not supported by GMail
-                            paddingRight     : '1.5em',
-                            
-                            
-                            
-                            // typos:
-                            fontSize   : '1rem',
-                            fontWeight : 'bold',
-                            textAlign  : 'end',
-                        }}
-                    >Account</th>
+                    <th style={styles.tableTitleSide}>
+                        Account
+                    </th>
                     <td>
-                        {customer.email} ({customer.nickName})
+                        {customer.email}<span style={styles.secondaryText}> ({customer.nickName})</span>
                     </td>
                 </tr>
             </tbody>

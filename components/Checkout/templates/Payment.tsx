@@ -4,6 +4,9 @@ import {
     default as React,
 }                           from 'react'
 
+// styles:
+import * as styles          from '@/components/Checkout/templates/styles'
+
 // internals:
 import {
     // hooks:
@@ -49,10 +52,10 @@ const BillingAddress = (): React.ReactNode => {
     } = address;
     return (
         <>
-            <p>
+            <p style={styles.paragraph}>
                 {billingFirstName} {billingLastName} ({billingPhone})
             </p>
-            <p>
+            <p style={styles.paragraphLast}>
                 {`${billingAddress}, ${billingCity}, ${billingZone} (${billingZip}), ${countryList?.entities?.[billingCountry ?? '']?.name}`}
             </p>
         </>
@@ -108,52 +111,10 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
     
     // jsx:
     return (
-        <table
-            // styles:
-            style={{
-                // layouts:
-                tableLayout: 'auto',
-                
-                
-                
-                // borders:
-                borderCollapse: 'collapse',
-                
-                
-                
-                // typos:
-                color: 'initial',
-            }}
-        >
+        <table style={styles.tableReset}>
             {!!title && <thead>
                 <tr>
-                    <th colSpan={2}
-                        // styles:
-                        style={{
-                            // positions:
-                            verticalAlign : 'middle',
-                            
-                            
-                            
-                            // sizes:
-                            boxSizing  : 'content-box',
-                            // inlineSize : '4em', // not supported by GMail
-                            width      : '4em',
-                            
-                            
-                            
-                            // spacings:
-                            // paddingInlineEnd : '1.5em', // not supported by GMail
-                            paddingRight     : '1.5em',
-                            
-                            
-                            
-                            // typos:
-                            fontSize   : '1rem',
-                            fontWeight : 'bold',
-                            textAlign  : 'end',
-                        }}
-                    >
+                    <th colSpan={2} style={styles.tableTitleCenter}>
                         {title}
                     </th>
                 </tr>
@@ -161,65 +122,21 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
             
             <tbody>
                 <tr>
-                    <th
-                        // styles:
-                        style={{
-                            // positions:
-                            verticalAlign : 'middle',
-                            
-                            
-                            
-                            // sizes:
-                            boxSizing  : 'content-box',
-                            // inlineSize : '4em', // not supported by GMail
-                            width      : '4em',
-                            
-                            
-                            
-                            // spacings:
-                            // paddingInlineEnd : '1.5em', // not supported by GMail
-                            paddingRight     : '1.5em',
-                            
-                            
-                            
-                            // typos:
-                            fontSize   : '1rem',
-                            fontWeight : 'bold',
-                            textAlign  : 'end',
-                        }}
-                    >Payment Method</th>
-                    <td><PaymentMethod /></td>
+                    <th style={styles.tableTitleSide}>
+                        Payment Method
+                    </th>
+                    <td>
+                        <PaymentMethod />
+                    </td>
                 </tr>
                 
                 <tr>
-                    <th
-                        // styles:
-                        style={{
-                            // positions:
-                            verticalAlign : 'middle',
-                            
-                            
-                            
-                            // sizes:
-                            boxSizing  : 'content-box',
-                            // inlineSize : '4em', // not supported by GMail
-                            width      : '4em',
-                            
-                            
-                            
-                            // spacings:
-                            // paddingInlineEnd : '1.5em', // not supported by GMail
-                            paddingRight     : '1.5em',
-                            
-                            
-                            
-                            // typos:
-                            fontSize   : '1rem',
-                            fontWeight : 'bold',
-                            textAlign  : 'end',
-                        }}
-                    >Billing Address</th>
-                    <td><BillingAddress /></td>
+                    <th style={styles.tableTitleSide}>
+                        Billing Address
+                    </th>
+                    <td>
+                        <BillingAddress />
+                    </td>
                 </tr>
             </tbody>
         </table>
