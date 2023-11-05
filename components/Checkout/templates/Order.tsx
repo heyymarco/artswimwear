@@ -189,7 +189,7 @@ const OrderItems = (): React.ReactNode => {
                             
                             
                             // typos:
-                            color: 'currentcolor',
+                            color: 'initial',
                         }}
                     >
                         <tbody>

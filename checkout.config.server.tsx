@@ -32,7 +32,11 @@ import {
 
 export const checkoutConfig = {
     EMAIL_CHECKOUT_SUBJECT : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
-    EMAIL_CHECKOUT_MESSAGE : <article>
+    EMAIL_CHECKOUT_MESSAGE : <article
+        style={{
+            color: 'initial',
+        }}
+    >
         <section>
             <h1>
                 Thanks For Your Order!
@@ -79,7 +83,7 @@ export const checkoutConfig = {
                     
                     
                     // typos:
-                    color: 'currentcolor',
+                    color: 'initial',
                 }}
             >
                 <table

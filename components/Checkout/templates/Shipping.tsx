@@ -109,7 +109,7 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
                 
                 
                 // typos:
-                color: 'currentcolor',
+                color: 'initial',
             }}
         >
             {!!title && <thead>

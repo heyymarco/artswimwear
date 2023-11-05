@@ -121,7 +121,7 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
                 
                 
                 // typos:
-                color: 'currentcolor',
+                color: 'initial',
             }}
         >
             {!!title && <thead>

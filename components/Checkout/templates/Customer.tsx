@@ -85,7 +85,7 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                 
                 
                 // typos:
-                color: 'currentcolor',
+                color: 'initial',
             }}
         >
             {!!title && <thead>
