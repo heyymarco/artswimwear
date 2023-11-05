@@ -1,3 +1,4 @@
+[high prior] fix email: Ship By undefined - 1-2 days
 move checkoutState to local if guess mode
 [high prior] verify the migrated api code in app dir
 [high prior] auto convert currentCurrency to USD if the currentCurrency is not supported by PayPal
