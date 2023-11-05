@@ -207,12 +207,6 @@ const OrderItems = (): React.ReactNode => {
                             // appearances:
                             alt={product?.name ?? ''}
                             src={product?.imageBase64}
-                            sizes='64px'
-                            
-                            
-                            
-                            // classes:
-                            className='prodImg'
                         />}
                         
                         <p>
