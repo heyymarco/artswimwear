@@ -183,6 +183,11 @@ const OrderItems = (): React.ReactNode => {
                             
                             
                             
+                            // sizes:
+                            width : '100%', // consistent width across item(s)
+                            
+                            
+                            
                             // borders:
                             borderCollapse: 'collapse',
                             
@@ -221,6 +226,11 @@ const OrderItems = (): React.ReactNode => {
                                     style={{
                                         // positions:
                                         verticalAlign : 'middle',
+                                        
+                                        
+                                        
+                                        // sizes:
+                                        width : '100%', // fill the available table width
                                         
                                         
                                         
