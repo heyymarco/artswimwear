@@ -100,12 +100,14 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                             
                             // sizes:
                             boxSizing  : 'content-box',
-                            inlineSize : '4em',
+                            // inlineSize : '4em', // not supported by GMail
+                            width      : '4em',
                             
                             
                             
                             // spacings:
-                            paddingInlineEnd : '1.5em',
+                            // paddingInlineEnd : '1.5em', // not supported by GMail
+                            paddingRight     : '1.5em',
                             
                             
                             
@@ -132,12 +134,14 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                             
                             // sizes:
                             boxSizing  : 'content-box',
-                            inlineSize : '4em',
+                            // inlineSize : '4em', // not supported by GMail
+                            width      : '4em',
                             
                             
                             
                             // spacings:
-                            paddingInlineEnd : '1.5em',
+                            // paddingInlineEnd : '1.5em', // not supported by GMail
+                            paddingRight     : '1.5em',
                             
                             
                             

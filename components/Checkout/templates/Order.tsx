@@ -197,7 +197,8 @@ const OrderItems = (): React.ReactNode => {
                                 <td rowSpan={4}
                                     // styles:
                                     style={{
-                                        paddingInlineEnd: '1em',
+                                        // paddingInlineEnd : '1em', // not supported by GMail
+                                        paddingRight     : '1em',
                                     }}
                                 >
                                     {!!product?.imageId && <img

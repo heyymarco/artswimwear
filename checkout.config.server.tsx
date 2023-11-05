@@ -73,7 +73,8 @@ export const checkoutConfig = {
                 // styles:
                 style={{
                     // sizes:
-                    inlineSize: 'fit-content',
+                    // inlineSize: 'fit-content', // not supported by GMail
+                    width: 'fit-content',
                     
                     
                     
@@ -95,7 +96,8 @@ export const checkoutConfig = {
                         
                         
                         // spacings:
-                        marginBlockEnd: '1rem',
+                        // marginBlockEnd : '1rem', // not supported by GMail
+                        marginBottom   : '1rem',
                     }}
                 >
                     <tbody>
