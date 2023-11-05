@@ -166,23 +166,11 @@ const OrderItems = (): React.ReactNode => {
     
     // jsx:
     return (
-        <ul
-            // styles:
-            style={{
-                // layouts:
-                listStyleType : 'none',
-                
-                
-                
-                // spacings:
-                margin        : 'unset',
-                padding       : 'unset',
-            }}
-        >
-            {items.map(({price, quantity, product}, itemIndex) => {
+        <div>
+            {items.map(({price, quantity, product}, itemIndex, {length: itemsCount}) => {
                 // jsx:
                 return (
-                    <li
+                    <table
                         // identifiers:
                         key={itemIndex}
                         
@@ -190,40 +178,127 @@ const OrderItems = (): React.ReactNode => {
                         
                         // styles:
                         style={{
-                            // spacings:
-                            margin    : 'unset',
+                            // layouts:
+                            tableLayout: 'auto',
+                            
+                            
+                            
+                            // borders:
+                            borderCollapse: 'collapse',
                             
                             
                             
                             // typos:
-                            textAlign : 'unset'
+                            color: 'currentcolor',
                         }}
                     >
-                        <h3>
-                            {product?.name}
-                        </h3>
-                        
-                        {!!product?.imageId && <img
-                            // appearances:
-                            alt={product?.name ?? ''}
-                            src={`cid:${product?.imageId}`}
-                        />}
-                        
-                        <p>
-                            @ {formatCurrency(price)}
-                        </p>
-                        
-                        <p>
-                            qty: x{quantity}
-                        </p>
-                        
-                        <p>
-                            {formatCurrency((price !== undefined) ? (price * quantity) : undefined)}
-                        </p>
-                    </li>
+                        <tbody>
+                            <tr>
+                                <td rowSpan={4}
+                                    // styles:
+                                    style={{
+                                        paddingInlineEnd: '1em',
+                                    }}
+                                >
+                                    {!!product?.imageId && <img
+                                        // appearances:
+                                        alt={product?.name ?? ''}
+                                        src={`cid:${product?.imageId}`}
+                                        
+                                        
+                                        
+                                        // styles:
+                                        style={{
+                                            // positions:
+                                            verticalAlign: 'middle',
+                                        }}
+                                    />}
+                                </td>
+                                <th
+                                    // styles:
+                                    style={{
+                                        // typos:
+                                        fontSize   : '1rem',
+                                        fontWeight : 'bold',
+                                        textAlign  : 'start',
+                                    }}
+                                >
+                                    {product?.name}
+                                </th>
+                            </tr>
+                            <tr>
+                                <td
+                                    // styles:
+                                    style={{
+                                        // appearances:
+                                        opacity    : 0.6,
+                                        
+                                        
+                                        
+                                        // typos:
+                                        fontSize   : '0.75rem',
+                                        fontWeight : 'lighter',
+                                    }}
+                                >
+                                    @ {formatCurrency(price)}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <span
+                                        style={{
+                                            // positions:
+                                            verticalAlign : 'middle',
+                                            
+                                            
+                                            
+                                            // appearances:
+                                            opacity    : 0.6,
+                                            
+                                            
+                                            
+                                            // typos:
+                                            fontSize      : '0.75rem',
+                                            fontWeight    : 'lighter',
+                                        }}
+                                    >qty: </span>
+                                    <span
+                                        style={{
+                                            // positions:
+                                            verticalAlign : 'middle',
+                                            
+                                            
+                                            
+                                            // typos:
+                                            fontSize      : '1rem',
+                                            fontWeight    : 'normal',
+                                        }}
+                                    >x{quantity}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td
+                                    // styles:
+                                    style={{
+                                        // typos:
+                                        fontSize   : '1rem',
+                                        fontWeight : 'bold',
+                                        textAlign  : 'end',
+                                    }}
+                                >
+                                    {formatCurrency((price !== undefined) ? (price * quantity) : undefined)}
+                                </td>
+                            </tr>
+                            {(itemIndex < (itemsCount - 1)) && <tr>
+                                <td colSpan={2}>
+                                    <hr />
+                                </td>
+                            </tr>}
+                        </tbody>
+                    </table>
                 );
             })}
-        </ul>
+        </div>
     );
 };
 
