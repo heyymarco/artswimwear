@@ -206,7 +206,7 @@ const OrderItems = (): React.ReactNode => {
                         {!!product?.imageId && <img
                             // appearances:
                             alt={product?.name ?? ''}
-                            src={product?.imageId}
+                            src={`cid:${product?.imageId}`}
                         />}
                         
                         <p>

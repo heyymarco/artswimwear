@@ -1617,7 +1617,7 @@ router
                 const itemProduct = newOrderItems[index].product;
                 if (!itemProduct) return;
                 itemProduct.imageBase64 = imageBase64;
-                itemProduct.imageId     = `cid:${index}`;
+                itemProduct.imageId     = `i${index}`;
             });
             //#endregion download image url to base64
             
