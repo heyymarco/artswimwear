@@ -228,9 +228,9 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
                 }}
             >
                 {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
+                {' '}
+                <span>{COMMERCE_CURRENCY}</span>
             </span>
-            {' '}
-            <span>{COMMERCE_CURRENCY}</span>
         </p>
     );
 };
