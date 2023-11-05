@@ -204,7 +204,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                             // appearances:
                             alt={`image #${index + 1} of ${productDetail.name}`}
                             src={resolveMediaUrl(image)}
-                            sizes='100vw'
+                            sizes='266px' // ((25*16) - (1*2)) * (2/3) = 266
                             
                             priority={true}
                         />

@@ -108,7 +108,7 @@ const ProductItem = ({product}: ProductItemProps) => {
                 // appearances:
                 alt={product.name ?? ''}
                 src={resolveMediaUrl(product.image)}
-                sizes='414px'
+                sizes='414px' // (255*2) - ((4*16) * 1.5) = 414
                 
                 
                 
