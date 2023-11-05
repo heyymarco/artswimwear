@@ -197,6 +197,7 @@ const OrderItems = (): React.ReactNode => {
                                 <td rowSpan={4}
                                     // styles:
                                     style={{
+                                        // spacings:
                                         // paddingInlineEnd : '1em', // not supported by GMail
                                         paddingRight     : '1em',
                                     }}

@@ -106,10 +106,28 @@ export const checkoutConfig = {
                 >
                     <tbody>
                         <tr>
-                            <td>
+                            <td
+                                // styles:
+                                style={{
+                                    // appearances:
+                                    opacity : 0.6,
+                                }}
+                            >
                                 Order Number
                             </td>
-                            <td>
+                            <td
+                                // styles:
+                                style={{
+                                    // appearances:
+                                    opacity : 0.6,
+                                    
+                                    
+                                    
+                                    // spacings:
+                                    paddingLeft  : '0.5em',
+                                    paddingRight : '0.5em',
+                                }}
+                            >
                                 :
                             </td>
                             <td>
@@ -117,10 +135,28 @@ export const checkoutConfig = {
                             </td>
                         </tr>
                         <tr>
-                            <td>
+                            <td
+                                // styles:
+                                style={{
+                                    // appearances:
+                                    opacity : 0.6,
+                                }}
+                            >
                                 Order Date
                             </td>
-                            <td>
+                            <td
+                                // styles:
+                                style={{
+                                    // appearances:
+                                    opacity : 0.6,
+                                    
+                                    
+                                    
+                                    // spacings:
+                                    paddingLeft  : '0.5em',
+                                    paddingRight : '0.5em',
+                                }}
+                            >
                                 :
                             </td>
                             <td>
