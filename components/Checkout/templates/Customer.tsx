@@ -71,10 +71,50 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
     // jsx:
     if (!customer) return null;
     return (
-        <table>
+        <table
+            // styles:
+            style={{
+                // layouts:
+                tableLayout: 'auto',
+                
+                
+                
+                // borders:
+                borderCollapse: 'collapse',
+                
+                
+                
+                // typos:
+                color: 'currentcolor',
+            }}
+        >
             {!!title && <thead>
                 <tr>
-                    <th colSpan={3}>
+                    <th colSpan={3}
+                        // styles:
+                        style={{
+                            // positions:
+                            verticalAlign : 'middle',
+                            
+                            
+                            
+                            // sizes:
+                            boxSizing  : 'content-box',
+                            inlineSize : '4em',
+                            
+                            
+                            
+                            // spacings:
+                            paddingInlineEnd : '1.5em',
+                            
+                            
+                            
+                            // typos:
+                            fontSize   : '1rem',
+                            fontWeight : 'bold',
+                            textAlign  : 'end',
+                        }}
+                    >
                         {title}
                     </th>
                 </tr>
@@ -82,7 +122,31 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
             
             <tbody>
                 <tr>
-                    <th>Account</th>
+                    <th
+                        // styles:
+                        style={{
+                            // positions:
+                            verticalAlign : 'middle',
+                            
+                            
+                            
+                            // sizes:
+                            boxSizing  : 'content-box',
+                            inlineSize : '4em',
+                            
+                            
+                            
+                            // spacings:
+                            paddingInlineEnd : '1.5em',
+                            
+                            
+                            
+                            // typos:
+                            fontSize   : '1rem',
+                            fontWeight : 'bold',
+                            textAlign  : 'end',
+                        }}
+                    >Account</th>
                     <td>
                         {customer.email} ({customer.nickName})
                     </td>
