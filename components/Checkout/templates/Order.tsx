@@ -15,6 +15,11 @@ import {
     formatCurrency,
 }                           from '@/libs/formatters'
 
+// configs:
+import {
+    COMMERCE_CURRENCY,
+}                           from '@/commerce.config'
+
 
 
 // utilities:
@@ -82,11 +87,34 @@ const OrderSubtotal = (props: OrderSubtotalProps): React.ReactNode => {
     
     // jsx:
     return (
-        <>
-            {label} <span className='currency'>
+        <p
+            // styles:
+            style={{
+                // layouts:
+                display: 'flex',
+                
+                
+                
+                // spacings:
+                margin: 0,
+            }}
+        >
+            {label} <span
+                // styles:
+                style={{
+                    // spacings:
+                    marginLeft: 'auto',
+                    
+                    
+                    
+                    // typos:
+                    fontSize   : '1rem',
+                    fontWeight : 'bold',
+                }}
+            >
                 {formatCurrency(getTotalProductPrice(items))}
             </span>
-        </>
+        </p>
     );
 };
 export interface OrderShippingProps {
@@ -114,11 +142,34 @@ const OrderShipping = (props: OrderShippingProps): React.ReactNode => {
     // jsx:
     if (shippingCost === null) return null;
     return (
-        <>
-            {label} <span className='currency'>
+        <p
+            // styles:
+            style={{
+                // layouts:
+                display: 'flex',
+                
+                
+                
+                // spacings:
+                margin: 0,
+            }}
+        >
+            {label} <span
+                // styles:
+                style={{
+                    // spacings:
+                    marginLeft: 'auto',
+                    
+                    
+                    
+                    // typos:
+                    fontSize   : '1rem',
+                    fontWeight : 'bold',
+                }}
+            >
                 {formatCurrency(shippingCost)}
             </span>
-        </>
+        </p>
     );
 };
 export interface OrderTotalProps {
@@ -146,11 +197,41 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
     
     // jsx:
     return (
-        <>
-            {label} <span className='currency'>
+        <p
+            // styles:
+            style={{
+                // layouts:
+                display: 'flex',
+                
+                
+                
+                // spacings:
+                margin: 0,
+                
+                
+                
+                // typos:
+                fontSize   : '1.25rem',
+            }}
+        >
+            {label} <span
+                // styles:
+                style={{
+                    // spacings:
+                    marginLeft: 'auto',
+                    
+                    
+                    
+                    // typos:
+                    // fontSize   : '1rem',
+                    fontWeight : 'bold',
+                }}
+            >
                 {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
             </span>
-        </>
+            {' '}
+            <span>{COMMERCE_CURRENCY}</span>
+        </p>
     );
 };
 const OrderItems = (): React.ReactNode => {
@@ -298,7 +379,7 @@ const OrderItems = (): React.ReactNode => {
                                     // styles:
                                     style={{
                                         // typos:
-                                        // fontSize   : '1rem',
+                                        fontSize   : '1rem',
                                         fontWeight : 'bold',
                                         textAlign  : 'end',
                                     }}

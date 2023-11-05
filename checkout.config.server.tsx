@@ -34,11 +34,20 @@ export const checkoutConfig = {
     EMAIL_CHECKOUT_SUBJECT : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
     EMAIL_CHECKOUT_MESSAGE : <article
         style={{
-            color: 'initial',
+            // typos:
+            fontSize : '1rem',
+            color    : 'initial',
         }}
     >
         <section>
-            <h1>
+            <h1
+                // styles:
+                style={{
+                    // typos:
+                    fontSize   : '2rem',
+                    fontWeight : 'bold',
+                }}
+            >
                 Thanks For Your Order!
             </h1>
             
@@ -56,7 +65,14 @@ export const checkoutConfig = {
             <hr />
             
             <section>
-                <h2>
+                <h2
+                    // styles:
+                    style={{
+                        // typos:
+                        fontSize   : '1.75rem',
+                        fontWeight : 'bold',
+                    }}
+                >
                     Payment Instruction
                 </h2>
                 
@@ -69,7 +85,14 @@ export const checkoutConfig = {
         <hr />
         
         <section>
-            <h2>
+            <h2
+                // styles:
+                style={{
+                    // typos:
+                    fontSize   : '1.75rem',
+                    fontWeight : 'bold',
+                }}
+            >
                 Order Summary
             </h2>
             
@@ -130,7 +153,13 @@ export const checkoutConfig = {
                             >
                                 :
                             </td>
-                            <td>
+                            <td
+                                // styles:
+                                style={{
+                                    // typos:
+                                    fontWeight : 'bold',
+                                }}
+                            >
                                 <Order.Id />
                             </td>
                         </tr>
@@ -173,7 +202,6 @@ export const checkoutConfig = {
                 <hr />
                 
                 <Order.Subtotal />
-                <br />
                 <Order.Shipping />
                 
                 <hr />
@@ -195,7 +223,14 @@ export const checkoutConfig = {
         <hr />
         
         <section>
-            <h2>
+            <h2
+                // styles:
+                style={{
+                    // typos:
+                    fontSize   : '1.75rem',
+                    fontWeight : 'bold',
+                }}
+            >
                 Shipping Info
             </h2>
             
@@ -206,7 +241,14 @@ export const checkoutConfig = {
             <hr />
             
             <section>
-                <h2>
+                <h2
+                    // styles:
+                    style={{
+                        // typos:
+                        fontSize   : '1.75rem',
+                        fontWeight : 'bold',
+                    }}
+                >
                     Payment Info
                 </h2>
                 
@@ -217,7 +259,14 @@ export const checkoutConfig = {
         <hr />
         
         <section>
-            <h2>
+            <h2
+                // styles:
+                style={{
+                    // typos:
+                    fontSize   : '1.75rem',
+                    fontWeight : 'bold',
+                }}
+            >
                 Customer Info
             </h2>
             
@@ -227,7 +276,14 @@ export const checkoutConfig = {
         <hr />
         
         <section>
-            <h2>
+            <h2
+                // styles:
+                style={{
+                    // typos:
+                    fontSize   : '1.75rem',
+                    fontWeight : 'bold',
+                }}
+            >
                 Customer Care Support
             </h2>
             
