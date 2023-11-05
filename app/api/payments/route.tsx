@@ -1610,6 +1610,7 @@ router
                     } // if
                 })
             );
+            console.log('downloaded images: ', imageBase64s);
             imageBase64s.forEach((imageBase64, index) => {
                 if (!imageBase64) return;
                 const itemProduct = newOrderItems[index].product;
@@ -1644,6 +1645,7 @@ router
                     },
                 });
                 try {
+                    console.log('sending email...');
                     await transporter.sendMail({
                         from    : process.env.EMAIL_CHECKOUT_FROM, // sender address
                         to      : customerEmail, // list of receivers
@@ -1658,6 +1660,7 @@ router
                             </OrderDataContextProvider>
                         ),
                     });
+                    console.log('email sent.');
                 }
                 finally {
                     transporter.close();
