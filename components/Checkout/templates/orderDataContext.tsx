@@ -41,8 +41,12 @@ import type {
 
 
 // contexts:
+export type ProductData = Pick<Product, 'name'> & {
+    image        : Product['images'][number]|null
+    imageBase64 ?: string
+}
 export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'> & {
-    product : Pick<Product, 'name'>|null
+    product : ProductData|null
 }
 export type OrderAndData = Order & {
     items             : OrderItemsAndData[]

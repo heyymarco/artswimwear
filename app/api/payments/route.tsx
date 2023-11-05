@@ -88,6 +88,9 @@ import {
     getMatchingShipping,
     calculateShippingCost,
 }                           from '@/libs/shippings'
+import {
+    downloadImageAsBase64,
+}                           from '@/libs/images'
 
 
 
@@ -321,6 +324,7 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
                     product        : {
                         select : {
                             name   : true,
+                            images : true,
                         },
                     },
                 },
@@ -349,6 +353,14 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
     const shippingProvider = newOrder.shippingProvider;
     return {
         ...newOrder,
+        items: newOrder.items.map((item) => ({
+            ...item,
+            product : !!item.product ? {
+                name        : item.product.name,
+                image       : item.product.images?.[0] ?? null,
+                imageBase64 : undefined,
+            } : null,
+        })),
         shippingProvider : (
             (shippingAddress && shippingProvider)
             ? getMatchingShipping(shippingProvider, { city: shippingAddress.city, zone: shippingAddress.zone, country: shippingAddress.country })
@@ -1578,6 +1590,30 @@ router
         
         //#region send email confirmation
         if (newOrder) {
+            //#region download image url to base64
+            const newOrderItems = newOrder.items;
+            const imageUrls     = newOrderItems.map((item) => item.product?.image);
+            const imageBase64s  = await Promise.all(
+                imageUrls.map(async (imageUrl): Promise<string|undefined> => {
+                    if (!imageUrl) return undefined;
+                    try {
+                        return await downloadImageAsBase64(imageUrl, 64);
+                    }
+                    catch { // silently ignore the error and resulting as undefined:
+                        return undefined;
+                    } // if
+                })
+            );
+            imageBase64s.forEach((imageBase64, index) => {
+                if (!imageBase64) return;
+                const itemProduct = newOrderItems[index].product;
+                if (!itemProduct) return;
+                itemProduct.imageBase64 = imageBase64;
+            });
+            //#endregion download image url to base64
+            
+            
+            
             try {
                 const { renderToStaticMarkup } = await import('react-dom/server');
                 const orderDataContextProviderProps : OrderDataContextProviderProps = {

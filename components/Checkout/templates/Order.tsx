@@ -203,6 +203,18 @@ const OrderItems = (): React.ReactNode => {
                             {product?.name}
                         </h3>
                         
+                        {!!product?.imageBase64 && <img
+                            // appearances:
+                            alt={product?.name ?? ''}
+                            src={product?.imageBase64}
+                            sizes='64px'
+                            
+                            
+                            
+                            // classes:
+                            className='prodImg'
+                        />}
+                        
                         <p>
                             @ {formatCurrency(price)}
                         </p>
