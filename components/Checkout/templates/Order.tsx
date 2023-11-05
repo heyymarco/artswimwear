@@ -206,7 +206,7 @@ const OrderItems = (): React.ReactNode => {
                         {!!product?.imageBase64 && <img
                             // appearances:
                             alt={product?.name ?? ''}
-                            src={product?.imageBase64}
+                            src={product?.imageId}
                         />}
                         
                         <p>

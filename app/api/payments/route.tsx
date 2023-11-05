@@ -362,6 +362,7 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
                 name        : item.product.name,
                 image       : item.product.images?.[0] ?? null,
                 imageBase64 : undefined,
+                imageId     : undefined,
             } : null,
         })),
         shippingProvider : (
@@ -1616,6 +1617,7 @@ router
                 const itemProduct = newOrderItems[index].product;
                 if (!itemProduct) return;
                 itemProduct.imageBase64 = imageBase64;
+                itemProduct.imageId     = `cid:${index}`;
             });
             //#endregion download image url to base64
             
@@ -1647,17 +1649,25 @@ router
                 try {
                     console.log('sending email...');
                     await transporter.sendMail({
-                        from    : process.env.EMAIL_CHECKOUT_FROM, // sender address
-                        to      : customerEmail, // list of receivers
-                        subject : renderToStaticMarkup(
+                        from        : process.env.EMAIL_CHECKOUT_FROM, // sender address
+                        to          : customerEmail, // list of receivers
+                        subject     : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
                                 {checkoutConfig.EMAIL_CHECKOUT_SUBJECT}
                             </OrderDataContextProvider>
                         ),
-                        html    : renderToStaticMarkup(
+                        html        : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
                                 {checkoutConfig.EMAIL_CHECKOUT_MESSAGE}
                             </OrderDataContextProvider>
+                        ),
+                        attachments : (
+                            newOrderItems
+                            .filter(({product}) => !!product && !!product.imageBase64 && !!product.imageId)
+                            .map(({product}) => ({
+                                path : product?.imageBase64,
+                                cid  : product?.imageId,
+                            }))
                         ),
                     });
                     console.log('email sent.');
