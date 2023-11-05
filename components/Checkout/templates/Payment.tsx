@@ -107,10 +107,50 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
     
     // jsx:
     return (
-        <table>
+        <table
+            // styles:
+            style={{
+                // layouts:
+                tableLayout: 'auto',
+                
+                
+                
+                // borders:
+                borderCollapse: 'collapse',
+                
+                
+                
+                // typos:
+                color: 'currentcolor',
+            }}
+        >
             {!!title && <thead>
                 <tr>
-                    <th colSpan={2}>
+                    <th colSpan={2}
+                        // styles:
+                        style={{
+                            // positions:
+                            verticalAlign : 'middle',
+                            
+                            
+                            
+                            // sizes:
+                            boxSizing  : 'content-box',
+                            inlineSize : '4em',
+                            
+                            
+                            
+                            // spacings:
+                            paddingInlineEnd : '1.5em',
+                            
+                            
+                            
+                            // typos:
+                            fontSize   : '1rem',
+                            fontWeight : 'bold',
+                            textAlign  : 'end',
+                        }}
+                    >
                         {title}
                     </th>
                 </tr>
@@ -118,12 +158,60 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
             
             <tbody>
                 <tr>
-                    <th>Payment Method</th>
+                    <th
+                        // styles:
+                        style={{
+                            // positions:
+                            verticalAlign : 'middle',
+                            
+                            
+                            
+                            // sizes:
+                            boxSizing  : 'content-box',
+                            inlineSize : '4em',
+                            
+                            
+                            
+                            // spacings:
+                            paddingInlineEnd : '1.5em',
+                            
+                            
+                            
+                            // typos:
+                            fontSize   : '1rem',
+                            fontWeight : 'bold',
+                            textAlign  : 'end',
+                        }}
+                    >Payment Method</th>
                     <td><PaymentMethod /></td>
                 </tr>
                 
                 <tr>
-                    <th>Billing Address</th>
+                    <th
+                        // styles:
+                        style={{
+                            // positions:
+                            verticalAlign : 'middle',
+                            
+                            
+                            
+                            // sizes:
+                            boxSizing  : 'content-box',
+                            inlineSize : '4em',
+                            
+                            
+                            
+                            // spacings:
+                            paddingInlineEnd : '1.5em',
+                            
+                            
+                            
+                            // typos:
+                            fontSize   : '1rem',
+                            fontWeight : 'bold',
+                            textAlign  : 'end',
+                        }}
+                    >Billing Address</th>
                     <td><BillingAddress /></td>
                 </tr>
             </tbody>
