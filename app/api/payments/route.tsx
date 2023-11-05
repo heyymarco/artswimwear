@@ -85,6 +85,9 @@ import {
     trimNumber,
 }                           from '@/libs/formatters'
 import {
+    resolveMediaUrl,
+}                           from '@/libs/mediaStorage.client'
+import {
     getMatchingShipping,
     calculateShippingCost,
 }                           from '@/libs/shippings'
@@ -1596,10 +1599,13 @@ router
             const imageBase64s  = await Promise.all(
                 imageUrls.map(async (imageUrl): Promise<string|undefined> => {
                     if (!imageUrl) return undefined;
+                    const resolvedImageUrl = resolveMediaUrl(imageUrl);
+                    if (!resolvedImageUrl) return undefined;
                     try {
-                        return await downloadImageAsBase64(imageUrl, 64);
+                        return await downloadImageAsBase64(resolvedImageUrl, 64);
                     }
-                    catch { // silently ignore the error and resulting as undefined:
+                    catch (error: any) { // silently ignore the error and resulting as undefined:
+                        console.log('ERROR DOWNLOADING IMAGE: ', error);
                         return undefined;
                     } // if
                 })
