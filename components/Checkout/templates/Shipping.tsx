@@ -95,10 +95,50 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
     
     // jsx:
     return (
-        <table>
+        <table
+            // styles:
+            style={{
+                // layouts:
+                tableLayout: 'auto',
+                
+                
+                
+                // borders:
+                borderCollapse: 'collapse',
+                
+                
+                
+                // typos:
+                color: 'currentcolor',
+            }}
+        >
             {!!title && <thead>
                 <tr>
-                    <th colSpan={3}>
+                    <th colSpan={3}
+                        // styles:
+                        style={{
+                            // positions:
+                            verticalAlign : 'middle',
+                            
+                            
+                            
+                            // sizes:
+                            boxSizing  : 'content-box',
+                            inlineSize : '4em',
+                            
+                            
+                            
+                            // spacings:
+                            paddingInlineEnd : '1.5em',
+                            
+                            
+                            
+                            // typos:
+                            fontSize   : '1rem',
+                            fontWeight : 'bold',
+                            textAlign  : 'end',
+                        }}
+                    >
                         {title}
                     </th>
                 </tr>
@@ -106,12 +146,60 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
             
             <tbody>
                 <tr>
-                    <th>Ship To</th>
+                    <th
+                        // styles:
+                        style={{
+                            // positions:
+                            verticalAlign : 'middle',
+                            
+                            
+                            
+                            // sizes:
+                            boxSizing  : 'content-box',
+                            inlineSize : '4em',
+                            
+                            
+                            
+                            // spacings:
+                            paddingInlineEnd : '1.5em',
+                            
+                            
+                            
+                            // typos:
+                            fontSize   : '1rem',
+                            fontWeight : 'bold',
+                            textAlign  : 'end',
+                        }}
+                    >Ship To</th>
                     <td><ShippingAddress /></td>
                 </tr>
                 
                 <tr>
-                    <th>Ship By</th>
+                    <th
+                        // styles:
+                        style={{
+                            // positions:
+                            verticalAlign : 'middle',
+                            
+                            
+                            
+                            // sizes:
+                            boxSizing  : 'content-box',
+                            inlineSize : '4em',
+                            
+                            
+                            
+                            // spacings:
+                            paddingInlineEnd : '1.5em',
+                            
+                            
+                            
+                            // typos:
+                            fontSize   : '1rem',
+                            fontWeight : 'bold',
+                            textAlign  : 'end',
+                        }}
+                    >Ship By</th>
                     <td><ShippingMethod /></td>
                 </tr>
             </tbody>
