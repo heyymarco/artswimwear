@@ -69,49 +69,89 @@ export const checkoutConfig = {
                 Order Summary
             </h2>
             
-            <table>
-                <tbody>
-                    <tr>
-                        <td>
-                            Order Number
-                        </td>
-                        <td>
-                            :
-                        </td>
-                        <td>
-                            <Order.Id />
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Order Date
-                        </td>
-                        <td>
-                            :
-                        </td>
-                        <td>
-                            <Order.CreatedAt />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            <hr />
-            
-            <Order.Items />
-            
-            <hr />
-            
-            <Order.Subtotal />
-            <Order.Shipping />
-            
-            <hr />
-            
-            <Order.Total />
+            <div
+                // styles:
+                style={{
+                    // sizes:
+                    inlineSize: 'fit-content',
+                    
+                    
+                    
+                    // typos:
+                    color: 'currentcolor',
+                }}
+            >
+                <table
+                    // styles:
+                    style={{
+                        // layouts:
+                        tableLayout: 'auto',
+                        
+                        
+                        
+                        // borders:
+                        borderCollapse: 'collapse',
+                        
+                        
+                        
+                        // spacings:
+                        marginBlockEnd: '1rem',
+                    }}
+                >
+                    <tbody>
+                        <tr>
+                            <td>
+                                Order Number
+                            </td>
+                            <td>
+                                :
+                            </td>
+                            <td>
+                                <Order.Id />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                Order Date
+                            </td>
+                            <td>
+                                :
+                            </td>
+                            <td>
+                                <Order.CreatedAt />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div
+                    // styles:
+                    style={{
+                        // sizes:
+                        contain: 'inline-size',
+                    }}
+                >
+                    <hr />
+                    
+                    <Order.Items />
+                    
+                    <hr />
+                    
+                    <Order.Subtotal />
+                    <br />
+                    <Order.Shipping />
+                    
+                    <hr />
+                    
+                    <Order.Total />
+                </div>
+                
+                <IfPhysicalProduct>
+                    <hr />
+                </IfPhysicalProduct>
+            </div>
             
             <IfPhysicalProduct>
-                <hr />
-                
                 <p>
                     We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
                 </p>
