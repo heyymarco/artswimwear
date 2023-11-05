@@ -166,22 +166,54 @@ const OrderItems = (): React.ReactNode => {
     
     // jsx:
     return (
-        <ul style={{
-            listStyleType : 'none',
-            margin        : 'unset',
-            padding       : 'unset',
-        }}>
+        <ul
+            // styles:
+            style={{
+                // layouts:
+                listStyleType : 'none',
+                
+                
+                
+                // spacings:
+                margin        : 'unset',
+                padding       : 'unset',
+            }}
+        >
             {items.map(({price, quantity, product}, itemIndex) => {
                 // jsx:
                 return (
                     <li
                         // identifiers:
                         key={itemIndex}
+                        
+                        
+                        
+                        // styles:
+                        style={{
+                            // spacings:
+                            margin    : 'unset',
+                            
+                            
+                            
+                            // typos:
+                            textAlign : 'unset'
+                        }}
                     >
-                        <h3>{product?.name}</h3>
-                        <p>@ {formatCurrency(price)}</p>
-                        <p>qty: x{quantity}</p>
-                        <p>{formatCurrency((price !== undefined) ? (price * quantity) : undefined)}</p>
+                        <h3>
+                            {product?.name}
+                        </h3>
+                        
+                        <p>
+                            @ {formatCurrency(price)}
+                        </p>
+                        
+                        <p>
+                            qty: x{quantity}
+                        </p>
+                        
+                        <p>
+                            {formatCurrency((price !== undefined) ? (price * quantity) : undefined)}
+                        </p>
                     </li>
                 );
             })}
