@@ -298,7 +298,7 @@ const OrderItems = (): React.ReactNode => {
                                     // styles:
                                     style={{
                                         // typos:
-                                        fontSize   : '1rem',
+                                        // fontSize   : '1rem',
                                         fontWeight : 'bold',
                                         textAlign  : 'end',
                                     }}
