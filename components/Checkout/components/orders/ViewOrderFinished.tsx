@@ -65,6 +65,7 @@ const ViewOrderFinished = (props: ViewOrderFinishedProps): JSX.Element|null => {
         
         
         // customer data:
+        customerNickName,
         customerEmail,
     } = useCheckoutState();
     
@@ -75,7 +76,7 @@ const ViewOrderFinished = (props: ViewOrderFinishedProps): JSX.Element|null => {
         <>
             <Section>
                 <p>
-                    Dear {/* <Customer.Name /> */},
+                    Dear {customerNickName},
                 </p>
                 
                 <p>
