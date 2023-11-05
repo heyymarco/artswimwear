@@ -1,3 +1,4 @@
+[high prior] fix shipping should be mocked when order finished so the shipping displayed on the order summary
 [high prior] fix email: Ship By undefined - 1-2 days
 move checkoutState to local if guess mode
 [high prior] verify the migrated api code in app dir
