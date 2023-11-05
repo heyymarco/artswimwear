@@ -126,27 +126,19 @@ export const checkoutConfig = {
                     </tbody>
                 </table>
                 
-                <div
-                    // styles:
-                    style={{
-                        // sizes:
-                        contain: 'inline-size',
-                    }}
-                >
-                    <hr />
-                    
-                    <Order.Items />
-                    
-                    <hr />
-                    
-                    <Order.Subtotal />
-                    <br />
-                    <Order.Shipping />
-                    
-                    <hr />
-                    
-                    <Order.Total />
-                </div>
+                <hr />
+                
+                <Order.Items />
+                
+                <hr />
+                
+                <Order.Subtotal />
+                <br />
+                <Order.Shipping />
+                
+                <hr />
+                
+                <Order.Total />
                 
                 <IfPhysicalProduct>
                     <hr />
