@@ -203,7 +203,7 @@ const OrderItems = (): React.ReactNode => {
                             {product?.name}
                         </h3>
                         
-                        {!!product?.imageBase64 && <img
+                        {!!product?.imageId && <img
                             // appearances:
                             alt={product?.name ?? ''}
                             src={product?.imageId}
