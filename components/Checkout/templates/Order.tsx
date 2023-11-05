@@ -217,6 +217,11 @@ const OrderItems = (): React.ReactNode => {
                                 <th
                                     // styles:
                                     style={{
+                                        // positions:
+                                        verticalAlign : 'middle',
+                                        
+                                        
+                                        
                                         // typos:
                                         fontSize   : '1rem',
                                         fontWeight : 'bold',
