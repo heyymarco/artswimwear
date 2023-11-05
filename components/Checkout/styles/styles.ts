@@ -293,7 +293,16 @@ export default () => {
                                 padding: '0.75rem',
                             }),
                             ...children('th', {
-                                fontWeight: typos.fontWeightSemibold,
+                                // layouts:
+                                display : 'grid',
+                                justifyContent : 'center', // center the content horizontally
+                                alignContent   : 'center', // center the content vertically
+                                
+                                
+                                
+                                // typos:
+                                fontWeight : typos.fontWeightSemibold,
+                                textAlign  : 'end',
                             }),
                             ...children('td', {
                                 wordBreak    : 'break-word',
