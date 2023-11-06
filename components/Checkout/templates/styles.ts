@@ -23,7 +23,9 @@ import {
     
     // a typography management system:
     typoValues,
+    secondaryValues,
     headingValues,
+    paragraphValues,
     horzRuleValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
@@ -147,7 +149,8 @@ export const paragraph : React.CSSProperties = {
     
     
     // spacings:
-    marginBottom    : '1em',
+    marginTop       : `${paragraphValues.marginBlockStart}`,
+    marginBottom    : `${paragraphValues.marginBlockEnd}`,
 };
 export const paragraphCurrency : React.CSSProperties = {
     // layouts:
@@ -183,14 +186,14 @@ export const tableReset : React.CSSProperties = {
 };
 export const tableTitle : React.CSSProperties = {
     // typos:
-    fontSize        : '1rem',
-    fontWeight      : 'bold',
+    fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
+    fontWeight      : `${typoValues.fontWeightBold}`,
     textAlign       : 'start', // reset the default browser
 };
 export const tableTitleCenter : React.CSSProperties = {
     // typos:
-    fontSize        : '1rem',
-    fontWeight      : 'bold',
+    fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
+    fontWeight      : `${typoValues.fontWeightBold}`,
     textAlign       : 'center', // reset the default browser
 };
 export const tableTitleSide : React.CSSProperties = {
@@ -206,21 +209,31 @@ export const tableTitleSide : React.CSSProperties = {
     
     
     // spacings:
-    paddingRight       : '1.5em', // fallback for GMail
+    paddingTop         : `calc(${spacerValues.md} / 2)`,
+    paddingBottom      : `calc(${spacerValues.md} / 2)`,
+    paddingRight       : `calc(${spacerValues.md} / 2)`, // fallback for GMail
     paddingInlineStart : 0,
-    paddingInlineEnd   : '1.5em',
+    paddingInlineEnd   : `calc(${spacerValues.md} / 2)`,
     
     
     
     // typos:
-    fontSize        : '1rem',
-    fontWeight      : 'bold',
+    fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
+    fontWeight      : `${typoValues.fontWeightBold}`,
     textAlign       : 'end', // align to right_most
+};
+export const tableContentSide : React.CSSProperties = {
+    // spacings:
+    paddingTop         : `calc(${spacerValues.md} / 2)`,
+    paddingBottom      : `calc(${spacerValues.md} / 2)`,
+    paddingLeft        : `calc(${spacerValues.md} / 2)`, // fallback for GMail
+    paddingInlineEnd   : 0,
+    paddingInlineStart : `calc(${spacerValues.md} / 2)`,
 };
 
 export const secondaryText : React.CSSProperties = {
     // appearances:
-    opacity         : 0.65,
+    opacity         : `${secondaryValues.opacity}`,
 };
 export const smallText : React.CSSProperties = {
     // layouts:
@@ -234,7 +247,7 @@ export const smallText : React.CSSProperties = {
     
     
     // typos:
-    fontSize        : '0.75rem',
+    fontSize        : `calc(0.75 * ${typoValues.fontSizeMd})`,
     // fontWeight      : 'lighter',
 };
 export const normalText : React.CSSProperties = {
@@ -244,17 +257,17 @@ export const normalText : React.CSSProperties = {
     
     
     // typos:
-    fontSize        : '1rem',
-    fontWeight      : 'normal',
-}
+    fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
+    fontWeight      : `${typoValues.fontWeightNormal}`,
+};
 
 export const boldText : React.CSSProperties = {
     // typos:
-    fontWeight      : 'bold',
+    fontWeight      : `${typoValues.fontWeightBold}`,
 };
 export const bigText : React.CSSProperties = {
     // typos:
-    fontSize        : '1.25rem',
+    fontSize        : `calc(1.25 * ${typoValues.fontSizeMd})`,
 };
 
 export const tableLabelSide : React.CSSProperties = {
@@ -274,6 +287,6 @@ export const colonSeparator : React.CSSProperties = {
     
     
     // spacings:
-    paddingLeft     : '0.5em',
-    paddingRight    : '0.5em',
+    paddingLeft     : `calc(${spacerValues.md} / 2)`,
+    paddingRight    : `calc(${spacerValues.md} / 2)`,
 };

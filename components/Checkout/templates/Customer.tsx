@@ -104,7 +104,7 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                     <th style={styles.tableTitleSide}>
                         Account
                     </th>
-                    <td>
+                    <td style={styles.tableContentSide}>
                         {customer.email}<span style={styles.secondaryText}> ({customer.nickName})</span>
                     </td>
                 </tr>

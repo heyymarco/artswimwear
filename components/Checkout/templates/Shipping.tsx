@@ -128,7 +128,7 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
                     <th style={styles.tableTitleSide}>
                         Ship To
                     </th>
-                    <td>
+                    <td style={styles.tableContentSide}>
                         <ShippingAddress />
                     </td>
                 </tr>
@@ -137,7 +137,7 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
                     <th style={styles.tableTitleSide}>
                         Ship By
                     </th>
-                    <td>
+                    <td style={styles.tableContentSide}>
                         <ShippingMethod />
                     </td>
                 </tr>
