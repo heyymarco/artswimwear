@@ -52,6 +52,9 @@ import {
     IfPhysicalProduct,
 }                           from '@/components/Checkout/templates/IfPhysicalProduct'
 
+// configs:
+import '@/theme.config'
+
 
 
 export const checkoutConfig = {
