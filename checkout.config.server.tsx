@@ -72,6 +72,11 @@ export const checkoutConfig = {
             <div
                 // styles:
                 style={{
+                    // positions:
+                    ...styles.selfCenterHorz, // center self horizontally
+                    
+                    
+                    
                     // layouts:
                     display : 'grid',
                     
