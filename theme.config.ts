@@ -31,7 +31,7 @@ colorValues.secondaryMild = secondaryCol.lighten(1);
 
 
 basicValues.backgGrad = [
-    ['linear-gradient(180deg, transparent, rgba(100, 100, 100, 1)) border-box'],
+    ['linear-gradient(180deg, transparent, rgba(220, 220, 220, 1)) border-box'],
 ];
 basicValues.backgroundBlendMode = 'saturation';
 
