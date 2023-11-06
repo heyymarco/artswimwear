@@ -29,6 +29,8 @@ import {
     horzRuleValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// configs:
+import '@/theme.config'
 
 
 
