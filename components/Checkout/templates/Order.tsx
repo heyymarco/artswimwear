@@ -267,7 +267,11 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                         style={{
                                             // positions:
                                             // center product image vertically:
-                                            verticalAlign  : 'middle',
+                                            verticalAlign : 'middle',// backgrounds:
+                                            
+                                            
+                                            
+                                            background    : 'white',
                                         }}
                                     />}
                                 </td>
