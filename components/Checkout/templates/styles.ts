@@ -16,14 +16,42 @@ import {
     
     
     
+    // a spacer (gap) management system
+    spacerValues,
+    
+    
+    
     // a typography management system:
     typoValues,
+    headingValues,
     horzRuleValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
 
 
+export const horzRule : React.CSSProperties = {
+    // layouts:
+    display         : 'block',
+    
+    
+    
+    // appearances:
+    opacity         : `${horzRuleValues.opacity}`,
+    
+    
+    
+    // borders:
+    border          : `${borderValues.style} 0px currentColor`,
+    borderTopWidth  : `${borderValues.hair}`,
+    
+    
+    
+    // spacings:
+    margin          : 0,
+    marginTop       : `${spacerValues.md}`,
+    marginBottom    : `${spacerValues.md}`,
+};
 export const borderAsHorzRule : React.CSSProperties = {
     // borders:
     // borderBottom      : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
@@ -55,7 +83,7 @@ export const article : React.CSSProperties = {
     
     
     // typos:
-    fontSize        : '1rem',
+    fontSize        : `${typoValues.fontSizeMd}`,
     textAlign       : 'center',
 };
 export const sectionBase : React.CSSProperties = {
@@ -66,7 +94,7 @@ export const sectionBase : React.CSSProperties = {
     
     
     // spacings:
-    padding         : '1rem',
+    padding         : `${spacerValues.md}`,
 };
 export const section : React.CSSProperties = {
     // layouts:
@@ -82,12 +110,12 @@ export const sectionLast = sectionBase;
 export const headingBase : React.CSSProperties = {
     // spacings:
     margin          : 0,
-    marginBottom    : '0.75em',
+    marginBottom    : `${headingValues.marginBlockEnd}`,
     
     
     
     // typos:
-    fontWeight      : 'bold',
+    fontWeight      : `${typoValues.fontWeightBold}`,
 };
 export const heading1 : React.CSSProperties = {
     // layouts:
@@ -96,7 +124,7 @@ export const heading1 : React.CSSProperties = {
     
     
     // typos:
-    fontSize        : '2rem',
+    fontSize        : `calc(2 * ${typoValues.fontSizeMd})`,
 };
 export const heading2 : React.CSSProperties = {
     // layouts:
@@ -105,7 +133,7 @@ export const heading2 : React.CSSProperties = {
     
     
     // typos:
-    fontSize        : '1.75rem',
+    fontSize        : `calc(1.75 * ${typoValues.fontSizeMd})`,
 };
 
 export const paragraphBase : React.CSSProperties = {
@@ -138,29 +166,6 @@ export const numberCurrency : React.CSSProperties = {
     marginInlineEnd   : 0,
 };
 export const paragraphLast = paragraphBase;
-
-export const horzRule : React.CSSProperties = {
-    // layouts:
-    display         : 'block',
-    
-    
-    
-    // appearances:
-    opacity         : 0.25,
-    
-    
-    
-    // borders:
-    border          : 'solid 0px currentColor',
-    borderTopWidth  : '1px',
-    
-    
-    
-    // spacings:
-    margin          : 0,
-    marginTop       : '1rem',
-    marginBottom    : '1rem',
-};
 
 export const tableReset : React.CSSProperties = {
     // layouts:
