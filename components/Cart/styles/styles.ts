@@ -1,6 +1,7 @@
 // cssfn:
 import {
     // writes css in javascript:
+    rule,
     descendants,
     children,
     scope,
@@ -183,7 +184,6 @@ export default () => [
             
             // typos:
             ...children(['&', '.currency'], {
-                fontSize    : typos.fontSizeSm,
                 fontWeight  : typos.fontWeightLight,
             }),
         }),
@@ -197,9 +197,23 @@ export default () => [
             
             
             
+            // layouts:
+            ...rule('.readOnly', {
+                display  : 'flex',
+                flexWrap : 'nowrap',
+            }),
+            
+            
+            
+            // spacings:
+            ...rule('.readOnly', {
+                gap      : '0.5em',
+            }),
+            
+            
+            
             // children:
             ...children('.label', {
-                fontSize    : typos.fontSizeSm,
                 fontWeight  : typos.fontWeightLight,
             }),
         }),
