@@ -194,7 +194,20 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
         </p>
     );
 };
-const OrderItems = (): React.ReactNode => {
+
+export interface OrderItemsProps {
+    // styles:
+    style ?: React.CSSProperties
+}
+const OrderItems = (props: OrderItemsProps): React.ReactNode => {
+    // rest props:
+    const {
+        // styles:
+        style,
+    } = props;
+    
+    
+    
     // contexts:
     const {
         // data:
@@ -207,7 +220,10 @@ const OrderItems = (): React.ReactNode => {
     
     // jsx:
     return (
-        <div>
+        <div
+            // styles:
+            style={style}
+        >
             {items.map(({price, quantity, product}, itemIndex, {length: itemsCount}) => {
                 // jsx:
                 return (

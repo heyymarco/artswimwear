@@ -8,7 +8,7 @@ import {
 import {
     // a typography management system:
     typos,
-    horzRules,
+    horzRuleValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
@@ -18,7 +18,14 @@ export const borderAsHorzRule : React.CSSProperties = {
     // borders:
     // borderBottom      : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
     // borderBottomColor : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`, // causing whole inlineStyle removed in GMail
-    borderBottom      : `solid 1px rgba(0, 0, 0, ${horzRules.opacity})`,
+    borderBottom      : `solid 1px rgba(0, 0, 0, ${horzRuleValues.opacity})`,
+};
+
+export const selfCenterHorz : React.CSSProperties = {
+    // positions:
+    // justifySelf     : 'center', // not supported in GMail
+    marginLeft      : 'auto', // the another way to center horizontally
+    marginRight     : 'auto', // the another way to center horizontally
 };
 
 export const article : React.CSSProperties = {
@@ -44,7 +51,7 @@ export const article : React.CSSProperties = {
 export const sectionBase : React.CSSProperties = {
     // layouts:
     display         : 'grid',
-    justifyItems    : 'center', // center items horizontally
+    // justifyItems    : 'center', // center items horizontally // not supported in GMail
     
     
     

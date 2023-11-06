@@ -85,7 +85,7 @@ export const checkoutConfig = {
                     // styles:
                     style={{
                         // positions:
-                        justifySelf  : 'center',
+                        ...styles.selfCenterHorz, // center self horizontally
                         
                         
                         
@@ -154,7 +154,7 @@ export const checkoutConfig = {
                 Shipping Info
             </h2>
             
-            <Shipping.Info title={null} />
+            <Shipping.Info style={styles.selfCenterHorz} title={null} />
         </section>
         
         <IfPaid>
@@ -163,7 +163,7 @@ export const checkoutConfig = {
                     Payment Info
                 </h2>
                 
-                <Payment.Info title={null} />
+                <Payment.Info style={styles.selfCenterHorz} title={null} />
             </section>
         </IfPaid>
         
@@ -172,7 +172,7 @@ export const checkoutConfig = {
                 Customer Info
             </h2>
             
-            <Customer.Info title={null} />
+            <Customer.Info style={styles.selfCenterHorz} title={null} />
         </section>
         
         <section style={styles.sectionLast}>

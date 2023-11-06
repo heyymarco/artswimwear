@@ -96,6 +96,11 @@ const PaymentMethod = (): React.ReactNode => {
 
 
 export interface PaymentInfoProps {
+    // styles:
+    style    ?: React.CSSProperties
+    
+    
+    
     // accessibilities:
     title    ?: React.ReactNode
     readOnly ?: boolean
@@ -103,6 +108,11 @@ export interface PaymentInfoProps {
 const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
     // rest props:
     const {
+        // styles:
+        style,
+        
+        
+        
         // accessibilities:
         title = 'Payment Info',
     } = props;
@@ -111,7 +121,13 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
     
     // jsx:
     return (
-        <table style={styles.tableReset}>
+        <table
+            // styles:
+            style={{
+                ...styles.tableReset,
+                ...style,
+            }}
+        >
             {!!title && <thead>
                 <tr>
                     <th colSpan={2} style={styles.tableTitleCenter}>

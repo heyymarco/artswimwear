@@ -50,6 +50,11 @@ const CustomerEmail = (): React.ReactNode => {
 
 
 export interface CustomerInfoProps {
+    // styles:
+    style    ?: React.CSSProperties
+    
+    
+    
     // accessibilities:
     title    ?: React.ReactNode
     readOnly ?: boolean
@@ -57,6 +62,11 @@ export interface CustomerInfoProps {
 const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
     // rest props:
     const {
+        // styles:
+        style,
+        
+        
+        
         // accessibilities:
         title = 'Customer Info',
     } = props;
@@ -74,7 +84,13 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
     // jsx:
     if (!customer) return null;
     return (
-        <table style={styles.tableReset}>
+        <table
+            // styles:
+            style={{
+                ...styles.tableReset,
+                ...style,
+            }}
+        >
             {!!title && <thead>
                 <tr>
                     <th colSpan={2} style={styles.tableTitleCenter}>

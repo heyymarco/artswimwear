@@ -83,6 +83,11 @@ const ShippingMethod = (): React.ReactNode => {
 
 
 export interface ShippingInfoProps {
+    // styles:
+    style    ?: React.CSSProperties
+    
+    
+    
     // accessibilities:
     title    ?: React.ReactNode
     readOnly ?: boolean
@@ -90,6 +95,11 @@ export interface ShippingInfoProps {
 const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
     // rest props:
     const {
+        // styles:
+        style,
+        
+        
+        
         // accessibilities:
         title = 'Shipping Info',
     } = props;
@@ -98,7 +108,13 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
     
     // jsx:
     return (
-        <table style={styles.tableReset}>
+        <table
+            // styles:
+            style={{
+                ...styles.tableReset,
+                ...style,
+            }}
+        >
             {!!title && <thead>
                 <tr>
                     <th colSpan={2} style={styles.tableTitleCenter}>
