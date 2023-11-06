@@ -6,8 +6,18 @@ import {
 
 // reusable-ui core:
 import {
+    // a color management system:
+    colorValues,
+    
+    
+    
+    // a border (stroke) management system
+    borderValues,
+    
+    
+    
     // a typography management system:
-    typos,
+    typoValues,
     horzRuleValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
@@ -18,7 +28,7 @@ export const borderAsHorzRule : React.CSSProperties = {
     // borders:
     // borderBottom      : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
     // borderBottomColor : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`, // causing whole inlineStyle removed in GMail
-    borderBottom      : `solid 1px rgba(0, 0, 0, ${horzRuleValues.opacity})`,
+    borderBottom      : `${borderValues.style} ${borderValues.hair} rgba(0, 0, 0, ${horzRuleValues.opacity})`,
 };
 
 export const selfCenterHorz : React.CSSProperties = {
@@ -30,12 +40,12 @@ export const selfCenterHorz : React.CSSProperties = {
 
 export const article : React.CSSProperties = {
     // backgrounds:
-    backgroundColor : '#ffffff',
+    backgroundColor : colorValues.backg.hex().toLowerCase(),
     
     
     
     // foregrounds:
-    color           : '#000000',
+    color           : colorValues.foreg.hex().toLowerCase(),
     
     
     
