@@ -16,8 +16,9 @@ import {
 
 export const borderAsHorzRule : React.CSSProperties = {
     // borders:
-    borderBottom      : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
-    borderBottomColor : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`,
+    // borderBottom      : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
+    // borderBottomColor : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`, // causing whole inlineStyle removed in GMail
+    borderBottom      : `solid 1px rgba(0, 0, 0, ${horzRules.opacity})`,
 };
 
 export const article : React.CSSProperties = {
