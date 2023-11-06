@@ -1,6 +1,27 @@
 // styles:
 import * as styles          from '@/components/Checkout/templates/styles'
 
+// reusable-ui core:
+import {
+    // a color management system:
+    colorValues,
+    
+    
+    
+    // a border (stroke) management system:
+    borderRadiusValues,
+    
+    
+    
+    // a spacer (gap) management system
+    spacerValues,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+import {
+    // base-components:
+    basicValues,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
 // templates:
 import {
     // react components:
@@ -36,7 +57,37 @@ import {
 export const checkoutConfig = {
     EMAIL_CHECKOUT_SUBJECT : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
     EMAIL_CHECKOUT_MESSAGE : <article style={styles.article}>
-        <section style={styles.section}>
+        <div style={styles.dummySectionStart}></div>
+        <section
+            // styles:
+            style={{
+                // layouts:
+                ...styles.sectionBase,
+                
+                
+                
+                // backgrounds:
+                background          : (basicValues.backgGrad as any)?.[0]?.[0],
+                backgroundBlendMode : `${basicValues.backgroundBlendMode}`,
+                backgroundColor     : colorValues.primaryThin.hex().toLowerCase(),
+                
+                
+                
+                // foregrounds:
+                color               : colorValues.primaryBold.hex().toLowerCase(),
+                
+                
+                
+                // borders:
+                borderRadius        : `${borderRadiusValues.xxl}`,
+                
+                
+                
+                // spacings:
+                margin              : `${spacerValues.md}`,
+                padding             : `calc(${spacerValues.md} * 1.5)`,
+            }}
+        >
             <h1 style={styles.heading1}>
                 Thanks For Your Order!
             </h1>

@@ -70,12 +70,12 @@ export const selfCenterHorz : React.CSSProperties = {
 
 export const article : React.CSSProperties = {
     // backgrounds:
-    backgroundColor : colorValues.backg.hex().toLowerCase(),
+    backgroundColor : colorValues.secondaryThin.hex().toLowerCase(),
     
     
     
     // foregrounds:
-    color           : colorValues.foreg.hex().toLowerCase(),
+    color           : colorValues.secondaryBold.hex().toLowerCase(),
     
     
     
@@ -87,6 +87,15 @@ export const article : React.CSSProperties = {
     // typos:
     fontSize        : `${typoValues.fontSizeMd}`,
     textAlign       : 'center',
+};
+export const dummySectionStart : React.CSSProperties = {
+    // appearances:
+    visibility      : 'hidden',
+    
+    
+    
+    // sizes:
+    height          : '0.05px', // ensures the margin works on the hero section
 };
 export const sectionBase : React.CSSProperties = {
     // layouts:
