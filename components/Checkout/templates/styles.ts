@@ -4,9 +4,23 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui core:
+import {
+    // a typography management system:
+    typos,
+    horzRules,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
-export const document : React.CSSProperties = {
+
+
+export const borderAsHorzRule : React.CSSProperties = {
+    // borders:
+    borderBottom      : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
+    borderBottomColor : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`,
+};
+
+export const article : React.CSSProperties = {
     // backgrounds:
     backgroundColor : '#ffffff',
     
@@ -18,7 +32,7 @@ export const document : React.CSSProperties = {
     
     
     // spacings:
-    padding         : '1rem',
+    padding         : 0,
     
     
     
@@ -26,6 +40,26 @@ export const document : React.CSSProperties = {
     fontSize        : '1rem',
     textAlign       : 'center',
 };
+export const sectionBase : React.CSSProperties = {
+    // layouts:
+    display         : 'grid',
+    justifyItems    : 'center', // center items horizontally
+    
+    
+    
+    // spacings:
+    padding         : '1rem',
+};
+export const section : React.CSSProperties = {
+    // layouts:
+    ...sectionBase,
+    
+    
+    
+    // borders:
+    ...borderAsHorzRule,
+};
+export const sectionLast = sectionBase;
 
 export const headingBase : React.CSSProperties = {
     // spacings:
@@ -38,7 +72,7 @@ export const headingBase : React.CSSProperties = {
     fontWeight      : 'bold',
 };
 export const heading1 : React.CSSProperties = {
-    // bases:
+    // layouts:
     ...headingBase,
     
     
@@ -47,7 +81,7 @@ export const heading1 : React.CSSProperties = {
     fontSize        : '2rem',
 };
 export const heading2 : React.CSSProperties = {
-    // bases:
+    // layouts:
     ...headingBase,
     
     
@@ -61,7 +95,7 @@ export const paragraphBase : React.CSSProperties = {
     margin          : 0,
 };
 export const paragraph : React.CSSProperties = {
-    // bases:
+    // layouts:
     ...paragraphBase,
     
     
@@ -70,7 +104,7 @@ export const paragraph : React.CSSProperties = {
     marginBottom    : '1em',
 };
 export const paragraphCurrency : React.CSSProperties = {
-    // bases:
+    // layouts:
     ...paragraphBase,
     
     
@@ -166,7 +200,7 @@ export const secondaryText : React.CSSProperties = {
     opacity         : 0.65,
 };
 export const smallText : React.CSSProperties = {
-    // bases:
+    // layouts:
     ...secondaryText,
     
     
@@ -178,7 +212,7 @@ export const smallText : React.CSSProperties = {
     
     // typos:
     fontSize        : '0.75rem',
-    fontWeight      : 'lighter',
+    // fontWeight      : 'lighter',
 };
 export const normalText : React.CSSProperties = {
     // positions:
@@ -200,8 +234,18 @@ export const bigText : React.CSSProperties = {
     fontSize        : '1.25rem',
 };
 
+export const tableLabelSide : React.CSSProperties = {
+    // positions:
+    verticalAlign   : 'middle', // center vertically
+    
+    
+    
+    // typos:
+    ...secondaryText,
+    textAlign       : 'end', // align to right_most
+};
 export const colonSeparator : React.CSSProperties = {
-    // bases:
+    // layouts:
     ...secondaryText,
     
     

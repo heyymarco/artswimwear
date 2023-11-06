@@ -35,8 +35,8 @@ import {
 
 export const checkoutConfig = {
     EMAIL_CHECKOUT_SUBJECT : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
-    EMAIL_CHECKOUT_MESSAGE : <article style={styles.document}>
-        <section>
+    EMAIL_CHECKOUT_MESSAGE : <article style={styles.article}>
+        <section style={styles.section}>
             <h1 style={styles.heading1}>
                 Thanks For Your Order!
             </h1>
@@ -53,9 +53,7 @@ export const checkoutConfig = {
         </section>
         
         <IfNotPaid>
-            <hr style={styles.horzRule} />
-            
-            <section>
+            <section style={styles.section}>
                 <h2 style={styles.heading2}>
                     Payment Instruction
                 </h2>
@@ -66,9 +64,7 @@ export const checkoutConfig = {
             </section>
         </IfNotPaid>
         
-        <hr style={styles.horzRule} />
-        
-        <section>
+        <section style={styles.section}>
             <h2 style={styles.heading2}>
                 Order Summary
             </h2>
@@ -76,25 +72,35 @@ export const checkoutConfig = {
             <div
                 // styles:
                 style={{
+                    // layouts:
+                    display : 'grid',
+                    
+                    
+                    
                     // sizes:
-                    width: 'fit-content',
+                    width   : 'fit-content',
                 }}
             >
                 <table
                     // styles:
                     style={{
-                        // bases:
+                        // positions:
+                        justifySelf  : 'center',
+                        
+                        
+                        
+                        // layouts:
                         ...styles.tableReset,
                         
                         
                         
                         // spacings:
-                        marginBottom   : '1rem',
+                        marginBottom : '0.5rem',
                     }}
                 >
                     <tbody>
                         <tr>
-                            <td style={styles.secondaryText}>
+                            <td style={styles.tableLabelSide}>
                                 Order Number
                             </td>
                             <td style={styles.colonSeparator}>
@@ -105,7 +111,7 @@ export const checkoutConfig = {
                             </td>
                         </tr>
                         <tr>
-                            <td  style={styles.secondaryText}>
+                            <td  style={styles.tableLabelSide}>
                                 Order Date
                             </td>
                             <td style={styles.colonSeparator}>
@@ -143,9 +149,7 @@ export const checkoutConfig = {
             </IfPhysicalProduct>
         </section>
         
-        <hr style={styles.horzRule} />
-        
-        <section>
+        <section style={styles.section}>
             <h2 style={styles.heading2}>
                 Shipping Info
             </h2>
@@ -154,9 +158,7 @@ export const checkoutConfig = {
         </section>
         
         <IfPaid>
-            <hr style={styles.horzRule} />
-            
-            <section>
+            <section style={styles.section}>
                 <h2 style={styles.heading2}>
                     Payment Info
                 </h2>
@@ -165,9 +167,7 @@ export const checkoutConfig = {
             </section>
         </IfPaid>
         
-        <hr style={styles.horzRule} />
-        
-        <section>
+        <section style={styles.section}>
             <h2 style={styles.heading2}>
                 Customer Info
             </h2>
@@ -175,9 +175,7 @@ export const checkoutConfig = {
             <Customer.Info title={null} />
         </section>
         
-        <hr style={styles.horzRule} />
-        
-        <section>
+        <section style={styles.sectionLast}>
             <h2 style={styles.heading2}>
                 Customer Care Support
             </h2>

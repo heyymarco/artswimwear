@@ -95,7 +95,7 @@ const OrderSubtotal = (props: OrderSubtotalProps): React.ReactNode => {
             <span
                 // styles:
                 style={{
-                    // bases:
+                    // typos:
                     ...styles.boldText,
                     ...styles.numberCurrency,
                 }}
@@ -135,7 +135,7 @@ const OrderShipping = (props: OrderShippingProps): React.ReactNode => {
             <span
                 // styles:
                 style={{
-                    // bases:
+                    // typos:
                     ...styles.boldText,
                     ...styles.numberCurrency,
                 }}
@@ -173,7 +173,7 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
         <p
             // styles:
             style={{
-                // bases:
+                // typos:
                 ...styles.paragraphCurrency,
                 ...styles.bigText,
             }}
@@ -182,7 +182,7 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
             <span
                 // styles:
                 style={{
-                    // bases:
+                    // typos:
                     ...styles.boldText,
                     ...styles.numberCurrency,
                 }}
@@ -219,7 +219,7 @@ const OrderItems = (): React.ReactNode => {
                         
                         // styles:
                         style={{
-                            // bases:
+                            // layouts:
                             ...styles.tableReset,
                             
                             
@@ -258,7 +258,7 @@ const OrderItems = (): React.ReactNode => {
                                 <th
                                     // styles:
                                     style={{
-                                        // bases:
+                                        // layouts:
                                         ...styles.tableTitle,
                                         
                                         
@@ -287,7 +287,7 @@ const OrderItems = (): React.ReactNode => {
                                 <td
                                     // styles:
                                     style={{
-                                        // bases:
+                                        // typos:
                                         ...styles.boldText,
                                         
                                         
