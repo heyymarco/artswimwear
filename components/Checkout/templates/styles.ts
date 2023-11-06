@@ -70,12 +70,12 @@ export const selfCenterHorz : React.CSSProperties = {
 
 export const article : React.CSSProperties = {
     // backgrounds:
-    backgroundColor : colorValues.secondaryThin.hex().toLowerCase(),
+    backgroundColor : colorValues.secondaryThin.toString().toLowerCase(),
     
     
     
     // foregrounds:
-    color           : colorValues.secondaryBold.hex().toLowerCase(),
+    color           : colorValues.secondaryBold.toString().toLowerCase(),
     
     
     
