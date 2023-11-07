@@ -50,7 +50,7 @@ const ShippingAddress = (): React.ReactNode => {
     } = address;
     return (
         <>
-            <p style={styles.paragraph}>
+            <p style={styles.paragraphFirst}>
                 {shippingFirstName} {shippingLastName} ({shippingPhone})
             </p>
             
@@ -79,16 +79,15 @@ const ShippingMethod = (): React.ReactNode => {
                 // styles:
                 style={{
                     // layouts:
-                    ...styles.paragraphLast,
+                    ...styles.paragraphBase,
                     display       : 'flex',
                     flexDirection : 'row',
                     flexWrap      : 'nowrap',
-                    alignItems    : 'center', // center items vertically
                     
                     
                     
                     // spacings:
-                    gap           : '0.5em',
+                    columnGap     : '0.5em',
                 }}
             >
                 {shippingProvider.name}

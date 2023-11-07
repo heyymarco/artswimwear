@@ -182,13 +182,24 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
             <span
                 // styles:
                 style={{
+                    // layouts:
+                    display       : 'flex',
+                    flexDirection : 'row',
+                    flexWrap      : 'nowrap',
+                    
+                    
+                    
+                    // spacings:
+                    columnGap     : '0.3em',
+                    
+                    
+                    
                     // typos:
                     ...styles.boldText,
                     ...styles.numberCurrency,
                 }}
             >
                 {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
-                {' '}
                 <span>{COMMERCE_CURRENCY}</span>
             </span>
         </p>

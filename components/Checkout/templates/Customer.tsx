@@ -112,12 +112,11 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                             display       : 'flex',
                             flexDirection : 'row',
                             flexWrap      : 'nowrap',
-                            alignItems    : 'center', // center items vertically
                             
                             
                             
                             // spacings:
-                            gap           : '0.5em',
+                            columnGap     : '0.5em',
                         }}
                     >
                         {customer.email}

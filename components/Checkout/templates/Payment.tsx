@@ -52,7 +52,7 @@ const BillingAddress = (): React.ReactNode => {
     } = address;
     return (
         <>
-            <p style={styles.paragraph}>
+            <p style={styles.paragraphFirst}>
                 {billingFirstName} {billingLastName} ({billingPhone})
             </p>
             
@@ -85,16 +85,15 @@ const PaymentMethod = (): React.ReactNode => {
                 // styles:
                 style={{
                     // layouts:
-                    ...styles.paragraphLast,
+                    ...styles.paragraphBase,
                     display       : 'flex',
                     flexDirection : 'row',
                     flexWrap      : 'nowrap',
-                    alignItems    : 'center', // center items vertically
                     
                     
                     
                     // spacings:
-                    gap           : '0.5em',
+                    columnGap     : '0.5em',
                 }}
             >
                 {

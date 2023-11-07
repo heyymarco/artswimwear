@@ -169,6 +169,24 @@ export const paragraph : React.CSSProperties = {
     marginTop       : `${paragraphValues.marginBlockStart}`,
     marginBottom    : `${paragraphValues.marginBlockEnd}`,
 };
+export const paragraphFirst : React.CSSProperties = {
+    // layouts:
+    ...paragraphBase,
+    
+    
+    
+    // spacings:
+    marginBottom    : `${paragraphValues.marginBlockEnd}`,
+};
+export const paragraphLast  : React.CSSProperties = {
+    // layouts:
+    ...paragraphBase,
+    
+    
+    
+    // spacings:
+    marginTop       : `${paragraphValues.marginBlockStart}`,
+};
 export const paragraphCurrency : React.CSSProperties = {
     // layouts:
     ...paragraphBase,
@@ -185,7 +203,6 @@ export const numberCurrency : React.CSSProperties = {
     marginInlineStart : 'auto',
     marginInlineEnd   : 0,
 };
-export const paragraphLast = paragraphBase;
 
 export const tableReset : React.CSSProperties = {
     // layouts:
@@ -260,6 +277,8 @@ export const smallText : React.CSSProperties = {
     
     // positions:
     verticalAlign   : 'middle', // center to normal_size_text
+    marginTop       : 'auto',
+    marginBottom    : 'auto',
     
     
     
@@ -270,6 +289,8 @@ export const smallText : React.CSSProperties = {
 export const normalText : React.CSSProperties = {
     // positions:
     verticalAlign   : 'middle', // center to normal_size_text
+    marginTop       : 'auto',
+    marginBottom    : 'auto',
     
     
     
