@@ -87,7 +87,7 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
         <table
             // styles:
             style={{
-                ...styles.tableReset,
+                ...styles.tableInfo,
                 ...style,
             }}
         >

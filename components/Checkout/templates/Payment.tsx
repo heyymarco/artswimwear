@@ -140,7 +140,7 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
         <table
             // styles:
             style={{
-                ...styles.tableReset,
+                ...styles.tableInfo,
                 ...style,
             }}
         >
@@ -153,7 +153,7 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
             </thead>}
             
             <tbody>
-                <tr>
+                <tr style={styles.tableRowSeparator}>
                     <th style={styles.tableTitleSide}>
                         Payment Method
                     </th>

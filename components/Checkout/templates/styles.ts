@@ -57,6 +57,12 @@ export const horzRule : React.CSSProperties = {
     marginTop       : `${spacerValues.md}`,
     marginBottom    : `${spacerValues.md}`,
 };
+export const borderAllSides : React.CSSProperties = {
+    // borders:
+    // border          : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
+    // borderColor     : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`, // causing whole inlineStyle removed in GMail
+    border          : `${borderValues.style} ${borderValues.hair} rgba(0, 0, 0, ${horzRuleValues.opacity})`,
+};
 export const borderAsHorzRule : React.CSSProperties = {
     // borders:
     // borderBottom      : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
@@ -218,6 +224,15 @@ export const tableReset : React.CSSProperties = {
     // typos:
     textAlign       : 'start',
 };
+export const tableInfo  : React.CSSProperties = {
+    // layouts:
+    ...tableReset,
+    
+    
+    
+    // borders:
+    ...borderAllSides,
+};
 export const tableTitle : React.CSSProperties = {
     // typos:
     fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
@@ -243,11 +258,7 @@ export const tableTitleSide : React.CSSProperties = {
     
     
     // spacings:
-    paddingTop         : `calc(${spacerValues.md} / 2)`,
-    paddingBottom      : `calc(${spacerValues.md} / 2)`,
-    paddingRight       : `calc(${spacerValues.md} / 2)`, // fallback for GMail
-    paddingInlineStart : 0,
-    paddingInlineEnd   : `calc(${spacerValues.md} / 2)`,
+    padding         : `calc(${spacerValues.md} * 0.75)`,
     
     
     
@@ -258,12 +269,9 @@ export const tableTitleSide : React.CSSProperties = {
 };
 export const tableContentSide : React.CSSProperties = {
     // spacings:
-    paddingTop         : `calc(${spacerValues.md} / 2)`,
-    paddingBottom      : `calc(${spacerValues.md} / 2)`,
-    paddingLeft        : `calc(${spacerValues.md} / 2)`, // fallback for GMail
-    paddingInlineEnd   : 0,
-    paddingInlineStart : `calc(${spacerValues.md} / 2)`,
+    padding         : `calc(${spacerValues.md} * 0.75)`,
 };
+export const tableRowSeparator = borderAsHorzRule;
 
 export const secondaryText : React.CSSProperties = {
     // appearances:
