@@ -130,7 +130,7 @@ const EditShippingMethod = (): JSX.Element|null => {
                                 </p>
                                 
                                 {!!shippingEntry.estimate && <p className='estimate'>
-                                    Estimate: {shippingEntry.estimate}
+                                    (estimate: {shippingEntry.estimate})
                                 </p>}
                                 
                                 <p className='cost'>
