@@ -29,6 +29,9 @@ import {
     horzRuleValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// other libs:
+import Color                from 'color'                // color utilities
+
 // configs:
 import '@/theme.config'
 
@@ -244,6 +247,21 @@ export const tableTitleCenter : React.CSSProperties = {
     fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
     fontWeight      : `${typoValues.fontWeightBold}`,
     textAlign       : 'center', // reset the default browser
+    
+    
+    
+    // backgrounds:
+    backgroundColor : colorValues.primary.mix(Color('#ffffff')).toString().toLowerCase(),
+    
+    
+    
+    // foregrounds:
+    color           : colorValues.primaryBold.toString().toLowerCase(),
+    
+    
+    
+    // borders:
+    ...borderAsHorzRule,
 };
 export const tableTitleSide : React.CSSProperties = {
     // positions:

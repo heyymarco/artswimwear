@@ -52,6 +52,9 @@ import {
     IfPhysicalProduct,
 }                           from '@/components/Checkout/templates/IfPhysicalProduct'
 
+// other libs:
+import Color                from 'color'                // color utilities
+
 // configs:
 import '@/theme.config'
 
@@ -72,7 +75,7 @@ export const checkoutConfig = {
                 // backgrounds:
                 background          : (basicValues.backgGrad as any)?.[0]?.[0],
                 backgroundBlendMode : `${basicValues.backgroundBlendMode}`,
-                backgroundColor     : colorValues.primaryThin.toString().toLowerCase(),
+                backgroundColor     : colorValues.primary.mix(Color('#ffffff')).toString().toLowerCase(),
                 
                 
                 
