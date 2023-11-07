@@ -334,11 +334,11 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
             },
             shippingProvider : {
                 select : {
-                    name            : true, // optional
+                    name            : true, // optional for displaying email report
                     
                     weightStep      : true, // required for calculating `getMatchingShipping()`
                     
-                    estimate        : true, // optional
+                    estimate        : true, // optional for displaying email report
                     shippingRates   : true, // required for calculating `getMatchingShipping()`
                     
                     useSpecificArea : true, // required for calculating `getMatchingShipping()`
