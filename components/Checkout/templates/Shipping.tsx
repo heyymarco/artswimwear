@@ -88,7 +88,7 @@ const ShippingMethod = (): React.ReactNode => {
                     
                     
                     // spacings:
-                    gap           : '1em',
+                    gap           : '0.5em',
                 }}
             >
                 {shippingProvider.name}

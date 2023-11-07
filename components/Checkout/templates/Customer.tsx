@@ -117,7 +117,7 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                             
                             
                             // spacings:
-                            gap           : '1em',
+                            gap           : '0.5em',
                         }}
                     >
                         {customer.email}
