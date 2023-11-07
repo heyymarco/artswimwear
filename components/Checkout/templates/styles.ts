@@ -52,7 +52,8 @@ export const horzRule : React.CSSProperties = {
     
     
     // spacings:
-    margin          : 0,
+    marginLeft      : 0,
+    marginRight     : 0,
     marginTop       : `${spacerValues.md}`,
     marginBottom    : `${spacerValues.md}`,
 };
@@ -122,7 +123,9 @@ export const sectionLast = sectionBase;
 
 export const headingBase : React.CSSProperties = {
     // spacings:
-    margin          : 0,
+    marginLeft      : 0,
+    marginRight     : 0,
+    marginTop       : 0,
     marginBottom    : `${headingValues.marginBlockEnd}`,
     
     
@@ -151,7 +154,10 @@ export const heading2 : React.CSSProperties = {
 
 export const paragraphBase : React.CSSProperties = {
     // spacings:
-    margin          : 0,
+    marginLeft      : 0,
+    marginRight     : 0,
+    marginTop       : 0,
+    marginBottom    : 0,
 };
 export const paragraph : React.CSSProperties = {
     // layouts:

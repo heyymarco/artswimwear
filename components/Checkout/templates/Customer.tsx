@@ -104,8 +104,27 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                     <th style={styles.tableTitleSide}>
                         Account
                     </th>
-                    <td style={styles.tableContentSide}>
-                        {customer.email}<span style={styles.secondaryText}> ({customer.nickName})</span>
+                    <td
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...styles.tableContentSide,
+                            display       : 'flex',
+                            flexDirection : 'row',
+                            flexWrap      : 'nowrap',
+                            alignItems    : 'center', // center items vertically
+                            
+                            
+                            
+                            // spacings:
+                            gap           : '1em',
+                        }}
+                    >
+                        {customer.email}
+                        
+                        <span style={styles.smallText}>
+                            ({customer.nickName})
+                        </span>
                     </td>
                 </tr>
             </tbody>

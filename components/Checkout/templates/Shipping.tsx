@@ -53,6 +53,7 @@ const ShippingAddress = (): React.ReactNode => {
             <p style={styles.paragraph}>
                 {shippingFirstName} {shippingLastName} ({shippingPhone})
             </p>
+            
             <p style={styles.paragraphLast}>
                 {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
             </p>
@@ -74,8 +75,27 @@ const ShippingMethod = (): React.ReactNode => {
     if (!shippingProvider) return null;
     return (
         <>
-            <p style={styles.paragraphLast}>
-                {`${shippingProvider.name}${!shippingProvider.estimate ? '' : ` - ${shippingProvider.estimate}`}`}
+            <p
+                // styles:
+                style={{
+                    // layouts:
+                    ...styles.paragraphLast,
+                    display       : 'flex',
+                    flexDirection : 'row',
+                    flexWrap      : 'nowrap',
+                    alignItems    : 'center', // center items vertically
+                    
+                    
+                    
+                    // spacings:
+                    gap           : '1em',
+                }}
+            >
+                {shippingProvider.name}
+                
+                {!!shippingProvider.estimate && <span style={styles.smallText}>
+                        (estimate: {shippingProvider.estimate} after dispatched from our warehouse)
+                </span>}
             </p>
         </>
     );

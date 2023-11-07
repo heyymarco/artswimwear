@@ -55,6 +55,7 @@ const BillingAddress = (): React.ReactNode => {
             <p style={styles.paragraph}>
                 {billingFirstName} {billingLastName} ({billingPhone})
             </p>
+            
             <p style={styles.paragraphLast}>
                 {`${billingAddress}, ${billingCity}, ${billingZone} (${billingZip}), ${countryList?.entities?.[billingCountry ?? '']?.name}`}
             </p>
@@ -80,16 +81,32 @@ const PaymentMethod = (): React.ReactNode => {
     // jsx:
     return (
         <>
-            {
-                !!paymentBrand
-                ? <>{paymentBrand.toUpperCase()}</>
-                : (paymentType?.toUpperCase() ?? paymentType)
-            }
-            
-            {!!paymentIdentifier && <span>
-                {' '}
-                ({paymentIdentifier})
-            </span>}
+            <p
+                // styles:
+                style={{
+                    // layouts:
+                    ...styles.paragraphLast,
+                    display       : 'flex',
+                    flexDirection : 'row',
+                    flexWrap      : 'nowrap',
+                    alignItems    : 'center', // center items vertically
+                    
+                    
+                    
+                    // spacings:
+                    gap           : '1em',
+                }}
+            >
+                {
+                    !!paymentBrand
+                    ? <>{paymentBrand.toUpperCase()}</>
+                    : (paymentType?.toUpperCase() ?? paymentType)
+                }
+                
+                {!!paymentIdentifier && <span style={styles.smallText}>
+                    ({paymentIdentifier})
+                </span>}
+            </p>
         </>
     );
 };
