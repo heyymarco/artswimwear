@@ -243,13 +243,6 @@ export const tableTitle : React.CSSProperties = {
     textAlign       : 'start', // reset the default browser
 };
 export const tableTitleCenter : React.CSSProperties = {
-    // typos:
-    fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
-    fontWeight      : `${typoValues.fontWeightBold}`,
-    textAlign       : 'center', // reset the default browser
-    
-    
-    
     // backgrounds:
     backgroundColor : colorValues.primary.mix(Color('#ffffff')).toString().toLowerCase(),
     
@@ -262,6 +255,18 @@ export const tableTitleCenter : React.CSSProperties = {
     
     // borders:
     ...borderAsHorzRule,
+    
+    
+    
+    // spacings:
+    padding         : `calc(${spacerValues.md} * 0.75)`,
+    
+    
+    
+    // typos:
+    fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
+    fontWeight      : `${typoValues.fontWeightBold}`,
+    textAlign       : 'center', // reset the default browser
 };
 export const tableTitleSide : React.CSSProperties = {
     // positions:
