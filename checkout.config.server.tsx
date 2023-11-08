@@ -162,23 +162,33 @@ export const checkoutConfig = {
                 >
                     <tbody>
                         <tr>
+                            {/* label */}
                             <td style={styles.tableLabelSide}>
                                 Order Number
                             </td>
+                            
+                            {/* colon */}
                             <td style={styles.tableColonSeparator}>
                                 :
                             </td>
+                            
+                            {/* value */}
                             <td style={styles.textBold}>
                                 <Order.Id />
                             </td>
                         </tr>
                         <tr>
+                            {/* label */}
                             <td  style={styles.tableLabelSide}>
                                 Order Date
                             </td>
+                            
+                            {/* colon */}
                             <td style={styles.tableColonSeparator}>
                                 :
                             </td>
+                            
+                            {/* value */}
                             <td>
                                 <Order.CreatedAt />
                             </td>

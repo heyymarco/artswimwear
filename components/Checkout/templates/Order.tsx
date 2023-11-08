@@ -305,7 +305,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                         
                                         
                                         // sizes:
-                                        ...styles.tableColumnRest,
+                                        ...styles.tableColumnAutoSize,
                                     }}
                                 >
                                     {product?.name}
@@ -327,7 +327,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                     // styles:
                                     style={{
                                         // sizes:
-                                        ...styles.tableColumnRest,
+                                        ...styles.tableColumnAutoSize,
                                         
                                         
                                         
@@ -353,7 +353,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                 <td
                                     style={{
                                         // sizes:
-                                        ...styles.tableColumnRest,
+                                        ...styles.tableColumnAutoSize,
                                         
                                         
                                         
@@ -371,7 +371,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                     // styles:
                                     style={{
                                         // sizes:
-                                        ...styles.tableColumnRest,
+                                        ...styles.tableColumnAutoSize,
                                         
                                         
                                         
@@ -386,7 +386,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                             
                             {/* separator */}
                             {(itemIndex < (itemsCount - 1)) && <tr>
-                                <td colSpan={4} style={styles.tableColumnRest}>
+                                <td colSpan={4} style={styles.tableColumnAutoSize}>
                                     <hr style={styles.borderHorz} />
                                 </td>
                             </tr>}

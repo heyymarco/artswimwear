@@ -375,7 +375,7 @@ export const tableGapSeparator   : React.CSSProperties = {
     // spacings:
     paddingLeft     : `calc(${spacerValues.md} / 4)`,
 };
-export const tableColumnRest     : React.CSSProperties = {
+export const tableColumnAutoSize : React.CSSProperties = {
     // sizes:
     width : '100%', // fills the rest of table width
 };
