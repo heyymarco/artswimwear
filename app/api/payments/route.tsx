@@ -1631,8 +1631,10 @@ router
             
             
             try {
-                const business                  = await resolveBusinessConfig(checkoutConfig.business);
-                const customerOrderConfirmation = await resolveEmailConfig(checkoutConfig.emails.customerOrderConfirmation);
+                const [business, customerOrderConfirmation] = await Promise.all([
+                    resolveBusinessConfig(checkoutConfig.business),
+                    resolveEmailConfig(checkoutConfig.emails.customerOrderConfirmation),
+                ]);
                 
                 
                 
