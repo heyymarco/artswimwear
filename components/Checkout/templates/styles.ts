@@ -380,7 +380,7 @@ export const tableColonSeparator : React.CSSProperties = {
 };
 export const tableGapSeparator   : React.CSSProperties = {
     // spacings:
-    paddingLeft     : `calc(${spacerValues.md} / 4)`,
+    paddingRight    : `calc(${spacerValues.md} / 4)`,
 };
 export const tableColumnAutoSize : React.CSSProperties = {
     // sizes:
