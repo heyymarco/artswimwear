@@ -121,8 +121,6 @@ export const borderBottomSide : React.CSSProperties = {
 };
 export const borderAllSides   : React.CSSProperties = {
     // borders:
-    // border          : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
-    // borderColor     : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`, // causing whole inlineStyle removed in GMail
     border          : horzRuleBase(colorValues.primaryBold.toString().toLowerCase()),
 };
 
