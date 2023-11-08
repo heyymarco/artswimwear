@@ -95,6 +95,7 @@ import {
     downloadImageAsBase64,
 }                           from '@/libs/images'
 import {
+    resolveBusinessConfig,
     resolveEmailConfig,
 }                           from './utilities'
 
@@ -1630,6 +1631,7 @@ router
             
             
             try {
+                const business                  = await resolveBusinessConfig(checkoutConfig.business);
                 const customerOrderConfirmation = await resolveEmailConfig(checkoutConfig.emails.customerOrderConfirmation);
                 
                 

@@ -64,6 +64,10 @@ import '@/theme.config'
 
 
 export const checkoutConfig : CheckoutConfig = {
+    business : {
+        name : 'ArtSwimwear',
+        url  : 'https://www.artswimwear.com/',
+    },
     emails : {
         customerOrderConfirmation : {
             host     : process.env.EMAIL_CHECKOUT_SERVER_HOST     ?? '',

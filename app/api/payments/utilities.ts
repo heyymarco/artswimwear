@@ -8,8 +8,25 @@ import {
 import type {
     // types:
     MaybeFactory,
+    BusinessConfig,
     EmailConfig,
 }                           from './types'
+
+
+
+export interface ResolvedBusinessConfig {
+}
+export const resolveBusinessConfig = async (businessConfig: MaybeFactory<BusinessConfig>): Promise<ResolvedBusinessConfig> => {
+    const {
+        name,
+        url,
+    } = (typeof(businessConfig) === 'function') ? await businessConfig() : businessConfig;
+    
+    return {
+        name : (typeof(name) === 'function') ? await name() : name,
+        url  : (typeof(url)  === 'function') ? await url()  : url,
+    };
+}
 
 
 

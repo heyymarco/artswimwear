@@ -9,6 +9,10 @@ import {
 export type MaybePromise<T> = T|Promise<T>
 export type MaybeFactory<T> = T|(() => MaybePromise<T>)
 
+export interface BusinessConfig {
+    name     : MaybeFactory<string>
+    url      : MaybeFactory<string>
+}
 export interface EmailConfig {
     host     : MaybeFactory<string>
     port     : MaybeFactory<number>
@@ -21,6 +25,7 @@ export interface EmailConfig {
     message  : MaybeFactory<React.ReactNode>
 }
 export interface CheckoutConfig {
+    business : MaybeFactory<BusinessConfig>
     emails : {
         customerOrderConfirmation : MaybeFactory<EmailConfig>
     }
