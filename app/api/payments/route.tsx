@@ -1630,6 +1630,10 @@ router
             
             
             try {
+                const customerOrderConfirmation = await resolveEmailConfig(checkoutConfig.emails.customerOrderConfirmation);
+                
+                
+                
                 const { renderToStaticMarkup } = await import('react-dom/server');
                 const orderDataContextProviderProps : OrderDataContextProviderProps = {
                     // data:
@@ -1642,10 +1646,6 @@ router
                     // relation data:
                     countryList : countryList,
                 };
-                
-                
-                
-                const customerOrderConfirmation = await resolveEmailConfig(checkoutConfig.emails.customerOrderConfirmation);
                 
                 
                 
