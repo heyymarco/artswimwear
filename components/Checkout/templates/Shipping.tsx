@@ -92,7 +92,7 @@ const ShippingMethod = (): React.ReactNode => {
             >
                 {shippingProvider.name}
                 
-                {!!shippingProvider.estimate && <span style={styles.smallText}>
+                {!!shippingProvider.estimate && <span style={styles.textSmall}>
                         (estimate: {shippingProvider.estimate} after dispatched from our warehouse)
                 </span>}
             </p>

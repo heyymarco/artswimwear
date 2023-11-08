@@ -63,7 +63,7 @@ import '@/theme.config'
 export const checkoutConfig = {
     EMAIL_CHECKOUT_SUBJECT : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
     EMAIL_CHECKOUT_MESSAGE : <article style={styles.article}>
-        <div style={styles.dummySectionStart}></div>
+        <div style={styles.sectionDummy}></div>
         <section
             // styles:
             style={{
@@ -165,10 +165,10 @@ export const checkoutConfig = {
                             <td style={styles.tableLabelSide}>
                                 Order Number
                             </td>
-                            <td style={styles.colonSeparator}>
+                            <td style={styles.tableColonSeparator}>
                                 :
                             </td>
-                            <td style={styles.boldText}>
+                            <td style={styles.textBold}>
                                 <Order.Id />
                             </td>
                         </tr>
@@ -176,7 +176,7 @@ export const checkoutConfig = {
                             <td  style={styles.tableLabelSide}>
                                 Order Date
                             </td>
-                            <td style={styles.colonSeparator}>
+                            <td style={styles.tableColonSeparator}>
                                 :
                             </td>
                             <td>
@@ -186,21 +186,21 @@ export const checkoutConfig = {
                     </tbody>
                 </table>
                 
-                <hr style={styles.horzRule} />
+                <hr style={styles.borderHorz} />
                 
                 <Order.Items />
                 
-                <hr style={styles.horzRule} />
+                <hr style={styles.borderHorz} />
                 
                 <Order.Subtotal />
                 <Order.Shipping />
                 
-                <hr style={styles.horzRule} />
+                <hr style={styles.borderHorz} />
                 
                 <Order.Total />
                 
                 <IfPhysicalProduct>
-                    <hr style={styles.horzRule} />
+                    <hr style={styles.borderHorz} />
                 </IfPhysicalProduct>
             </div>
             
@@ -216,7 +216,7 @@ export const checkoutConfig = {
                 Shipping Info
             </h2>
             
-            <Shipping.Info style={styles.selfCenterHorz} title={null} />
+            <Shipping.Info style={styles.selfCenterHorz} />
         </section>
         
         <IfPaid>
@@ -225,7 +225,7 @@ export const checkoutConfig = {
                     Payment Info
                 </h2>
                 
-                <Payment.Info style={styles.selfCenterHorz} title={null} />
+                <Payment.Info style={styles.selfCenterHorz} />
             </section>
         </IfPaid>
         
@@ -234,7 +234,7 @@ export const checkoutConfig = {
                 Customer Info
             </h2>
             
-            <Customer.Info style={styles.selfCenterHorz} title={null} />
+            <Customer.Info style={styles.selfCenterHorz} />
         </section>
         
         <section style={styles.sectionLast}>

@@ -7,6 +7,12 @@ import {
 // styles:
 import * as styles          from '@/components/Checkout/templates/styles'
 
+// reusable-ui core:
+import {
+    // a spacer (gap) management system
+    spacerValues,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // internals:
 import {
     // hooks:
@@ -96,7 +102,7 @@ const OrderSubtotal = (props: OrderSubtotalProps): React.ReactNode => {
                 // styles:
                 style={{
                     // typos:
-                    ...styles.boldText,
+                    ...styles.textBold,
                     ...styles.numberCurrency,
                 }}
             >
@@ -136,7 +142,7 @@ const OrderShipping = (props: OrderShippingProps): React.ReactNode => {
                 // styles:
                 style={{
                     // typos:
-                    ...styles.boldText,
+                    ...styles.textBold,
                     ...styles.numberCurrency,
                 }}
             >
@@ -175,7 +181,7 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
             style={{
                 // typos:
                 ...styles.paragraphCurrency,
-                ...styles.bigText,
+                ...styles.textBig,
             }}
         >
             {label}
@@ -195,7 +201,7 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
                     
                     
                     // typos:
-                    ...styles.boldText,
+                    ...styles.textBold,
                     ...styles.numberCurrency,
                 }}
             >
@@ -256,15 +262,17 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                         }}
                     >
                         <tbody>
+                            {/* image + title */}
                             <tr>
+                                {/* image */}
                                 <td rowSpan={4}
                                     // styles:
                                     style={{
                                         // spacings:
                                         // a spacer between product image and the product contents:
-                                        paddingRight       : '1em', // fallback for GMail
+                                        paddingRight       : `${spacerValues.md}`, // fallback for GMail
                                         paddingInlineStart : 0,
-                                        paddingInlineEnd   : '1em',
+                                        paddingInlineEnd   : `${spacerValues.md}`,
                                     }}
                                 >
                                     {!!product?.imageId && <img
@@ -286,11 +294,13 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                         }}
                                     />}
                                 </td>
-                                <th
+                                
+                                {/* title */}
+                                <th colSpan={3}
                                     // styles:
                                     style={{
                                         // layouts:
-                                        ...styles.tableTitle,
+                                        ...styles.tableTitleProduct,
                                         
                                         
                                         
@@ -301,25 +311,46 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                     {product?.name}
                                 </th>
                             </tr>
+                            
+                            {/* unit price */}
                             <tr>
-                                <td style={styles.smallText}>
-                                    @ {formatCurrency(price)}
+                                {/* label */}
+                                <td style={styles.textSmall}>
+                                    @
+                                </td>
+                                
+                                {/* gap */}
+                                <td style={styles.tableGapSeparator}></td>
+                                
+                                {/* value */}
+                                <td style={styles.textSmall}>
+                                    {formatCurrency(price)}
                                 </td>
                             </tr>
+                            
+                            {/* quantity */}
                             <tr>
-                                <td>
-                                    <span style={styles.smallText}>qty: </span>
-                                    <span style={styles.normalText}>
-                                        x{quantity}
-                                    </span>
+                                {/* label */}
+                                <td style={styles.textSmall}>
+                                    Qty
+                                </td>
+                                
+                                {/* gap */}
+                                <td style={styles.tableGapSeparator}></td>
+                                
+                                {/* value */}
+                                <td style={styles.textNormal}>
+                                    x{quantity}
                                 </td>
                             </tr>
+                            
+                            {/* total per product price */}
                             <tr>
-                                <td
+                                <td colSpan={3}
                                     // styles:
                                     style={{
                                         // typos:
-                                        ...styles.boldText,
+                                        ...styles.textBold,
                                         
                                         
                                         
@@ -330,9 +361,11 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                     {formatCurrency((price !== undefined) ? (price * quantity) : undefined)}
                                 </td>
                             </tr>
+                            
+                            {/* separator */}
                             {(itemIndex < (itemsCount - 1)) && <tr>
-                                <td colSpan={2}>
-                                    <hr style={styles.horzRule} />
+                                <td colSpan={4}>
+                                    <hr style={styles.borderHorz} />
                                 </td>
                             </tr>}
                         </tbody>

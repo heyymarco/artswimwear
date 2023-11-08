@@ -37,19 +37,62 @@ import '@/theme.config'
 
 
 
-export const horzRule : React.CSSProperties = {
+export const textSecondary : React.CSSProperties = {
+    // appearances:
+    opacity         : `${secondaryValues.opacity}`,
+};
+export const textSmall     : React.CSSProperties = {
+    // layouts:
+    ...textSecondary,
+    
+    
+    
+    // positions:
+    verticalAlign   : 'middle', // center to normal_size_text
+    marginTop       : 'auto',
+    marginBottom    : 'auto',
+    
+    
+    
+    // typos:
+    fontSize        : `calc(0.75 * ${typoValues.fontSizeMd})`,
+    // fontWeight      : 'lighter',
+};
+export const textNormal    : React.CSSProperties = {
+    // positions:
+    verticalAlign   : 'middle', // center to normal_size_text
+    marginTop       : 'auto',
+    marginBottom    : 'auto',
+    
+    
+    
+    // typos:
+    fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
+    fontWeight      : `${typoValues.fontWeightNormal}`,
+};
+export const textBold      : React.CSSProperties = {
+    // typos:
+    fontWeight      : `${typoValues.fontWeightBold}`,
+};
+export const textBig       : React.CSSProperties = {
+    // typos:
+    fontSize        : `calc(1.25 * ${typoValues.fontSizeMd})`,
+};
+
+
+
+export const borderBase       : string = (
+    // `${borderValues.style} ${borderValues.hair} rgba(0, 0, 0, ${horzRuleValues.opacity})`
+    `${borderValues.style} ${borderValues.hair} ${colorValues.primaryBold.opaquer(Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`)).toString().toLowerCase()})`
+);
+export const borderHorz       : React.CSSProperties = {
     // layouts:
     display         : 'block',
     
     
     
-    // appearances:
-    opacity         : `${horzRuleValues.opacity}`,
-    
-    
-    
     // borders:
-    border          : `${borderValues.style} 0px currentColor`,
+    border          : borderBase,
     borderTopWidth  : `${borderValues.hair}`,
     
     
@@ -60,18 +103,20 @@ export const horzRule : React.CSSProperties = {
     marginTop       : `${spacerValues.md}`,
     marginBottom    : `${spacerValues.md}`,
 };
-export const borderAllSides : React.CSSProperties = {
+export const borderAllSides   : React.CSSProperties = {
     // borders:
     // border          : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
     // borderColor     : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`, // causing whole inlineStyle removed in GMail
-    border          : `${borderValues.style} ${borderValues.hair} rgba(0, 0, 0, ${horzRuleValues.opacity})`,
+    border          : borderBase,
 };
 export const borderAsHorzRule : React.CSSProperties = {
     // borders:
     // borderBottom      : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
     // borderBottomColor : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`, // causing whole inlineStyle removed in GMail
-    borderBottom      : `${borderValues.style} ${borderValues.hair} rgba(0, 0, 0, ${horzRuleValues.opacity})`,
+    borderBottom    : borderBase,
 };
+
+
 
 export const selfCenterHorz : React.CSSProperties = {
     // positions:
@@ -79,6 +124,8 @@ export const selfCenterHorz : React.CSSProperties = {
     marginLeft      : 'auto', // the another way to center horizontally
     marginRight     : 'auto', // the another way to center horizontally
 };
+
+
 
 export const article : React.CSSProperties = {
     // backgrounds:
@@ -100,7 +147,10 @@ export const article : React.CSSProperties = {
     fontSize        : `${typoValues.fontSizeMd}`,
     textAlign       : 'center',
 };
-export const dummySectionStart : React.CSSProperties = {
+
+
+
+export const sectionDummy : React.CSSProperties = {
     // appearances:
     visibility      : 'hidden',
     
@@ -109,17 +159,16 @@ export const dummySectionStart : React.CSSProperties = {
     // sizes:
     height          : '0.05px', // ensures the margin works on the hero section
 };
-export const sectionBase : React.CSSProperties = {
+export const sectionBase  : React.CSSProperties = {
     // layouts:
-    display         : 'grid',
-    // justifyItems    : 'center', // center items horizontally // not supported in GMail
+    display         : 'block', // content friendly layout
     
     
     
     // spacings:
     padding         : `${spacerValues.md}`,
 };
-export const section : React.CSSProperties = {
+export const section      : React.CSSProperties = {
     // layouts:
     ...sectionBase,
     
@@ -128,7 +177,9 @@ export const section : React.CSSProperties = {
     // borders:
     ...borderAsHorzRule,
 };
-export const sectionLast = sectionBase;
+export const sectionLast  = sectionBase;
+
+
 
 export const headingBase : React.CSSProperties = {
     // spacings:
@@ -142,7 +193,7 @@ export const headingBase : React.CSSProperties = {
     // typos:
     fontWeight      : `${typoValues.fontWeightBold}`,
 };
-export const heading1 : React.CSSProperties = {
+export const heading1    : React.CSSProperties = {
     // layouts:
     ...headingBase,
     
@@ -151,7 +202,7 @@ export const heading1 : React.CSSProperties = {
     // typos:
     fontSize        : `calc(2 * ${typoValues.fontSizeMd})`,
 };
-export const heading2 : React.CSSProperties = {
+export const heading2    : React.CSSProperties = {
     // layouts:
     ...headingBase,
     
@@ -161,14 +212,16 @@ export const heading2 : React.CSSProperties = {
     fontSize        : `calc(1.75 * ${typoValues.fontSizeMd})`,
 };
 
-export const paragraphBase : React.CSSProperties = {
+
+
+export const paragraphBase     : React.CSSProperties = {
     // spacings:
     marginLeft      : 0,
     marginRight     : 0,
     marginTop       : 0,
     marginBottom    : 0,
 };
-export const paragraph : React.CSSProperties = {
+export const paragraph         : React.CSSProperties = {
     // layouts:
     ...paragraphBase,
     
@@ -178,7 +231,7 @@ export const paragraph : React.CSSProperties = {
     marginTop       : `${paragraphValues.marginBlockStart}`,
     marginBottom    : `${paragraphValues.marginBlockEnd}`,
 };
-export const paragraphFirst : React.CSSProperties = {
+export const paragraphFirst    : React.CSSProperties = {
     // layouts:
     ...paragraphBase,
     
@@ -187,7 +240,7 @@ export const paragraphFirst : React.CSSProperties = {
     // spacings:
     marginBottom    : `${paragraphValues.marginBlockEnd}`,
 };
-export const paragraphLast  : React.CSSProperties = {
+export const paragraphLast     : React.CSSProperties = {
     // layouts:
     ...paragraphBase,
     
@@ -205,7 +258,7 @@ export const paragraphCurrency : React.CSSProperties = {
     // layouts:
     display         : 'flex', // makes marginInlineStart work
 };
-export const numberCurrency : React.CSSProperties = {
+export const numberCurrency    : React.CSSProperties = {
     // spacings:
     // place the number to right_most:
     marginLeft        : 'auto', // fallback for GMail
@@ -213,7 +266,9 @@ export const numberCurrency : React.CSSProperties = {
     marginInlineEnd   : 0,
 };
 
-export const tableReset : React.CSSProperties = {
+
+
+export const tableReset          : React.CSSProperties = {
     // layouts:
     tableLayout     : 'auto',
     
@@ -227,7 +282,7 @@ export const tableReset : React.CSSProperties = {
     // typos:
     textAlign       : 'start',
 };
-export const tableInfo  : React.CSSProperties = {
+export const tableInfo           : React.CSSProperties = {
     // layouts:
     ...tableReset,
     
@@ -236,13 +291,13 @@ export const tableInfo  : React.CSSProperties = {
     // borders:
     ...borderAllSides,
 };
-export const tableTitle : React.CSSProperties = {
+export const tableTitleProduct   : React.CSSProperties = {
     // typos:
     fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
     fontWeight      : `${typoValues.fontWeightBold}`,
     textAlign       : 'start', // reset the default browser
 };
-export const tableTitleCenter : React.CSSProperties = {
+export const tableTitleCenter    : React.CSSProperties = {
     // backgrounds:
     backgroundColor : colorValues.primary.mix(Color('#ffffff')).toString().toLowerCase(),
     
@@ -268,7 +323,7 @@ export const tableTitleCenter : React.CSSProperties = {
     fontWeight      : `${typoValues.fontWeightBold}`,
     textAlign       : 'center', // reset the default browser
 };
-export const tableTitleSide : React.CSSProperties = {
+export const tableTitleSide      : React.CSSProperties = {
     // positions:
     verticalAlign   : 'middle', // center vertically
     
@@ -290,71 +345,32 @@ export const tableTitleSide : React.CSSProperties = {
     fontWeight      : `${typoValues.fontWeightBold}`,
     textAlign       : 'end', // align to right_most
 };
-export const tableContentSide : React.CSSProperties = {
-    // spacings:
-    padding         : `calc(${spacerValues.md} * 0.75)`,
-};
-export const tableRowSeparator = borderAsHorzRule;
-
-export const secondaryText : React.CSSProperties = {
-    // appearances:
-    opacity         : `${secondaryValues.opacity}`,
-};
-export const smallText : React.CSSProperties = {
-    // layouts:
-    ...secondaryText,
-    
-    
-    
-    // positions:
-    verticalAlign   : 'middle', // center to normal_size_text
-    marginTop       : 'auto',
-    marginBottom    : 'auto',
-    
-    
-    
-    // typos:
-    fontSize        : `calc(0.75 * ${typoValues.fontSizeMd})`,
-    // fontWeight      : 'lighter',
-};
-export const normalText : React.CSSProperties = {
-    // positions:
-    verticalAlign   : 'middle', // center to normal_size_text
-    marginTop       : 'auto',
-    marginBottom    : 'auto',
-    
-    
-    
-    // typos:
-    fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
-    fontWeight      : `${typoValues.fontWeightNormal}`,
-};
-
-export const boldText : React.CSSProperties = {
-    // typos:
-    fontWeight      : `${typoValues.fontWeightBold}`,
-};
-export const bigText : React.CSSProperties = {
-    // typos:
-    fontSize        : `calc(1.25 * ${typoValues.fontSizeMd})`,
-};
-
-export const tableLabelSide : React.CSSProperties = {
+export const tableLabelSide      : React.CSSProperties = {
     // positions:
     verticalAlign   : 'middle', // center vertically
     
     
     
     // typos:
-    ...secondaryText,
+    ...textSecondary,
     textAlign       : 'end', // align to right_most
 };
-export const colonSeparator : React.CSSProperties = {
+export const tableContentSide    : React.CSSProperties = {
+    // spacings:
+    padding         : `calc(${spacerValues.md} * 0.75)`,
+};
+export const tableRowSeparator   = borderAsHorzRule;
+export const tableColonSeparator : React.CSSProperties = {
     // layouts:
-    ...secondaryText,
+    ...textSecondary,
     
     
     
+    // spacings:
+    paddingLeft     : `calc(${spacerValues.md} / 2)`,
+    paddingRight    : `calc(${spacerValues.md} / 2)`,
+};
+export const tableGapSeparator   : React.CSSProperties = {
     // spacings:
     paddingLeft     : `calc(${spacerValues.md} / 2)`,
     paddingRight    : `calc(${spacerValues.md} / 2)`,
