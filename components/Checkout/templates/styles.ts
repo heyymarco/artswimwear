@@ -83,7 +83,7 @@ export const textBig       : React.CSSProperties = {
 
 const horzRuleBase            = (color?: React.CSSProperties['color']): string => (
     // `${borderValues.style} ${borderValues.hair} rgba(0, 0, 0, ${horzRuleValues.opacity})`
-    `${borderValues.style} ${borderValues.hair} ${colorValues.primaryBold.mix(Color('#ffffff'), 1 - (Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`))).toString().toLowerCase()}`
+    `${borderValues.style} ${borderValues.hair} ${color ?? colorValues.primaryBold.mix(Color('#ffffff'), 1 - (Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`))).toString().toLowerCase()}`
 );
 export const horzRule         : React.CSSProperties = {
     // layouts:
