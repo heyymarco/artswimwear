@@ -75,7 +75,7 @@ export const checkoutConfig = {
                 // backgrounds:
                 background          : (basicValues.backgGrad as any)?.[0]?.[0],
                 backgroundBlendMode : `${basicValues.backgroundBlendMode}`,
-                backgroundColor     : colorValues.primary.mix(Color('#ffffff')).toString().toLowerCase(),
+                backgroundColor     : colorValues.primary.mix(Color('#ffffff'), 0.5).toString().toLowerCase(),
                 
                 
                 

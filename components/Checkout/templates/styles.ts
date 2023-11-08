@@ -83,9 +83,8 @@ export const textBig       : React.CSSProperties = {
 
 export const borderBase       : string = (
     // `${borderValues.style} ${borderValues.hair} rgba(0, 0, 0, ${horzRuleValues.opacity})`
-    `${borderValues.style} ${borderValues.hair} ${colorValues.primaryBold.alpha(Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`)).toString().toLowerCase()}`
+    `${borderValues.style} ${borderValues.hair} ${colorValues.primaryBold.mix(Color('#ffffff'), 1 - (Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`))).toString().toLowerCase()}`
 );
-console.log({borderBase})
 export const borderHorz       : React.CSSProperties = {
     // layouts:
     display         : 'block',
@@ -93,8 +92,10 @@ export const borderHorz       : React.CSSProperties = {
     
     
     // borders:
-    border          : borderBase,
-    borderTopWidth  : `${borderValues.hair}`,
+    borderLeft      : 0,
+    borderRight     : 0,
+    borderTop       : borderBase,
+    borderBottom    : 0,
     
     
     
@@ -112,8 +113,9 @@ export const borderAllSides   : React.CSSProperties = {
 };
 export const borderAsHorzRule : React.CSSProperties = {
     // borders:
-    // borderBottom      : 'solid 1px currentColor', // fallback to currentColor if `color-mix` is not recognized
-    // borderBottomColor : `color-mix(in srgb, currentcolor calc(${horzRules.opacity} * 100%), transparent)`, // causing whole inlineStyle removed in GMail
+    borderLeft      : 0,
+    borderRight     : 0,
+    borderTop       : 0,
     borderBottom    : borderBase,
 };
 

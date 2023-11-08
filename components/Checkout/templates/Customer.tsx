@@ -119,10 +119,10 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                             columnGap     : '0.5em',
                         }}
                     >
-                        <CustomerName />
+                        <CustomerEmail />
                         
                         <span style={styles.textSmall}>
-                            <CustomerEmail />
+                            (<CustomerName />)
                         </span>
                     </td>
                 </tr>
