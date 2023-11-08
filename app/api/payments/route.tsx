@@ -1650,19 +1650,19 @@ router
                 
                 
                 const transporter = nodemailer.createTransport({
-                    host     :  process.env.EMAIL_CHECKOUT_SERVER_HOST ?? '',
-                    port     : Number.parseInt(process.env.EMAIL_CHECKOUT_SERVER_PORT ?? '465'),
-                    secure   : (process.env.EMAIL_CHECKOUT_SERVER_SECURE === 'true'),
+                    host     : customerOrderConfirmation.host,
+                    port     : customerOrderConfirmation.port,
+                    secure   : customerOrderConfirmation.secure,
                     auth     : {
-                        user :  process.env.EMAIL_CHECKOUT_SERVER_USERNAME,
-                        pass :  process.env.EMAIL_CHECKOUT_SERVER_PASSWORD,
+                        user : customerOrderConfirmation.username,
+                        pass : customerOrderConfirmation.password,
                     },
                 });
                 try {
                     console.log('sending email...');
                     await transporter.sendMail({
-                        from        : process.env.EMAIL_CHECKOUT_FROM, // sender address
-                        to          : customerEmail, // list of receivers
+                        from        : customerOrderConfirmation.from,
+                        to          : customerEmail,
                         subject     : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
                                 {customerOrderConfirmation.subject}

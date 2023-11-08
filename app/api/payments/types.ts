@@ -10,8 +10,15 @@ export type MaybePromise<T> = T|Promise<T>
 export type MaybeFactory<T> = T|(() => MaybePromise<T>)
 
 export interface EmailConfig {
-    subject : MaybeFactory<React.ReactNode>
-    message : MaybeFactory<React.ReactNode>
+    host     : MaybeFactory<string>
+    port     : MaybeFactory<number>
+    secure   : MaybeFactory<boolean>
+    username : MaybeFactory<string>
+    password : MaybeFactory<string>
+    
+    from     : MaybeFactory<string>
+    subject  : MaybeFactory<React.ReactNode>
+    message  : MaybeFactory<React.ReactNode>
 }
 export interface CheckoutConfig {
     emails : {

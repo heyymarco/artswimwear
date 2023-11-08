@@ -66,8 +66,15 @@ import '@/theme.config'
 export const checkoutConfig : CheckoutConfig = {
     emails : {
         customerOrderConfirmation : {
-            subject : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
-            message : <article style={styles.article}>
+            host     : process.env.EMAIL_CHECKOUT_SERVER_HOST     ?? '',
+            port     : Number.parseInt(process.env.EMAIL_CHECKOUT_SERVER_PORT ?? '465'),
+            secure   : (process.env.EMAIL_CHECKOUT_SERVER_SECURE === 'true'),
+            username : process.env.EMAIL_CHECKOUT_SERVER_USERNAME ?? '',
+            password : process.env.EMAIL_CHECKOUT_SERVER_PASSWORD ?? '',
+            
+            from     : process.env.EMAIL_CHECKOUT_FROM ?? '',
+            subject  : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
+            message  : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 <section
                     // styles:
