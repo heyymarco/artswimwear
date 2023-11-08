@@ -305,7 +305,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                         
                                         
                                         // sizes:
-                                        width : '100%', // the product title fills the available table width
+                                        ...styles.tableColumnRest,
                                     }}
                                 >
                                     {product?.name}
@@ -323,7 +323,18 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                 <td style={styles.tableGapSeparator}></td>
                                 
                                 {/* value */}
-                                <td style={styles.textSmall}>
+                                <td
+                                    // styles:
+                                    style={{
+                                        // sizes:
+                                        ...styles.tableColumnRest,
+                                        
+                                        
+                                        
+                                        // typos:
+                                        ...styles.textSmall,
+                                    }}
+                                >
                                     {formatCurrency(price)}
                                 </td>
                             </tr>
@@ -339,7 +350,17 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                 <td style={styles.tableGapSeparator}></td>
                                 
                                 {/* value */}
-                                <td style={styles.textNormal}>
+                                <td
+                                    style={{
+                                        // sizes:
+                                        ...styles.tableColumnRest,
+                                        
+                                        
+                                        
+                                        // typos:
+                                        ...styles.textNormal,
+                                    }}
+                                >
                                     x{quantity}
                                 </td>
                             </tr>
@@ -349,13 +370,14 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                 <td colSpan={3}
                                     // styles:
                                     style={{
+                                        // sizes:
+                                        ...styles.tableColumnRest,
+                                        
+                                        
+                                        
                                         // typos:
                                         ...styles.textBold,
-                                        
-                                        
-                                        
-                                        // typos:
-                                        textAlign  : 'end', // align to right_most
+                                        textAlign : 'end', // align to right_most
                                     }}
                                 >
                                     {formatCurrency((price !== undefined) ? (price * quantity) : undefined)}
@@ -364,7 +386,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                             
                             {/* separator */}
                             {(itemIndex < (itemsCount - 1)) && <tr>
-                                <td colSpan={4}>
+                                <td colSpan={4} style={styles.tableColumnRest}>
                                     <hr style={styles.borderHorz} />
                                 </td>
                             </tr>}
