@@ -315,7 +315,14 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                             {/* unit price */}
                             <tr>
                                 {/* label */}
-                                <td style={styles.textSmall}>
+                                <td
+                                    // styles:
+                                    style={{
+                                        // typos:
+                                        ...styles.textSmall,
+                                        textAlign : 'end', // align to right_most
+                                    }}
+                                >
                                     @
                                 </td>
                                 
@@ -342,7 +349,14 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                             {/* quantity */}
                             <tr>
                                 {/* label */}
-                                <td style={styles.textSmall}>
+                                <td
+                                    // styles:
+                                    style={{
+                                        // typos:
+                                        ...styles.textSmall,
+                                        textAlign : 'end', // align to right_most
+                                    }}
+                                >
                                     Qty
                                 </td>
                                 
@@ -387,7 +401,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                             {/* separator */}
                             {(itemIndex < (itemsCount - 1)) && <tr>
                                 <td colSpan={4} style={styles.tableColumnAutoSize}>
-                                    <hr style={styles.borderHorz} />
+                                    <hr style={styles.horzRule} />
                                 </td>
                             </tr>}
                         </tbody>

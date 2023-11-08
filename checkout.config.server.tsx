@@ -196,21 +196,21 @@ export const checkoutConfig = {
                     </tbody>
                 </table>
                 
-                <hr style={styles.borderHorz} />
+                <hr style={styles.horzRule} />
                 
                 <Order.Items />
                 
-                <hr style={styles.borderHorz} />
+                <hr style={styles.horzRule} />
                 
                 <Order.Subtotal />
                 <Order.Shipping />
                 
-                <hr style={styles.borderHorz} />
+                <hr style={styles.horzRule} />
                 
                 <Order.Total />
                 
                 <IfPhysicalProduct>
-                    <hr style={styles.borderHorz} />
+                    <hr style={styles.horzRule} />
                 </IfPhysicalProduct>
             </div>
             
