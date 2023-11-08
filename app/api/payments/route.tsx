@@ -94,6 +94,9 @@ import {
 import {
     downloadImageAsBase64,
 }                           from '@/libs/images'
+import {
+    resolveEmailConfig,
+}                           from './utilities'
 
 
 
@@ -1640,6 +1643,12 @@ router
                     countryList : countryList,
                 };
                 
+                
+                
+                const customerOrderConfirmation = await resolveEmailConfig(checkoutConfig.emails.customerOrderConfirmation);
+                
+                
+                
                 const transporter = nodemailer.createTransport({
                     host     :  process.env.EMAIL_CHECKOUT_SERVER_HOST ?? '',
                     port     : Number.parseInt(process.env.EMAIL_CHECKOUT_SERVER_PORT ?? '465'),
@@ -1656,12 +1665,12 @@ router
                         to          : customerEmail, // list of receivers
                         subject     : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                {checkoutConfig.EMAIL_CHECKOUT_SUBJECT}
+                                {customerOrderConfirmation.subject}
                             </OrderDataContextProvider>
                         ),
                         html        : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                {checkoutConfig.EMAIL_CHECKOUT_MESSAGE}
+                                {customerOrderConfirmation.message}
                             </OrderDataContextProvider>
                         ),
                         attachments : (

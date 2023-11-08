@@ -56,205 +56,212 @@ import {
 import Color                from 'color'                // color utilities
 
 // configs:
+import type {
+    CheckoutConfig,
+}                           from '@/app/api/payments/types'
 import '@/theme.config'
 
 
 
-export const checkoutConfig = {
-    EMAIL_CHECKOUT_SUBJECT : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
-    EMAIL_CHECKOUT_MESSAGE : <article style={styles.article}>
-        <div style={styles.sectionDummy}></div>
-        <section
-            // styles:
-            style={{
-                // layouts:
-                ...styles.sectionBase,
-                
-                
-                
-                // backgrounds:
-                background          : (basicValues.backgGrad as any)?.[0]?.[0],
-                backgroundBlendMode : `${basicValues.backgroundBlendMode}`,
-                backgroundColor     : colorValues.primary.mix(Color('#ffffff'), 0.5).toString().toLowerCase(),
-                
-                
-                
-                // foregrounds:
-                color               : colorValues.primaryBold.toString().toLowerCase(),
-                
-                
-                
-                // borders:
-                borderRadius        : `${borderRadiusValues.xxl}`,
-                
-                
-                
-                // spacings:
-                margin              : `${spacerValues.md}`,
-                padding             : `calc(${spacerValues.md} * 1.5)`,
-            }}
-        >
-            <h1 style={styles.heading1}>
-                Thanks For Your Order!
-            </h1>
-            
-            <p style={styles.paragraph}>
-                Dear <Customer.Name />,
-            </p>
-            
-            <p style={styles.paragraphLast}>
-                Thank you for placing an order on {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
-                <br />
-                We are pleased to confirm that we have received your order<IfPaid> and it is <strong>currently being processed</strong></IfPaid><IfNotPaid> and are <strong>waiting for your payment</strong> so that your order can be processed further</IfNotPaid>.
-            </p>
-        </section>
-        
-        <IfNotPaid>
-            <section style={styles.section}>
-                <h2 style={styles.heading2}>
-                    Payment Instruction
-                </h2>
-                
-                <p style={styles.paragraphLast}>
-                    TODO: write a transfer instruction here.
-                </p>
-            </section>
-        </IfNotPaid>
-        
-        <section style={styles.section}>
-            <h2 style={styles.heading2}>
-                Order Summary
-            </h2>
-            
-            <div
-                // styles:
-                style={{
-                    // positions:
-                    ...styles.selfCenterHorz, // center self horizontally
-                    
-                    
-                    
-                    // layouts:
-                    display : 'grid',
-                    
-                    
-                    
-                    // sizes:
-                    width   : 'fit-content',
-                }}
-            >
-                <table
+export const checkoutConfig : CheckoutConfig = {
+    emails : {
+        customerOrderConfirmation : {
+            subject : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
+            message : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                <section
                     // styles:
                     style={{
-                        // positions:
-                        ...styles.selfCenterHorz, // center self horizontally
-                        
-                        
-                        
                         // layouts:
-                        ...styles.tableReset,
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds:
+                        background          : (basicValues.backgGrad as any)?.[0]?.[0],
+                        backgroundBlendMode : `${basicValues.backgroundBlendMode}`,
+                        backgroundColor     : colorValues.primary.mix(Color('#ffffff'), 0.5).toString().toLowerCase(),
+                        
+                        
+                        
+                        // foregrounds:
+                        color               : colorValues.primaryBold.toString().toLowerCase(),
+                        
+                        
+                        
+                        // borders:
+                        borderRadius        : `${borderRadiusValues.xxl}`,
                         
                         
                         
                         // spacings:
-                        marginBottom : '0.5rem',
+                        margin              : `${spacerValues.md}`,
+                        padding             : `calc(${spacerValues.md} * 1.5)`,
                     }}
                 >
-                    <tbody>
-                        <tr>
-                            {/* label */}
-                            <td style={styles.tableLabelSide}>
-                                Order Number
-                            </td>
+                    <h1 style={styles.heading1}>
+                        Thanks For Your Order!
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Customer.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraphLast}>
+                        Thank you for placing an order on {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
+                        <br />
+                        We are pleased to confirm that we have received your order<IfPaid> and it is <strong>currently being processed</strong></IfPaid><IfNotPaid> and are <strong>waiting for your payment</strong> so that your order can be processed further</IfNotPaid>.
+                    </p>
+                </section>
+                
+                <IfNotPaid>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Payment Instruction
+                        </h2>
+                        
+                        <p style={styles.paragraphLast}>
+                            TODO: write a transfer instruction here.
+                        </p>
+                    </section>
+                </IfNotPaid>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
                             
-                            {/* colon */}
-                            <td style={styles.tableColonSeparator}>
-                                :
-                            </td>
                             
-                            {/* value */}
-                            <td style={styles.textBold}>
-                                <Order.Id />
-                            </td>
-                        </tr>
-                        <tr>
-                            {/* label */}
-                            <td  style={styles.tableLabelSide}>
-                                Order Date
-                            </td>
                             
-                            {/* colon */}
-                            <td style={styles.tableColonSeparator}>
-                                :
-                            </td>
+                            // layouts:
+                            display : 'grid',
                             
-                            {/* value */}
-                            <td>
-                                <Order.CreatedAt />
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                        
+                        <IfPhysicalProduct>
+                            <hr style={styles.horzRule} />
+                        </IfPhysicalProduct>
+                    </div>
+                    
+                    <IfPhysicalProduct>
+                        <p style={styles.paragraphLast}>
+                            We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
+                        </p>
+                    </IfPhysicalProduct>
+                </section>
                 
-                <hr style={styles.horzRule} />
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Shipping Info
+                    </h2>
+                    
+                    <Shipping.Info style={styles.selfCenterHorz} />
+                </section>
                 
-                <Order.Items />
+                <IfPaid>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Payment Info
+                        </h2>
+                        
+                        <Payment.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPaid>
                 
-                <hr style={styles.horzRule} />
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
                 
-                <Order.Subtotal />
-                <Order.Shipping />
-                
-                <hr style={styles.horzRule} />
-                
-                <Order.Total />
-                
-                <IfPhysicalProduct>
-                    <hr style={styles.horzRule} />
-                </IfPhysicalProduct>
-            </div>
-            
-            <IfPhysicalProduct>
-                <p style={styles.paragraphLast}>
-                    We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
-                </p>
-            </IfPhysicalProduct>
-        </section>
-        
-        <section style={styles.section}>
-            <h2 style={styles.heading2}>
-                Shipping Info
-            </h2>
-            
-            <Shipping.Info style={styles.selfCenterHorz} />
-        </section>
-        
-        <IfPaid>
-            <section style={styles.section}>
-                <h2 style={styles.heading2}>
-                    Payment Info
-                </h2>
-                
-                <Payment.Info style={styles.selfCenterHorz} />
-            </section>
-        </IfPaid>
-        
-        <section style={styles.section}>
-            <h2 style={styles.heading2}>
-                Customer Info
-            </h2>
-            
-            <Customer.Info style={styles.selfCenterHorz} />
-        </section>
-        
-        <section style={styles.sectionLast}>
-            <h2 style={styles.heading2}>
-                Customer Care Support
-            </h2>
-            
-            <p style={styles.paragraphLast}>
-                Need help? Please reply this email.
-            </p>
-        </section>
-    </article>
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Care Support
+                    </h2>
+                    
+                    <p style={styles.paragraphLast}>
+                        Need help? Please reply this email.
+                    </p>
+                </section>
+            </article>,
+        },
+    },
 };
