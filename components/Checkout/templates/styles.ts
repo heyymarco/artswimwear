@@ -83,8 +83,9 @@ export const textBig       : React.CSSProperties = {
 
 export const borderBase       : string = (
     // `${borderValues.style} ${borderValues.hair} rgba(0, 0, 0, ${horzRuleValues.opacity})`
-    `${borderValues.style} ${borderValues.hair} ${colorValues.primaryBold.opaquer(Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`)).toString().toLowerCase()})`
+    `${borderValues.style} ${borderValues.hair} ${colorValues.primaryBold.alpha(Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`)).toString().toLowerCase()}`
 );
+console.log({borderBase})
 export const borderHorz       : React.CSSProperties = {
     // layouts:
     display         : 'block',
