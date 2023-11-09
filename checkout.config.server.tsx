@@ -3,11 +3,6 @@ import * as styles          from '@/components/Checkout/templates/styles'
 
 // reusable-ui core:
 import {
-    // a color management system:
-    colorValues,
-    
-    
-    
     // a border (stroke) management system:
     borderRadiusValues,
     
@@ -16,12 +11,6 @@ import {
     // a spacer (gap) management system
     spacerValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
-
-// reusable-ui components:
-import {
-    // base-components:
-    basicValues,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // templates:
 import {
@@ -56,9 +45,6 @@ import {
     // react components:
     IfPhysicalProduct,
 }                           from '@/components/Checkout/templates/IfPhysicalProduct'
-
-// other libs:
-import Color                from 'color'                // color utilities
 
 // configs:
 import type {
