@@ -25,6 +25,10 @@ import {
 // templates:
 import {
     // react components:
+    Business,
+}                           from '@/components/Checkout/templates/Business'
+import {
+    // react components:
     Customer,
 }                           from '@/components/Checkout/templates/Customer'
 import {
@@ -65,8 +69,8 @@ import '@/theme.config'
 
 export const checkoutConfig : CheckoutConfig = {
     business : {
-        name : 'ArtSwimwear',
-        url  : 'https://www.artswimwear.com/',
+        name : process.env.BUSINESS_NAME ?? '',
+        url  : process.env.BUSINESS_URL  ?? '',
     },
     emails : {
         customerOrderConfirmation : {
@@ -77,7 +81,7 @@ export const checkoutConfig : CheckoutConfig = {
             password : process.env.EMAIL_CHECKOUT_SERVER_PASSWORD ?? '',
             
             from     : process.env.EMAIL_CHECKOUT_FROM ?? '',
-            subject  : <>Your Order at {process.env.BUSINESS_NAME || process.env.WEBSITE_URL}</>,
+            subject  : <>Your Order at <Business.Name /></>,
             message  : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 <section
@@ -119,7 +123,7 @@ export const checkoutConfig : CheckoutConfig = {
                     </p>
                     
                     <p style={styles.paragraphLast}>
-                        Thank you for placing an order on {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
+                        Thank you for placing an order on <Business.Name />.
                         <br />
                         We are pleased to confirm that we have received your order<IfPaid> and it is <strong>currently being processed</strong></IfPaid><IfNotPaid> and are <strong>waiting for your payment</strong> so that your order can be processed further</IfNotPaid>.
                     </p>

@@ -60,6 +60,11 @@ import {
     OrderDataContextProviderProps,
     OrderDataContextProvider,
 }                           from '@/components/Checkout/templates/orderDataContext'
+import {
+    // react components:
+    BusinessContextProviderProps,
+    BusinessContextProvider,
+}                           from '@/components/Checkout/templates/businessDataContext'
 
 // others:
 import {
@@ -1648,6 +1653,10 @@ router
                     // relation data:
                     countryList : countryList,
                 };
+                const businessContextProviderProps  : BusinessContextProviderProps = {
+                    // data:
+                    model : business,
+                };
                 
                 
                 
@@ -1667,12 +1676,16 @@ router
                         to          : customerEmail,
                         subject     : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                {customerOrderConfirmation.subject}
+                                <BusinessContextProvider {...businessContextProviderProps}>
+                                    {customerOrderConfirmation.subject}
+                                </BusinessContextProvider>
                             </OrderDataContextProvider>
                         ),
                         html        : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                {customerOrderConfirmation.message}
+                                <BusinessContextProvider {...businessContextProviderProps}>
+                                    {customerOrderConfirmation.message}
+                                </BusinessContextProvider>
                             </OrderDataContextProvider>
                         ),
                         attachments : (
