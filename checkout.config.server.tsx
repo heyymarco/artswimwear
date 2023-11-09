@@ -214,7 +214,7 @@ export const checkoutConfig : CheckoutConfig = {
                         <p>
                             After you make payment, please confirm your payment via this link:
                             <br />
-                            <Business.Url />/payment-confirmation/?orderId=<Order.Id />
+                            <Business.Url />/payment-confirmation?orderId=<Order.Id />
                         </p>
                     </section>
                 </IfNotPaid>
