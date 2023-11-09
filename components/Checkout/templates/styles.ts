@@ -165,13 +165,8 @@ export const selfCenterHorz : React.CSSProperties = {
 
 
 export const article : React.CSSProperties = {
-    // backgrounds:
-    backgroundColor : colorValues.secondaryThin.toString().toLowerCase(),
-    
-    
-    
-    // foregrounds:
-    color           : colorValues.secondaryBold.toString().toLowerCase(),
+    // backgrounds & foregrounds:
+    ...theme('secondary', false),
     
     
     
@@ -345,13 +340,8 @@ export const tableTitleProduct   : React.CSSProperties = {
     textAlign       : 'start', // reset the default browser
 };
 export const tableTitleCenter    : React.CSSProperties = {
-    // backgrounds:
-    backgroundColor : colorValues.primary.mix(Color('#ffffff')).toString().toLowerCase(),
-    
-    
-    
-    // foregrounds:
-    color           : colorValues.primaryBold.toString().toLowerCase(),
+    // backgrounds & foregrounds:
+    ...theme('primary'),
     
     
     

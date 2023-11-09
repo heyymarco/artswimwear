@@ -200,7 +200,7 @@ export const checkoutConfig : CheckoutConfig = {
                                 
                                 
                                 // backgrounds & foregrounds:
-                                ...styles.theme('success'),
+                                ...styles.theme('primary'),
                                 
                                 
                                 
@@ -239,8 +239,13 @@ export const checkoutConfig : CheckoutConfig = {
                                 
                                 
                                 
+                                // sizes:
+                                width     : 'fit-content',
+                                
+                                
+                                
                                 // backgrounds & foregrounds:
-                                ...styles.theme('success'),
+                                ...styles.theme('primary'),
                                 
                                 
                                 
