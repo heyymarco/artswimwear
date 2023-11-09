@@ -143,7 +143,7 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
             </thead>}
             
             <tbody>
-                <tr style={styles.tableRowSeparator}>
+                <tr>
                     <th style={styles.tableTitleSide}>
                         Ship To
                     </th>
@@ -152,7 +152,7 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
                     </td>
                 </tr>
                 
-                <tr>
+                <tr style={styles.tableRowSeparator}>
                     <th style={styles.tableTitleSide}>
                         Ship By
                     </th>

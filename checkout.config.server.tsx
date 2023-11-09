@@ -71,75 +71,62 @@ export const checkoutConfig : CheckoutConfig = {
     business : {
         name    : process.env.BUSINESS_NAME ?? '',
         url     : process.env.BUSINESS_URL  ?? '',
-        payment : <article
-            // styles:
-            style={{
-                // layouts:
-                display       : 'flex',
-                flexDirection : 'column',
-                flexWrap      : 'nowrap',
+        payment : <article>
+            <details style={styles.selfCenterHorz}>
+                <summary style={styles.detailsTitleCenter}>
+                    ABC Bank
+                </summary>
                 
-                
-                
-                // spacings:
-                rowGap        : `${spacerValues.md}`,
-            }}
-        >
-            <table style={styles.tableInfo}>
-                <thead>
-                    <tr>
-                        <th colSpan={2} style={styles.tableTitleCenter}>
-                            ABC Bank
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style={styles.tableRowSeparator}>
-                        <th style={styles.tableTitleSide}>
-                            Account
-                        </th>
-                        <td style={styles.tableContentSide}>
-                            123456789
-                        </td>
-                    </tr>
-                    <tr style={styles.tableRowSeparator}>
-                        <th style={styles.tableTitleSide}>
-                            Name of
-                        </th>
-                        <td style={styles.tableContentSide}>
-                            Smith John
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <table style={styles.tableFull}>
+                    <tbody>
+                        <tr>
+                            <th style={styles.tableTitleSide}>
+                                Account
+                            </th>
+                            <td style={styles.tableContentSide}>
+                                123456789
+                            </td>
+                        </tr>
+                        
+                        <tr style={styles.tableRowSeparator}>
+                            <th style={styles.tableTitleSide}>
+                                Name of
+                            </th>
+                            <td style={styles.tableContentSide}>
+                                Smith John
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </details>
             
-            <table style={styles.tableInfo}>
-                <thead>
-                    <tr>
-                        <th colSpan={2} style={styles.tableTitleCenter}>
-                            XYZ Bank
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr style={styles.tableRowSeparator}>
-                        <th style={styles.tableTitleSide}>
-                            Account
-                        </th>
-                        <td style={styles.tableContentSide}>
-                            ABCDEFG
-                        </td>
-                    </tr>
-                    <tr style={styles.tableRowSeparator}>
-                        <th style={styles.tableTitleSide}>
-                            Name of
-                        </th>
-                        <td style={styles.tableContentSide}>
-                            John Smith
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <details style={styles.selfCenterHorz}>
+                <summary style={styles.detailsTitleCenter}>
+                    XYZ Bank
+                </summary>
+                
+                <table style={styles.tableFull}>
+                    <tbody>
+                        <tr>
+                            <th style={styles.tableTitleSide}>
+                                Account
+                            </th>
+                            <td style={styles.tableContentSide}>
+                                ABCDEFG
+                            </td>
+                        </tr>
+                        
+                        <tr style={styles.tableRowSeparator}>
+                            <th style={styles.tableTitleSide}>
+                                Name of
+                            </th>
+                            <td style={styles.tableContentSide}>
+                                John Smith
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </details>
         </article>
     },
     emails : {
@@ -185,7 +172,7 @@ export const checkoutConfig : CheckoutConfig = {
                     }}
                 >
                     <h1 style={styles.heading1}>
-                        <IfPaid>Thanks</IfPaid><IfNotPaid>Awaiting Payment</IfNotPaid>{' '}For Your Order!
+                        <IfPaid>Thanks</IfPaid><IfNotPaid>Awaiting Payment</IfNotPaid>{' '}For Your Order<IfPaid>!</IfPaid><IfNotPaid>...</IfNotPaid>
                     </h1>
                     
                     <p style={styles.paragraph}>
