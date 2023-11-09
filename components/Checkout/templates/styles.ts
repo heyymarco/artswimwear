@@ -112,13 +112,6 @@ export const borderAsHorzRule : React.CSSProperties = {
     borderTop       : 0,
     borderBottom    : horzRuleBase(),
 };
-export const borderTopSide    : React.CSSProperties = {
-    // borders:
-    borderLeft      : 0,
-    borderRight     : 0,
-    borderTop       : horzRuleBase(colorValues.primaryBold.toString().toLowerCase()),
-    borderBottom    : 0,
-};
 export const borderBottomSide : React.CSSProperties = {
     // borders:
     borderLeft      : 0,
@@ -306,14 +299,15 @@ export const tableInfo           : React.CSSProperties = {
     // borders:
     ...borderAllSides,
 };
-export const tableFlush          : React.CSSProperties = {
+export const tableInfoCenter     : React.CSSProperties = {
     // layouts:
-    ...tableReset,
+    ...tableInfo,
     
     
     
-    // sizes:
-    width : '100%',
+    // positions:
+    // needs to overwrite the paragraph's layout
+    ...selfCenterHorz, // center self horizontally
 };
 export const tableTitleProduct   : React.CSSProperties = {
     // typos:
@@ -383,7 +377,7 @@ export const tableContentSide    : React.CSSProperties = {
     // spacings:
     padding         : `calc(${spacerValues.md} * 0.75)`,
 };
-export const tableRowSeparator   = borderTopSide; // using borderTop over borderBottom to support toggleable <details>
+export const tableRowSeparator   = borderBottomSide;
 export const tableColonSeparator : React.CSSProperties = {
     // layouts:
     ...textSecondary,
@@ -401,16 +395,4 @@ export const tableGapSeparator   : React.CSSProperties = {
 export const tableColumnAutoSize : React.CSSProperties = {
     // sizes:
     width : '100%', // fills the rest of table width
-};
-
-
-export const details             = borderAllSides;
-export const detailsTitleCenter  : React.CSSProperties = {
-    // layouts:
-    ...tableTitleCenter,
-    
-    
-    
-    // borders:
-    ...borderTopSide,
 };

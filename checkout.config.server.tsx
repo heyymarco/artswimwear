@@ -72,61 +72,63 @@ export const checkoutConfig : CheckoutConfig = {
         name    : process.env.BUSINESS_NAME ?? '',
         url     : process.env.BUSINESS_URL  ?? '',
         payment : <article>
-            <details style={styles.details}>
-                <summary style={styles.detailsTitleCenter}>
-                    ABC Bank
-                </summary>
-                
-                <table style={styles.tableFlush}>
-                    <tbody>
-                        <tr>
-                            <th style={styles.tableTitleSide}>
-                                Account
-                            </th>
-                            <td style={styles.tableContentSide}>
-                                123456789
-                            </td>
-                        </tr>
-                        
-                        <tr style={styles.tableRowSeparator}>
-                            <th style={styles.tableTitleSide}>
-                                Name of
-                            </th>
-                            <td style={styles.tableContentSide}>
-                                Smith John
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </details>
+            <table style={styles.tableInfoCenter}>
+                <thead>
+                    <tr>
+                        <th colSpan={2} style={styles.tableTitleCenter}>
+                            ABC Bank
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style={styles.tableRowSeparator}>
+                        <th style={styles.tableTitleSide}>
+                            Account
+                        </th>
+                        <td style={styles.tableContentSide}>
+                            123456789
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th style={styles.tableTitleSide}>
+                            Name of
+                        </th>
+                        <td style={styles.tableContentSide}>
+                            Smith John
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
             <br />
-            <details style={styles.details}>
-                <summary style={styles.detailsTitleCenter}>
-                    XYZ Bank
-                </summary>
-                
-                <table style={styles.tableFlush}>
-                    <tbody>
-                        <tr>
-                            <th style={styles.tableTitleSide}>
-                                Account
-                            </th>
-                            <td style={styles.tableContentSide}>
-                                ABCDEFG
-                            </td>
-                        </tr>
-                        
-                        <tr style={styles.tableRowSeparator}>
-                            <th style={styles.tableTitleSide}>
-                                Name of
-                            </th>
-                            <td style={styles.tableContentSide}>
-                                John Smith
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </details>
+            <table style={styles.tableInfoCenter}>
+                <thead>
+                    <tr>
+                        <th colSpan={2} style={styles.tableTitleCenter}>
+                        XYZ Bank
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style={styles.tableRowSeparator}>
+                        <th style={styles.tableTitleSide}>
+                            Account
+                        </th>
+                        <td style={styles.tableContentSide}>
+                            ABCDEFG
+                        </td>
+                    </tr>
+                    
+                    <tr>
+                        <th style={styles.tableTitleSide}>
+                            Name of
+                        </th>
+                        <td style={styles.tableContentSide}>
+                            John Smith
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </article>
     },
     emails : {
@@ -193,20 +195,21 @@ export const checkoutConfig : CheckoutConfig = {
                         </h2>
                         
                         <p style={styles.paragraph}>
-                            Please immediately make payment for your order to <strong>one</strong> of our accounts below:
+                            Please immediately make payment for your order to <strong>one of</strong> our accounts below:
                         </p>
                         
                         <p
                             // styles:
                             style={{
-                                // positions:
-                                ...styles.selfCenterHorz, // center self horizontally
-                                
-                                
-                                
                                 // layouts:
                                 ...styles.paragraph,
                                 display   : 'flex',
+                                
+                                
+                                
+                                // positions:
+                                // needs to overwrite the paragraph's layout
+                                ...styles.selfCenterHorz, // center self horizontally
                                 
                                 
                                 

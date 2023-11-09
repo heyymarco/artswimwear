@@ -153,7 +153,7 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
             </thead>}
             
             <tbody>
-                <tr>
+                <tr style={styles.tableRowSeparator}>
                     <th style={styles.tableTitleSide}>
                         Payment Method
                     </th>
@@ -162,7 +162,7 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
                     </td>
                 </tr>
                 
-                <tr style={styles.tableRowSeparator}>
+                <tr>
                     <th style={styles.tableTitleSide}>
                         Billing Address
                     </th>
