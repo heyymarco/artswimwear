@@ -151,7 +151,7 @@ export const checkoutConfig : CheckoutConfig = {
             password : process.env.EMAILS_CHECKOUT_PASSWORD ?? '',
             
             from     : process.env.EMAILS_CHECKOUT_FROM ?? '',
-            subject  : <>Your Order at <Business.Name /></>,
+            subject  : <><IfNotPaid>Awaiting Payment For </IfNotPaid>Your Order at <Business.Name /></>,
             message  : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 <section
@@ -185,7 +185,7 @@ export const checkoutConfig : CheckoutConfig = {
                     }}
                 >
                     <h1 style={styles.heading1}>
-                        Thanks For Your Order!
+                        <IfPaid>Thanks</IfPaid><IfNotPaid>Awaiting Payment</IfNotPaid>{' '}For Your Order!
                     </h1>
                     
                     <p style={styles.paragraph}>
@@ -308,14 +308,18 @@ export const checkoutConfig : CheckoutConfig = {
                         <Order.Total />
                         
                         <IfPhysicalProduct>
-                            <hr style={styles.horzRule} />
+                            <IfPaid>
+                                <hr style={styles.horzRule} />
+                            </IfPaid>
                         </IfPhysicalProduct>
                     </div>
                     
                     <IfPhysicalProduct>
-                        <p style={styles.paragraphLast}>
-                            We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
-                        </p>
+                        <IfPaid>
+                            <p style={styles.paragraphLast}>
+                                We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
+                            </p>
+                        </IfPaid>
                     </IfPhysicalProduct>
                 </section>
                 
