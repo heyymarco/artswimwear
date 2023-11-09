@@ -306,7 +306,7 @@ export const tableInfo           : React.CSSProperties = {
     // borders:
     ...borderAllSides,
 };
-export const tableFull           : React.CSSProperties = {
+export const tableFlush          : React.CSSProperties = {
     // layouts:
     ...tableReset,
     
@@ -404,6 +404,7 @@ export const tableColumnAutoSize : React.CSSProperties = {
 };
 
 
+export const details             = borderAllSides;
 export const detailsTitleCenter  : React.CSSProperties = {
     // layouts:
     ...tableTitleCenter,

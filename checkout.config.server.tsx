@@ -72,12 +72,12 @@ export const checkoutConfig : CheckoutConfig = {
         name    : process.env.BUSINESS_NAME ?? '',
         url     : process.env.BUSINESS_URL  ?? '',
         payment : <article>
-            <details style={styles.selfCenterHorz}>
+            <details style={styles.details}>
                 <summary style={styles.detailsTitleCenter}>
                     ABC Bank
                 </summary>
                 
-                <table style={styles.tableFull}>
+                <table style={styles.tableFlush}>
                     <tbody>
                         <tr>
                             <th style={styles.tableTitleSide}>
@@ -99,13 +99,13 @@ export const checkoutConfig : CheckoutConfig = {
                     </tbody>
                 </table>
             </details>
-            
-            <details style={styles.selfCenterHorz}>
+            <br />
+            <details style={styles.details}>
                 <summary style={styles.detailsTitleCenter}>
                     XYZ Bank
                 </summary>
                 
-                <table style={styles.tableFull}>
+                <table style={styles.tableFlush}>
                     <tbody>
                         <tr>
                             <th style={styles.tableTitleSide}>
@@ -194,6 +194,38 @@ export const checkoutConfig : CheckoutConfig = {
                         
                         <p style={styles.paragraph}>
                             Please immediately make payment for your order to <strong>one</strong> of our accounts below:
+                        </p>
+                        
+                        <p
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.paragraph,
+                                display   : 'flex',
+                                
+                                
+                                
+                                // sizes:
+                                width     : 'fit-content',
+                                
+                                
+                                
+                                // spacings:
+                                columnGap : '0.5em',
+                                
+                                
+                                
+                                // typos:
+                                ...styles.textBig,
+                            }}
+                        >
+                            <span>Amount:</span>
+                            <Order.TotalValue />
                         </p>
                         
                         <Business.Payment />

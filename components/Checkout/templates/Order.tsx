@@ -72,6 +72,33 @@ const OrderCreatedAt = (): React.ReactNode => {
     // jsx:
     return createdAt.toISOString();
 };
+
+
+const OrderSubtotalValue = (props: OrderSubtotalProps): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            items,
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    return (
+        <span
+            // styles:
+            style={{
+                // typos:
+                ...styles.textBold,
+                ...styles.numberCurrency,
+            }}
+        >
+            {formatCurrency(getTotalProductPrice(items))}
+        </span>
+    );
+};
 export interface OrderSubtotalProps {
     label ?: React.ReactNode
 }
@@ -98,17 +125,37 @@ const OrderSubtotal = (props: OrderSubtotalProps): React.ReactNode => {
     return (
         <p style={styles.paragraphCurrency}>
             {label}
-            <span
-                // styles:
-                style={{
-                    // typos:
-                    ...styles.textBold,
-                    ...styles.numberCurrency,
-                }}
-            >
-                {formatCurrency(getTotalProductPrice(items))}
-            </span>
+            
+            <OrderSubtotalValue />
         </p>
+    );
+};
+
+
+const OrderShippingValue = (props: OrderShippingProps): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            shippingCost,
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    if (shippingCost === null) return null;
+    return (
+        <span
+            // styles:
+            style={{
+                // typos:
+                ...styles.textBold,
+                ...styles.numberCurrency,
+            }}
+        >
+            {formatCurrency(shippingCost)}
+        </span>
     );
 };
 export interface OrderShippingProps {
@@ -138,17 +185,49 @@ const OrderShipping = (props: OrderShippingProps): React.ReactNode => {
     return (
         <p style={styles.paragraphCurrency}>
             {label}
-            <span
-                // styles:
-                style={{
-                    // typos:
-                    ...styles.textBold,
-                    ...styles.numberCurrency,
-                }}
-            >
-                {formatCurrency(shippingCost)}
-            </span>
+            
+            <OrderShippingValue />
         </p>
+    );
+};
+
+const OrderTotalValue = (props: OrderTotalProps): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            shippingCost,
+            items,
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    return (
+        <span
+            // styles:
+            style={{
+                // layouts:
+                display       : 'flex',
+                flexDirection : 'row',
+                flexWrap      : 'nowrap',
+                
+                
+                
+                // spacings:
+                columnGap     : '0.3em',
+                
+                
+                
+                // typos:
+                ...styles.textBold,
+                ...styles.numberCurrency,
+            }}
+        >
+            {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
+            <span>{COMMERCE_CURRENCY}</span>
+        </span>
     );
 };
 export interface OrderTotalProps {
@@ -163,51 +242,23 @@ const OrderTotal = (props: OrderTotalProps): React.ReactNode => {
     
     
     
-    // contexts:
-    const {
-        // data:
-        order : {
-            shippingCost,
-            items,
-        },
-    } = useOrderDataContext();
-    
-    
-    
     // jsx:
     return (
         <p
             // styles:
             style={{
-                // typos:
+                // layouts:
                 ...styles.paragraphCurrency,
+                
+                
+                
+                // typos:
                 ...styles.textBig,
             }}
         >
             {label}
-            <span
-                // styles:
-                style={{
-                    // layouts:
-                    display       : 'flex',
-                    flexDirection : 'row',
-                    flexWrap      : 'nowrap',
-                    
-                    
-                    
-                    // spacings:
-                    columnGap     : '0.3em',
-                    
-                    
-                    
-                    // typos:
-                    ...styles.textBold,
-                    ...styles.numberCurrency,
-                }}
-            >
-                {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
-                <span>{COMMERCE_CURRENCY}</span>
-            </span>
+            
+            <OrderTotalValue />
         </p>
     );
 };
@@ -413,10 +464,17 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
 };
 
 export const Order = {
-    Id        : OrderId,
-    CreatedAt : OrderCreatedAt,
-    Subtotal  : OrderSubtotal,
-    Shipping  : OrderShipping,
-    Total     : OrderTotal,
-    Items     : OrderItems,
+    Id            : OrderId,
+    CreatedAt     : OrderCreatedAt,
+    
+    SubtotalValue : OrderSubtotalValue,
+    Subtotal      : OrderSubtotal,
+    
+    ShippingValue : OrderShippingValue,
+    Shipping      : OrderShipping,
+    
+    TotalValue    : OrderTotalValue,
+    Total         : OrderTotal,
+    
+    Items         : OrderItems,
 };
