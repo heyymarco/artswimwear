@@ -1635,7 +1635,7 @@ router
                 const {
                     business,
                     emails : {
-                        customerOrderConfirmation,
+                        checkout : checkoutEmail,
                     },
                 } = checkoutConfig;
                 
@@ -1661,30 +1661,30 @@ router
                 
                 
                 const transporter = nodemailer.createTransport({
-                    host     : customerOrderConfirmation.host,
-                    port     : customerOrderConfirmation.port,
-                    secure   : customerOrderConfirmation.secure,
+                    host     : checkoutEmail.host,
+                    port     : checkoutEmail.port,
+                    secure   : checkoutEmail.secure,
                     auth     : {
-                        user : customerOrderConfirmation.username,
-                        pass : customerOrderConfirmation.password,
+                        user : checkoutEmail.username,
+                        pass : checkoutEmail.password,
                     },
                 });
                 try {
                     console.log('sending email...');
                     await transporter.sendMail({
-                        from        : customerOrderConfirmation.from,
+                        from        : checkoutEmail.from,
                         to          : customerEmail,
                         subject     : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
                                 <BusinessContextProvider {...businessContextProviderProps}>
-                                    {customerOrderConfirmation.subject}
+                                    {checkoutEmail.subject}
                                 </BusinessContextProvider>
                             </OrderDataContextProvider>
                         ),
                         html        : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
                                 <BusinessContextProvider {...businessContextProviderProps}>
-                                    {customerOrderConfirmation.message}
+                                    {checkoutEmail.message}
                                 </BusinessContextProvider>
                             </OrderDataContextProvider>
                         ),

@@ -73,14 +73,14 @@ export const checkoutConfig : CheckoutConfig = {
         url  : process.env.BUSINESS_URL  ?? '',
     },
     emails : {
-        customerOrderConfirmation : {
-            host     : process.env.EMAIL_CHECKOUT_SERVER_HOST     ?? '',
-            port     : Number.parseInt(process.env.EMAIL_CHECKOUT_SERVER_PORT ?? '465'),
-            secure   : (process.env.EMAIL_CHECKOUT_SERVER_SECURE === 'true'),
-            username : process.env.EMAIL_CHECKOUT_SERVER_USERNAME ?? '',
-            password : process.env.EMAIL_CHECKOUT_SERVER_PASSWORD ?? '',
+        checkout : {
+            host     : process.env.EMAILS_CHECKOUT_HOST     ?? '',
+            port     : Number.parseInt(process.env.EMAILS_CHECKOUT_PORT ?? '465'),
+            secure   : (process.env.EMAILS_CHECKOUT_SECURE === 'true'),
+            username : process.env.EMAILS_CHECKOUT_USERNAME ?? '',
+            password : process.env.EMAILS_CHECKOUT_PASSWORD ?? '',
             
-            from     : process.env.EMAIL_CHECKOUT_FROM ?? '',
+            from     : process.env.EMAILS_CHECKOUT_FROM ?? '',
             subject  : <>Your Order at <Business.Name /></>,
             message  : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
@@ -123,7 +123,7 @@ export const checkoutConfig : CheckoutConfig = {
                     </p>
                     
                     <p style={styles.paragraphLast}>
-                        Thank you for placing an order on <Business.Name />.
+                        Thank you for placing an order on <strong><Business.Name /></strong>.
                         <br />
                         We are pleased to confirm that we have received your order<IfPaid> and it is <strong>currently being processed</strong></IfPaid><IfNotPaid> and are <strong>waiting for your payment</strong> so that your order can be processed further</IfNotPaid>.
                     </p>
