@@ -9,6 +9,7 @@ import {
 export interface BusinessConfig {
     name     : string
     url      : string
+    payment ?: React.ReactNode
 }
 export interface EmailConfig {
     host     : string

@@ -69,8 +69,78 @@ import '@/theme.config'
 
 export const checkoutConfig : CheckoutConfig = {
     business : {
-        name : process.env.BUSINESS_NAME ?? '',
-        url  : process.env.BUSINESS_URL  ?? '',
+        name    : process.env.BUSINESS_NAME ?? '',
+        url     : process.env.BUSINESS_URL  ?? '',
+        payment : <article
+            // styles:
+            style={{
+                // layouts:
+                display       : 'flex',
+                flexDirection : 'column',
+                flexWrap      : 'nowrap',
+                
+                
+                
+                // spacings:
+                rowGap        : `${spacerValues.md}`,
+            }}
+        >
+            <table style={styles.tableInfo}>
+                <thead>
+                    <tr>
+                        <th colSpan={2} style={styles.tableTitleCenter}>
+                            ABC Bank
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style={styles.tableRowSeparator}>
+                        <th style={styles.tableTitleSide}>
+                            Account
+                        </th>
+                        <td style={styles.tableContentSide}>
+                            123456789
+                        </td>
+                    </tr>
+                    <tr style={styles.tableRowSeparator}>
+                        <th style={styles.tableTitleSide}>
+                            Name of
+                        </th>
+                        <td style={styles.tableContentSide}>
+                            Smith John
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <table style={styles.tableInfo}>
+                <thead>
+                    <tr>
+                        <th colSpan={2} style={styles.tableTitleCenter}>
+                            XYZ Bank
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style={styles.tableRowSeparator}>
+                        <th style={styles.tableTitleSide}>
+                            Account
+                        </th>
+                        <td style={styles.tableContentSide}>
+                            ABCDEFG
+                        </td>
+                    </tr>
+                    <tr style={styles.tableRowSeparator}>
+                        <th style={styles.tableTitleSide}>
+                            Name of
+                        </th>
+                        <td style={styles.tableContentSide}>
+                            John Smith
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </article>
     },
     emails : {
         checkout : {
@@ -135,8 +205,16 @@ export const checkoutConfig : CheckoutConfig = {
                             Payment Instruction
                         </h2>
                         
-                        <p style={styles.paragraphLast}>
-                            TODO: write a transfer instruction here.
+                        <p style={styles.paragraph}>
+                            Please immediately make payment for your order to <strong>one</strong> of our accounts below:
+                        </p>
+                        
+                        <Business.Payment />
+                        
+                        <p>
+                            After you make payment, please confirm your payment via this link:
+                            <br />
+                            <Business.Url />/payment-confirmation/?orderId=<Order.Id />
                         </p>
                     </section>
                 </IfNotPaid>

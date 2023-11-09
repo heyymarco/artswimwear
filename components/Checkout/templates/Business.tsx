@@ -42,8 +42,23 @@ const BusinessUrl = (): React.ReactNode => {
         model?.url || null
     );
 };
+const BusinessPayment = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        model,
+    } = useBusinessContext();
+    
+    
+    
+    // jsx:
+    return (
+        model?.payment ?? null
+    );
+};
 
 export const Business = {
-    Name : BusinessName,
-    Url  : BusinessUrl,
+    Name    : BusinessName,
+    Url     : BusinessUrl,
+    Payment : BusinessPayment,
 };
