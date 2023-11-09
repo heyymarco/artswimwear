@@ -6,27 +6,24 @@ import {
 
 
 
-export type MaybePromise<T> = T|Promise<T>
-export type MaybeFactory<T> = T|(() => MaybePromise<T>)
-
 export interface BusinessConfig {
-    name     : MaybeFactory<string>
-    url      : MaybeFactory<string>
+    name     : string
+    url      : string
 }
 export interface EmailConfig {
-    host     : MaybeFactory<string>
-    port     : MaybeFactory<number>
-    secure   : MaybeFactory<boolean>
-    username : MaybeFactory<string>
-    password : MaybeFactory<string>
+    host     : string
+    port     : number
+    secure   : boolean
+    username : string
+    password : string
     
-    from     : MaybeFactory<string>
-    subject  : MaybeFactory<React.ReactNode>
-    message  : MaybeFactory<React.ReactNode>
+    from     : string
+    subject  : React.ReactNode
+    message  : React.ReactNode
 }
 export interface CheckoutConfig {
-    business : MaybeFactory<BusinessConfig>
+    business : BusinessConfig
     emails : {
-        customerOrderConfirmation : MaybeFactory<EmailConfig>
+        customerOrderConfirmation : EmailConfig
     }
 }

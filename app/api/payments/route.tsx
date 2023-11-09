@@ -61,20 +61,6 @@ import {
     OrderDataContextProvider,
 }                           from '@/components/Checkout/templates/orderDataContext'
 
-// configs:
-import {
-    COMMERCE_CURRENCY,
-    COMMERCE_CURRENCY_FRACTION_UNIT,
-    COMMERCE_CURRENCY_FRACTION_ROUNDING,
-    
-    PAYPAL_CURRENCY,
-    PAYPAL_CURRENCY_FRACTION_UNIT,
-    PAYPAL_CURRENCY_FRACTION_ROUNDING,
-}                           from '@/commerce.config'
-import {
-    checkoutConfig,
-}                           from '@/checkout.config.server'
-
 // others:
 import {
     customAlphabet,
@@ -94,10 +80,20 @@ import {
 import {
     downloadImageAsBase64,
 }                           from '@/libs/images'
+
+// configs:
 import {
-    resolveBusinessConfig,
-    resolveEmailConfig,
-}                           from './utilities'
+    COMMERCE_CURRENCY,
+    COMMERCE_CURRENCY_FRACTION_UNIT,
+    COMMERCE_CURRENCY_FRACTION_ROUNDING,
+    
+    PAYPAL_CURRENCY,
+    PAYPAL_CURRENCY_FRACTION_UNIT,
+    PAYPAL_CURRENCY_FRACTION_ROUNDING,
+}                           from '@/commerce.config'
+import {
+    checkoutConfig,
+}                           from '@/checkout.config.server'
 
 
 
@@ -1631,10 +1627,12 @@ router
             
             
             try {
-                const [business, customerOrderConfirmation] = await Promise.all([
-                    resolveBusinessConfig(checkoutConfig.business),
-                    resolveEmailConfig(checkoutConfig.emails.customerOrderConfirmation),
-                ]);
+                const {
+                    business,
+                    emails : {
+                        customerOrderConfirmation,
+                    },
+                } = checkoutConfig;
                 
                 
                 
