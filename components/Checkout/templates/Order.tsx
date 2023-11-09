@@ -111,16 +111,6 @@ const OrderSubtotal = (props: OrderSubtotalProps): React.ReactNode => {
     
     
     
-    // contexts:
-    const {
-        // data:
-        order : {
-            items,
-        },
-    } = useOrderDataContext();
-    
-    
-    
     // jsx:
     return (
         <p style={styles.paragraphCurrency}>

@@ -17,6 +17,7 @@ import {
     spacerValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// reusable-ui components:
 import {
     // base-components:
     basicValues,
@@ -143,6 +144,7 @@ export const checkoutConfig : CheckoutConfig = {
             subject  : <><IfNotPaid>Awaiting Payment For </IfNotPaid>Your Order at <Business.Name /></>,
             message  : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
+                
                 <section
                     // styles:
                     style={{
@@ -151,26 +153,19 @@ export const checkoutConfig : CheckoutConfig = {
                         
                         
                         
-                        // backgrounds:
-                        background          : (basicValues.backgGrad as any)?.[0]?.[0],
-                        backgroundBlendMode : `${basicValues.backgroundBlendMode}`,
-                        backgroundColor     : colorValues.primary.mix(Color('#ffffff'), 0.5).toString().toLowerCase(),
-                        
-                        
-                        
-                        // foregrounds:
-                        color               : colorValues.primaryBold.toString().toLowerCase(),
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
                         
                         
                         
                         // borders:
-                        borderRadius        : `${borderRadiusValues.xxl}`,
+                        borderRadius : `${borderRadiusValues.xxl}`,
                         
                         
                         
                         // spacings:
-                        margin              : `${spacerValues.md}`,
-                        padding             : `calc(${spacerValues.md} * 1.5)`,
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
                     }}
                 >
                     <h1 style={styles.heading1}>
@@ -218,8 +213,19 @@ export const checkoutConfig : CheckoutConfig = {
                                 
                                 
                                 
+                                // backgrounds & foregrounds:
+                                ...styles.theme('success'),
+                                
+                                
+                                
+                                // borders:
+                                borderRadius : `${borderRadiusValues.xxl}`,
+                                
+                                
+                                
                                 // spacings:
-                                columnGap : '0.5em',
+                                padding      : `calc(${spacerValues.md} * 1.5)`,
+                                columnGap    : '0.5em',
                                 
                                 
                                 
@@ -233,7 +239,34 @@ export const checkoutConfig : CheckoutConfig = {
                         
                         <Business.Payment />
                         
-                        <p>
+                        <p
+                            // styles:
+                            style={{
+                                // layouts:
+                                ...styles.paragraphLast,
+                                
+                                
+                                
+                                // positions:
+                                // needs to overwrite the paragraph's layout
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // backgrounds & foregrounds:
+                                ...styles.theme('success'),
+                                
+                                
+                                
+                                // borders:
+                                borderRadius : `${borderRadiusValues.xxl}`,
+                                
+                                
+                                
+                                // spacings:
+                                padding      : `calc(${spacerValues.md} * 1.5)`,
+                            }}
+                        >
                             After you make payment, please confirm your payment via this link:
                             <br />
                             <Business.Url />/payment-confirmation?orderId=<Order.Id />

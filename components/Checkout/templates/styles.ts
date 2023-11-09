@@ -27,13 +27,42 @@ import {
     headingValues,
     paragraphValues,
     horzRuleValues,
+    
+    
+    
+    // color options of UI:
+    ThemeName,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // base-components:
+    basicValues,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // other libs:
 import Color                from 'color'                // color utilities
 
 // configs:
 import '@/theme.config'
+
+
+
+export const theme = (themeName: ThemeName, gradient: boolean = true) => {
+    return {
+        // backgrounds:
+        ...(gradient ? {
+            background          : (basicValues.backgGrad as any)?.[0]?.[0],
+            backgroundBlendMode : `${basicValues.backgroundBlendMode}`,
+        } : undefined),
+        backgroundColor         : colorValues[themeName as keyof typeof colorValues].mix(Color('#ffffff'), 0.5).toString().toLowerCase(),
+        
+        
+        
+        // foregrounds:
+        color                   : colorValues[`${themeName}Bold` as keyof typeof colorValues].toString().toLowerCase(),
+    };
+};
 
 
 
