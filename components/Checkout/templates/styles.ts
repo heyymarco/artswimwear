@@ -333,6 +333,15 @@ export const tableInfoCenter     : React.CSSProperties = {
     // needs to overwrite the paragraph's layout
     ...selfCenterHorz, // center self horizontally
 };
+export const tableInfoFill       : React.CSSProperties = {
+    // layouts:
+    ...tableInfo,
+    
+    
+    
+    // sizes:
+    width : '100%',
+};
 export const tableTitleProduct   : React.CSSProperties = {
     // typos:
     fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
