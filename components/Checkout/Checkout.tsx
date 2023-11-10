@@ -202,7 +202,7 @@ const CheckoutInternal = (): JSX.Element|null => {
     return (
         <Container
             // variants:
-            theme='secondary'
+            theme='primary'
             
             
             

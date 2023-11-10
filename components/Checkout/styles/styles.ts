@@ -43,6 +43,11 @@ import {
     
     
     
+    // foreground (text color) stuff of UI:
+    usesForeground,
+    
+    
+    
     // border (stroke) stuff of UI:
     usesBorder,
     
@@ -76,6 +81,7 @@ export default () => {
     
     // features:
     const {backgroundVars} = usesBackground();
+    const {foregroundVars} = usesForeground();
     const {borderVars    } = usesBorder();
     const {paddingVars   } = usesPadding();
     
@@ -313,8 +319,26 @@ export default () => {
                     }),
                     ...children('thead', {
                         ...children('tr', {
+                            // accessibilities:
+                            ...rule(['& ::selection'], { // ::selection on descendants
+                                // backgrounds:
+                                backg : backgroundVars.backgColor,
+                                
+                                
+                                
+                                // foregrounds:
+                                foreg : foregroundVars.foreg,
+                            }),
+                            
+                            
+                            
                             // backgrounds:
-                            backgroundColor     : backgroundVars.altBackgColor,
+                            backg     : backgroundVars.altBackgColor,
+                            
+                            
+                            
+                            // foregrounds:
+                            color     : foregroundVars.altForeg,
                             
                             
                             
@@ -340,6 +364,29 @@ export default () => {
                             }),
                             
                             flexWrap              : 'nowrap',  // no wrapping
+                            
+                            
+                            
+                            // accessibilities:
+                            ...rule(['& ::selection'], { // ::selection on descendants
+                                // backgrounds:
+                                backg : backgroundVars.altBackgColor,
+                                
+                                
+                                
+                                // foregrounds:
+                                foreg : foregroundVars.altForeg,
+                            }),
+                            
+                            
+                            
+                            // backgrounds:
+                            backg     : backgroundVars.backgColor,
+                            
+                            
+                            
+                            // foregrounds:
+                            color     : foregroundVars.foreg,
                             
                             
                             
