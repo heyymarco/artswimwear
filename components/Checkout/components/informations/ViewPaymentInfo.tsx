@@ -44,7 +44,12 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
             <tbody>
                 <tr>
                     <th>Payment Method</th>
-                    <td><ViewPaymentMethod /></td>
+                    <td
+                        // classes:
+                        className='paymentInfo'
+                    >
+                        <ViewPaymentMethod />
+                    </td>
                 </tr>
                 
                 <tr>

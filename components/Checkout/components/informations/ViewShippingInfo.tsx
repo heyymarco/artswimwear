@@ -92,7 +92,12 @@ const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
                 
                 {(checkoutStep !== 'shipping') && <tr>
                     <th>Ship By</th>
-                    <td><ViewShippingMethod /></td>
+                    <td
+                        // classes:
+                        className='shippingInfo'
+                    >
+                        <ViewShippingMethod />
+                    </td>
                     {!readOnly && <td>
                         <EditButton onClick={handleGotoShippingProvider} />
                     </td>}

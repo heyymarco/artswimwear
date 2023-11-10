@@ -32,7 +32,19 @@ const ViewShippingMethod = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            {`${selectedShipping?.name}${!selectedShipping?.estimate ? '' : ` - ${selectedShipping?.estimate}`}`}
+            <span
+                // classes:
+                className='shippingProvider'
+            >
+                {selectedShipping?.name}
+            </span>
+            
+            {!!selectedShipping?.estimate && <span
+                // classes:
+                className='shippingEstimate'
+            >
+                (estimate: {selectedShipping?.estimate} after dispatched from our warehouse)
+            </span>}
         </>
     );
 };

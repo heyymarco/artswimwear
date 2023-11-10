@@ -270,6 +270,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     className={styleSheet.info}
                 >
                     <ViewCustomerInfo />
+                    
                     <ViewShippingInfo />
                 </Section>}
                 

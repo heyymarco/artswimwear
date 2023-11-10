@@ -17,6 +17,7 @@ import {
 import {
     // a border (stroke) management system:
     borders,
+    borderRadiuses,
     
     
     
@@ -265,133 +266,174 @@ export default () => {
                 
                 // children:
                 ...children('table', {
-                    borderCollapse: 'collapse',
-                    tableLayout: 'auto',
-                    // tableLayout: 'fixed',
-                    border: borderVars.border,
-                    borderWidth: borders.defaultWidth,
-                    width: '100%',
+                    // layouts:
+                    borderCollapse : 'collapse',
+                    tableLayout    : 'auto',
                     
                     
                     
+                    // sizes:
+                    width          : '100%', // block like layout
+                    
+                    
+                    
+                    // borders:
+                    border         : borderVars.border,
+                    borderWidth    : borders.defaultWidth,
+                    
+                    
+                    
+                    // children:
                     ...children(['thead', 'tbody'], {
                         ...children('tr', {
-                            ...ifScreenWidthSmallerThan('sm', {
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                padding: '1rem',
+                            // borders:
+                            ...rule(':not(:last-child)', { // border as separator
+                                borderBlockEnd      : borderVars.border,
+                                borderBlockEndWidth : borders.defaultWidth,
                             }),
-                            ...rule(':not(:last-child)', {
-                                borderBlockEnd: borderVars.border,
-                                borderBlockEndWidth: borders.defaultWidth,
+                            
+                            
+                            
+                            // children:
+                            ...children(['th', 'td'], { // spacing for all cells
+                                // spacings:
+                                padding        : '0.75rem',
                             }),
-                            ...children(['th', 'td'], {
-                                ...ifScreenWidthSmallerThan('sm', {
-                                    padding: '0rem',
-                                }),
-                                padding: '0.75rem',
-                            }),
-                            ...children('th', {
-                                // layouts:
-                                display : 'grid',
-                                justifyContent : 'center', // center the content horizontally
-                                alignContent   : 'center', // center the content vertically
-                                
-                                
-                                
+                            ...children('th', { // default title formatting
                                 // typos:
-                                fontWeight : typos.fontWeightSemibold,
-                                textAlign  : 'end',
+                                fontWeight     : typos.fontWeightSemibold,
+                                textAlign      : 'center', // center the title horizontally
                             }),
-                            ...children('td', {
-                                wordBreak    : 'break-word',
-                                overflowWrap : 'anywhere',
+                            ...children('td', { // default data formatting
+                                // typos:
+                                wordBreak      : 'break-word',
+                                overflowWrap   : 'anywhere', // break long text like email
                             }),
                         }),
                     }),
                     ...children('thead', {
                         ...children('tr', {
+                            // backgrounds:
                             backgroundColor     : backgroundVars.altBackgColor,
+                            
+                            
+                            
+                            // borders:
                             borderBlockEnd      : borderVars.border,
                             borderBlockEndWidth : borders.defaultWidth,
-                            ...children('th', {
-                                textAlign: 'center',
-                            }),
                         }),
                     }),
                     ...children('tbody', {
-                        ...ifScreenWidthSmallerThan('sm', {
-                            display: 'flex',
-                            flexDirection: 'column',
-                        }),
                         ...children('tr', {
                             // layouts:
-                            display       : 'flex',
-                            flexDirection : 'row',
+                            // the table cells is set to 'grid'|'block', causing the table structure broken,
+                            // to fix this we set the table row to flex:
+                            display               : 'flex',
+                            
+                            flexDirection         : 'column',
+                            justifyContent        : 'start',   // top_most the items vertically
+                            alignItems            : 'stretch', // stretch  the items horizontally
+                            ...ifScreenWidthAtLeast('sm', {
+                                flexDirection     : 'row',
+                                // justifyContent : 'start',   // top_most the items horizontally
+                                // alignItems     : 'stretch', // stretch  the items vertically
+                            }),
+                            
+                            flexWrap              : 'nowrap',  // no wrapping
                             
                             
                             
-                            ...children('td', {
-                                // typos:
-                                textAlign: 'start',
-                                ...ifScreenWidthSmallerThan('sm', {
-                                    textAlign: 'center',
+                            // children:
+                            ...children('th', { // special title formatting
+                                // layouts:
+                                display            : 'grid',
+                                
+                                justifyContent     : 'center',  // center     the items horizontally
+                                ...ifScreenWidthAtLeast('sm', {
+                                    justifyContent : 'end',     // right_most the items horizontally
+                                }),
+                                
+                                alignContent       : 'center',  // center     the items vertically
+                                
+                                
+                                
+                                // sizes:
+                                ...ifScreenWidthAtLeast('sm', {
+                                    // fixed size accross table(s), simulating subgrid:
+                                    boxSizing      : 'content-box',
+                                    inlineSize     : '5em', // a fixed size by try n error
+                                    flex           : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
+                                }),
+                            }),
+                            ...children('td', { // special data formatting
+                                // sizes:
+                                
+                                // fill the remaining width for data cells:
+                                ...rule(':nth-child(2)', {
+                                    flex       : [[1, 1, 'auto']], // growable, shrinkable, initial from it's width
+                                }),
+                                
+                                // fixed width of Edit cells:
+                                ...rule(':nth-child(3)', {
+                                    flex       : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
                                 }),
                                 
                                 
                                 
-                                // children:
-                                ...children('.paymentProvider', {
-                                    width         : '42px',
-                                    verticalAlign : 'middle',
+                                // special layouts:
+                                ...rule(':nth-child(2)', {
+                                    textAlign : 'center',
+                                    ...ifScreenWidthAtLeast('sm', {
+                                        textAlign : 'start',
+                                    }),
                                 }),
-                                ...children('.paymentIdentifier', {
-                                    // positions:
-                                    verticalAlign     : 'middle',
-                                    
-                                    
-                                    
+                                ...rule(':nth-child(3)', { // Edit cells:
                                     // layouts:
-                                    display           : 'inline-block',
+                                    display        : 'grid',
+                                    justifyContent : 'center', // center the items vertically
+                                }),
+                                ...rule(['.shippingInfo', '.paymentInfo'], {
+                                    // layouts:
+                                    display            : 'grid',
                                     
+                                    justifyContent     : 'center', // center    the items horizontally
+                                    ...ifScreenWidthAtLeast('sm', {
+                                        justifyContent : 'start',  // left_most the items horizontally
+                                    }),
                                     
+                                    alignItems         : 'center', // center    the each item vertically
+                                    justifyItems       : 'center', // center    the each item horizontally
                                     
-                                    // sizes:
-                                    boxSizing         : 'content-box',
-                                    maxInlineSize     : '25em',
-                                    
-                                    
-                                    
-                                    // scrolls:
-                                    overflow          : 'hidden',   // hide the rest text if overflowed
-                                    whiteSpace        : 'nowrap',   // do not break word on [space]
-                                    overflowWrap      : 'normal',   // do not break word for long_word
-                                    textOverflow      : 'ellipsis', // put triple_dot after long_word...
+                                    gridAutoFlow       : 'row',
+                                    ...ifScreenWidthAtLeast('sm', {
+                                        gridAutoFlow   : 'column',
+                                    }),
                                     
                                     
                                     
                                     // spacings:
-                                    marginInlineStart : '0.5em',
+                                    gap                : spacers.sm,
                                     
                                     
                                     
-                                    // typos:
-                                    fontSize          : typos.fontSizeSm,
+                                    // children:
+                                    ...children('.paymentProvider', {
+                                        // sizes:
+                                        width             : '42px',
+                                        height            : 'auto',
+                                        
+                                        
+                                        
+                                        // borders:
+                                        border            : borderVars.border,
+                                        borderWidth       : borders.defaultWidth,
+                                        borderRadius      : borderRadiuses.sm,
+                                    }),
+                                    ...children(['.shippingEstimate', '.paymentIdentifier'], {
+                                        // typos:
+                                        fontSize          : typos.fontSizeSm,
+                                    }),
                                 }),
-                            }),
-                            ...children('th', {
-                                boxSizing  : 'content-box',
-                                inlineSize : '4em',
-                                flex       : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
-                            }),
-                            ...children('td:nth-child(2)', {
-                                flex       : [[1, 1, 'auto']], // growable, shrinkable, initial from it's width
-                            }),
-                            ...children('td:nth-child(3)', {
-                                boxSizing  : 'content-box',
-                                inlineSize : 'max-content',
-                                flex       : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
                             }),
                         }),
                     }),
