@@ -273,7 +273,8 @@ export default () => {
                 // children:
                 ...children('table', {
                     // layouts:
-                    borderCollapse : 'collapse',
+                    borderCollapse : 'separate',
+                    borderSpacing  : 0,
                     tableLayout    : 'auto',
                     
                     
@@ -283,23 +284,85 @@ export default () => {
                     
                     
                     
-                    // borders:
-                    border         : borderVars.border,
-                    borderWidth    : borders.defaultWidth,
-                    
-                    
-                    
                     // children:
                     ...children(['thead', 'tbody'], {
+                        // border strokes & radiuses:
                         ...children('tr', {
-                            // borders:
-                            ...rule(':not(:last-child)', { // border as separator
-                                borderBlockEnd      : borderVars.border,
-                                borderBlockEndWidth : borders.defaultWidth,
+                            ...children(['th', 'td'], {
+                                ...rule(':first-child', {
+                                    borderInlineStart              : borderVars.border,
+                                    borderInlineStartWidth         : borders.defaultWidth,
+                                }),
+                                ...rule(':last-child', {
+                                    borderInlineEnd                : borderVars.border,
+                                    borderInlineEndWidth           : borders.defaultWidth,
+                                }),
                             }),
-                            
-                            
-                            
+                        }),
+                        ...rule(':first-child', {
+                            ...children('tr', {
+                                ...rule(':first-child', {
+                                    ...children(['th', 'td'], {
+                                        borderBlockStart           : borderVars.border,
+                                        borderBlockStartWidth      : borders.defaultWidth,
+                                        
+                                        
+                                        
+                                        ...rule(':first-child', {
+                                            borderStartStartRadius : borderRadiuses.default,
+                                        }),
+                                        ...rule(':last-child', {
+                                            borderStartEndRadius   : borderRadiuses.default,
+                                        }),
+                                    }),
+                                }),
+                            }),
+                        }),
+                        ...rule(':last-child', {
+                            ...children('tr', {
+                                ...rule(':last-child', {
+                                    ...children(['th', 'td'], {
+                                        borderBlockEnd             : borderVars.border,
+                                        borderBlockEndWidth        : borders.defaultWidth,
+                                        
+                                        
+                                        
+                                        ...rule(':first-child', {
+                                            borderEndStartRadius   : borderRadiuses.default,
+                                        }),
+                                        ...rule(':last-child', {
+                                            borderEndEndRadius     : borderRadiuses.default,
+                                        }),
+                                    }),
+                                }),
+                            }),
+                        }),
+                        
+                        
+                        // border separators:
+                        ...children('tr', {
+                            ...rule(':not(:last-child)', { // border as separator between row(s)
+                                ...children(['th', 'td'], {
+                                    borderBlockEnd      : borderVars.border,
+                                    borderBlockEndWidth : borders.defaultWidth,
+                                }),
+                            }),
+                        }),
+                        ...rule(':not(:last-child)', { // border as separator between thead|tbody
+                            ...children('tr', {
+                                ...rule(':last-child', {
+                                    ...children(['th', 'td'], {
+                                        borderBlockEnd      : borderVars.border,
+                                        borderBlockEndWidth : borders.defaultWidth,
+                                    }),
+                                }),
+                            }),
+                        }),
+                        
+                        
+                        
+                        // children:
+                        ...children('tr', {
                             // children:
                             ...children(['th', 'td'], { // spacing for all cells
                                 // spacings:
@@ -319,32 +382,28 @@ export default () => {
                     }),
                     ...children('thead', {
                         ...children('tr', {
-                            // accessibilities:
-                            ...rule(['& ::selection'], { // ::selection on descendants
+                            ...children('th', {
+                                // accessibilities:
+                                ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
+                                    // backgrounds:
+                                    backg : backgroundVars.backgColor,
+                                    
+                                    
+                                    
+                                    // foregrounds:
+                                    foreg : foregroundVars.foreg,
+                                }),
+                                
+                                
+                                
                                 // backgrounds:
-                                backg : backgroundVars.backgColor,
+                                backg     : backgroundVars.altBackgColor,
                                 
                                 
                                 
                                 // foregrounds:
-                                foreg : foregroundVars.foreg,
+                                color     : foregroundVars.altForeg,
                             }),
-                            
-                            
-                            
-                            // backgrounds:
-                            backg     : backgroundVars.altBackgColor,
-                            
-                            
-                            
-                            // foregrounds:
-                            color     : foregroundVars.altForeg,
-                            
-                            
-                            
-                            // borders:
-                            borderBlockEnd      : borderVars.border,
-                            borderBlockEndWidth : borders.defaultWidth,
                         }),
                     }),
                     ...children('tbody', {
@@ -367,30 +426,29 @@ export default () => {
                             
                             
                             
-                            // accessibilities:
-                            ...rule(['& ::selection'], { // ::selection on descendants
+                            // children:
+                            ...children(['th', 'td'], {
+                                // accessibilities:
+                                ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
+                                    // backgrounds:
+                                    backg : backgroundVars.backgColor,
+                                    
+                                    
+                                    
+                                    // foregrounds:
+                                    foreg : foregroundVars.foreg,
+                                }),
+                                
+                                
+                                
                                 // backgrounds:
-                                backg : backgroundVars.altBackgColor,
+                                backg     : backgroundVars.backgColor,
                                 
                                 
                                 
                                 // foregrounds:
-                                foreg : foregroundVars.altForeg,
+                                color     : foregroundVars.foreg,
                             }),
-                            
-                            
-                            
-                            // backgrounds:
-                            backg     : backgroundVars.backgColor,
-                            
-                            
-                            
-                            // foregrounds:
-                            color     : foregroundVars.foreg,
-                            
-                            
-                            
-                            // children:
                             ...children('th', { // special title formatting
                                 // layouts:
                                 display            : 'grid',
