@@ -178,6 +178,9 @@ export const article : React.CSSProperties = {
     // typos:
     fontSize        : `${typoValues.fontSizeMd}`,
     textAlign       : 'center',
+    
+    whiteSpace      : 'normal',
+    wordBreak       : 'break-all',
 };
 
 
