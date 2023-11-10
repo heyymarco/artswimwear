@@ -199,14 +199,12 @@ const OrderTotalValue = (props: OrderTotalProps): React.ReactNode => {
             // styles:
             style={{
                 // layouts:
-                display       : 'flex',
-                flexDirection : 'row',
-                flexWrap      : 'nowrap',
+                display   : 'flex',
                 
                 
                 
                 // spacings:
-                columnGap     : '0.3em',
+                columnGap : '0.3em',
                 
                 
                 

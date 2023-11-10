@@ -109,14 +109,12 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
                         style={{
                             // layouts:
                             ...styles.tableContentSide,
-                            display       : 'flex',
-                            flexDirection : 'row',
-                            flexWrap      : 'nowrap',
+                            display   : 'flex',
                             
                             
                             
                             // spacings:
-                            columnGap     : '0.5em',
+                            columnGap : '0.5em',
                         }}
                     >
                         <CustomerEmail />

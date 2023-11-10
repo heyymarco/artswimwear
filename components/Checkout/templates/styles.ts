@@ -284,10 +284,6 @@ export const paragraphLast     : React.CSSProperties = {
 export const paragraphCurrency : React.CSSProperties = {
     // layouts:
     ...paragraphBase,
-    
-    
-    
-    // layouts:
     display         : 'flex', // makes marginInlineStart work
 };
 export const numberCurrency    : React.CSSProperties = {
