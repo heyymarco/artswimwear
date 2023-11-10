@@ -178,9 +178,6 @@ export const article : React.CSSProperties = {
     // typos:
     fontSize        : `${typoValues.fontSizeMd}`,
     textAlign       : 'center',
-    
-    whiteSpace      : 'normal',
-    wordBreak       : 'break-all',
 };
 
 
@@ -403,6 +400,12 @@ export const tableLabelSide      : React.CSSProperties = {
 export const tableContentSide    : React.CSSProperties = {
     // spacings:
     padding         : `calc(${spacerValues.md} * 0.75)`,
+    
+    
+    
+    // typos:
+    whiteSpace      : 'normal',
+    wordBreak       : 'break-all',
 };
 export const tableRowSeparator   = borderBottomSide;
 export const tableColonSeparator : React.CSSProperties = {
