@@ -31,7 +31,6 @@ const EditButton = (props: EditButtonProps) => {
             
             // variants:
             size={props.size ?? 'sm'}
-            theme={props.theme ?? 'primary'}
             buttonStyle={props.buttonStyle ?? 'link'}
             
             

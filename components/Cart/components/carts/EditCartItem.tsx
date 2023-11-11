@@ -218,7 +218,6 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                 {!propReadOnly && <Group
                     // variants:
                     size='sm'
-                    theme='primary'
                     
                     
                     
