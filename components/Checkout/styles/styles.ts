@@ -340,8 +340,8 @@ export default () => {
                         
                         
                         // border separators:
-                        ...children('tr', {
-                            ...rule(':not(:last-child)', { // border as separator between row(s)
+                        ...children('tr', { // border as separator between row(s)
+                            ...rule(':not(:last-child)', {
                                 ...children(['th', 'td'], {
                                     borderBlockEnd      : borderVars.border,
                                     borderBlockEndWidth : borders.defaultWidth,
@@ -382,7 +382,7 @@ export default () => {
                     }),
                     ...children('thead', {
                         ...children('tr', {
-                            ...children('th', {
+                            ...children('th', { // special theme color for header's cell(s)
                                 // accessibilities:
                                 ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
                                     // backgrounds:
@@ -426,8 +426,21 @@ export default () => {
                             
                             
                             
+                            // border separators:
+                            ...ifScreenWidthSmallerThan('sm', { // conditional border as separator between row(s)
+                                ...rule(':nth-child(n)', { // increase specificity
+                                    ...children(['th', 'td'], {
+                                        ...rule(':not(:last-child)', {
+                                            borderBlockEnd : 0,
+                                        }),
+                                    }),
+                                }),
+                            }),
+                            
+                            
+                            
                             // children:
-                            ...children(['th', 'td'], {
+                            ...children(['th', 'td'], { // special theme color for body's cell(s)
                                 // accessibilities:
                                 ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
                                     // backgrounds:
