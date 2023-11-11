@@ -16,19 +16,14 @@ import {
     useCartState,
 }                           from '../../states/cartState'
 
-// configs:
-import {
-    COMMERCE_CURRENCY,
-}                           from '@/commerce.config'
-
 
 
 // react components:
-export interface ViewTotalCartProps {
+export interface ViewShippingCartProps {
     // data:
     totalShippingCost ?: number|null|undefined
 }
-const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
+const ViewShippingCart = (props: ViewShippingCartProps): JSX.Element|null => {
     // rest props:
     const {
         // data:
@@ -41,30 +36,23 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
     const {
         // states:
         isCartReady,
-        
-        
-        
-        // cart data:
-        totalProductPrice,
     } = useCartState();
+    const isPhysicalProduct     = (totalShippingCost !== null);
     const isNotShippingSelected = (totalShippingCost === undefined);
     
     
     
     // jsx:
-    if (!isCartReady) return null;
+    if (!isCartReady)       return null;
+    if (!isPhysicalProduct) return null;
     return (
-        <p className='currencyBlock totalCost'>
-            <span>Total</span>
+        <p className='currencyBlock'>
+            <span>Shipping</span>
             
             <span className='currency'>
                 {
                     !isNotShippingSelected
-                    ? <>
-                        {formatCurrency(totalProductPrice + (totalShippingCost ?? 0))}
-                        {' '}
-                        <span>{COMMERCE_CURRENCY}</span>
-                    </>
+                    ? formatCurrency(totalShippingCost)
                     : 'calculated at next step'
                 }
             </span>
@@ -72,6 +60,6 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
     );
 };
 export {
-    ViewTotalCart,
-    ViewTotalCart as default,
+    ViewShippingCart,
+    ViewShippingCart as default,
 };

@@ -36,15 +36,13 @@ const ViewSubtotalCart = (): JSX.Element|null => {
     // jsx:
     if (!isCartReady) return null;
     return (
-        <>
-            <hr />
+        <p className='currencyBlock'>
+            <span>Subtotal</span>
             
-            <p className='currencyBlock'>
-                Subtotal <span className='currency'>
-                    {formatCurrency(totalProductPrice)}
-                </span>
-            </p>
-        </>
+            <span className='currency'>
+                {formatCurrency(totalProductPrice)}
+            </span>
+        </p>
     );
 };
 export {

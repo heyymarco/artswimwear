@@ -44,6 +44,12 @@ import {
     EditCart,
 }                           from './components/carts/EditCart'
 import {
+    ViewSubtotalCart,
+}                           from './components/carts/ViewSubtotalCart'
+import {
+    ViewShippingCart,
+}                           from './components/carts/ViewShippingCart'
+import {
     ViewTotalCart,
 }                           from './components/carts/ViewTotalCart'
 import {
@@ -138,6 +144,7 @@ const CheckoutInternal = (): JSX.Element|null => {
         // actions:
         refetchCheckout,
     } = useCheckoutState();
+    const isPhysicalProduct = (totalShippingCost !== null);
     
     
     
@@ -228,6 +235,17 @@ const CheckoutInternal = (): JSX.Element|null => {
                     readOnly={isCheckoutFinished}
                     // readOnly={true} // for testing
                 />
+                
+                <hr />
+                
+                <ViewSubtotalCart />
+                {isPhysicalProduct && <ViewShippingCart
+                    // data:
+                    totalShippingCost={totalShippingCost}
+                />}
+                
+                <hr />
+                
                 <ViewTotalCart
                     // data:
                     totalShippingCost={totalShippingCost}

@@ -10,7 +10,7 @@ import {
 import {
     EditCartProps,
     EditCart as BaseEditCart,
-}                           from '@/components/Cart'
+}                           from '@/components/Cart/components/carts/EditCart'
 import {
     ResponsiveDetails,
 }                           from '../ResponsiveDetails'

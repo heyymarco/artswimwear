@@ -1,4 +1,4 @@
 'use client'
 
 // internal components:
-export *                    from '@/components/Cart'
+export *                    from '@/components/Cart/components/carts/ViewTotalCart'
