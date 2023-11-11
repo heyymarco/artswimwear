@@ -339,6 +339,7 @@ export default () => {
                         }),
                         
                         
+                        
                         // border separators:
                         ...children('tr', { // border as separator between row(s)
                             ...rule(':not(:last-child)', {
@@ -407,6 +408,66 @@ export default () => {
                         }),
                     }),
                     ...children('tbody', {
+                        // conditional border strokes & radiuses:
+                        ...ifScreenWidthSmallerThan('sm', {
+                            ...children('tr', {
+                                ...children(['th', 'td'], {
+                                    borderInline      : borderVars.border,
+                                    borderInlineWidth : borders.defaultWidth,
+                                }),
+                            }),
+                            ...rule(':first-child', {
+                                ...children('tr', {
+                                    ...rule(':first-child', {
+                                        ...children(['th', 'td'], {
+                                            ...rule(':not(:first-child)', {
+                                                borderStartStartRadius : 0,
+                                                borderStartEndRadius   : 0,
+                                            }),
+                                            ...rule(':first-child', {
+                                                borderStartStartRadius : '1rem',
+                                                borderStartEndRadius   : '1rem',
+                                            }),
+                                        }),
+                                    }),
+                                }),
+                            }),
+                            ...rule(':last-child', {
+                                ...children('tr', {
+                                    ...rule(':last-child', {
+                                        ...children(['th', 'td'], {
+                                            ...rule(':not(:last-child)', {
+                                                borderEndStartRadius   : 0,
+                                                borderEndEndRadius     : 0,
+                                            }),
+                                            ...rule(':last-child', {
+                                                borderEndStartRadius   : borderRadiuses.default,
+                                                borderEndEndRadius     : borderRadiuses.default,
+                                            }),
+                                        }),
+                                    }),
+                                }),
+                            }),
+                        }),
+                        
+                        
+                        
+                        // conditional border separators:
+                        ...ifScreenWidthSmallerThan('sm', {
+                            ...children('tr', {
+                                ...rule(':nth-child(n)', { // increase specificity
+                                    ...children(['th', 'td'], {
+                                        ...rule(':not(:last-child)', {
+                                            borderBlockEnd : 0,
+                                        }),
+                                    }),
+                                }),
+                            }),
+                        }),
+                        
+                        
+                        
+                        // children:
                         ...children('tr', {
                             // layouts:
                             // the table cells is set to 'grid'|'block', causing the table structure broken,
@@ -423,19 +484,6 @@ export default () => {
                             }),
                             
                             flexWrap              : 'nowrap',  // no wrapping
-                            
-                            
-                            
-                            // border separators:
-                            ...ifScreenWidthSmallerThan('sm', { // conditional border as separator between row(s)
-                                ...rule(':nth-child(n)', { // increase specificity
-                                    ...children(['th', 'td'], {
-                                        ...rule(':not(:last-child)', {
-                                            borderBlockEnd : 0,
-                                        }),
-                                    }),
-                                }),
-                            }),
                             
                             
                             
