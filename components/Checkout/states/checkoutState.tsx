@@ -324,7 +324,7 @@ export interface CheckoutStateBase {
     // payment data:
     paymentValidation         : boolean
     
-    paymentMethod             : PaymentMethod | undefined
+    paymentMethod             : PaymentMethod
     setPaymentMethod          : (paymentMethod: PaymentMethod) => void
     
     paymentToken              : PaymentToken  | undefined
@@ -653,7 +653,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // payment data:
         paymentValidation,
         
-        paymentMethod,
+        paymentMethod = 'card',
         
         paymentToken,
     } = localCheckoutState;
