@@ -19,8 +19,12 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Generic,
+    
+    
+    
     // simple-components:
-    Label,
     ButtonIcon,
     
     
@@ -204,66 +208,60 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                     </span>
             </p>}
             
-            {propReadOnly && <p className='quantity readOnly'>
+            <Generic tag={propReadOnly ? 'p' : 'div'} className='quantity'>
                 <span className='label txt-sec'>
                     Qty
                 </span>
-                <span className='value number'>
+                {propReadOnly && <span className='value number'>
                     x{quantity}
-                </span>
-            </p>}
-            {!propReadOnly && <Group
-                // variants:
-                size='sm'
-                theme='primary'
-                
-                
-                
-                // classes:
-                className='quantity'
-                
-                
-                
-                // accessibilities:
-                title='Quantity'
-            >
-                <Label
+                </span>}
+                {!propReadOnly && <Group
                     // variants:
-                    theme='inherit'
+                    size='sm'
+                    theme='primary'
+                    
+                    
+                    
+                    // classes:
+                    className='value control'
+                    
+                    
+                    
+                    // accessibilities:
+                    title='Quantity'
                 >
-                    Qty
-                </Label>
-                <ButtonIcon
-                    // appearances:
-                    icon='delete'
-                    
-                    
-                    
-                    // accessibilities:
-                    title='remove from cart'
-                    
-                    
-                    
-                    // handlers:
-                    onClick={handleDelete}
-                />
-                <QuantityInput
-                    // accessibilities:
-                    enabled={!isProductDeleted}
-                    
-                    
-                    
-                    // values:
-                    value={quantity}
-                    onChange={handleChange}
-                    
-                    
-                    
-                    // validations:
-                    min={0}
-                    max={99}
-                />
-            </Group>}
+                    <ButtonIcon
+                        // appearances:
+                        icon='delete'
+                        
+                        
+                        
+                        // accessibilities:
+                        title='remove from cart'
+                        
+                        
+                        
+                        // handlers:
+                        onClick={handleDelete}
+                    />
+                    <QuantityInput
+                        // accessibilities:
+                        enabled={!isProductDeleted}
+                        
+                        
+                        
+                        // values:
+                        value={quantity}
+                        onChange={handleChange}
+                        
+                        
+                        
+                        // validations:
+                        min={0}
+                        max={99}
+                    />
+                </Group>}
+            </Generic>
             
             <p className='subPrice currencyBlock'>
                 {isProductDeleted && <>This product was deleted</>}

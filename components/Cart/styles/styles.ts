@@ -199,8 +199,13 @@ export default () => [
                 textAlign       : 'end',   // right_most
             }),
             ...children('.value', {
-                // typos:
-                textAlign       : 'start', // left_most
+                ...rule(':not(.control)', {
+                    // typos:
+                    textAlign   : 'start', // left_most
+                }),
+                ...rule('.control', {
+                    justifySelf : 'start',
+                }),
             }),
         }),
         ...children('.unitPrice', {
