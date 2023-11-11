@@ -644,7 +644,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // billing data:
-        billingValidation,
+        billingValidation : reduxBillingValidation,
         
         billingAsShipping,
         
@@ -659,7 +659,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     } = localCheckoutState;
     const checkoutProgress    = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
     const isPaymentTokenValid = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
+    
     const isBillingRequired   = (paymentMethod === 'card'); // the billingAddress is required for 'card'
+    const billingValidation   = isBillingRequired && !billingAsShipping && reduxBillingValidation;
     
     const {
         // payment data:
