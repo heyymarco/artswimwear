@@ -492,12 +492,12 @@ export default () => {
                                 // accessibilities:
                                 ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
                                     // backgrounds:
-                                    backg : backgroundVars.backgColor,
+                                    backg : backgroundVars.altBackgColor,
                                     
                                     
                                     
                                     // foregrounds:
-                                    foreg : foregroundVars.foreg,
+                                    foreg : foregroundVars.altForeg,
                                 }),
                                 
                                 
