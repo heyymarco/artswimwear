@@ -192,10 +192,12 @@ export type BusyState =
     | 'transaction'
 
 interface FinishedOrderState {
-    cartItems     : CartState['cartItems'  ]
-    productList   : CartState['productList']
-    checkoutState : ReduxCheckoutState
-    paymentState  : MakePaymentResponse
+    cartItems         : CartState['cartItems'  ]
+    productList       : CartState['productList']
+    
+    checkoutState     : ReduxCheckoutState
+    totalShippingCost : number|null|undefined
+    paymentState      : MakePaymentResponse
 }
 
 
@@ -726,7 +728,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // cart data:
-    const totalShippingCost = useMemo<number|null|undefined>(() => {
+    const realTotalShippingCost = useMemo<number|null|undefined>(() => {
         // conditions:
         if (!shippingList)               return undefined; // the shippingList data is not available yet => nothing to calculate
         const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
@@ -738,6 +740,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
         return calculateShippingCost(totalProductWeight, selectedShipping);
     }, [totalProductWeight, shippingList, shippingProvider]);
+    const totalShippingCost     = finishedOrderState ? finishedOrderState.totalShippingCost : realTotalShippingCost;
+    
     
     
     // states:
@@ -1239,6 +1243,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 ...localCheckoutState,
                 checkoutStep : (paid ? 'paid' : 'pending'),
             },
+            totalShippingCost,
             paymentState,
         });
         
