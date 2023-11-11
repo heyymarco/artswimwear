@@ -89,13 +89,13 @@ export default () => [
         // layouts:
         display      : 'grid',
         gridTemplate : [[
-            '"image              image" max-content',
-            '"title              title" max-content',
-            '"labelUnitPrice unitPrice" max-content',
-            '"labelQuantity  quantity " max-content',
-            '"subPrice        subPrice" max-content',
+            '"image    image              image    image" max-content',
+            '"title    title              title    title" max-content',
+            '".....    labelUnitPrice unitPrice ........" max-content',
+            '".....    labelQuantity   quantity ........" max-content',
+            '"subPrice subPrice        subPrice subPrice" max-content',
             '/',
-            `minmax(${imageSize / 2}px, 1fr) minmax(${imageSize / 2}px, 1fr)`,
+            `1fr auto auto 1fr`,
         ]],
         ...ifScreenWidthAtLeast('sm', {
             gridTemplate : [[
@@ -104,7 +104,7 @@ export default () => [
                 '"image labelQuantity   quantity" max-content',
                 '"image subPrice        subPrice" max-content',
                 '/',
-                `${imageSize}px min-content auto`,
+                `min-content min-content auto`,
             ]],
         }),
         
