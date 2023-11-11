@@ -39,6 +39,7 @@ const ProgressCheckout = (): JSX.Element|null => {
             size='sm'
             theme={!isDesktop ? 'secondary' : 'primary'}
             outlined={!isDesktop}
+            mild={false}
             listStyle='breadcrumb'
             orientation='inline'
             
@@ -48,9 +49,9 @@ const ProgressCheckout = (): JSX.Element|null => {
             enabled={true}         // always enabled
             inheritEnabled={false} // always enabled
         >
-            <ListItem active={checkoutProgress >= 0}>Information</ListItem>
-            <ListItem active={checkoutProgress >= 1}>Shipping</ListItem>
-            <ListItem active={checkoutProgress >= 2}>Payment</ListItem>
+            <ListItem mild={true} active={checkoutProgress >= 0}>Information</ListItem>
+            <ListItem mild={true} active={checkoutProgress >= 1}>Shipping</ListItem>
+            <ListItem mild={true} active={checkoutProgress >= 2}>Payment</ListItem>
         </List>
     );
 };
