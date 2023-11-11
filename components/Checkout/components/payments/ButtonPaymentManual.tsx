@@ -87,7 +87,6 @@ const ButtonPaymentManual = (): JSX.Element|null => {
                     
                     // variants:
                     size='lg'
-                    theme='primary'
                     gradient={true}
                     
                     

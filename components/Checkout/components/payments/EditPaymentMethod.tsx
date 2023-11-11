@@ -136,7 +136,6 @@ const EditPaymentMethod = (): JSX.Element|null => {
             
             <ExclusiveAccordion
                 // variants:
-                theme='primary'
                 listStyle='content'
                 
                 

@@ -99,7 +99,6 @@ const NavCheckout = (): JSX.Element|null => {
                     
                     // variants:
                     size='md'
-                    theme='primary'
                     buttonStyle='link'
                     
                     
@@ -127,7 +126,6 @@ const NavCheckout = (): JSX.Element|null => {
                             
                             // variants:
                             size='lg'
-                            theme='primary'
                             gradient={true}
                             
                             
@@ -156,12 +154,10 @@ const NavCheckout = (): JSX.Element|null => {
                         
                         // variants:
                         size='md'
-                        theme='primary'
                     />
                     {' '}Need help?{' '}
                     <Button
                         // variants:
-                        theme='primary'
                         buttonStyle='link'
                     >
                         <Link href='/contact'>
@@ -179,7 +175,6 @@ const NavCheckout = (): JSX.Element|null => {
                     
                     // variants:
                     size='lg'
-                    theme='primary'
                     gradient={true}
                     
                     

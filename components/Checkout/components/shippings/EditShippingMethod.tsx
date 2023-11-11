@@ -77,11 +77,6 @@ const EditShippingMethod = (): JSX.Element|null => {
     return (
         <>
             {!!filteredShippingList && <List
-                // variants:
-                theme='primary'
-                
-                
-                
                 // behaviors:
                 actionCtrl={true}
             >

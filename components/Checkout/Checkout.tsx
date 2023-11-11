@@ -215,11 +215,6 @@ const CheckoutInternal = (): JSX.Element|null => {
                 
                 
                 
-                // variants:
-                theme={!isDesktop ? 'primary' : undefined}
-                
-                
-                
                 // classes:
                 className={styleSheet.orderSummary}
                 

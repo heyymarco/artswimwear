@@ -158,7 +158,6 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                     
                     // variants:
                     size='lg'
-                    theme='primary'
                     gradient={true}
                     
                     
