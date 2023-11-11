@@ -285,6 +285,7 @@ export interface CheckoutStateBase {
     
     
     // billing data:
+    isBillingRequired         : boolean
     billingValidation         : boolean
     
     
@@ -485,6 +486,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // billing data:
+    isBillingRequired         : false,
     billingValidation         : false,
     
     
@@ -523,7 +525,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     // payment data:
     paymentValidation         : false,
     
-    paymentMethod             : undefined,
+    paymentMethod             : 'card',
     setPaymentMethod          : noopCallback,
     
     paymentToken              : undefined,
@@ -657,6 +659,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     } = localCheckoutState;
     const checkoutProgress    = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
     const isPaymentTokenValid = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
+    const isBillingRequired   = (paymentMethod === 'card'); // the billingAddress is required for 'card'
     
     const {
         // payment data:
@@ -915,6 +918,20 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         };
     }, [paymentToken]);
     
+    // auto reset billing validation:
+    useEffect(() => {
+        // conditions:
+        if (isBillingRequired)  return; // billing is required                => nothing to reset
+        if (!billingAsShipping) return; // billing is different than shipping => nothing to reset
+        
+        
+        
+        // reset:
+        if (billingAsShipping) { // the billingAddress is the same as shippingAddress => reset billingAddress validation
+            dispatch(reduxSetBillingValidation(false));
+        } // if
+    }, [isBillingRequired, billingAsShipping, billingAsShipping]);
+    
     // auto clear finished checkout states in redux:
     useEffect(() => {
         // conditions:
@@ -1097,11 +1114,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     const setBillingAsShipping = useEvent((billingAsShipping: boolean): void => {
         dispatch(reduxSetBillingAsShipping(billingAsShipping));
-        
-        // reset:
-        if (billingAsShipping) { // the billingAddress is the same as shippingAddress => reset billingAddress validation
-            dispatch(reduxSetBillingValidation(false));
-        } // if
     });
     
     const doTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
@@ -1110,7 +1122,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        if (paymentMethod !== 'paypal') { // paymentMethod 'card' & paymentMethod 'manual' => requires valid billing fields
+        if (isBillingRequired) {
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             if (!billingAsShipping) { // use dedicated billingAddress => enable billingAddress validation
@@ -1219,16 +1231,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             // billing data:
-            billingFirstName : billingAsShipping ? shippingFirstName : billingFirstName,
-            billingLastName  : billingAsShipping ? shippingLastName  : billingLastName,
+            billingFirstName : isBillingRequired ? (billingAsShipping ? shippingFirstName : billingFirstName) : '',
+            billingLastName  : isBillingRequired ? (billingAsShipping ? shippingLastName  : billingLastName)  : '',
             
-            billingPhone     : billingAsShipping ? shippingPhone     : billingPhone,
+            billingPhone     : isBillingRequired ? (billingAsShipping ? shippingPhone     : billingPhone)     : '',
             
-            billingAddress   : billingAsShipping ? shippingAddress   : billingAddress,
-            billingCity      : billingAsShipping ? shippingCity      : billingCity,
-            billingZone      : billingAsShipping ? shippingZone      : billingZone,
-            billingZip       : billingAsShipping ? shippingZip       : billingZip,
-            billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
+            billingAddress   : isBillingRequired ? (billingAsShipping ? shippingAddress   : billingAddress)   : '',
+            billingCity      : isBillingRequired ? (billingAsShipping ? shippingCity      : billingCity)      : '',
+            billingZone      : isBillingRequired ? (billingAsShipping ? shippingZone      : billingZone)      : '',
+            billingZip       : isBillingRequired ? (billingAsShipping ? shippingZip       : billingZip)       : '',
+            billingCountry   : isBillingRequired ? (billingAsShipping ? shippingCountry   : billingCountry)   : '',
         }).unwrap();
         
         
@@ -1333,6 +1345,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // billing data:
+        isBillingRequired,
         billingValidation,
         
         
@@ -1486,6 +1499,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // billing data:
+        isBillingRequired,
         billingValidation,
         
         

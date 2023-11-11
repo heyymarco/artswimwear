@@ -75,6 +75,7 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
     // states:
     const {
         // billing data:
+        isBillingRequired,
         billingValidation,
         
         billingAsShipping,
@@ -106,11 +107,6 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
         
         billingCountry,
         billingCountryHandlers,
-        
-        
-        
-        // payment data:
-        paymentMethod,
         
         
         
@@ -165,7 +161,7 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                 
                 
                 // states:
-                expanded={paymentMethod !== 'paypal'} // the billingAddress is required for 'card' and 'manual'
+                expanded={isBillingRequired}
             >
                 <Section
                     // refs:
@@ -257,7 +253,7 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                         >
                             <ValidationProvider
                                 // validations:
-                                enableValidation={!billingAsShipping && billingValidation}
+                                enableValidation={billingValidation}
                             >
                                 <AddressFields
                                     // types:
