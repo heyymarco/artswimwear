@@ -37,7 +37,7 @@ const ProgressCheckout = (): JSX.Element|null => {
         <List
             // variants:
             size='sm'
-            theme={!isDesktop ? 'secondary' : 'primary'}
+            theme={!isDesktop ? 'secondary' : 'inherit'}
             outlined={!isDesktop}
             mild={false}
             listStyle='breadcrumb'

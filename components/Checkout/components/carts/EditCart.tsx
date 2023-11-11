@@ -26,7 +26,6 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     return (
         <ResponsiveDetails
             // variants:
-            theme='secondary'
             detailsStyle='content'
             
             
