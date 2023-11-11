@@ -14,6 +14,11 @@ import {
     ViewBillingAddress,
 }                           from '../informations/ViewBillingAddress'
 
+// internals:
+import {
+    useCheckoutState,
+}                           from '../../states/checkoutState'
+
 
 
 // react components:
@@ -27,6 +32,14 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
         // accessibilities:
         title = 'Payment Info',
     } = props;
+    
+    
+    
+    // states:
+    const {
+        // billing data:
+        isBillingRequired,
+    } = useCheckoutState();
     
     
     
@@ -52,10 +65,10 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
                     </td>
                 </tr>
                 
-                <tr>
+                {isBillingRequired && <tr>
                     <th>Billing Address</th>
                     <td><ViewBillingAddress /></td>
-                </tr>
+                </tr>}
             </tbody>
         </table>
     );
