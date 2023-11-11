@@ -230,7 +230,8 @@ const CheckoutInternal = (): JSX.Element|null => {
             >
                 <EditCart
                     // accessibilities:
-                    readOnly={isCheckoutFinished}
+                    // readOnly={isCheckoutFinished}
+                    readOnly={true}
                 />
                 <ViewTotalCart
                     // data:

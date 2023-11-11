@@ -196,16 +196,19 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             />
             
             {(productUnitPrice !== undefined) && <p className='unitPrice'>
-                @ <span className='currency secondary'>
-                    {formatCurrency(productUnitPrice)}
-                </span>
+                    <span className='label txt-sec'>
+                        @
+                    </span>
+                    <span className='value txt-sec'>
+                        {formatCurrency(productUnitPrice)}
+                    </span>
             </p>}
             
             {propReadOnly && <p className='quantity readOnly'>
-                <span className='label'>
+                <span className='label txt-sec'>
                     Qty
                 </span>
-                <span className='number'>
+                <span className='value number'>
                     x{quantity}
                 </span>
             </p>}

@@ -89,29 +89,32 @@ export default () => [
         // layouts:
         display      : 'grid',
         gridTemplate : [[
-            '" image   " max-content',
-            '" title   " max-content',
-            '"unitPrice" max-content',
-            '"quantity " max-content',
-            '"subPrice " max-content',
+            '"image              image" max-content',
+            '"title              title" max-content',
+            '"labelUnitPrice unitPrice" max-content',
+            '"labelQuantity  quantity " max-content',
+            '"subPrice        subPrice" max-content',
             '/',
-            `minmax(${imageSize}px, 1fr)`,
+            `minmax(${imageSize / 2}px, 1fr) minmax(${imageSize / 2}px, 1fr)`,
         ]],
         ...ifScreenWidthAtLeast('sm', {
             gridTemplate : [[
-                '"image     title" max-content',
-                '"image unitPrice" max-content',
-                '"image  quantity" max-content',
-                '"image  subPrice" max-content',
+                '"image title              title" max-content',
+                '"image labelUnitPrice unitPrice" max-content',
+                '"image labelQuantity   quantity" max-content',
+                '"image subPrice        subPrice" max-content',
                 '/',
-                `${imageSize}px auto`,
+                `${imageSize}px min-content auto`,
             ]],
         }),
         
         
         
         // spacings:
-        gapInline     : '1rem',
+        gapInline     : spacers.sm,
+        ...ifScreenWidthAtLeast('sm', {
+            gapInline : 0, // different gap between prodImg and label
+        }),
         gapBlock      : '0.5rem',
         paddingInline : '0px',
         
@@ -134,6 +137,13 @@ export default () => [
             
             // backgrounds:
             background  : 'white',
+            
+            
+            
+            // spacings:
+            ...ifScreenWidthAtLeast('sm', {
+                marginInlineEnd : spacers.default,
+            }),
             
             
             
@@ -172,9 +182,30 @@ export default () => [
                 textAlign: 'center',
             }),
         }),
+        ...children(['.unitPrice', '.quantity'], {
+            display             : 'grid',
+            gridTemplateColumns : 'subgrid',
+            
+            
+            
+            // children:
+            ...children('.label', {
+                // spacings:
+                marginInlineEnd : spacers.sm,
+                
+                
+                
+                // typos:
+                textAlign       : 'end',   // right_most
+            }),
+            ...children('.value', {
+                // typos:
+                textAlign       : 'start', // left_most
+            }),
+        }),
         ...children('.unitPrice', {
             // positions:
-            gridArea    : 'unitPrice',
+            gridArea    : 'labelUnitPrice/labelUnitPrice / unitPrice/unitPrice',
             justifySelf : 'center', // center horizontally
             ...ifScreenWidthAtLeast('sm', {
                 justifySelf : 'start', // place to the left
@@ -183,31 +214,14 @@ export default () => [
             
             
             // typos:
-            ...children(['&', '.currency'], {
-                fontWeight  : typos.fontWeightLight,
-            }),
+            fontWeight  : typos.fontWeightLight,
         }),
         ...children('.quantity', {
             // positions:
-            gridArea    : 'quantity',
+            gridArea    : 'labelQuantity/labelQuantity / quantity/quantity',
             justifySelf : 'center', // center horizontally
             ...ifScreenWidthAtLeast('sm', {
                 justifySelf : 'start', // place to the left
-            }),
-            
-            
-            
-            // layouts:
-            ...rule('.readOnly', {
-                display  : 'flex',
-                flexWrap : 'nowrap',
-            }),
-            
-            
-            
-            // spacings:
-            ...rule('.readOnly', {
-                gap      : '0.5em',
             }),
             
             
