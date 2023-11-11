@@ -39,11 +39,18 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
     const {
         // billing data:
         isBillingRequired,
+        
+        
+        
+        // payment data:
+        paymentMethod,
     } = useCheckoutState();
+    const isPaid = (paymentMethod !== 'manual');
     
     
     
     // jsx:
+    if (!isPaid) return null;
     return (
         <table>
             {!!title && <thead>
