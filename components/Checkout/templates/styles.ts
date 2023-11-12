@@ -111,7 +111,7 @@ export const textBig                     : React.CSSProperties = {
 
 
 
-const horzRuleBase                       = (themeName: ThemeName = 'primary'): string => (
+const horzRuleStroke                     = (themeName: ThemeName = 'primary'): string => (
     `${borderValues.style} ${borderValues.hair} ${colorValues[`${themeName}Bold` as keyof typeof colorValues].mix(Color('#ffffff'), 1 - (Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`))).toString().toLowerCase()}`
 );
 export const horzRule                    : React.CSSProperties = {
@@ -121,10 +121,10 @@ export const horzRule                    : React.CSSProperties = {
     
     
     // borders:
-    borderLeft        : 0,              // no   left   border
-    borderRight       : 0,              // no   right  border
-    borderTop         : horzRuleBase(), // only top    border
-    borderBottom      : 0,              // no   bottom border
+    borderLeft        : 0,                // no   left   border
+    borderRight       : 0,                // no   right  border
+    borderTop         : horzRuleStroke(), // only top    border
+    borderBottom      : 0,                // no   bottom border
     
     
     
@@ -136,7 +136,7 @@ export const horzRule                    : React.CSSProperties = {
 };
 export const borderAsHorzRule            : React.CSSProperties = {
     // borders:
-    borderBottom      : horzRuleBase(), // exploits bottom border as horz rule
+    borderBottom      : horzRuleStroke(), // exploits bottom border as horz rule
 };
 
 
