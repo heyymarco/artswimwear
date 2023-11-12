@@ -156,7 +156,6 @@ const CartDialog = () => {
                     
                     // variants:
                     size='lg'
-                    theme='primary'
                     gradient={true}
                     
                     
