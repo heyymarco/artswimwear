@@ -87,6 +87,7 @@ const ViewOrderFinished = (props: ViewOrderFinishedProps): JSX.Element|null => {
                 <Alert
                     // variants:
                     theme='success'
+                    gradient={true}
                     
                     
                     
