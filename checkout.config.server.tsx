@@ -147,6 +147,7 @@ export const checkoutConfig : CheckoutConfig = {
                         
                         
                         // borders:
+                        ...styles.borderAllSides,
                         borderRadius : `${borderRadiusValues.xxl}`,
                         
                         
@@ -207,6 +208,7 @@ export const checkoutConfig : CheckoutConfig = {
                                 
                                 
                                 // borders:
+                                ...styles.borderAllSides,
                                 borderRadius : `${borderRadiusValues.xxl}`,
                                 
                                 
@@ -252,6 +254,7 @@ export const checkoutConfig : CheckoutConfig = {
                                 
                                 
                                 // borders:
+                                ...styles.borderAllSides,
                                 borderRadius : `${borderRadiusValues.xxl}`,
                                 
                                 
