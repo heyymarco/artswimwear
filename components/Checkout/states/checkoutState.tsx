@@ -925,7 +925,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // conditions:
         if (isBillingAddressRequired) return; // billing is required                => nothing to reset
         if (!billingAsShipping)       return; // billing is different than shipping => nothing to reset
-        if (!reduxBillingValidation)  return; // already reseted => nothing to reset
+        if (!reduxBillingValidation)  return; // already reseted                    => nothing to reset
         
         
         
