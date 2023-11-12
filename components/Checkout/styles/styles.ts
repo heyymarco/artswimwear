@@ -598,6 +598,7 @@ export default () => {
                                     ...children(['.customerName', '.shippingEstimate', '.paymentIdentifier'], {
                                         // typos:
                                         fontSize       : typos.fontSizeSm,
+                                        fontWeight     : typos.fontWeightNormal,
                                     }),
                                 }),
                             }),
@@ -735,7 +736,7 @@ export default () => {
                 fontWeight : typos.fontWeightSemibold,
             }),
             ...children(['.estimate'], {
-                opacity    : 0.8,
+                // typos:
                 fontSize   : typos.fontSizeSm,
                 fontWeight : typos.fontWeightNormal,
             }),
