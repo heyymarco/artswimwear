@@ -133,6 +133,18 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
     
     
     
+    // contexts:
+    const {
+        // data:
+        order : {
+            payment : {
+                billingAddress : address,
+            },
+        },
+    } = useOrderDataContext();
+    
+    
+    
     // jsx:
     return (
         <table
@@ -160,14 +172,14 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
                     </td>
                 </tr>
                 
-                <tr>
+                {!!address && <tr>
                     <th style={styles.tableTitleSide}>
                         Billing Address
                     </th>
                     <td style={styles.tableContentSide}>
                         <BillingAddress />
                     </td>
-                </tr>
+                </tr>}
             </tbody>
         </table>
     );

@@ -1565,13 +1565,15 @@ router
             let newOrder : OrderAndData|undefined = undefined;
             const paymentPartial = !('error' in paymentResponse) ? paymentResponse.payment : undefined;
             if (paymentPartial) {
+                const isBillingAddressRequired = (paymentPartial.type === 'CARD');
+                
                 // payment APPROVED => move the `draftOrder` to `order`:
                 newOrder = await commitOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
                     customer           : newCustomer,
                     payment            : {
                         ...paymentPartial,
-                        billingAddress : {
+                        billingAddress : isBillingAddressRequired ? {
                             firstName  : billingFirstName,
                             lastName   : billingLastName,
                             
@@ -1582,7 +1584,7 @@ router
                             zone       : billingZone,
                             zip        : billingZip,
                             country    : billingCountry,
-                        },
+                        } : null,
                     },
                 });
             }

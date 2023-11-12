@@ -40,7 +40,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
         
         
         // billing data:
-        isBillingRequired,
+        isBillingAddressRequired,
         
         billingAsShipping,
         
@@ -75,7 +75,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
     
     
     // jsx:
-    if (!isBillingRequired) return null;
+    if (!isBillingAddressRequired) return null;
     return (
         <>
             <p>

@@ -38,7 +38,7 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
     // states:
     const {
         // billing data:
-        isBillingRequired,
+        isBillingAddressRequired,
         
         
         
@@ -72,7 +72,7 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
                     </td>
                 </tr>
                 
-                {isBillingRequired && <tr>
+                {isBillingAddressRequired && <tr>
                     <th>Billing Address</th>
                     <td><ViewBillingAddress /></td>
                 </tr>}

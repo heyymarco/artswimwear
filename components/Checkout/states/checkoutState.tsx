@@ -285,7 +285,7 @@ export interface CheckoutStateBase {
     
     
     // billing data:
-    isBillingRequired         : boolean
+    isBillingAddressRequired  : boolean
     billingValidation         : boolean
     
     
@@ -486,7 +486,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // billing data:
-    isBillingRequired         : false,
+    isBillingAddressRequired  : false,
     billingValidation         : false,
     
     
@@ -657,11 +657,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         paymentToken,
     } = localCheckoutState;
-    const checkoutProgress    = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
-    const isPaymentTokenValid = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
+    const checkoutProgress         = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
+    const isPaymentTokenValid      = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
     
-    const isBillingRequired   = (paymentMethod === 'card'); // the billingAddress is required for 'card'
-    const billingValidation   = isBillingRequired && !billingAsShipping && reduxBillingValidation;
+    const isBillingAddressRequired = (paymentMethod === 'card'); // the billingAddress is required for 'card'
+    const billingValidation        = isBillingAddressRequired && !billingAsShipping && reduxBillingValidation;
     
     const {
         // payment data:
@@ -670,8 +670,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         identifier : paymentIdentifier,
     } = finishedOrderState?.paymentState?.payment ?? {};
     
-    const dispatch            = useDispatch();
-    const setCheckoutStep     = useEvent((checkoutStep: CheckoutStep): void => {
+    const dispatch                 = useDispatch();
+    const setCheckoutStep          = useEvent((checkoutStep: CheckoutStep): void => {
         dispatch(reduxSetCheckoutStep(checkoutStep));
     });
     
@@ -923,8 +923,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // auto reset billing validation:
     useEffect(() => {
         // conditions:
-        if (isBillingRequired)  return; // billing is required                => nothing to reset
-        if (!billingAsShipping) return; // billing is different than shipping => nothing to reset
+        if (isBillingAddressRequired) return; // billing is required                => nothing to reset
+        if (!billingAsShipping)       return; // billing is different than shipping => nothing to reset
         
         
         
@@ -932,7 +932,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         if (billingAsShipping) { // the billingAddress is the same as shippingAddress => reset billingAddress validation
             dispatch(reduxSetBillingValidation(false));
         } // if
-    }, [isBillingRequired, billingAsShipping, billingAsShipping]);
+    }, [isBillingAddressRequired, billingAsShipping, billingAsShipping]);
     
     // auto clear finished checkout states in redux:
     useEffect(() => {
@@ -1124,7 +1124,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        if (isBillingRequired) {
+        if (isBillingAddressRequired) {
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             if (!billingAsShipping) { // use dedicated billingAddress => enable billingAddress validation
@@ -1233,16 +1233,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             // billing data:
-            billingFirstName : isBillingRequired ? (billingAsShipping ? shippingFirstName : billingFirstName) : '',
-            billingLastName  : isBillingRequired ? (billingAsShipping ? shippingLastName  : billingLastName)  : '',
+            billingFirstName : isBillingAddressRequired ? (billingAsShipping ? shippingFirstName : billingFirstName) : '',
+            billingLastName  : isBillingAddressRequired ? (billingAsShipping ? shippingLastName  : billingLastName)  : '',
             
-            billingPhone     : isBillingRequired ? (billingAsShipping ? shippingPhone     : billingPhone)     : '',
+            billingPhone     : isBillingAddressRequired ? (billingAsShipping ? shippingPhone     : billingPhone)     : '',
             
-            billingAddress   : isBillingRequired ? (billingAsShipping ? shippingAddress   : billingAddress)   : '',
-            billingCity      : isBillingRequired ? (billingAsShipping ? shippingCity      : billingCity)      : '',
-            billingZone      : isBillingRequired ? (billingAsShipping ? shippingZone      : billingZone)      : '',
-            billingZip       : isBillingRequired ? (billingAsShipping ? shippingZip       : billingZip)       : '',
-            billingCountry   : isBillingRequired ? (billingAsShipping ? shippingCountry   : billingCountry)   : '',
+            billingAddress   : isBillingAddressRequired ? (billingAsShipping ? shippingAddress   : billingAddress)   : '',
+            billingCity      : isBillingAddressRequired ? (billingAsShipping ? shippingCity      : billingCity)      : '',
+            billingZone      : isBillingAddressRequired ? (billingAsShipping ? shippingZone      : billingZone)      : '',
+            billingZip       : isBillingAddressRequired ? (billingAsShipping ? shippingZip       : billingZip)       : '',
+            billingCountry   : isBillingAddressRequired ? (billingAsShipping ? shippingCountry   : billingCountry)   : '',
         }).unwrap();
         
         
@@ -1347,7 +1347,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // billing data:
-        isBillingRequired,
+        isBillingAddressRequired,
         billingValidation,
         
         
@@ -1501,7 +1501,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // billing data:
-        isBillingRequired,
+        isBillingAddressRequired,
         billingValidation,
         
         

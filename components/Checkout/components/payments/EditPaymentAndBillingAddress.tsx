@@ -75,7 +75,7 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
     // states:
     const {
         // billing data:
-        isBillingRequired,
+        isBillingAddressRequired,
         billingValidation,
         
         billingAsShipping,
@@ -161,7 +161,7 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                 
                 
                 // states:
-                expanded={isBillingRequired}
+                expanded={isBillingAddressRequired}
             >
                 <Section
                     // refs:
