@@ -69,7 +69,7 @@ export const checkoutConfig : CheckoutConfig = {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style={styles.tableRowSeparator}>
+                        <tr>
                             <th style={styles.tableTitleSide}>
                                 Account
                             </th>
@@ -79,10 +79,10 @@ export const checkoutConfig : CheckoutConfig = {
                         </tr>
                         
                         <tr>
-                            <th style={styles.tableTitleSide}>
+                            <th style={styles.tableTitleSideLast}>
                                 Name of
                             </th>
-                            <td style={styles.tableContentSide}>
+                            <td style={styles.tableContentSideLast}>
                                 Smith John
                             </td>
                         </tr>
@@ -98,7 +98,7 @@ export const checkoutConfig : CheckoutConfig = {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr style={styles.tableRowSeparator}>
+                        <tr>
                             <th style={styles.tableTitleSide}>
                                 Account
                             </th>
@@ -108,10 +108,10 @@ export const checkoutConfig : CheckoutConfig = {
                         </tr>
                         
                         <tr>
-                            <th style={styles.tableTitleSide}>
+                            <th style={styles.tableTitleSideLast}>
                                 Name of
                             </th>
-                            <td style={styles.tableContentSide}>
+                            <td style={styles.tableContentSideLast}>
                                 John Smith
                             </td>
                         </tr>

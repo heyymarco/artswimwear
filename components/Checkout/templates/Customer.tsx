@@ -68,7 +68,7 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
         
         
         // accessibilities:
-        title = 'Customer Info',
+        title,
     } = props;
     
     
@@ -101,14 +101,24 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
             
             <tbody>
                 <tr>
-                    <th style={styles.tableTitleSide}>
+                    <th
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...(title ? null : styles.borderTopSide        ),
+                            ...(title ? null : styles.tableTitleSideFirst  ),
+                            ...styles.tableTitleSideLast,
+                        }}
+                    >
                         Account
                     </th>
                     <td
                         // styles:
                         style={{
                             // layouts:
-                            ...styles.tableContentSide,
+                            ...(title ? null : styles.borderTopSide        ),
+                            ...(title ? null : styles.tableContentSideFirst),
+                            ...styles.tableContentSideLast,
                             display   : 'flex',
                             
                             

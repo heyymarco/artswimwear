@@ -118,7 +118,7 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
         
         
         // accessibilities:
-        title = 'Shipping Info',
+        title,
     } = props;
     
     
@@ -141,20 +141,36 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
             </thead>}
             
             <tbody>
-                <tr style={styles.tableRowSeparator}>
-                    <th style={styles.tableTitleSide}>
+                <tr>
+                    <th
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...(title ? null : styles.borderTopSide        ),
+                            ...(title ? null : styles.tableTitleSideFirst  ),
+                            ...styles.tableTitleSide,
+                        }}
+                    >
                         Ship To
                     </th>
-                    <td style={styles.tableContentSide}>
+                    <td
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...(title ? null : styles.borderTopSide        ),
+                            ...(title ? null : styles.tableContentSideFirst),
+                            ...styles.tableContentSide,
+                        }}
+                    >
                         <ShippingAddress />
                     </td>
                 </tr>
                 
                 <tr>
-                    <th style={styles.tableTitleSide}>
+                    <th style={styles.tableTitleSideLast}>
                         Ship By
                     </th>
-                    <td style={styles.tableContentSide}>
+                    <td style={styles.tableContentSideLast}>
                         <ShippingMethod />
                     </td>
                 </tr>

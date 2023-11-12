@@ -128,7 +128,7 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
         
         
         // accessibilities:
-        title = 'Payment Info',
+        title,
     } = props;
     
     
@@ -163,20 +163,36 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
             </thead>}
             
             <tbody>
-                <tr style={styles.tableRowSeparator}>
-                    <th style={styles.tableTitleSide}>
+                <tr>
+                    <th
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...(title   ? null                    : styles.borderTopSide        ),
+                            ...(title   ? null                    : styles.tableTitleSideFirst  ),
+                            ...(address ? styles.tableTitleSide   : styles.tableTitleSideLast   ),
+                        }}
+                    >
                         Payment Method
                     </th>
-                    <td style={styles.tableContentSide}>
+                    <td
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...(title   ? null                    : styles.borderTopSide        ),
+                            ...(title   ? null                    : styles.tableContentSideFirst),
+                            ...(address ? styles.tableContentSide : styles.tableContentSideLast ),
+                        }}
+                    >
                         <PaymentMethod />
                     </td>
                 </tr>
                 
                 {!!address && <tr>
-                    <th style={styles.tableTitleSide}>
+                    <th style={styles.tableTitleSideLast}>
                         Billing Address
                     </th>
-                    <td style={styles.tableContentSide}>
+                    <td style={styles.tableContentSideLast}>
                         <BillingAddress />
                     </td>
                 </tr>}
