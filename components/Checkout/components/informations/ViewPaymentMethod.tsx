@@ -52,7 +52,7 @@ const ViewPaymentMethod = (): JSX.Element|null => {
             
             {!!paymentIdentifier && <span
                 // classes:
-                className='paymentIdentifier'
+                className='paymentIdentifier txt-sec'
             >
                 ({paymentIdentifier})
             </span>}

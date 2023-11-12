@@ -41,7 +41,7 @@ const ViewShippingMethod = (): JSX.Element|null => {
             
             {!!selectedShipping?.estimate && <span
                 // classes:
-                className='shippingEstimate'
+                className='shippingEstimate txt-sec'
             >
                 (estimate: {selectedShipping?.estimate} after dispatched from our warehouse)
             </span>}

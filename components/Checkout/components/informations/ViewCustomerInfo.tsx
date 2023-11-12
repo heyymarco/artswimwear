@@ -72,7 +72,12 @@ const ViewCustomerInfo = (props: ViewCustomerInfoProps): JSX.Element|null => {
             <tbody>
                 <tr>
                     <th>Account</th>
-                    <td><ViewCustomerContact /></td>
+                    <td
+                        // classes:
+                        className='customerAccount'
+                    >
+                        <ViewCustomerContact />
+                    </td>
                     {!readOnly && <td>
                         <EditButton onClick={handleGotoContactInfo} />
                     </td>}

@@ -94,7 +94,7 @@ const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
                     <th>Ship By</th>
                     <td
                         // classes:
-                        className='shippingInfo'
+                        className='shippingMethod'
                     >
                         <ViewShippingMethod />
                     </td>

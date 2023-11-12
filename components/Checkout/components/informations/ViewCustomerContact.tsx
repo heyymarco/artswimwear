@@ -35,7 +35,19 @@ const ViewCustomerContact = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            <span className={styleSheet.data}>{customerEmail}</span> (<span className={styleSheet.data}>{customerNickName}</span>)
+            <span
+                // classes:
+                className={`customerEmail ${styleSheet.data}`}
+            >
+                {customerEmail}
+            </span>
+            
+            <span
+                // classes:
+                className={`customerName txt-sec ${styleSheet.data}`}
+            >
+                ({customerNickName})
+            </span>
         </>
     );
 };

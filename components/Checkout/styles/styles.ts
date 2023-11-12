@@ -558,7 +558,7 @@ export default () => {
                                     display        : 'grid',
                                     justifyContent : 'center', // center the items vertically
                                 }),
-                                ...rule(['.shippingInfo', '.paymentInfo'], {
+                                ...rule(['.customerAccount', '.shippingMethod', '.paymentMethod'], {
                                     // layouts:
                                     display            : 'grid',
                                     
@@ -585,19 +585,19 @@ export default () => {
                                     // children:
                                     ...children('.paymentProvider', {
                                         // sizes:
-                                        width             : '42px',
-                                        height            : 'auto',
+                                        width          : '42px',
+                                        height         : 'auto',
                                         
                                         
                                         
                                         // borders:
-                                        border            : borderVars.border,
-                                        borderWidth       : borders.defaultWidth,
-                                        borderRadius      : borderRadiuses.sm,
+                                        border         : borderVars.border,
+                                        borderWidth    : borders.defaultWidth,
+                                        borderRadius   : borderRadiuses.sm,
                                     }),
-                                    ...children(['.shippingEstimate', '.paymentIdentifier'], {
+                                    ...children(['.customerName', '.shippingEstimate', '.paymentIdentifier'], {
                                         // typos:
-                                        fontSize          : typos.fontSizeSm,
+                                        fontSize       : typos.fontSizeSm,
                                     }),
                                 }),
                             }),
