@@ -61,6 +61,12 @@ import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
 
+// contexts:
+import {
+    // hooks:
+    useCheckoutState,
+}                           from '@/components/Checkout/states/checkoutState'
+
 // internals:
 import {
     useCartStyleSheet,
@@ -127,6 +133,10 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
         // relation data:
         productList,
     } = useCartState();
+    
+    const {
+        isBusy,
+    } = useCheckoutState();
     
     
     
@@ -228,6 +238,11 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                     
                     // accessibilities:
                     title='Quantity'
+                    
+                    
+                    
+                    // states:
+                    enabled={!isBusy} // disabled if busy
                 >
                     <ButtonIcon
                         // appearances:
