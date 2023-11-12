@@ -259,7 +259,6 @@ const CheckoutInternal = (): JSX.Element|null => {
                 
                 
                 // variants:
-                theme={!isDesktop ? 'primary' : undefined}
                 mild={!isDesktop ? false : undefined}
                 
                 
