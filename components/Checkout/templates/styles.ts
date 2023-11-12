@@ -159,13 +159,13 @@ export const borderBottomSide            : React.CSSProperties = {
 export const borderInlineStartSide       : React.CSSProperties = {
     // borders:
     borderLeft        : borderStroke(), // fallback for GMail
-    borderInlineEnd   : 0,            // kills the fallback above
+    borderInlineEnd   : 0,              // kills the fallback above
     borderInlineStart : borderStroke(), // ltr/rtl aware
 };
 export const borderInlineEndSide         : React.CSSProperties = {
     // borders:
     borderRight       : borderStroke(), // fallback for GMail
-    borderInlineStart : 0,            // kills the fallback above
+    borderInlineStart : 0,              // kills the fallback above
     borderInlineEnd   : borderStroke(), // ltr/rtl aware
 };
 
