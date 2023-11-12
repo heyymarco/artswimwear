@@ -111,9 +111,9 @@ export const textBig                     : React.CSSProperties = {
 
 
 
-const horzRuleBase                       = (color?: React.CSSProperties['color']): string => (
+const horzRuleBase                       = (themeName: ThemeName = 'primary'): string => (
     // `${borderValues.style} ${borderValues.hair} rgba(0, 0, 0, ${horzRuleValues.opacity})`
-    `${borderValues.style} ${borderValues.hair} ${color ?? colorValues.primaryBold.mix(Color('#ffffff'), 1 - (Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`))).toString().toLowerCase()}`
+    `${borderValues.style} ${borderValues.hair} ${colorValues[`${themeName}Bold` as keyof typeof colorValues].mix(Color('#ffffff'), 1 - (Number.parseFloat(`${horzRuleValues.opacity ?? 0.25}`))).toString().toLowerCase()}`
 );
 export const horzRule                    : React.CSSProperties = {
     // layouts:
@@ -142,32 +142,32 @@ export const borderAsHorzRule            : React.CSSProperties = {
 
 
 
-const borderBase                         = (color?: React.CSSProperties['color']): string => (
-    horzRuleBase(color ?? colorValues.primaryBold.toString().toLowerCase())
+export const borderStroke                = (themeName: ThemeName = 'primary'): string => (
+    horzRuleBase(colorValues[`${themeName}Bold` as keyof typeof colorValues].toString().toLowerCase())
 );
 export const borderAllSides              : React.CSSProperties = {
     // borders:
-    border            : borderBase(),
+    border            : borderStroke(),
 };
 export const borderTopSide               : React.CSSProperties = {
     // borders:
-    borderTop         : borderBase(),
+    borderTop         : borderStroke(),
 };
 export const borderBottomSide            : React.CSSProperties = {
     // borders:
-    borderBottom      : borderBase(),
+    borderBottom      : borderStroke(),
 };
 export const borderInlineStartSide       : React.CSSProperties = {
     // borders:
-    borderLeft        : borderBase(), // fallback for GMail
+    borderLeft        : borderStroke(), // fallback for GMail
     borderInlineEnd   : 0,            // kills the fallback above
-    borderInlineStart : borderBase(), // ltr/rtl aware
+    borderInlineStart : borderStroke(), // ltr/rtl aware
 };
 export const borderInlineEndSide         : React.CSSProperties = {
     // borders:
-    borderRight       : borderBase(), // fallback for GMail
+    borderRight       : borderStroke(), // fallback for GMail
     borderInlineStart : 0,            // kills the fallback above
-    borderInlineEnd   : borderBase(), // ltr/rtl aware
+    borderInlineEnd   : borderStroke(), // ltr/rtl aware
 };
 
 
