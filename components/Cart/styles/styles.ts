@@ -244,14 +244,16 @@ export default () => [
     }, {specificityWeight: 2}),
     
     scope('shippingTips', {
+        // sizes:
+        contain           : 'inline-size',
         // spacings:
-        marginBlockStart : 'auto', // place to very bottom
+        marginBlockStart  : 'auto', // place to very bottom
         
         
         
         // typos:
-        fontSize  : typos.fontSizeMd,
-        textAlign : 'center',
+        fontSize          : typos.fontSizeMd,
+        textAlign         : 'center',
         ...ifScreenWidthSmallerThan('sm', {
             boxSizing     : 'border-box',
             maxInlineSize : maxMobileTextWidth,
