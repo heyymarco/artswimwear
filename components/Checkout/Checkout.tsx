@@ -130,6 +130,8 @@ const CheckoutInternal = (): JSX.Element|null => {
         
         
         // shipping data:
+        isShippingAddressRequired,
+        
         totalShippingCost,
         
         
@@ -144,7 +146,6 @@ const CheckoutInternal = (): JSX.Element|null => {
         // actions:
         refetchCheckout,
     } = useCheckoutState();
-    const isPhysicalProduct = (totalShippingCost !== null);
     
     
     
@@ -239,7 +240,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                 <hr />
                 
                 <ViewSubtotalCart />
-                {isPhysicalProduct && <ViewShippingCart
+                {isShippingAddressRequired && <ViewShippingCart
                     // data:
                     totalShippingCost={totalShippingCost}
                 />}
