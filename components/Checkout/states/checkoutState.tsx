@@ -662,9 +662,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const checkoutProgress          = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
     const isPaymentTokenValid       = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
     
-    const isShippingAddressRequired = (totalProductWeight !== null);
-    const shippingValidation        = isShippingAddressRequired && reduxShippingValidation;
-    
     const isBillingAddressRequired  = (paymentMethod === 'card'); // the billingAddress is required for 'card'
     const billingValidation         = isBillingAddressRequired && !billingAsShipping && reduxBillingValidation;
     
@@ -738,19 +735,22 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // cart data:
-    const realTotalShippingCost = useMemo<number|null|undefined>(() => {
+    const realTotalShippingCost     = useMemo<number|null|undefined>(() => {
         // conditions:
+        if (totalProductWeight === null) return null;      // non physical product => no shipping required
         if (!shippingList)               return undefined; // the shippingList data is not available yet => nothing to calculate
         const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
         if (!selectedShipping)           return undefined; // no valid selected shippingProvider => nothing to calculate
-        if (totalProductWeight === null) return null;      // non physical product => no shipping required
         
         
         
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
         return calculateShippingCost(totalProductWeight, selectedShipping);
     }, [totalProductWeight, shippingList, shippingProvider]);
-    const totalShippingCost     = finishedOrderState ? finishedOrderState.totalShippingCost : realTotalShippingCost;
+    const totalShippingCost         = finishedOrderState ? finishedOrderState.totalShippingCost : realTotalShippingCost;
+    
+    const isShippingAddressRequired = (totalShippingCost !== null); // null => non physical product; undefined => has physical product but no shippingProvider selected; number => has physical product and has shippingProvider selected
+    const shippingValidation        = isShippingAddressRequired && reduxShippingValidation;
     
     
     
