@@ -247,6 +247,7 @@ export interface CheckoutStateBase {
     
     
     // shipping data:
+    isShippingAddressRequired : boolean
     shippingValidation        : boolean
     
     
@@ -453,6 +454,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // shipping data:
+    isShippingAddressRequired : false,
     shippingValidation        : false,
     
     
@@ -637,7 +639,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // shipping data:
-        shippingValidation,
+        shippingValidation : reduxShippingValidation,
         
         shippingProvider,
         
@@ -657,11 +659,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         paymentToken,
     } = localCheckoutState;
-    const checkoutProgress         = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
-    const isPaymentTokenValid      = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
+    const checkoutProgress          = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
+    const isPaymentTokenValid       = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
     
-    const isBillingAddressRequired = (paymentMethod === 'card'); // the billingAddress is required for 'card'
-    const billingValidation        = isBillingAddressRequired && !billingAsShipping && reduxBillingValidation;
+    const isShippingAddressRequired = (totalProductWeight !== null);
+    const shippingValidation        = isShippingAddressRequired && reduxShippingValidation;
+    
+    const isBillingAddressRequired  = (paymentMethod === 'card'); // the billingAddress is required for 'card'
+    const billingValidation         = isBillingAddressRequired && !billingAsShipping && reduxBillingValidation;
     
     const {
         // payment data:
@@ -670,8 +675,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         identifier : paymentIdentifier,
     } = finishedOrderState?.paymentState?.payment ?? {};
     
-    const dispatch                 = useDispatch();
-    const setCheckoutStep          = useEvent((checkoutStep: CheckoutStep): void => {
+    const dispatch                  = useDispatch();
+    const setCheckoutStep           = useEvent((checkoutStep: CheckoutStep): void => {
         dispatch(reduxSetCheckoutStep(checkoutStep));
     });
     
@@ -1308,6 +1313,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // shipping data:
+        isShippingAddressRequired,
         shippingValidation,
         
         
@@ -1462,6 +1468,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // shipping data:
+        isShippingAddressRequired,
         shippingValidation,
         
         
