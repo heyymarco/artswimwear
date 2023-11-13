@@ -111,6 +111,7 @@ export interface CartStateBase {
     totalProductQuantity  : number
     totalProductWeight    : number|null
     totalProductPrice     : number
+    hasPhysicalProduct    : boolean
     
     
     
@@ -194,6 +195,7 @@ const CartStateContext = createContext<CartState>({
     totalProductQuantity  : 0,
     totalProductWeight    : null,
     totalProductPrice     : 0,
+    hasPhysicalProduct    : false,
     
     
     
@@ -301,6 +303,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         };
     }, [cartItems, productList]);
     
+    const hasPhysicalProduct = (totalProductWeight !== null);
+    
     
     
     // dom effects:
@@ -389,6 +393,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         totalProductQuantity,
         totalProductWeight,
         totalProductPrice,
+        hasPhysicalProduct,
         
         
         
@@ -423,6 +428,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         totalProductQuantity,
         totalProductWeight,
         totalProductPrice,
+        hasPhysicalProduct,
         
         
         
