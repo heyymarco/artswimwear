@@ -250,7 +250,8 @@ export default () => [
         
         
         // typos:
-        fontSize : typos.fontSizeMd,
+        fontSize  : typos.fontSizeMd,
+        textAlign : 'center',
         ...ifScreenWidthSmallerThan('sm', {
             boxSizing     : 'border-box',
             maxInlineSize : maxMobileTextWidth,
