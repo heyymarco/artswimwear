@@ -1085,6 +1085,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 // there is/are shippingProvider(s) available for given address => continue to select the shippingProvider(s)
+                // go forward to shipping method:
                 setCheckoutStep('shipping');
             } // if
         } // if
@@ -1093,15 +1094,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         if (!goForward) { // go back from 'shipping'|'payment' => focus to shipping method option control
             if (!isShippingAddressRequired) { // if only digital products => no shipping required
-                // jump backward to payment:
+                // jump backward to info:
                 setCheckoutStep('info');
             }
             else {
-                // jump backward to shipping:
+                // go backward to shipping method:
                 setCheckoutStep('shipping');
                 
                 
                 
+                // focus to shipping method:
                 setTimeout(() => {
                     const focusInputElm = shippingMethodOptionRef.current;
                     if (focusInputElm) {
