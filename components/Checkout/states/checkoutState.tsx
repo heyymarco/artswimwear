@@ -1010,8 +1010,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const gotoStepShipping     = useEvent(async (): Promise<boolean> => {
         const goForward = (checkoutStep === 'info');
         if (goForward) { // go forward from 'info' => do validate shipping agencies
-            // TODO: if (totalShippingWeight !== null) // if contain a/some physical product => requires shipping
-            {
+            if (!isShippingAddressRequired) { // if only digital products => no shipping required
+                // jump forward to payment:
+                setCheckoutStep('payment');
+            }
+            else { // if contain a/some physical product => requires shipping
                 // validate:
                 // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
                 dispatch(reduxSetShippingValidation(true)); // enable billingAddress validation
@@ -1027,76 +1030,89 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     showMessageFieldError(fieldErrors);
                     return false; // transaction aborted due to validation error
                 } // if
-            } // if
-            
-            
-            
-            setIsBusy('checkShipping');
-            try {
-                const shippingList = await getShippingByAddress({
-                    city    : shippingCity,
-                    zone    : shippingZone,
-                    country : shippingCountry,
-                }).unwrap();
                 
                 
                 
-                if (!shippingList.ids.length) {
+                // check for suitable shippingProvider(s) for given address:
+                setIsBusy('checkShipping');
+                try {
+                    const shippingList = await getShippingByAddress({
+                        city    : shippingCity,
+                        zone    : shippingZone,
+                        country : shippingCountry,
+                    }).unwrap();
+                    
+                    
+                    
+                    if (!shippingList.ids.length) {
+                        showMessageError({
+                            title : <h1>No Shipping Agency</h1>,
+                            error : <>
+                                <p>
+                                    We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
+                                </p>
+                                <p>
+                                    Please contact us for further assistance.
+                                </p>
+                            </>,
+                        });
+                        return false; // transaction failed due to no_shipping_agency
+                    } // if
+                }
+                catch (error: any) {
                     showMessageError({
-                        title : <h1>No Shipping Agency</h1>,
+                        title : <h1>Error Calculating Shipping Cost</h1>,
                         error : <>
                             <p>
-                                We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
+                                Oops, there was an error calculating the shipping cost.
                             </p>
                             <p>
-                                Please contact us for further assistance.
+                                There was a <strong>problem contacting our server</strong>.<br />
+                                Make sure your internet connection is available.
+                            </p>
+                            <p>
+                                Please try again in a few minutes.<br />
+                                If the problem still persists, please contact us manually.
                             </p>
                         </>,
                     });
-                    return false; // transaction failed due to no_shipping_agency
-                } // if
-            }
-            catch (error: any) {
-                showMessageError({
-                    title : <h1>Error Calculating Shipping Cost</h1>,
-                    error : <>
-                        <p>
-                            Oops, there was an error calculating the shipping cost.
-                        </p>
-                        <p>
-                            There was a <strong>problem contacting our server</strong>.<br />
-                            Make sure your internet connection is available.
-                        </p>
-                        <p>
-                            Please try again in a few minutes.<br />
-                            If the problem still persists, please contact us manually.
-                        </p>
-                    </>,
-                });
-                return false; // transaction failed due to fetch_error
-            }
-            finally {
-                setIsBusy(false);
-            } // try
+                    return false; // transaction failed due to fetch_error
+                }
+                finally {
+                    setIsBusy(false);
+                } // try
+                
+                
+                
+                // there is/are shippingProvider(s) available for given address => continue to select the shippingProvider(s)
+                setCheckoutStep('shipping');
+            } // if
         } // if
         
         
         
-        setCheckoutStep('shipping');
-        
-        
-        
         if (!goForward) { // go back from 'shipping'|'payment' => focus to shipping method option control
-            setTimeout(() => {
-                const focusInputElm = shippingMethodOptionRef.current;
-                if (focusInputElm) {
-                    focusInputElm.scrollIntoView({
-                        block    : 'start',
-                        behavior : 'smooth',
-                    });
-                    focusInputElm.focus({ preventScroll: true });
-                } // if
-            }, 200);
+            if (!isShippingAddressRequired) { // if only digital products => no shipping required
+                // jump backward to payment:
+                setCheckoutStep('info');
+            }
+            else {
+                // jump backward to shipping:
+                setCheckoutStep('shipping');
+                
+                
+                
+                setTimeout(() => {
+                    const focusInputElm = shippingMethodOptionRef.current;
+                    if (focusInputElm) {
+                        focusInputElm.scrollIntoView({
+                            block    : 'start',
+                            behavior : 'smooth',
+                        });
+                        focusInputElm.focus({ preventScroll: true });
+                    } // if
+                }, 200);
+            } // if
         } // if
         
         
