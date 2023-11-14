@@ -374,13 +374,15 @@ export const checkoutConfig : CheckoutConfig = {
                     </IfPhysicalProduct>
                 </section>
                 
-                <section style={styles.section}>
-                    <h2 style={styles.heading2}>
-                        Shipping Info
-                    </h2>
-                    
-                    <Shipping.Info style={styles.selfCenterHorz} />
-                </section>
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
                 
                 <IfPaid>
                     <section style={styles.section}>

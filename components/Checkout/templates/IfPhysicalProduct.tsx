@@ -18,13 +18,13 @@ export const IfPhysicalProduct = (props: React.PropsWithChildren<{}>): React.Rea
     const {
         // data:
         order : {
-            shippingCost,
+            shippingAddress : address,
         },
     } = useOrderDataContext();
     
     
     
     // jsx:
-    if (shippingCost === null) return null;
+    if (!address) return null;
     return props.children;
 };
