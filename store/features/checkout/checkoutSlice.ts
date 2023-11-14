@@ -39,6 +39,8 @@ export interface CheckoutState {
     
     
     // customer data:
+    customerValidation : boolean
+    
     customerNickName   : string
     customerEmail      : string
     
@@ -100,6 +102,8 @@ const initialState : CheckoutState = {
     
     
     // customer data:
+    customerValidation : false,
+    
     customerNickName   : '',
     customerEmail      : '',
     
@@ -167,6 +171,10 @@ export const checkoutSlice = createSlice({
         
         
         // customer data:
+        setCustomerValidation : (state, {payload: value}: PayloadAction<boolean>) => {
+            state.customerValidation = value;
+        },
+        
         setCustomerNickName   : (state, {payload: value}: PayloadAction<string>) => {
             state.customerNickName = value;
         },
@@ -289,6 +297,8 @@ export const {
     
     
     // customer data:
+    setCustomerValidation,
+    
     setCustomerNickName,
     setCustomerEmail,
     

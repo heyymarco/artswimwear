@@ -71,6 +71,8 @@ import {
     setMarketingOpt       as reduxSetMarketingOpt,
     
     // customer data:
+    setCustomerValidation as reduxSetCustomerValidation,
+    
     setCustomerEmail      as reduxSetCustomerEmail,
     setCustomerNickName   as reduxSetCustomerNickName,
     
@@ -238,6 +240,7 @@ export interface CheckoutStateBase {
     
     
     // customer data:
+    customerValidation        : boolean
     customerNickName          : string
     customerNickNameHandlers  : FieldHandlers<HTMLInputElement>
     
@@ -362,7 +365,7 @@ export interface CheckoutStateBase {
     // actions:
     gotoStepInformation       : (focusTo?: 'contactInfo'|'shippingAddress') => void
     gotoStepShipping          : () => Promise<boolean>
-    gotoPayment               : () => void
+    gotoPayment               : () => Promise<boolean>
     
     doTransaction             : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder              : (options?: PlaceOrderOptions) => Promise<string>
@@ -445,6 +448,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // customer data:
+    customerValidation        : false,
     customerNickName          : '',
     customerNickNameHandlers  : noopHandler,
     
@@ -564,7 +568,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     // actions:
     gotoStepInformation       : noopCallback,
     gotoStepShipping          : noopCallback as any,
-    gotoPayment               : noopCallback,
+    gotoPayment               : noopCallback as any,
     
     doTransaction             : noopCallback as any,
     doPlaceOrder              : noopCallback as any,
@@ -635,6 +639,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const {
         // states:
         checkoutStep,
+        
+        
+        
+        // customer data:
+        customerValidation : reduxCustomerValidation,
         
         
         
@@ -748,6 +757,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return calculateShippingCost(totalProductWeight, selectedShipping);
     }, [totalProductWeight, shippingList, shippingProvider]);
     const totalShippingCost         = finishedOrderState ? finishedOrderState.totalShippingCost : realTotalShippingCost;
+    
+    const customerValidation        = reduxCustomerValidation;
     
     const isShippingAddressRequired = (totalShippingCost !== null); // null => non physical product; undefined => has physical product but no shippingProvider selected; number => has physical product and has shippingProvider selected
     const shippingValidation        = isShippingAddressRequired && reduxShippingValidation;
@@ -1010,29 +1021,30 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const gotoStepShipping     = useEvent(async (): Promise<boolean> => {
         const goForward = (checkoutStep === 'info');
         if (goForward) { // go forward from 'info' => do validate shipping agencies
+            // validate:
+            // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+            dispatch(reduxSetCustomerValidation(true)); // enable customerAccount validation
+            dispatch(reduxSetShippingValidation(true)); // enable billingAddress validation
+            await new Promise<void>((resolve) => { // wait for a validation state applied
+                setTimeout(() => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 0);
+                }, 0);
+            });
+            const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
+            if (fieldErrors?.length) { // there is an/some invalid field
+                showMessageFieldError(fieldErrors);
+                return false; // transaction aborted due to validation error
+            } // if
+            
+            
+            
             if (!isShippingAddressRequired) { // if only digital products => no shipping required
                 // jump forward to payment method:
                 setCheckoutStep('payment');
             }
             else { // if contain a/some physical product => requires shipping
-                // validate:
-                // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
-                dispatch(reduxSetShippingValidation(true)); // enable billingAddress validation
-                await new Promise<void>((resolve) => { // wait for a validation state applied
-                    setTimeout(() => {
-                        setTimeout(() => {
-                            resolve();
-                        }, 0);
-                    }, 0);
-                });
-                const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
-                if (fieldErrors?.length) { // there is an/some invalid field
-                    showMessageFieldError(fieldErrors);
-                    return false; // transaction aborted due to validation error
-                } // if
-                
-                
-                
                 // check for suitable shippingProvider(s) for given address:
                 setIsBusy('checkShipping');
                 try {
@@ -1121,8 +1133,35 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const gotoPayment          = useEvent((): void => {
+    const gotoPayment          = useEvent(async (): Promise<boolean> => {
+        if (!isShippingAddressRequired) { // if only digital products => validate the customer account
+            // validate:
+            // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
+            dispatch(reduxSetCustomerValidation(true)); // enable customerAccount validation
+            await new Promise<void>((resolve) => { // wait for a validation state applied
+                setTimeout(() => {
+                    setTimeout(() => {
+                        resolve();
+                    }, 0);
+                }, 0);
+            });
+            const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
+            if (fieldErrors?.length) { // there is an/some invalid field
+                showMessageFieldError(fieldErrors);
+                return false; // transaction aborted due to validation error
+            } // if
+        }
+        else {
+            // if physical products => the customer account is *already validated* by `gotoStepShipping()`
+        } // if
+        
+        
+        
         setCheckoutStep('payment');
+        
+        
+        
+        return true; // transaction completed
     });
     
     const setShippingProvider  = useEvent((shippingProvider: string): void => {
@@ -1322,6 +1361,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // customer data:
+        customerValidation,
         customerNickName,
         customerNickNameHandlers,  // stable ref
         
@@ -1477,6 +1517,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // customer data:
+        customerValidation,
         customerNickName,
         // customerNickNameHandlers,  // stable ref
         
