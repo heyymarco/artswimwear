@@ -28,6 +28,11 @@ const ProgressCheckout = (): JSX.Element|null => {
         checkoutProgress,
         
         isDesktop,
+        
+        
+        
+        // shipping data:
+        isShippingAddressRequired,
     } = useCheckoutState();
     
     
@@ -49,9 +54,10 @@ const ProgressCheckout = (): JSX.Element|null => {
             enabled={true}         // always enabled
             inheritEnabled={false} // always enabled
         >
-            <ListItem mild={true} active={checkoutProgress >= 0}>Information</ListItem>
-            <ListItem mild={true} active={checkoutProgress >= 1}>Shipping</ListItem>
-            <ListItem mild={true} active={checkoutProgress >= 2}>Payment</ListItem>
+            <ListItem size='sm' mild={true} active={checkoutProgress >= 0}>Information</ListItem>
+            {isShippingAddressRequired && <ListItem size='sm' mild={true} active={checkoutProgress >= 1}>Shipping</ListItem>}
+            <ListItem size='sm' mild={true} active={checkoutProgress >= 2}>Payment</ListItem>
+            <ListItem size='sm' mild={true} active={checkoutProgress >= 3}>Finished</ListItem>
         </List>
     );
 };
