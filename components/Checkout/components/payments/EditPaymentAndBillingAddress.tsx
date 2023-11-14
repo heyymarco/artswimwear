@@ -20,10 +20,10 @@ import {
 // internal components:
 import {
     EditPaymentMethod,
-}                           from '../payments/EditPaymentMethod'
+}                           from './EditPaymentMethod'
 import {
     EditBillingAddress,
-}                           from '../payments/EditBillingAddress'
+}                           from './EditBillingAddress'
 
 // internals:
 import {
