@@ -485,23 +485,39 @@ router
         
         shippingProvider : shippingProviderId,
     } = placeOrderData;
-    if (
-           !shippingFirstName || (typeof(shippingFirstName) !== 'string')
-        || !shippingLastName  || (typeof(shippingLastName) !== 'string')
+    const hasShippingAddress = (
+        !!shippingFirstName ||
+        !!shippingLastName ||
         
-        || !shippingPhone     || (typeof(shippingPhone) !== 'string')
+        !!shippingPhone ||
         
-        || !shippingAddress   || (typeof(shippingAddress) !== 'string')
-        || !shippingCity      || (typeof(shippingCity) !== 'string')
-        || !shippingZone      || (typeof(shippingZone) !== 'string')
-        || !shippingZip       || (typeof(shippingZip) !== 'string')
-        || !shippingCountry   || (typeof(shippingCountry) !== 'string') // todo validate country id
+        !!shippingAddress ||
+        !!shippingCity ||
+        !!shippingZone ||
+        !!shippingZip ||
+        !!shippingCountry ||
         
-        || !shippingProviderId  || (typeof(shippingProviderId) !== 'string') // todo validate shipping provider
-    ) {
-        return NextResponse.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
+        !!shippingProviderId
+    );
+    if (hasShippingAddress) {
+        if (
+               !shippingFirstName || (typeof(shippingFirstName) !== 'string')
+            || !shippingLastName  || (typeof(shippingLastName) !== 'string')
+            
+            || !shippingPhone     || (typeof(shippingPhone) !== 'string')
+            
+            || !shippingAddress   || (typeof(shippingAddress) !== 'string')
+            || !shippingCity      || (typeof(shippingCity) !== 'string')
+            || !shippingZone      || (typeof(shippingZone) !== 'string')
+            || !shippingZip       || (typeof(shippingZip) !== 'string')
+            || !shippingCountry   || (typeof(shippingCountry) !== 'string') // todo validate country id
+            
+            || !shippingProviderId  || (typeof(shippingProviderId) !== 'string') // todo validate shipping provider
+        ) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
     } // if
     //#endregion validate shipping address
     
@@ -560,7 +576,7 @@ router
         ({orderId, paypalOrderId} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string, paypalOrderId: string|null }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
-                prismaTransaction.shippingProvider.findUnique({
+                hasShippingAddress ? prismaTransaction.shippingProvider.findUnique({
                     where  : {
                         id      : shippingProviderId,
                         enabled : true,
@@ -573,7 +589,7 @@ router
                         useSpecificArea : true,
                         countries       : true,
                     },
-                }),
+                }) : null,
                 prismaTransaction.product.findMany({
                     where  : {
                         id         : { in : validFormattedItems.map((item) => item.productId) },
@@ -640,10 +656,10 @@ router
             
             
             //#region validate shipping
-            if (!selectedShipping) throw 'BAD_SHIPPING';
+            if (hasShippingAddress && !selectedShipping) throw 'BAD_SHIPPING';
             
-            const matchingShipping = getMatchingShipping(selectedShipping, { city: shippingCity, zone: shippingZone, country: shippingCountry });
-            if (!matchingShipping) throw 'BAD_SHIPPING';
+            const matchingShipping = (hasShippingAddress && !!selectedShipping) ? getMatchingShipping(selectedShipping, { city: shippingCity, zone: shippingZone, country: shippingCountry }) : null;
+            if (hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';
             //#endregion validate shipping
             
             
@@ -727,7 +743,8 @@ router
                     } // if
                 } // for
             }
-            const totalShippingCost          = calculateShippingCost(totalProductWeights, matchingShipping);
+            if ((totalProductWeights != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
+            const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeights, matchingShipping) : null;
             const totalShippingCostConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
             const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
             //#endregion validate cart items: check existing products => check product quantities => create detailed items
@@ -866,7 +883,7 @@ router
                                 // category enum|undefined
                                 // The item category type.
                                 // The possible values are: 'DIGITAL_GOODS'|'PHYSICAL_GOODS'|'DONATION'
-                                category              : (typeof(detailedItem.shippingWeight) === 'number') ? 'PHYSICAL_GOODS' : 'DIGITAL_GOODS',
+                                category              : hasShippingAddress ? 'PHYSICAL_GOODS' : 'DIGITAL_GOODS',
                                 
                                 // description string|undefined
                                 // The detailed item description.
@@ -894,7 +911,7 @@ router
                             
                             // shipping object|undefined
                             // The name and address of the person to whom to ship the items.
-                            shipping                  : {
+                            shipping                  : hasShippingAddress ? {
                                 // address object|undefined
                                 // The address of the person to whom to ship the items.
                                 address               : {
@@ -944,7 +961,7 @@ router
                                 // The method by which the payer wants to get their items from the payee e.g shipping, in-person pickup. Either type or options but not both may be present.
                                 // The possible values are: 'SHIPPING'|'PICKUP_IN_PERSON'
                                 type                  : 'SHIPPING',
-                            },
+                            } : undefined,
                             
                             // soft_descriptor string|undefined
                             // The soft descriptor is the dynamic text used to construct the statement descriptor that appears on a payer's card statement.
@@ -1021,24 +1038,26 @@ router
                         })),
                     },
                     
-                    shippingAddress            : {
-                        firstName              : shippingFirstName,
-                        lastName               : shippingLastName,
-                        
-                        phone                  : shippingPhone,
-                        
-                        address                : shippingAddress,
-                        city                   : shippingCity,
-                        zone                   : shippingZone,
-                        zip                    : shippingZip,
-                        country                : shippingCountry.toUpperCase(),
-                    },
-                    shippingCost               : usePaypal ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
-                    shippingProvider           : {
-                        connect                : {
-                            id                 : shippingProviderId,
+                    ...(hasShippingAddress ? {
+                        shippingAddress            : {
+                            firstName              : shippingFirstName,
+                            lastName               : shippingLastName,
+                            
+                            phone                  : shippingPhone,
+                            
+                            address                : shippingAddress,
+                            city                   : shippingCity,
+                            zone                   : shippingZone,
+                            zip                    : shippingZip,
+                            country                : shippingCountry.toUpperCase(),
                         },
-                    },
+                        shippingCost               : usePaypal ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
+                        shippingProvider           : {
+                            connect                : {
+                                id                 : shippingProviderId,
+                            },
+                        },
+                    } : undefined),
                 },
                 select : {
                     id : true,
