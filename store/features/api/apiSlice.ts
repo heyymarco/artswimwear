@@ -36,11 +36,17 @@ export type { PaymentToken }
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
     paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'
 }
-export interface PlaceOrderData
+export interface PlaceOrderDataBasic
     extends
         Omit<CartState,     // cart item(s)
             |'showCart'
         >,
+        PlaceOrderOptions   // options: pay manually | paymentSource
+{
+}
+export interface PlaceOrderDataWithShippingAddress
+    extends
+        PlaceOrderDataBasic,
         Pick<CheckoutState, // shippings
             |'shippingFirstName'
             |'shippingLastName'
@@ -54,16 +60,16 @@ export interface PlaceOrderData
             |'shippingCountry'
             
             |'shippingProvider'
-        >,
-        PlaceOrderOptions   // options: pay manually | paymentSource
+        >
 {
 }
+export type PlaceOrderData = PlaceOrderDataBasic | PlaceOrderDataWithShippingAddress
 export interface PlaceOrderResponse
 {
     orderId : string
 }
 
-export interface AuthenticationPaymentData
+export interface AuthenticationPaymentDataBasic
     extends
         Pick<CheckoutState, // marketings
             |'marketingOpt'
@@ -71,7 +77,13 @@ export interface AuthenticationPaymentData
         Pick<CheckoutState, // customers
             |'customerNickName'
             |'customerEmail'
-        >,
+        >
+{
+    orderId : string
+}
+export interface AuthenticationPaymentDataWithBillingAddress
+    extends
+        AuthenticationPaymentDataBasic,
         Pick<CheckoutState, // bilings
             |'billingFirstName'
             |'billingLastName'
@@ -87,6 +99,7 @@ export interface AuthenticationPaymentData
 {
     orderId : string
 }
+export type AuthenticationPaymentData = AuthenticationPaymentDataBasic | AuthenticationPaymentDataWithBillingAddress
 export interface MakePaymentResponse
 {
     payment : Omit<Payment, 'billingAddress'>
