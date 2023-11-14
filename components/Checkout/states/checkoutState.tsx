@@ -753,8 +753,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
     
     const isBillingAddressRequired       = (paymentMethod === 'card'); // the billingAddress is required for 'card'
-    const billingAsShipping              = isShippingAddressRequired                       && reduxBillingAsShipping;
-    const billingValidation              = isBillingAddressRequired  && !billingAsShipping && reduxBillingValidation;
+    const billingAsShipping              = isShippingAddressRequired && reduxBillingAsShipping;
+    const billingValidation              = isBillingAddressRequired  && reduxBillingValidation && !billingAsShipping;
     
     
     
