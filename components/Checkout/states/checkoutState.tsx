@@ -731,20 +731,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const [getShippingByAddress, {data: shippingList   , isUninitialized: isShippingUninitialized, isError: isShippingError, isSuccess: isShippingSuccess}]  = useGetMatchingShippingList();
     
-    const isPerformedRecoverShippingList = useRef<boolean>(false);
-    const isNeedsRecoverShippingList     =                                (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
-    const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
-    
-    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */)   || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
-    const hasData                        = (!!productList      && !!countryList    && isPaymentTokenValid);
-    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError   || (isTokenError   && !isPaymentTokenValid /* silently token error   if still have old_valid_token */))) || !hasData /* considered as error if no data */;
-    const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
-    const isCheckoutFinished             = isCheckoutReady && ((checkoutStep === 'pending') || (checkoutStep === 'paid'));
     
     
-    
-    // cart data:
-    const realTotalShippingCost     = useMemo<number|null|undefined>(() => {
+    const realTotalShippingCost          = useMemo<number|null|undefined>(() => {
         // conditions:
         if (totalProductWeight === null) return null;      // non physical product => no shipping required
         if (!shippingList)               return undefined; // the shippingList data is not available yet => nothing to calculate
@@ -756,12 +745,24 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
         return calculateShippingCost(totalProductWeight, selectedShipping);
     }, [totalProductWeight, shippingList, shippingProvider]);
-    const totalShippingCost         = finishedOrderState ? finishedOrderState.totalShippingCost : realTotalShippingCost;
+    const totalShippingCost              = finishedOrderState ? finishedOrderState.totalShippingCost : realTotalShippingCost;
     
-    const customerValidation        = reduxCustomerValidation;
+    const customerValidation             = reduxCustomerValidation;
     
-    const isShippingAddressRequired = (totalShippingCost !== null); // null => non physical product; undefined => has physical product but no shippingProvider selected; number => has physical product and has shippingProvider selected
-    const shippingValidation        = isShippingAddressRequired && reduxShippingValidation;
+    const isShippingAddressRequired      = (totalShippingCost !== null); // null => non physical product; undefined => has physical product but no shippingProvider selected; number => has physical product and has shippingProvider selected
+    const shippingValidation             = isShippingAddressRequired && reduxShippingValidation;
+    
+    const isPerformedRecoverShippingList = useRef<boolean>(false);
+    const isNeedsRecoverShippingList     = isShippingAddressRequired   && (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
+    const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
+    
+    
+    
+    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */)   || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
+    const hasData                        = (!!productList      && !!countryList    && isPaymentTokenValid);
+    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError   || (isTokenError   && !isPaymentTokenValid /* silently token error   if still have old_valid_token */))) || !hasData /* considered as error if no data */;
+    const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
+    const isCheckoutFinished             = isCheckoutReady && ((checkoutStep === 'pending') || (checkoutStep === 'paid'));
     
     
     
