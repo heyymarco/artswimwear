@@ -1253,7 +1253,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 // shipping data:
                 ...(isShippingAddressRequired ? {
-                        shippingFirstName,
+                    shippingFirstName,
                     shippingLastName,
                     
                     shippingPhone,
