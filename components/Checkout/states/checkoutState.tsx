@@ -782,7 +782,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // dom effects:
     
     // try to recover shippingList on page_refresh:
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!isNeedsRecoverShippingList)     return; // already being initialized/recovered => ignore
         
@@ -811,7 +811,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [isNeedsRecoverShippingList, shippingCity, shippingZone, shippingCountry]);
     
     // go back to shipping page if the selected shippingProvider is not in shippingList:
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!isNeedsRecoverShippingProvider) return; // already recovered => ignore
         
