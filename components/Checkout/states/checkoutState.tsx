@@ -14,7 +14,6 @@ import {
     
     // hooks:
     useContext,
-    useEffect,
     useMemo,
     useRef,
     useState,
@@ -878,7 +877,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // auto renew payment token:
     const lastPaymentToken = useRef<PaymentToken|undefined|0>(0/* 0 = uninit */); // ensures the payment token not re-refreshed twice (especially in dev mode)
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         // conditions:
         if (lastPaymentToken.current === paymentToken) return; // no change => ignore
         lastPaymentToken.current = paymentToken;               // sync
@@ -938,7 +937,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [paymentToken]);
     
     // auto reset billing validation:
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         // conditions:
         if (isBillingAddressRequired) return; // billing is required                => nothing to reset
         if (!billingAsShipping)       return; // billing is different than shipping => nothing to reset
@@ -951,7 +950,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [isBillingAddressRequired, billingAsShipping, reduxBillingValidation]);
     
     // auto clear finished checkout states in redux:
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         // conditions:
         if ((checkoutStep !== 'pending') && (checkoutStep !== 'paid')) return; // auto clear when state is 'pending' or 'paid'
         
