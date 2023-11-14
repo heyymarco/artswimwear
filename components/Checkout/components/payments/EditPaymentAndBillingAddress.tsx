@@ -94,7 +94,7 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                     title='Billing Address'
                 >
                     <p>
-                        Select the address that matches your card or payment method.
+                        Enter the address that matches your card&apos;s billing address.
                     </p>
                     
                     <EditBillingAddress />

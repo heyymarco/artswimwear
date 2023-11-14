@@ -66,44 +66,16 @@ const EditBillingAddress = (): JSX.Element|null => {
     
     // states:
     const {
+        // shipping data:
+        isShippingAddressRequired,
+        
+        
+        
         // billing data:
         isBillingAddressRequired,
-        billingValidation,
         
         billingAsShipping,
         setBillingAsShipping,
-        
-        
-        billingFirstName,
-        billingFirstNameHandlers,
-        
-        billingLastName,
-        billingLastNameHandlers,
-        
-        
-        billingPhone,
-        billingPhoneHandlers,
-        
-        
-        billingAddress,
-        billingAddressHandlers,
-        
-        billingCity,
-        billingCityHandlers,
-        
-        billingZone,
-        billingZoneHandlers,
-        
-        billingZip,
-        billingZipHandlers,
-        
-        billingCountry,
-        billingCountryHandlers,
-        
-        
-        
-        // relation data:
-        countryList,
     } = useCheckoutState();
     
     
@@ -123,6 +95,14 @@ const EditBillingAddress = (): JSX.Element|null => {
     
     // jsx:
     if (!isBillingAddressRequired) return null;
+    if (!isShippingAddressRequired) return (
+        <Section
+            // classes:
+            className={`${styleSheet.billingEntry} ${styleSheet.address}`}
+        >
+            <EditBillingAddressImpl />
+        </Section>
+    );
     return (
         <>
             <ExclusiveAccordion
@@ -200,44 +180,7 @@ const EditBillingAddress = (): JSX.Element|null => {
                         />
                     }
                 >
-                    <ValidationProvider
-                        // validations:
-                        enableValidation={billingValidation}
-                    >
-                        <AddressFields
-                            // types:
-                            addressType       = 'billing'
-                            
-                            
-                            
-                            // values:
-                            firstName         = {billingFirstName}
-                            lastName          = {billingLastName}
-                            
-                            phone             = {billingPhone}
-                            
-                            address           = {billingAddress}
-                            city              = {billingCity}
-                            zone              = {billingZone}
-                            zip               = {billingZip}
-                            country           = {billingCountry}
-                            countryList       = {countryList}
-                            
-                            
-                            
-                            // handlers:
-                            onFirstNameChange = {billingFirstNameHandlers.onChange}
-                            onLastNameChange  = {billingLastNameHandlers.onChange }
-                            
-                            onPhoneChange     = {billingPhoneHandlers.onChange    }
-                            
-                            onAddressChange   = {billingAddressHandlers.onChange  }
-                            onCityChange      = {billingCityHandlers.onChange     }
-                            onZoneChange      = {billingZoneHandlers.onChange     }
-                            onZipChange       = {billingZipHandlers.onChange      }
-                            onCountryChange   = {billingCountryHandlers.onChange  }
-                        />
-                    </ValidationProvider>
+                    <EditBillingAddressImpl />
                 </AccordionItem>
             </ExclusiveAccordion>
         </>
@@ -246,4 +189,90 @@ const EditBillingAddress = (): JSX.Element|null => {
 export {
     EditBillingAddress,
     EditBillingAddress as default,
+};
+
+
+
+const EditBillingAddressImpl = (): JSX.Element|null => {
+    // states:
+    const {
+        // billing data:
+        billingValidation,
+        
+        
+        billingFirstName,
+        billingFirstNameHandlers,
+        
+        billingLastName,
+        billingLastNameHandlers,
+        
+        
+        billingPhone,
+        billingPhoneHandlers,
+        
+        
+        billingAddress,
+        billingAddressHandlers,
+        
+        billingCity,
+        billingCityHandlers,
+        
+        billingZone,
+        billingZoneHandlers,
+        
+        billingZip,
+        billingZipHandlers,
+        
+        billingCountry,
+        billingCountryHandlers,
+        
+        
+        
+        // relation data:
+        countryList,
+    } = useCheckoutState();
+    
+    
+    
+    // jsx:
+    return (
+        <ValidationProvider
+            // validations:
+            enableValidation={billingValidation}
+        >
+            <AddressFields
+                // types:
+                addressType       = 'billing'
+                
+                
+                
+                // values:
+                firstName         = {billingFirstName}
+                lastName          = {billingLastName}
+                
+                phone             = {billingPhone}
+                
+                address           = {billingAddress}
+                city              = {billingCity}
+                zone              = {billingZone}
+                zip               = {billingZip}
+                country           = {billingCountry}
+                countryList       = {countryList}
+                
+                
+                
+                // handlers:
+                onFirstNameChange = {billingFirstNameHandlers.onChange}
+                onLastNameChange  = {billingLastNameHandlers.onChange }
+                
+                onPhoneChange     = {billingPhoneHandlers.onChange    }
+                
+                onAddressChange   = {billingAddressHandlers.onChange  }
+                onCityChange      = {billingCityHandlers.onChange     }
+                onZoneChange      = {billingZoneHandlers.onChange     }
+                onZipChange       = {billingZipHandlers.onChange      }
+                onCountryChange   = {billingCountryHandlers.onChange  }
+            />
+        </ValidationProvider>
+    );
 };
