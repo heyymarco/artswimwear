@@ -26,6 +26,8 @@ const ViewShippingAddress = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
+        isShippingAddressRequired,
+        
         shippingFirstName,
         shippingLastName,
         
@@ -46,6 +48,7 @@ const ViewShippingAddress = (): JSX.Element|null => {
     
     
     // jsx:
+    if (!isShippingAddressRequired) return null;
     return (
         <>
             <p>

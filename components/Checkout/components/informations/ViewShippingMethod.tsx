@@ -18,6 +18,8 @@ const ViewShippingMethod = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
+        isShippingAddressRequired,
+        
         shippingProvider,
         
         
@@ -30,6 +32,7 @@ const ViewShippingMethod = (): JSX.Element|null => {
     
     
     // jsx:
+    if (!isShippingAddressRequired) return null;
     return (
         <>
             <span

@@ -53,6 +53,11 @@ const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
         
         
         
+        // shipping data:
+        isShippingAddressRequired,
+        
+        
+        
         // actions:
         gotoStepInformation,
         gotoStepShipping,
@@ -71,6 +76,7 @@ const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
     
     
     // jsx:
+    if (!isShippingAddressRequired) return null;
     return (
         <table>
             {!!title && <thead>
