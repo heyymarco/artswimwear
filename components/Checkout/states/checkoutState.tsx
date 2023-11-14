@@ -1274,9 +1274,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             }).unwrap();
             return placeOrderResponse.orderId;
         }
-        catch (error: any) {
-            showMessageFetchError({ error, context: 'order' });
-            throw error;
+        catch (fetchError: any) {
+            showMessageFetchError({ fetchError, context: 'order' });
+            throw fetchError;
         } // try
     });
     const doMakePayment        = useEvent(async (orderId: string, paid: boolean): Promise<void> => {

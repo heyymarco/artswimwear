@@ -63,8 +63,8 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
                 // forward the authentication to backend_API to receive the fund agreement:
                 await doMakePayment(paypalAuthentication.orderID, /*paid:*/true);
             }
-            catch (error: any) {
-                showMessageFetchError({ error, context: 'payment' });
+            catch (fetchError: any) {
+                showMessageFetchError({ fetchError, context: 'payment' });
             } // try
         });
     });

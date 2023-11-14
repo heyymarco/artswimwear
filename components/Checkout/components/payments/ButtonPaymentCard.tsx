@@ -137,8 +137,8 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 // then forward the authentication to backend_API to receive the fund:
                 await doMakePayment(paypalAuthentication.orderId, /*paid:*/true);
             }
-            catch (error: any) {
-                showMessageFetchError({ error, context: 'payment' });
+            catch (fetchError: any) {
+                showMessageFetchError({ fetchError, context: 'payment' });
             } // try
         });
     });

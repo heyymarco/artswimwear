@@ -66,8 +66,8 @@ const ButtonPaymentManual = (): JSX.Element|null => {
                 // then forward the authentication to backend_API to book the order (but not paid yet):
                 await doMakePayment(orderId, /*paid:*/false);
             }
-            catch (error: any) {
-                showMessageFetchError({ error, context: 'order' });
+            catch (fetchError: any) {
+                showMessageFetchError({ fetchError, context: 'order' });
             } // try
         });
     });
