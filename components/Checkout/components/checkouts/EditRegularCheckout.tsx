@@ -27,6 +27,9 @@ import {
 import {
     AddressFields,
 }                           from '@heymarco/address-fields'
+import {
+    EditShippingAddress,
+}                           from './EditShippingAddress'
 
 // internal components:
 import {
@@ -68,39 +71,8 @@ const EditRegularCheckout = (): JSX.Element|null => {
         
         
         // shipping data:
+        isShippingAddressRequired,
         shippingValidation,
-        
-        
-        shippingFirstName,
-        shippingFirstNameHandlers,
-        
-        shippingLastName,
-        shippingLastNameHandlers,
-        
-        
-        shippingPhone,
-        shippingPhoneHandlers,
-        
-        
-        shippingAddress,
-        shippingAddressHandlers,
-        
-        shippingCity,
-        shippingCityHandlers,
-        
-        shippingZone,
-        shippingZoneHandlers,
-        
-        shippingZip,
-        shippingZipHandlers,
-        
-        shippingCountry,
-        shippingCountryHandlers,
-        
-        
-        
-        // relation data:
-        countryList,
         
         
         
@@ -238,7 +210,7 @@ const EditRegularCheckout = (): JSX.Element|null => {
                 </Check>
             </Section>
             
-            <Section
+            {isShippingAddressRequired && <Section
                 // classes:
                 className={styleSheet.address}
                 
@@ -247,45 +219,8 @@ const EditRegularCheckout = (): JSX.Element|null => {
                 // accessibilities:
                 title='Shipping Address'
             >
-                <AddressFields
-                    // refs:
-                    addressRef        = {shippingAddressInputRef}
-                    
-                    
-                    
-                    // types:
-                    addressType       = 'shipping'
-                    
-                    
-                    
-                    // values:
-                    firstName         = {shippingFirstName}
-                    lastName          = {shippingLastName}
-                    
-                    phone             = {shippingPhone}
-                    
-                    address           = {shippingAddress}
-                    city              = {shippingCity}
-                    zone              = {shippingZone}
-                    zip               = {shippingZip}
-                    country           = {shippingCountry}
-                    countryList       = {countryList}
-                    
-                    
-                    
-                    // handlers:
-                    onFirstNameChange = {shippingFirstNameHandlers.onChange}
-                    onLastNameChange  = {shippingLastNameHandlers.onChange }
-                    
-                    onPhoneChange     = {shippingPhoneHandlers.onChange    }
-                    
-                    onAddressChange   = {shippingAddressHandlers.onChange  }
-                    onCityChange      = {shippingCityHandlers.onChange     }
-                    onZoneChange      = {shippingZoneHandlers.onChange     }
-                    onZipChange       = {shippingZipHandlers.onChange      }
-                    onCountryChange   = {shippingCountryHandlers.onChange  }
-                />
-            </Section>
+                <EditShippingAddress />
+            </Section>}
         </ValidationProvider>
     );
 };;
