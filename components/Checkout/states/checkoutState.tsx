@@ -656,7 +656,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // billing data:
         billingValidation : reduxBillingValidation,
         
-        billingAsShipping,
+        billingAsShipping : reduxBillingAsShipping,
         
         
         
@@ -669,9 +669,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     } = localCheckoutState;
     const checkoutProgress          = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
     const isPaymentTokenValid       = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
-    
-    const isBillingAddressRequired  = (paymentMethod === 'card'); // the billingAddress is required for 'card'
-    const billingValidation         = isBillingAddressRequired && !billingAsShipping && reduxBillingValidation;
     
     const {
         // payment data:
@@ -754,6 +751,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isPerformedRecoverShippingList = useRef<boolean>(false);
     const isNeedsRecoverShippingList     =  isShippingAddressRequired  && (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
+    
+    const isBillingAddressRequired       = (paymentMethod === 'card'); // the billingAddress is required for 'card'
+    const billingAsShipping              = isShippingAddressRequired                       && reduxBillingAsShipping;
+    const billingValidation              = isBillingAddressRequired  && !billingAsShipping && reduxBillingValidation;
     
     
     
@@ -1251,18 +1252,20 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 // shipping data:
-                shippingFirstName,
-                shippingLastName,
-                
-                shippingPhone,
-                
-                shippingAddress,
-                shippingCity,
-                shippingZone,
-                shippingZip,
-                shippingCountry,
-                
-                shippingProvider,
+                ...(isShippingAddressRequired ? {
+                        shippingFirstName,
+                    shippingLastName,
+                    
+                    shippingPhone,
+                    
+                    shippingAddress,
+                    shippingCity,
+                    shippingZone,
+                    shippingZip,
+                    shippingCountry,
+                    
+                    shippingProvider,
+                } : undefined),
                 
                 
                 
@@ -1294,16 +1297,18 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             // billing data:
-            billingFirstName : isBillingAddressRequired ? (billingAsShipping ? shippingFirstName : billingFirstName) : '',
-            billingLastName  : isBillingAddressRequired ? (billingAsShipping ? shippingLastName  : billingLastName)  : '',
-            
-            billingPhone     : isBillingAddressRequired ? (billingAsShipping ? shippingPhone     : billingPhone)     : '',
-            
-            billingAddress   : isBillingAddressRequired ? (billingAsShipping ? shippingAddress   : billingAddress)   : '',
-            billingCity      : isBillingAddressRequired ? (billingAsShipping ? shippingCity      : billingCity)      : '',
-            billingZone      : isBillingAddressRequired ? (billingAsShipping ? shippingZone      : billingZone)      : '',
-            billingZip       : isBillingAddressRequired ? (billingAsShipping ? shippingZip       : billingZip)       : '',
-            billingCountry   : isBillingAddressRequired ? (billingAsShipping ? shippingCountry   : billingCountry)   : '',
+            ...(isBillingAddressRequired ? {
+                billingFirstName : billingAsShipping ? shippingFirstName : billingFirstName,
+                billingLastName  : billingAsShipping ? shippingLastName  : billingLastName,
+                
+                billingPhone     : billingAsShipping ? shippingPhone     : billingPhone,
+                
+                billingAddress   : billingAsShipping ? shippingAddress   : billingAddress,
+                billingCity      : billingAsShipping ? shippingCity      : billingCity,
+                billingZone      : billingAsShipping ? shippingZone      : billingZone,
+                billingZip       : billingAsShipping ? shippingZip       : billingZip,
+                billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
+            } : undefined),
         }).unwrap();
         
         
