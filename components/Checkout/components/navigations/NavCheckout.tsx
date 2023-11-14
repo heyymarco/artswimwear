@@ -55,6 +55,11 @@ const NavCheckout = (): JSX.Element|null => {
         
         
         
+        // shipping data:
+        isShippingAddressRequired,
+        
+        
+        
         // actions:
         gotoStepInformation,
         gotoStepShipping,
@@ -71,18 +76,18 @@ const NavCheckout = (): JSX.Element|null => {
     // utilities:
     const [prevAction, nextAction] = useMemo(() => {
         const prevAction = [
-            { text: 'Return to cart'       , action: () => dispatch(showCart(true)) },
-            { text: 'Return to information', action: () => gotoStepInformation()    },
-            { text: 'Return to shipping'   , action: gotoStepShipping               },
-        ][checkoutProgress];
+            { text: 'Return to Cart'       , action: () => dispatch(showCart(true)) },
+            { text: 'Return to Information', action: () => gotoStepInformation()    },
+            { text: 'Return to Shipping'   , action: gotoStepShipping               },
+        ][Math.max(0, checkoutProgress - (isShippingAddressRequired ? 0 : 1))];
         
         const nextAction = [
-            { text: 'Continue to shipping' , action: gotoStepShipping               },
-            { text: 'Continue to payment'  , action: gotoPayment                    },
-        ][checkoutProgress];
+            { text: 'Continue to Shipping' , action: gotoStepShipping               },
+            { text: 'Continue to Payment'  , action: gotoPayment                    },
+        ][checkoutProgress + (isShippingAddressRequired ? 0 : 1)];
         
         return [prevAction, nextAction] as const;
-    }, [checkoutProgress]);
+    }, [checkoutProgress, isShippingAddressRequired]);
     
     
     
