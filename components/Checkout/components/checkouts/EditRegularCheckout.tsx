@@ -25,9 +25,6 @@ import {
     Section,
 }                           from '@heymarco/section'
 import {
-    AddressFields,
-}                           from '@heymarco/address-fields'
-import {
     EditShippingAddress,
 }                           from './EditShippingAddress'
 
@@ -78,7 +75,6 @@ const EditRegularCheckout = (): JSX.Element|null => {
         
         // fields:
         contactEmailInputRef,
-        shippingAddressInputRef,
     } = useCheckoutState();
     
     
