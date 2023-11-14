@@ -1011,7 +1011,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         const goForward = (checkoutStep === 'info');
         if (goForward) { // go forward from 'info' => do validate shipping agencies
             if (!isShippingAddressRequired) { // if only digital products => no shipping required
-                // jump forward to payment:
+                // jump forward to payment method:
                 setCheckoutStep('payment');
             }
             else { // if contain a/some physical product => requires shipping
