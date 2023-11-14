@@ -753,7 +753,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const shippingValidation             = isShippingAddressRequired && reduxShippingValidation;
     
     const isPerformedRecoverShippingList = useRef<boolean>(false);
-    const isNeedsRecoverShippingList     = isShippingAddressRequired   && (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
+    const isNeedsRecoverShippingList     =  isShippingAddressRequired  && (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
     const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
     
     
