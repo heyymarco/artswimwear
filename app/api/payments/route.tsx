@@ -1165,20 +1165,6 @@ router
         // customers:
         customerNickName,
         customerEmail,
-        
-        
-        
-        // bilings:
-        billingFirstName,
-        billingLastName,
-        
-        billingPhone,
-        
-        billingAddress,
-        billingCity,
-        billingZone,
-        billingZip,
-        billingCountry,
     } = paymentData;
     if (
         ((marketingOpt !== undefined) && (typeof(marketingOpt) !== 'boolean'))
@@ -1190,6 +1176,54 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
+    
+    
+    
+    //#region validate billing address
+    const {
+        // billings:
+        billingFirstName,
+        billingLastName,
+        
+        billingPhone,
+        
+        billingAddress,
+        billingCity,
+        billingZone,
+        billingZip,
+        billingCountry,
+    } = paymentData;
+    const hasBillingAddress = (
+        !!billingFirstName ||
+        !!billingLastName ||
+        
+        !!billingPhone ||
+        
+        !!billingAddress ||
+        !!billingCity ||
+        !!billingZone ||
+        !!billingZip ||
+        !!billingCountry
+    );
+    if (hasBillingAddress) {
+        if (
+               !billingFirstName || (typeof(billingFirstName) !== 'string')
+            || !billingLastName  || (typeof(billingLastName) !== 'string')
+            
+            || !billingPhone     || (typeof(billingPhone) !== 'string')
+            
+            || !billingAddress   || (typeof(billingAddress) !== 'string')
+            || !billingCity      || (typeof(billingCity) !== 'string')
+            || !billingZone      || (typeof(billingZone) !== 'string')
+            || !billingZip       || (typeof(billingZip) !== 'string')
+            || !billingCountry   || (typeof(billingCountry) !== 'string') // todo validate country id
+        ) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+    } // if
+    //#endregion validate billing address
     
     
     
@@ -1584,7 +1618,7 @@ router
             let newOrder : OrderAndData|undefined = undefined;
             const paymentPartial = !('error' in paymentResponse) ? paymentResponse.payment : undefined;
             if (paymentPartial) {
-                const isBillingAddressRequired = (paymentPartial.type === 'CARD');
+                // const isBillingAddressRequired = (paymentPartial.type === 'CARD');
                 
                 // payment APPROVED => move the `draftOrder` to `order`:
                 newOrder = await commitOrder(prismaTransaction, {
@@ -1592,7 +1626,7 @@ router
                     customer           : newCustomer,
                     payment            : {
                         ...paymentPartial,
-                        billingAddress : isBillingAddressRequired ? {
+                        billingAddress : hasBillingAddress ? {
                             firstName  : billingFirstName,
                             lastName   : billingLastName,
                             
