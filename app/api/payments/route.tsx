@@ -968,6 +968,21 @@ router
                             // If an Order is paid using the "PayPal Wallet", the statement descriptor will appear in following format on the payer's card statement: PAYPAL_prefix+(space)+merchant_descriptor+(space)+ soft_descriptor
                             soft_descriptor           : undefined,
                         }],
+                        
+                        // doesn't work:
+                        // payment_source: {
+                        //     paypal : {
+                        //         experience_context : {
+                        //             shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
+                        //         },
+                        //     },
+                        // },
+                        
+                        // works:
+                        application_context : {
+                            brand_name          : checkoutConfig?.business?.name || undefined,
+                            shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
+                        },
                     }),
                 });
                 const paypalOrderData = await handlePaypalResponse(paypalResponse);
