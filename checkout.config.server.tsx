@@ -49,7 +49,7 @@ import {
 // configs:
 import type {
     CheckoutConfig,
-}                           from '@/app/api/payments/types'
+}                           from '@/app/api/checkout/types'
 import '@/theme.config'
 
 

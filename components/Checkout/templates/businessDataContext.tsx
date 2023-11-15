@@ -18,7 +18,7 @@ import {
 // configs:
 import type {
     BusinessConfig,
-}                           from '@/app/api/payments/types'
+}                           from '@/app/api/checkout/types'
 
 
 

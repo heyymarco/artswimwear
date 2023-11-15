@@ -149,20 +149,20 @@ export const apiSlice = createApi({
         
         generatePaymentToken    : builder.mutation<PaymentToken, void>({
             query : () => ({
-                url    : 'payments',
+                url    : 'checkout',
                 method : 'GET',
             }),
         }),
         placeOrder              : builder.mutation<PlaceOrderResponse, PlaceOrderData>({
             query : (orderData) => ({
-                url    : 'payments',
+                url    : 'checkout',
                 method : 'POST',
                 body   : orderData,
             }),
         }),
         makePayment             : builder.mutation<MakePaymentResponse, AuthenticationPaymentData>({
             query : (paymentData) => ({
-                url    : 'payments',
+                url    : 'checkout',
                 method : 'PATCH',
                 body   : paymentData,
             }),
