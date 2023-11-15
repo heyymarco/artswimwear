@@ -664,9 +664,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentValidation,
         
         paymentMethod = 'card',
-        
-        paymentToken,
     } = localCheckoutState;
+    
+    const {
+        paymentToken,
+    } = globalCheckoutState;
+    
     const checkoutProgress          = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
     const isPaymentTokenValid       = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
     
@@ -759,10 +762,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */)   || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
-    const hasData                        = (!!productList      && !!countryList    && isPaymentTokenValid);
+    const isLastCheckoutStep             = (checkoutStep === 'pending') || (checkoutStep === 'paid');
+    const hasData                        = (!!productList      && !!countryList    && (isLastCheckoutStep || isPaymentTokenValid));
     const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError   || (isTokenError   && !isPaymentTokenValid /* silently token error   if still have old_valid_token */))) || !hasData /* considered as error if no data */;
     const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
-    const isCheckoutFinished             = isCheckoutReady && ((checkoutStep === 'pending') || (checkoutStep === 'paid'));
+    const isCheckoutFinished             = isCheckoutReady && isLastCheckoutStep;
     
     
     
@@ -877,11 +881,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep]);
     
     // auto renew payment token:
-    const lastPaymentToken = useRef<PaymentToken|undefined|0>(0/* 0 = uninit */); // ensures the payment token not re-refreshed twice (especially in dev mode)
+    const isAutoRefreshPaymentTokenScheduled = useRef<boolean>(false); // ensures the payment token not re-refreshed twice (especially in dev mode)
+    
+    useIsomorphicLayoutEffect(() => {
+        if (!!paymentToken && !isPaymentTokenValid) isAutoRefreshPaymentTokenScheduled.current = false; // invalidate the expired paymentToken
+    }, [paymentToken, isPaymentTokenValid]);
+    
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (lastPaymentToken.current === paymentToken) return; // no change => ignore
-        lastPaymentToken.current = paymentToken;               // sync
+        if (isAutoRefreshPaymentTokenScheduled.current) return; // already scheduled => ignore the twice_dev_mode
+        isAutoRefreshPaymentTokenScheduled.current = true;
         console.log('paymentToken changed: ', paymentToken);
         
         
@@ -896,15 +905,19 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 // replace the expiring one:
                 dispatch(reduxSetPaymentToken(newPaymentToken));
-                lastPaymentToken.current = newPaymentToken; // prevents from re-schedule
                 
                 
                 
                 // report the next refresh duration:
+                console.log('paymentToken renewed', {
+                    expiresAt: newPaymentToken ? new Date(newPaymentToken.expiresAt).toLocaleString() : null,
+                    refreshAt: newPaymentToken ? new Date(newPaymentToken.refreshAt).toLocaleString() : null,
+                });
                 return Math.max(0, newPaymentToken.refreshAt - Date.now());
             }
-            catch {
+            catch (error: any) {
                 // report the next retry duration:
+                console.log('failed to renew payment token: ', error);
                 return (60 * 1000);
             } // try
         };
@@ -935,7 +948,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return () => {
             if (cancelRefresh) clearTimeout(cancelRefresh);
         };
-    }, [paymentToken]);
+    }, [paymentToken, isPaymentTokenValid]);
     
     // auto reset billing validation:
     useIsomorphicLayoutEffect(() => {
@@ -1326,6 +1339,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             totalShippingCost,
             paymentState,
         });
+        
+        
+        
+        // discard used paymentToken:
+        dispatch(reduxSetPaymentToken(undefined));
+        // isAutoRefreshPaymentTokenScheduled.current = false; // no need to re-schedule the paymentToken renewal, because it's the final checkoutStep
         
         
         
