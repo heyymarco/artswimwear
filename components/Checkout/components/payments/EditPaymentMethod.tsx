@@ -72,6 +72,11 @@ import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
+// configs:
+import {
+    PAYPAL_CURRENCY,
+}                           from '@/commerce.config'
+
 
 
 // react components:
@@ -118,7 +123,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
         'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
         'data-client-token' : paymentToken?.paymentToken,
-        currency            : 'USD',
+        currency            : PAYPAL_CURRENCY,
         intent              : 'capture',
         components          : 'hosted-fields,buttons',
     }), [paymentToken?.paymentToken]);
