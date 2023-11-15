@@ -421,12 +421,14 @@ export default () => {
                                     ...rule(':first-child', {
                                         ...children(['th', 'td'], {
                                             ...rule(':not(:first-child)', {
+                                                borderBlockStartWidth  : 0, // kill the separator
+                                                
                                                 borderStartStartRadius : 0,
                                                 borderStartEndRadius   : 0,
                                             }),
                                             ...rule(':first-child', {
-                                                borderStartStartRadius : '1rem',
-                                                borderStartEndRadius   : '1rem',
+                                                borderStartStartRadius : borderRadiuses.default,
+                                                borderStartEndRadius   : borderRadiuses.default,
                                             }),
                                         }),
                                     }),
