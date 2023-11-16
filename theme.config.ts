@@ -1,7 +1,7 @@
 import '@reusable-ui/typos/effects'
 import { iconConfig } from '@reusable-ui/components'
 import { imageValues } from '@heymarco/image'
-import './theme.basic.config'
+import './theme.basics.config'
 
 
 
