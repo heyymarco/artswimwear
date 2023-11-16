@@ -45,6 +45,14 @@ import {
 }                           from '@/components/Checkout/templates/IfPaid'
 import {
     // react components:
+    IfPaidAuto,
+}                           from '@/components/Checkout/templates/IfPaidAuto'
+import {
+    // react components:
+    IfPaidManual,
+}                           from '@/components/Checkout/templates/IfPaidManual'
+import {
+    // react components:
     IfNotPaid,
 }                           from '@/components/Checkout/templates/IfNotPaid'
 import {
@@ -135,7 +143,19 @@ export const checkoutConfig : CheckoutConfig = {
             password : process.env.EMAILS_CHECKOUT_PASSWORD ?? '',
             
             from     : process.env.EMAILS_CHECKOUT_FROM ?? '',
-            subject  : <><IfNotPaid>Awaiting Payment For </IfNotPaid>Your Order at <Business.Name /></>,
+            subject  : <>
+                <IfNotPaid>
+                    Awaiting Payment For Your Order at <Business.Name />
+                </IfNotPaid>
+                
+                <IfPaidManual>
+                    Your Payment at <Business.Name />
+                </IfPaidManual>
+                
+                <IfPaidAuto>
+                    Your Order at <Business.Name />
+                </IfPaidAuto>
+            </>,
             message  : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
@@ -164,7 +184,17 @@ export const checkoutConfig : CheckoutConfig = {
                     }}
                 >
                     <h1 style={styles.heading1}>
-                        <IfPaid>Thanks</IfPaid><IfNotPaid>Awaiting Payment</IfNotPaid>{' '}For Your Order<IfPaid>!</IfPaid><IfNotPaid>...</IfNotPaid>
+                        <IfNotPaid>
+                            Awaiting Payment For Your Order...
+                        </IfNotPaid>
+                        
+                        <IfPaidManual>
+                            Thanks For Your Payment!
+                        </IfPaidManual>
+                        
+                        <IfPaidAuto>
+                            Thanks For Your Order!
+                        </IfPaidAuto>
                     </h1>
                     
                     <p style={styles.paragraph}>
@@ -172,9 +202,23 @@ export const checkoutConfig : CheckoutConfig = {
                     </p>
                     
                     <p style={styles.paragraphLast}>
-                        Thank you for placing an order on <strong><Business.Name /></strong>.
-                        <br />
-                        We are pleased to confirm that we have received your order<IfPaid> and it is <strong>currently being processed</strong></IfPaid><IfNotPaid> and are <strong>waiting for your payment</strong> so that your order can be processed further</IfNotPaid>.
+                        <IfNotPaid>
+                            Thank you for placing an order at <strong><Business.Name /></strong>.
+                            <br />
+                            We are pleased to confirm that we have received your order and are <strong>waiting for your payment</strong> so that your order can be processed further.
+                        </IfNotPaid>
+                        
+                        <IfPaidManual>
+                            Thank you for your payment of the order at <strong><Business.Name /></strong>.
+                            <br />
+                            We are pleased to confirm that the order is <strong>currently being processed</strong>.
+                        </IfPaidManual>
+                        
+                        <IfPaidAuto>
+                            Thank you for placing an order at <strong><Business.Name /></strong>.
+                            <br />
+                            We are pleased to confirm that we have received your order and it is <strong>currently being processed</strong>.
+                        </IfPaidAuto>
                     </p>
                 </section>
                 

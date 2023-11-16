@@ -1750,7 +1750,7 @@ router
                                     {checkoutEmail.subject}
                                 </BusinessContextProvider>
                             </OrderDataContextProvider>
-                        ),
+                        ).replace(/[\r\n\t]+/g, ' ').trim(),
                         html        : renderToStaticMarkup(
                             <OrderDataContextProvider {...orderDataContextProviderProps}>
                                 <BusinessContextProvider {...businessContextProviderProps}>

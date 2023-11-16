@@ -13,6 +13,11 @@ import {
     useOrderDataContext,
 }                           from './orderDataContext'
 
+// utilities:
+import {
+    formatCurrency,
+}                           from '@/libs/formatters'
+
 
 
 // react components:
@@ -107,6 +112,38 @@ const PaymentMethod = (): React.ReactNode => {
         </>
     );
 };
+const PaymentAmount = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            payment : {
+                // payment data:
+                amount : paymentAmount,
+            },
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <p style={styles.paragraphCurrency}>
+                <span
+                    // styles:
+                    style={{
+                        // typos:
+                        ...styles.textBold,
+                        // ...styles.numberCurrency, // no need to place right_most
+                    }}
+                >
+                    {formatCurrency(paymentAmount)}
+                </span>
+            </p>
+        </>
+    );
+};
 
 
 export interface PaymentInfoProps {
@@ -138,10 +175,13 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
         // data:
         order : {
             payment : {
+                type           : paymentType,
+                
                 billingAddress : address,
             },
         },
     } = useOrderDataContext();
+    const isManualPayment = (paymentType === 'MANUAL_PAID');
     
     
     
@@ -168,9 +208,9 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
                         // styles:
                         style={{
                             // layouts:
-                            ...(title   ? null                    : styles.borderTopSide        ),
-                            ...(title   ? null                    : styles.tableTitleSideFirst  ),
-                            ...(address ? styles.tableTitleSide   : styles.tableTitleSideLast   ),
+                            ...(title                        ? null                    : styles.borderTopSide        ),
+                            ...(title                        ? null                    : styles.tableTitleSideFirst  ),
+                            ...((address || isManualPayment) ? styles.tableTitleSide   : styles.tableTitleSideLast   ),
                         }}
                     >
                         Payment Method
@@ -179,14 +219,35 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
                         // styles:
                         style={{
                             // layouts:
-                            ...(title   ? null                    : styles.borderTopSide        ),
-                            ...(title   ? null                    : styles.tableContentSideFirst),
-                            ...(address ? styles.tableContentSide : styles.tableContentSideLast ),
+                            ...(title                        ? null                    : styles.borderTopSide        ),
+                            ...(title                        ? null                    : styles.tableContentSideFirst),
+                            ...((address || isManualPayment) ? styles.tableContentSide : styles.tableContentSideLast ),
                         }}
                     >
                         <PaymentMethod />
                     </td>
                 </tr>
+                
+                {isManualPayment && <tr>
+                    <th
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...(address                      ? styles.tableTitleSide   : styles.tableTitleSideLast   ),
+                        }}
+                    >
+                        Payment Amount
+                    </th>
+                    <td
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...(address                      ? styles.tableContentSide : styles.tableContentSideLast ),
+                        }}
+                    >
+                        <PaymentAmount />
+                    </td>
+                </tr>}
                 
                 {!!address && <tr>
                     <th style={styles.tableTitleSideLast}>
@@ -204,5 +265,6 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
 export const Payment = {
     BillingAddress : BillingAddress,
     Method         : PaymentMethod,
+    Amount         : PaymentAmount,
     Info           : PaymentInfo,
 };
