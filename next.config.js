@@ -16,16 +16,16 @@ const nextConfig = {
     esmExternals: 'loose',
   },
   
-  reactStrictMode: true,
-  // swcMinify: false,
-  
-  webpack: (config) => {
-    config.experiments = {
-      ...config.experiments,
-      ...{topLevelAwait: true}
-    }
-    return config
-  },
+  // reactStrictMode: true,
+  // // swcMinify: false,
+  // 
+  // webpack: (config) => {
+  //   config.experiments = {
+  //     ...config.experiments,
+  //     ...{topLevelAwait: true}
+  //   }
+  //   return config
+  // },
 }
 
 
