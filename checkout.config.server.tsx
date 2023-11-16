@@ -1,3 +1,9 @@
+// react:
+import {
+    // react:
+    default as React,
+}                           from 'react'
+
 // styles:
 import * as styles          from '@/components/Checkout/templates/styles'
 
@@ -50,7 +56,7 @@ import {
 import type {
     CheckoutConfig,
 }                           from '@/app/api/checkout/types'
-import '@/theme.config'
+import '@/theme.basics.config'
 
 
 

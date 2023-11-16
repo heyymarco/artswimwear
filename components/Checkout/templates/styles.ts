@@ -45,7 +45,7 @@ import {
 import Color                from 'color'                // color utilities
 
 // configs:
-import '@/theme.config'
+import '@/theme.basics.config'
 
 
 
