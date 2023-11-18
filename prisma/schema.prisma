@@ -166,6 +166,13 @@ type Payment {
     
     billingAddress          Address?
 }
+enum OrderStatus {
+    NEW_ORDER
+    PROCESSED
+    SHIPPED
+    IN_TROUBLE
+    COMPLETED
+}
 model Order {
     // records:
     id                      String                  @id @default(cuid()) @map("_id")
@@ -174,9 +181,11 @@ model Order {
     
     // data:
     orderId                 String                  @unique // a secondary id for public identifier
+    orderStatus             OrderStatus             @default(NEW_ORDER)
     
     shippingAddress         Address?
     shippingCost            Float?                  // min: 0
+    shippingNumber          String?
     
     payment                 Payment
     
