@@ -169,7 +169,7 @@ type Payment {
 enum OrderStatus {
     NEW_ORDER
     PROCESSED
-    SHIPPED
+    ON_THE_WAY
     IN_TROUBLE
     COMPLETED
 }
