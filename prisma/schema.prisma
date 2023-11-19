@@ -182,6 +182,7 @@ model Order {
     // data:
     orderId                 String                  @unique // a secondary id for public identifier
     orderStatus             OrderStatus             @default(NEW_ORDER)
+    orderTrouble            Json?
     
     shippingAddress         Address?
     shippingCost            Float?                  // min: 0
