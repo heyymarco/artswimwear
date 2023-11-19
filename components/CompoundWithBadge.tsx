@@ -60,13 +60,15 @@ const CompoundWithBadge = <TElement extends Element = HTMLElement>(props: Compou
     
     
     // jsx:
+    const layoutProps : GenericProps<TElement> = {
+        // other props:
+        ...restGenericProps,
+        ...wrapperComponent.props, // overwrites restGenericProps (if any conflics)
+    };
+    const isFragmentWrapper = wrapperComponent.type === (<React.Fragment />).type;
     return React.cloneElement<GenericProps<TElement>>(wrapperComponent,
         // props:
-        {
-            // other props:
-            ...restGenericProps,
-            ...wrapperComponent.props, // overwrites restGenericProps (if any conflics)
-        },
+        (isFragmentWrapper ? undefined : layoutProps),
         
         
         
@@ -75,6 +77,11 @@ const CompoundWithBadge = <TElement extends Element = HTMLElement>(props: Compou
         React.cloneElement<GenericProps<Element>>(elementComponent,
             // props:
             {
+                // other props:
+                ...(isFragmentWrapper ? layoutProps : undefined),
+                
+                
+                
                 // refs:
                 elmRef : mergedComponentRef,
             },
