@@ -61,7 +61,24 @@ const UpdateStatePlugin = ({value, defaultValue, onChange}: UpdateStatePluginPro
         if (prevValue.current === newValue) return; // no diff => ignore
         const editorState = (
             !newValue
-            ? null
+            ? editor.parseEditorState({root: {
+                children  : [
+                    // an empty paragraph hack to clear the content:
+                    {
+                        children  : [],
+                        direction : null,
+                        format    : '',
+                        indent    : 0,
+                        type      : 'paragraph',
+                        version   : 1,
+                    },
+                ],
+                direction : null,
+                format    : '',
+                indent    : 0,
+                type      : 'root',
+                version   : 1,
+            }} as any)
             : ('root' in newValue)
                 ? editor.parseEditorState(newValue as any)
                 : newValue
