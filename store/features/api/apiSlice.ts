@@ -7,12 +7,30 @@ import type { CreateOrderData }                     from '@paypal/paypal-js'
 import type { MatchingShipping, MatchingAddress }   from '@/libs/shippings'
 
 // apis:
-import type { CountryPreview }                  from '@/app/api/countries/route'
-export type { CountryPreview }                  from '@/app/api/countries/route'
-import type { ProductPreview, ProductDetail }   from '@/app/api/products/route'
-export type { ProductPreview, ProductDetail }   from '@/app/api/products/route'
-import type { PaymentToken, PaymentDetail }     from '@/app/api/checkout/route'
-export type { PaymentToken, PaymentDetail }     from '@/app/api/checkout/route'
+import type {
+    CountryPreview,
+}                           from '@/app/api/countries/route'
+export type {
+    CountryPreview,
+}                           from '@/app/api/countries/route'
+import type {
+    ProductPreview,
+    ProductDetail,
+}                           from '@/app/api/products/route'
+export type {
+    ProductPreview,
+    ProductDetail,
+}                           from '@/app/api/products/route'
+import type {
+    PaymentToken,
+    DraftOrderDetail,
+    PaymentDetail,
+}                           from '@/app/api/checkout/route'
+export type {
+    PaymentToken,
+    DraftOrderDetail,
+    PaymentDetail,
+}                           from '@/app/api/checkout/route'
 
 
 
@@ -59,10 +77,6 @@ export interface PlaceOrderDataWithShippingAddress
 {
 }
 export type PlaceOrderData = PlaceOrderDataBasic | PlaceOrderDataWithShippingAddress
-export interface PlaceOrderResponse
-{
-    orderId : string
-}
 
 export interface AuthenticationPaymentDataBasic
     extends
@@ -144,7 +158,7 @@ export const apiSlice = createApi({
                 method : 'GET',
             }),
         }),
-        placeOrder              : builder.mutation<PlaceOrderResponse, PlaceOrderData>({
+        placeOrder              : builder.mutation<DraftOrderDetail, PlaceOrderData>({
             query : (orderData) => ({
                 url    : 'checkout',
                 method : 'POST',

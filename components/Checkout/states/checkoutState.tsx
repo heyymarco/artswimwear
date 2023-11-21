@@ -1258,7 +1258,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
-            const placeOrderResponse = await placeOrder({
+            const draftOrderDetail = await placeOrder({
                 // cart item(s):
                 items : cartItems,
                 
@@ -1285,7 +1285,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 // options: pay manually | paymentSource (by <PayPalButtons>)
                 ...options,
             }).unwrap();
-            return placeOrderResponse.orderId;
+            return draftOrderDetail.orderId;
         }
         catch (fetchError: any) {
             showMessageFetchError({ fetchError, context: 'order' });

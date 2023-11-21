@@ -45,12 +45,6 @@ import type {
     CountryPreview,
 }                           from '@/app/api/countries/route'
 
-// stores:
-import type {
-    // types:
-    PlaceOrderResponse,
-}                           from '@/store/features/api/apiSlice'
-
 // templates:
 import {
     // types:
@@ -429,6 +423,11 @@ export interface PaymentToken {
     paymentToken : string
     expiresAt    : number
     refreshAt    : number
+}
+
+export interface DraftOrderDetail
+{
+    orderId : string
 }
 
 export interface PaymentDetail
@@ -1143,10 +1142,10 @@ router
     
     
     // draftOrder created:
-    const placeOrderResponse : PlaceOrderResponse = {
+    const draftOrderDetail : DraftOrderDetail = {
         orderId: paypalOrderId ?? `#ORDER_${orderId}`,
     };
-    return NextResponse.json(placeOrderResponse); // handled with success
+    return NextResponse.json(draftOrderDetail); // handled with success
 })
 
 /**
