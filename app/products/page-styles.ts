@@ -4,7 +4,7 @@ import {
     rule,
     children,
     scope,
-}                           from '@cssfn/core'     
+}                           from '@cssfn/core'              // writes css in javascript
 
 // configs:
 import {
