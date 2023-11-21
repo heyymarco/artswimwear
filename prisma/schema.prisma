@@ -169,18 +169,18 @@ type Payment {
 model PaymentConfirmation {
     // records:
     id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    updatedAt               DateTime?
+    reviewedAt              DateTime?
     
     // data:
     token                   String                  @unique
     
     amount                  Float                   // min: 0
-    payerName               String?
+    payerName               String?                 // minLength: 2, maxLength: 50
     paymentDate             DateTime?
     
-    originatingBank         String?
-    destinationBank         String?
+    originatingBank         String?                 // minLength: 2, maxLength: 50
+    destinationBank         String?                 // minLength: 2, maxLength: 50
     
     rejectionReason         Json?
     
