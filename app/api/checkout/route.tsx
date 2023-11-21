@@ -427,7 +427,7 @@ const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
 
 
 // types:
-interface ErrorResponse {
+export interface PaymentDeclinedErrorResponse {
     error : string
 }
 
@@ -1257,7 +1257,7 @@ router
     
     
     
-    let paymentResponse : MakePaymentResponse|ErrorResponse;
+    let paymentResponse : MakePaymentResponse|PaymentDeclinedErrorResponse;
     let newOrder        : OrderAndData|undefined = undefined;
     let countryList     : EntityState<CountryPreview>;
     try {
@@ -1268,7 +1268,7 @@ router
             email         : customerEmail,
         };
         
-        ([paymentResponse, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [MakePaymentResponse|ErrorResponse, OrderAndData|undefined, EntityState<CountryPreview>]> => {
+        ([paymentResponse, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [MakePaymentResponse|PaymentDeclinedErrorResponse, OrderAndData|undefined, EntityState<CountryPreview>]> => {
             //#region verify draftOrder_id
             const requiredSelect = {
                 id                     : true,
@@ -1348,7 +1348,7 @@ router
             
             
             //#region process the payment
-            let paymentResponse : MakePaymentResponse|ErrorResponse;
+            let paymentResponse : MakePaymentResponse|PaymentDeclinedErrorResponse;
             if (paypalOrderId) {
                 const accessToken = await generateAccessToken();
                 const url = `${paypalURL}/v2/checkout/orders/${paypalOrderId}/capture`;
