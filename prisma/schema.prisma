@@ -173,6 +173,8 @@ model PaymentConfirmation {
     updatedAt               DateTime                @updatedAt
     
     // data:
+    token                   String                  @unique
+    
     amount                  Float                   // min: 0
     payerName               String?
     paymentDate             DateTime?

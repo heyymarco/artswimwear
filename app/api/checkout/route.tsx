@@ -31,6 +31,7 @@ import type {
     Customer,
     
     Payment,
+    PaymentConfirmation,
     DraftOrder,
     DraftOrdersOnProducts,
 }                           from '@prisma/client'
@@ -439,6 +440,28 @@ export interface PaymentDetail
 }
 export interface PaymentDeclined {
     error : string
+}
+
+export interface PaymentConfirmationRequest {
+    paymentConfirmation : Partial<PaymentConfirmationDetail> & {
+        token : string
+    }
+}
+export interface PaymentConfirmationDetail
+    extends
+        Omit<PaymentConfirmation,
+            |'updatedAt'
+            
+            |'amount'
+            |'payerName'
+            |'paymentDate'
+            
+            |'originatingBank'
+            |'destinationBank'
+            
+            |'rejectionReason'
+        >
+{
 }
 
 
@@ -1192,6 +1215,19 @@ router
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
+        const paymentConfirmationToken = paymentConfirmation.token;
+        if (!paymentConfirmationToken || (typeof(paymentConfirmationToken) !== 'string')) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        
+        
+        
+        // TODO: add logic here
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
     } // if
     
     

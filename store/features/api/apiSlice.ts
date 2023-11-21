@@ -25,11 +25,15 @@ import type {
     PaymentToken,
     DraftOrderDetail,
     PaymentDetail,
+    PaymentConfirmationRequest,
+    PaymentConfirmationDetail,
 }                           from '@/app/api/checkout/route'
 export type {
     PaymentToken,
     DraftOrderDetail,
     PaymentDetail,
+    PaymentConfirmationRequest,
+    PaymentConfirmationDetail,
 }                           from '@/app/api/checkout/route'
 
 
@@ -172,6 +176,13 @@ export const apiSlice = createApi({
                 body   : paymentData,
             }),
         }),
+        paymentConfirmation     : builder.mutation<PaymentConfirmationDetail, PaymentConfirmationRequest>({
+            query : (paymentConfirmationDetail) => ({
+                url    : 'checkout',
+                method : 'PATCH',
+                body   : paymentConfirmationDetail,
+            }),
+        }),
     }),
 });
 
@@ -188,6 +199,7 @@ export const {
     useGeneratePaymentTokenMutation    : useGeneratePaymentToken,
     usePlaceOrderMutation              : usePlaceOrder,
     useMakePaymentMutation             : useMakePayment,
+    usePaymentConfirmationMutation     : usePaymentConfirmation,
 } = apiSlice;
 
 export const usePrefetchProductList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList'  , options);
