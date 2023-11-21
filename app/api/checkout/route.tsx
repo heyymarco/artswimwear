@@ -40,10 +40,14 @@ import {
     prisma,
 }                           from '@/libs/prisma.server'
 
+// apis:
+import type {
+    CountryPreview,
+}                           from '@/app/api/countries/route'
+
 // stores:
 import type {
     // types:
-    CountryPreview,
     PaymentToken,
     PlaceOrderResponse,
     MakePaymentResponse,
@@ -1167,6 +1171,17 @@ router
     }
     else {
         paypalOrderId = rawOrderId;
+    } // if
+    
+    
+    
+    const paymentConfirmation = paymentData.paymentConfirmation;
+    if (paymentConfirmation !== undefined) {
+        if (!orderId || (typeof(paymentConfirmation) !== 'object')) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
     } // if
     
     
