@@ -449,8 +449,9 @@ export interface PaymentConfirmationRequest {
 }
 export interface PaymentConfirmationDetail
     extends
-        Omit<PaymentConfirmation,
+        Pick<PaymentConfirmation,
             |'updatedAt'
+            |'reviewedAt'
             
             |'amount'
             |'payerName'
@@ -1201,10 +1202,77 @@ router
         
         
         
-        // TODO: add logic here
-        return NextResponse.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
+        const {
+            amount,
+            payerName,
+            paymentDate,
+            
+            originatingBank,
+            destinationBank,
+        } = paymentConfirmation;
+        if ((typeof(amount) !== 'number') || (amount < 0) || !isFinite(amount)) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        if (((payerName !== undefined) && (payerName !== null)) && ((typeof(payerName) !== 'string') || (payerName.length < 2) || (payerName.length > 50))) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        if ((paymentDate !== undefined) && (paymentDate !== null) && ((typeof(paymentDate) !== 'number') || (paymentDate < 0) || !isFinite(paymentDate))) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        if (((originatingBank !== undefined) && (originatingBank !== null)) && ((typeof(originatingBank) !== 'string') || (originatingBank.length < 2) || (originatingBank.length > 50))) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        if (((destinationBank !== undefined) && (destinationBank !== null)) && ((typeof(destinationBank) !== 'string') || (destinationBank.length < 2) || (destinationBank.length > 50))) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        
+        
+        
+        const paymentConfirmationDetail : PaymentConfirmationDetail = await prisma.paymentConfirmation.update({
+            where  : {
+                token : paymentConfirmationToken,
+            },
+            data   : {
+                updatedAt  : new Date(),
+                reviewedAt : null,
+                
+                amount,
+                payerName,
+                paymentDate,
+                
+                originatingBank,
+                destinationBank,
+            },
+            select : {
+                updatedAt       : true,
+                reviewedAt      : true,
+                
+                amount          : true,
+                payerName       : true,
+                paymentDate     : true,
+                
+                originatingBank : true,
+                destinationBank : true,
+                
+                rejectionReason : true,
+            },
+        });
+        if (!paymentConfirmationDetail) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        return NextResponse.json(paymentConfirmationDetail); // handled with success
     } // if
     
     
