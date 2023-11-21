@@ -1183,6 +1183,32 @@ router
         }, { status: 400 }); // handled with error
     } // if
     
+    
+    
+    const paymentConfirmation = paymentData.paymentConfirmation;
+    if (paymentConfirmation !== undefined) {
+        if ((typeof(paymentConfirmation) !== 'object')) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        const paymentConfirmationToken = paymentConfirmation.token;
+        if (!paymentConfirmationToken || (typeof(paymentConfirmationToken) !== 'string')) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        
+        
+        
+        // TODO: add logic here
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    
+    
+    
     const rawOrderId = paymentData.orderId;
     if (typeof(rawOrderId) !== 'string') {
         return NextResponse.json({
@@ -1204,30 +1230,6 @@ router
     }
     else {
         paypalOrderId = rawOrderId;
-    } // if
-    
-    
-    
-    const paymentConfirmation = paymentData.paymentConfirmation;
-    if (paymentConfirmation !== undefined) {
-        if (!orderId || (typeof(paymentConfirmation) !== 'object')) {
-            return NextResponse.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
-        } // if
-        const paymentConfirmationToken = paymentConfirmation.token;
-        if (!paymentConfirmationToken || (typeof(paymentConfirmationToken) !== 'string')) {
-            return NextResponse.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
-        } // if
-        
-        
-        
-        // TODO: add logic here
-        return NextResponse.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
     } // if
     
     
