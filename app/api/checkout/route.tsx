@@ -286,7 +286,7 @@ type CommitDraftOrder = Omit<DraftOrder,
         |'draftOrderId'
     >[]
 }
-const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customer, payment } : { draftOrder: CommitDraftOrder, customer: CommitCustomer, payment: Payment }): Promise<OrderAndData> => {
+const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customer, payment, paymentConfirmationToken } : { draftOrder: CommitDraftOrder, customer: CommitCustomer, payment: Payment, paymentConfirmationToken: string|undefined }): Promise<OrderAndData> => {
     const newOrder = await prismaTransaction.order.create({
         data   : {
             orderId          : draftOrder.orderId,
@@ -313,6 +313,11 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
             },
             
             payment          : payment,
+            paymentConfirmation : !paymentConfirmationToken ? undefined : {
+                create : {
+                    token: paymentConfirmationToken,
+                },
+            },
         },
         // select : {
         //     id : true,
@@ -1465,6 +1470,7 @@ router
             
             //#region process the payment
             let paymentResponse : PaymentDetail|PaymentDeclined;
+            let paymentConfirmationToken : string|undefined = undefined;
             if (paypalOrderId) {
                 const accessToken = await generateAccessToken();
                 const url = `${paypalURL}/v2/checkout/orders/${paypalOrderId}/capture`;
@@ -1752,6 +1758,27 @@ router
                     amount     : 0,
                     fee        : 0,
                 };
+                
+                
+                
+                paymentConfirmationToken = await (async (): Promise<string> => {
+                    const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
+                    let tempToken = await nanoid();
+                    
+                    for (let attempts = 10; attempts > 0; attempts--) {
+                        const foundDuplicate = await prismaTransaction.paymentConfirmation.count({
+                            where  : {
+                                token : tempToken,
+                            },
+                            select : {
+                                id : true,
+                            },
+                        });
+                        if (!foundDuplicate) return tempToken;
+                    } // for
+                    console.log('INTERNAL ERROR AT GENERATE UNIQUE TOKEN');
+                    throw 'INTERNAL_ERROR';
+                })();
             } // if
             //#endregion process the payment
             
@@ -1782,6 +1809,7 @@ router
                             country    : billingCountry,
                         } : null,
                     },
+                    paymentConfirmationToken,
                 });
             }
             else {
