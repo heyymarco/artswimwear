@@ -1612,8 +1612,6 @@ router
                                     fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
                                 };
                             })(),
-                            // @ts-ignore:
-                            extra: paypalPaymentData,
                         };
                     }; break;
                     case 'DECLINED'  : {
