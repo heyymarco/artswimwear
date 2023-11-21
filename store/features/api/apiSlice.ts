@@ -2,7 +2,7 @@ import { createEntityAdapter, EntityState }         from '@reduxjs/toolkit'
 import type { PrefetchOptions }                     from '@reduxjs/toolkit/dist/query/core/module'
 import { createApi, fetchBaseQuery }                from '@reduxjs/toolkit/query/react'
 import type { CartState }                           from '../cart/cartSlice'
-import type { PaymentToken, CheckoutState }         from '../checkout/checkoutSlice'
+import type { CheckoutState }         from '../checkout/checkoutSlice'
 import type { CreateOrderData }                     from '@paypal/paypal-js'
 import type { MatchingShipping, MatchingAddress }   from '@/libs/shippings'
 
@@ -11,8 +11,8 @@ import type { CountryPreview }                  from '@/app/api/countries/route'
 export type { CountryPreview }                  from '@/app/api/countries/route'
 import type { ProductPreview, ProductDetail }   from '@/app/api/products/route'
 export type { ProductPreview, ProductDetail }   from '@/app/api/products/route'
-import type { PaymentDetail }                   from '@/app/api/checkout/route'
-export type { PaymentDetail }                   from '@/app/api/checkout/route'
+import type { PaymentToken, PaymentDetail }     from '@/app/api/checkout/route'
+export type { PaymentToken, PaymentDetail }     from '@/app/api/checkout/route'
 
 
 
@@ -27,8 +27,6 @@ const countryListAdapter = createEntityAdapter<CountryPreview>({
 const shippingListAdapter = createEntityAdapter<MatchingShipping>({
     selectId : (shippingEntry) => `${shippingEntry.id}`,
 });
-
-export type { PaymentToken }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
     paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'

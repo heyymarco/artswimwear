@@ -10,6 +10,14 @@ import type {
     RootState,
 }                           from '../../store'
 
+// apis:
+import type {
+    PaymentToken,
+}                           from '@/app/api/checkout/route'
+export type {
+    PaymentToken,
+}                           from '@/app/api/checkout/route'
+
 
 
 export type CheckoutStep =
@@ -22,11 +30,6 @@ export type PaymentMethod =
     |'card'
     |'paypal'
     |'manual'
-export interface PaymentToken {
-    paymentToken : string
-    expiresAt    : number
-    refreshAt    : number
-}
 export interface CheckoutState {
     // states:
     checkoutStep       : CheckoutStep

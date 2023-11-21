@@ -48,7 +48,6 @@ import type {
 // stores:
 import type {
     // types:
-    PaymentToken,
     PlaceOrderResponse,
 }                           from '@/store/features/api/apiSlice'
 
@@ -426,6 +425,12 @@ const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
 
 
 // types:
+export interface PaymentToken {
+    paymentToken : string
+    expiresAt    : number
+    refreshAt    : number
+}
+
 export interface PaymentDetail
     extends
         Omit<Payment,

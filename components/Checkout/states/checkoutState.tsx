@@ -330,7 +330,7 @@ export interface CheckoutStateBase {
     paymentMethod             : PaymentMethod
     setPaymentMethod          : (paymentMethod: PaymentMethod) => void
     
-    paymentToken              : PaymentToken  | undefined
+    paymentToken              : PaymentToken | undefined
     
     paymentType               : string|undefined
     paymentBrand              : string|null|undefined
