@@ -123,8 +123,8 @@ import {
 import {
     // types:
     CountryPreview,
+    PaymentDetail,
     PlaceOrderOptions,
-    MakePaymentResponse,
     
     
     
@@ -179,8 +179,8 @@ export type {
     PaymentToken,
     
     ProductPreview,
+    PaymentDetail,
     PlaceOrderOptions,
-    MakePaymentResponse,
     
     CountryPreview,
     
@@ -198,7 +198,7 @@ interface FinishedOrderState {
     
     checkoutState     : ReduxCheckoutState
     totalShippingCost : number|null|undefined
-    paymentState      : MakePaymentResponse
+    paymentDetail     : PaymentDetail
 }
 
 
@@ -678,7 +678,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         type       : paymentType,
         brand      : paymentBrand,
         identifier : paymentIdentifier,
-    } = finishedOrderState?.paymentState?.payment ?? {};
+    } = finishedOrderState?.paymentDetail ?? {};
     
     const dispatch                  = useDispatch();
     const setCheckoutStep           = useEvent((checkoutStep: CheckoutStep): void => {
@@ -1293,7 +1293,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         } // try
     });
     const doMakePayment        = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
-        const paymentState = await makePayment({
+        const paymentDetail = await makePayment({
             orderId,
             
             
@@ -1337,7 +1337,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 checkoutStep : (paid ? 'paid' : 'pending'),
             },
             totalShippingCost,
-            paymentState,
+            paymentDetail,
         });
         
         

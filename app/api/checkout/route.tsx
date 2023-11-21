@@ -50,7 +50,6 @@ import type {
     // types:
     PaymentToken,
     PlaceOrderResponse,
-    MakePaymentResponse,
 }                           from '@/store/features/api/apiSlice'
 
 // templates:
@@ -427,7 +426,14 @@ const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
 
 
 // types:
-export interface PaymentDeclinedErrorResponse {
+export interface PaymentDetail
+    extends
+        Omit<Payment,
+            |'billingAddress'
+        >
+{
+}
+export interface PaymentDeclined {
     error : string
 }
 
@@ -1257,7 +1263,7 @@ router
     
     
     
-    let paymentResponse : MakePaymentResponse|PaymentDeclinedErrorResponse;
+    let paymentResponse : PaymentDetail|PaymentDeclined;
     let newOrder        : OrderAndData|undefined = undefined;
     let countryList     : EntityState<CountryPreview>;
     try {
@@ -1268,7 +1274,7 @@ router
             email         : customerEmail,
         };
         
-        ([paymentResponse, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [MakePaymentResponse|PaymentDeclinedErrorResponse, OrderAndData|undefined, EntityState<CountryPreview>]> => {
+        ([paymentResponse, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, OrderAndData|undefined, EntityState<CountryPreview>]> => {
             //#region verify draftOrder_id
             const requiredSelect = {
                 id                     : true,
@@ -1348,7 +1354,7 @@ router
             
             
             //#region process the payment
-            let paymentResponse : MakePaymentResponse|PaymentDeclinedErrorResponse;
+            let paymentResponse : PaymentDetail|PaymentDeclined;
             if (paypalOrderId) {
                 const accessToken = await generateAccessToken();
                 const url = `${paypalURL}/v2/checkout/orders/${paypalOrderId}/capture`;
@@ -1575,47 +1581,47 @@ router
                 
                 switch (captureData?.status) {
                     case 'COMPLETED' : {
-                        paymentResponse = { // payment APPROVED
-                            payment : await (async (): Promise<Omit<Payment, 'billingAddress'>> => {
-                                const payment_source = paypalPaymentData?.payment_source;
-                                
-                                const card = payment_source?.card;
-                                if (card) {
-                                    return {
-                                        type       : 'CARD',
-                                        brand      : card.brand?.toLowerCase() ?? null,
-                                        identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
-                                        
-                                        amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
-                                        fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
-                                    };
-                                } //if
-                                
-                                const paypal = payment_source?.paypal;
-                                if (paypal) {
-                                    return {
-                                        type       : 'PAYPAL',
-                                        brand      : 'paypal',
-                                        identifier : paypal.email_address || null,
-                                        
-                                        amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
-                                        fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
-                                    };
-                                } //if
-                                
+                        // payment APPROVED:
+                        paymentResponse = await (async (): Promise<Omit<Payment, 'billingAddress'>> => {
+                            const payment_source = paypalPaymentData?.payment_source;
+                            
+                            const card = payment_source?.card;
+                            if (card) {
                                 return {
-                                    type       : 'CUSTOM',
-                                    brand      : null,
-                                    identifier : null,
+                                    type       : 'CARD',
+                                    brand      : card.brand?.toLowerCase() ?? null,
+                                    identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
                                     
                                     amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
                                     fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
                                 };
-                            })(),
-                        };
+                            } //if
+                            
+                            const paypal = payment_source?.paypal;
+                            if (paypal) {
+                                return {
+                                    type       : 'PAYPAL',
+                                    brand      : 'paypal',
+                                    identifier : paypal.email_address || null,
+                                    
+                                    amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
+                                    fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
+                                };
+                            } //if
+                            
+                            return {
+                                type       : 'CUSTOM',
+                                brand      : null,
+                                identifier : null,
+                                
+                                amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
+                                fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
+                            };
+                        })();
                     }; break;
                     case 'DECLINED'  : {
-                        paymentResponse = {  // payment DECLINED
+                        // payment DECLINED:
+                        paymentResponse = {
                             error     : 'payment declined',
                         };
                     }; break;
@@ -1627,15 +1633,14 @@ router
                 } // switch
             }
             else {
-                paymentResponse = { // paylater APPROVED (we waiting for your payment confirmation within xx days)
-                    payment : {
-                        type       : 'MANUAL',
-                        brand      : null,
-                        identifier : null,
-                        
-                        amount     : 0,
-                        fee        : 0,
-                    },
+                // paylater APPROVED (we waiting for your payment confirmation within xx days):
+                paymentResponse = {
+                    type       : 'MANUAL',
+                    brand      : null,
+                    identifier : null,
+                    
+                    amount     : 0,
+                    fee        : 0,
                 };
             } // if
             //#endregion process the payment
@@ -1644,7 +1649,7 @@ router
             
             //#region save the database
             let newOrder : OrderAndData|undefined = undefined;
-            const paymentPartial = !('error' in paymentResponse) ? paymentResponse.payment : undefined;
+            const paymentPartial = !('error' in paymentResponse) ? paymentResponse : undefined;
             if (paymentPartial) {
                 // const isBillingAddressRequired = (paymentPartial.type === 'CARD');
                 
@@ -1729,7 +1734,7 @@ router
                     // data:
                     order       : newOrder,
                     customer    : newCustomer,
-                    isPaid      : !('error' in paymentResponse) && (paymentResponse.payment.type !== 'MANUAL'),
+                    isPaid      : !('error' in paymentResponse) && (paymentResponse.type !== 'MANUAL'),
                     
                     
                     

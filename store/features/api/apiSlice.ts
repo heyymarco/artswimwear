@@ -6,16 +6,13 @@ import type { PaymentToken, CheckoutState }         from '../checkout/checkoutSl
 import type { CreateOrderData }                     from '@paypal/paypal-js'
 import type { MatchingShipping, MatchingAddress }   from '@/libs/shippings'
 
-// models:
-import type {
-    Payment,
-}                           from '@prisma/client'
-
 // apis:
 import type { CountryPreview }                  from '@/app/api/countries/route'
 export type { CountryPreview }                  from '@/app/api/countries/route'
-import type { ProductPreview, ProductDetail}    from '@/app/api/products/route'
-export type { ProductPreview, ProductDetail}    from '@/app/api/products/route'
+import type { ProductPreview, ProductDetail }   from '@/app/api/products/route'
+export type { ProductPreview, ProductDetail }   from '@/app/api/products/route'
+import type { PaymentDetail }                   from '@/app/api/checkout/route'
+export type { PaymentDetail }                   from '@/app/api/checkout/route'
 
 
 
@@ -100,10 +97,6 @@ export interface AuthenticationPaymentDataWithBillingAddress
     orderId : string
 }
 export type AuthenticationPaymentData = AuthenticationPaymentDataBasic | AuthenticationPaymentDataWithBillingAddress
-export interface MakePaymentResponse
-{
-    payment : Omit<Payment, 'billingAddress'>
-}
 
 
 
@@ -160,7 +153,7 @@ export const apiSlice = createApi({
                 body   : orderData,
             }),
         }),
-        makePayment             : builder.mutation<MakePaymentResponse, AuthenticationPaymentData>({
+        makePayment             : builder.mutation<PaymentDetail, AuthenticationPaymentData>({
             query : (paymentData) => ({
                 url    : 'checkout',
                 method : 'PATCH',
