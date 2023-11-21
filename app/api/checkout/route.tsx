@@ -653,13 +653,13 @@ router
                     where : {
                         orderId : tempOrderId,
                     },
-                    take : 1,
+                    take  : 1,
                 }),
                 prismaTransaction.order.count({
                     where : {
                         orderId : tempOrderId,
                     },
-                    take : 1,
+                    take  : 1,
                 }),
             ]);
             //#endregion batch queries
@@ -679,13 +679,13 @@ router
                                 where : {
                                     orderId : tempOrderId,
                                 },
-                                take : 1,
+                                take  : 1,
                             }),
                             prismaTransaction.order.count({
                                 where : {
                                     orderId : tempOrderId,
                                 },
-                                take : 1,
+                                take  : 1,
                             }),
                         ]);
                         if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) return tempOrderId;
@@ -1215,7 +1215,7 @@ router
             originatingBank,
             destinationBank,
         } = paymentConfirmation;
-        if ((typeof(amount) !== 'number') || (amount < 0) || !isFinite(amount)) {
+        if ((amount !== undefined) && ((typeof(amount) !== 'number') || (amount < 0) || !isFinite(amount))) {
             return NextResponse.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
@@ -1243,35 +1243,45 @@ router
         
         
         
-        const paymentConfirmationDetail : PaymentConfirmationDetail = await prisma.paymentConfirmation.update({
-            where  : {
-                token : paymentConfirmationToken,
-            },
-            data   : {
-                updatedAt  : new Date(),
-                reviewedAt : null,
-                
-                amount,
-                payerName,
-                paymentDate,
-                
-                originatingBank,
-                destinationBank,
-            },
-            select : {
-                updatedAt       : true,
-                reviewedAt      : true,
-                
-                amount          : true,
-                payerName       : true,
-                paymentDate     : true,
-                
-                originatingBank : true,
-                destinationBank : true,
-                
-                rejectionReason : true,
-            },
-        });
+        const select = {
+            updatedAt       : true,
+            reviewedAt      : true,
+            
+            amount          : true,
+            payerName       : true,
+            paymentDate     : true,
+            
+            originatingBank : true,
+            destinationBank : true,
+            
+            rejectionReason : true,
+        };
+        const paymentConfirmationDetail : PaymentConfirmationDetail|null = (
+            (amount === undefined)
+            ? await prisma.paymentConfirmation.findUnique({
+                where  : {
+                    token : paymentConfirmationToken,
+                },
+                select : select,
+            })
+            : await prisma.paymentConfirmation.update({
+                where  : {
+                    token : paymentConfirmationToken,
+                },
+                data   : {
+                    updatedAt  : new Date(),
+                    reviewedAt : null,
+                    
+                    amount,
+                    payerName,
+                    paymentDate,
+                    
+                    originatingBank,
+                    destinationBank,
+                },
+                select : select,
+            })
+        );
         if (!paymentConfirmationDetail) {
             return NextResponse.json({
                 error: 'Invalid data.',
@@ -1767,12 +1777,10 @@ router
                     
                     for (let attempts = 10; attempts > 0; attempts--) {
                         const foundDuplicate = await prismaTransaction.paymentConfirmation.count({
-                            where  : {
+                            where : {
                                 token : tempToken,
                             },
-                            select : {
-                                id : true,
-                            },
+                            take : 1,
                         });
                         if (!foundDuplicate) return tempToken;
                     } // for
