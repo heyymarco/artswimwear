@@ -175,6 +175,7 @@ model PaymentConfirmation {
     // data:
     token                   String                  @unique
     
+    currency                String?                 // minLength: 3, maxLength: 3
     amount                  Float?                  // min: 0
     payerName               String?                 // minLength: 2, maxLength: 50
     paymentDate             DateTime?
