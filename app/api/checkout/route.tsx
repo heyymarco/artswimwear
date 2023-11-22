@@ -92,6 +92,8 @@ import {
     PAYPAL_CURRENCY,
     PAYPAL_CURRENCY_FRACTION_UNIT,
     PAYPAL_CURRENCY_FRACTION_ROUNDING,
+    
+    commerceConfig,
 }                           from '@/commerce.config'
 import {
     checkoutConfig,
@@ -458,6 +460,7 @@ export interface PaymentConfirmationDetail
             |'updatedAt'
             |'reviewedAt'
             
+            |'currency'
             |'amount'
             |'payerName'
             |'paymentDate'
@@ -1208,6 +1211,7 @@ router
         
         
         const {
+            currency,
             amount,
             payerName,
             paymentDate,
@@ -1215,6 +1219,16 @@ router
             originatingBank,
             destinationBank,
         } = paymentConfirmation;
+        if ((currency !== undefined) !== (amount !== undefined)) { // both currency & amount must be defined or undefined
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        if (((currency !== undefined) && (currency !== null)) && ((typeof(currency) !== 'string') || !Object.keys(commerceConfig.currencies).includes(currency))) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
         if ((amount !== undefined) && ((typeof(amount) !== 'number') || (amount < 0) || !isFinite(amount))) {
             return NextResponse.json({
                 error: 'Invalid data.',
@@ -1247,6 +1261,7 @@ router
             updatedAt       : true,
             reviewedAt      : true,
             
+            currency        : true,
             amount          : true,
             payerName       : true,
             paymentDate     : true,
@@ -1272,6 +1287,7 @@ router
                     updatedAt  : new Date(),
                     reviewedAt : null,
                     
+                    currency,
                     amount,
                     payerName,
                     paymentDate,
