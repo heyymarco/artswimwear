@@ -73,6 +73,9 @@ import {
 import {
     CurrencyEditor,
 }                           from '@/components/editors/CurrencyEditor'
+import {
+    NameEditor,
+}                           from '@/components/editors/NameEditor'
 
 // stores:
 import {
@@ -125,6 +128,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     // states:
     const [currency, setCurrency] = useState<string>(commerceConfig.defaultCurrency);
     const [amount, setAmount] = useState<number|null>(paymentConfirmationData?.amount ?? null);
+    const [payerName, setPayerName] = useState<string|null>(paymentConfirmationData?.payerName || null);
     const selectedCurrency = commerceConfig.currencies?.[currency as keyof typeof commerceConfig.currencies];
     
     
@@ -305,6 +309,33 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                             placeholder='Transfered Amount'
                         />
                     </Group>
+                    <NameEditor
+                        // classes:
+                        className='name editor'
+                        
+                        
+                        
+                        // accessibilities:
+                        aria-label='Payer Name'
+                        
+                        
+                        
+                        // values:
+                        value={payerName ?? ''}
+                        onChange={(value) => setPayerName(value ?? null)}
+                        
+                        
+                        
+                        // validations:
+                        required={true}
+                        minLength={2}
+                        maxLength={50}
+                        
+                        
+                        
+                        // formats:
+                        placeholder='Payer Name'
+                    />
                     {JSON.stringify(paymentConfirmationData)}
                 </>}
             </Section>
