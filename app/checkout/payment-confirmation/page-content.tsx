@@ -126,9 +126,11 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     
     
     // states:
-    const [currency, setCurrency] = useState<string>(commerceConfig.defaultCurrency);
+    const [currency, setCurrency] = useState<string>(paymentConfirmationData?.currency || commerceConfig.defaultCurrency);
     const [amount, setAmount] = useState<number|null>(paymentConfirmationData?.amount ?? null);
     const [payerName, setPayerName] = useState<string|null>(paymentConfirmationData?.payerName || null);
+    const [originatingBank, setOriginatingBank] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
+    const [destinationBank, setDestinationBank] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     const selectedCurrency = commerceConfig.currencies?.[currency as keyof typeof commerceConfig.currencies];
     
     
@@ -327,7 +329,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                         
                         
                         // validations:
-                        required={true}
+                        required={false}
                         minLength={2}
                         maxLength={50}
                         
@@ -336,6 +338,66 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                         // formats:
                         placeholder='Payer Name'
                     />
+                    <NameEditor
+                        // classes:
+                        className='origin editor'
+                        
+                        
+                        
+                        // accessibilities:
+                        aria-label='Originating Bank'
+                        
+                        
+                        
+                        // values:
+                        value={originatingBank ?? ''}
+                        onChange={(value) => setOriginatingBank(value ?? null)}
+                        
+                        
+                        
+                        // validations:
+                        required={false}
+                        minLength={2}
+                        maxLength={50}
+                        
+                        
+                        
+                        // formats:
+                        placeholder='Originating Bank'
+                    />
+                    <NameEditor
+                        // classes:
+                        className='dest editor'
+                        
+                        
+                        
+                        // accessibilities:
+                        aria-label='Destination Bank'
+                        
+                        
+                        
+                        // values:
+                        value={destinationBank ?? ''}
+                        onChange={(value) => setDestinationBank(value ?? null)}
+                        
+                        
+                        
+                        // validations:
+                        required={false}
+                        minLength={2}
+                        maxLength={50}
+                        
+                        
+                        
+                        // formats:
+                        placeholder='Destination Bank'
+                    />
+                    <ButtonIcon
+                        // appearances:
+                        icon='done'
+                    >
+                        Confirm
+                    </ButtonIcon>
                     {JSON.stringify(paymentConfirmationData)}
                 </>}
             </Section>
