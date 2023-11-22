@@ -33,8 +33,30 @@ import {
 
 // reusable-ui components:
 import {
+    // simple-components:
+    Label,
+    EditableButton,
+    ButtonIcon,
+    
+    
+    
+    // layout-components:
+    ListItem,
+    
+    
+    
     // notification-components:
     Alert,
+    
+    
+    
+    // menu-components:
+    DropdownListButton,
+    
+    
+    
+    // composite-components:
+    Group,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // heymarco components:
@@ -48,12 +70,20 @@ import {
     LoadingBlankPage,
     ErrorBlankPage,
 }                           from '@/components/BlankPage'
+import {
+    CurrencyEditor,
+}                           from '@/components/editors/CurrencyEditor'
 
 // stores:
 import {
     // hooks:
     usePaymentConfirmation,
 }                           from '@/store/features/api/apiSlice'
+
+// configs:
+import {
+    commerceConfig,
+}                           from '@/commerce.config'
 
 
 
@@ -89,6 +119,13 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const hasData       = (!!paymentConfirmationData);
     const isPageError   = (!isPageLoading && (isPaymentConfirmationError)) || (!hasData && !!token) /* considered as error if no data but has token*/;
     const isPageReady   = !isPageLoading && !isPageError && !!token;
+    
+    
+    
+    // states:
+    const [currency, setCurrency] = useState<string>(commerceConfig.defaultCurrency);
+    const [amount, setAmount] = useState<number|null>(paymentConfirmationData?.amount ?? null);
+    const selectedCurrency = commerceConfig.currencies?.[currency as keyof typeof commerceConfig.currencies];
     
     
     
@@ -139,6 +176,11 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     );
     return (
         <Main
+            // variants:
+            theme='primary'
+            
+            
+            
             // classes:
             className={styleSheet.main}
         >
@@ -162,6 +204,107 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                     </p>
                 </Alert>}
                 {!!isPageReady && <>
+                    <Group>
+                        <DropdownListButton
+                            // variants:
+                            theme='primary'
+                            mild={true}
+                            
+                            
+                            
+                            // classes:
+                            className='solid'
+                            
+                            
+                            
+                            // accessibilities:
+                            aria-label='Payment Currency'
+                            
+                            
+                            
+                            // floatable:
+                            floatingPlacement='bottom-end'
+                            
+                            
+                            
+                            // components:
+                            buttonComponent={
+                                <EditableButton
+                                    // accessibilities:
+                                    assertiveFocusable={true}
+                                    
+                                    
+                                    
+                                    // validations:
+                                    isValid={!!currency}
+                                    
+                                    
+                                    
+                                    // components:
+                                    buttonComponent={
+                                        <ButtonIcon
+                                            // appearances:
+                                            icon='dropdown'
+                                            iconPosition='end'
+                                        />
+                                    }
+                                >
+                                    {currency}
+                                </EditableButton>
+                            }
+                        >
+                            {Object.keys(commerceConfig.currencies).map((currencyOption) =>
+                                <ListItem
+                                    // identifiers:
+                                    key={currencyOption}
+                                    
+                                    
+                                    
+                                    // accessibilities:
+                                    active={(currencyOption === currency)}
+                                    
+                                    
+                                    
+                                    // handlers:
+                                    onClick={() => setCurrency(currencyOption)}
+                                >
+                                    {currencyOption}
+                                </ListItem>
+                            )}
+                        </DropdownListButton>
+                        <CurrencyEditor
+                            // appearances:
+                            currencySign={selectedCurrency?.sign}
+                            currencyFraction={selectedCurrency.fractionMax}
+                            
+                            
+                            
+                            // classes:
+                            className='fluid'
+                            
+                            
+                            
+                            // accessibilities:
+                            aria-label='Transfered Amount'
+                            
+                            
+                            
+                            // values:
+                            value={amount}
+                            onChange={(value) => setAmount(value)}
+                            
+                            
+                            
+                            // validations:
+                            required={true}
+                            min={0}
+                            
+                            
+                            
+                            // formats:
+                            placeholder='Transfered Amount'
+                        />
+                    </Group>
                     {JSON.stringify(paymentConfirmationData)}
                 </>}
             </Section>
