@@ -33,6 +33,16 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Basic,
+    
+    
+    
+    // base-content-components:
+    Content,
+    
+    
+    
     // simple-components:
     Label,
     EditableButton,
@@ -57,6 +67,8 @@ import {
     
     // composite-components:
     Group,
+    Tab,
+    TabPanel,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // heymarco components:
@@ -133,6 +145,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const [destinationBank, setDestinationBank] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     const selectedCurrency = commerceConfig.currencies?.[currency as keyof typeof commerceConfig.currencies];
     
+    const [isSent, setIsSent] = useState<boolean>(false);
+    
     
     
     // handlers:
@@ -148,6 +162,9 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                 token,
             },
         });
+    });
+    const handleDoConfirmation = useEvent(() => {
+        setIsSent(true);
     });
     
     
@@ -190,7 +207,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             // classes:
             className={styleSheet.main}
         >
-            <Section title='Payment Confirmation'>
+            <Section>
                 {!isPageReady && <Alert
                     // variants:
                     theme='danger'
@@ -209,197 +226,221 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                         This payment confirmation link is invalid or expired.
                     </p>
                 </Alert>}
-                {!!isPageReady && <>
-                    <Group>
-                        <DropdownListButton
-                            // variants:
-                            theme='primary'
-                            mild={true}
-                            
-                            
-                            
+                {!!isPageReady && <Tab
+                    // states:
+                    expandedTabIndex={!isSent ? 0 : 1}
+                    
+                    
+                    
+                    // components:
+                    headerComponent={null}
+                    bodyComponent={<Content mild={true} />}
+                >
+                    <TabPanel className={styleSheet.paymentConfirmation}>
+                        <h1 className='title'>
+                            Payment Confirmation
+                        </h1>
+                        <Group>
+                            <DropdownListButton
+                                // variants:
+                                theme='primary'
+                                mild={true}
+                                
+                                
+                                
+                                // classes:
+                                className='solid'
+                                
+                                
+                                
+                                // accessibilities:
+                                aria-label='Payment Currency'
+                                
+                                
+                                
+                                // floatable:
+                                floatingPlacement='bottom-end'
+                                
+                                
+                                
+                                // components:
+                                buttonComponent={
+                                    <EditableButton
+                                        // accessibilities:
+                                        assertiveFocusable={true}
+                                        
+                                        
+                                        
+                                        // validations:
+                                        isValid={!!currency}
+                                        
+                                        
+                                        
+                                        // components:
+                                        buttonComponent={
+                                            <ButtonIcon
+                                                // appearances:
+                                                icon='dropdown'
+                                                iconPosition='end'
+                                            />
+                                        }
+                                    >
+                                        {currency}
+                                    </EditableButton>
+                                }
+                            >
+                                {Object.keys(commerceConfig.currencies).map((currencyOption) =>
+                                    <ListItem
+                                        // identifiers:
+                                        key={currencyOption}
+                                        
+                                        
+                                        
+                                        // accessibilities:
+                                        active={(currencyOption === currency)}
+                                        
+                                        
+                                        
+                                        // handlers:
+                                        onClick={() => setCurrency(currencyOption)}
+                                    >
+                                        {currencyOption}
+                                    </ListItem>
+                                )}
+                            </DropdownListButton>
+                            <CurrencyEditor
+                                // appearances:
+                                currencySign={selectedCurrency?.sign}
+                                currencyFraction={selectedCurrency.fractionMax}
+                                
+                                
+                                
+                                // classes:
+                                className='fluid'
+                                
+                                
+                                
+                                // accessibilities:
+                                aria-label='Transfered Amount'
+                                
+                                
+                                
+                                // values:
+                                value={amount}
+                                onChange={(value) => setAmount(value)}
+                                
+                                
+                                
+                                // validations:
+                                required={true}
+                                min={0}
+                                
+                                
+                                
+                                // formats:
+                                placeholder='Transfered Amount'
+                            />
+                        </Group>
+                        <NameEditor
                             // classes:
-                            className='solid'
+                            className='name editor'
                             
                             
                             
                             // accessibilities:
-                            aria-label='Payment Currency'
-                            
-                            
-                            
-                            // floatable:
-                            floatingPlacement='bottom-end'
-                            
-                            
-                            
-                            // components:
-                            buttonComponent={
-                                <EditableButton
-                                    // accessibilities:
-                                    assertiveFocusable={true}
-                                    
-                                    
-                                    
-                                    // validations:
-                                    isValid={!!currency}
-                                    
-                                    
-                                    
-                                    // components:
-                                    buttonComponent={
-                                        <ButtonIcon
-                                            // appearances:
-                                            icon='dropdown'
-                                            iconPosition='end'
-                                        />
-                                    }
-                                >
-                                    {currency}
-                                </EditableButton>
-                            }
-                        >
-                            {Object.keys(commerceConfig.currencies).map((currencyOption) =>
-                                <ListItem
-                                    // identifiers:
-                                    key={currencyOption}
-                                    
-                                    
-                                    
-                                    // accessibilities:
-                                    active={(currencyOption === currency)}
-                                    
-                                    
-                                    
-                                    // handlers:
-                                    onClick={() => setCurrency(currencyOption)}
-                                >
-                                    {currencyOption}
-                                </ListItem>
-                            )}
-                        </DropdownListButton>
-                        <CurrencyEditor
-                            // appearances:
-                            currencySign={selectedCurrency?.sign}
-                            currencyFraction={selectedCurrency.fractionMax}
-                            
-                            
-                            
-                            // classes:
-                            className='fluid'
-                            
-                            
-                            
-                            // accessibilities:
-                            aria-label='Transfered Amount'
+                            aria-label='Payer Name'
                             
                             
                             
                             // values:
-                            value={amount}
-                            onChange={(value) => setAmount(value)}
+                            value={payerName ?? ''}
+                            onChange={(value) => setPayerName(value ?? null)}
                             
                             
                             
                             // validations:
-                            required={true}
-                            min={0}
+                            required={false}
+                            minLength={2}
+                            maxLength={50}
                             
                             
                             
                             // formats:
-                            placeholder='Transfered Amount'
+                            placeholder='Payer Name'
                         />
-                    </Group>
-                    <NameEditor
-                        // classes:
-                        className='name editor'
-                        
-                        
-                        
-                        // accessibilities:
-                        aria-label='Payer Name'
-                        
-                        
-                        
-                        // values:
-                        value={payerName ?? ''}
-                        onChange={(value) => setPayerName(value ?? null)}
-                        
-                        
-                        
-                        // validations:
-                        required={false}
-                        minLength={2}
-                        maxLength={50}
-                        
-                        
-                        
-                        // formats:
-                        placeholder='Payer Name'
-                    />
-                    <NameEditor
-                        // classes:
-                        className='origin editor'
-                        
-                        
-                        
-                        // accessibilities:
-                        aria-label='Originating Bank'
-                        
-                        
-                        
-                        // values:
-                        value={originatingBank ?? ''}
-                        onChange={(value) => setOriginatingBank(value ?? null)}
-                        
-                        
-                        
-                        // validations:
-                        required={false}
-                        minLength={2}
-                        maxLength={50}
-                        
-                        
-                        
-                        // formats:
-                        placeholder='Originating Bank'
-                    />
-                    <NameEditor
-                        // classes:
-                        className='dest editor'
-                        
-                        
-                        
-                        // accessibilities:
-                        aria-label='Destination Bank'
-                        
-                        
-                        
-                        // values:
-                        value={destinationBank ?? ''}
-                        onChange={(value) => setDestinationBank(value ?? null)}
-                        
-                        
-                        
-                        // validations:
-                        required={false}
-                        minLength={2}
-                        maxLength={50}
-                        
-                        
-                        
-                        // formats:
-                        placeholder='Destination Bank'
-                    />
-                    <ButtonIcon
-                        // appearances:
-                        icon='done'
-                    >
-                        Confirm
-                    </ButtonIcon>
-                    {JSON.stringify(paymentConfirmationData)}
-                </>}
+                        <NameEditor
+                            // classes:
+                            className='origin editor'
+                            
+                            
+                            
+                            // accessibilities:
+                            aria-label='Originating Bank'
+                            
+                            
+                            
+                            // values:
+                            value={originatingBank ?? ''}
+                            onChange={(value) => setOriginatingBank(value ?? null)}
+                            
+                            
+                            
+                            // validations:
+                            required={false}
+                            minLength={2}
+                            maxLength={50}
+                            
+                            
+                            
+                            // formats:
+                            placeholder='Originating Bank'
+                        />
+                        <NameEditor
+                            // classes:
+                            className='dest editor'
+                            
+                            
+                            
+                            // accessibilities:
+                            aria-label='Destination Bank'
+                            
+                            
+                            
+                            // values:
+                            value={destinationBank ?? ''}
+                            onChange={(value) => setDestinationBank(value ?? null)}
+                            
+                            
+                            
+                            // validations:
+                            required={false}
+                            minLength={2}
+                            maxLength={50}
+                            
+                            
+                            
+                            // formats:
+                            placeholder='Destination Bank'
+                        />
+                        <ButtonIcon
+                            // appearances:
+                            icon='done'
+                            
+                            
+                            
+                            // handlers:
+                            onClick={handleDoConfirmation}
+                        >
+                            Confirm
+                        </ButtonIcon>
+                    </TabPanel>
+                    <TabPanel className={styleSheet.paymentConfirmationSent}>
+                        <p>
+                            Thank you
+                        </p>
+                    </TabPanel>
+                </Tab>}
+                {JSON.stringify(paymentConfirmationData)}
             </Section>
         </Main>
     );
