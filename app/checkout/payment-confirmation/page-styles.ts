@@ -51,7 +51,7 @@ import {
 
 
 // styles:
-export const usesSignInTitleColor = () => {
+const usesSignInTitleColor = () => {
     // dependencies:
     
     // features:
@@ -87,6 +87,22 @@ export const usesSignInTitleColor = () => {
         ...foregroundRule(), // must be placed at the last
     });
 };
+const usesTitleLayout = () => {
+    return style({
+        // appearances:
+        ...usesSignInTitleColor(),
+        
+        
+        
+        // spacings:
+        margin    : '0px', // kill <h1> auto margin
+        
+        
+        
+        // typos:
+        textAlign : 'center',
+    });
+};
 
 const usesPaymentConfirmationTabLayout = () => {
     return style({
@@ -102,25 +118,40 @@ const usesPaymentConfirmationTabLayout = () => {
         
         // children:
         ...children('.title', {
-            // appearances:
-            ...usesSignInTitleColor(),
-            
-            
-            
-            // spacings:
-            margin    : '0px', // kill <h1> auto margin
-            
-            
-            
-            // typos:
-            textAlign : 'center',
+            // layouts:
+            ...usesTitleLayout(),
         }),
     });
 };
 const usesPaymentConfirmationSentTabLayout = () => {
     return style({
         // layouts:
-        display : 'grid',
+        display       : 'flex',
+        flexDirection : 'column',
+        
+        
+        
+        // spacings:
+        gap     : spacers.default,
+        
+        
+        
+        // children:
+        ...children('.title', {
+            // layouts:
+            ...usesTitleLayout(),
+        }),
+        ...children('.actions', {
+            // layouts:
+            display : 'grid',
+            alignContent: 'start',
+            
+            
+            
+            // spacings:
+            marginBlockStart : 'auto',
+            gap     : spacers.default,
+        }),
     });
 };
 

@@ -163,8 +163,11 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             },
         });
     });
-    const handleDoConfirmation = useEvent(() => {
+    const handleDoConfirmation        = useEvent(() => {
         setIsSent(true);
+    });
+    const handleGotoHome              = useEvent(() => {
+        setIsSent(false); // TODO: replace with actual goto home after development finished
     });
     
     
@@ -435,12 +438,43 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                         </ButtonIcon>
                     </TabPanel>
                     <TabPanel className={styleSheet.paymentConfirmationSent}>
-                        <p>
-                            Thank you
-                        </p>
+                        <h1 className='title'>
+                            Thank You!
+                        </h1>
+                        <Alert
+                            // variants:
+                            theme='success'
+                            
+                            
+                            
+                            // states:
+                            expanded={true}
+                            
+                            
+                            
+                            // components:
+                            controlComponent={<React.Fragment />}
+                        >
+                            <p>
+                                Your payment confirmation has been sent. We will immediately review your confirmation and notify you back.
+                            </p>
+                        </Alert>
+                        <div className='actions'>
+                            <ButtonIcon
+                                // appearances:
+                                icon='home'
+                                
+                                
+                                
+                                // handlers:
+                                onClick={handleGotoHome}
+                            >
+                                Back to Home
+                            </ButtonIcon>
+                        </div>
                     </TabPanel>
                 </Tab>}
-                {JSON.stringify(paymentConfirmationData)}
+                {/* {JSON.stringify(paymentConfirmationData)} */}
             </Section>
         </Main>
     );
