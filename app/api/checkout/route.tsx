@@ -1184,6 +1184,14 @@ router
  * purchase the previously posted order
  */
 .patch(async (req) => {
+    // await new Promise<void>((resolved) => {
+    //     setTimeout(() => {
+    //         resolved();
+    //     }, 2000);
+    // });
+    
+    
+    
     const paymentData = await req.json();
     console.log('paymentData: ', paymentData);
     if (typeof(paymentData) !== 'object') {

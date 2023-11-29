@@ -77,9 +77,10 @@ import './layout-styles';
 // defaults:
 const fetchErrorTitleDefault   : Extract<FetchErrorTitle  , Function> = ({isRequestError, isServerError, errorCode, context}) => {
     switch (context) {
-        case 'order'   : return <h1>Error Processing Your Order</h1>;
-        case 'payment' : return <h1>Error Processing Your Payment</h1>;
-        default        : return <h1>Error</h1>;
+        case 'order'               : return <h1>Error Processing Your Order</h1>;
+        case 'payment'             : return <h1>Error Processing Your Payment</h1>;
+        case 'paymentConfirmation' : return <h1>Error Processing Your Payment Confirmation</h1>;
+        default                    : return <h1>Error</h1>;
     } // switch
 };
 const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequestError, isServerError, errorCode, context}) => <>
@@ -87,9 +88,10 @@ const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequ
         Oops, there was an error processing {
             ((): React.ReactNode => {
                 switch (context) {
-                    case 'order'  : return <>your order</>;
-                    case 'payment': return <>your payment</>;
-                    default       : return <>the command</>;
+                    case 'order'               : return <>your order</>;
+                    case 'payment'             : return <>your payment</>;
+                    case 'paymentConfirmation' : return <h1>Error Processing Your Payment Confirmation</h1>;
+                    default                    : return <>the command</>;
                 } // switch
             })()
         }.
