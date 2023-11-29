@@ -75,7 +75,7 @@ const NumberEditor = <TElement extends Element = HTMLElement>(props: NumberEdito
             
             
             // formats:
-            type={'number'}
+            type='number'
         />
     );
 };
