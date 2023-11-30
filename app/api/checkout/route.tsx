@@ -1247,7 +1247,15 @@ router
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
-        if ((paymentDate !== undefined) && (paymentDate !== null) && ((typeof(paymentDate) !== 'number') || (paymentDate < 0) || !isFinite(paymentDate))) {
+        let paymentDateAsDate : Date|undefined = undefined;
+        if ((paymentDate !== undefined) && (paymentDate !== null) && ((typeof(paymentDate) !== 'string') || !paymentDate.length || !(paymentDateAsDate = ((): Date|undefined => {
+            try {
+                return new Date(paymentDate);
+            }
+            catch {
+                return undefined;
+            } // try
+        })()))) {
             return NextResponse.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
@@ -1298,7 +1306,7 @@ router
                     currency,
                     amount,
                     payerName,
-                    paymentDate,
+                    paymentDate : paymentDateAsDate ?? new Date(paymentDate),
                     
                     originatingBank,
                     destinationBank,

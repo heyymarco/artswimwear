@@ -105,6 +105,9 @@ import {
 import {
     NameEditor,
 }                           from '@/components/editors/NameEditor'
+import {
+    DateTimeEditor,
+}                           from '@/components/editors/DateTimeEditor'
 
 // stores:
 import {
@@ -152,11 +155,12 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     // apis:
     const [doPaymentConfirmation, {data: paymentConfirmationData, isLoading: isPaymentConfirmationLoading, isError: isPaymentConfirmationError, error: paymentConfirmationError}] = usePaymentConfirmation();
     
-    const [isBusy, setIsBusy] = useState<boolean>(false);
+    const [isBusy  , setIsBusy  ] = useState<boolean>(false);
+    const [isLoaded, setIsLoaded] = useState<boolean>(false);
     
-    const isPageLoading = isPaymentConfirmationLoading && !isBusy;
+    const isPageLoading = isPaymentConfirmationLoading && !isLoaded;
     const hasData       = (!!paymentConfirmationData);
-    const isPageError   = ((!isPageLoading && (isPaymentConfirmationError)) || (!hasData && !!token)) && !isBusy; /* considered as error if no data but has token*/ /* consider no error if isBusy */
+    const isPageError   = ((!isPageLoading && (isPaymentConfirmationError)) || (!hasData && !!token)) && !isLoaded; /* considered as error if no data but has token*/ /* consider no error if isLoaded */
     const isPageReady   = !isPageLoading && !isPageError && !!token;
     
     
@@ -166,6 +170,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const [currency        , setCurrency        ] = useState<string>(paymentConfirmationData?.currency || commerceConfig.defaultCurrency);
     const [amount          , setAmount          ] = useState<number|null>(paymentConfirmationData?.amount ?? null);
     const [payerName       , setPayerName       ] = useState<string|null>(paymentConfirmationData?.payerName || null);
+    const [paymentDate     , setPaymentDate     ] = useState<Date|null>(paymentConfirmationData?.paymentDate || null);
     const [originatingBank , setOriginatingBank ] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
     const [destinationBank , setDestinationBank ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     const selectedCurrency = commerceConfig.currencies?.[currency as keyof typeof commerceConfig.currencies];
@@ -214,7 +219,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                 currency,
                 amount,
                 payerName,
-                paymentDate,
+                paymentDate: paymentDateAsString,
                 
                 originatingBank,
                 destinationBank,
@@ -227,6 +232,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             setCurrency(currency || commerceConfig.defaultCurrency);
             setAmount(amount);
             setPayerName(payerName);
+            setPaymentDate(paymentDateAsString ? new Date(paymentDateAsString) : null); // the paymentDateAsString returned from server is a 'string', we need to convert back to Date type
             
             setOriginatingBank(originatingBank);
             setDestinationBank(destinationBank);
@@ -234,6 +240,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             
             
             setHasInitialData(amount !== null);
+            setIsLoaded(true);
         }
         catch {
             // the error is already handled by `isPageError`
@@ -268,7 +275,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                     currency        : currency,
                     amount          : amount,
                     payerName       : payerName       || null, // convert empty string to null
-                    paymentDate     : undefined, // TODO: create <DateTimeEditor>
+                    paymentDate     : paymentDate,
                     
                     originatingBank : originatingBank || null, // convert empty string to null
                     destinationBank : destinationBank || null, // convert empty string to null
@@ -504,6 +511,38 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     
                                     // formats:
                                     placeholder="Payer Name (can be blank if you don't remember)"
+                                />
+                                <DateTimeEditor
+                                    // classes:
+                                    className='fluid'
+                                    
+                                    
+                                    
+                                    // accessibilities:
+                                    aria-label='Transfered Amount'
+                                    
+                                    
+                                    
+                                    // values:
+                                    value={paymentDate}
+                                    onChange={(value) => {
+                                        // console.log('onChange: ', {
+                                        //     date  : value,
+                                        //     local : value?.toLocaleString(),
+                                        //     utc   : value?.toISOString(),
+                                        // });
+                                        setPaymentDate(value);
+                                    }}
+                                    
+                                    
+                                    
+                                    // validations:
+                                    required={false}
+                                    
+                                    
+                                    
+                                    // formats:
+                                    placeholder="Transfered Date (can be blank if you don't remember)"
                                 />
                                 <NameEditor
                                     // classes:
