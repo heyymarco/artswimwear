@@ -425,6 +425,9 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     <p>
                                         We will notify you as soon as possible.
                                     </p>
+                                    <p>
+                                        If there is an error in the data you sent, you can change and update it.
+                                    </p>
                                 </Alert>}
                                 
                                 {(isRejected || isApproved) && <>
