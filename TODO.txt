@@ -1,3 +1,4 @@
+TODO: fix table layout to use subgrid
 add captcha to manual payment of checkout
 move checkoutState to local if guess mode
 [high prior] verify the migrated api code in app dir
