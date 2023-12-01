@@ -509,8 +509,6 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                             We are processing your order.
                                         </p>
                                     </Alert>}
-                                    
-                                    <hr />
                                 </>}
                                 
                                 {(isUnderReview || isRejected || isApproved) && <hr />}
