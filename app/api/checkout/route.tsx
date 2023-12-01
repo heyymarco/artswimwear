@@ -25,15 +25,15 @@ import {
 }                           from 'nodemailer'
 
 // models:
-import type {
-    Product,
+import {
+    type Product,
     
-    Customer,
+    type Customer,
     
-    Payment,
-    PaymentConfirmation,
-    DraftOrder,
-    DraftOrdersOnProducts,
+    type Payment,
+    type PaymentConfirmation,
+    type DraftOrder,
+    type DraftOrdersOnProducts,
 }                           from '@prisma/client'
 
 // ORMs:
@@ -1309,10 +1309,15 @@ router
             : await prisma.paymentConfirmation.update({
                 where  : {
                     token : paymentConfirmationToken,
+                    
+                    OR : [
+                        { reviewedAt      : { equals: null } }, // not has been reviewed (neither approved or rejected)
+                        { rejectionReason : { equals: null } }, // not has been reviewed as approved
+                    ],
                 },
                 data   : {
                     updatedAt  : new Date(),
-                    reviewedAt : null,
+                    reviewedAt : null, // reset for next review
                     
                     currency,
                     amount,
@@ -1322,6 +1327,8 @@ router
                     
                     originatingBank,
                     destinationBank,
+                    
+                    rejectionReason : null, // reset for next review
                 },
                 select : select,
             })
