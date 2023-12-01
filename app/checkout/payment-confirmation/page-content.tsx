@@ -108,6 +108,10 @@ import {
 import {
     DateTimeEditor,
 }                           from '@/components/editors/DateTimeEditor'
+import {
+    WysiwygEditorState,
+    WysiwygViewer,
+}                           from '@/components/WysiwygEditor'
 
 // stores:
 import {
@@ -166,6 +170,9 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     
     
     // states:
+    const [updatedAt       , setUpdatedAt       ] = useState<Date|null>(null);
+    const [reviewedAt      , setReviewedAt      ] = useState<Date|null>(null);
+    
     const [enableValidation, setEnableValidation] = useState<boolean>(false);
     const [currency        , setCurrency        ] = useState<string>(paymentConfirmationData?.currency || commerceConfig.defaultCurrency);
     const [amount          , setAmount          ] = useState<number|null>(paymentConfirmationData?.amount ?? null);
@@ -176,9 +183,17 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const [destinationBank , setDestinationBank ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     const selectedCurrency = commerceConfig.currencies?.[currency as keyof typeof commerceConfig.currencies];
     
-    const [hasInitialData, setHasInitialData] = useState<boolean>(false);
-    const [hasModified   , setHasModified   ] = useState<boolean>(false);
-    const [isSent        , setIsSent        ] = useState<boolean>(false);
+    const [rejectionReason , setRejectionReason ] = useState<WysiwygEditorState|null>(null);
+    const isReviewed    = !!reviewedAt;
+    const isRejected    =  isReviewed && !!rejectionReason;
+    const isApproved    =  isReviewed &&  !rejectionReason;
+    const isUnderReview = !isReviewed && !!updatedAt;
+    // const isApproved = true;
+    // console.log({isRejected, isApproved, rejectionReason})
+    
+    const [hasInitialData  , setHasInitialData  ] = useState<boolean>(false);
+    const [hasModified     , setHasModified     ] = useState<boolean>(false);
+    const [isSent          , setIsSent          ] = useState<boolean>(false);
     
     
     
@@ -214,8 +229,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             
             
             const {
-                updatedAt,
-                reviewedAt,
+                updatedAt  : updatedAtAsString,
+                reviewedAt : reviewedAtAsString,
                 
                 currency,
                 amount,
@@ -231,6 +246,9 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             
             
             
+            setUpdatedAt(updatedAtAsString ? new Date(updatedAtAsString) : null);
+            setReviewedAt(reviewedAtAsString ? new Date(reviewedAtAsString) : null);
+            
             setCurrency(currency || commerceConfig.defaultCurrency);
             setAmount(amount);
             setPayerName(payerName);
@@ -239,6 +257,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             
             setOriginatingBank(originatingBank);
             setDestinationBank(destinationBank);
+            
+            setRejectionReason(rejectionReason as unknown as WysiwygEditorState|null);
             
             
             
@@ -345,7 +365,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
         >
             <AccessibilityProvider
                 // accessibilities:
-                enabled={!isBusy} // disabled if busy
+                enabled={!isBusy && !isApproved} // disabled if busy or was approved
             >
                 <ValidationProvider
                     // validations:
@@ -384,6 +404,136 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                 <h1 className='title'>
                                     Payment Confirmation
                                 </h1>
+                                
+                                {isUnderReview && <Alert
+                                    // variants:
+                                    theme='warning'
+                                    
+                                    
+                                    
+                                    // states:
+                                    expanded={true}
+                                    
+                                    
+                                    
+                                    // components:
+                                    controlComponent={<React.Fragment />}
+                                >
+                                    <p>
+                                        Your payment confirmation is <strong>being reviewed</strong>.
+                                    </p>
+                                    <p>
+                                        We will notify you as soon as possible.
+                                    </p>
+                                </Alert>}
+                                
+                                {(isRejected || isApproved) && <>
+                                    <Group>
+                                        <Label theme='primary' className='solid'>
+                                            Reviewed At
+                                        </Label>
+                                        <DateTimeEditor
+                                            // variants:
+                                            theme='success'
+                                            
+                                            
+                                            
+                                            // accessibilities:
+                                            readOnly={true}
+                                            
+                                            
+                                            
+                                            // values:
+                                            value={reviewedAt}
+                                            timezone={preferedTimezone}
+                                            onTimezoneChange={setPreferedTimezone}
+                                        />
+                                    </Group>
+                                    
+                                    {isRejected && <Alert
+                                        // variants:
+                                        theme='danger'
+                                        
+                                        
+                                        
+                                        // states:
+                                        expanded={true}
+                                        
+                                        
+                                        
+                                        // components:
+                                        controlComponent={<React.Fragment />}
+                                    >
+                                        <p>
+                                            Sorry, your payment confirmation was <strong>rejected</strong>.
+                                        </p>
+                                        <p>
+                                            But don&apos;t worry, you can <strong>revise</strong> the payment confirmation and <strong>update</strong> it.
+                                            We will validate your confirmation and notify you again.
+                                        </p>
+                                        <p>
+                                            Reason:
+                                        </p>
+                                        <WysiwygViewer
+                                            // variants:
+                                            nude={true}
+                                            
+                                            
+                                            
+                                            // values:
+                                            value={rejectionReason}
+                                        />
+                                    </Alert>}
+                                    
+                                    {isApproved && <Alert
+                                        // variants:
+                                        theme='success'
+                                        
+                                        
+                                        
+                                        // states:
+                                        expanded={true}
+                                        
+                                        
+                                        
+                                        // components:
+                                        controlComponent={<React.Fragment />}
+                                    >
+                                        <p>
+                                            Congratulations! Your payment has been approved.
+                                        </p>
+                                        <p>
+                                            We are processing your order.
+                                        </p>
+                                    </Alert>}
+                                    
+                                    <hr />
+                                </>}
+                                
+                                {(isUnderReview || isRejected || isApproved) && <hr />}
+                                
+                                {!!updatedAt && <Group>
+                                    <Label theme='primary' className='solid'>
+                                        Updated At
+                                    </Label>
+                                    <DateTimeEditor
+                                        // variants:
+                                        theme='success'
+                                        
+                                        
+                                        
+                                        // accessibilities:
+                                        readOnly={true}
+                                        
+                                        
+                                        
+                                        // values:
+                                        value={updatedAt}
+                                        timezone={preferedTimezone}
+                                        onTimezoneChange={setPreferedTimezone}
+                                    />
+                                </Group>}
+                                
                                 <Group>
                                     <DropdownListButton
                                         // variants:
@@ -486,6 +636,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                         placeholder='Transfered Amount'
                                     />
                                 </Group>
+                                
                                 <NameEditor
                                     // classes:
                                     className='name editor'
@@ -516,6 +667,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     // formats:
                                     placeholder="Payer Name (can be blank if you don't remember)"
                                 />
+                                
                                 <DateTimeEditor
                                     // classes:
                                     className='fluid'
@@ -550,6 +702,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     // formats:
                                     placeholder="Transfered Date (can be blank if you don't remember)"
                                 />
+                                
                                 <NameEditor
                                     // classes:
                                     className='origin editor'
@@ -577,6 +730,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     // formats:
                                     placeholder="Originating Bank (can be blank if you don't remember)"
                                 />
+                                
                                 <NameEditor
                                     // classes:
                                     className='dest editor'
@@ -604,7 +758,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     // formats:
                                     placeholder="Destination Bank (can be blank if you don't remember)"
                                 />
-                                <ButtonIcon
+                                
+                                {!isApproved && <ButtonIcon
                                     // appearances:
                                     icon={isBusy ? 'busy' : (hasInitialData ? 'save' : 'done')}
                                     
@@ -614,7 +769,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     onClick={handleDoConfirmation}
                                 >
                                     {hasInitialData ? 'Update' : 'Confirm'}
-                                </ButtonIcon>
+                                </ButtonIcon>}
                             </TabPanel>
                             <TabPanel className={styleSheet.paymentConfirmationSent}>
                                 <h1 className='title'>
