@@ -41,6 +41,10 @@ import {
     // react components:
     TimezoneEditor,
 }                           from '@/components/editors/TimezoneEditor'
+export {
+    // utilities:
+    convertTimezoneToReadableClock,
+}                           from '@/components/editors/TimezoneEditor'
 
 
 
