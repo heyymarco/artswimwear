@@ -60,6 +60,13 @@ export interface DateTimeEditorProps<TElement extends Element = HTMLElement>
             |'inputMode'             // always 'numeric'
         >
 {
+    // values:
+    defaultTimezone  ?: number
+    timezone         ?: number
+    onTimezoneChange ?: EditorChangeEventHandler<number>
+    
+    
+    
     // validations:
     min  ?: Date
     max  ?: Date
@@ -107,6 +114,10 @@ const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeE
         value : controlledValue,
         onChange,
         
+        defaultTimezone = (0 - (new Date()).getTimezoneOffset()),
+        timezone : controlledTimezone,
+        onTimezoneChange,
+        
         
         
         // validations:
@@ -128,7 +139,9 @@ const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeE
     const isControllableValue = (controlledValue !== undefined);
     
     const [isFocus , setIsFocus ] = useState<boolean>(false);
-    const [timezone, setTimezone] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
+    const [uncontrolledTimezone, setUncontrolledTimezone] = useState<number>(defaultTimezone);
+    const timezone = controlledTimezone ?? uncontrolledTimezone;
+    const isControllableTimezone = (controlledTimezone !== undefined);
     
     
     
@@ -164,16 +177,20 @@ const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeE
     
     
     // handlers:
-    const handleChangeAsText = useEvent<EditorChangeEventHandler<string>>((valueAsString) => {
+    const handleChangeAsText   = useEvent<EditorChangeEventHandler<string>>((valueAsString) => {
         const date = localToDate(valueAsString) ?? null;
         if (!isControllableValue) setUncontrolledValue(date);
         onChange?.(date);
     });
+    const handleTimezoneChange = useEvent<EditorChangeEventHandler<number>>((newTimezone) => {
+        if (!isControllableTimezone) setUncontrolledTimezone(newTimezone);
+        onTimezoneChange?.(newTimezone);
+    });
     
-    const handleFocus = useEvent<React.FocusEventHandler<TElement>>(() => {
+    const handleFocus          = useEvent<React.FocusEventHandler<TElement>>(() => {
         setIsFocus(true);
     });
-    const handleBlur = useEvent<React.FocusEventHandler<TElement>>(() => {
+    const handleBlur           = useEvent<React.FocusEventHandler<TElement>>(() => {
         setIsFocus(false);
     });
     
@@ -232,7 +249,7 @@ const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeE
                 
                 // values:
                 value={timezone}
-                onChange={setTimezone}
+                onChange={handleTimezoneChange}
             />
             <Editor<TElement, string|null>
                 // other props:
