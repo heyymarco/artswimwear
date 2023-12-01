@@ -768,6 +768,12 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     
                                     
                                     
+                                    // variants:
+                                    size='lg'
+                                    gradient={true}
+                                    
+                                    
+                                    
                                     // handlers:
                                     onClick={handleDoConfirmation}
                                 >
