@@ -5,4 +5,4 @@ import type {
 
 
 
-export type WysiwygEditorState = EditorState
+export type WysiwygEditorState = Omit<EditorState, ''> // typescript hack to force WysiwygEditorState as not the same as EditorState
