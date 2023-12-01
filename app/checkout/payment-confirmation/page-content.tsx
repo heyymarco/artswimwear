@@ -171,6 +171,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const [amount          , setAmount          ] = useState<number|null>(paymentConfirmationData?.amount ?? null);
     const [payerName       , setPayerName       ] = useState<string|null>(paymentConfirmationData?.payerName || null);
     const [paymentDate     , setPaymentDate     ] = useState<Date|null>(paymentConfirmationData?.paymentDate || null);
+    const [preferedTimezone, setPreferedTimezone] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
     const [originatingBank , setOriginatingBank ] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
     const [destinationBank , setDestinationBank ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     const selectedCurrency = commerceConfig.currencies?.[currency as keyof typeof commerceConfig.currencies];
@@ -220,6 +221,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                 amount,
                 payerName,
                 paymentDate: paymentDateAsString,
+                preferedTimezone,
                 
                 originatingBank,
                 destinationBank,
@@ -233,6 +235,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             setAmount(amount);
             setPayerName(payerName);
             setPaymentDate(paymentDateAsString ? new Date(paymentDateAsString) : null); // the paymentDateAsString returned from server is a 'string', we need to convert back to Date type
+            if (preferedTimezone !== null) setPreferedTimezone(preferedTimezone);
             
             setOriginatingBank(originatingBank);
             setDestinationBank(destinationBank);
@@ -269,16 +272,17 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
         setIsBusy(true);
         try {
             await doPaymentConfirmation({
-                paymentConfirmation : {
-                    token           : token,
+                paymentConfirmation  : {
+                    token            : token,
                     
-                    currency        : currency,
-                    amount          : amount,
-                    payerName       : payerName       || null, // convert empty string to null
-                    paymentDate     : paymentDate,
+                    currency         : currency,
+                    amount           : amount,
+                    payerName        : payerName       || null, // convert empty string to null
+                    paymentDate      : paymentDate,
+                    preferedTimezone : preferedTimezone,
                     
-                    originatingBank : originatingBank || null, // convert empty string to null
-                    destinationBank : destinationBank || null, // convert empty string to null
+                    originatingBank  : originatingBank || null, // convert empty string to null
+                    destinationBank  : destinationBank || null, // convert empty string to null
                 },
             }).unwrap();
         }
@@ -533,6 +537,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                         // });
                                         setPaymentDate(value);
                                     }}
+                                    timezone={preferedTimezone}
+                                    onTimezoneChange={setPreferedTimezone}
                                     
                                     
                                     

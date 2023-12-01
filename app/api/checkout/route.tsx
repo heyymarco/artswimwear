@@ -82,6 +82,9 @@ import {
 import {
     downloadImageAsBase64,
 }                           from '@/libs/images'
+import {
+    possibleTimezoneValues,
+}                           from '@/components/editors/TimezoneEditor/types'
 
 // configs:
 import {
@@ -464,6 +467,7 @@ export interface PaymentConfirmationDetail
             |'amount'
             |'payerName'
             |'paymentDate'
+            |'preferedTimezone'
             
             |'originatingBank'
             |'destinationBank'
@@ -1223,6 +1227,7 @@ router
             amount,
             payerName,
             paymentDate,
+            preferedTimezone,
             
             originatingBank,
             destinationBank,
@@ -1260,6 +1265,11 @@ router
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
+        if ((preferedTimezone !== undefined) && (preferedTimezone !== null) && (typeof(preferedTimezone) !== 'number') && !isFinite(preferedTimezone) && !possibleTimezoneValues.includes(preferedTimezone)) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
         if (((originatingBank !== undefined) && (originatingBank !== null)) && ((typeof(originatingBank) !== 'string') || (originatingBank.length < 2) || (originatingBank.length > 50))) {
             return NextResponse.json({
                 error: 'Invalid data.',
@@ -1274,18 +1284,19 @@ router
         
         
         const select = {
-            updatedAt       : true,
-            reviewedAt      : true,
+            updatedAt        : true,
+            reviewedAt       : true,
             
-            currency        : true,
-            amount          : true,
-            payerName       : true,
-            paymentDate     : true,
+            currency         : true,
+            amount           : true,
+            payerName        : true,
+            paymentDate      : true,
+            preferedTimezone : true,
             
-            originatingBank : true,
-            destinationBank : true,
+            originatingBank  : true,
+            destinationBank  : true,
             
-            rejectionReason : true,
+            rejectionReason  : true,
         };
         const paymentConfirmationDetail : PaymentConfirmationDetail|null = (
             (amount === undefined)
@@ -1306,7 +1317,8 @@ router
                     currency,
                     amount,
                     payerName,
-                    paymentDate : paymentDateAsDate ?? new Date(paymentDate),
+                    paymentDate      : paymentDateAsDate ?? new Date(paymentDate),
+                    preferedTimezone,
                     
                     originatingBank,
                     destinationBank,
