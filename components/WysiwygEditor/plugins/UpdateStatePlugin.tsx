@@ -31,11 +31,53 @@ import {
 import type {
     // types:
     EditorChangeEventHandler,
-}                           from '@/components/Editor'
+}                           from '@/components/editors/Editor'
 import type {
     // types:
     WysiwygEditorState,
 }                           from '../types'
+
+
+
+// utilities:
+const normalizeValue = (value: WysiwygEditorState|null): WysiwygEditorState|null => {
+    // detect for empty value:
+    if (value) {
+        if ('root' in value) { // value as plain JSON
+            const firstChild = (value.root as any)?.children?.[0];
+            if (!firstChild || ((firstChild?.type === 'paragraph') && !firstChild?.children?.length)) {
+                // empty paragraph => empty content => null:
+                return null;
+            } // if
+        }
+        else { // value as EditorState
+            const nodeMap = value?._nodeMap;
+            const root = nodeMap?.get('root');
+            if (!root) {
+                // no root => empty content => null:
+                return null;
+            }
+            else {
+                const firstKey = root?.__first;
+                if (!firstKey) {
+                    // no child => empty content => null:
+                    return null;
+                }
+                else {
+                    const firstChild = nodeMap?.get(firstKey);
+                    if (!firstChild || ((firstChild?.__type === 'paragraph') && !firstChild?.__first)) {
+                        // empty paragraph => empty content => null:
+                        return null;
+                    } // if
+                } // if
+            } // if
+        } // if
+    } // if
+    
+    
+    
+    return value;
+};
 
 
 
@@ -54,7 +96,7 @@ const UpdateStatePlugin = ({value, defaultValue, onChange}: UpdateStatePluginPro
     // dom effects:
     const isMounted = useMountedFlag();
     
-    const newValue  = ((value !== undefined) ? value : defaultValue) ?? null;
+    const newValue  = normalizeValue(((value !== undefined) ? value : defaultValue) ?? null);
     const prevValue = useRef<WysiwygEditorState|null>(newValue);
     useEffect(() => {
         // conditions:
@@ -105,13 +147,21 @@ const UpdateStatePlugin = ({value, defaultValue, onChange}: UpdateStatePluginPro
         editorState.read(() => {
             // conditions:
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-            if (prevValue.current === editorState) return; // no diff => ignore
-            prevValue.current = editorState;
+            
+            
+            
+            // detect for empty newValue:
+            let newValue = normalizeValue(editorState);
+            
+            
+            
+            if (prevValue.current === newValue) return; // no diff => ignore
+            prevValue.current = newValue;
             
             
             
             // actions:
-            onChange(editorState);
+            onChange(newValue);
         });
     });
     
