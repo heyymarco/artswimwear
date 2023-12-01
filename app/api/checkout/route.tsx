@@ -1298,7 +1298,7 @@ router
             
             rejectionReason  : true,
         };
-        const paymentConfirmationDetail : PaymentConfirmationDetail|null = (
+        const paymentConfirmationDetail : PaymentConfirmationDetail|'ALREADY_APPROVED'|null = (
             (amount === undefined)
             ? await prisma.paymentConfirmation.findUnique({
                 where  : {
@@ -1306,36 +1306,52 @@ router
                 },
                 select : select,
             })
-            : await prisma.paymentConfirmation.update({
-                where  : {
-                    token : paymentConfirmationToken,
-                    
-                    OR : [
-                        { reviewedAt      : { equals: null } }, // never approved or rejected
-                        { rejectionReason : { not   : null } }, // has been reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
-                    ],
-                },
-                data   : {
-                    updatedAt  : new Date(),
-                    reviewedAt : null, // reset for next review
-                    
-                    currency,
-                    amount,
-                    payerName,
-                    paymentDate      : paymentDateAsDate ?? new Date(paymentDate),
-                    preferedTimezone,
-                    
-                    originatingBank,
-                    destinationBank,
-                    
-                    rejectionReason : null, // reset for next review
-                },
-                select : select,
-            })
+            : await (async() => {
+                try {
+                    return await prisma.paymentConfirmation.update({
+                        where  : {
+                            token : paymentConfirmationToken,
+                            
+                            OR : [
+                                { reviewedAt      : { equals: null } }, // never approved or rejected
+                                { rejectionReason : { not   : null } }, // has been reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
+                            ],
+                        },
+                        data   : {
+                            updatedAt  : new Date(),
+                            reviewedAt : null, // reset for next review
+                            
+                            currency,
+                            amount,
+                            payerName,
+                            paymentDate      : paymentDateAsDate ?? new Date(paymentDate),
+                            preferedTimezone,
+                            
+                            originatingBank,
+                            destinationBank,
+                            
+                            rejectionReason : null, // reset for next review
+                        },
+                        select : select,
+                    });
+                }
+                catch (error: any) {
+                    if (error?.code === 'P2025') return 'ALREADY_APPROVED';
+                    throw error;
+                } // try
+            })()
         );
+        if (paymentConfirmationDetail === 'ALREADY_APPROVED') {
+            return NextResponse.json({
+                error:
+`The payment confirmation is already approved.
+
+Updating the confirmation is not required.`,
+            }, { status: 400 }); // handled with error
+        }
         if (!paymentConfirmationDetail) {
             return NextResponse.json({
-                error: 'Invalid data.',
+                error: 'Invalid payment confirmation token.',
             }, { status: 400 }); // handled with error
         } // if
         return NextResponse.json(paymentConfirmationDetail); // handled with success
