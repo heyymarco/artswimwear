@@ -1312,7 +1312,7 @@ router
                     
                     OR : [
                         { reviewedAt      : { equals: null } }, // never approved or rejected
-                        { rejectionReason : { not   : null } }, // has been reviewed as rejected (prevents to confirm *already_approved_payment_confirmation*)
+                        { rejectionReason : { not   : null } }, // has been reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
                     ],
                 },
                 data   : {
