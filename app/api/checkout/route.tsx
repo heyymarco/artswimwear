@@ -1311,7 +1311,7 @@ router
                     token : paymentConfirmationToken,
                     
                     OR : [
-                        { reviewedAt      : { equals: null } }, // not has been reviewed (neither approved or rejected)
+                        { reviewedAt      : { equals: null } }, // not has been reviewed (never approved or rejected)
                         { rejectionReason : { equals: null } }, // not has been reviewed as approved
                     ],
                 },
