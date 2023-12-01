@@ -154,7 +154,7 @@ const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeE
         
         // converts:
         const localWithTimezone = `${local}${convertTimezoneToReadableClock(timezone)}`;
-        const date              = localWithTimezone ? new Date(localWithTimezone) : null;
+        const date              = new Date(localWithTimezone);
         // console.log('localToDate: ', {
         //     local,
         //     localWithTimezone,
@@ -178,9 +178,9 @@ const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeE
     
     // handlers:
     const handleChangeAsText   = useEvent<EditorChangeEventHandler<string>>((valueAsString) => {
-        const date = localToDate(valueAsString) ?? null;
-        if (!isControllableValue) setUncontrolledValue(date);
-        onChange?.(date);
+        const newDate = localToDate(valueAsString) ?? null;
+        if (!isControllableValue) setUncontrolledValue(newDate);
+        onChange?.(newDate);
     });
     const handleTimezoneChange = useEvent<EditorChangeEventHandler<number>>((newTimezone) => {
         if (!isControllableTimezone) setUncontrolledTimezone(newTimezone);
