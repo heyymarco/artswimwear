@@ -15,6 +15,12 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// reusable-ui components:
+import {
+    // react components:
+    Group,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
 // internals:
 import {
     // types:
@@ -26,6 +32,15 @@ import {
     EditorProps,
     Editor,
 }                           from '@/components/editors/Editor'
+import {
+    // utilities:
+    convertTimezoneToReadableClock,
+    
+    
+    
+    // react components:
+    TimezoneEditor,
+}                           from '@/components/editors/TimezoneEditor'
 
 
 
@@ -53,6 +68,40 @@ export interface DateTimeEditorProps<TElement extends Element = HTMLElement>
 const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeEditorProps<TElement>): JSX.Element|null => {
     // rest props:
     const {
+        // refs:
+        elmRef,
+        outerRef,
+        
+        
+        
+        // identifiers:
+        id,
+        
+        
+        
+        // variants:
+        size,
+        theme,
+        gradient,
+        outlined,
+        mild,
+        
+        
+        
+        // classes:
+        mainClass,
+        classes,
+        variantClasses,
+        stateClasses,
+        className,
+        
+        
+        
+        // styles:
+        style,
+        
+        
+        
         // values:
         defaultValue,
         value : controlledValue,
@@ -76,7 +125,7 @@ const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeE
     // states:
     const [uncontrolledValue, setUncontrolledValue] = useState<Date|null>(defaultValue ?? null);
     const value = controlledValue ?? uncontrolledValue;
-    const isControllableValue = !!value;
+    const isControllableValue = (controlledValue !== undefined);
     
     const [isFocus , setIsFocus ] = useState<boolean>(false);
     const [timezone, setTimezone] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
@@ -91,10 +140,7 @@ const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeE
         
         
         // converts:
-        const timezoneAbs       = Math.abs(timezone);
-        const timezoneHours     = Math.floor(timezoneAbs / 60);
-        const timezoneMinutes   = Math.round(timezoneAbs - (timezoneHours * 60))
-        const localWithTimezone = `${local}${(timezone >= 0) ? '+' : '-'}${(timezoneHours < 10) ? '0' : ''}${timezoneHours}:${(timezoneMinutes < 10) ? '0' : ''}${timezoneMinutes}`;
+        const localWithTimezone = `${local}${convertTimezoneToReadableClock(timezone)}`;
         const date              = localWithTimezone ? new Date(localWithTimezone) : null;
         // console.log('localToDate: ', {
         //     local,
@@ -135,34 +181,88 @@ const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeE
     
     // jsx:
     return (
-        <Editor<TElement, string|null>
-            // other props:
-            {...restEditorProps}
+        <Group
+            // refs:
+            outerRef={outerRef}
             
             
             
-            // values:
-            value          = {dateToLocal(value) ?? null}
-            onChangeAsText = {handleChangeAsText}
+            // identifiers:
+            id={id}
             
             
             
-            // validations:
-            min            = {dateToLocal(min) ?? undefined}
-            max            = {dateToLocal(max) ?? undefined}
-            step           = {step?.toString() ?? undefined}
+            // variants:
+            size={size}
+            theme={theme}
+            gradient={gradient}
+            outlined={outlined}
+            mild={mild}
             
             
             
-            // formats:
-            type={(!value && !isFocus) ? 'text' : 'datetime-local'}
+            // classes:
+            mainClass={mainClass}
+            classes={classes}
+            variantClasses={variantClasses}
+            stateClasses={stateClasses}
+            className={className}
             
             
             
-            // handlers:
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-        />
+            // styles:
+            style={style}
+        >
+            <TimezoneEditor
+                // variants:
+                theme={theme ?? 'primary'}
+                mild={mild ?? true}
+                
+                
+                
+                // classes:
+                className='solid'
+                
+                
+                
+                // floatable:
+                floatingPlacement='bottom-start'
+                
+                
+                
+                // values:
+                value={timezone}
+                onChange={setTimezone}
+            />
+            <Editor<TElement, string|null>
+                // other props:
+                {...restEditorProps}
+                
+                
+                
+                // values:
+                value          = {dateToLocal(value) ?? null}
+                onChangeAsText = {handleChangeAsText}
+                
+                
+                
+                // validations:
+                min            = {dateToLocal(min) ?? undefined}
+                max            = {dateToLocal(max) ?? undefined}
+                step           = {step?.toString() ?? undefined}
+                
+                
+                
+                // formats:
+                type={(!value && !isFocus) ? 'text' : 'datetime-local'}
+                
+                
+                
+                // handlers:
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+            />
+        </Group>
     );
 };
 export {
