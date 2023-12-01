@@ -90,7 +90,7 @@ const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequ
                 switch (context) {
                     case 'order'               : return <>your order</>;
                     case 'payment'             : return <>your payment</>;
-                    case 'paymentConfirmation' : return <h1>Error Processing Your Payment Confirmation</h1>;
+                    case 'paymentConfirmation' : return <>your payment confirmation</>;
                     default                    : return <>the command</>;
                 } // switch
             })()
