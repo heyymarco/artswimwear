@@ -179,6 +179,7 @@ model PaymentConfirmation {
     amount                  Float?                  // min: 0
     payerName               String?                 // minLength: 2, maxLength: 50
     paymentDate             DateTime?
+    preferedTimezone        Int?
     
     originatingBank         String?                 // minLength: 2, maxLength: 50
     destinationBank         String?                 // minLength: 2, maxLength: 50
