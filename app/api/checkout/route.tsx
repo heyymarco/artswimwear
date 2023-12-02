@@ -1344,10 +1344,10 @@ router
         if (paymentConfirmationDetail === 'ALREADY_APPROVED') {
             return NextResponse.json({
                 error:
-`The payment confirmation is already approved.
+`The previous payment confirmation has been approved.
 
 Updating the confirmation is not required.`,
-            }, { status: 400 }); // handled with error
+            }, { status: 409 }); // handled with conflict error
         }
         if (!paymentConfirmationDetail) {
             return NextResponse.json({

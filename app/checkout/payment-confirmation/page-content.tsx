@@ -43,11 +43,6 @@ import {
 
 // reusable-ui components:
 import {
-    // base-components:
-    Basic,
-    
-    
-    
     // base-content-components:
     Content,
     
@@ -83,9 +78,8 @@ import {
     
     
     // utility-components:
-    WindowResizeCallback,
-    useWindowResizeObserver,
     useDialogMessage,
+    paragraphify,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // heymarco components:
@@ -188,8 +182,6 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const isRejected    =  isReviewed && !!rejectionReason;
     const isApproved    =  isReviewed &&  !rejectionReason;
     const isUnderReview = !isReviewed && !!updatedAt;
-    // const isApproved = true;
-    // console.log({isRejected, isApproved, rejectionReason})
     
     const [hasInitialData  , setHasInitialData  ] = useState<boolean>(false);
     const [hasModified     , setHasModified     ] = useState<boolean>(false);
@@ -204,9 +196,9 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     
     // dialogs:
     const {
-        showMessageError,
         showMessageFieldError,
         showMessageFetchError,
+        showMessageSuccess,
     } = useDialogMessage();
     
     
@@ -307,8 +299,19 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             }).unwrap();
         }
         catch (fetchError: any) {
-            showMessageFetchError({ fetchError, context: 'paymentConfirmation' });
-            throw fetchError;
+            if (fetchError?.status === 409) { // conflict error
+                setIsLoaded(false); // reset the page as unloaded
+                handleGetConfirmationStatus(); // refresh the page
+                
+                await showMessageSuccess(
+                    paragraphify(fetchError?.data?.error),
+                );
+            }
+            else {
+                showMessageFetchError({ fetchError, context: 'paymentConfirmation' });
+            } // if
+            
+            return; // skip the success status
         }
         finally {
             setIsBusy(false);
@@ -683,11 +686,6 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     // values:
                                     value={paymentDate}
                                     onChange={(value) => {
-                                        // console.log('onChange: ', {
-                                        //     date  : value,
-                                        //     local : value?.toLocaleString(),
-                                        //     utc   : value?.toISOString(),
-                                        // });
                                         setPaymentDate(value);
                                     }}
                                     timezone={preferedTimezone}
