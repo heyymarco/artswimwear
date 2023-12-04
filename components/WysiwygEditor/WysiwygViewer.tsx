@@ -36,7 +36,7 @@ import {
 import type {
     // react components:
     EditorProps,
-}                           from '@/components/Editor'
+}                           from '@/components/editors/Editor'
 import type {
     // types:
     WysiwygEditorState,
