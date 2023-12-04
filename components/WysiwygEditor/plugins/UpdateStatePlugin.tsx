@@ -40,7 +40,7 @@ import type {
 
 
 // utilities:
-const normalizeValue = (value: WysiwygEditorState|null): WysiwygEditorState|null => {
+export const normalizeWysiwygEditorState = (value: WysiwygEditorState|null): WysiwygEditorState|null => {
     // detect for empty value:
     if (value) {
         if ('root' in value) { // value as plain JSON
@@ -96,7 +96,7 @@ const UpdateStatePlugin = ({value, defaultValue, onChange}: UpdateStatePluginPro
     // dom effects:
     const isMounted = useMountedFlag();
     
-    const newValue  = normalizeValue(((value !== undefined) ? value : defaultValue) ?? null);
+    const newValue  = normalizeWysiwygEditorState(((value !== undefined) ? value : defaultValue) ?? null);
     const prevValue = useRef<WysiwygEditorState|null>(newValue);
     useEffect(() => {
         // conditions:
@@ -151,7 +151,7 @@ const UpdateStatePlugin = ({value, defaultValue, onChange}: UpdateStatePluginPro
             
             
             // detect for empty newValue:
-            let newValue = normalizeValue(editorState);
+            const newValue = normalizeWysiwygEditorState(editorState);
             
             
             
