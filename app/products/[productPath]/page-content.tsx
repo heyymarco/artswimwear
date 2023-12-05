@@ -59,7 +59,7 @@ import {
 import {
     WysiwygEditorState,
     WysiwygViewer,
-}                           from '@/components/WysiwygEditor'
+}                           from '@/components/editors/WysiwygEditor'
 
 // internals:
 import {

@@ -48,6 +48,11 @@ import type {
 
 // templates:
 import {
+    // react components:
+    BusinessContextProviderProps,
+    BusinessContextProvider,
+}                           from '@/components/Checkout/templates/businessDataContext'
+import {
     // types:
     OrderAndData,
     
@@ -59,9 +64,9 @@ import {
 }                           from '@/components/Checkout/templates/orderDataContext'
 import {
     // react components:
-    BusinessContextProviderProps,
-    BusinessContextProvider,
-}                           from '@/components/Checkout/templates/businessDataContext'
+    PaymentContextProviderProps,
+    PaymentContextProvider,
+}                           from '@/components/Checkout/templates/paymentDataContext'
 
 // others:
 import {
@@ -1935,6 +1940,7 @@ Updating the confirmation is not required.`,
             try {
                 const {
                     business,
+                    payment,
                     emails : {
                         checkout : checkoutEmail,
                     },
@@ -1943,20 +1949,25 @@ Updating the confirmation is not required.`,
                 
                 
                 const { renderToStaticMarkup } = await import('react-dom/server');
+                const businessContextProviderProps  : BusinessContextProviderProps = {
+                    // data:
+                    model : business,
+                };
                 const orderDataContextProviderProps : OrderDataContextProviderProps = {
                     // data:
-                    order       : newOrder,
-                    customer    : newCustomer,
-                    isPaid      : !('error' in paymentResponse) && (paymentResponse.type !== 'MANUAL'),
+                    order                : newOrder,
+                    customer             : newCustomer,
+                    paymentConfirmation  : null,
+                    isPaid               : !('error' in paymentResponse) && (paymentResponse.type !== 'MANUAL'),
                     
                     
                     
                     // relation data:
-                    countryList : countryList,
+                    countryList          : countryList,
                 };
-                const businessContextProviderProps  : BusinessContextProviderProps = {
+                const paymentContextProviderProps  : PaymentContextProviderProps = {
                     // data:
-                    model : business,
+                    model : payment,
                 };
                 
                 
@@ -1976,18 +1987,22 @@ Updating the confirmation is not required.`,
                         from        : checkoutEmail.from,
                         to          : customerEmail,
                         subject     : renderToStaticMarkup(
-                            <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                <BusinessContextProvider {...businessContextProviderProps}>
-                                    {checkoutEmail.subject}
-                                </BusinessContextProvider>
-                            </OrderDataContextProvider>
+                            <BusinessContextProvider {...businessContextProviderProps}>
+                                <OrderDataContextProvider {...orderDataContextProviderProps}>
+                                    <PaymentContextProvider {...paymentContextProviderProps}>
+                                        {checkoutEmail.subject}
+                                    </PaymentContextProvider>
+                                </OrderDataContextProvider>
+                            </BusinessContextProvider>
                         ).replace(/[\r\n\t]+/g, ' ').trim(),
                         html        : renderToStaticMarkup(
-                            <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                <BusinessContextProvider {...businessContextProviderProps}>
-                                    {checkoutEmail.message}
-                                </BusinessContextProvider>
-                            </OrderDataContextProvider>
+                            <BusinessContextProvider {...businessContextProviderProps}>
+                                <OrderDataContextProvider {...orderDataContextProviderProps}>
+                                    <PaymentContextProvider {...paymentContextProviderProps}>
+                                        {checkoutEmail.message}
+                                    </PaymentContextProvider>
+                                </OrderDataContextProvider>
+                            </BusinessContextProvider>
                         ),
                         attachments : (
                             newOrderItems

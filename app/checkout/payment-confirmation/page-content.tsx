@@ -105,7 +105,7 @@ import {
 import {
     WysiwygEditorState,
     WysiwygViewer,
-}                           from '@/components/WysiwygEditor'
+}                           from '@/components/editors/WysiwygEditor'
 
 // stores:
 import {

@@ -4,10 +4,44 @@ import {
     default as React,
 }                           from 'react'
 
+// lexical functions:
+import {
+    createHeadlessEditor,
+}                           from '@lexical/headless'
+import {
+    $generateHtmlFromNodes,
+}                           from '@lexical/html'
+
+// types:
+import type {
+    // types:
+    WysiwygEditorState,
+}                           from '@/components/editors/WysiwygEditor/types'
+
+// // theme:
+// import {
+//     // defined classes to match Reusable-UI's styles & components.
+//     defaultTheme,
+// }                           from '@/components/editors/WysiwygEditor/defaultTheme'
+
+// nodes:
+import {
+    // defined supported nodes.
+    defaultNodes,
+}                           from '@/components/editors/WysiwygEditor/defaultNodes'
+
 // styles:
 import * as styles          from '@/components/Checkout/templates/styles'
 
 // internals:
+import {
+    // hooks:
+    useBusinessContext,
+}                           from './businessDataContext'
+import {
+    // hooks:
+    usePaymentContext,
+}                           from './paymentDataContext'
 import {
     // hooks:
     useOrderDataContext,
@@ -262,9 +296,105 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
     );
 };
 
+const PaymentBank = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        model,
+    } = usePaymentContext();
+    
+    
+    
+    // jsx:
+    return (
+        model?.bank ?? null
+    );
+};
+const PaymentConfirmationUrl = (): string|null => {
+    // contexts:
+    const {
+        // data:
+        model : business,
+    } = useBusinessContext();
+    
+    const {
+        // data:
+        model,
+    } = usePaymentContext();
+    
+    const {
+        // data:
+        order : {
+            orderId,
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    const baseUrl                 = business?.url;
+    const relativeConfirmationUrl = model?.confirmationUrl;
+    const absoluteConfirmationUrl = `${relativeConfirmationUrl?.startsWith('/') ? baseUrl : ''}${relativeConfirmationUrl}`;
+    const absoluteConfirmationUrlWithId = `${absoluteConfirmationUrl}?orderId=${encodeURIComponent(orderId)}`;
+    
+    
+    
+    // jsx:
+    return (
+        absoluteConfirmationUrlWithId
+    );
+};
+const PaymentConfirmationLink = (): React.ReactNode => {
+    const url = PaymentConfirmationUrl();
+    
+    
+    
+    // jsx:
+    if (!url) return null;
+    return (
+        <a href={url}>
+            {url}
+        </a>
+    );
+};
+export const PaymentConfirmationRejection = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        paymentConfirmation,
+    } = useOrderDataContext();
+    const rejectionReason = paymentConfirmation?.rejectionReason;
+    
+    
+    
+    const editor = createHeadlessEditor({
+        namespace   : 'WysiwygEditor', 
+        editable    : false,
+        
+        editorState : (rejectionReason ?? undefined) as WysiwygEditorState|undefined,
+        
+        // theme       : defaultTheme(), // no need className(s) because email doesn't support styling
+        nodes       : defaultNodes(),
+    });
+    
+    
+    
+    // jsx:
+    if (!rejectionReason) return null;
+    return (
+        // $generateHtmlFromNodes(editor) ?? null
+        JSON.stringify(rejectionReason)
+    );
+};
+
+
 export const Payment = {
-    BillingAddress : BillingAddress,
-    Method         : PaymentMethod,
-    Amount         : PaymentAmount,
-    Info           : PaymentInfo,
+    BillingAddress        : BillingAddress,
+    Method                : PaymentMethod,
+    Amount                : PaymentAmount,
+    Info                  : PaymentInfo,
+    
+    Bank                  : PaymentBank,
+    ConfirmationUrl       : PaymentConfirmationUrl,
+    ConfirmationLink      : PaymentConfirmationLink,
+    ConfirmationRejection : PaymentConfirmationRejection,
 };

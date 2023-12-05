@@ -17,39 +17,39 @@ import {
 
 // configs:
 import type {
-    BusinessConfig,
+    PaymentConfig,
 }                           from '@/components/Checkout/types'
 
 
 
 // contexts:
-export interface BusinessApi {
+export interface PaymentApi {
     // data:
-    model : BusinessConfig|undefined
+    model : PaymentConfig|undefined
 }
-const BusinessContext = createContext<BusinessApi>({
+const PaymentContext = createContext<PaymentApi>({
     model : undefined,
 });
 
 
 
 // hooks:
-export const useBusinessContext = () => {
-    return useContext(BusinessContext);
+export const usePaymentContext = () => {
+    return useContext(PaymentContext);
 };
 
 
 
 // react components:
-export interface BusinessContextProviderProps {
+export interface PaymentContextProviderProps {
     // data:
-    model : BusinessConfig
+    model : PaymentConfig
 }
-export const BusinessContextProvider = (props: React.PropsWithChildren<BusinessContextProviderProps>): JSX.Element|null => {
+export const PaymentContextProvider = (props: React.PropsWithChildren<PaymentContextProviderProps>): JSX.Element|null => {
     // jsx:
     return (
-        <BusinessContext.Provider value={props}>
+        <PaymentContext.Provider value={props}>
             {props.children}
-        </BusinessContext.Provider>
+        </PaymentContext.Provider>
     );
 };
