@@ -58,7 +58,7 @@ export interface OrderDataApi {
     // data:
     order                : OrderAndData
     customer             : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
-    paymentConfirmation  : Pick<PaymentConfirmation, 'rejectionReason'>|null
+    paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
     isPaid               : boolean
     
     
@@ -92,7 +92,7 @@ export interface OrderDataContextProviderProps {
     // data:
     order                : OrderAndData
     customer             : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
-    paymentConfirmation  : Pick<PaymentConfirmation, 'rejectionReason'>|null
+    paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
     isPaid               : boolean
     
     

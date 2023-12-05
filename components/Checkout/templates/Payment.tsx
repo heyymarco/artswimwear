@@ -324,23 +324,22 @@ const PaymentConfirmationUrl = (): string|null => {
     
     const {
         // data:
-        order : {
-            orderId,
-        },
+        paymentConfirmation,
     } = useOrderDataContext();
+    const paymentConfirmationToken = paymentConfirmation?.token;
     
     
     
-    const baseUrl                 = business?.url;
-    const relativeConfirmationUrl = model?.confirmationUrl;
-    const absoluteConfirmationUrl = `${relativeConfirmationUrl?.startsWith('/') ? baseUrl : ''}${relativeConfirmationUrl}`;
-    const absoluteConfirmationUrlWithId = `${absoluteConfirmationUrl}?orderId=${encodeURIComponent(orderId)}`;
+    const baseUrl                          = business?.url;
+    const relativeConfirmationUrl          = model?.confirmationUrl;
+    const absoluteConfirmationUrl          = `${relativeConfirmationUrl?.startsWith('/') ? baseUrl : ''}${relativeConfirmationUrl}`;
+    const absoluteConfirmationUrlWithToken = `${absoluteConfirmationUrl}?token=${encodeURIComponent(paymentConfirmationToken ?? '')}`;
     
     
     
     // jsx:
     return (
-        absoluteConfirmationUrlWithId
+        absoluteConfirmationUrlWithToken
     );
 };
 const PaymentConfirmationLink = (): React.ReactNode => {

@@ -1460,9 +1460,10 @@ Updating the confirmation is not required.`,
     
     
     
-    let paymentResponse : PaymentDetail|PaymentDeclined;
-    let newOrder        : OrderAndData|undefined = undefined;
-    let countryList     : EntityState<CountryPreview>;
+    let paymentResponse          : PaymentDetail|PaymentDeclined;
+    let paymentConfirmationToken : string|undefined = undefined;
+    let newOrder                 : OrderAndData|undefined = undefined;
+    let countryList              : EntityState<CountryPreview>;
     try {
         const newCustomer : CommitCustomer = {
             marketingOpt  : marketingOpt,
@@ -1471,7 +1472,7 @@ Updating the confirmation is not required.`,
             email         : customerEmail,
         };
         
-        ([paymentResponse, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, OrderAndData|undefined, EntityState<CountryPreview>]> => {
+        ([paymentResponse, paymentConfirmationToken, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, string|undefined, OrderAndData|undefined, EntityState<CountryPreview>]> => {
             //#region verify draftOrder_id
             const requiredSelect = {
                 id                     : true,
@@ -1901,7 +1902,7 @@ Updating the confirmation is not required.`,
             
             
             // report the payment result:
-            return [paymentResponse, newOrder, countryList];
+            return [paymentResponse, paymentConfirmationToken, newOrder, countryList];
         }));
         
         
@@ -1957,7 +1958,10 @@ Updating the confirmation is not required.`,
                     // data:
                     order                : newOrder,
                     customer             : newCustomer,
-                    paymentConfirmation  : null,
+                    paymentConfirmation  : {
+                        token            : paymentConfirmationToken ?? '',
+                        rejectionReason  : null,
+                    },
                     isPaid               : !('error' in paymentResponse) && (paymentResponse.type !== 'MANUAL'),
                     
                     
