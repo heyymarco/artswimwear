@@ -286,8 +286,8 @@ model ShippingTracking {
     // data:
     token                   String                  @unique
     
-    shippingCarrier         String?
-    shippingNumber          String?
+    shippingCarrier         String?                 // minLength: 1, maxLength: 50
+    shippingNumber          String?                 // minLength: 1, maxLength: 50
     
     preferredTimezone       Int?
     
