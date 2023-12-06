@@ -210,7 +210,6 @@ model Order {
     
     shippingAddress         Address?
     shippingCost            Float?                  // min: 0
-    shippingNumber          String?
     
     payment                 Payment
     
@@ -224,6 +223,8 @@ model Order {
     shippingProvider        ShippingProvider?       @relation(fields: [shippingProviderId] , references: [id], "OrdersOnShipping", onDelete: SetNull) // preserve the related Order(s) if the ShippingProvider deleted
     
     paymentConfirmation     PaymentConfirmation?    // an Order may have one related PaymentConfirmation // one to one
+    
+    shippingTracking        ShippingTracking?       // an Order may have one related ShippingTracking // one to one
 }
 model OrdersOnProducts {
     // records:
@@ -277,4 +278,20 @@ model DraftOrdersOnProducts {
     
     productId               String?
     product                 Product?                @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
+}
+model ShippingTracking {
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    
+    // data:
+    token                   String                  @unique
+    
+    shippingCarrier         String?
+    shippingNumber          String?
+    
+    preferredTimezone       Int?
+    
+    // relations:
+    orderId                 String                  @unique
+    order                   Order                   @relation(fields: [orderId], references: [id], onDelete: Cascade) // delete the related ShippingTracking if the Order deleted
 }
