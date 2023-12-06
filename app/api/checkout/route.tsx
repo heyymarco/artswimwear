@@ -1318,8 +1318,10 @@ router
                             token : paymentConfirmationToken,
                             
                             OR : [
-                                { reviewedAt      : { equals: null } }, // never approved or rejected
-                                { rejectionReason : { not   : null } }, // has been reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
+                                { reviewedAt      : { equals : null  } }, // never approved or rejected
+                                { reviewedAt      : { isSet  : false } }, // never approved or rejected
+                                
+                                { rejectionReason : { not    : null  } }, // has reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
                             ],
                         },
                         data   : {
@@ -1341,6 +1343,7 @@ router
                     });
                 }
                 catch (error: any) {
+                    console.log('ERROR: ', error, {amount, paymentConfirmationToken});
                     if (error?.code === 'P2025') return 'ALREADY_APPROVED';
                     throw error;
                 } // try
