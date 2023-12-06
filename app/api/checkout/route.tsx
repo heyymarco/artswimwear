@@ -1321,6 +1321,8 @@ router
                                 { reviewedAt      : { equals : null  } }, // never approved or rejected
                                 { reviewedAt      : { isSet  : false } }, // never approved or rejected
                                 
+                                /* -or- */
+                                
                                 { rejectionReason : { not    : null  } }, // has reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
                             ],
                         },
