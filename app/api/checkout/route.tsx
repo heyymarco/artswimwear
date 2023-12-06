@@ -472,7 +472,7 @@ export interface PaymentConfirmationDetail
             |'amount'
             |'payerName'
             |'paymentDate'
-            |'preferedTimezone'
+            |'preferredTimezone'
             
             |'originatingBank'
             |'destinationBank'
@@ -1232,7 +1232,7 @@ router
             amount,
             payerName,
             paymentDate,
-            preferedTimezone,
+            preferredTimezone,
             
             originatingBank,
             destinationBank,
@@ -1270,7 +1270,7 @@ router
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
-        if ((preferedTimezone !== undefined) && (preferedTimezone !== null) && (typeof(preferedTimezone) !== 'number') && !isFinite(preferedTimezone) && !possibleTimezoneValues.includes(preferedTimezone)) {
+        if ((preferredTimezone !== undefined) && (preferredTimezone !== null) && (typeof(preferredTimezone) !== 'number') && !isFinite(preferredTimezone) && !possibleTimezoneValues.includes(preferredTimezone)) {
             return NextResponse.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
@@ -1289,19 +1289,19 @@ router
         
         
         const select = {
-            updatedAt        : true,
-            reviewedAt       : true,
+            updatedAt         : true,
+            reviewedAt        : true,
             
-            currency         : true,
-            amount           : true,
-            payerName        : true,
-            paymentDate      : true,
-            preferedTimezone : true,
+            currency          : true,
+            amount            : true,
+            payerName         : true,
+            paymentDate       : true,
+            preferredTimezone : true,
             
-            originatingBank  : true,
-            destinationBank  : true,
+            originatingBank   : true,
+            destinationBank   : true,
             
-            rejectionReason  : true,
+            rejectionReason   : true,
         };
         const paymentConfirmationDetail : PaymentConfirmationDetail|'ALREADY_APPROVED'|null = (
             (amount === undefined)
@@ -1334,7 +1334,7 @@ router
                             amount,
                             payerName,
                             paymentDate      : paymentDateAsDate ?? new Date(paymentDate),
-                            preferedTimezone,
+                            preferredTimezone,
                             
                             originatingBank,
                             destinationBank,

@@ -164,20 +164,20 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     
     
     // states:
-    const [updatedAt       , setUpdatedAt       ] = useState<Date|null>(null);
-    const [reviewedAt      , setReviewedAt      ] = useState<Date|null>(null);
+    const [updatedAt        , setUpdatedAt        ] = useState<Date|null>(null);
+    const [reviewedAt       , setReviewedAt       ] = useState<Date|null>(null);
     
-    const [enableValidation, setEnableValidation] = useState<boolean>(false);
-    const [currency        , setCurrency        ] = useState<string>(paymentConfirmationData?.currency || commerceConfig.defaultCurrency);
-    const [amount          , setAmount          ] = useState<number|null>(paymentConfirmationData?.amount ?? null);
-    const [payerName       , setPayerName       ] = useState<string|null>(paymentConfirmationData?.payerName || null);
-    const [paymentDate     , setPaymentDate     ] = useState<Date|null>(paymentConfirmationData?.paymentDate || null);
-    const [preferedTimezone, setPreferedTimezone] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
-    const [originatingBank , setOriginatingBank ] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
-    const [destinationBank , setDestinationBank ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
+    const [enableValidation , setEnableValidation ] = useState<boolean>(false);
+    const [currency         , setCurrency         ] = useState<string>(paymentConfirmationData?.currency || commerceConfig.defaultCurrency);
+    const [amount           , setAmount           ] = useState<number|null>(paymentConfirmationData?.amount ?? null);
+    const [payerName        , setPayerName        ] = useState<string|null>(paymentConfirmationData?.payerName || null);
+    const [paymentDate      , setPaymentDate      ] = useState<Date|null>(paymentConfirmationData?.paymentDate || null);
+    const [preferredTimezone, setPreferredTimezone] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
+    const [originatingBank  , setOriginatingBank  ] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
+    const [destinationBank  , setDestinationBank  ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     const selectedCurrency = commerceConfig.currencies?.[currency as keyof typeof commerceConfig.currencies];
     
-    const [rejectionReason , setRejectionReason ] = useState<WysiwygEditorState|null>(null);
+    const [rejectionReason  , setRejectionReason  ] = useState<WysiwygEditorState|null>(null);
     const isReviewed    = !!reviewedAt;
     const isRejected    =  isReviewed && !!rejectionReason;
     const isApproved    =  isReviewed &&  !rejectionReason;
@@ -228,7 +228,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                 amount,
                 payerName,
                 paymentDate: paymentDateAsString,
-                preferedTimezone,
+                preferredTimezone,
                 
                 originatingBank,
                 destinationBank,
@@ -245,7 +245,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             setAmount(amount);
             setPayerName(payerName);
             setPaymentDate(paymentDateAsString ? new Date(paymentDateAsString) : null); // the paymentDateAsString returned from server is a 'string', we need to convert back to Date type
-            if (preferedTimezone !== null) setPreferedTimezone(preferedTimezone);
+            if (preferredTimezone !== null) setPreferredTimezone(preferredTimezone);
             
             setOriginatingBank(originatingBank);
             setDestinationBank(destinationBank);
@@ -284,17 +284,17 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
         setIsBusy(true);
         try {
             await doPaymentConfirmation({
-                paymentConfirmation  : {
-                    token            : token,
+                paymentConfirmation   : {
+                    token             : token,
                     
-                    currency         : currency,
-                    amount           : amount,
-                    payerName        : payerName       || null, // convert empty string to null
-                    paymentDate      : paymentDate,
-                    preferedTimezone : preferedTimezone,
+                    currency          : currency,
+                    amount            : amount,
+                    payerName         : payerName       || null, // convert empty string to null
+                    paymentDate       : paymentDate,
+                    preferredTimezone : preferredTimezone,
                     
-                    originatingBank  : originatingBank || null, // convert empty string to null
-                    destinationBank  : destinationBank || null, // convert empty string to null
+                    originatingBank   : originatingBank || null, // convert empty string to null
+                    destinationBank   : destinationBank || null, // convert empty string to null
                 },
             }).unwrap();
         }
@@ -451,8 +451,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                             
                                             // values:
                                             value={reviewedAt}
-                                            timezone={preferedTimezone}
-                                            onTimezoneChange={setPreferedTimezone}
+                                            timezone={preferredTimezone}
+                                            onTimezoneChange={setPreferredTimezone}
                                         />
                                     </Group>
                                     
@@ -533,8 +533,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                         
                                         // values:
                                         value={updatedAt}
-                                        timezone={preferedTimezone}
-                                        onTimezoneChange={setPreferedTimezone}
+                                        timezone={preferredTimezone}
+                                        onTimezoneChange={setPreferredTimezone}
                                     />
                                 </Group>}
                                 
@@ -688,8 +688,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     onChange={(value) => {
                                         setPaymentDate(value);
                                     }}
-                                    timezone={preferedTimezone}
-                                    onTimezoneChange={setPreferedTimezone}
+                                    timezone={preferredTimezone}
+                                    onTimezoneChange={setPreferredTimezone}
                                     
                                     
                                     
