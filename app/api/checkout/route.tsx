@@ -286,7 +286,6 @@ type CommitCustomer = Omit<Customer,
 >
 type CommitDraftOrder = Omit<DraftOrder,
     |'createdAt'
-    |'updatedAt'
     
     |'paypalOrderId'
 > & {
@@ -465,7 +464,7 @@ export interface PaymentConfirmationRequest {
 export interface PaymentConfirmationDetail
     extends
         Pick<PaymentConfirmation,
-            |'updatedAt'
+            |'reportedAt'
             |'reviewedAt'
             
             |'currency'
@@ -1289,7 +1288,7 @@ router
         
         
         const select = {
-            updatedAt         : true,
+            reportedAt        : true,
             reviewedAt        : true,
             
             currency          : true,
@@ -1327,7 +1326,7 @@ router
                             ],
                         },
                         data   : {
-                            updatedAt  : new Date(),
+                            reportedAt : new Date(), // set the confirmation date
                             reviewedAt : null, // reset for next review
                             
                             currency,

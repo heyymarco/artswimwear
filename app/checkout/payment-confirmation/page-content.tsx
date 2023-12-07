@@ -164,7 +164,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     
     
     // states:
-    const [updatedAt        , setUpdatedAt        ] = useState<Date|null>(null);
+    const [reportedAt       , setReportedAt       ] = useState<Date|null>(null);
     const [reviewedAt       , setReviewedAt       ] = useState<Date|null>(null);
     
     const [enableValidation , setEnableValidation ] = useState<boolean>(false);
@@ -181,7 +181,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const isReviewed    = !!reviewedAt;
     const isRejected    =  isReviewed && !!rejectionReason;
     const isApproved    =  isReviewed &&  !rejectionReason;
-    const isUnderReview = !isReviewed && !!updatedAt;
+    const isUnderReview = !isReviewed && !!reportedAt;
     
     const [hasInitialData  , setHasInitialData  ] = useState<boolean>(false);
     const [hasModified     , setHasModified     ] = useState<boolean>(false);
@@ -221,7 +221,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             
             
             const {
-                updatedAt  : updatedAtAsString,
+                reportedAt : reportedAtAsString,
                 reviewedAt : reviewedAtAsString,
                 
                 currency,
@@ -238,7 +238,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             
             
             
-            setUpdatedAt(updatedAtAsString ? new Date(updatedAtAsString) : null);
+            setReportedAt(reportedAtAsString ? new Date(reportedAtAsString) : null);
             setReviewedAt(reviewedAtAsString ? new Date(reviewedAtAsString) : null);
             
             setCurrency(currency || commerceConfig.defaultCurrency);
@@ -516,9 +516,9 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                 
                                 {(isUnderReview || isRejected || isApproved) && <hr />}
                                 
-                                {!!updatedAt && <Group>
+                                {!!reportedAt && <Group>
                                     <Label theme='primary' className='solid'>
-                                        Updated At
+                                        Reported At
                                     </Label>
                                     <DateTimeEditor
                                         // variants:
@@ -532,7 +532,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                         
                                         
                                         // values:
-                                        value={updatedAt}
+                                        value={reportedAt}
                                         timezone={preferredTimezone}
                                         onTimezoneChange={setPreferredTimezone}
                                     />

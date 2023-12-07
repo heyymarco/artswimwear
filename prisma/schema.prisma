@@ -169,7 +169,7 @@ type Payment {
 model PaymentConfirmation {
     // records:
     id                      String                  @id @default(cuid()) @map("_id")
-    updatedAt               DateTime?               // manually set
+    reportedAt              DateTime?               // manually set
     reviewedAt              DateTime?               // manually set
     
     // data:
