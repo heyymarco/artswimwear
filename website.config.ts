@@ -38,3 +38,6 @@ export const PAGE_CHECKOUT_DESCRIPTION                   = '{{TheCurrentStepDesc
 
 export const PAGE_CHECKOUT_PAYMENT_CONFIRM_TITLE         = `Confirm Your Payment - ${WEBSITE_TITLE}`
 export const PAGE_CHECKOUT_PAYMENT_CONFIRM_DESCRIPTION   = 'Confirm your payment of your order.'
+
+export const PAGE_CHECKOUT_SHIPPING_TRACKING_TITLE       = `Delivery Tracking - ${WEBSITE_TITLE}`
+export const PAGE_CHECKOUT_SHIPPING_TRACKING_DESCRIPTION = 'Track your order delivery.'

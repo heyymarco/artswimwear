@@ -34,6 +34,7 @@ import {
     type PaymentConfirmation,
     type DraftOrder,
     type DraftOrdersOnProducts,
+    type ShippingTracking,
 }                           from '@prisma/client'
 
 // ORMs:
@@ -477,6 +478,22 @@ export interface PaymentConfirmationDetail
             |'destinationBank'
             
             |'rejectionReason'
+        >
+{
+}
+
+export interface ShippingTrackingRequest {
+    shippingTracking : Partial<Pick<ShippingTrackingDetail, 'preferredTimezone'>> & {
+        token : string
+    }
+}
+export interface ShippingTrackingDetail
+    extends
+        Pick<ShippingTracking,
+            |'shippingCarrier'
+            |'shippingNumber'
+            
+            |'preferredTimezone'
         >
 {
 }
@@ -1364,6 +1381,66 @@ Updating the confirmation is not required.`,
             }, { status: 400 }); // handled with error
         } // if
         return NextResponse.json(paymentConfirmationDetail); // handled with success
+    } // if
+    
+    
+    
+    const shippingTracking = paymentData.shippingTracking;
+    if (shippingTracking !== undefined) {
+        if ((typeof(shippingTracking) !== 'object')) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        const shippingTrackingToken = shippingTracking.token;
+        if (!shippingTrackingToken || (typeof(shippingTrackingToken) !== 'string')) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        
+        
+        
+        const {
+            preferredTimezone,
+        } = shippingTracking;
+        if ((preferredTimezone !== undefined) && (preferredTimezone !== null) && (typeof(preferredTimezone) !== 'number') && !isFinite(preferredTimezone) && !possibleTimezoneValues.includes(preferredTimezone)) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        
+        
+        
+        const select = {
+            shippingCarrier   : true,
+            shippingNumber    : true,
+            preferredTimezone : true,
+        };
+        const shippingTrackingDetail : ShippingTrackingDetail|null = (
+            (preferredTimezone === undefined)
+            ? await prisma.shippingTracking.findUnique({
+                where  : {
+                    token : shippingTrackingToken,
+                },
+                select : select,
+            })
+            : await prisma.shippingTracking.update({
+                where  : {
+                    token : shippingTrackingToken,
+                },
+                data   : {
+                    preferredTimezone,
+                },
+                select : select,
+            })
+        );
+        if (!shippingTrackingDetail) {
+            return NextResponse.json({
+                error: 'Invalid shipping tracking token.',
+            }, { status: 400 }); // handled with error
+        } // if
+        return NextResponse.json(shippingTrackingDetail); // handled with success
     } // if
     
     
