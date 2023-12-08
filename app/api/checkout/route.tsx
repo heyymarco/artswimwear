@@ -68,6 +68,11 @@ import {
     PaymentContextProviderProps,
     PaymentContextProvider,
 }                           from '@/components/Checkout/templates/paymentDataContext'
+import {
+    // react components:
+    ShippingContextProviderProps,
+    ShippingContextProvider,
+}                           from '@/components/Checkout/templates/shippingDataContext'
 
 // others:
 import {
@@ -2023,6 +2028,7 @@ Updating the confirmation is not required.`,
                 const {
                     business,
                     payment,
+                    shipping,
                     emails : {
                         checkout : checkoutEmail,
                     },
@@ -2044,6 +2050,7 @@ Updating the confirmation is not required.`,
                         rejectionReason  : null,
                     },
                     isPaid               : !('error' in paymentResponse) && (paymentResponse.type !== 'MANUAL'),
+                    shippingTracking     : null,
                     
                     
                     
@@ -2053,6 +2060,10 @@ Updating the confirmation is not required.`,
                 const paymentContextProviderProps  : PaymentContextProviderProps = {
                     // data:
                     model : payment,
+                };
+                const shippingContextProviderProps  : ShippingContextProviderProps = {
+                    // data:
+                    model : shipping,
                 };
                 
                 
@@ -2075,7 +2086,9 @@ Updating the confirmation is not required.`,
                             <BusinessContextProvider {...businessContextProviderProps}>
                                 <OrderDataContextProvider {...orderDataContextProviderProps}>
                                     <PaymentContextProvider {...paymentContextProviderProps}>
-                                        {checkoutEmail.subject}
+                                        <ShippingContextProvider {...shippingContextProviderProps}>
+                                            {checkoutEmail.subject}
+                                        </ShippingContextProvider>
                                     </PaymentContextProvider>
                                 </OrderDataContextProvider>
                             </BusinessContextProvider>
@@ -2084,7 +2097,9 @@ Updating the confirmation is not required.`,
                             <BusinessContextProvider {...businessContextProviderProps}>
                                 <OrderDataContextProvider {...orderDataContextProviderProps}>
                                     <PaymentContextProvider {...paymentContextProviderProps}>
-                                        {checkoutEmail.message}
+                                        <ShippingContextProvider {...shippingContextProviderProps}>
+                                            {checkoutEmail.message}
+                                        </ShippingContextProvider>
                                     </PaymentContextProvider>
                                 </OrderDataContextProvider>
                             </BusinessContextProvider>

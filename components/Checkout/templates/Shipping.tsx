@@ -10,6 +10,14 @@ import * as styles          from '@/components/Checkout/templates/styles'
 // internals:
 import {
     // hooks:
+    useBusinessContext,
+}                           from './businessDataContext'
+import {
+    // hooks:
+    useShippingContext,
+}                           from './shippingDataContext'
+import {
+    // hooks:
     useOrderDataContext,
 }                           from './orderDataContext'
 
@@ -97,6 +105,71 @@ const ShippingMethod = (): React.ReactNode => {
         </>
     );
 };
+const ShippingNumber = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        shippingTracking,
+    } = useOrderDataContext();
+    const shippingTrackingNumber = shippingTracking?.shippingNumber;
+    
+    
+    
+    // jsx:
+    if (!shippingTracking) return null;
+    return (
+        <>
+            <p style={styles.paragraphBase}>
+                {shippingTrackingNumber}
+            </p>
+        </>
+    );
+};
+const ShippingTrackingUrl = (): string|null => {
+    // contexts:
+    const {
+        // data:
+        model : business,
+    } = useBusinessContext();
+    
+    const {
+        // data:
+        model,
+    } = useShippingContext();
+    
+    const {
+        // data:
+        shippingTracking,
+    } = useOrderDataContext();
+    const shippingTrackingToken = shippingTracking?.token;
+    
+    
+    
+    const baseUrl                      = business?.url;
+    const relativeTrackingUrl          = model?.trackingUrl;
+    const absoluteTrackingUrl          = `${relativeTrackingUrl?.startsWith('/') ? baseUrl : ''}${relativeTrackingUrl}`;
+    const absoluteTrackingUrlWithToken = `${absoluteTrackingUrl}?token=${encodeURIComponent(shippingTrackingToken ?? '')}`;
+    
+    
+    
+    // jsx:
+    return (
+        absoluteTrackingUrlWithToken
+    );
+};
+const ShippingTrackingLink = (): React.ReactNode => {
+    const url = ShippingTrackingUrl();
+    
+    
+    
+    // jsx:
+    if (!url) return null;
+    return (
+        <a href={url}>
+            {url}
+        </a>
+    );
+};
 
 
 export interface ShippingInfoProps {
@@ -120,6 +193,15 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
         // accessibilities:
         title,
     } = props;
+    
+    
+    
+    // contexts:
+    const {
+        // data:
+        shippingTracking,
+    } = useOrderDataContext();
+    const hasShippingTrackingNumber = !!shippingTracking?.shippingNumber;
     
     
     
@@ -167,20 +249,32 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
                 </tr>
                 
                 <tr>
-                    <th style={styles.tableTitleSideLast}>
+                    <th style={hasShippingTrackingNumber ? styles.tableTitleSide   : styles.tableTitleSideLast}>
                         Ship By
                     </th>
-                    <td style={styles.tableContentSideLast}>
+                    <td style={hasShippingTrackingNumber ? styles.tableContentSide : styles.tableContentSideLast}>
                         <ShippingMethod />
                     </td>
                 </tr>
+                
+                {hasShippingTrackingNumber && <tr>
+                    <th style={styles.tableTitleSideLast}>
+                        Shipping Tracking Number
+                    </th>
+                    <td style={styles.tableContentSideLast}>
+                        <ShippingNumber />
+                    </td>
+                </tr>}
             </tbody>
         </table>
     );
 };
 
 export const Shipping = {
-    Address : ShippingAddress,
-    Method  : ShippingMethod,
-    Info    : ShippingInfo,
+    Address      : ShippingAddress,
+    Method       : ShippingMethod,
+    Info         : ShippingInfo,
+    Number       : ShippingNumber,
+    TrackingUrl  : ShippingTrackingUrl,
+    TrackingLink : ShippingTrackingLink,
 };

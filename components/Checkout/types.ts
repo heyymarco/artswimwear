@@ -14,6 +14,9 @@ export interface PaymentConfig {
     bank            ?: React.ReactNode
     confirmationUrl  : string
 }
+export interface ShippingConfig {
+    trackingUrl      : string
+}
 export interface EmailConfig {
     host     : string
     port     : number
@@ -28,6 +31,7 @@ export interface EmailConfig {
 export interface CheckoutConfig {
     business : BusinessConfig
     payment  : PaymentConfig
+    shipping : ShippingConfig
     emails   : {
         checkout  : EmailConfig
         shipping  : EmailConfig

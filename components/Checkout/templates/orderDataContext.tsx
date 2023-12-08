@@ -16,6 +16,7 @@ import type {
     PaymentConfirmation,
     Order,
     OrdersOnProducts,
+    ShippingTracking,
 }                           from '@prisma/client'
 
 // stores:
@@ -60,6 +61,7 @@ export interface OrderDataApi {
     customer             : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
     paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
     isPaid               : boolean
+    shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null
     
     
     
@@ -71,6 +73,7 @@ const OrderDataContext = createContext<OrderDataApi>({
     customer             : null,
     paymentConfirmation  : null,
     isPaid               : false,
+    shippingTracking     : null,
     
     
     
@@ -94,6 +97,7 @@ export interface OrderDataContextProviderProps {
     customer             : Omit<Customer, 'id'|'createdAt'|'updatedAt'>|null
     paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
     isPaid               : boolean
+    shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null
     
     
     

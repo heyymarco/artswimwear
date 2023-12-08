@@ -141,6 +141,9 @@ export const checkoutConfig : CheckoutConfig = {
         </article>,
         confirmationUrl : '/checkout/payment-confirmation',
     },
+    shipping : {
+        trackingUrl     : '/checkout/shipping-tracking',
+    },
     emails   : {
         checkout  : {
             host     : process.env.EMAILS_CHECKOUT_HOST     ?? '',
@@ -525,7 +528,7 @@ export const checkoutConfig : CheckoutConfig = {
                     <p>
                         Please use the link below to track shipping status:
                         <br />
-                        <Business.Url />/orders/<Order.Id />?token=abcabcabc
+                        <Shipping.TrackingLink />
                     </p>
                 </section>
                 
@@ -879,16 +882,22 @@ export const checkoutConfig : CheckoutConfig = {
                         Dear <Customer.Name />,
                     </p>
                     
-                    <p style={styles.paragraphLast}>
+                    <p style={styles.paragraph}>
                         We are sorry, your payment confirmation was <strong>rejected</strong> because the information you submitted was invalid.
                         <br />
                         But don&apos;t worry, you can <strong>resend</strong> it again. We will check your payment confirmation again.
                     </p>
                     
-                    <p>
+                    <p style={styles.paragraph}>
                         Reason:
                         <br />
                         <Payment.ConfirmationRejection />
+                    </p>
+                    
+                    <p style={styles.paragraphLast}>
+                        Retry:
+                        <br />
+                        <Payment.ConfirmationLink />
                     </p>
                 </section>
                 
