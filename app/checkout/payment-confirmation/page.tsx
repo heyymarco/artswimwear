@@ -16,15 +16,15 @@ import {
 
 // configs:
 import {
-    PAGE_CHECKOUT_PAYMENTCONFIRM_TITLE,
-    PAGE_CHECKOUT_PAYMENTCONFIRM_DESCRIPTION,
+    PAGE_CHECKOUT_PAYMENT_CONFIRM_TITLE,
+    PAGE_CHECKOUT_PAYMENT_CONFIRM_DESCRIPTION,
 }                           from '@/website.config'
 
 
 
 export const metadata: Metadata = {
-    title       : PAGE_CHECKOUT_PAYMENTCONFIRM_TITLE,
-    description : PAGE_CHECKOUT_PAYMENTCONFIRM_DESCRIPTION,
+    title       : PAGE_CHECKOUT_PAYMENT_CONFIRM_TITLE,
+    description : PAGE_CHECKOUT_PAYMENT_CONFIRM_DESCRIPTION,
 }
 
 
