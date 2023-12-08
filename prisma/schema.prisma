@@ -293,5 +293,19 @@ model ShippingTracking {
     
     // relations:
     orderId                 String                  @unique
-    order                   Order                   @relation(fields: [orderId], references: [id], onDelete: Cascade) // delete the related ShippingTracking if the Order deleted
+    order                   Order                   @relation(fields: [orderId], references: [id], onDelete: Cascade)  // delete the related ShippingTracking if the Order deleted
+    
+    shippingTrackingLogs    ShippingTrackingLog[]   // a ShippingTracking may have some related ShippingTrackingLog(s) // one  to many
+}
+model ShippingTrackingLog {
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    reportedAt              DateTime?               // manually set
+    
+    // data:
+    log                     String
+    
+    // relations:
+    shippingTrackingId      String
+    shippingTracking        ShippingTracking        @relation(fields: [shippingTrackingId], references: [id], onDelete: Cascade) // delete the related ShippingTrackingLog(s) if the ShippingTracking deleted
 }
