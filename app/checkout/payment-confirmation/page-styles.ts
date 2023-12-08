@@ -2,7 +2,6 @@
 import {
     // writes css in javascript:
     rule,
-    descendants,
     children,
     style,
     scope,
@@ -15,12 +14,6 @@ import {
     
     
     
-    // a responsive management system:
-    ifContainerWidthAtLeast,
-    ifContainerWidthBetween,
-    
-    
-    
     // background stuff of UI:
     usesBackground,
     
@@ -28,30 +21,18 @@ import {
     
     // foreground (text color) stuff of UI:
     usesForeground,
-    
-    
-    
-    // size options of UI:
-    usesResizable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
     // base-components:
     basics,
-    
-    
-    
-    // base-content-components:
-    onContentStylesChange,
-    usesContentLayout,
-    usesContentVariants,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 
 
 // styles:
-const usesSignInTitleColor = () => {
+const usesTitleColor = () => {
     // dependencies:
     
     // features:
@@ -90,7 +71,7 @@ const usesSignInTitleColor = () => {
 const usesTitleLayout = () => {
     return style({
         // appearances:
-        ...usesSignInTitleColor(),
+        ...usesTitleColor(),
         
         
         
@@ -185,7 +166,7 @@ export default () => [
         // children:
         ...children('.title', {
             // appearances:
-            ...usesSignInTitleColor(),
+            ...usesTitleColor(),
         }),
     }),
 ];
