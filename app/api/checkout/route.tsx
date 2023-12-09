@@ -1453,6 +1453,13 @@ Updating the confirmation is not required.`,
                 error: 'Invalid shipping tracking token.',
             }, { status: 400 }); // handled with error
         } // if
+        
+        // sort the log by reported date:
+        shippingTrackingDetail.shippingTrackingLogs.sort(({reportedAt: a}, {reportedAt: b}) => {
+            if ((a === null) || (b === null)) return 0;
+            return a.valueOf() - b.valueOf();
+        });
+        
         return NextResponse.json(shippingTrackingDetail); // handled with success
     } // if
     

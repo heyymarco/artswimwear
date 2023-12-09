@@ -2,7 +2,6 @@
 import {
     // writes css in javascript:
     rule,
-    descendants,
     children,
     style,
     scope,
@@ -24,12 +23,16 @@ import {
     // a responsive management system:
     ifScreenWidthAtLeast,
     ifScreenWidthSmallerThan,
-    ifScreenWidthBetween,
     
     
     
     // a typography management system:
     typos,
+    
+    
+    
+    // removes browser's default stylesheet:
+    stripoutTextbox,
     
     
     
@@ -45,29 +48,12 @@ import {
     
     // border (stroke) stuff of UI:
     usesBorder,
-    
-    
-    
-    // padding (inner spacing) stuff of UI:
-    usesPadding,
-    
-    
-    
-    // groups a list of UIs into a single UI:
-    usesGroupable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
     // base-components:
     basics,
-    
-    
-    
-    // base-content-components:
-    onContentStylesChange,
-    usesContentLayout,
-    usesContentVariants,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 
@@ -150,7 +136,7 @@ const usesShippingTrackingLayout = () => {
         
         
         // spacings:
-        gap     : spacers.default,
+        gap     : spacers.xl,
         
         
         
@@ -164,10 +150,9 @@ const usesShippingTrackingLayout = () => {
             // layouts:
             ...usesTitleLayout(),
         }),
-        ...children('.info', {
+        ...children('table', {
             // positions:
-            gridArea       : 'info',
-            justifySelf    : 'center',
+            justifySelf    : 'stretch',
             
             
             
@@ -506,6 +491,10 @@ const usesShippingTrackingLayout = () => {
                 }),
             }),
         }),
+        ...children('.info', {
+            // positions:
+            gridArea       : 'info',
+        }),
         ...children('.logsEmpty', {
             // positions:
             gridArea : 'logs',
@@ -515,6 +504,32 @@ const usesShippingTrackingLayout = () => {
             // typos:
             textAlign: 'center',
         }),
+        ...children('.logs', {
+            // positions:
+            gridArea : 'logs',
+            
+            
+            
+            // typos:
+            textAlign: 'center',
+            
+            
+            
+            // children:
+            ...children('tbody', {
+                ...children('.timezone', {
+                    ...children('td', {
+                        display: 'grid',
+                        alignContent: 'center',
+                    }),
+                }),
+            }),
+        }),
+    });
+};
+const usesOutputDateLayout = () => {
+    return style({
+        ...stripoutTextbox(),
     });
 };
 
@@ -539,5 +554,8 @@ export default () => [
     }),
     scope('shippingTracking', {
         ...usesShippingTrackingLayout(),
+    }),
+    scope('outputDate', {
+        ...usesOutputDateLayout(),
     }),
 ];

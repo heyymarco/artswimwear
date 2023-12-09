@@ -29,25 +29,10 @@ import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
     useEvent,
-    
-    
-    
-    // an accessibility management system:
-    AccessibilityProvider,
-    
-    
-    
-    // a validation management system:
-    ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
-    // base-components:
-    Basic,
-    
-    
-    
     // base-content-components:
     Content,
     
@@ -55,14 +40,6 @@ import {
     
     // simple-components:
     Icon,
-    Label,
-    EditableButton,
-    ButtonIcon,
-    
-    
-    
-    // layout-components:
-    ListItem,
     
     
     
@@ -71,21 +48,8 @@ import {
     
     
     
-    // menu-components:
-    DropdownListButton,
-    
-    
-    
-    // composite-components:
-    Group,
-    Tab,
-    TabPanel,
-    
-    
-    
     // utility-components:
     useDialogMessage,
-    paragraphify,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // heymarco components:
@@ -100,18 +64,8 @@ import {
     ErrorBlankPage,
 }                           from '@/components/BlankPage'
 import {
-    CurrencyEditor,
-}                           from '@/components/editors/CurrencyEditor'
-import {
-    NameEditor,
-}                           from '@/components/editors/NameEditor'
-import {
-    DateTimeEditor,
-}                           from '@/components/editors/DateTimeEditor'
-import {
-    WysiwygEditorState,
-    WysiwygViewer,
-}                           from '@/components/editors/WysiwygEditor'
+    TimezoneEditor,
+}                           from '@/components/editors/TimezoneEditor'
 
 // stores:
 import {
@@ -119,11 +73,6 @@ import {
     ShippingTrackingDetail,
     useShippingTracking,
 }                           from '@/store/features/api/apiSlice'
-
-// configs:
-import {
-    commerceConfig,
-}                           from '@/commerce.config'
 
 
 
@@ -155,7 +104,6 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
     // apis:
     const [doShippingTracking, {data: shippingTrackingData, isLoading: isShippingTrackingLoading, isError: isShippingTrackingError, error: shippingTrackingError}] = useShippingTracking();
     
-    const [isBusy  , setIsBusy  ] = useState<boolean>(false);
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
     
     const isPageLoading = isShippingTrackingLoading && !isLoaded;
@@ -183,7 +131,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
     
     
     // handlers:
-    const handleGetConfirmationStatus = useEvent(async (): Promise<void> => {
+    const handleGetConfirmationStatus   = useEvent(async (): Promise<void> => {
         // conditions:
         if (!token) return; // token is blank => abort
         
@@ -221,34 +169,31 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
             // the error is already handled by `isPageError`
         } // try
     });
-    const handleDoConfirmation        = useEvent(async (): Promise<void> => {
-        // do payment confirmation:
-        setIsBusy(true);
+    const handleUpdatePreferredTimezone = useEvent(async (newPreferredTimezone: number): Promise<boolean> => {
+        // update local setting:
+        setPreferredTimezone(newPreferredTimezone);
+        
+        
+        
+        // update server setting:
         try {
             await doShippingTracking({
                 shippingTracking   : {
                     token             : token,
                     
-                    preferredTimezone : preferredTimezone,
+                    preferredTimezone : newPreferredTimezone,
                 },
             }).unwrap();
         }
         catch (fetchError: any) {
             showMessageFetchError({ fetchError, context: 'shippingTracking' });
             
-            return; // skip the success status
-        }
-        finally {
-            setIsBusy(false);
+            return false; // failed to save
         } // try
         
         
         
-        // show the success status:
-        // TODO
-    });
-    const handleGotoHome              = useEvent(() => {
-        // TODO
+        return true; // succeeded to save
     });
     
     
@@ -350,6 +295,38 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                     </Content>}
                     
                     {!!shippingTrackingLogs?.length && <>
+                        <table className='logs'>
+                            <tbody>
+                                <tr className='timezone'>
+                                    <td>
+                                        Timezone
+                                    </td>
+                                    <td>
+                                        <TimezoneEditor
+                                            // variants:
+                                            theme='primary'
+                                            mild={true}
+                                            
+                                            
+                                            
+                                            // values:
+                                            value={preferredTimezone}
+                                            onChange={handleUpdatePreferredTimezone}
+                                        />
+                                    </td>
+                                </tr>
+                                {shippingTrackingLogs.map(({reportedAt, log}) =>
+                                    <tr>
+                                        <td>
+                                            {!!reportedAt && <input type='datetime-local' className={styleSheet.outputDate} readOnly={true} value={(new Date(new Date(reportedAt).valueOf() + (preferredTimezone * 60 * 1000))).toISOString().slice(0, 16)} />}
+                                        </td>
+                                        <td>
+                                            {log}
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </>}
                 </div>}
             </Section>
