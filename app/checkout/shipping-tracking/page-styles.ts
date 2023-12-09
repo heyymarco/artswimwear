@@ -139,6 +139,13 @@ const usesShippingTrackingLayout = () => {
     return style({
         // layouts:
         display : 'grid',
+        gridTemplate : [[
+            '"..... title ....." auto',
+            '"..... info  ....." auto',
+            '"..... logs  ....." auto',
+            '/',
+            'auto max-content auto',
+        ]],
         
         
         
@@ -149,11 +156,17 @@ const usesShippingTrackingLayout = () => {
         
         // children:
         ...children('.title', {
+            // positions:
+            gridArea : 'title',
+            
+            
+            
             // layouts:
             ...usesTitleLayout(),
         }),
-        ...children('table', {
+        ...children('.info', {
             // positions:
+            gridArea       : 'info',
             justifySelf    : 'center',
             
             
@@ -492,6 +505,15 @@ const usesShippingTrackingLayout = () => {
                     }),
                 }),
             }),
+        }),
+        ...children('.logsEmpty', {
+            // positions:
+            gridArea : 'logs',
+            
+            
+            
+            // typos:
+            textAlign: 'center',
         }),
     });
 };

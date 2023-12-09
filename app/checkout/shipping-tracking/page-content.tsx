@@ -43,12 +43,18 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Basic,
+    
+    
+    
     // base-content-components:
     Content,
     
     
     
     // simple-components:
+    Icon,
     Label,
     EditableButton,
     ButtonIcon,
@@ -110,6 +116,7 @@ import {
 // stores:
 import {
     // hooks:
+    ShippingTrackingDetail,
     useShippingTracking,
 }                           from '@/store/features/api/apiSlice'
 
@@ -125,11 +132,6 @@ const useShippingTrackingPageStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'./page-styles')
 , { id: 'aq8up5vk1o' });
 import './page-styles';
-
-
-
-// utilities:
-const invalidSelector = ':is(.invalidating, .invalidated)';
 
 
 
@@ -164,11 +166,10 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
     
     
     // states:
-    const [shippingCarrier  , setShippingCarrier  ] = useState<string|null>(shippingTrackingData?.shippingCarrier || null);
-    const [shippingNumber   , setShippingNumber   ] = useState<string|null>(shippingTrackingData?.shippingNumber || null);
-    const [preferredTimezone, setPreferredTimezone] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
-    
-    const [hasModified     , setHasModified     ] = useState<boolean>(false);
+    const [shippingCarrier     , setShippingCarrier     ] = useState<string|null>(shippingTrackingData?.shippingCarrier || null);
+    const [shippingNumber      , setShippingNumber      ] = useState<string|null>(shippingTrackingData?.shippingNumber || null);
+    const [preferredTimezone   , setPreferredTimezone   ] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
+    const [shippingTrackingLogs, setShippingTrackingLogs] = useState<ShippingTrackingDetail['shippingTrackingLogs']>([]);
     
     
     
@@ -202,6 +203,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                 shippingCarrier,
                 shippingNumber,
                 preferredTimezone,
+                shippingTrackingLogs,
             } = shippingTrackingDetail;
             
             
@@ -209,6 +211,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
             setShippingCarrier(shippingCarrier);
             setShippingNumber(shippingNumber);
             if (preferredTimezone !== null) setPreferredTimezone(preferredTimezone);
+            setShippingTrackingLogs(shippingTrackingLogs);
             
             
             
@@ -307,12 +310,13 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                         This shipping tracking link is invalid or expired.
                     </p>
                 </Alert>}
+                
                 {!!isPageReady && <div className={styleSheet.shippingTracking}>
                     <h1 className='title'>
                         Delivery Tracking
                     </h1>
                     
-                    <table>
+                    <table className='info'>
                         <tbody>
                             <tr>
                                 <th>
@@ -332,8 +336,22 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                             </tr>
                         </tbody>
                     </table>
+                    
+                    {!shippingTrackingLogs?.length && <Content className='logsEmpty' theme='warning' mild={true}>
+                        <p>
+                            <Icon icon='timer' theme='primary' size='xl' />
+                        </p>
+                        <p className='h5'>
+                            There are no tracking logs yet.
+                        </p>
+                        <p>
+                            Please check it again later.
+                        </p>
+                    </Content>}
+                    
+                    {!!shippingTrackingLogs?.length && <>
+                    </>}
                 </div>}
-                {/* {JSON.stringify(shippingTrackingData)} */}
             </Section>
         </Main>
     );

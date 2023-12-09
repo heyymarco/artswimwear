@@ -25,16 +25,17 @@ import {
 }                           from 'nodemailer'
 
 // models:
-import {
-    type Product,
+import type {
+    Product,
     
-    type Customer,
+    Customer,
     
-    type Payment,
-    type PaymentConfirmation,
-    type DraftOrder,
-    type DraftOrdersOnProducts,
-    type ShippingTracking,
+    Payment,
+    PaymentConfirmation,
+    DraftOrder,
+    DraftOrdersOnProducts,
+    ShippingTracking,
+    ShippingTrackingLog,
 }                           from '@prisma/client'
 
 // ORMs:
@@ -501,6 +502,7 @@ export interface ShippingTrackingDetail
             |'preferredTimezone'
         >
 {
+    shippingTrackingLogs : Omit<ShippingTrackingLog, 'id'|'shippingTrackingId'>[]
 }
 
 
@@ -1418,9 +1420,15 @@ Updating the confirmation is not required.`,
         
         
         const select = {
-            shippingCarrier   : true,
-            shippingNumber    : true,
-            preferredTimezone : true,
+            shippingCarrier    : true,
+            shippingNumber     : true,
+            preferredTimezone  : true,
+            shippingTrackingLogs : {
+                select : {
+                    reportedAt : true,
+                    log        : true,
+                },
+            },
         };
         const shippingTrackingDetail : ShippingTrackingDetail|null = (
             (preferredTimezone === undefined)
