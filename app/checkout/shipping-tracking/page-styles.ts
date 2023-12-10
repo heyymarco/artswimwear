@@ -152,9 +152,9 @@ const usesTableLayout = () => {
         ...style({
             // layouts:
             display             : 'grid',
-            gridTemplateColumns : 'repeat(1, auto)',
+            gridTemplateColumns : 'repeat(1, auto)',   // single column
             ...ifScreenWidthAtLeast('sm', {
-                gridTemplateColumns : 'auto 1fr auto', // <Title>|<Label> + <Content> + <EditButton>
+                gridTemplateColumns : 'auto 1fr auto', // multi  columns : <Title>|<Label> + <Content> + <EditButton>
             }),
             ...children(['thead', 'tbody', 'tfoot'], {
                 gridColumn          : '1 / -1', // span the entire columns
@@ -168,6 +168,23 @@ const usesTableLayout = () => {
                         display          : 'grid',
                         gridTemplateRows : 'auto', // only 1 row
                         gridAutoFlow     : 'column',
+                        
+                        ...rule('[colspan="2"]', {
+                            gridColumnEnd : 'span 2',
+                        }),
+                        ...rule('[colspan="3"]', {
+                            gridColumnEnd : 'span 3',
+                        }),
+                        ...ifScreenWidthAtLeast('sm', { // auto fix for multi column : missing column of <EditButton>
+                            ...rule(':last-child', {
+                                ...rule(':nth-child(1)', {
+                                    gridColumnEnd : 'span 3',
+                                }),
+                                ...rule(':nth-child(2)', {
+                                    gridColumnEnd : 'span 2',
+                                }),
+                            }),
+                        }),
                     }),
                 }),
             }),
@@ -245,13 +262,6 @@ const usesTableLayout = () => {
                     ...children(['td', 'th'], { // spacing for all cells
                         // spacings:
                         padding        : '0.75rem',
-                        
-                        ...rule('[colspan="2"]', {
-                            gridColumnEnd : 'span 2',
-                        }),
-                        ...rule('[colspan="3"]', {
-                            gridColumnEnd : 'span 3',
-                        }),
                     }),
                     ...children(['td', 'th'], { // common features
                         // features:
