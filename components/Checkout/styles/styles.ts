@@ -333,8 +333,6 @@ export default () => {
     // dependencies:
     
     // features:
-    const {backgroundVars} = usesBackground();
-    const {foregroundVars} = usesForeground();
     const {borderVars    } = usesBorder();
     const {paddingVars   } = usesPadding();
     
