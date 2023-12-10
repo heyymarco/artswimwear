@@ -22,7 +22,6 @@ import {
     
     // a responsive management system:
     ifScreenWidthAtLeast,
-    ifScreenWidthSmallerThan,
     
     
     
@@ -48,6 +47,16 @@ import {
     
     // border (stroke) stuff of UI:
     usesBorder,
+    
+    
+    
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
+    
+    
+    
+    // groups a list of UIs into a single UI:
+    usesGroupable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -111,55 +120,73 @@ const usesTitleLayout = () => {
         textAlign : 'center',
     });
 };
-
-const usesShippingTrackingLayout = () => {
+const usesTableLayout = () => {
     // dependencies:
     
     // features:
-    const {backgroundVars} = usesBackground();
-    const {foregroundVars} = usesForeground();
-    const {borderVars    } = usesBorder();
+    const {backgroundRule, backgroundVars} = usesBackground(basics);
+    const {foregroundRule, foregroundVars} = usesForeground(basics);
+    const {borderRule    , borderVars    } = usesBorder(basics);
+    const {paddingRule   , paddingVars   } = usesPadding(basics);
+    
+    // capabilities:
+    const {groupableRule, separatorRule, groupableVars} = usesGroupable({
+        orientationInlineSelector : null, // never  => the <table> is never  stacked in horizontal
+        orientationBlockSelector  : '&',  // always => the <table> is always stacked in vertical
+        itemsSelector             : ['thead', 'tbody', 'tfoot'], // select <thead>, <tbody>, <tfoot>
+    });
+    const {groupableRule: subGroupableRule, separatorRule: subSeparatorRule} = usesGroupable({
+        orientationInlineSelector : null, // never  => the <thead>, <tbody>, <tfoot> are never  stacked in horizontal
+        orientationBlockSelector  : '&',  // always => the <thead>, <tbody>, <tfoot> are always stacked in vertical
+        itemsSelector             : 'tr', // select <tr>
+    });
+    const {groupableRule: rowGroupableRule} = usesGroupable({
+        orientationInlineSelector : '&',  // always => the <thead>, <tbody>, <tfoot> are always stacked in horizontal
+        orientationBlockSelector  : null, // never  => the <thead>, <tbody>, <tfoot> are never  stacked in vertical
+        itemsSelector             : ['td', 'th'], // select <tr> & <th>
+    });
     
     
     
     return style({
+        // capabilities:
+        ...groupableRule(), // make a nicely rounded corners
+        
+        
+        
         // layouts:
-        display : 'grid',
-        gridTemplate : [[
-            '"..... title ....." auto',
-            '"..... info  ....." auto',
-            '"..... logs  ....." auto',
-            '/',
-            'auto max-content auto',
-        ]],
-        
-        
-        
-        // spacings:
-        gap     : spacers.xl,
-        
-        
-        
-        // children:
-        ...children('.title', {
-            // positions:
-            gridArea : 'title',
-            
-            
-            
-            // layouts:
-            ...usesTitleLayout(),
-        }),
-        ...children('table', {
+        ...style({
             // positions:
             justifySelf    : 'stretch',
             
             
             
             // layouts:
-            borderCollapse : 'separate',
-            borderSpacing  : 0,
-            tableLayout    : 'auto',
+            // borderCollapse : 'separate',
+            // borderSpacing  : 0,
+            // tableLayout    : 'auto',
+            
+            // table as subgrid:
+            display             : 'grid',
+            gridTemplateColumns : 'repeat(1, auto)',
+            ...ifScreenWidthAtLeast('sm', {
+                gridTemplateColumns : 'repeat(2, auto)',
+            }),
+            ...children(['thead', 'tbody', 'tfoot'], {
+                gridColumn          : '1 / -1', // span the entire columns
+                display             : 'grid',
+                gridTemplateColumns : 'subgrid',
+                ...children('tr', {
+                    gridColumn          : 'inherit',
+                    display             : 'inherit',
+                    gridTemplateColumns : 'inherit',
+                    ...children(['td', 'th'], {
+                        display          : 'grid',
+                        gridTemplateRows : 'auto', // only 1 row
+                        gridAutoFlow     : 'column',
+                    }),
+                }),
+            }),
             
             
             
@@ -168,90 +195,78 @@ const usesShippingTrackingLayout = () => {
             
             
             
-            // children:
-            ...children(['thead', 'tbody'], {
-                // border strokes & radiuses:
+            // borders:
+            border                 : borderVars.border,
+         // borderRadius           : borderVars.borderRadius,
+            borderStartStartRadius : borderVars.borderStartStartRadius,
+            borderStartEndRadius   : borderVars.borderStartEndRadius,
+            borderEndStartRadius   : borderVars.borderEndStartRadius,
+            borderEndEndRadius     : borderVars.borderEndEndRadius,
+            ...children(['thead', 'tbody', 'tfoot'], {
+                border                 : borderVars.border,
+                ...separatorRule(), // turns the current border as separator between <thead>, <tbody>, <tfoot>
+                
+                borderStartStartRadius : borderVars.borderStartStartRadius,
+                borderStartEndRadius   : borderVars.borderStartEndRadius,
+                borderEndStartRadius   : borderVars.borderEndStartRadius,
+                borderEndEndRadius     : borderVars.borderEndEndRadius,
+                
+                
+                
+                // children:
+                ...subGroupableRule(),
                 ...children('tr', {
-                    ...children(['th', 'td'], {
-                        ...rule(':first-child', {
-                            borderInlineStart              : borderVars.border,
-                            borderInlineStartWidth         : borders.defaultWidth,
-                        }),
-                        ...rule(':last-child', {
-                            borderInlineEnd                : borderVars.border,
-                            borderInlineEndWidth           : borders.defaultWidth,
-                        }),
+                    border                 : borderVars.border,
+                    ...subSeparatorRule(), // turns the current border as separator between <tr>(s)
+                    
+                    borderStartStartRadius : borderVars.borderStartStartRadius,
+                    borderStartEndRadius   : borderVars.borderStartEndRadius,
+                    borderEndStartRadius   : borderVars.borderEndStartRadius,
+                    borderEndEndRadius     : borderVars.borderEndEndRadius,
+                    
+                    
+                    
+                    // children:
+                    ...rowGroupableRule(),
+                    ...children(['td', 'th'], {
+                        borderStartStartRadius : borderVars.borderStartStartRadius,
+                        borderStartEndRadius   : borderVars.borderStartEndRadius,
+                        borderEndStartRadius   : borderVars.borderEndStartRadius,
+                        borderEndEndRadius     : borderVars.borderEndEndRadius,
                     }),
                 }),
+            }),
+            
+            
+            
+            // spacings:
+            paddingInline : paddingVars.paddingInline,
+            paddingBlock  : paddingVars.paddingBlock,
+            ...children(['thead', 'tbody', 'tfoot'], {
+                marginInline         : `calc(0px - ${groupableVars.paddingInline})`, // cancel out parent's padding with negative margin
                 ...rule(':first-child', {
-                    ...children('tr', {
-                        ...rule(':first-child', {
-                            ...children(['th', 'td'], {
-                                borderBlockStart           : borderVars.border,
-                                borderBlockStartWidth      : borders.defaultWidth,
-                                
-                                
-                                
-                                ...rule(':first-child', {
-                                    borderStartStartRadius : borderRadiuses.default,
-                                }),
-                                ...rule(':last-child', {
-                                    borderStartEndRadius   : borderRadiuses.default,
-                                }),
-                            }),
-                        }),
-                    }),
+                    marginBlockStart : `calc(0px - ${groupableVars.paddingBlock })`, // cancel out parent's padding with negative margin
                 }),
                 ...rule(':last-child', {
-                    ...children('tr', {
-                        ...rule(':last-child', {
-                            ...children(['th', 'td'], {
-                                borderBlockEnd             : borderVars.border,
-                                borderBlockEndWidth        : borders.defaultWidth,
-                                
-                                
-                                
-                                ...rule(':first-child', {
-                                    borderEndStartRadius   : borderRadiuses.default,
-                                }),
-                                ...rule(':last-child', {
-                                    borderEndEndRadius     : borderRadiuses.default,
-                                }),
-                            }),
-                        }),
-                    }),
+                    marginBlockEnd   : `calc(0px - ${groupableVars.paddingBlock })`, // cancel out parent's padding with negative margin
                 }),
-                
-                
-                
-                // border separators:
-                ...children('tr', { // border as separator between row(s)
-                    ...rule(':not(:last-child)', {
-                        ...children(['th', 'td'], {
-                            borderBlockEnd      : borderVars.border,
-                            borderBlockEndWidth : borders.defaultWidth,
-                        }),
-                    }),
-                }),
-                ...rule(':not(:last-child)', { // border as separator between thead|tbody
-                    ...children('tr', {
-                        ...rule(':last-child', {
-                            ...children(['th', 'td'], {
-                                borderBlockEnd      : borderVars.border,
-                                borderBlockEndWidth : borders.defaultWidth,
-                            }),
-                        }),
-                    }),
-                }),
-                
-                
-                
+            }),
+            
+            
+            
+            // children:
+            ...children(['thead', 'tbody', 'tfoot'], {
                 // children:
                 ...children('tr', {
                     // children:
                     ...children(['th', 'td'], { // spacing for all cells
                         // spacings:
                         padding        : '0.75rem',
+                    }),
+                    ...children(['th', 'td'], { // common features
+                        // features:
+                        ...backgroundRule(), // must be placed at the last
+                        ...foregroundRule(), // must be placed at the last
                     }),
                     ...children('th', { // default title formatting
                         // typos:
@@ -292,87 +307,8 @@ const usesShippingTrackingLayout = () => {
                 }),
             }),
             ...children('tbody', {
-                // conditional border strokes & radiuses:
-                ...ifScreenWidthSmallerThan('sm', {
-                    ...children('tr', {
-                        ...children(['th', 'td'], {
-                            borderInline      : borderVars.border,
-                            borderInlineWidth : borders.defaultWidth,
-                        }),
-                    }),
-                    ...rule(':first-child', {
-                        ...children('tr', {
-                            ...rule(':first-child', {
-                                ...children(['th', 'td'], {
-                                    ...rule(':not(:first-child)', {
-                                        borderBlockStartWidth  : 0, // kill the separator
-                                        
-                                        borderStartStartRadius : 0,
-                                        borderStartEndRadius   : 0,
-                                    }),
-                                    ...rule(':first-child', {
-                                        borderStartStartRadius : borderRadiuses.default,
-                                        borderStartEndRadius   : borderRadiuses.default,
-                                    }),
-                                }),
-                            }),
-                        }),
-                    }),
-                    ...rule(':last-child', {
-                        ...children('tr', {
-                            ...rule(':last-child', {
-                                ...children(['th', 'td'], {
-                                    ...rule(':not(:last-child)', {
-                                        borderEndStartRadius   : 0,
-                                        borderEndEndRadius     : 0,
-                                    }),
-                                    ...rule(':last-child', {
-                                        borderEndStartRadius   : borderRadiuses.default,
-                                        borderEndEndRadius     : borderRadiuses.default,
-                                    }),
-                                }),
-                            }),
-                        }),
-                    }),
-                }),
-                
-                
-                
-                // conditional border separators:
-                ...ifScreenWidthSmallerThan('sm', {
-                    ...children('tr', {
-                        ...rule(':nth-child(n)', { // increase specificity
-                            ...children(['th', 'td'], {
-                                ...rule(':not(:last-child)', {
-                                    borderBlockEnd : 0,
-                                }),
-                            }),
-                        }),
-                    }),
-                }),
-                
-                
-                
                 // children:
                 ...children('tr', {
-                    // layouts:
-                    // the table cells is set to 'grid'|'block', causing the table structure broken,
-                    // to fix this we set the table row to flex:
-                    display               : 'flex',
-                    
-                    flexDirection         : 'column',
-                    justifyContent        : 'start',   // top_most the items vertically
-                    alignItems            : 'stretch', // stretch  the items horizontally
-                    ...ifScreenWidthAtLeast('sm', {
-                        flexDirection     : 'row',
-                        // justifyContent : 'start',   // top_most the items horizontally
-                        // alignItems     : 'stretch', // stretch  the items vertically
-                    }),
-                    
-                    flexWrap              : 'nowrap',  // no wrapping
-                    
-                    
-                    
                     // children:
                     ...children(['th', 'td'], { // special theme color for body's cell(s)
                         // accessibilities:
@@ -406,16 +342,6 @@ const usesShippingTrackingLayout = () => {
                         }),
                         
                         alignContent       : 'center',  // center     the items vertically
-                        
-                        
-                        
-                        // sizes:
-                        ...ifScreenWidthAtLeast('sm', {
-                            // fixed size accross table(s), simulating subgrid:
-                            boxSizing      : 'content-box',
-                            inlineSize     : '13em', // a fixed size by try n error
-                            flex           : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
-                        }),
                     }),
                     ...children('td', { // special data formatting
                         // sizes:
@@ -433,10 +359,16 @@ const usesShippingTrackingLayout = () => {
                         
                         
                         // special layouts:
-                        ...rule(':nth-child(2)', {
-                            textAlign : 'center',
+                        ...rule(':nth-child(1)', {
+                            justifyContent     : 'center',  // center     the items horizontally
                             ...ifScreenWidthAtLeast('sm', {
-                                textAlign : 'start',
+                                justifyContent : 'end',     // right_most the items horizontally
+                            }),
+                        }),
+                        ...rule(':nth-child(2)', {
+                            justifyContent     : 'center',  // center     the items horizontally
+                            ...ifScreenWidthAtLeast('sm', {
+                                justifyContent : 'start',   // left_most the items horizontally
                             }),
                         }),
                         ...rule(':nth-child(3)', { // Edit cells:
@@ -490,6 +422,47 @@ const usesShippingTrackingLayout = () => {
                     }),
                 }),
             }),
+        }),
+        
+        
+        
+        // features:
+        ...borderRule(),     // must be placed at the last
+        ...paddingRule(),    // must be placed at the last
+    });
+};
+
+const usesShippingTrackingLayout = () => {
+    return style({
+        // layouts:
+        display : 'grid',
+        gridTemplate : [[
+            '"..... title ....." auto',
+            '"..... info  ....." auto',
+            '"..... logs  ....." auto',
+            '/',
+            'auto max-content auto',
+        ]],
+        
+        
+        
+        // spacings:
+        gap     : spacers.xl,
+        
+        
+        
+        // children:
+        ...children('.title', {
+            // positions:
+            gridArea : 'title',
+            
+            
+            
+            // layouts:
+            ...usesTitleLayout(),
+        }),
+        ...children('table', {
+            ...usesTableLayout(),
         }),
         ...children('.info', {
             // positions:
