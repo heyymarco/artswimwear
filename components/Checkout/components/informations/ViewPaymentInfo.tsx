@@ -74,7 +74,10 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
                 
                 {isBillingAddressRequired && <tr>
                     <th>Billing Address</th>
-                    <td><ViewBillingAddress /></td>
+                    <td
+                        // classes:
+                        className='billingAddress'
+                    ><ViewBillingAddress /></td>
                 </tr>}
             </tbody>
         </table>

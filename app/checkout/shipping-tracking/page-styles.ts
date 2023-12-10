@@ -160,7 +160,7 @@ const usesTableLayout = () => {
             display             : 'grid',
             gridTemplateColumns : 'repeat(1, auto)',
             ...ifScreenWidthAtLeast('sm', {
-                gridTemplateColumns : 'repeat(2, auto)',
+                gridTemplateColumns : 'auto 1fr auto', // <Title>|<Label> + <Content> + <EditButton>
             }),
             ...children(['thead', 'tbody', 'tfoot'], {
                 gridColumn          : '1 / -1', // span the entire columns
@@ -251,6 +251,13 @@ const usesTableLayout = () => {
                     ...children(['td', 'th'], { // spacing for all cells
                         // spacings:
                         padding        : '0.75rem',
+                        
+                        ...rule('[colspan="2"]', {
+                            gridColumnEnd : 'span 2',
+                        }),
+                        ...rule('[colspan="3"]', {
+                            gridColumnEnd : 'span 3',
+                        }),
                     }),
                     ...children(['td', 'th'], { // common features
                         // features:
@@ -341,7 +348,7 @@ const usesTableLayout = () => {
                         }),
                         ...rule(':nth-child(2)', { // <td> as <Data>
                             // layouts:
-                            justifyContent     : 'center',  // center     the items horizontally
+                            justifyContent     : 'center',  // center    the items horizontally
                             ...ifScreenWidthAtLeast('sm', {
                                 justifyContent : 'start',   // left_most the items horizontally
                             }),
@@ -410,54 +417,20 @@ const usesShippingTrackingLayout = () => {
             
             
             
-            // sizes:
-            // inlineSize : '100%', // block like layout
-            
-            
-            
             // children:
             ...children('tbody', {
                 ...children('tr', {
                     ...children('td', { // special data formatting
-                        ...rule(['.customerAccount', '.shippingMethod', '.paymentMethod'], {
+                        ...rule('.editTimezone', {
                             // layouts:
-                            justifyContent     : 'center', // center    the items horizontally
-                            ...ifScreenWidthAtLeast('sm', {
-                                justifyContent : 'start',  // left_most the items horizontally
-                            }),
-                            
-                            alignItems         : 'center', // center    the each item vertically
-                            justifyItems       : 'center', // center    the each item horizontally
-                            
-                            gridAutoFlow       : 'row',
-                            ...ifScreenWidthAtLeast('sm', {
-                                gridAutoFlow   : 'column',
-                            }),
-                            
-                            
-                            
-                            // spacings:
-                            gap                : spacers.sm,
-                            
-                            
-                            
-                            // children:
-                            ...children('.paymentProvider', {
-                                // sizes:
-                                width          : '42px',
-                                height         : 'auto',
-                                
-                                
-                                
-                                // borders:
-                                border         : borderVars.border,
-                                borderWidth    : borders.defaultWidth,
-                                borderRadius   : borderRadiuses.sm,
-                            }),
-                            ...children(['.customerName', '.shippingEstimate', '.paymentIdentifier'], {
-                                // typos:
-                                fontSize       : typos.fontSizeSm,
-                                fontWeight     : typos.fontWeightNormal,
+                            justifyContent: 'stretch', // full width the editor
+                        }),
+                        ...rule('.labelDateTime', {
+                            ...children('input', {
+                                textAlign     : 'center',
+                                ...ifScreenWidthAtLeast('sm', {
+                                    textAlign : 'end',
+                                }),
                             }),
                         }),
                     }),

@@ -90,7 +90,10 @@ const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
             <tbody>
                 <tr>
                     <th>Ship To</th>
-                    <td><ViewShippingAddress /></td>
+                    <td
+                        // classes:
+                        className='shippingAddress'
+                    ><ViewShippingAddress /></td>
                     {!readOnly && <td>
                         <EditButton onClick={handleGotoShippingAddress} />
                     </td>}

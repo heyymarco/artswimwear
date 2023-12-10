@@ -301,7 +301,10 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                                     <td>
                                         Timezone
                                     </td>
-                                    <td>
+                                    <td
+                                        // classes:
+                                        className='editTimezone'
+                                    >
                                         <TimezoneEditor
                                             // variants:
                                             theme='primary'
@@ -317,7 +320,10 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                                 </tr>
                                 {shippingTrackingLogs.map(({reportedAt, log}) =>
                                     <tr>
-                                        <td>
+                                        <td
+                                            // classes:
+                                            className='labelDateTime'
+                                        >
                                             {!!reportedAt && <input type='datetime-local' className={styleSheet.outputDate} readOnly={true} value={(new Date(new Date(reportedAt).valueOf() + (preferredTimezone * 60 * 1000))).toISOString().slice(0, 16)} />}
                                         </td>
                                         <td>
