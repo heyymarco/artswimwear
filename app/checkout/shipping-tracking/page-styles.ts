@@ -9,12 +9,6 @@ import {
 
 // reusable-ui core:
 import {
-    // a border (stroke) management system:
-    borders,
-    borderRadiuses,
-    
-    
-    
     // a spacer (gap) management system:
     spacers,
     
@@ -371,13 +365,6 @@ const usesTableLayout = () => {
 };
 
 const usesShippingTrackingLayout = () => {
-    // dependencies:
-    
-    // features:
-    const {borderVars} = usesBorder();
-    
-    
-    
     return style({
         // layouts:
         display : 'grid',
