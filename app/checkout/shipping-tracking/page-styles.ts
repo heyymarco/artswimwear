@@ -156,17 +156,7 @@ const usesTableLayout = () => {
         
         // layouts:
         ...style({
-            // positions:
-            justifySelf    : 'stretch',
-            
-            
-            
             // layouts:
-            // borderCollapse : 'separate',
-            // borderSpacing  : 0,
-            // tableLayout    : 'auto',
-            
-            // table as subgrid:
             display             : 'grid',
             gridTemplateColumns : 'repeat(1, auto)',
             ...ifScreenWidthAtLeast('sm', {
@@ -190,11 +180,6 @@ const usesTableLayout = () => {
             
             
             
-            // sizes:
-            // width          : '100%', // block like layout
-            
-            
-            
             // borders:
             border                 : borderVars.border,
          // borderRadius           : borderVars.borderRadius,
@@ -206,6 +191,7 @@ const usesTableLayout = () => {
                 border                 : borderVars.border,
                 ...separatorRule(), // turns the current border as separator between <thead>, <tbody>, <tfoot>
                 
+             // borderRadius           : borderVars.borderRadius,
                 borderStartStartRadius : borderVars.borderStartStartRadius,
                 borderStartEndRadius   : borderVars.borderStartEndRadius,
                 borderEndStartRadius   : borderVars.borderEndStartRadius,
@@ -219,6 +205,7 @@ const usesTableLayout = () => {
                     border                 : borderVars.border,
                     ...subSeparatorRule(), // turns the current border as separator between <tr>(s)
                     
+                 // borderRadius           : borderVars.borderRadius,
                     borderStartStartRadius : borderVars.borderStartStartRadius,
                     borderStartEndRadius   : borderVars.borderStartEndRadius,
                     borderEndStartRadius   : borderVars.borderEndStartRadius,
@@ -227,8 +214,12 @@ const usesTableLayout = () => {
                     
                     
                     // children:
-                    ...rowGroupableRule(),
+                    ...rowGroupableRule(), // turns the borderRadius(es) of the first & last <td>|<th>
                     ...children(['td', 'th'], {
+                        // border                 : borderVars.border,
+                        // ...rowSeparatorRule(), // turns the current border as separator between <td>|<th>(s)
+                        
+                     // borderRadius           : borderVars.borderRadius,
                         borderStartStartRadius : borderVars.borderStartStartRadius,
                         borderStartEndRadius   : borderVars.borderStartEndRadius,
                         borderEndStartRadius   : borderVars.borderEndStartRadius,
@@ -256,14 +247,12 @@ const usesTableLayout = () => {
             
             // children:
             ...children(['thead', 'tbody', 'tfoot'], {
-                // children:
                 ...children('tr', {
-                    // children:
-                    ...children(['th', 'td'], { // spacing for all cells
+                    ...children(['td', 'th'], { // spacing for all cells
                         // spacings:
                         padding        : '0.75rem',
                     }),
-                    ...children(['th', 'td'], { // common features
+                    ...children(['td', 'th'], { // common features
                         // features:
                         ...backgroundRule(), // must be placed at the last
                         ...foregroundRule(), // must be placed at the last
@@ -280,9 +269,9 @@ const usesTableLayout = () => {
                     }),
                 }),
             }),
-            ...children('thead', {
+            ...children(['thead', 'tfoot'], {
                 ...children('tr', {
-                    ...children('th', { // special theme color for header's cell(s)
+                    ...children('th', { // special theme color for header|footer's cell(s)
                         // accessibilities:
                         ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
                             // backgrounds:
@@ -302,15 +291,13 @@ const usesTableLayout = () => {
                         
                         
                         // foregrounds:
-                        color     : foregroundVars.altForeg,
+                        foreg     : foregroundVars.altForeg,
                     }),
                 }),
             }),
             ...children('tbody', {
-                // children:
                 ...children('tr', {
-                    // children:
-                    ...children(['th', 'td'], { // special theme color for body's cell(s)
+                    ...children(['td', 'th'], { // special theme color for body's cell(s)
                         // accessibilities:
                         ...rule(['&::selection', '& ::selection'], { // ::selection on self and descendants
                             // backgrounds:
@@ -330,56 +317,110 @@ const usesTableLayout = () => {
                         
                         
                         // foregrounds:
-                        color     : foregroundVars.foreg,
+                        foreg     : foregroundVars.foreg,
                     }),
                     ...children('th', { // special title formatting
-                        // layouts:
-                        display            : 'grid',
-                        
-                        justifyContent     : 'center',  // center     the items horizontally
-                        ...ifScreenWidthAtLeast('sm', {
-                            justifyContent : 'end',     // right_most the items horizontally
+                        ...rule(':nth-child(1)', { // <th> as <Label>
+                            // layouts:
+                            justifyContent     : 'center',  // center     the items horizontally
+                            ...ifScreenWidthAtLeast('sm', {
+                                justifyContent : 'end',     // right_most the items horizontally
+                            }),
+                            
+                            alignContent       : 'center',  // center     the items vertically
                         }),
-                        
-                        alignContent       : 'center',  // center     the items vertically
                     }),
                     ...children('td', { // special data formatting
-                        // sizes:
-                        
-                        // fill the remaining width for data cells:
-                        ...rule(':nth-child(2)', {
-                            flex       : [[1, 1, 'auto']], // growable, shrinkable, initial from it's width
-                        }),
-                        
-                        // fixed width of Edit cells:
-                        ...rule(':nth-child(3)', {
-                            flex       : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
-                        }),
-                        
-                        
-                        
                         // special layouts:
-                        ...rule(':nth-child(1)', {
+                        ...rule(':nth-child(1)', { // <td> as <Label>
+                            // layouts:
                             justifyContent     : 'center',  // center     the items horizontally
                             ...ifScreenWidthAtLeast('sm', {
                                 justifyContent : 'end',     // right_most the items horizontally
                             }),
                         }),
-                        ...rule(':nth-child(2)', {
+                        ...rule(':nth-child(2)', { // <td> as <Data>
+                            // layouts:
                             justifyContent     : 'center',  // center     the items horizontally
                             ...ifScreenWidthAtLeast('sm', {
                                 justifyContent : 'start',   // left_most the items horizontally
                             }),
                         }),
-                        ...rule(':nth-child(3)', { // Edit cells:
+                        ...rule(':nth-child(3)', { // <td> as <EditButton>
                             // layouts:
-                            display        : 'grid',
                             justifyContent : 'center', // center the items vertically
                         }),
+                    }),
+                }),
+            }),
+        }),
+        
+        
+        
+        // features:
+        ...borderRule(),     // must be placed at the last
+        ...paddingRule(),    // must be placed at the last
+    });
+};
+
+const usesShippingTrackingLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {borderVars} = usesBorder();
+    
+    
+    
+    return style({
+        // layouts:
+        display : 'grid',
+        gridTemplate : [[
+            '"..... title ....." auto',
+            '"..... info  ....." auto',
+            '"..... logs  ....." auto',
+            '/',
+            'auto max-content auto',
+        ]],
+        
+        
+        
+        // spacings:
+        gap     : spacers.xl,
+        
+        
+        
+        // children:
+        ...children('.title', {
+            // positions:
+            gridArea : 'title',
+            
+            
+            
+            // layouts:
+            ...usesTitleLayout(),
+        }),
+        ...children('table', {
+            // positions:
+            justifySelf : 'stretch',
+            
+            
+            
+            // layouts:
+            ...usesTableLayout(),
+            
+            
+            
+            // sizes:
+            // inlineSize : '100%', // block like layout
+            
+            
+            
+            // children:
+            ...children('tbody', {
+                ...children('tr', {
+                    ...children('td', { // special data formatting
                         ...rule(['.customerAccount', '.shippingMethod', '.paymentMethod'], {
                             // layouts:
-                            display            : 'grid',
-                            
                             justifyContent     : 'center', // center    the items horizontally
                             ...ifScreenWidthAtLeast('sm', {
                                 justifyContent : 'start',  // left_most the items horizontally
@@ -422,47 +463,6 @@ const usesTableLayout = () => {
                     }),
                 }),
             }),
-        }),
-        
-        
-        
-        // features:
-        ...borderRule(),     // must be placed at the last
-        ...paddingRule(),    // must be placed at the last
-    });
-};
-
-const usesShippingTrackingLayout = () => {
-    return style({
-        // layouts:
-        display : 'grid',
-        gridTemplate : [[
-            '"..... title ....." auto',
-            '"..... info  ....." auto',
-            '"..... logs  ....." auto',
-            '/',
-            'auto max-content auto',
-        ]],
-        
-        
-        
-        // spacings:
-        gap     : spacers.xl,
-        
-        
-        
-        // children:
-        ...children('.title', {
-            // positions:
-            gridArea : 'title',
-            
-            
-            
-            // layouts:
-            ...usesTitleLayout(),
-        }),
-        ...children('table', {
-            ...usesTableLayout(),
         }),
         ...children('.info', {
             // positions:
