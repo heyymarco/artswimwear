@@ -90,7 +90,7 @@ const ViewCustomerInfo = (props: ViewCustomerInfoProps): JSX.Element|null => {
             
             <DataTableBody>
                 <DataTableItem
-                    // appearances:
+                    // accessibilities:
                     label='Account'
                     
                     

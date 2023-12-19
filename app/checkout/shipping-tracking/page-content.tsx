@@ -273,10 +273,16 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                     
                     <DataTable breakpoint='sm' className={styleSheet.tableInfo}>
                         <DataTableBody>
-                            <DataTableItem label='Ship By'>
+                            <DataTableItem
+                                // accessibilities:
+                                label='Ship By'
+                            >
                                 {shippingCarrier}
                             </DataTableItem>
-                            <DataTableItem label='Shipping Tracking Number'>
+                            <DataTableItem
+                                // accessibilities:
+                                label='Shipping Tracking Number'
+                            >
                                 {shippingNumber}
                             </DataTableItem>
                         </DataTableBody>
@@ -298,7 +304,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                         <DataTable breakpoint='sm' className={styleSheet.tableLogs}>
                             <DataTableBody>
                                 <DataTableItem
-                                    // appearances:
+                                    // accessibilities:
                                     label='Timezone'
                                     
                                     
@@ -320,7 +326,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                                 </DataTableItem>
                                 {shippingTrackingLogs.map(({reportedAt, log}) =>
                                     <DataTableItem
-                                        // appearances:
+                                        // accessibilities:
                                         label={
                                             !!reportedAt && <input type='datetime-local' className={styleSheet.outputDate} readOnly={true} value={(new Date(new Date(reportedAt).valueOf() + (preferredTimezone * 60 * 1000))).toISOString().slice(0, 16)} />
                                         }

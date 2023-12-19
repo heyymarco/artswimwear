@@ -82,7 +82,7 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
             
             <DataTableBody>
                 <DataTableItem
-                    // appearances:
+                    // accessibilities:
                     label='Payment Method'
                     
                     
@@ -94,7 +94,7 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
                 </DataTableItem>
                 
                 {isBillingAddressRequired && <DataTableItem
-                    // appearances:
+                    // accessibilities:
                     label='Billing Address'
                     
                     
