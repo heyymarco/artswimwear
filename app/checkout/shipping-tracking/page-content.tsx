@@ -33,6 +33,11 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Generic,
+    
+    
+    
     // base-content-components:
     Content,
     
@@ -57,6 +62,11 @@ import {
     Section,
     Main,
 }                           from '@heymarco/section'
+import {
+    DataTableBody,
+    DataTableItem,
+    DataTable,
+}                           from '@heymarco/data-table'
 
 // internal components:
 import {
@@ -257,32 +267,22 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                 </Alert>}
                 
                 {!!isPageReady && <div className={styleSheet.shippingTracking}>
-                    <h1 className='title'>
+                    <h1 className={styleSheet.title}>
                         Delivery Tracking
                     </h1>
                     
-                    <table className='info'>
-                        <tbody>
-                            <tr>
-                                <th>
-                                    Ship By
-                                </th>
-                                <td>
-                                    {shippingCarrier}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th>
-                                    Shipping Tracking Number
-                                </th>
-                                <td>
-                                    {shippingNumber}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <DataTable breakpoint='sm' className={styleSheet.tableInfo}>
+                        <DataTableBody>
+                            <DataTableItem label='Ship By'>
+                                {shippingCarrier}
+                            </DataTableItem>
+                            <DataTableItem label='Shipping Tracking Number'>
+                                {shippingNumber}
+                            </DataTableItem>
+                        </DataTableBody>
+                    </DataTable>
                     
-                    {!shippingTrackingLogs?.length && <Content className='logsEmpty' theme='warning' mild={true}>
+                    {!shippingTrackingLogs?.length && <Content className={styleSheet.logsEmpty} theme='warning' mild={true}>
                         <p>
                             <Icon icon='timer' theme='primary' size='xl' />
                         </p>
@@ -295,44 +295,46 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                     </Content>}
                     
                     {!!shippingTrackingLogs?.length && <>
-                        <table className='logs'>
-                            <tbody>
-                                <tr className='timezone'>
-                                    <td>
-                                        Timezone
-                                    </td>
-                                    <td
-                                        // classes:
-                                        className='editTimezone'
-                                    >
-                                        <TimezoneEditor
-                                            // variants:
-                                            theme='primary'
-                                            mild={true}
-                                            
-                                            
-                                            
-                                            // values:
-                                            value={preferredTimezone}
-                                            onChange={handleUpdatePreferredTimezone}
-                                        />
-                                    </td>
-                                </tr>
+                        <DataTable breakpoint='sm' className={styleSheet.tableLogs}>
+                            <DataTableBody>
+                                <DataTableItem
+                                    // appearances:
+                                    label='Timezone'
+                                    
+                                    
+                                    
+                                    // components:
+                                    tableDataComponent={<Generic className={styleSheet.editTimezone} />}
+                                >
+                                    <TimezoneEditor
+                                        // variants:
+                                        theme='primary'
+                                        mild={true}
+                                        
+                                        
+                                        
+                                        // values:
+                                        value={preferredTimezone}
+                                        onChange={handleUpdatePreferredTimezone}
+                                    />
+                                </DataTableItem>
                                 {shippingTrackingLogs.map(({reportedAt, log}) =>
-                                    <tr>
-                                        <td
-                                            // classes:
-                                            className='labelDateTime'
-                                        >
-                                            {!!reportedAt && <input type='datetime-local' className={styleSheet.outputDate} readOnly={true} value={(new Date(new Date(reportedAt).valueOf() + (preferredTimezone * 60 * 1000))).toISOString().slice(0, 16)} />}
-                                        </td>
-                                        <td>
-                                            {log}
-                                        </td>
-                                    </tr>
+                                    <DataTableItem
+                                        // appearances:
+                                        label={
+                                            !!reportedAt && <input type='datetime-local' className={styleSheet.outputDate} readOnly={true} value={(new Date(new Date(reportedAt).valueOf() + (preferredTimezone * 60 * 1000))).toISOString().slice(0, 16)} />
+                                        }
+                                        
+                                        
+                                        
+                                        // components:
+                                        tableLabelComponent={<Generic className='labelDateTime' />}
+                                    >
+                                        {log}
+                                    </DataTableItem>
                                 )}
-                            </tbody>
-                        </table>
+                            </DataTableBody>
+                        </DataTable>
                     </>}
                 </div>}
             </Section>
