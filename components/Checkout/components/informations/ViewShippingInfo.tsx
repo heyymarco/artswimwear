@@ -12,6 +12,21 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// reusable-ui components:
+import {
+    // base-components:
+    Generic,
+    Basic,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// heymarco components:
+import {
+    DataTableHeader,
+    DataTableBody,
+    DataTableItem,
+    DataTable,
+}                           from '@heymarco/data-table'
+
 // internal components:
 import {
     EditButton,
@@ -25,6 +40,9 @@ import {
 
 // internals:
 import {
+    useCheckoutStyleSheet,
+}                           from '../../styles/loader'
+import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -37,6 +55,11 @@ export interface ViewShippingInfoProps {
     readOnly ?: boolean
 }
 const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
+    // styles:
+    const styleSheet = useCheckoutStyleSheet();
+    
+    
+    
     // rest props:
     const {
         // accessibilities:
@@ -78,41 +101,51 @@ const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
     // jsx:
     if (!isShippingAddressRequired) return null;
     return (
-        <table>
-            {!!title && <thead>
-                <tr>
-                    <th colSpan={3}>
-                        {title}
-                    </th>
-                </tr>
-            </thead>}
+        <DataTable breakpoint='sm'>
+            {!!title && <DataTableHeader tableTitleComponent={<Basic />}>
+                {title}
+            </DataTableHeader>}
             
-            <tbody>
-                <tr>
-                    <th>Ship To</th>
-                    <td
-                        // classes:
-                        className='shippingAddress'
-                    ><ViewShippingAddress /></td>
-                    {!readOnly && <td>
-                        <EditButton onClick={handleGotoShippingAddress} />
-                    </td>}
-                </tr>
+            <DataTableBody>
+                <DataTableItem
+                    // appearances:
+                    label='Ship To'
+                    
+                    
+                    
+                    // components:
+                    tableDataComponent={<Generic className={styleSheet.tableDataAddress} />}
+                    
+                    
+                    
+                    // children:
+                    actionChildren={
+                        !readOnly && <EditButton onClick={handleGotoShippingAddress} />
+                    }
+                >
+                    <ViewShippingAddress />
+                </DataTableItem>
                 
-                {(checkoutStep !== 'shipping') && <tr>
-                    <th>Ship By</th>
-                    <td
-                        // classes:
-                        className='shippingMethod'
-                    >
-                        <ViewShippingMethod />
-                    </td>
-                    {!readOnly && <td>
-                        <EditButton onClick={handleGotoShippingProvider} />
-                    </td>}
-                </tr>}
-            </tbody>
-        </table>
+                {(checkoutStep !== 'shipping') && <DataTableItem
+                    // appearances:
+                    label='Ship By'
+                    
+                    
+                    
+                    // components:
+                    tableDataComponent={<Generic className={styleSheet.tableDataComposite} />}
+                    
+                    
+                    
+                    // children:
+                    actionChildren={
+                        !readOnly && <EditButton onClick={handleGotoShippingProvider} />
+                    }
+                >
+                    <ViewShippingMethod />
+                </DataTableItem>}
+            </DataTableBody>
+        </DataTable>
     );
 };
 export {

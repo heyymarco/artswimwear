@@ -6,6 +6,21 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui components:
+import {
+    // base-components:
+    Generic,
+    Basic,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// heymarco components:
+import {
+    DataTableHeader,
+    DataTableBody,
+    DataTableItem,
+    DataTable,
+}                           from '@heymarco/data-table'
+
 // internal components:
 import {
     ViewPaymentMethod,
@@ -15,6 +30,9 @@ import {
 }                           from '../informations/ViewBillingAddress'
 
 // internals:
+import {
+    useCheckoutStyleSheet,
+}                           from '../../styles/loader'
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
@@ -27,6 +45,11 @@ export interface ViewPaymentInfoProps {
     title ?: React.ReactNode
 }
 const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
+    // styles:
+    const styleSheet = useCheckoutStyleSheet();
+    
+    
+    
     // rest props:
     const {
         // accessibilities:
@@ -52,35 +75,37 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
     // jsx:
     if (!isPaid) return null;
     return (
-        <table>
-            {!!title && <thead>
-                <tr>
-                    <th colSpan={2}>
-                        {title}
-                    </th>
-                </tr>
-            </thead>}
+        <DataTable breakpoint='sm'>
+            {!!title && <DataTableHeader tableTitleComponent={<Basic />}>
+                {title}
+            </DataTableHeader>}
             
-            <tbody>
-                <tr>
-                    <th>Payment Method</th>
-                    <td
-                        // classes:
-                        className='paymentMethod'
-                    >
-                        <ViewPaymentMethod />
-                    </td>
-                </tr>
+            <DataTableBody>
+                <DataTableItem
+                    // appearances:
+                    label='Payment Method'
+                    
+                    
+                    
+                    // components:
+                    tableDataComponent={<Generic className={styleSheet.tableDataComposite} />}
+                >
+                    <ViewPaymentMethod />
+                </DataTableItem>
                 
-                {isBillingAddressRequired && <tr>
-                    <th>Billing Address</th>
-                    <td
-                        // classes:
-                        className='billingAddress'
-                    ><ViewBillingAddress /></td>
-                </tr>}
-            </tbody>
-        </table>
+                {isBillingAddressRequired && <DataTableItem
+                    // appearances:
+                    label='Billing Address'
+                    
+                    
+                    
+                    // components:
+                    tableDataComponent={<Generic className={styleSheet.tableDataAddress} />}
+                >
+                    <ViewBillingAddress />
+                </DataTableItem>}
+            </DataTableBody>
+        </DataTable>
     );
 };
 export {

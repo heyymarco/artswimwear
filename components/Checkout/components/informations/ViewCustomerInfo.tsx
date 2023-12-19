@@ -12,6 +12,21 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// reusable-ui components:
+import {
+    // base-components:
+    Generic,
+    Basic,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// heymarco components:
+import {
+    DataTableHeader,
+    DataTableBody,
+    DataTableItem,
+    DataTable,
+}                           from '@heymarco/data-table'
+
 // internal components:
 import {
     EditButton,
@@ -21,6 +36,9 @@ import {
 }                           from '../informations/ViewCustomerContact'
 
 // internals:
+import {
+    useCheckoutStyleSheet,
+}                           from '../../styles/loader'
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
@@ -34,6 +52,11 @@ export interface ViewCustomerInfoProps {
     readOnly ?: boolean
 }
 const ViewCustomerInfo = (props: ViewCustomerInfoProps): JSX.Element|null => {
+    // styles:
+    const styleSheet = useCheckoutStyleSheet();
+    
+    
+    
     // rest props:
     const {
         // accessibilities:
@@ -60,30 +83,32 @@ const ViewCustomerInfo = (props: ViewCustomerInfoProps): JSX.Element|null => {
     
     // jsx:
     return (
-        <table>
-            {!!title && <thead>
-                <tr>
-                    <th colSpan={3}>
-                        {title}
-                    </th>
-                </tr>
-            </thead>}
+        <DataTable breakpoint='sm'>
+            {!!title && <DataTableHeader tableTitleComponent={<Basic />}>
+                {title}
+            </DataTableHeader>}
             
-            <tbody>
-                <tr>
-                    <th>Account</th>
-                    <td
-                        // classes:
-                        className='customerAccount'
-                    >
-                        <ViewCustomerContact />
-                    </td>
-                    {!readOnly && <td>
-                        <EditButton onClick={handleGotoContactInfo} />
-                    </td>}
-                </tr>
-            </tbody>
-        </table>
+            <DataTableBody>
+                <DataTableItem
+                    // appearances:
+                    label='Account'
+                    
+                    
+                    
+                    // components:
+                    tableDataComponent={<Generic className={styleSheet.tableDataComposite} />}
+                    
+                    
+                    
+                    // children:
+                    actionChildren={
+                        !readOnly && <EditButton onClick={handleGotoContactInfo} />
+                    }
+                >
+                    <ViewCustomerContact />
+                </DataTableItem>
+            </DataTableBody>
+        </DataTable>
     );
 };
 export {
