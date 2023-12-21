@@ -505,6 +505,18 @@ export interface ShippingTrackingDetail
     shippingTrackingLogs : Omit<ShippingTrackingLog, 'id'|'shippingTrackingId'>[]
 }
 
+interface OutOfStockItem {
+    productId : string
+    stock     : number
+}
+class OutOfStockError extends Error {
+    outOfStockItems : OutOfStockItem[];
+    constructor(outOfStockItems : OutOfStockItem[]) {
+        super('out of stock');
+        this.outOfStockItems = outOfStockItems;
+    }
+}
+
 
 
 // routers:
@@ -773,15 +785,29 @@ router
                 
                 
                 
+                const outOfStockItems : { productId: string, stock: number }[] = [];
                 for (const { productId, quantity } of validFormattedItems) {
                     const product = productList[productId];
-                    if (!product) throw 'INVALID_PRODUCT_ID';
+                    // if (!product) throw 'INVALID_PRODUCT_ID';
+                    if (!product) {
+                        outOfStockItems.push({
+                            productId,
+                            stock: 0,
+                        });
+                        continue;
+                    } // if
                     
                     
                     
                     const stock = productList[productId]?.stock;
                     if (typeof(stock) === 'number') {
-                        if (quantity > stock) throw 'INSUFFICIENT_PRODUCT_STOCK';
+                        // if (quantity > stock) throw 'INSUFFICIENT_PRODUCT_STOCK';
+                        if (quantity > stock) {
+                            outOfStockItems.push({
+                                productId,
+                                stock,
+                            });
+                        } // if
                         
                         reduceStockItems.push({
                             productId      : productId,
@@ -820,6 +846,7 @@ router
                         totalProductWeights      = trimNumber(totalProductWeights);
                     } // if
                 } // for
+                if (outOfStockItems.length) throw new OutOfStockError(outOfStockItems);
             }
             if ((totalProductWeights != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeights, matchingShipping) : null;
@@ -1183,11 +1210,20 @@ router
             * Invalid API_request body JSON (programming bug).
             * unexpected API response (programming bug).
         */
+        
+        if (error instanceof OutOfStockError) {
+            return NextResponse.json({
+                error           : 'OUT_OF_STOCK',
+                outOfStockItems : error.outOfStockItems,
+            }, { status: 409 }); // handled with error conflict
+        } // if
+        
         switch (error) {
             case 'BAD_SHIPPING'               :
             case 'INVALID_JSON'               :
-            case 'INVALID_PRODUCT_ID'         :
-            case 'INSUFFICIENT_PRODUCT_STOCK' : {
+            // case 'INVALID_PRODUCT_ID'         :
+            // case 'INSUFFICIENT_PRODUCT_STOCK' :
+            {
                 console.log('ERROR: ', error);
                 return NextResponse.json({
                     error: error,
