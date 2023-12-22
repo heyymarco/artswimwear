@@ -23,21 +23,34 @@ export type {
 }                           from '@/app/api/products/route'
 import type {
     PaymentToken,
+    
+    // PlaceOrderOptions,
+    PlaceOrderData,
     DraftOrderDetail,
+    
     PaymentDetail,
+    
     PaymentConfirmationRequest,
     PaymentConfirmationDetail,
+    
     ShippingTrackingRequest,
     ShippingTrackingDetail,
 }                           from '@/app/api/checkout/route'
 export type {
     PaymentToken,
+    
+    PlaceOrderOptions,
+    PlaceOrderData,
     DraftOrderDetail,
+    
     PaymentDetail,
+    
     PaymentConfirmationRequest,
     PaymentConfirmationDetail,
+    
     ShippingTrackingRequest,
     ShippingTrackingDetail,
+    
     OutOfStockItem,
 }                           from '@/app/api/checkout/route'
 
@@ -54,38 +67,6 @@ const countryListAdapter = createEntityAdapter<CountryPreview>({
 const shippingListAdapter = createEntityAdapter<MatchingShipping>({
     selectId : (shippingEntry) => `${shippingEntry.id}`,
 });
-
-export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'
-}
-export interface PlaceOrderDataBasic
-    extends
-        Omit<CartState,     // cart item(s)
-            |'showCart'
-        >,
-        PlaceOrderOptions   // options: pay manually | paymentSource
-{
-}
-export interface PlaceOrderDataWithShippingAddress
-    extends
-        PlaceOrderDataBasic,
-        Pick<CheckoutState, // shippings
-            |'shippingFirstName'
-            |'shippingLastName'
-            
-            |'shippingPhone'
-            
-            |'shippingAddress'
-            |'shippingCity'
-            |'shippingZone'
-            |'shippingZip'
-            |'shippingCountry'
-            
-            |'shippingProvider'
-        >
-{
-}
-export type PlaceOrderData = PlaceOrderDataBasic | PlaceOrderDataWithShippingAddress
 
 export interface AuthenticationPaymentDataBasic
     extends
