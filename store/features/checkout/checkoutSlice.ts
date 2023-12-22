@@ -64,6 +64,7 @@ export interface CheckoutState
     
     // billing data:
     billingValidation  : boolean
+    billingAsShipping  : boolean
     
     
     

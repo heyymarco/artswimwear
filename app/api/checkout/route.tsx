@@ -489,8 +489,6 @@ export interface ShippingData {
 }
 export interface BillingData {
     // billing data:
-    billingAsShipping  : boolean
-    
     billingFirstName   : string
     billingLastName    : string
     
@@ -520,6 +518,20 @@ export interface DraftOrderDetail
     orderId : string
 }
 
+export interface AuthenticationPaymentDataBasic
+    extends
+        ExtraData,   // extra data
+        CustomerData // customer data
+{
+    orderId : string
+}
+export interface AuthenticationPaymentDataWithBillingAddress
+    extends
+        AuthenticationPaymentDataBasic,
+        BillingData  // billing data
+{
+}
+export type AuthenticationPaymentData = AuthenticationPaymentDataBasic | AuthenticationPaymentDataWithBillingAddress
 export interface PaymentDetail
     extends
         Omit<Payment,

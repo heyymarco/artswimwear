@@ -28,6 +28,7 @@ import type {
     PlaceOrderData,
     DraftOrderDetail,
     
+    AuthenticationPaymentData,
     PaymentDetail,
     
     PaymentConfirmationRequest,
@@ -43,6 +44,7 @@ export type {
     PlaceOrderData,
     DraftOrderDetail,
     
+    AuthenticationPaymentData,
     PaymentDetail,
     
     PaymentConfirmationRequest,
@@ -67,37 +69,6 @@ const countryListAdapter = createEntityAdapter<CountryPreview>({
 const shippingListAdapter = createEntityAdapter<MatchingShipping>({
     selectId : (shippingEntry) => `${shippingEntry.id}`,
 });
-
-export interface AuthenticationPaymentDataBasic
-    extends
-        Pick<CheckoutState, // marketings
-            |'marketingOpt'
-        >,
-        Pick<CheckoutState, // customers
-            |'customerNickName'
-            |'customerEmail'
-        >
-{
-    orderId : string
-}
-export interface AuthenticationPaymentDataWithBillingAddress
-    extends
-        AuthenticationPaymentDataBasic,
-        Pick<CheckoutState, // bilings
-            |'billingFirstName'
-            |'billingLastName'
-            
-            |'billingPhone'
-            
-            |'billingAddress'
-            |'billingCity'
-            |'billingZone'
-            |'billingZip'
-            |'billingCountry'
-        >
-{
-}
-export type AuthenticationPaymentData = AuthenticationPaymentDataBasic | AuthenticationPaymentDataWithBillingAddress
 
 
 
