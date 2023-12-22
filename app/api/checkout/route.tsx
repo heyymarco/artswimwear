@@ -839,7 +839,7 @@ router
                 // options: pay manually | paymentSource
                 paymentSource,
             } = placeOrderData;
-            const usePaypal = (paymentSource !== 'manual');
+            const usePaypalGateway = (paymentSource !== 'manual'); // if undefined || not 'manual' => use paypal gateway
             
             
             
@@ -898,7 +898,7 @@ router
                     
                     
                     const unitPrice          = product.price;
-                    const unitPriceConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(unitPrice)) : unitPrice;
+                    const unitPriceConverted = usePaypalGateway ? (await paypalConvertCurrencyIfRequired(unitPrice)) : unitPrice;
                     const unitWeight         = product.shippingWeight ?? null;
                     
                     
@@ -930,7 +930,7 @@ router
             }
             if ((totalProductWeights != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeights, matchingShipping) : null;
-            const totalShippingCostConverted = usePaypal ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
+            const totalShippingCostConverted = usePaypalGateway ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
             const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
             //#endregion validate cart items: check existing products => check product quantities => create detailed items
             
@@ -956,7 +956,7 @@ router
             
             //#region fetch paypal API
             let paypalOrderId : string|null;
-            if (usePaypal) {
+            if (usePaypalGateway) {
                 const accessToken = await generateAccessToken();
                 const url = `${paypalURL}/v2/checkout/orders`;
                 const paypalResponse = await fetch(url, {
@@ -1231,7 +1231,7 @@ router
                                     },
                                 },
                                 
-                                price          : usePaypal ? (await paypalRevertCurrencyIfRequired(detailedItem.price)) : detailedItem.price,
+                                price          : usePaypalGateway ? (await paypalRevertCurrencyIfRequired(detailedItem.price)) : detailedItem.price,
                                 shippingWeight : detailedItem.shippingWeight,
                                 quantity       : detailedItem.quantity,
                             };
@@ -1251,7 +1251,7 @@ router
                             zip                    : shippingZip,
                             country                : shippingCountry.toUpperCase(),
                         },
-                        shippingCost               : usePaypal ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
+                        shippingCost               : usePaypalGateway ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
                         shippingProvider           : {
                             connect                : {
                                 id                 : shippingProviderId,
