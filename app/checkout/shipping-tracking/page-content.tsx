@@ -324,8 +324,13 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                                         onChange={handleUpdatePreferredTimezone}
                                     />
                                 </DataTableItem>
-                                {shippingTrackingLogs.map(({reportedAt, log}) =>
+                                {shippingTrackingLogs.map(({reportedAt, log}, index) =>
                                     <DataTableItem
+                                        // identifiers:
+                                        key={index}
+                                        
+                                        
+                                        
                                         // accessibilities:
                                         label={
                                             !!reportedAt && <input type='datetime-local' className={styleSheet.outputDate} readOnly={true} value={(new Date(new Date(reportedAt).valueOf() + (preferredTimezone * 60 * 1000))).toISOString().slice(0, 16)} />
