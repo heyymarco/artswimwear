@@ -1002,7 +1002,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const {
         showMessageError,
         showMessageFieldError,
-        showMessageFetchError,
     } = useDialogMessage();
     
     
@@ -1288,7 +1287,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             return draftOrderDetail.orderId;
         }
         catch (fetchError: any) {
-            showMessageFetchError({ fetchError, context: 'order' });
+            const outOfStockItems = fetchError?.data?.outOfStockItems;
+            if (outOfStockItems) {
+                // TODO: handle out of stock
+                console.log('out of stock: ', outOfStockItems);
+            } // if
+            
+            
+            
             throw fetchError;
         } // try
     });

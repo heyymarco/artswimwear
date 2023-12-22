@@ -13,6 +13,11 @@ import {
 
 // reusable-ui core:
 import {
+    // react helper hooks:
+    useEvent,
+    
+    
+    
     // a validation management system:
     ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -28,6 +33,11 @@ import {
     
     // notification-components:
     Tooltip,
+    
+    
+    
+    // utility-components:
+    useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
@@ -52,6 +62,10 @@ import {
 }                           from '../payments/ButtonPaymentCard'
 
 // paypal:
+import type {
+    CreateOrderData,
+    CreateOrderActions,
+}                           from '@paypal/paypal-js'
 import {
     PayPalHostedFieldsProvider,
 }                           from '@paypal/react-paypal-js'
@@ -108,6 +122,26 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     
     
+    // dialogs:
+    const {
+        showMessageFetchError,
+    } = useDialogMessage();
+    
+    
+    
+    // handlers:
+    const handleCreateOrder    = useEvent(async (): Promise<string> => {
+        try {
+            return await doPlaceOrder();
+        }
+        catch (fetchError: any) {
+            if (!fetchError?.data?.outOfStockItems) showMessageFetchError({ fetchError, context: 'order' });
+            throw fetchError;
+        } // try
+    });
+    
+    
+    
     // jsx:
     return (
         <PayPalHostedFieldsProvider
@@ -117,7 +151,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
             
             
             // handlers:
-            createOrder={doPlaceOrder}
+            createOrder={handleCreateOrder}
         >
             <ValidationProvider
                 // validations:

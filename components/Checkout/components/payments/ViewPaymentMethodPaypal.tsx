@@ -20,6 +20,8 @@ import {
 
 // paypal:
 import type {
+    CreateOrderData,
+    CreateOrderActions,
     OnApproveActions,
     OnApproveData,
     OnShippingChangeActions,
@@ -57,6 +59,15 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     
     
     // handlers:
+    const handleCreateOrder    = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
+        try {
+            return await doPlaceOrder(data);
+        }
+        catch (fetchError: any) {
+            if (!fetchError?.data?.outOfStockItems) showMessageFetchError({ fetchError, context: 'order' });
+            throw fetchError;
+        } // try
+    });
     const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         doTransaction(async () => {
             try {
@@ -110,6 +121,9 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             return actions.resolve();
         } // if
     });
+    const handleError          = useEvent((err: Record<string, unknown>): void => {
+        // already handled by `handleCreateOrder()` & `handleFundApproved()`
+    });
     
     
     
@@ -122,9 +136,10 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             
             <PayPalButtons
                 // handlers:
-                createOrder={doPlaceOrder}
+                createOrder={handleCreateOrder}
                 onApprove={handleFundApproved}
                 onShippingChange={handleShippingChange}
+                onError={handleError}
             />
         </>
     );

@@ -108,7 +108,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                     cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
                     billingAddress : {
                         streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
-                     // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
+                    // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
                         locality          : billingAsShipping ? shippingCity    : billingCity,    // city
                         region            : billingAsShipping ? shippingZone    : billingZone,    // state
                         postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
@@ -138,7 +138,8 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 await doMakePayment(paypalAuthentication.orderId, /*paid:*/true);
             }
             catch (fetchError: any) {
-                showMessageFetchError({ fetchError, context: 'payment' });
+                if (!fetchError?.data?.outOfStockItems) showMessageFetchError({ fetchError, context: 'payment' });
+                // TODO: re-generate paypal payment token
             } // try
         });
     });
