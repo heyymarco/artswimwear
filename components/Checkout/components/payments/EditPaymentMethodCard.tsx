@@ -62,10 +62,6 @@ import {
 }                           from '../payments/ButtonPaymentCard'
 
 // paypal:
-import type {
-    CreateOrderData,
-    CreateOrderActions,
-}                           from '@paypal/paypal-js'
 import {
     PayPalHostedFieldsProvider,
 }                           from '@paypal/react-paypal-js'
