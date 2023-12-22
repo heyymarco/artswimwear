@@ -10,18 +10,22 @@ import type {
     RootState,
 }                           from '../../store'
 
+// apis:
+import type {
+    CartEntry,
+    CartData,
+}                           from '@/app/api/checkout/route'
+export type {
+    CartEntry,
+    CartData,
+}                           from '@/app/api/checkout/route'
 
 
-export interface CartEntry {
-    productId : string
-    quantity  : number
-}
-export interface CartState {
-    // cart data:
-    items     : CartEntry[],
-    
-    
-    
+
+export interface CartState
+    extends
+        CartData
+{
     // cart dialogs:
     showCart  : boolean
 }

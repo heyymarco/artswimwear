@@ -75,6 +75,11 @@ import {
     ShippingContextProvider,
 }                           from '@/components/Checkout/templates/shippingDataContext'
 
+// paypal:
+import type {
+    CreateOrderData,
+}                           from '@paypal/paypal-js'
+
 // others:
 import {
     customAlphabet,
@@ -447,6 +452,69 @@ export interface PaymentToken {
     refreshAt    : number
 }
 
+export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
+    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'
+}
+export interface CartEntry {
+    productId          : string
+    quantity           : number
+}
+export interface CartData {
+    // cart data:
+    items              : CartEntry[]
+}
+export interface ExtraData {
+    // extra data:
+    marketingOpt       : boolean
+}
+export interface CustomerData {
+    // customer data:
+    customerNickName   : string
+    customerEmail      : string
+}
+export interface ShippingData {
+    // shipping data:
+    shippingFirstName  : string
+    shippingLastName   : string
+    
+    shippingPhone      : string
+    
+    shippingAddress    : string
+    shippingCity       : string
+    shippingZone       : string
+    shippingZip        : string
+    shippingCountry    : string
+    
+    shippingProvider  ?: string
+}
+export interface BillingData {
+    // billing data:
+    billingAsShipping  : boolean
+    
+    billingFirstName   : string
+    billingLastName    : string
+    
+    billingPhone       : string
+    
+    billingAddress     : string
+    billingCity        : string
+    billingZone        : string
+    billingZip         : string
+    billingCountry     : string
+}
+export interface PlaceOrderDataBasic
+    extends
+        CartData,         // cart item(s)
+        PlaceOrderOptions // options: pay manually | paymentSource
+{
+}
+export interface PlaceOrderDataWithShippingAddress
+    extends
+        PlaceOrderDataBasic,
+        ShippingData // shippings
+{
+}
+export type PlaceOrderData = PlaceOrderDataBasic | PlaceOrderDataWithShippingAddress
 export interface DraftOrderDetail
 {
     orderId : string

@@ -13,9 +13,19 @@ import type {
 // apis:
 import type {
     PaymentToken,
+    
+    ExtraData,
+    CustomerData,
+    ShippingData,
+    BillingData,
 }                           from '@/app/api/checkout/route'
 export type {
     PaymentToken,
+    
+    ExtraData,
+    CustomerData,
+    ShippingData,
+    BillingData,
 }                           from '@/app/api/checkout/route'
 
 
@@ -30,58 +40,30 @@ export type PaymentMethod =
     |'card'
     |'paypal'
     |'manual'
-export interface CheckoutState {
+export interface CheckoutState
+    extends
+        ExtraData,
+        CustomerData,
+        ShippingData,
+        BillingData
+{
     // states:
     checkoutStep       : CheckoutStep
-    
-    
-    
-    // extra data:
-    marketingOpt       : boolean
     
     
     
     // customer data:
     customerValidation : boolean
     
-    customerNickName   : string
-    customerEmail      : string
-    
     
     
     // shipping data:
     shippingValidation : boolean
     
-    shippingFirstName  : string
-    shippingLastName   : string
-    
-    shippingPhone      : string
-    
-    shippingAddress    : string
-    shippingCity       : string
-    shippingZone       : string
-    shippingZip        : string
-    shippingCountry    : string
-    
-    shippingProvider  ?: string
-    
     
     
     // billing data:
     billingValidation  : boolean
-    
-    billingAsShipping  : boolean
-    
-    billingFirstName   : string
-    billingLastName    : string
-    
-    billingPhone       : string
-    
-    billingAddress     : string
-    billingCity        : string
-    billingZone        : string
-    billingZip         : string
-    billingCountry     : string
     
     
     
