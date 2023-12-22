@@ -115,7 +115,6 @@ export interface AuthenticationPaymentDataWithBillingAddress
             |'billingCountry'
         >
 {
-    orderId : string
 }
 export type AuthenticationPaymentData = AuthenticationPaymentDataBasic | AuthenticationPaymentDataWithBillingAddress
 
