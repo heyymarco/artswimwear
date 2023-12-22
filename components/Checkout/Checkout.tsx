@@ -345,11 +345,6 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     
-                    // classes:
-                    className={styleSheet.shippingMethod}
-                    
-                    
-                    
                     // accessibilities:
                     title='Shipping Method'
                 >
