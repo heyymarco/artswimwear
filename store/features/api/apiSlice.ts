@@ -38,6 +38,7 @@ export type {
     PaymentConfirmationDetail,
     ShippingTrackingRequest,
     ShippingTrackingDetail,
+    OutOfStockItem,
 }                           from '@/app/api/checkout/route'
 
 

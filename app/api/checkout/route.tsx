@@ -505,7 +505,7 @@ export interface ShippingTrackingDetail
     shippingTrackingLogs : Omit<ShippingTrackingLog, 'id'|'shippingTrackingId'>[]
 }
 
-interface OutOfStockItem {
+export interface OutOfStockItem {
     productId : string
     stock     : number
 }

@@ -125,6 +125,7 @@ import {
     CountryPreview,
     PaymentDetail,
     PlaceOrderOptions,
+    OutOfStockItem,
     
     
     
@@ -1287,8 +1288,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             return draftOrderDetail.orderId;
         }
         catch (fetchError: any) {
-            const outOfStockItems = fetchError?.data?.outOfStockItems;
-            if (outOfStockItems) {
+            const outOfStockItems : OutOfStockItem[]|undefined = fetchError?.data?.outOfStockItems;
+            if (outOfStockItems?.length) {
                 // TODO: handle out of stock
                 console.log('out of stock: ', outOfStockItems);
             } // if
