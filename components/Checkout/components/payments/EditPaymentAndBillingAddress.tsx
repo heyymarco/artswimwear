@@ -59,11 +59,6 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
     return (
         <>
             <Section
-                // classes:
-                className={styleSheet.paymentMethod}
-                
-                
-                
                 // accessibilities:
                 title='Payment Method'
             >
