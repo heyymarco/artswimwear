@@ -1039,6 +1039,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 } // if
             }, 200);
         } // if
+        
+        
+        
+        verifyStock();
     });
     const gotoStepShipping     = useEvent(async (): Promise<boolean> => {
         const goForward = (checkoutStep === 'info');
@@ -1153,6 +1157,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
+        verifyStock();
         return true; // transaction completed
     });
     const gotoPayment          = useEvent(async (): Promise<boolean> => {
@@ -1183,6 +1188,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
+        verifyStock();
         return true; // transaction completed
     });
     
@@ -1352,6 +1358,17 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             throw fetchError;
+        } // try
+    });
+    const verifyStock          = useEvent(async (): Promise<boolean> => {
+        try {
+            await doPlaceOrder({
+                simulateOrder: true,
+            });
+            return true;
+        }
+        catch {
+            return false;
         } // try
     });
     const doMakePayment        = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
