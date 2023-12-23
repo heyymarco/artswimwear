@@ -122,8 +122,8 @@ export interface CartStateBase {
     
     // actions:
     addProductToCart      : (productId: string, quantity?: number) => void
-    deleteProductFromCart : (productId: string) => void
-    changeProductFromCart : (productId: string, quantity: number) => void
+    deleteProductFromCart : (productId: string, showConfirm?: boolean) => void
+    changeProductFromCart : (productId: string, quantity: number, showConfirm?: boolean) => void
     clearProductsFromCart : () => void
     
     showCart              : () => void
@@ -324,40 +324,42 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // actions:
         dispatch(reduxAddToCart({ productId, quantity }));
     });
-    const deleteProductFromCart = useEvent(async (productId: string): Promise<void> => {
+    const deleteProductFromCart = useEvent(async (productId: string, showConfirm?: boolean): Promise<void> => {
         // conditions:
-        if (
-            (await showMessage<'yes'|'no'>({
-                theme    : 'warning',
-                // si ze     : 'sm',
-                title    : <h1>Delete Confirmation</h1>,
-                message  : <p>
-                    Are you sure to remove product:<br />
-                    <strong>{productList?.entities?.[productId]?.name ?? 'UNKNOWN PRODUCT'}</strong><br />from the cart?
-                </p>,
-                options  : {
-                    yes  : <ButtonIcon icon='check'          theme='primary'>Yes</ButtonIcon>,
-                    no   : <ButtonIcon icon='not_interested' theme='secondary' autoFocus={true}>No</ButtonIcon>,
-                },
-                // viewport : cartBodyRef,
-            }))
-            !==
-            'yes'
-        ) return;
-        if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+        if (showConfirm ?? true) {
+            if (
+                (await showMessage<'yes'|'no'>({
+                    theme    : 'warning',
+                    // si ze     : 'sm',
+                    title    : <h1>Delete Confirmation</h1>,
+                    message  : <p>
+                        Are you sure to remove product:<br />
+                        <strong>{productList?.entities?.[productId]?.name ?? 'UNKNOWN PRODUCT'}</strong><br />from the cart?
+                    </p>,
+                    options  : {
+                        yes  : <ButtonIcon icon='check'          theme='primary'>Yes</ButtonIcon>,
+                        no   : <ButtonIcon icon='not_interested' theme='secondary' autoFocus={true}>No</ButtonIcon>,
+                    },
+                    // viewport : cartBodyRef,
+                }))
+                !==
+                'yes'
+            ) return;
+            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+        } // if
         
         
         
         // actions:
         dispatch(reduxRemoveFromCart({ productId }));
     });
-    const changeProductFromCart = useEvent((productId: string, quantity: number): void => {
+    const changeProductFromCart = useEvent((productId: string, quantity: number, showConfirm?: boolean): void => {
         // actions:
         if (quantity > 0) {
             dispatch(reduxSetCartItemQuantity({ productId, quantity }));
         }
         else {
-            deleteProductFromCart(productId);
+            deleteProductFromCart(productId, showConfirm);
         } // if
     });
     const clearProductsFromCart = useEvent((): void => {
