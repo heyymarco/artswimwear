@@ -454,6 +454,7 @@ export interface PaymentToken {
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
     paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'
+    simulateOrder ?: boolean
 }
 export interface CartEntry {
     productId          : string
@@ -636,6 +637,25 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
+    
+    
+    
+    //#region validate options
+    const {
+        paymentSource, // options: pay manually | paymentSource
+        simulateOrder = false,
+    } = placeOrderData;
+    if ((paymentSource !== undefined) && ((typeof(paymentSource) !== 'string') || !paymentSource)) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    if ((simulateOrder !== undefined) && (typeof(simulateOrder) !== 'boolean')) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    //#endregion validate options
     
     
     
@@ -835,11 +855,7 @@ router
             
             
             //#region validate cart items: check existing products => check product quantities => create detailed items
-            const {
-                // options: pay manually | paymentSource
-                paymentSource,
-            } = placeOrderData;
-            const usePaypalGateway = (paymentSource !== 'manual'); // if undefined || not 'manual' => use paypal gateway
+            const usePaypalGateway = !simulateOrder && (paymentSource !== 'manual'); // if undefined || not 'manual' => use paypal gateway
             
             
             
@@ -928,6 +944,10 @@ router
                     } // if
                 } // for
                 if (outOfStockItems.length) throw new OutOfStockError(outOfStockItems);
+                if (simulateOrder) return {
+                    orderId       : '',
+                    paypalOrderId : null,
+                };
             }
             if ((totalProductWeights != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeights, matchingShipping) : null;
