@@ -1325,9 +1325,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         <p>
                             We have {hasNotAvailable && <strong>deleted</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity of</>} the {isPlural? 'products' : 'product'} in your shopping cart.
                         </p>
-                        <p>
-                            We have <strong>canceled your previous order</strong> and <strong>your funds have not been deducted</strong>.
-                        </p>
+                        {(paymentMethod !== 'manual') && <p>
+                            We have <strong>canceled your previous transaction</strong> and <strong>your funds have not been deducted</strong>.
+                        </p>}
                         <p>
                             Please try ordering again with the new order quantity.
                         </p>
