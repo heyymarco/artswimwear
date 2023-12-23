@@ -102,11 +102,6 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
             {...restListProps}
         >
             <ListItem
-                // semantics:
-                aria-role='heading'
-                
-                
-                
                 // variants:
                 mild={false}
                 
