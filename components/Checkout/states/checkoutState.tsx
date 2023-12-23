@@ -1311,14 +1311,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 const hasBoth         = hasNotAvailable && hasOutOfStock;
                 const isPlural        = outOfStockItems.length > 1;
                 showMessageNotification({
-                    theme  : 'warning',
-                    title  : <h1>Out of Stock</h1>,
+                    theme        : 'warning',
+                    title        : <h1>Out of Stock</h1>,
                     notification : <>
                         <p>
                             There {isPlural ? 'are some products' : 'is a product'} that {isPlural ? 'are' : 'is'} <strong>out of stock</strong>.
                         </p>
                         <p>
-                            We have {hasNotAvailable && <strong>removed</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity</>} {hasOutOfStock ? 'of' : 'the'} {isPlural? 'products' : 'product'} in your shopping cart.
+                            We have {hasNotAvailable && <strong>removed</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity of</>} the {isPlural? 'products' : 'product'} in your shopping cart.
                         </p>
                         <p>
                             We have <strong>canceled your previous order</strong> and <strong>your funds have not been deducted</strong>.
