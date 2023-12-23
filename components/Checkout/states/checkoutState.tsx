@@ -622,6 +622,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
+        deleteProductFromCart,
+        changeProductFromCart,
         clearProductsFromCart,
         
         refetchCart,
@@ -1003,6 +1005,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const {
         showMessageError,
         showMessageFieldError,
+        showMessageNotification,
     } = useDialogMessage();
     
     
@@ -1290,8 +1293,41 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         catch (fetchError: any) {
             const outOfStockItems : OutOfStockItem[]|undefined = fetchError?.data?.outOfStockItems;
             if (outOfStockItems?.length) {
-                // TODO: handle out of stock
-                console.log('out of stock: ', outOfStockItems);
+                for (const {productId, stock} of outOfStockItems) {
+                    if (stock <= 0) {
+                        // the product is no longer available -or- no stock => delete the product from cart:
+                        deleteProductFromCart(productId, /*showConfirm = */false);
+                    }
+                    else {
+                        // the product is available but the stock is below than the requested quantity => reduce the quantity to available stock:
+                        changeProductFromCart(productId, stock, /*showConfirm = */false);
+                    } // if
+                } // for
+                
+                
+                
+                const hasNotAvailable = outOfStockItems.some(({stock}) => (stock <= 0));
+                const hasOutOfStock   = outOfStockItems.some(({stock}) => (stock >  0));
+                const hasBoth         = hasNotAvailable && hasOutOfStock;
+                const isPlural        = outOfStockItems.length > 1;
+                showMessageNotification({
+                    theme  : 'warning',
+                    title  : <h1>Out of Stock</h1>,
+                    notification : <>
+                        <p>
+                            There {isPlural ? 'are some products' : 'is a product'} that {isPlural ? 'are' : 'is'} <strong>out of stock</strong>.
+                        </p>
+                        <p>
+                            We have {hasNotAvailable && <strong>removed</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity</>} {hasOutOfStock ? 'of' : 'the'} {isPlural? 'products' : 'product'} in your shopping cart.
+                        </p>
+                        <p>
+                            We have <strong>canceled your previous order</strong> and <strong>your funds have not been deducted</strong>.
+                        </p>
+                        <p>
+                            Please try ordering again with the new order quantity.
+                        </p>
+                    </>
+                });
             } // if
             
             
