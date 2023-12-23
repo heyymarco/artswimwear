@@ -47,11 +47,27 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Basic,
+    
+    
+    
+    // layout-components:
+    List,
+    ListItem,
+    
+    
+    
     // utility-components:
     WindowResizeCallback,
     useWindowResizeObserver,
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// heymarco components:
+import {
+    Image,
+}                           from '@heymarco/image'
 
 // stores:
 import {
@@ -168,6 +184,11 @@ import {
     FieldHandlers,
     useFieldState,
 }                           from '../hooks/fieldState'
+
+// utilities:
+import {
+    resolveMediaUrl,
+}                           from '@/libs/mediaStorage.client'
 
 
 
@@ -607,6 +628,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // states:
         isCartLoading,
         isCartError,
+        isCartReady,
         
         
         
@@ -1318,7 +1340,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                             There {isPlural ? 'are some products' : 'is a product'} that {isPlural ? 'are' : 'is'} <strong>out of stock</strong>.
                         </p>
                         <p>
-                            We have {hasNotAvailable && <strong>removed</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity of</>} the {isPlural? 'products' : 'product'} in your shopping cart.
+                            We have {hasNotAvailable && <strong>deleted</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity of</>} the {isPlural? 'products' : 'product'} in your shopping cart.
                         </p>
                         <p>
                             We have <strong>canceled your previous order</strong> and <strong>your funds have not been deducted</strong>.
@@ -1326,6 +1348,56 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         <p>
                             Please try ordering again with the new order quantity.
                         </p>
+                        <List theme='primary'>
+                            <ListItem mild={false} aria-role='heading'>
+                                Changed {isPlural ? 'items' : 'item'}
+                            </ListItem>
+                            {outOfStockItems.map(({productId, stock}, index) => {
+                                // fn props:
+                                const product          = productList?.entities?.[productId];
+                                const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
+                                
+                                
+                                
+                                // jsx:
+                                return (
+                                    <ListItem
+                                        // identifiers:
+                                        key={index}
+                                    >
+                                        <h3
+                                            // classes:
+                                            className='title h6'
+                                        >
+                                            {
+                                                !isProductDeleted
+                                                ? productList?.entities?.[productId]?.name
+                                                : 'PRODUCT DELETED'
+                                            }
+                                        </h3>
+                                        
+                                        <Image
+                                            // appearances:
+                                            alt={product?.name ?? ''}
+                                            src={resolveMediaUrl(product?.image)}
+                                            sizes='64px'
+                                            
+                                            
+                                            
+                                            // classes:
+                                            className='prodImg'
+                                        />
+                                        <span>
+                                            {
+                                                (stock > 0)
+                                                ? <>Quantity changed to <strong>{stock}</strong></>
+                                                : <strong>Deleted</strong>
+                                            }
+                                        </span>
+                                    </ListItem>
+                                );
+                            })}
+                        </List>
                     </>
                 });
             } // if
