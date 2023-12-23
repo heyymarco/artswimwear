@@ -47,27 +47,16 @@ import {
 
 // reusable-ui components:
 import {
-    // base-components:
-    Basic,
-    
-    
-    
-    // layout-components:
-    List,
-    ListItem,
-    
-    
-    
     // utility-components:
     WindowResizeCallback,
     useWindowResizeObserver,
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// heymarco components:
+// internal components:
 import {
-    Image,
-}                           from '@heymarco/image'
+    ViewOutOfStock,
+}                           from '../components/carts/ViewOutOfStock'
 
 // stores:
 import {
@@ -184,11 +173,6 @@ import {
     FieldHandlers,
     useFieldState,
 }                           from '../hooks/fieldState'
-
-// utilities:
-import {
-    resolveMediaUrl,
-}                           from '@/libs/mediaStorage.client'
 
 
 
@@ -628,7 +612,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // states:
         isCartLoading,
         isCartError,
-        isCartReady,
         
         
         
@@ -1348,56 +1331,20 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         <p>
                             Please try ordering again with the new order quantity.
                         </p>
-                        <List theme='primary'>
-                            <ListItem mild={false} aria-role='heading'>
-                                Changed {isPlural ? 'Items' : 'Item'}
-                            </ListItem>
-                            {outOfStockItems.map(({productId, stock}, index) => {
-                                // fn props:
-                                const product          = productList?.entities?.[productId];
-                                const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
-                                
-                                
-                                
-                                // jsx:
-                                return (
-                                    <ListItem
-                                        // identifiers:
-                                        key={index}
-                                    >
-                                        <h3
-                                            // classes:
-                                            className='title h6'
-                                        >
-                                            {
-                                                !isProductDeleted
-                                                ? productList?.entities?.[productId]?.name
-                                                : 'PRODUCT DELETED'
-                                            }
-                                        </h3>
-                                        
-                                        <Image
-                                            // appearances:
-                                            alt={product?.name ?? ''}
-                                            src={resolveMediaUrl(product?.image)}
-                                            sizes='64px'
-                                            
-                                            
-                                            
-                                            // classes:
-                                            className='prodImg'
-                                        />
-                                        <span>
-                                            {
-                                                (stock > 0)
-                                                ? <>Quantity changed to <strong>{stock}</strong></>
-                                                : <strong>Deleted</strong>
-                                            }
-                                        </span>
-                                    </ListItem>
-                                );
-                            })}
-                        </List>
+                        <ViewOutOfStock
+                            // variants:
+                            theme='primary'
+                            
+                            
+                            
+                            // data:
+                            outOfStockItems={outOfStockItems}
+                            
+                            
+                            
+                            // relation data:
+                            productList={productList}
+                        />
                     </>
                 });
             } // if
