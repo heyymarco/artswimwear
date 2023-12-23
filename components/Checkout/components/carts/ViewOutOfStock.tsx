@@ -171,7 +171,7 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
                             {
                                 (stock > 0)
                                 ? <><em>Quantity changed to</em> <strong>{stock}</strong>.</>
-                                : <strong>Deleted</strong>
+                                : <em><strong>Deleted</strong>.</em>
                             }
                         </span>
                     </ListItem>
