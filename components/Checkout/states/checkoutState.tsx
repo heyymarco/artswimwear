@@ -1350,7 +1350,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         </p>
                         <List theme='primary'>
                             <ListItem mild={false} aria-role='heading'>
-                                Changed {isPlural ? 'items' : 'item'}
+                                Changed {isPlural ? 'Items' : 'Item'}
                             </ListItem>
                             {outOfStockItems.map(({productId, stock}, index) => {
                                 // fn props:

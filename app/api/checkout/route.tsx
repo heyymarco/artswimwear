@@ -869,10 +869,11 @@ router
                 for (const { productId, quantity } of validFormattedItems) {
                     const product = productList[productId];
                     // if (!product) throw 'INVALID_PRODUCT_ID';
-                    if (!product) {
+                    if (!product || (!''.toLowerCase())) { // TODO: fix this
                         outOfStockItems.push({
                             productId,
-                            stock: 0,
+                            // stock: 0, // TODO: fix this
+                            stock: 1, // TODO: remove this
                         });
                         continue;
                     } // if
