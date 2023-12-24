@@ -1360,15 +1360,32 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             throw fetchError;
         } // try
     });
+    const verifyStockPromise   = useRef<Promise<boolean>|undefined>(undefined);
     const verifyStock          = useEvent(async (): Promise<boolean> => {
+        const verifyStockPromised = verifyStockPromise.current;
+        if (verifyStockPromised) { // if prev verifyStock is already running => wait until resolved
+            return await verifyStockPromised; // resolved
+        } // if
+        
+        
+        
+        const newVerifyStockPromise = (async (): Promise<boolean> => {
+            try {
+                await doPlaceOrder({
+                    simulateOrder: true,
+                });
+                return true;
+            }
+            catch {
+                return false;
+            } // try
+        })();
+        verifyStockPromise.current = newVerifyStockPromise; // setup
         try {
-            await doPlaceOrder({
-                simulateOrder: true,
-            });
-            return true;
+            return await newVerifyStockPromise; // resolved
         }
-        catch {
-            return false;
+        finally {
+            verifyStockPromise.current = undefined; // cleanup
         } // try
     });
     const doMakePayment        = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
