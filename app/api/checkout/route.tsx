@@ -754,8 +754,8 @@ router
     
     
     //#region generate a unique orderId
-    const nanoid = customAlphabet('0123456789', 16);
-    const tempOrderId = await nanoid();
+    const nanoid = !simulateOrder ? customAlphabet('0123456789', 16) : null;
+    const tempOrderId = (await nanoid?.()) ?? '';
     //#endregion generate a unique orderId
     
     
@@ -766,7 +766,7 @@ router
         ({orderId, paypalOrderId} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string, paypalOrderId: string|null }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
-                hasShippingAddress ? prismaTransaction.shippingProvider.findUnique({
+                (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
                     where  : {
                         id      : shippingProviderId,
                         enabled : true,
@@ -796,31 +796,31 @@ router
                         stock          : true,
                     },
                 }),
-                prismaTransaction.draftOrder.count({
+                !simulateOrder ? prismaTransaction.draftOrder.count({
                     where : {
                         orderId : tempOrderId,
                     },
                     take  : 1,
-                }),
-                prismaTransaction.order.count({
+                }) : null,
+                !simulateOrder ? prismaTransaction.order.count({
                     where : {
                         orderId : tempOrderId,
                     },
                     take  : 1,
-                }),
+                }) : null,
             ]);
             //#endregion batch queries
             
             
             
             //#region re-generate a unique orderId
-            const orderId = await (async (): Promise<string> => {
+            const orderId = !simulateOrder ? await (async (): Promise<string> => {
                 if (!foundOrderIdInDraftOrder && !foundOrderIdInOrder) {
                     return tempOrderId;
                 }
                 else {
                     for (let attempts = 10; attempts > 0; attempts--) {
-                        const tempOrderId = await nanoid();
+                        const tempOrderId = await nanoid?.() ?? '';
                         const [foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                             prismaTransaction.draftOrder.count({
                                 where : {
@@ -840,16 +840,20 @@ router
                     console.log('INTERNAL ERROR AT GENERATE UNIQUE ID');
                     throw 'INTERNAL_ERROR';
                 } // if
-            })();
+            })() : '';
             //#endregion re-generate a unique orderId
             
             
             
             //#region validate shipping
-            if (hasShippingAddress && !selectedShipping) throw 'BAD_SHIPPING';
+            if (!simulateOrder && hasShippingAddress && !selectedShipping) throw 'BAD_SHIPPING';
             
-            const matchingShipping = (hasShippingAddress && !!selectedShipping) ? getMatchingShipping(selectedShipping, { city: shippingCity, zone: shippingZone, country: shippingCountry }) : null;
-            if (hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';
+            const matchingShipping = (
+                (!simulateOrder && hasShippingAddress && !!selectedShipping)
+                ? getMatchingShipping(selectedShipping, { city: shippingCity, zone: shippingZone, country: shippingCountry })
+                : null
+            );
+            if (!simulateOrder && hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';
             //#endregion validate shipping
             
             

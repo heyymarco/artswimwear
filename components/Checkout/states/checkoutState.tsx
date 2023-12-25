@@ -1390,9 +1390,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         const newVerifyStockPromise = (async (): Promise<boolean> => {
             try {
-                await doPlaceOrder({
+                await placeOrder({
+                    // cart item(s):
+                    items : cartItems,
+                    
+                    
+                    
+                    // options:
                     simulateOrder: true,
-                });
+                }).unwrap();
                 return true;
             }
             catch {
