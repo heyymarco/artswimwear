@@ -986,15 +986,19 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep, globalCartItems, globalCheckoutState]);
     
     // pooling for available stocks:
+    const isPoolingVerifyStockScheduled = useRef<boolean>(false); // ensures the pooling verifyStock not triggered twice (especially in dev mode)
     useEffect(() => {
         // conditions:
         if ((checkoutStep === 'pending') || (checkoutStep === 'paid')) return; // stop pooling when state is 'pending' or 'paid'
+        if (isPoolingVerifyStockScheduled.current) return; // already scheduled => ignore the twice_dev_mode
+        isPoolingVerifyStockScheduled.current = true;
         
         
         
         // actions:
         let scheduledVerifyStock : ReturnType<typeof setTimeout>|undefined = undefined;
         const scheduleVerifyStock = () => {
+            console.log('scheduled verifyStock');
             verifyStock().then(() => {
                 scheduledVerifyStock = setTimeout(scheduleVerifyStock, 60 * 1000); // pooling every a minute
             });
@@ -1006,6 +1010,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // cleanups:
         return () => {
             if (scheduledVerifyStock) clearTimeout(scheduledVerifyStock);
+            isPoolingVerifyStockScheduled.current = false;
         };
     }, [checkoutStep]);
     
@@ -1379,16 +1384,32 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             throw fetchError;
         } // try
     });
-    const verifyStockPromise   = useRef<Promise<boolean>|undefined>(undefined);
+    const verifyStockPromise   = useRef<Promise<boolean>|number|undefined>(undefined);
     const verifyStock          = useEvent(async (): Promise<boolean> => {
         const verifyStockPromised = verifyStockPromise.current;
-        if (verifyStockPromised) { // if prev verifyStock is already running => wait until resolved
+        if (verifyStockPromised instanceof Promise) { // if prev verifyStock is already running => wait until resolved
+            console.log('bulk await');
             return await verifyStockPromised; // resolved
         } // if
         
         
         
         const newVerifyStockPromise = (async (): Promise<boolean> => {
+            // limits the request rate:
+            if (typeof(verifyStockPromised) === 'number') {
+                const lastRequestDuration = performance.now() - verifyStockPromised.valueOf();
+                const waitFor = (10 * 1000) - lastRequestDuration;
+                if (waitFor > 0) {
+                    console.log('waitFor: ',  waitFor / 1000);
+                    await new Promise<void>((resolved) => {
+                        setTimeout(resolved, waitFor);
+                    });
+                    console.log('ready');
+                } // if
+            } // if
+            
+            
+            
             try {
                 await placeOrder({
                     // cart item(s):
@@ -1410,7 +1431,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             return await newVerifyStockPromise; // resolved
         }
         finally {
-            verifyStockPromise.current = undefined; // cleanup
+            verifyStockPromise.current = performance.now(); // limits the future request rate
         } // try
     });
     const doMakePayment        = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
