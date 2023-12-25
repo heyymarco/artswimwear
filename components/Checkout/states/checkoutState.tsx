@@ -17,6 +17,7 @@ import {
     useMemo,
     useRef,
     useState,
+    useEffect,
 }                           from 'react'
 
 // redux:
@@ -984,6 +985,30 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         if (globalCheckoutState) dispatch(reduxResetCheckoutData());
     }, [checkoutStep, globalCartItems, globalCheckoutState]);
     
+    // pooling for available stocks:
+    useEffect(() => {
+        // conditions:
+        if ((checkoutStep === 'pending') || (checkoutStep === 'paid')) return; // stop pooling when state is 'pending' or 'paid'
+        
+        
+        
+        // actions:
+        let scheduledVerifyStock : ReturnType<typeof setTimeout>|undefined = undefined;
+        const scheduleVerifyStock = () => {
+            verifyStock().then(() => {
+                scheduledVerifyStock = setTimeout(scheduleVerifyStock, 60 * 1000); // pooling every a minute
+            });
+        };
+        scheduleVerifyStock();
+        
+        
+        
+        // cleanups:
+        return () => {
+            if (scheduledVerifyStock) clearTimeout(scheduledVerifyStock);
+        };
+    }, [checkoutStep]);
+    
     
     
     // refs:
@@ -1039,10 +1064,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 } // if
             }, 200);
         } // if
-        
-        
-        
-        verifyStock();
     });
     const gotoStepShipping     = useEvent(async (): Promise<boolean> => {
         const goForward = (checkoutStep === 'info');
@@ -1157,7 +1178,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        verifyStock();
         return true; // transaction completed
     });
     const gotoPayment          = useEvent(async (): Promise<boolean> => {
@@ -1188,7 +1208,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        verifyStock();
         return true; // transaction completed
     });
     
