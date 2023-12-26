@@ -128,10 +128,10 @@ export interface CartStateBase {
     
     // actions:
     addProductToCart      : (productId: string, quantity?: number) => void
-    deleteProductFromCart : (productId: string, showConfirm?: boolean) => Promise<void>
-    changeProductFromCart : (productId: string, quantity: number, showConfirm?: boolean) => Promise<void>
+    deleteProductFromCart : (productId: string, options?: { showConfirm?: boolean }) => Promise<void>
+    changeProductFromCart : (productId: string, quantity: number, options?: { showConfirm?: boolean }) => Promise<void>
     clearProductsFromCart : () => void
-    trimProductsFromCart  : (limitedStockItems: LimitedStockItem[], showConfirm?: boolean, showPaymentCanceled?: boolean) => Promise<void>
+    trimProductsFromCart  : (limitedStockItems: LimitedStockItem[], options?: { showConfirm?: boolean, showPaymentCanceled?: boolean }) => Promise<void>
     
     showCart              : () => void
     hideCart              : () => void
@@ -334,9 +334,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // actions:
         dispatch(reduxAddToCart({ productId, quantity }));
     });
-    const deleteProductFromCart = useEvent(async (productId: string, showConfirm?: boolean): Promise<void> => {
+    const deleteProductFromCart = useEvent(async (productId: string, options?: { showConfirm?: boolean }): Promise<void> => {
         // conditions:
-        if (showConfirm ?? true) {
+        if (options?.showConfirm ?? true) {
             if (
                 (await showMessage<'yes'|'no'>({
                     theme    : 'warning',
@@ -363,20 +363,20 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // actions:
         dispatch(reduxRemoveFromCart({ productId }));
     });
-    const changeProductFromCart = useEvent(async (productId: string, quantity: number, showConfirm?: boolean): Promise<void> => {
+    const changeProductFromCart = useEvent(async (productId: string, quantity: number, options?: { showConfirm?: boolean }): Promise<void> => {
         // actions:
         if (quantity > 0) {
             dispatch(reduxSetCartItemQuantity({ productId, quantity }));
         }
         else {
-            await deleteProductFromCart(productId, showConfirm);
+            await deleteProductFromCart(productId, options);
         } // if
     });
     const clearProductsFromCart = useEvent((): void => {
         // actions:
         dispatch(reduxClearCart());
     });
-    const trimProductsFromCart  = useEvent(async (limitedStockItems: LimitedStockItem[], showConfirm?: boolean, showPaymentCanceled?: boolean): Promise<void> => {
+    const trimProductsFromCart  = useEvent(async (limitedStockItems: LimitedStockItem[], options?: { showConfirm?: boolean, showPaymentCanceled?: boolean }): Promise<void> => {
         // conditions:
         if (!limitedStockItems?.length) return;
         
@@ -386,18 +386,18 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         for (const {productId, stock} of limitedStockItems) {
             if (stock <= 0) {
                 // the product is no longer available -or- no stock => delete the product from cart:
-                deleteProductFromCart(productId, /*showConfirm = */false);
+                deleteProductFromCart(productId, { showConfirm: false });
             }
             else {
                 // the product is available but the stock is below than the requested quantity => reduce the quantity to available stock:
-                changeProductFromCart(productId, stock, /*showConfirm = */false);
+                changeProductFromCart(productId, stock, { showConfirm: false });
             } // if
         } // for
         
         
         
         // report changes:
-        if (showConfirm ?? true) {
+        if (options?.showConfirm ?? true) {
             const hasNotAvailable = limitedStockItems.some(({stock}) => (stock <= 0));
             const hasOutOfStock   = limitedStockItems.some(({stock}) => (stock >  0));
             const hasBoth         = hasNotAvailable && hasOutOfStock;
@@ -412,7 +412,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     <p>
                         We have {hasNotAvailable && <strong>deleted</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity of</>} the {isPlural? 'products' : 'product'} in your shopping cart.
                     </p>
-                    {(showPaymentCanceled ?? false) && <>
+                    {(options?.showPaymentCanceled ?? false) && <>
                         <p>
                             We have <strong>canceled your previous transaction</strong> and <strong>your funds have not been deducted</strong>.
                         </p>

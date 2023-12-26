@@ -1338,7 +1338,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             return draftOrderDetail.orderId;
         }
         catch (fetchError: any) {
-            await trimProductsFromCart(fetchError?.data?.limitedStockItems, /* showConfirm = */true, /* showPaymentCanceled = */(options?.paymentSource !== 'manual'));
+            await trimProductsFromCart(fetchError?.data?.limitedStockItems, {
+                showConfirm         : true,
+                showPaymentCanceled : (options?.paymentSource !== 'manual'),
+            });
             
             
             
@@ -1384,7 +1387,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 return true;
             }
             catch (fetchError: any) {
-                await trimProductsFromCart(fetchError?.data?.limitedStockItems, /* showConfirm = */true, /* showPaymentCanceled = */false);
+                await trimProductsFromCart(fetchError?.data?.limitedStockItems, {
+                        showConfirm         : true,
+                        showPaymentCanceled : false,
+                });
                 
                 
                 
