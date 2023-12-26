@@ -889,17 +889,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep]);
     
     // auto renew payment token:
-    const isAutoRefreshPaymentTokenScheduled = useRef<boolean>(false); // ensures the payment token not re-refreshed twice (especially in dev mode)
-    
-    useIsomorphicLayoutEffect(() => {
-        if (!!paymentToken && !isPaymentTokenValid) isAutoRefreshPaymentTokenScheduled.current = false; // invalidate the expired paymentToken
-    }, [paymentToken, isPaymentTokenValid]);
-    
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (isAutoRefreshPaymentTokenScheduled.current) return; // already scheduled => ignore the twice_dev_mode
-        isAutoRefreshPaymentTokenScheduled.current = true;
-        console.log('paymentToken changed: ', paymentToken);
+        if ((checkoutStep === 'pending') || (checkoutStep === 'paid')) return; // no paymentToken renewal when state is 'pending' or 'paid'
         
         
         
@@ -930,8 +922,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             } // try
         };
         
-        let cancelRefresh : ReturnType<typeof setTimeout>|undefined = undefined;
+        let schedulingAborted             = false;
+        let schedulingRefreshPaymentToken : ReturnType<typeof setTimeout>|undefined = undefined;
         const scheduleRefreshPaymentToken = async (): Promise<void> => {
+            // conditions:
+            if (schedulingAborted) return;
+            
+            
+            
             // determine the next refresh duration:
             const paymentTokenRemainingAge = (
                 !!paymentToken
@@ -944,17 +942,26 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 : await performRefreshPaymentToken()
             );
             
-            // schedule to refresh:
+            
+            
+            // conditions:
+            if (schedulingAborted) return;
+            
+            
+            
+            // re-schedule:
             console.log(`schedule refresh token in ${nextRefreshDuration/1000} seconds`);
-            cancelRefresh = setTimeout(scheduleRefreshPaymentToken, nextRefreshDuration);
+            schedulingRefreshPaymentToken = setTimeout(scheduleRefreshPaymentToken, nextRefreshDuration);
         };
-        scheduleRefreshPaymentToken();
+        // first-schedule & avoids double re-run in StrictMode:
+        Promise.resolve().then(scheduleRefreshPaymentToken);
         
         
         
         // cleanups:
         return () => {
-            if (cancelRefresh) clearTimeout(cancelRefresh);
+            schedulingAborted = true;
+            if (schedulingRefreshPaymentToken) clearTimeout(schedulingRefreshPaymentToken);
         };
     }, [paymentToken, isPaymentTokenValid]);
     
@@ -995,7 +1002,17 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         let schedulingAborted     = false;
         let schedulingVerifyStock : ReturnType<typeof setTimeout>|undefined = undefined;
         const scheduleVerifyStock = async (): Promise<void> => {
+            // conditions:
+            if (schedulingAborted) return;
+            
+            
+            
+            // actions:
             await verifyStock();
+            
+            
+            
+            // conditions:
             if (schedulingAborted) return;
             
             
@@ -1004,7 +1021,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             schedulingVerifyStock = setTimeout(scheduleVerifyStock, 60 * 1000); // pooling every a minute
         };
         // first-schedule & avoids double re-run in StrictMode:
-        schedulingVerifyStock = setTimeout(scheduleVerifyStock, 0);
+        Promise.resolve().then(scheduleVerifyStock);
         
         
         
@@ -1487,7 +1504,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // discard used paymentToken:
         dispatch(reduxSetPaymentToken(undefined));
-        // isAutoRefreshPaymentTokenScheduled.current = false; // no need to re-schedule the paymentToken renewal, because it's the final checkoutStep
         
         
         
