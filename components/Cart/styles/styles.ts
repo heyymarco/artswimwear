@@ -269,4 +269,105 @@ export default () => [
         flexWrap   : 'nowrap',         // fix <ModalSide>'s collapsing animation
         whiteSpace : 'nowrap',         // fix <ModalSide>'s collapsing animation
     }, {specificityWeight: 2}),
+    
+    scope('viewOutOfStockTitle', {
+        // typos:
+        textAlign  : 'center',
+        fontWeight : typos.fontWeightSemibold,
+    }),
+    scope('viewOutOfStockItem', {
+        // layouts:
+        display      : 'grid',
+        gridTemplate : [[
+            '"image " max-content',
+            '"title " max-content',
+            '"info  " max-content',
+            '"action" max-content',
+            '/',
+            `1fr`,
+        ]],
+        ...ifScreenWidthAtLeast('sm', {
+            gridTemplate : [[
+                '"image  title" max-content',
+                '"image   info" max-content',
+                '"image action" max-content',
+                '"image ......" max-content',
+                '/',
+                `min-content auto`,
+            ]],
+        }),
+        
+        
+        
+        // children:
+    ...children('.prodImg', {
+        // positions:
+        gridArea    : 'image',
+        justifySelf : 'center', // center horizontally
+        alignSelf   : 'center', // center vertically
+        
+        
+        
+        // sizes:
+        width       : `${imageSize}px`,
+        aspectRatio : commerces.defaultProductAspectRatio,
+        
+        
+        
+        // backgrounds:
+        background  : 'white',
+        
+        
+        
+        // spacings:
+        ...ifScreenWidthAtLeast('sm', {
+            marginInlineEnd : spacers.default,
+        }),
+        
+        
+        
+        // children:
+        ...children('img', {
+            // sizes:
+            width  : '100% !important',
+            height : '100% !important',
+        }),
+        ...children('.title', {
+            // positions:
+            gridArea    : 'title',
+            justifySelf : 'center', // center horizontally
+            ...ifScreenWidthAtLeast('sm', {
+                justifySelf : 'stretch', // stretch horizontally
+            }),
+            
+            
+            
+            // sizes:
+            ...ifScreenWidthSmallerThan('sm', {
+                boxSizing     : 'border-box',
+                maxInlineSize : maxMobileTextWidth,
+            }),
+            
+            
+            
+            // typos:
+            whiteSpace   : 'normal',
+            textOverflow : 'ellipsis', // long text...
+            wordBreak    : 'break-word',
+            overflowWrap : 'break-word',
+            overflow     : 'hidden',
+            ...ifScreenWidthSmallerThan('sm', {
+                textAlign: 'center',
+            }),
+        }),
+        ...children('.info', {
+            // positions:
+            gridArea    : 'info',
+        }),
+        ...children('.action', {
+            // positions:
+            gridArea    : 'action',
+        }),
+    }),
+    }, {specificityWeight: 2}),
 ];

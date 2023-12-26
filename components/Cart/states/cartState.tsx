@@ -44,6 +44,11 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// internal components:
+import {
+    ViewOutOfStock,
+}                           from '../components/carts/ViewOutOfStock'
+
 // stores:
 import {
     // types:
@@ -71,6 +76,7 @@ import {
 import {
     // types:
     ProductPreview,
+    LimitedStockItem,
     
     
     
@@ -122,10 +128,10 @@ export interface CartStateBase {
     
     // actions:
     addProductToCart      : (productId: string, quantity?: number) => void
-    deleteProductFromCart : (productId: string, showConfirm?: boolean) => void
-    changeProductFromCart : (productId: string, quantity: number, showConfirm?: boolean) => void
+    deleteProductFromCart : (productId: string, showConfirm?: boolean) => Promise<void>
+    changeProductFromCart : (productId: string, quantity: number, showConfirm?: boolean) => Promise<void>
     clearProductsFromCart : () => void
-    trimProductsFromCart  : (limitedStockItems: LimitedStockItem[], showConfirm?: boolean) => void
+    trimProductsFromCart  : (limitedStockItems: LimitedStockItem[], showConfirm?: boolean, showPaymentCanceled?: boolean) => Promise<void>
     
     showCart              : () => void
     hideCart              : () => void
@@ -179,7 +185,8 @@ export type CartState =
         )
     )
 
-const noopCallback = () => {};
+const noopCallback      = (): void => {};
+const noopCallbackAsync = async (): Promise<void> => {};
 const CartStateContext = createContext<CartState>({
     // states:
     isCartShown           : false,
@@ -207,9 +214,10 @@ const CartStateContext = createContext<CartState>({
     
     // actions:
     addProductToCart      : noopCallback,
-    deleteProductFromCart : noopCallback,
-    changeProductFromCart : noopCallback,
+    deleteProductFromCart : noopCallbackAsync,
+    changeProductFromCart : noopCallbackAsync,
     clearProductsFromCart : noopCallback,
+    trimProductsFromCart  : noopCallbackAsync,
     
     showCart              : noopCallback,
     hideCart              : noopCallback,
@@ -316,6 +324,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // dialogs:
     const {
         showMessage,
+        showMessageNotification,
     } = useDialogMessage();
     
     
@@ -354,18 +363,78 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // actions:
         dispatch(reduxRemoveFromCart({ productId }));
     });
-    const changeProductFromCart = useEvent((productId: string, quantity: number, showConfirm?: boolean): void => {
+    const changeProductFromCart = useEvent(async (productId: string, quantity: number, showConfirm?: boolean): Promise<void> => {
         // actions:
         if (quantity > 0) {
             dispatch(reduxSetCartItemQuantity({ productId, quantity }));
         }
         else {
-            deleteProductFromCart(productId, showConfirm);
+            await deleteProductFromCart(productId, showConfirm);
         } // if
     });
     const clearProductsFromCart = useEvent((): void => {
         // actions:
         dispatch(reduxClearCart());
+    });
+    const trimProductsFromCart  = useEvent(async (limitedStockItems: LimitedStockItem[], showConfirm?: boolean, showPaymentCanceled?: boolean): Promise<void> => {
+        // conditions:
+        if (!limitedStockItems?.length) return;
+        
+        
+        
+        // update cart:
+        for (const {productId, stock} of limitedStockItems) {
+            if (stock <= 0) {
+                // the product is no longer available -or- no stock => delete the product from cart:
+                deleteProductFromCart(productId, /*showConfirm = */false);
+            }
+            else {
+                // the product is available but the stock is below than the requested quantity => reduce the quantity to available stock:
+                changeProductFromCart(productId, stock, /*showConfirm = */false);
+            } // if
+        } // for
+        
+        
+        
+        // report changes:
+        if (showConfirm ?? true) {
+            const hasNotAvailable = limitedStockItems.some(({stock}) => (stock <= 0));
+            const hasOutOfStock   = limitedStockItems.some(({stock}) => (stock >  0));
+            const hasBoth         = hasNotAvailable && hasOutOfStock;
+            const isPlural        = limitedStockItems.length > 1;
+            await showMessageNotification({
+                theme        : 'warning',
+                title        : <h1>Out of Stock</h1>,
+                notification : <>
+                    <p>
+                        There {isPlural ? 'are some products' : 'is a product'} that {isPlural ? 'are' : 'is'} <strong>out of stock</strong>.
+                    </p>
+                    <p>
+                        We have {hasNotAvailable && <strong>deleted</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity of</>} the {isPlural? 'products' : 'product'} in your shopping cart.
+                    </p>
+                    {(showPaymentCanceled ?? false) && <p>
+                        We have <strong>canceled your previous transaction</strong> and <strong>your funds have not been deducted</strong>.
+                    </p>}
+                    <p>
+                        Please try ordering again with the new order quantity.
+                    </p>
+                    <ViewOutOfStock
+                        // variants:
+                        theme='primary'
+                        
+                        
+                        
+                        // data:
+                        limitedStockItems={limitedStockItems}
+                        
+                        
+                        
+                        // relation data:
+                        productList={productList}
+                    />
+                </>
+            });
+        } // if
     });
     
     const showCart              = useEvent((): void => {
@@ -410,6 +479,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         deleteProductFromCart, // stable ref
         changeProductFromCart, // stable ref
         clearProductsFromCart, // stable ref
+        trimProductsFromCart,  // stable ref
         
         showCart,              // stable ref
         hideCart,              // stable ref
@@ -445,6 +515,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         // deleteProductFromCart, // stable ref
         // changeProductFromCart, // stable ref
         // clearProductsFromCart, // stable ref
+        // trimProductsFromCart,  // stable ref
         
         // showCart,              // stable ref
         // hideCart,              // stable ref

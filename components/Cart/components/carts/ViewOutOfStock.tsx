@@ -30,7 +30,10 @@ import type {
     LimitedStockItem,
 }                           from '@/store/features/api/apiSlice'
 
-// contexts:
+// internals:
+import {
+    useCartStyleSheet,
+}                           from '../../styles/loader'
 import {
     // types:
     ProductPreview,
@@ -39,12 +42,7 @@ import {
     
     // hooks:
     useCartState,
-}                           from '@/components/Cart'
-
-// internals:
-import {
-    useCheckoutStyleSheet,
-}                           from '../../styles/loader'
+}                           from '../../states/cartState'
 
 // utilities:
 import {
@@ -69,7 +67,7 @@ export interface ViewOutOfStockProps
 }
 const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
     // styles:
-    const styleSheet = useCheckoutStyleSheet();
+    const styleSheet = useCartStyleSheet();
     
     
     

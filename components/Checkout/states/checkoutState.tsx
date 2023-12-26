@@ -53,11 +53,6 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// internal components:
-import {
-    ViewOutOfStock,
-}                           from '../components/carts/ViewOutOfStock'
-
 // stores:
 import {
     // types:
@@ -627,9 +622,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        deleteProductFromCart,
-        changeProductFromCart,
         clearProductsFromCart,
+        trimProductsFromCart,
         
         refetchCart,
     } = useCartState();
@@ -1344,7 +1338,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             return draftOrderDetail.orderId;
         }
         catch (fetchError: any) {
-            await trimCart(fetchError?.data?.limitedStockItems);
+            await trimProductsFromCart(fetchError?.data?.limitedStockItems, /* showConfirm = */true, /* showPaymentCanceled = */(options?.paymentSource !== 'manual'));
             
             
             
@@ -1390,7 +1384,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 return true;
             }
             catch (fetchError: any) {
-                await trimCart(fetchError?.data?.limitedStockItems);
+                await trimProductsFromCart(fetchError?.data?.limitedStockItems, /* showConfirm = */true, /* showPaymentCanceled = */false);
                 
                 
                 
@@ -1405,64 +1399,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             verifyStockPromise.current = performance.now(); // limits the future request rate
         } // try
     });
-    const trimCart             = useEvent(async (limitedStockItems: LimitedStockItem[] | undefined): Promise<void> => {
-        // conditions:
-        if (!limitedStockItems?.length) return;
-        
-        
-        
-        // update cart:
-        for (const {productId, stock} of limitedStockItems) {
-            if (stock <= 0) {
-                // the product is no longer available -or- no stock => delete the product from cart:
-                deleteProductFromCart(productId, /*showConfirm = */false);
-            }
-            else {
-                // the product is available but the stock is below than the requested quantity => reduce the quantity to available stock:
-                changeProductFromCart(productId, stock, /*showConfirm = */false);
-            } // if
-        } // for
-        
-        
-        
-        // report changes:
-        const hasNotAvailable = limitedStockItems.some(({stock}) => (stock <= 0));
-        const hasOutOfStock   = limitedStockItems.some(({stock}) => (stock >  0));
-        const hasBoth         = hasNotAvailable && hasOutOfStock;
-        const isPlural        = limitedStockItems.length > 1;
-        await showMessageNotification({
-            theme        : 'warning',
-            title        : <h1>Out of Stock</h1>,
-            notification : <>
-                <p>
-                    There {isPlural ? 'are some products' : 'is a product'} that {isPlural ? 'are' : 'is'} <strong>out of stock</strong>.
-                </p>
-                <p>
-                    We have {hasNotAvailable && <strong>deleted</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity of</>} the {isPlural? 'products' : 'product'} in your shopping cart.
-                </p>
-                {(paymentMethod !== 'manual') && <p>
-                    We have <strong>canceled your previous transaction</strong> and <strong>your funds have not been deducted</strong>.
-                </p>}
-                <p>
-                    Please try ordering again with the new order quantity.
-                </p>
-                <ViewOutOfStock
-                    // variants:
-                    theme='primary'
-                    
-                    
-                    
-                    // data:
-                    limitedStockItems={limitedStockItems}
-                    
-                    
-                    
-                    // relation data:
-                    productList={productList}
-                />
-            </>
-        });
-    })
     const doMakePayment        = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
         const paymentDetail = await makePayment({
             orderId,

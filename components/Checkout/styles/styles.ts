@@ -27,7 +27,6 @@ import {
     
     
     // a responsive management system:
-    breakpoints,
     ifScreenWidthAtLeast,
     ifScreenWidthSmallerThan,
     ifScreenWidthBetween,
@@ -62,19 +61,7 @@ import {
     
     // base-content-components:
     containers,
-    contents,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-
-// configs:
-import {
-    commerces,
-}                           from '@/config'
-
-
-
-// defaults:
-const imageSize = 64;  // 64px
-const maxMobileTextWidth = `calc(${breakpoints.sm}px - (2 * ${contents.paddingInline}))`;
 
 
 
@@ -614,106 +601,5 @@ export default () => {
                 display: 'none',
             }),
         }),
-        
-        scope('viewOutOfStockTitle', {
-            // typos:
-            textAlign  : 'center',
-            fontWeight : typos.fontWeightSemibold,
-        }),
-        scope('viewOutOfStockItem', {
-            // layouts:
-            display      : 'grid',
-            gridTemplate : [[
-                '"image " max-content',
-                '"title " max-content',
-                '"info  " max-content',
-                '"action" max-content',
-                '/',
-                `1fr`,
-            ]],
-            ...ifScreenWidthAtLeast('sm', {
-                gridTemplate : [[
-                    '"image  title" max-content',
-                    '"image   info" max-content',
-                    '"image action" max-content',
-                    '"image ......" max-content',
-                    '/',
-                    `min-content auto`,
-                ]],
-            }),
-            
-            
-            
-            // children:
-        ...children('.prodImg', {
-            // positions:
-            gridArea    : 'image',
-            justifySelf : 'center', // center horizontally
-            alignSelf   : 'center', // center vertically
-            
-            
-            
-            // sizes:
-            width       : `${imageSize}px`,
-            aspectRatio : commerces.defaultProductAspectRatio,
-            
-            
-            
-            // backgrounds:
-            background  : 'white',
-            
-            
-            
-            // spacings:
-            ...ifScreenWidthAtLeast('sm', {
-                marginInlineEnd : spacers.default,
-            }),
-            
-            
-            
-            // children:
-            ...children('img', {
-                // sizes:
-                width  : '100% !important',
-                height : '100% !important',
-            }),
-            ...children('.title', {
-                // positions:
-                gridArea    : 'title',
-                justifySelf : 'center', // center horizontally
-                ...ifScreenWidthAtLeast('sm', {
-                    justifySelf : 'stretch', // stretch horizontally
-                }),
-                
-                
-                
-                // sizes:
-                ...ifScreenWidthSmallerThan('sm', {
-                    boxSizing     : 'border-box',
-                    maxInlineSize : maxMobileTextWidth,
-                }),
-                
-                
-                
-                // typos:
-                whiteSpace   : 'normal',
-                textOverflow : 'ellipsis', // long text...
-                wordBreak    : 'break-word',
-                overflowWrap : 'break-word',
-                overflow     : 'hidden',
-                ...ifScreenWidthSmallerThan('sm', {
-                    textAlign: 'center',
-                }),
-            }),
-            ...children('.info', {
-                // positions:
-                gridArea    : 'info',
-            }),
-            ...children('.action', {
-                // positions:
-                gridArea    : 'action',
-            }),
-        }),
-        }, {specificityWeight: 2}),
     ];
 };
