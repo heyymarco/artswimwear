@@ -586,15 +586,15 @@ export interface ShippingTrackingDetail
     shippingTrackingLogs : Omit<ShippingTrackingLog, 'id'|'shippingTrackingId'>[]
 }
 
-export interface OutOfStockItem {
+export interface LimitedStockItem {
     productId : string
     stock     : number
 }
 class OutOfStockError extends Error {
-    outOfStockItems : OutOfStockItem[];
-    constructor(outOfStockItems : OutOfStockItem[]) {
+    limitedStockItems : LimitedStockItem[];
+    constructor(limitedStockItems : LimitedStockItem[]) {
         super('out of stock');
-        this.outOfStockItems = outOfStockItems;
+        this.limitedStockItems = limitedStockItems;
     }
 }
 
@@ -885,12 +885,12 @@ router
                 
                 
                 
-                const outOfStockItems : { productId: string, stock: number }[] = [];
+                const limitedStockItems : LimitedStockItem[] = [];
                 for (const { productId, quantity } of validFormattedItems) {
                     const product = productList[productId];
                     // if (!product) throw 'INVALID_PRODUCT_ID';
                     if (!product || (!''.toLowerCase())) { // TODO: fix this
-                        outOfStockItems.push({
+                        limitedStockItems.push({
                             productId,
                             // stock: 0, // TODO: fix this
                             stock: 1, // TODO: remove this
@@ -904,7 +904,7 @@ router
                     if (typeof(stock) === 'number') {
                         // if (quantity > stock) throw 'INSUFFICIENT_PRODUCT_STOCK';
                         if (quantity > stock) {
-                            outOfStockItems.push({
+                            limitedStockItems.push({
                                 productId,
                                 stock,
                             });
@@ -947,7 +947,7 @@ router
                         totalProductWeights      = trimNumber(totalProductWeights);
                     } // if
                 } // for
-                if (outOfStockItems.length) throw new OutOfStockError(outOfStockItems);
+                if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
                 if (simulateOrder) return {
                     orderId       : '',
                     paypalOrderId : null,
@@ -1318,8 +1318,8 @@ router
         
         if (error instanceof OutOfStockError) {
             return NextResponse.json({
-                error           : 'OUT_OF_STOCK',
-                outOfStockItems : error.outOfStockItems,
+                error             : 'OUT_OF_STOCK',
+                limitedStockItems : error.limitedStockItems,
             }, { status: 409 }); // handled with error conflict
         } // if
         

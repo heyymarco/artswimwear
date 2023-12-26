@@ -27,7 +27,7 @@ import {
 // stores:
 import type {
     // types:
-    OutOfStockItem,
+    LimitedStockItem,
 }                           from '@/store/features/api/apiSlice'
 
 // contexts:
@@ -60,12 +60,12 @@ export interface ViewOutOfStockProps
         ListProps
 {
     // data:
-    outOfStockItems : OutOfStockItem[]
+    limitedStockItems : LimitedStockItem[]
     
     
     
     // relation data:
-    productList     : EntityState<ProductPreview>|undefined
+    productList       : EntityState<ProductPreview>|undefined
 }
 const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
     // styles:
@@ -76,14 +76,14 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
     // rest props:
     const {
         // data:
-        outOfStockItems,
+        limitedStockItems,
         
         
         
         // relation data:
         productList,
     ...restListProps} = props;
-    const isPlural = outOfStockItems.length > 1;
+    const isPlural = limitedStockItems.length > 1;
     
     
     
@@ -112,7 +112,7 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
             >
                 Changed {isPlural ? 'Items' : 'Item'}
             </ListItem>
-            {outOfStockItems.map(({productId, stock}, index) => {
+            {limitedStockItems.map(({productId, stock}, index) => {
                 // fn props:
                 const product          = productList?.entities?.[productId];
                 const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product

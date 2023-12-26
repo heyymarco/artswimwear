@@ -67,7 +67,7 @@ const ButtonPaymentManual = (): JSX.Element|null => {
                 await doMakePayment(orderId, /*paid:*/false);
             }
             catch (fetchError: any) {
-                if (!fetchError?.data?.outOfStockItems) showMessageFetchError({ fetchError, context: 'order' });
+                if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
             } // try
         });
     });

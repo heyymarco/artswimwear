@@ -138,7 +138,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 await doMakePayment(paypalAuthentication.orderId, /*paid:*/true);
             }
             catch (fetchError: any) {
-                if (!fetchError?.data?.outOfStockItems) showMessageFetchError({ fetchError, context: 'payment' });
+                if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
                 // TODO: re-generate paypal payment token
             } // try
         });

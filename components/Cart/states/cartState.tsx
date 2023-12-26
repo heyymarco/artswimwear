@@ -125,6 +125,7 @@ export interface CartStateBase {
     deleteProductFromCart : (productId: string, showConfirm?: boolean) => void
     changeProductFromCart : (productId: string, quantity: number, showConfirm?: boolean) => void
     clearProductsFromCart : () => void
+    trimProductsFromCart  : (limitedStockItems: LimitedStockItem[], showConfirm?: boolean) => void
     
     showCart              : () => void
     hideCart              : () => void

@@ -130,7 +130,7 @@ import {
     CountryPreview,
     PaymentDetail,
     PlaceOrderOptions,
-    OutOfStockItem,
+    LimitedStockItem,
     
     
     
@@ -1344,7 +1344,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             return draftOrderDetail.orderId;
         }
         catch (fetchError: any) {
-            await trimCart(fetchError?.data?.outOfStockItems);
+            await trimCart(fetchError?.data?.limitedStockItems);
             
             
             
@@ -1390,7 +1390,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 return true;
             }
             catch (fetchError: any) {
-                await trimCart(fetchError?.data?.outOfStockItems);
+                await trimCart(fetchError?.data?.limitedStockItems);
                 
                 
                 
@@ -1405,14 +1405,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             verifyStockPromise.current = performance.now(); // limits the future request rate
         } // try
     });
-    const trimCart             = useEvent(async (outOfStockItems: OutOfStockItem[] | undefined): Promise<void> => {
+    const trimCart             = useEvent(async (limitedStockItems: LimitedStockItem[] | undefined): Promise<void> => {
         // conditions:
-        if (!outOfStockItems?.length) return;
+        if (!limitedStockItems?.length) return;
         
         
         
         // update cart:
-        for (const {productId, stock} of outOfStockItems) {
+        for (const {productId, stock} of limitedStockItems) {
             if (stock <= 0) {
                 // the product is no longer available -or- no stock => delete the product from cart:
                 deleteProductFromCart(productId, /*showConfirm = */false);
@@ -1426,10 +1426,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // report changes:
-        const hasNotAvailable = outOfStockItems.some(({stock}) => (stock <= 0));
-        const hasOutOfStock   = outOfStockItems.some(({stock}) => (stock >  0));
+        const hasNotAvailable = limitedStockItems.some(({stock}) => (stock <= 0));
+        const hasOutOfStock   = limitedStockItems.some(({stock}) => (stock >  0));
         const hasBoth         = hasNotAvailable && hasOutOfStock;
-        const isPlural        = outOfStockItems.length > 1;
+        const isPlural        = limitedStockItems.length > 1;
         await showMessageNotification({
             theme        : 'warning',
             title        : <h1>Out of Stock</h1>,
@@ -1453,7 +1453,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     
                     
                     // data:
-                    outOfStockItems={outOfStockItems}
+                    limitedStockItems={limitedStockItems}
                     
                     
                     

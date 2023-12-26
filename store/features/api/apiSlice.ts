@@ -53,7 +53,7 @@ export type {
     ShippingTrackingRequest,
     ShippingTrackingDetail,
     
-    OutOfStockItem,
+    LimitedStockItem,
 }                           from '@/app/api/checkout/route'
 
 
