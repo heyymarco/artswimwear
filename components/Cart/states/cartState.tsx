@@ -61,6 +61,7 @@ import {
     deleteProductFromCart as reduxDeleteProductFromCart,
     changeProductFromCart as reduxChangeProductFromCart,
     clearProductsFromCart as reduxClearProductsFromCart,
+    trimProductsFromCart  as reduxTrimProductsFromCart,
     
     
     
@@ -382,17 +383,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         
-        // update cart:
-        for (const {productId, stock} of limitedStockItems) {
-            if (stock <= 0) {
-                // the product is no longer available -or- no stock => delete the product from cart:
-                deleteProductFromCart(productId, { showConfirm: false });
-            }
-            else {
-                // the product is available but the stock is below than the requested quantity => reduce the quantity to available stock:
-                changeProductFromCart(productId, stock, { showConfirm: false });
-            } // if
-        } // for
+        // actions:
+        dispatch(reduxTrimProductsFromCart(limitedStockItems));
         
         
         

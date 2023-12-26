@@ -9,6 +9,10 @@ import type {
     // types:
     RootState,
 }                           from '../../store'
+import type {
+    // types:
+    LimitedStockItem,
+}                           from '@/store/features/api/apiSlice'
 
 // apis:
 import type {
@@ -85,6 +89,29 @@ export const cartSlice = createSlice({
         clearProductsFromCart : ({items}) => {
             items.splice(0); // remove all
         },
+        trimProductsFromCart  : ({items}, {payload: limitedStockItems}: PayloadAction<LimitedStockItem[]|null|undefined>) => {
+            // conditions:
+            if (!limitedStockItems?.length) return;
+            
+            
+            
+            // update cart:
+            for (const {productId, stock} of limitedStockItems) {
+                const existingEntry = items.find((entry) => entry.productId === productId);
+                if (!existingEntry) continue;
+                
+                
+                
+                const quantity = Math.min(existingEntry.quantity, Math.max(0, stock));
+                if (quantity > 0) {
+                    existingEntry.quantity = quantity;
+                }
+                else {
+                    const itemIndex = items.findIndex((entry) => (entry === existingEntry));
+                    if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
+                } // if
+            } // for
+        },
         
         
         
@@ -107,6 +134,7 @@ export const {
     deleteProductFromCart,
     changeProductFromCart,
     clearProductsFromCart,
+    trimProductsFromCart,
     
     
     
