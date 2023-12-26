@@ -412,12 +412,14 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     <p>
                         We have {hasNotAvailable && <strong>deleted</strong>}{hasBoth && '/'}{hasOutOfStock && <><strong>reduced</strong> the quantity of</>} the {isPlural? 'products' : 'product'} in your shopping cart.
                     </p>
-                    {(showPaymentCanceled ?? false) && <p>
-                        We have <strong>canceled your previous transaction</strong> and <strong>your funds have not been deducted</strong>.
-                    </p>}
-                    <p>
-                        Please try ordering again with the new order quantity.
-                    </p>
+                    {(showPaymentCanceled ?? false) && <>
+                        <p>
+                            We have <strong>canceled your previous transaction</strong> and <strong>your funds have not been deducted</strong>.
+                        </p>
+                        <p>
+                            Please try ordering again with the new order quantity.
+                        </p>
+                    </>}
                     <ViewOutOfStock
                         // variants:
                         theme='primary'
