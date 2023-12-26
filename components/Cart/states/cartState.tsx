@@ -57,15 +57,15 @@ import {
     
     
     // cart data:
-    addToCart           as reduxAddToCart,
-    removeFromCart      as reduxRemoveFromCart,
-    setCartItemQuantity as reduxSetCartItemQuantity,
-    clearCart           as reduxClearCart,
+    addProductToCart      as reduxAddProductToCart,
+    deleteProductFromCart as reduxDeleteProductFromCart,
+    changeProductFromCart as reduxChangeProductFromCart,
+    clearProductsFromCart as reduxClearProductsFromCart,
     
     
     
     // cart dialogs:
-    showCart            as reduxShowCart,
+    showCart              as reduxShowCart,
     
     
     
@@ -332,7 +332,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // stable callbacks:
     const addProductToCart      = useEvent((productId: string, quantity: number = 1): void => {
         // actions:
-        dispatch(reduxAddToCart({ productId, quantity }));
+        dispatch(reduxAddProductToCart({ productId, quantity }));
     });
     const deleteProductFromCart = useEvent(async (productId: string, options?: { showConfirm?: boolean }): Promise<void> => {
         // conditions:
@@ -361,12 +361,12 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // actions:
-        dispatch(reduxRemoveFromCart({ productId }));
+        dispatch(reduxDeleteProductFromCart({ productId }));
     });
     const changeProductFromCart = useEvent(async (productId: string, quantity: number, options?: { showConfirm?: boolean }): Promise<void> => {
         // actions:
         if (quantity > 0) {
-            dispatch(reduxSetCartItemQuantity({ productId, quantity }));
+            dispatch(reduxChangeProductFromCart({ productId, quantity }));
         }
         else {
             await deleteProductFromCart(productId, options);
@@ -374,7 +374,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     });
     const clearProductsFromCart = useEvent((): void => {
         // actions:
-        dispatch(reduxClearCart());
+        dispatch(reduxClearProductsFromCart());
     });
     const trimProductsFromCart  = useEvent(async (limitedStockItems: LimitedStockItem[], options?: { showConfirm?: boolean, showPaymentCanceled?: boolean }): Promise<void> => {
         // conditions:

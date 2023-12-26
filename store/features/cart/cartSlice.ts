@@ -44,7 +44,7 @@ export const cartSlice = createSlice({
     initialState,
     reducers: {
         // cart data:
-        addToCart           : ({items}, {payload: {productId, quantity = 1}}: PayloadAction<CartEntry>) => {
+        addProductToCart      : ({items}, {payload: {productId, quantity = 1}}: PayloadAction<CartEntry>) => {
             const existingEntry = items.find((entry) => entry.productId === productId);
             if (!existingEntry) {
                 if (quantity > 0) {
@@ -58,11 +58,11 @@ export const cartSlice = createSlice({
                 existingEntry.quantity += quantity;
             } // if
         },
-        removeFromCart      : ({items}, {payload: {productId}}: PayloadAction<Pick<CartEntry, 'productId'>>) => {
+        deleteProductFromCart : ({items}, {payload: {productId}}: PayloadAction<Pick<CartEntry, 'productId'>>) => {
             const itemIndex = items.findIndex((entry) => entry.productId === productId);
             if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
         },
-        setCartItemQuantity : ({items}, {payload: {productId, quantity}}: PayloadAction<CartEntry>) => {
+        changeProductFromCart : ({items}, {payload: {productId, quantity}}: PayloadAction<CartEntry>) => {
             const existingEntry = items.find((entry) => entry.productId === productId);
             if (!existingEntry) {
                 if (quantity > 0) {
@@ -82,17 +82,17 @@ export const cartSlice = createSlice({
                 } // if
             } // if
         },
-        clearCart           : ({items}) => {
+        clearProductsFromCart : ({items}) => {
             items.splice(0); // remove all
         },
         
         
         
         // cart dialogs:
-        toggleCart          : (state) => {
+        toggleCart            : (state) => {
             state.showCart = !state.showCart;
         },
-        showCart            : (state, {payload: setShown}: PayloadAction<boolean>) => {
+        showCart              : (state, {payload: setShown}: PayloadAction<boolean>) => {
             state.showCart = setShown;
         },
     },
@@ -103,10 +103,10 @@ export const cartSlice = createSlice({
 export default cartSlice.reducer;
 export const {
     // cart data:
-    addToCart,
-    removeFromCart,
-    setCartItemQuantity,
-    clearCart,
+    addProductToCart,
+    deleteProductFromCart,
+    changeProductFromCart,
+    clearProductsFromCart,
     
     
     
