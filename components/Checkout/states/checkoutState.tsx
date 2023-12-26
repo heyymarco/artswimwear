@@ -18,6 +18,7 @@ import {
     useRef,
     useState,
     useEffect,
+    useSyncExternalStore,
 }                           from 'react'
 
 // redux:
@@ -986,31 +987,33 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep, globalCartItems, globalCheckoutState]);
     
     // pooling for available stocks:
-    const isPoolingVerifyStockScheduled = useRef<boolean>(false); // ensures the pooling verifyStock not triggered twice (especially in dev mode)
-    useEffect(() => {
+    useEffect((): (() => void)|undefined => {
         // conditions:
-        if ((checkoutStep === 'pending') || (checkoutStep === 'paid')) return; // stop pooling when state is 'pending' or 'paid'
-        if (isPoolingVerifyStockScheduled.current) return; // already scheduled => ignore the twice_dev_mode
-        isPoolingVerifyStockScheduled.current = true;
+        if ((checkoutStep === 'pending') || (checkoutStep === 'paid')) return; // no pooling when state is 'pending' or 'paid'
         
         
         
         // actions:
-        let scheduledVerifyStock : ReturnType<typeof setTimeout>|undefined = undefined;
-        const scheduleVerifyStock = () => {
-            console.log('scheduled verifyStock');
-            verifyStock().then(() => {
-                scheduledVerifyStock = setTimeout(scheduleVerifyStock, 60 * 1000); // pooling every a minute
-            });
+        let schedulingAborted     = false;
+        let schedulingVerifyStock : ReturnType<typeof setTimeout>|undefined = undefined;
+        const scheduleVerifyStock = async (): Promise<void> => {
+            await verifyStock();
+            if (schedulingAborted) return;
+            
+            
+            
+            // re-schedule:
+            schedulingVerifyStock = setTimeout(scheduleVerifyStock, 60 * 1000); // pooling every a minute
         };
-        scheduleVerifyStock();
+        // first-schedule & avoids double re-run in StrictMode:
+        schedulingVerifyStock = setTimeout(scheduleVerifyStock, 0);
         
         
         
         // cleanups:
         return () => {
-            if (scheduledVerifyStock) clearTimeout(scheduledVerifyStock);
-            isPoolingVerifyStockScheduled.current = false;
+            schedulingAborted = true;
+            if (schedulingVerifyStock) clearTimeout(schedulingVerifyStock);
         };
     }, [checkoutStep]);
     
