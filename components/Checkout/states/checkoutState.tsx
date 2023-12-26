@@ -17,8 +17,6 @@ import {
     useMemo,
     useRef,
     useState,
-    useEffect,
-    useSyncExternalStore,
 }                           from 'react'
 
 // redux:
@@ -987,7 +985,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep, globalCartItems, globalCheckoutState]);
     
     // pooling for available stocks:
-    useEffect((): (() => void)|undefined => {
+    useIsomorphicLayoutEffect((): (() => void)|undefined => {
         // conditions:
         if ((checkoutStep === 'pending') || (checkoutStep === 'paid')) return; // no pooling when state is 'pending' or 'paid'
         
