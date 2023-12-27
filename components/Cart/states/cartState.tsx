@@ -29,6 +29,7 @@ import type {
 // reusable-ui core:
 import {
     // react helper hooks:
+    useIsomorphicLayoutEffect,
     useEvent,
     useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -319,6 +320,27 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     // dom effects:
     const isMounted = useMountedFlag();
+    
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (!isCartReady)      return; // do not clean up when the related data is still loading
+        if (!cartItems.length) return; // no item(s) in the cart => nothing to clean up
+        if (!productList)      return; // the productList is not yet loaded => do not clean up now
+        
+        
+        
+        // clean up invalid productId(s):
+        const invalidProductIds = cartItems.map(({productId}) => productId).filter((productId) => !productList.ids.includes(productId));
+        if (invalidProductIds.length) {
+            trimProductsFromCart(
+                invalidProductIds
+                .map((invalidProductId) => ({
+                    productId : invalidProductId,
+                    stock     : 0,
+                }))
+            );
+        } // if
+    }, [isCartReady, cartItems, productList]);
     
     
     
