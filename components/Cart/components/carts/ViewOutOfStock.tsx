@@ -134,8 +134,8 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
                         >
                             {
                                 !isProductDeleted
-                                ? productList?.entities?.[productId]?.name
-                                : 'PRODUCT DELETED'
+                                ? (product?.name ?? <em>Unknown Product</em>)
+                                : <em>Deleted Product</em>
                             }
                         </h3>
                         
