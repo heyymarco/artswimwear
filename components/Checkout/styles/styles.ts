@@ -601,5 +601,9 @@ export default () => {
                 display: 'none',
             }),
         }),
+        
+        scope('captchaDialogBody', {
+            //
+        }),
     ];
 };

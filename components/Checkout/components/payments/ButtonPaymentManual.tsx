@@ -4,18 +4,29 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useState,
 }                           from 'react'
 
 // reusable-ui core:
 import {
     // react helper hooks:
     useEvent,
+    EventHandler,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
     // simple-components:
     ButtonIcon,
+    
+    
+    
+    // dialog-components:
+    ModalExpandedChangeEvent,
     
     
     
@@ -27,6 +38,12 @@ import {
 import {
     ButtonWithBusy,
 }                           from '../ButtonWithBusy'
+import {
+    CollapsibleSuspense,
+}                           from '@/components/CollapsibleSuspense'
+import {
+    CaptchaDialog,
+}                           from './CaptchaDialog'
 
 // internals:
 import {
@@ -45,6 +62,8 @@ const ButtonPaymentManual = (): JSX.Element|null => {
         doMakePayment,
     } = useCheckoutState();
     
+    const [showCaptchaDialog, setShowCaptchaDialog] = useState<boolean>(false);
+    
     
     
     // dialogs:
@@ -56,6 +75,8 @@ const ButtonPaymentManual = (): JSX.Element|null => {
     
     // handlers:
     const handleFinishOrderButtonClick = useEvent(() => {
+        setShowCaptchaDialog(true);
+        return;
         doTransaction(async () => {
             try {
                 // createOrder:
@@ -71,38 +92,56 @@ const ButtonPaymentManual = (): JSX.Element|null => {
             } // try
         });
     });
+    const handleExpandedChange       = useEvent<EventHandler<ModalExpandedChangeEvent>>(({expanded}): void => {
+        // conditions:
+        if (expanded) return; // ignore if expanded
+        
+        
+        
+        // actions:
+        setShowCaptchaDialog(false);
+    });
     
     
     
     // jsx:
     return (
-        <ButtonWithBusy
-            // components:
-            buttonComponent={
-                <ButtonIcon
-                    // appearances:
-                    icon='done'
-                    
-                    
-                    
-                    // variants:
-                    size='lg'
-                    gradient={true}
-                    
-                    
-                    
-                    // classes:
-                    className='next finishOrder'
-                    
-                    
-                    
-                    // handlers:
-                    onClick={handleFinishOrderButtonClick}
-                >
-                    Finish Order
-                </ButtonIcon>
-            }
-        />
+        <>
+            <ButtonWithBusy
+                // components:
+                buttonComponent={
+                    <ButtonIcon
+                        // appearances:
+                        icon='done'
+                        
+                        
+                        
+                        // variants:
+                        size='lg'
+                        gradient={true}
+                        
+                        
+                        
+                        // classes:
+                        className='next finishOrder'
+                        
+                        
+                        
+                        // handlers:
+                        onClick={handleFinishOrderButtonClick}
+                    >
+                        Finish Order
+                    </ButtonIcon>
+                }
+            />
+            <CollapsibleSuspense>
+                <CaptchaDialog
+                    // states:
+                    expanded={showCaptchaDialog}
+                    onExpandedChange={handleExpandedChange}
+                />
+            </CollapsibleSuspense>
+        </>
     );
 };
 export {
