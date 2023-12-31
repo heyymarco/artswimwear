@@ -9,6 +9,8 @@ import {
     
     // hooks:
     useState,
+    useRef,
+    useEffect,
 }                           from 'react'
 
 // reusable-ui core:
@@ -51,7 +53,13 @@ import {
 // google recaptcha components:
 import {
     default as ReCAPTCHAComponent,
+    ReCAPTCHA,
 }                           from 'react-google-recaptcha'
+
+// internal components:
+import {
+    ErrorBlankSection,
+}                           from '@/components/BlankSection'
 
 // internals:
 import {
@@ -86,7 +94,14 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     
     
     // states:
-    const [isLoaded, setIsLoaded] = useState<boolean|null>(null); // true: loaded, false: errored, null: loading
+    const enum LoadedState {
+        Loading,
+        Errored,
+        PartialLoaded,
+        FullyLoaded,
+    }
+    const [isLoaded    , setIsLoaded    ] = useState<LoadedState>(LoadedState.Loading); // 0: loading true: loaded, false: errored
+    const [recaptchaKey, setRecaptchaKey] = useState<number>(1);
     
     
     
@@ -99,15 +114,33 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     
     
     
+    // refs:
+    const recaptchaRef = useRef<ReCAPTCHA|null>(null);
+    
+    
+    
     // handlers:
-    const handleLoaded = useEvent((): void => {
-        setIsLoaded(true);
+    const handleLoaded      = useEvent((): void => {
+        setIsLoaded(LoadedState.PartialLoaded);
+        console.log('capcha PARTIAL LOADED', recaptchaRef.current, Date.now());
     });
-    const handleErrored = useEvent((): void => {
-        setIsLoaded(false);
+    const handleErrored     = useEvent((): void => {
+        // conditions:
+        if (isLoaded === LoadedState.FullyLoaded) return; // already loaded => no error possible
+        
+        
+        
+        // actions:
+        setIsLoaded(LoadedState.Errored);
+        console.log('capcha ERRORED', Date.now());
+    });
+    const handleReload      = useEvent((): void => {
+        setIsLoaded(LoadedState.Loading);
+        setRecaptchaKey((current) => (current + 1));
+        recaptchaRef.current?.reset?.();
     });
     
-    const handleChange = useEvent((token: string|null): void => {
+    const handleChange      = useEvent((token: string|null): void => {
         // conditions:
         if (!token) return;
         
@@ -132,6 +165,64 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     
     
     
+    // effects:
+    useEffect(() => {
+        // conditions:
+        if (isLoaded !== LoadedState.Loading) return; // only interested on loading state
+        
+        
+        
+        // setups:
+        const cancelTimeout = setTimeout(() => {
+            handleErrored();
+        }, 10 * 1000); // if not loaded|errored within 10 seconds => assumes as errored
+        
+        
+        
+        // cleanups:
+        return () => {
+            clearTimeout(cancelTimeout);
+        };
+    }, [isLoaded]);
+    
+    useEffect(() => {
+        // conditions:
+        if (isLoaded !== LoadedState.PartialLoaded) return; // only interested on partial loaded state
+        let recaptchaElm = (recaptchaRef.current as any)?.captcha as Element|undefined|null;
+        if (recaptchaElm) {
+            const iframe = recaptchaElm.querySelector?.('iframe[role]');
+            if (iframe) {
+                recaptchaElm = iframe;
+            } // if
+        } // if
+        if (!recaptchaElm) return;
+        
+        
+        
+        // setups:
+        const observer = new ResizeObserver((entries) => {
+            // conditions:
+            const entry = entries[0];
+            if (!entry.borderBoxSize[0].blockSize) return;
+            
+            
+            
+            // actions:
+            setIsLoaded(LoadedState.FullyLoaded);
+            console.log('capcha FULLY LOADED', entry, Date.now());
+        });
+        observer.observe(recaptchaElm, { box: 'border-box' });
+        
+        
+        
+        // cleanups:
+        return () => {
+            observer.disconnect();
+        };
+    }, [isLoaded]);
+    
+    
+    
     // jsx:
     return (
         <ModalCard
@@ -150,9 +241,17 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheet.captchaDialogBody}>
-                {(isLoaded === true) && <p className='pleaseWait'>Please wait...</p>}
-                
                 <ReCAPTCHAComponent
+                    // identifiers:
+                    key={recaptchaKey}
+                    
+                    
+                    
+                    // refs:
+                    ref={recaptchaRef}
+                    
+                    
+                    
                     // configs:
                     sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_ID ?? ''}
                     
@@ -170,6 +269,8 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
                     onChange={handleChange}
                 />
                 
+                {(isLoaded === LoadedState.Errored) && <ErrorBlankSection className='error' onRetry={handleReload} />}
+                
                 <Busy
                     // classes:
                     className='loading'
@@ -183,7 +284,7 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
                     
                     
                     // states:
-                    expanded={isLoaded === null}
+                    expanded={(isLoaded === LoadedState.Loading) || (isLoaded === LoadedState.PartialLoaded)}
                 />
             </CardBody>
             <CardFooter>
