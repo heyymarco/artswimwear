@@ -25,7 +25,7 @@
     "@paypal/react-paypal-js": "^7.8.2",
     "@prisma/client": "^5.0.0",
     "@reduxjs/toolkit": "^1.9.3",
-    "@reusable-ui/components": "^6.5.0",
+    "@reusable-ui/components": "^6.6.0",
     "@reusable-ui/core": "^6.5.0",
     "@reusable-ui/next-compat-link": "^6.5.0",
     "@types/node": "^18.14.4",

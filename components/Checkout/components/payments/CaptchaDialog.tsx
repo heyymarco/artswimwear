@@ -9,7 +9,6 @@ import {
     
     // hooks:
     useRef,
-    useState,
 }                           from 'react'
 
 // cssfn:
@@ -105,26 +104,8 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     
     
     
-    // rest props:
-    const {
-        // handlers:
-        onExpandedChange,
-    ...restModalCardProps} = props;
-    
-    
-    
-    // states:
-    const [editorValue     , setEditorValue     ] = useState<string|null>(null);
-    
-    
-    
     // refs:
     const editorRef = useRef<ReCAPTCHA|null>(null);
-    
-    
-    
-    // dom effects:
-    const isMounted = useMountedFlag();
     
     
     
@@ -138,37 +119,34 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     
     
     // handlers:
-    const handleOK = useEvent(async () => {
-        try {
-            await handleFinalizing(); // result: created|mutated
-        }
-        catch (fetchError: any) {
-            showMessageFetchError(fetchError);
-        } // try
+    const handleLoaded = useEvent((): void => {
+        console.log('loaded');
+    });
+    const handleErrored = useEvent((): void => {
+        console.log('error');
     });
     
-    const handleCloseDialog = useEvent(async () => {
-        await handleFinalizing(); // result: no changes
-    });
-    const handleFinalizing     = useEvent(async (otherTasks : Promise<any>[] = []) => {
-        await Promise.all(otherTasks);
-        
-        
-        
-        onExpandedChange?.({
-            expanded   : false,
-            actionType : 'ui',
-        });
-    });
-    
-    const handleExpandedChange : EventHandler<ModalExpandedChangeEvent> = useEvent((event) => {
+    const handleChange = useEvent((token: string|null): void => {
         // conditions:
-        if (event.actionType === 'shortcut') return; // prevents closing modal by accidentally pressing [esc]
+        if (!token) return;
         
         
         
         // actions:
-        onExpandedChange?.(event);
+        props.onExpandedChange?.({
+            expanded   : false,
+            actionType : 'ui',
+            data       : token,
+        });
+    });
+    
+    const handleCloseDialog = useEvent((): void => {
+        // actions:
+        props.onExpandedChange?.({
+            expanded   : false,
+            actionType : 'ui',
+            data       : undefined,
+        });
     });
     
     
@@ -177,7 +155,7 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     return (
         <ModalCard
             // other props:
-            {...restModalCardProps}
+            {...props}
             
             
             
@@ -190,11 +168,6 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
             
             // auto focusable:
             // autoFocusOn={props.autoFocusOn ?? editorRef}
-            
-            
-            
-            // handlers:
-            onExpandedChange = {handleExpandedChange}
         >
             <CardHeader>
                 <h1>Please Prove You&apos;re Not a Robot</h1>
@@ -215,10 +188,16 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
                     // variants:
                     theme='light'
                     size='normal'
+                    
+                    
+                    
+                    // handlers:
+                    asyncScriptOnLoad={handleLoaded}
+                    onErrored={handleErrored}
+                    onChange={handleChange}
                 />
             </CardBody>
             <CardFooter>
-                <ButtonIcon className='btnOK'     icon='done'   theme='success' size='sm' onClick={handleOK}>Save</ButtonIcon>
                 <ButtonIcon className='btnCancel' icon='cancel' theme='danger'  size='sm' onClick={handleCloseDialog}>Cancel</ButtonIcon>
             </CardFooter>
         </ModalCard>
