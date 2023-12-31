@@ -8,32 +8,13 @@ import {
     
     
     // hooks:
-    useRef,
     useState,
 }                           from 'react'
-
-// cssfn:
-import {
-    // style sheets:
-    dynamicStyleSheet,
-}                           from '@cssfn/cssfn-react'               // writes css in react hook
 
 // reusable-ui core:
 import {
     // react helper hooks:
     useEvent,
-    EventHandler,
-    useMountedFlag,
-    
-    
-    
-    // an accessibility management system:
-    AccessibilityProvider,
-    
-    
-    
-    // a validation management system:
-    ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -70,13 +51,7 @@ import {
 // google recaptcha components:
 import {
     default as ReCAPTCHAComponent,
-    ReCAPTCHA,
 }                           from 'react-google-recaptcha'
-
-// internal components:
-import type {
-    EditorProps,
-}                           from '@/components/editors/Editor'
 
 // internals:
 import {
@@ -107,11 +82,6 @@ export type ImplementedCaptchaDialogProps<TValue extends any, TModel extends {},
 const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends string>(props: CaptchaDialogProps<TValue, TModel, TEdit>) => {
     // styles:
     const styleSheet = useCheckoutStyleSheet();
-    
-    
-    
-    // refs:
-    const editorRef = useRef<ReCAPTCHA|null>(null);
     
     
     
@@ -174,11 +144,6 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
             theme          = {props.theme          ?? 'primary'   }
             backdropStyle  = {props.backdropStyle  ?? 'static'    }
             modalCardStyle = {props.modalCardStyle ?? 'scrollable'}
-            
-            
-            
-            // auto focusable:
-            // autoFocusOn={props.autoFocusOn ?? editorRef}
         >
             <CardHeader>
                 <h1>Please Prove You&apos;re Not a Robot</h1>
@@ -188,11 +153,6 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
                 {(isLoaded === true) && <p className='pleaseWait'>Please wait...</p>}
                 
                 <ReCAPTCHAComponent
-                    // refs:
-                    ref={editorRef}
-                    
-                    
-                    
                     // configs:
                     sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_ID ?? ''}
                     
