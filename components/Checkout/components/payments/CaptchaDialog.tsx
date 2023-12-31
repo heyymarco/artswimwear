@@ -9,6 +9,7 @@ import {
     
     // hooks:
     useRef,
+    useState,
 }                           from 'react'
 
 // cssfn:
@@ -47,6 +48,11 @@ import {
     CardHeader,
     CardBody,
     CardFooter,
+    
+    
+    
+    // status-components:
+    Busy,
     
     
     
@@ -109,6 +115,11 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     
     
     
+    // states:
+    const [isLoaded, setIsLoaded] = useState<boolean|null>(null); // true: loaded, false: errored, null: loading
+    
+    
+    
     // dialogs:
     const {
         showMessage,
@@ -120,10 +131,10 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     
     // handlers:
     const handleLoaded = useEvent((): void => {
-        console.log('loaded');
+        setIsLoaded(true);
     });
     const handleErrored = useEvent((): void => {
-        console.log('error');
+        setIsLoaded(false);
     });
     
     const handleChange = useEvent((token: string|null): void => {
@@ -174,6 +185,8 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheet.captchaDialogBody}>
+                {(isLoaded === true) && <p className='pleaseWait'>Please wait...</p>}
+                
                 <ReCAPTCHAComponent
                     // refs:
                     ref={editorRef}
@@ -195,6 +208,22 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
                     asyncScriptOnLoad={handleLoaded}
                     onErrored={handleErrored}
                     onChange={handleChange}
+                />
+                
+                <Busy
+                    // classes:
+                    className='loading'
+                    
+                    
+                    
+                    // variants:
+                    size='lg'
+                    theme='primary'
+                    
+                    
+                    
+                    // states:
+                    expanded={isLoaded === null}
                 />
             </CardBody>
             <CardFooter>

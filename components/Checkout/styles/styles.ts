@@ -603,7 +603,30 @@ export default () => {
         }),
         
         scope('captchaDialogBody', {
-            //
-        }),
+            // layouts:
+            display      : 'grid',
+            justifyItems : 'center',
+            alignItems   : 'center',
+            
+            
+            
+            // sizes:
+            boxSizing     : 'content-box',
+            minInlineSize : '304px', // the width  of google captcha
+            minBlockSize  : '78px',  // the height of google captcha
+            
+            
+            
+            // children:
+            ...children('*', {
+                gridArea: '1 / 1 / -1 / -1',
+            }),
+            ...children('.pleaseWait', {
+                margin: 0,
+            }),
+            ...children('.loading', {
+                fontSize: '3rem',
+            }),
+        }, {specificityWeight: 2}),
     ];
 };
