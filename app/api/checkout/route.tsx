@@ -455,6 +455,7 @@ export interface PaymentToken {
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
     paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'
     simulateOrder ?: boolean
+    captcha       ?: string
 }
 export interface CartEntry {
     productId          : string
@@ -656,6 +657,52 @@ router
         }, { status: 400 }); // handled with error
     } // if
     //#endregion validate options
+    
+    
+    
+    //#region validate captcha for manual payment
+    if (paymentSource === 'manual') {
+        const captcha = placeOrderData.captcha;
+        if (!captcha || (typeof(captcha) !== 'string') || !captcha) {
+            return NextResponse.json({
+                error: 'Invalid captcha.',
+            }, { status: 400 }); // handled with error
+        } // if
+        
+        
+        
+        // validate captcha:
+        try {
+            const response = await fetch(
+                `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.GOOGLE_RECAPTCHA_SECRET}&response=${captcha}`
+            );
+            if (!response.ok) {
+                return NextResponse.json({
+                    error: 'Invalid captcha.',
+                }, { status: 400 }); // handled with error
+            } // if
+            
+            const json = await response.json();
+            /*
+                invalid:
+                { success: false, 'error-codes': [ 'invalid-input-response' ] }
+                
+                valid:
+                { success: true, challenge_ts: '2024-01-01T04:24:34Z', hostname: 'localhost' }
+            */
+            if (!json.success) {
+                return NextResponse.json({
+                    error: 'Invalid captcha.',
+                }, { status: 400 }); // handled with error
+            } // if
+        }
+        catch {
+            return NextResponse.json({
+                error: 'Invalid captcha.',
+            }, { status: 400 }); // handled with error
+        } // if
+    } // if
+    //#endregion validate captcha for manual payment
     
     
     

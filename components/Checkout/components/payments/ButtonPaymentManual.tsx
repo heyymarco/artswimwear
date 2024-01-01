@@ -72,19 +72,17 @@ const ButtonPaymentManual = (): JSX.Element|null => {
     // handlers:
     const handleFinishOrderButtonClick = useEvent(async () => {
         // conditions:
-        const captcha = await showDialog(
+        const captcha = await showDialog<string|null>(
             <CaptchaDialog />
         );
         if (!captcha) return;
-        console.log('captcha is: ', captcha);
-        return;
         
         
         
         doTransaction(async () => {
             try {
                 // createOrder:
-                const orderId = await doPlaceOrder({paymentSource: 'manual'});
+                const orderId = await doPlaceOrder({paymentSource: 'manual', captcha});
                 
                 
                 
