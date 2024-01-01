@@ -72,7 +72,7 @@ const EditCustomerAccount = (): JSX.Element|null => {
                 
                 
                 // classes:
-                className='nick'
+                className='name'
                 
                 
                 
