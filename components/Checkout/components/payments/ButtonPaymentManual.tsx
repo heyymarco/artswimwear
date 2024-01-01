@@ -72,7 +72,7 @@ const ButtonPaymentManual = (): JSX.Element|null => {
     // handlers:
     const handleFinishOrderButtonClick = useEvent(async () => {
         // conditions:
-        const captcha = await showDialog<string|null>(
+        const captcha = await showDialog<string>(
             <CaptchaDialog />
         );
         if (!captcha) return;

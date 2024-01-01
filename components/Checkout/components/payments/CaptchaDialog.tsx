@@ -69,25 +69,16 @@ import {
 
 
 // react components:
-export interface CaptchaDialogProps<TValue extends any, TModel extends {}, TEdit extends string>
+export interface CaptchaDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<any> = ModalExpandedChangeEvent<string>>
     extends
         // bases:
-        Omit<ModalCardProps<HTMLElement, ModalExpandedChangeEvent>,
+        Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
             // children:
             |'children'        // already taken over
         >
 {
 }
-export type ImplementedCaptchaDialogProps<TValue extends any, TModel extends {}, TEdit extends string> = Omit<CaptchaDialogProps<TValue, TModel, TEdit>,
-    // data:
-    |'initialValue'
-    
-    
-    
-    // handlers:
-    |'onUpdate'
->
-const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends string>(props: CaptchaDialogProps<TValue, TModel, TEdit>) => {
+const CaptchaDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<any> = ModalExpandedChangeEvent<string>>(props: CaptchaDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // styles:
     const styleSheet = useCheckoutStyleSheet();
     
@@ -140,7 +131,7 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
             expanded   : false,
             actionType : 'ui',
             data       : token,
-        });
+        } as TModalExpandedChangeEvent);
     });
     
     const handleCloseDialog = useEvent((): void => {
@@ -149,7 +140,7 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
             expanded   : false,
             actionType : 'ui',
             data       : undefined,
-        });
+        } as TModalExpandedChangeEvent);
     });
     
     
