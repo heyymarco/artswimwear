@@ -69,7 +69,7 @@ import {
 
 
 // react components:
-export interface CaptchaDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<any> = ModalExpandedChangeEvent<string>>
+export interface CaptchaDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<string> = ModalExpandedChangeEvent<string>>
     extends
         // bases:
         Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
@@ -78,7 +78,7 @@ export interface CaptchaDialogProps<TElement extends Element = HTMLElement, TMod
         >
 {
 }
-const CaptchaDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<any> = ModalExpandedChangeEvent<string>>(props: CaptchaDialogProps<TElement, TModalExpandedChangeEvent>) => {
+const CaptchaDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<string> = ModalExpandedChangeEvent<string>>(props: CaptchaDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // styles:
     const styleSheet = useCheckoutStyleSheet();
     
