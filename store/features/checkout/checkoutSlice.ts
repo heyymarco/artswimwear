@@ -90,7 +90,7 @@ const initialState : CheckoutState = {
     // customer data:
     customerValidation : false,
     
-    customerNickName   : '',
+    customerName       : '',
     customerEmail      : '',
     
     
@@ -161,8 +161,8 @@ export const checkoutSlice = createSlice({
             state.customerValidation = value;
         },
         
-        setCustomerNickName   : (state, {payload: value}: PayloadAction<string>) => {
-            state.customerNickName = value;
+        setCustomerName       : (state, {payload: value}: PayloadAction<string>) => {
+            state.customerName = value;
         },
         setCustomerEmail      : (state, {payload: value}: PayloadAction<string>) => {
             state.customerEmail = value;
@@ -285,7 +285,7 @@ export const {
     // customer data:
     setCustomerValidation,
     
-    setCustomerNickName,
+    setCustomerName,
     setCustomerEmail,
     
     

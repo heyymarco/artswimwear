@@ -320,7 +320,7 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
                 create           : {
                     marketingOpt : customer.marketingOpt,
                     
-                    nickName     : customer.nickName,
+                    name         : customer.name,
                     email        : customer.email,
                 },
             },
@@ -471,7 +471,7 @@ export interface ExtraData {
 }
 export interface CustomerData {
     // customer data:
-    customerNickName   : string
+    customerName       : string
     customerEmail      : string
 }
 export interface ShippingData {
@@ -1684,13 +1684,13 @@ Updating the confirmation is not required.`,
         
         
         // customers:
-        customerNickName,
+        customerName,
         customerEmail,
     } = paymentData;
     if (
         ((marketingOpt !== undefined) && (typeof(marketingOpt) !== 'boolean'))
         
-        || !customerNickName || (typeof(customerNickName) !== 'string')
+        || !customerName || (typeof(customerName) !== 'string')
         || !customerEmail    || (typeof(customerEmail) !== 'string') // TODO: validate email
     ) {
         return NextResponse.json({
@@ -1756,7 +1756,7 @@ Updating the confirmation is not required.`,
         const newCustomer : CommitCustomer = {
             marketingOpt  : marketingOpt,
             
-            nickName      : customerNickName,
+            name          : customerName,
             email         : customerEmail,
         };
         

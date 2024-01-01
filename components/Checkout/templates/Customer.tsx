@@ -29,7 +29,7 @@ const CustomerName = (): React.ReactNode => {
     // jsx:
     if (!customer) return null;
     return (
-        customer.nickName ?? null
+        customer.name ?? null
     );
 };
 const CustomerEmail = (): React.ReactNode => {

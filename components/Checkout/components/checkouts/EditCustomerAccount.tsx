@@ -45,8 +45,8 @@ const EditCustomerAccount = (): JSX.Element|null => {
         // customer data:
         customerValidation,
         
-        customerNickName,
-        customerNickNameHandlers,
+        customerName,
+        customerNameHandlers,
         
         customerEmail,
         customerEmailHandlers,
@@ -85,7 +85,7 @@ const EditCustomerAccount = (): JSX.Element|null => {
                         
                         
                         // values:
-                        value={customerNickName}
+                        value={customerName}
                         
                         
                         
@@ -103,7 +103,7 @@ const EditCustomerAccount = (): JSX.Element|null => {
                         
                         
                         // handlers:
-                        {...customerNickNameHandlers}
+                        {...customerNameHandlers}
                     />
                 }
             />

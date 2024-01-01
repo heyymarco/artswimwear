@@ -26,7 +26,7 @@ const ViewCustomerContact = (): JSX.Element|null => {
     // states:
     const {
         // customer data:
-        customerNickName,
+        customerName,
         customerEmail,
     } = useCheckoutState();
     
@@ -46,7 +46,7 @@ const ViewCustomerContact = (): JSX.Element|null => {
                 // classes:
                 className={`customerName txt-sec ${styleSheet.data}`}
             >
-                ({customerNickName})
+                ({customerName})
             </span>
         </>
     );

@@ -73,7 +73,7 @@ import {
     setCustomerValidation as reduxSetCustomerValidation,
     
     setCustomerEmail      as reduxSetCustomerEmail,
-    setCustomerNickName   as reduxSetCustomerNickName,
+    setCustomerName       as reduxSetCustomerName,
     
     // shipping data:
     setShippingValidation as reduxSetShippingValidation,
@@ -241,8 +241,8 @@ export interface CheckoutStateBase {
     
     // customer data:
     customerValidation        : boolean
-    customerNickName          : string
-    customerNickNameHandlers  : FieldHandlers<HTMLInputElement>
+    customerName              : string
+    customerNameHandlers      : FieldHandlers<HTMLInputElement>
     
     customerEmail             : string
     customerEmailHandlers     : FieldHandlers<HTMLInputElement>
@@ -449,8 +449,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     // customer data:
     customerValidation        : false,
-    customerNickName          : '',
-    customerNickNameHandlers  : noopHandler,
+    customerName              : '',
+    customerNameHandlers      : noopHandler,
     
     customerEmail             : '',
     customerEmailHandlers     : noopHandler,
@@ -695,7 +695,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // customer data:
-    const [customerNickName  , , customerNickNameHandlers ] = useFieldState({ state: localCheckoutState, get: 'customerNickName' , set: reduxSetCustomerNickName  });
+    const [customerName      , , customerNameHandlers     ] = useFieldState({ state: localCheckoutState, get: 'customerName'     , set: reduxSetCustomerName      });
     const [customerEmail     , , customerEmailHandlers    ] = useFieldState({ state: localCheckoutState, get: 'customerEmail'    , set: reduxSetCustomerEmail     });
     
     
@@ -1417,7 +1417,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             // customer data:
-            customerNickName,
+            customerName,
             customerEmail,
             
             
@@ -1498,8 +1498,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // customer data:
         customerValidation,
-        customerNickName,
-        customerNickNameHandlers,  // stable ref
+        customerName,
+        customerNameHandlers,      // stable ref
         
         customerEmail,
         customerEmailHandlers,     // stable ref
@@ -1654,8 +1654,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // customer data:
         customerValidation,
-        customerNickName,
-        // customerNickNameHandlers,  // stable ref
+        customerName,
+        // customerNameHandlers,      // stable ref
         
         customerEmail,
         // customerEmailHandlers,     // stable ref

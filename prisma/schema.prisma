@@ -112,7 +112,7 @@ model Customer {
     // data:
     marketingOpt            Boolean?
     
-    nickName                String                  // minLength: 2, maxLength: 30
+    name                    String                  // minLength: 2, maxLength: 30
     email                   String                  // minLength: 5, maxLength: 50
     
     // relations:
