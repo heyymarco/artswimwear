@@ -43,17 +43,17 @@ import {
     ModalExpandedChangeEvent,
     ModalCardProps,
     ModalCard,
-    
-    
-    
-    // utility-components:
-    useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // google recaptcha components:
 import {
-    default as ReCAPTCHAComponent,
+    // types:
     ReCAPTCHA,
+    
+    
+    
+    // react components:
+    default as ReCAPTCHAComponent,
 }                           from 'react-google-recaptcha'
 
 // internal components:
@@ -105,15 +105,6 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     
     
     
-    // dialogs:
-    const {
-        showMessage,
-        showMessageFieldError,
-        showMessageFetchError,
-    } = useDialogMessage();
-    
-    
-    
     // refs:
     const recaptchaRef = useRef<ReCAPTCHA|null>(null);
     
@@ -122,7 +113,6 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     // handlers:
     const handleLoaded      = useEvent((): void => {
         setIsLoaded(LoadedState.PartialLoaded);
-        console.log('capcha PARTIAL LOADED', recaptchaRef.current, Date.now());
     });
     const handleErrored     = useEvent((): void => {
         // conditions:
@@ -132,7 +122,6 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
         
         // actions:
         setIsLoaded(LoadedState.Errored);
-        console.log('capcha ERRORED', Date.now());
     });
     const handleReload      = useEvent((): void => {
         setIsLoaded(LoadedState.Loading);
@@ -188,13 +177,7 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
     useEffect(() => {
         // conditions:
         if (isLoaded !== LoadedState.PartialLoaded) return; // only interested on partial loaded state
-        let recaptchaElm = (recaptchaRef.current as any)?.captcha as Element|undefined|null;
-        if (recaptchaElm) {
-            const iframe = recaptchaElm.querySelector?.('iframe[role]');
-            if (iframe) {
-                recaptchaElm = iframe;
-            } // if
-        } // if
+        const recaptchaElm = (recaptchaRef.current as any)?.captcha as Element|undefined|null;
         if (!recaptchaElm) return;
         
         
@@ -209,7 +192,6 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
             
             // actions:
             setIsLoaded(LoadedState.FullyLoaded);
-            console.log('capcha FULLY LOADED', entry, Date.now());
         });
         observer.observe(recaptchaElm, { box: 'border-box' });
         
@@ -288,7 +270,7 @@ const CaptchaDialog = <TValue extends any, TModel extends {}, TEdit extends stri
                 />
             </CardBody>
             <CardFooter>
-                <ButtonIcon className='btnCancel' icon='cancel' theme='danger'  size='sm' onClick={handleCloseDialog}>Cancel</ButtonIcon>
+                <ButtonIcon className='btnCancel' icon='cancel' theme='danger' onClick={handleCloseDialog}>Cancel</ButtonIcon>
             </CardFooter>
         </ModalCard>
     );
