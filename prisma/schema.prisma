@@ -110,13 +110,23 @@ model Customer {
     updatedAt               DateTime                @updatedAt
     
     // data:
-    marketingOpt            Boolean?
-    
     name                    String                  // minLength: 2, maxLength: 30
     email                   String                  // minLength: 5, maxLength: 50
     
     // relations:
     orders                  Order[]                 @relation("OrdersOnCustomer") // one Customer may have some related Order(s)  // one  to many
+    customerPreference      CustomerPreference?     // a Customer may have one related CustomerPreference                         // one  to one
+}
+model CustomerPreference {
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    
+    // data:
+    marketingOpt            Boolean?
+    
+    // relations:
+    customerId              String                  @unique
+    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPreference if the Customer deleted
 }
 
 

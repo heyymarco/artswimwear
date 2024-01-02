@@ -29,6 +29,7 @@ import type {
     Product,
     
     Customer,
+    CustomerPreference,
     
     Payment,
     PaymentConfirmation,
@@ -295,7 +296,12 @@ type CommitCustomer = Omit<Customer,
     |'id'
     |'createdAt'
     |'updatedAt'
->
+> & {
+    customerPreference ?: Omit<Partial<CustomerPreference>,
+        |'id'
+        |'customerId'
+    >
+}
 type CommitDraftOrder = Omit<DraftOrder,
     |'createdAt'
     
@@ -308,6 +314,10 @@ type CommitDraftOrder = Omit<DraftOrder,
     >[]
 }
 const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customer, payment, paymentConfirmationToken } : { draftOrder: CommitDraftOrder, customer: CommitCustomer, payment: Payment, paymentConfirmationToken: string|undefined }): Promise<OrderAndData> => {
+    const {
+        customerPreference: customerPreferenceData,
+    ...customerData} = customer;
+    
     const newOrder = await prismaTransaction.order.create({
         data   : {
             orderId          : draftOrder.orderId,
@@ -318,10 +328,10 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
             
             customer         : {
                 create           : {
-                    marketingOpt : customer.marketingOpt,
-                    
-                    name         : customer.name,
-                    email        : customer.email,
+                    ...customerData,
+                    customerPreference : {
+                        create   : customerPreferenceData,
+                    },
                 },
             },
             
@@ -1753,11 +1763,12 @@ Updating the confirmation is not required.`,
     let newOrder                 : OrderAndData|undefined = undefined;
     let countryList              : EntityState<CountryPreview>;
     try {
-        const newCustomer : CommitCustomer = {
-            marketingOpt  : marketingOpt,
-            
-            name          : customerName,
-            email         : customerEmail,
+        const newCustomer        : CommitCustomer = {
+            name                 : customerName,
+            email                : customerEmail,
+            customerPreference   : {
+                marketingOpt     : marketingOpt,
+            },
         };
         
         ([paymentResponse, paymentConfirmationToken, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, string|undefined, OrderAndData|undefined, EntityState<CountryPreview>]> => {
