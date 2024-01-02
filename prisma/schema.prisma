@@ -110,8 +110,8 @@ model Customer {
     updatedAt               DateTime                @updatedAt
     
     // data:
-    name                    String                  // minLength: 2, maxLength: 30
-    email                   String                  // minLength: 5, maxLength: 50
+    name                    String                          // minLength: 2, maxLength: 30
+    email                   String                  @unique // minLength: 5, maxLength: 50
     
     // relations:
     orders                  Order[]                 @relation("OrdersOnCustomer") // one Customer may have some related Order(s) // one  to many
@@ -136,8 +136,8 @@ model Guest {
     updatedAt               DateTime                @updatedAt
     
     // data:
-    name                    String                  // minLength: 2, maxLength: 30
-    email                   String                  // minLength: 5, maxLength: 50
+    name                    String                          // minLength: 2, maxLength: 30
+    email                   String                          // minLength: 5, maxLength: 50
     
     // relations:
     orders                  Order[]                 @relation("OrdersOnGuest") // one Guest may have some related Order(s) // one  to many
