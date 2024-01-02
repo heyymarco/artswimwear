@@ -103,6 +103,32 @@ model ShippingProvider {
 
 
 
+model Customer {
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    createdAt               DateTime                @default(now())
+    updatedAt               DateTime                @updatedAt
+    
+    // data:
+    name                    String                  // minLength: 2, maxLength: 30
+    email                   String                  // minLength: 5, maxLength: 50
+    
+    // relations:
+    orders                  Order[]                 @relation("OrdersOnCustomer") // one Customer may have some related Order(s) // one  to many
+    customerPreference      CustomerPreference?     // a Customer may have one related CustomerPreference                        // one  to one
+}
+model CustomerPreference {
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    
+    // data:
+    marketingOpt            Boolean?
+    
+    // relations:
+    customerId              String                  @unique
+    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPreference if the Customer deleted
+}
+
 model Guest {
     // records:
     id                      String                  @id @default(cuid()) @map("_id")
@@ -225,6 +251,9 @@ model Order {
     
     // relations:
     items                   OrdersOnProducts[]      // some Product(s) may have some related Order(s)  // many to many
+    
+    customerId              String?
+    customer                Customer?               @relation(fields: [customerId]         , references: [id], "OrdersOnCustomer", onDelete: SetNull) // preserve the related Order(s) if the Customer deleted
     
     guestId                 String?
     guest                   Guest?                  @relation(fields: [guestId]            , references: [id], "OrdersOnGuest"   , onDelete: SetNull) // preserve the related Order(s) if the Guest deleted

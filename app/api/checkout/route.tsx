@@ -299,6 +299,7 @@ type CommitGuest = Omit<Guest,
 > & {
     preference ?: Omit<Partial<GuestPreference>,
         |'id'
+        |'customerId'
         |'guestId'
     >
 }
