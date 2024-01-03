@@ -12,6 +12,7 @@ import type {
 // models:
 import type {
     Product,
+    Customer,
     Guest,
     PaymentConfirmation,
     Order,
@@ -58,7 +59,7 @@ export type OrderAndData = Order & {
 export interface OrderDataApi {
     // data:
     order                : OrderAndData
-    customer             : Omit<Guest, 'id'|'createdAt'|'updatedAt'>|null
+    customerOrGuest      : Omit<(Customer & Guest), 'id'|'createdAt'|'updatedAt'>|null
     paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
     isPaid               : boolean
     shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null
@@ -70,7 +71,7 @@ export interface OrderDataApi {
 }
 const OrderDataContext = createContext<OrderDataApi>({
     order                : undefined as any,
-    customer             : null,
+    customerOrGuest      : null,
     paymentConfirmation  : null,
     isPaid               : false,
     shippingTracking     : null,
@@ -94,7 +95,7 @@ export const useOrderDataContext = () => {
 export interface OrderDataContextProviderProps {
     // data:
     order                : OrderAndData
-    customer             : Omit<Guest, 'id'|'createdAt'|'updatedAt'>|null
+    customerOrGuest      : Omit<(Customer & Guest), 'id'|'createdAt'|'updatedAt'>|null
     paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
     isPaid               : boolean
     shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null

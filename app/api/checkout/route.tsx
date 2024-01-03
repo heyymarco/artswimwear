@@ -28,6 +28,8 @@ import {
 import type {
     Product,
     
+    Customer,
+    CustomerPreference,
     Guest,
     GuestPreference,
     
@@ -292,12 +294,12 @@ const paypalRevertCurrencyIfRequired  = async <TNumber extends number|null>(from
 
 
 
-type CommitGuest = Omit<Guest,
+type CommitCustomerOrGuest = Omit<(Customer & Guest),
     |'id'
     |'createdAt'
     |'updatedAt'
 > & {
-    preference ?: Omit<Partial<GuestPreference>,
+    preference ?: Omit<Partial<(CustomerPreference & GuestPreference)>,
         |'id'
         |'customerId'
         |'guestId'
@@ -314,10 +316,10 @@ type CommitDraftOrder = Omit<DraftOrder,
         |'draftOrderId'
     >[]
 }
-const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, guest, payment, paymentConfirmationToken } : { draftOrder: CommitDraftOrder, guest: CommitGuest, payment: Payment, paymentConfirmationToken: string|undefined }): Promise<OrderAndData> => {
+const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customerOrGuest, payment, paymentConfirmationToken } : { draftOrder: CommitDraftOrder, customerOrGuest: CommitCustomerOrGuest, payment: Payment, paymentConfirmationToken: string|undefined }): Promise<OrderAndData> => {
     const {
         preference: preferenceData,
-    ...guestData} = guest;
+    ...customerOrGuestData} = customerOrGuest;
     
     const newOrder = await prismaTransaction.order.create({
         data   : {
@@ -327,9 +329,18 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
                 create           : draftOrder.items,
             },
             
+            // TODO: connect to existing customer
+            // customer         : {
+            //     connect      : {
+            //         ...customerOrGuestData,
+            //         customerPreference : {
+            //             ...preferenceData,
+            //         },
+            //     },
+            // },
             guest            : {
                 create           : {
-                    ...guestData,
+                    ...customerOrGuestData,
                     guestPreference : {
                         create   : preferenceData,
                     },
@@ -1764,7 +1775,7 @@ Updating the confirmation is not required.`,
     let newOrder                 : OrderAndData|undefined = undefined;
     let countryList              : EntityState<CountryPreview>;
     try {
-        const newGuest           : CommitGuest = {
+        const newCustomerOrGuest : CommitCustomerOrGuest = {
             name                 : customerName,
             email                : customerEmail,
             preference           : {
@@ -2174,7 +2185,7 @@ Updating the confirmation is not required.`,
                 // payment APPROVED => move the `draftOrder` to `order`:
                 newOrder = await commitOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
-                    guest              : newGuest,
+                    customerOrGuest    : newCustomerOrGuest,
                     payment            : {
                         ...paymentPartial,
                         billingAddress : hasBillingAddress ? {
@@ -2258,7 +2269,7 @@ Updating the confirmation is not required.`,
                 const orderDataContextProviderProps : OrderDataContextProviderProps = {
                     // data:
                     order                : newOrder,
-                    customer             : newGuest,
+                    customerOrGuest      : newCustomerOrGuest,
                     paymentConfirmation  : {
                         token            : paymentConfirmationToken ?? '',
                         rejectionReason  : null,

@@ -21,30 +21,30 @@ const CustomerName = (): React.ReactNode => {
     // contexts:
     const {
         // data:
-        customer,
+        customerOrGuest,
     } = useOrderDataContext();
     
     
     
     // jsx:
-    if (!customer) return null;
+    if (!customerOrGuest) return null;
     return (
-        customer.name ?? null
+        customerOrGuest.name ?? null
     );
 };
 const CustomerEmail = (): React.ReactNode => {
     // contexts:
     const {
         // data:
-        customer,
+        customerOrGuest,
     } = useOrderDataContext();
     
     
     
     // jsx:
-    if (!customer) return null;
+    if (!customerOrGuest) return null;
     return (
-        customer.email ?? null
+        customerOrGuest.email ?? null
     );
 };
 
@@ -76,13 +76,13 @@ const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
     // contexts:
     const {
         // data:
-        customer,
+        customerOrGuest,
     } = useOrderDataContext();
     
     
     
     // jsx:
-    if (!customer) return null;
+    if (!customerOrGuest) return null;
     return (
         <table
             // styles:
