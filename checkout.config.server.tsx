@@ -1,3 +1,6 @@
+// themes:
+import './theme.basics.config'
+
 // react:
 import {
     // react:
@@ -66,7 +69,6 @@ import {
 import type {
     CheckoutConfig,
 }                           from '@/components/Checkout/types'
-import '@/theme.basics.config'
 
 
 

@@ -1,8 +1,10 @@
+// themes:
+import './theme.basics.config'
+
 import '@reusable-ui/typos/effects'
 import { iconConfig } from '@reusable-ui/components'
 import { imageValues } from '@heymarco/image'
 import { dataTableValues } from '@heymarco/data-table'
-import './theme.basics.config'
 
 
 

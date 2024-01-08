@@ -42,10 +42,7 @@ import {
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // other libs:
-import Color                from 'color'                // color utilities
-
-// configs:
-import '@/theme.basics.config'
+import Color                from 'color'                        // color utilities
 
 
 

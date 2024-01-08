@@ -1,5 +1,9 @@
 'use client'
 
+// themes:
+import '@/theme.config'
+import './layout-styles.scss'
+
 // react:
 import {
     // react:
@@ -25,7 +29,6 @@ import {
 import {
     StylesSSR,
 }                           from './StylesSSR'                  // server_side_rendering CSS (optional)
-import './layout-styles.scss'
 
 // reusable-ui components:
 import {
@@ -59,7 +62,6 @@ import {
 }                           from '@/store/store'
 
 // configs:
-import '@/theme.config'
 import {
     WEBSITE_LANGUAGE,
 }                           from '@/website.config'
