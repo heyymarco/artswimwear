@@ -4,10 +4,8 @@ import {
     default as React,
 }                           from 'react'
 
-// styles:
-import * as styles          from '@/components/Checkout/templates/styles'
-
 // internals:
+import * as styles          from './styles'
 import {
     // hooks:
     useBusinessContext,

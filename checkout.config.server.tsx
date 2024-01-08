@@ -4,9 +4,6 @@ import {
     default as React,
 }                           from 'react'
 
-// styles:
-import * as styles          from '@/components/Checkout/templates/styles'
-
 // reusable-ui core:
 import {
     // a border (stroke) management system:
@@ -19,6 +16,7 @@ import {
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // templates:
+import * as styles          from '@/components/Checkout/templates/styles'
 import {
     // react components:
     Business,

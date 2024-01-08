@@ -4,9 +4,6 @@ import {
     default as React,
 }                           from 'react'
 
-// styles:
-import * as styles          from '@/components/Checkout/templates/styles'
-
 // reusable-ui core:
 import {
     // a spacer (gap) management system
@@ -14,6 +11,7 @@ import {
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // internals:
+import * as styles          from './styles'
 import {
     // hooks:
     useOrderDataContext,
