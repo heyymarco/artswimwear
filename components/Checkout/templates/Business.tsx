@@ -43,7 +43,11 @@ const BusinessUrl = (): string|null => {
         url || null
     );
 };
-const BusinessLink = (): React.ReactNode => {
+export interface BusinessLinkProps {
+    // children:
+    children ?: React.ReactNode
+}
+const BusinessLink = (props: BusinessLinkProps): React.ReactNode => {
     const url = BusinessUrl();
     
     
@@ -52,7 +56,7 @@ const BusinessLink = (): React.ReactNode => {
     if (!url) return null;
     return (
         <a href={url}>
-            {url}
+            {props.children ?? url}
         </a>
     );
 };
