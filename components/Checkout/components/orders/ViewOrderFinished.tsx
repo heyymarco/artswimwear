@@ -36,6 +36,11 @@ import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
+// configs:
+import {
+    checkoutConfig,
+}                           from '@/checkout.config.server'
+
 
 
 // react components:
@@ -80,7 +85,7 @@ const ViewOrderFinished = (props: ViewOrderFinishedProps): JSX.Element|null => {
                 </p>
                 
                 <p>
-                    Thank you for placing an order on {process.env.BUSINESS_NAME || process.env.WEBSITE_URL || 'our website'}.
+                    Thank you for placing an order on {checkoutConfig.business.name}.
                     We are pleased to confirm that we have received your order{paid && <> and it is <strong>currently being processed</strong></>}{!paid && <> and are <strong>waiting for your payment</strong> so that your order can be processed further</>}.
                 </p>
                 
