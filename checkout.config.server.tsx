@@ -71,11 +71,11 @@ import '@/theme.basics.config'
 
 
 export const checkoutConfig : CheckoutConfig = {
-    business : {
-        name    : process.env.BUSINESS_NAME ?? '',
-        url     : process.env.BUSINESS_URL  ?? '',
+    business            : {
+        name            : process.env.BUSINESS_NAME ?? '',
+        url             : process.env.BUSINESS_URL  ?? '',
     },
-    payment  : {
+    payment             : {
         bank            : <article>
             <table style={{...styles.tableReset, ...styles.selfCenterHorz}}><tbody><tr><td>
                 <table style={styles.tableInfoFill}>
@@ -139,19 +139,19 @@ export const checkoutConfig : CheckoutConfig = {
         </article>,
         confirmationUrl : '/checkout/payment-confirmation',
     },
-    shipping : {
+    shipping            : {
         trackingUrl     : '/checkout/shipping-tracking',
     },
-    emails   : {
-        checkout  : {
-            host     : process.env.EMAILS_CHECKOUT_HOST     ?? '',
-            port     : Number.parseInt(process.env.EMAILS_CHECKOUT_PORT ?? '465'),
-            secure   : (process.env.EMAILS_CHECKOUT_SECURE === 'true'),
-            username : process.env.EMAILS_CHECKOUT_USERNAME ?? '',
-            password : process.env.EMAILS_CHECKOUT_PASSWORD ?? '',
+    emails              : {
+        checkout        : {
+            host        : process.env.EMAILS_CHECKOUT_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAILS_CHECKOUT_PORT ?? '465'),
+            secure      : (process.env.EMAILS_CHECKOUT_SECURE === 'true'),
+            username    : process.env.EMAILS_CHECKOUT_USERNAME ?? '',
+            password    : process.env.EMAILS_CHECKOUT_PASSWORD ?? '',
             
-            from     : process.env.EMAILS_CHECKOUT_FROM ?? '',
-            subject  : <>
+            from        : process.env.EMAILS_CHECKOUT_FROM ?? '',
+            subject     : <>
                 <IfNotPaid>
                     Awaiting Payment for Your Order at <Business.Name />
                 </IfNotPaid>
@@ -164,7 +164,7 @@ export const checkoutConfig : CheckoutConfig = {
                     Your Order at <Business.Name />
                 </IfPaidAuto>
             </>,
-            message  : <article style={styles.article}>
+            message     : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -472,18 +472,18 @@ export const checkoutConfig : CheckoutConfig = {
             </article>,
         },
         
-        shipping  : {
-            host     : process.env.EMAILS_SHIPPING_HOST     ?? '',
-            port     : Number.parseInt(process.env.EMAILS_SHIPPING_PORT ?? '465'),
-            secure   : (process.env.EMAILS_SHIPPING_SECURE === 'true'),
-            username : process.env.EMAILS_SHIPPING_USERNAME ?? '',
-            password : process.env.EMAILS_SHIPPING_PASSWORD ?? '',
+        shipping        : {
+            host        : process.env.EMAILS_SHIPPING_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAILS_SHIPPING_PORT ?? '465'),
+            secure      : (process.env.EMAILS_SHIPPING_SECURE === 'true'),
+            username    : process.env.EMAILS_SHIPPING_USERNAME ?? '',
+            password    : process.env.EMAILS_SHIPPING_PASSWORD ?? '',
             
-            from     : process.env.EMAILS_SHIPPING_FROM ?? '',
-            subject  : <>
+            from        : process.env.EMAILS_SHIPPING_FROM ?? '',
+            subject     : <>
                 A Shipping Confirmation of Your Order at <Business.Name />
             </>,
-            message  : <article style={styles.article}>
+            message     : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -518,12 +518,12 @@ export const checkoutConfig : CheckoutConfig = {
                         Dear <Customer.Name />,
                     </p>
                     
-                    <p style={styles.paragraphLast}>
+                    <p style={styles.paragraph}>
                         Thank you for placing an order at <strong><Business.Name /></strong>.
                         <br />
                         We are pleased to confirm that your order is <strong>on its way</strong>.
                     </p>
-                    <p>
+                    <p style={styles.paragraphLast}>
                         Please use the link below to track shipping status:
                         <br />
                         <Shipping.TrackingLink />
@@ -648,18 +648,18 @@ export const checkoutConfig : CheckoutConfig = {
             </article>,
         },
         
-        completed : {
-            host     : process.env.EMAILS_COMPLETED_HOST     ?? '',
-            port     : Number.parseInt(process.env.EMAILS_COMPLETED_PORT ?? '465'),
-            secure   : (process.env.EMAILS_COMPLETED_SECURE === 'true'),
-            username : process.env.EMAILS_COMPLETED_USERNAME ?? '',
-            password : process.env.EMAILS_COMPLETED_PASSWORD ?? '',
+        completed       : {
+            host        : process.env.EMAILS_COMPLETED_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAILS_COMPLETED_PORT ?? '465'),
+            secure      : (process.env.EMAILS_COMPLETED_SECURE === 'true'),
+            username    : process.env.EMAILS_COMPLETED_USERNAME ?? '',
+            password    : process.env.EMAILS_COMPLETED_PASSWORD ?? '',
             
-            from     : process.env.EMAILS_COMPLETED_FROM ?? '',
-            subject  : <>
+            from        : process.env.EMAILS_COMPLETED_FROM ?? '',
+            subject     : <>
                 Your Order Status Is Now Complete
             </>,
-            message  : <article style={styles.article}>
+            message     : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -834,18 +834,18 @@ export const checkoutConfig : CheckoutConfig = {
             </article>,
         },
         
-        rejected  : {
-            host     : process.env.EMAILS_REJECTED_HOST     ?? '',
-            port     : Number.parseInt(process.env.EMAILS_REJECTED_PORT ?? '465'),
-            secure   : (process.env.EMAILS_REJECTED_SECURE === 'true'),
-            username : process.env.EMAILS_REJECTED_USERNAME ?? '',
-            password : process.env.EMAILS_REJECTED_PASSWORD ?? '',
+        rejected        : {
+            host        : process.env.EMAILS_REJECTED_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAILS_REJECTED_PORT ?? '465'),
+            secure      : (process.env.EMAILS_REJECTED_SECURE === 'true'),
+            username    : process.env.EMAILS_REJECTED_USERNAME ?? '',
+            password    : process.env.EMAILS_REJECTED_PASSWORD ?? '',
             
-            from     : process.env.EMAILS_REJECTED_FROM ?? '',
-            subject  : <>
+            from        : process.env.EMAILS_REJECTED_FROM ?? '',
+            subject     : <>
                 Your Payment Confirmation Rejected of Your Order at <Business.Name />
             </>,
-            message  : <article style={styles.article}>
+            message     : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
