@@ -144,13 +144,13 @@ export const checkoutConfig : CheckoutConfig = {
     },
     emails              : {
         checkout        : {
-            host        : process.env.EMAILS_CHECKOUT_HOST     ?? '',
-            port        : Number.parseInt(process.env.EMAILS_CHECKOUT_PORT ?? '465'),
-            secure      : (process.env.EMAILS_CHECKOUT_SECURE === 'true'),
-            username    : process.env.EMAILS_CHECKOUT_USERNAME ?? '',
-            password    : process.env.EMAILS_CHECKOUT_PASSWORD ?? '',
+            host        : process.env.EMAIL_CHECKOUT_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAIL_CHECKOUT_PORT ?? '465'),
+            secure      : (process.env.EMAIL_CHECKOUT_SECURE === 'true'),
+            username    : process.env.EMAIL_CHECKOUT_USERNAME ?? '',
+            password    : process.env.EMAIL_CHECKOUT_PASSWORD ?? '',
             
-            from        : process.env.EMAILS_CHECKOUT_FROM ?? '',
+            from        : process.env.EMAIL_CHECKOUT_FROM ?? '',
             subject     : <>
                 <IfNotPaid>
                     Awaiting Payment for Your Order at <Business.Name />
@@ -473,13 +473,13 @@ export const checkoutConfig : CheckoutConfig = {
         },
         
         shipping        : {
-            host        : process.env.EMAILS_SHIPPING_HOST     ?? '',
-            port        : Number.parseInt(process.env.EMAILS_SHIPPING_PORT ?? '465'),
-            secure      : (process.env.EMAILS_SHIPPING_SECURE === 'true'),
-            username    : process.env.EMAILS_SHIPPING_USERNAME ?? '',
-            password    : process.env.EMAILS_SHIPPING_PASSWORD ?? '',
+            host        : process.env.EMAIL_SHIPPING_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAIL_SHIPPING_PORT ?? '465'),
+            secure      : (process.env.EMAIL_SHIPPING_SECURE === 'true'),
+            username    : process.env.EMAIL_SHIPPING_USERNAME ?? '',
+            password    : process.env.EMAIL_SHIPPING_PASSWORD ?? '',
             
-            from        : process.env.EMAILS_SHIPPING_FROM ?? '',
+            from        : process.env.EMAIL_SHIPPING_FROM ?? '',
             subject     : <>
                 A Shipping Confirmation of Your Order at <Business.Name />
             </>,
@@ -649,13 +649,13 @@ export const checkoutConfig : CheckoutConfig = {
         },
         
         completed       : {
-            host        : process.env.EMAILS_COMPLETED_HOST     ?? '',
-            port        : Number.parseInt(process.env.EMAILS_COMPLETED_PORT ?? '465'),
-            secure      : (process.env.EMAILS_COMPLETED_SECURE === 'true'),
-            username    : process.env.EMAILS_COMPLETED_USERNAME ?? '',
-            password    : process.env.EMAILS_COMPLETED_PASSWORD ?? '',
+            host        : process.env.EMAIL_COMPLETED_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAIL_COMPLETED_PORT ?? '465'),
+            secure      : (process.env.EMAIL_COMPLETED_SECURE === 'true'),
+            username    : process.env.EMAIL_COMPLETED_USERNAME ?? '',
+            password    : process.env.EMAIL_COMPLETED_PASSWORD ?? '',
             
-            from        : process.env.EMAILS_COMPLETED_FROM ?? '',
+            from        : process.env.EMAIL_COMPLETED_FROM ?? '',
             subject     : <>
                 Your Order Status Is Now Complete
             </>,
@@ -835,13 +835,13 @@ export const checkoutConfig : CheckoutConfig = {
         },
         
         rejected        : {
-            host        : process.env.EMAILS_REJECTED_HOST     ?? '',
-            port        : Number.parseInt(process.env.EMAILS_REJECTED_PORT ?? '465'),
-            secure      : (process.env.EMAILS_REJECTED_SECURE === 'true'),
-            username    : process.env.EMAILS_REJECTED_USERNAME ?? '',
-            password    : process.env.EMAILS_REJECTED_PASSWORD ?? '',
+            host        : process.env.EMAIL_REJECTED_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAIL_REJECTED_PORT ?? '465'),
+            secure      : (process.env.EMAIL_REJECTED_SECURE === 'true'),
+            username    : process.env.EMAIL_REJECTED_USERNAME ?? '',
+            password    : process.env.EMAIL_REJECTED_PASSWORD ?? '',
             
-            from        : process.env.EMAILS_REJECTED_FROM ?? '',
+            from        : process.env.EMAIL_REJECTED_FROM ?? '',
             subject     : <>
                 Your Payment Confirmation Rejected of Your Order at <Business.Name />
             </>,
