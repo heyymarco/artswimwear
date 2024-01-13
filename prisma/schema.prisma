@@ -389,8 +389,8 @@ model CustomerAccount {
     session_state           String?
     
     // relations:
-    userId                  String
-    customer                Customer                @relation(fields: [userId], references: [id], onDelete: Cascade) // delete the related CustomerAccount(s) if the Customer deleted
+    customerId              String
+    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerAccount(s) if the Customer deleted
 }
 
 model CustomerSession {
@@ -402,8 +402,8 @@ model CustomerSession {
     sessionToken            String                  @unique
     
     // relations:
-    userId                  String
-    customer                Customer                @relation(fields: [userId], references: [id], onDelete: Cascade) // delete the related CustomerSession(s) if the Customer deleted
+    customerId              String
+    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerSession(s) if the Customer deleted
 }
 
 // model Customer {
@@ -440,8 +440,8 @@ model CustomerCredentials {
     password                String?
     
     // relations:
-    userId                  String                  @unique
-    customer                Customer                @relation(fields: [userId], references: [id], onDelete: Cascade) // delete the related CustomerCredentials if the Customer deleted
+    customerId              String                  @unique
+    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerCredentials if the Customer deleted
 }
 
 model CustomerPasswordResetToken {
@@ -454,8 +454,8 @@ model CustomerPasswordResetToken {
     token                   String                  @unique
     
     // relations:
-    userId                  String                  @unique
-    customer                Customer                @relation(fields: [userId], references: [id], onDelete: Cascade) // delete the related CustomerPasswordResetToken if the Customer deleted
+    customerId              String                  @unique
+    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPasswordResetToken if the Customer deleted
 }
 
 model CustomerEmailConfirmationToken {
@@ -466,8 +466,8 @@ model CustomerEmailConfirmationToken {
     token                   String                  @unique
     
     // relations:
-    userId                  String                  @unique
-    customer                Customer                @relation(fields: [userId], references: [id], onDelete: Cascade) // delete the related CustomerEmailConfirmationToken if the Customer deleted
+    customerId              String                  @unique
+    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerEmailConfirmationToken if the Customer deleted
 }
 
 // model CustomerRole {
