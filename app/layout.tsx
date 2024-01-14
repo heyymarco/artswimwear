@@ -18,6 +18,11 @@ import {
     PersistGate,
 }                           from 'redux-persist/integration/react'
 
+// next-auth:
+import {
+    NextAuthSessionProvider,
+}                           from './NextAuthSessionProvider'
+
 // cssfn:
 import {
     // style sheets:
@@ -165,22 +170,24 @@ export default function RootLayout({
                 <StylesSSR />
             </head>
             <body>
-                <Provider store={store}><PersistGate persistor={persistor}>
-                    <DialogMessageProvider
-                        fetchErrorTitleDefault={fetchErrorTitleDefault}
-                        fetchErrorMessageDefault={fetchErrorMessageDefault}
-                    >
-                        <CartStateProvider>
-                            <Header />
-                            
-                            {children}
-                            
-                            <Footer />
-                            
-                            <CartDialog />
-                        </CartStateProvider>
-                    </DialogMessageProvider>
-                </PersistGate></Provider>
+                <NextAuthSessionProvider>
+                    <Provider store={store}><PersistGate persistor={persistor}>
+                        <DialogMessageProvider
+                            fetchErrorTitleDefault={fetchErrorTitleDefault}
+                            fetchErrorMessageDefault={fetchErrorMessageDefault}
+                        >
+                            <CartStateProvider>
+                                <Header />
+                                
+                                {children}
+                                
+                                <Footer />
+                                
+                                <CartDialog />
+                            </CartStateProvider>
+                        </DialogMessageProvider>
+                    </PersistGate></Provider>
+                </NextAuthSessionProvider>
             </body>
         </html>
     );
