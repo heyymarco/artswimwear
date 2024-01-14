@@ -1,22 +1,31 @@
-import React  from 'react';
+'use client'
 
-import { Navbar, navbarValues } from '@reusable-ui/components'
-import SiteNavbarMenu from './SiteNavbarMenu';
+// react:
+import {
+    // react:
+    default as React,
+}                           from 'react'
+
+// reusable-ui components:
+import {
+    Navbar,
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
+// internals components:
+import {
+    SiteNavbarMenu,
+}                           from './SiteNavbarMenu'
 
 
 
-navbarValues.boxSizing = 'border-box';
-navbarValues.blockSize = '4rem';
-
-
-
+// react components:
 const SiteNavbar = () => {
     return (
         <Navbar theme='primary' gradient={true} className='siteNavbar' breakpoint='md'>{(params) =>
             <SiteNavbarMenu {...params} />
         }</Navbar>
     );
-}
+};
 export {
     SiteNavbar,
     SiteNavbar as default,

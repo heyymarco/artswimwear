@@ -62,6 +62,9 @@ import {
 import {
     SiteLogo,
 }                           from './SiteLogo'
+import {
+    SignInMenu,
+}                           from './SignInMenu'
 
 // contexts:
 import {
@@ -242,6 +245,8 @@ const SiteNavbarMenu = ({
                             floatingShift={10}
                         />
                     </ListItem>}
+                    
+                    <SignInMenu />
                     
                     {isBusy && <NavItem active={true}>
                         <Busy theme='secondary' size='lg' />
