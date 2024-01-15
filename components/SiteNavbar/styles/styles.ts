@@ -15,8 +15,8 @@ import {
 
 // reusable-ui components:
 import {
-    // composite-components:
-    tabPanelElm,
+    // layout-components:
+    wrapperElm,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 
@@ -60,6 +60,27 @@ const usesProfileImageLayout = () => {
         }),
     });
 };
+const usesSignInDropdownLayout = () => {
+    return style({
+        // children:
+        ...children(wrapperElm, {
+            ...children('*', {
+                // layouts:
+                display      : 'grid',
+                gridTemplate : [[
+                    '"icon label" auto',
+                    '/',
+                    'auto 1fr',
+                ]],
+                
+                
+                
+                // spacings:
+                gap: spacers.sm,
+            }),
+        }),
+    });
+};
 
 
 
@@ -71,5 +92,9 @@ export default () => [
     scope('profileImage', {
         // layouts:
         ...usesProfileImageLayout(),
+    }),
+    scope('signInDropdown', {
+        // layouts:
+        ...usesSignInDropdownLayout(),
     }),
 ];

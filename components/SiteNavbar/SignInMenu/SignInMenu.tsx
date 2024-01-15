@@ -25,12 +25,6 @@ import {
     signOut,
 }                           from 'next-auth/react'
 
-// cssfn:
-import {
-    // style sheets:
-    dynamicStyleSheets,
-}                           from '@cssfn/cssfn-react'               // writes css in react hook
-
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -65,10 +59,14 @@ import {
 
 // internal components:
 import {
+    SignInDropdownResult,
     SignInDropdown,
 }                           from '../SignInDropdown'
 
 // internals:
+import {
+    useSignInMenuStyleSheet,
+}                           from '../styles/loader'
 import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
@@ -77,15 +75,6 @@ import {
 import {
     authConfigClient,
 }                           from '@/auth.config.client'
-
-
-
-// styles:
-import './styles/styles';
-export const useSignInMenuStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */ './styles/styles')
-, { id: 'w97dk60p1d' }); // a unique salt for SSR support, ensures the server-side & client-side have the same generated class names
-
 
 
 
@@ -183,7 +172,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 shownMenu.closeDialog(undefined);
             }
             else {
-                const newShownMenu = showDialog<string>(
+                const newShownMenu = showDialog<SignInDropdownResult>(
                     <SignInDropdown
                         // variants:
                         theme='primary'
