@@ -10,6 +10,7 @@ import {
     // hooks:
     useState,
     useEffect,
+    useRef,
 }                           from 'react'
 
 // next-js:
@@ -54,7 +55,18 @@ import {
     NavItem,
     TabPanel,
     Tab,
+    
+    
+    
+    // utility-components:
+    PromiseDialog,
+    useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
+// internal components:
+import {
+    SignInDropdown,
+}                           from '../SignInDropdown'
 
 // internals:
 import {
@@ -151,6 +163,14 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     
     
     
+    // dialogs:
+    const {
+        showDialog,
+    } = useDialogMessage();
+    const [shownMenu, setShownMenu] = useState<PromiseDialog<any>|null>(null);
+    
+    
+    
     // handlers:
     const router = useRouter();
     const pathname = usePathname();
@@ -159,10 +179,47 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             router.push(signInPath);
         }
         else if (isFullySignedIn) {
-            setIsSigningOut(true); // set signing out
-            signOut();
+            if (shownMenu) {
+                shownMenu.closeDialog(undefined);
+            }
+            else {
+                const newShownMenu = showDialog<string>(
+                    <SignInDropdown
+                        // variants:
+                        theme='primary'
+                        
+                        
+                        
+                        // floatable:
+                        floatingOn={menuRef}
+                        floatingPlacement='bottom-end'
+                        
+                        
+                        
+                        // auto focusable:
+                        restoreFocusOn={menuRef}
+                    />
+                );
+                setShownMenu(newShownMenu);
+                newShownMenu.collapseStartEvent().then(() => {
+                    setShownMenu(null);
+                });
+                newShownMenu.collapseEndEvent().then((event) => {
+                    switch (event.data) {
+                        case 'signOut':
+                            setIsSigningOut(true); // set signing out
+                            signOut();
+                            break;
+                    } // switch
+                });
+            } // if
         } // if
     });
+    
+    
+    
+    // refs:
+    const menuRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -174,8 +231,13 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             
             
             
+            // refs:
+            elmRef={menuRef}
+            
+            
+            
             // states:
-            active={(isBusy || pathname?.startsWith(signInPath)) ? true : undefined}
+            active={(isBusy || pathname?.startsWith(signInPath) || !!shownMenu) ? true : undefined}
             
             
             
