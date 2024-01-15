@@ -40,6 +40,24 @@ const usesSignInMenuLayout = () => {
 };
 const usesProfileImageLayout = () => {
     return style({
+        // backgrounds:
+        backgroundRepeat   : 'no-repeat',
+        backgroundPosition : 'center',
+        backgroundSize     : 'contain',
+        
+        
+        
+        // borders:
+        borderRadius       : '50%',
+        
+        
+        
+        // states:
+        ...rule('.hasImage', {
+            ...children('::after', {
+                opacity : 0, // hide the person icon
+            }),
+        }),
     });
 };
 

@@ -34,6 +34,7 @@ import {
 import {
     // react helper hooks:
     useEvent,
+    useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -104,10 +105,11 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     const isFullySignedIn  = !isSigningOut && (sessionStatus === 'authenticated')   && !!session;
     const isFullySignedOut = !isSigningOut && (sessionStatus === 'unauthenticated') &&  !session;
     const isBusy           =  isSigningOut || (sessionStatus === 'loading');
-    const { name: customerName, image: customerImage } = session?.user ?? {};
+    const { name: customerName, image: customerImageRaw } = session?.user ?? {};
     const customerNameParts = customerName?.split(/\s+/gi);
     const customerFirstName = customerNameParts?.[0];
     const customerShortRestName = !!customerNameParts && (customerNameParts.length >= 2) ? customerNameParts[customerNameParts.length - 1][0] : undefined;
+    const customerImage = resolveMediaUrl(customerImageRaw ?? undefined);
     
     
     
@@ -121,6 +123,31 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
         // actions:
         setIsSigningOut(false); // reset signing out
     }, [isFullySignedIn, isFullySignedOut]);
+    
+    
+    
+    // states:
+    const [hasValidImage, setHasValidImage] = useState<boolean>(false);
+    const isMounted = useMountedFlag();
+    useEffect(() => {
+        // conditions:
+        setHasValidImage(false); // reset
+        if (!customerImage) return; // no image => no need to verify
+        
+        
+        
+        // actions:
+        (async () => {
+            try {
+                const response = await fetch(customerImage, { method: 'HEAD' });
+                if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+                if (response.ok) setHasValidImage(true); // verified
+            }
+            catch {
+                // error => invalid image
+            } // try
+        })();
+    }, [customerImage]);
     
     
     
@@ -184,7 +211,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                     </span>
                 </TabPanel>
                 <TabPanel className={styleSheet.signInMenu}>
-                    <Icon icon='person' size='lg' className={styleSheet.profileImage} style={customerImage ? { backgroundImage: `url("${resolveMediaUrl(customerImage)}")` } : undefined} />
+                    <Icon icon='person' size='lg' className={`${styleSheet.profileImage} ${hasValidImage ? 'hasImage' : ''}`} style={customerImage ? { backgroundImage: `url("${customerImage}")` } : undefined} />
                     <span>
                         <span>
                             {customerFirstName}
