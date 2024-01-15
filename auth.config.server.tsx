@@ -49,10 +49,11 @@ export const authConfigServer : AuthConfigServer = {
     business                 : authConfigShared.business,
     signUp                   : authConfigShared.signUp,
     signIn                   : {
+        ...authConfigShared.signIn,
+        
         requireVerifiedEmail : true,
         failureMaxAttempts   : 5    /* times */,
         failureLockDuration  : 0.25 /* hours */,
-        path                 : '/signin',
     },
     reset                    : {
         ...authConfigShared.reset,

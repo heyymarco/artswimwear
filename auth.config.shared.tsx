@@ -14,6 +14,9 @@ export const authConfigShared : AuthConfigShared = {
     signUp                   : {
         enabled              : true,
     },
+    signIn                   : {
+        path                 : '/signin',
+    },
     reset                    : {
         enabled              : true,
     },

@@ -18,7 +18,7 @@
     "@heymarco/data-table": "^6.5.0",
     "@heymarco/image": "^6.5.0",
     "@heymarco/loading-bar": "^6.5.0",
-    "@heymarco/next-auth": "^6.7.5",
+    "@heymarco/next-auth": "^6.7.6",
     "@heymarco/quantity-input": "^6.5.0",
     "@heymarco/section": "^6.5.0",
     "@lexical/headless": "^0.12.4",
