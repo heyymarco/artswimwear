@@ -9,18 +9,26 @@ import {
     
     // hooks:
     useState,
+    useEffect,
 }                           from 'react'
+
+// next-js:
+import {
+    usePathname,
+    useRouter,
+}                           from 'next/navigation'
+
+// next-auth:
+import {
+    useSession,
+    signOut,
+}                           from 'next-auth/react'
 
 // cssfn:
 import {
     // style sheets:
     dynamicStyleSheet,
 }                           from '@cssfn/cssfn-react'               // writes css in react hook
-
-// next-auth:
-import {
-    useSession,
-}                           from 'next-auth/react'
 
 // reusable-ui core:
 import {
@@ -76,11 +84,34 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     const customerNameParts = customerName?.split(/\s+/gi);
     const customerFirstName = customerNameParts?.[0];
     const customerShortRestName = !!customerNameParts && (customerNameParts.length >= 2) ? customerNameParts[customerNameParts.length - 1][0] : undefined;
+    console.log({customerImage, resolved: resolveMediaUrl(customerImage ?? undefined)});
+    
+    
+    
+    // effects:
+    useEffect(() => {
+        // conditions:
+        if (!isFullySignedIn && !isFullySignedOut) return;
+        
+        
+        
+        // actions:
+        setIsSigningOut(false); // reset signing out
+    }, [isFullySignedIn, isFullySignedOut]);
+    
     
     
     // handlers:
+    const router = useRouter();
+    const pathname = usePathname();
     const handleClick = useEvent(() => {
-
+        if (isFullySignedOut) {
+            router.push('/signin');
+        }
+        else if (isFullySignedIn) {
+            setIsSigningOut(true); // set signing out
+            signOut();
+        } // if
     });
     
     
@@ -94,7 +125,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             
             
             // states:
-            active={isBusy ? true : undefined}
+            active={(isBusy || (pathname === '/signin')) ? true : undefined}
             
             
             
@@ -117,19 +148,27 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 headerComponent={null} // headless <Tab>
             >
                 <TabPanel>
-                    Sign In
-                </TabPanel>
-                <TabPanel>
-                    Loading...
-                </TabPanel>
-                <TabPanel>
-                    <Icon icon='face' size='lg' />
+                    <Icon icon='login' size='lg' />
                     <span>
-                        {customerFirstName}
+                        Sign In
                     </span>
-                    {customerShortRestName ? ' ' : ''}
+                </TabPanel>
+                <TabPanel>
+                    <Icon icon='busy' size='lg' />
                     <span>
-                        {customerShortRestName}
+                        Loading...
+                    </span>
+                </TabPanel>
+                <TabPanel>
+                    <Icon icon='person' size='lg' style={customerImage ? { backgroundImage: `url("${resolveMediaUrl(customerImage)}")` } : undefined} />
+                    <span>
+                        <span>
+                            {customerFirstName}
+                        </span>
+                        {customerShortRestName ? ' ' : ''}
+                        <span>
+                            {customerShortRestName}
+                        </span>
                     </span>
                 </TabPanel>
             </Tab>
