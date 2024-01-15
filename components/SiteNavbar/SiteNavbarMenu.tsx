@@ -12,18 +12,6 @@ import {
     useState,
 }                           from 'react'
 
-// next-auth:
-import {
-    useSession,
-    signOut,
-}                           from 'next-auth/react'
-
-// reusable-ui core:
-import {
-    // react helper hooks:
-    useEvent,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
-
 // reusable-ui components:
 import {
     // simple-components:
@@ -35,11 +23,6 @@ import {
     
     // layout-components:
     ListItem,
-    
-    
-    
-    // status-components:
-    Busy,
     
     
     
@@ -86,24 +69,6 @@ const SiteNavbarMenu = ({
         listExpanded,
         handleClickToToggleList,
     } : NavbarParams) => {
-    // sessions:
-    const { data: session, status: sessionStatus } = useSession();
-    const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
-    const isFullySignedIn  = !isSigningOut && (sessionStatus === 'authenticated')   && !!session;
-    const isFullySignedOut = !isSigningOut && (sessionStatus === 'unauthenticated') &&  !session;
-    const isBusy           =  isSigningOut || (sessionStatus === 'loading');
-    const role = session?.role;
-    
-    
-    
-    // handlers:
-    const handleSignOut = useEvent((): void => {
-        setIsSigningOut(true);
-        signOut();
-    });
-    
-    
-    
     // contexts:
     const {
         // states:
@@ -247,20 +212,6 @@ const SiteNavbarMenu = ({
                     </ListItem>}
                     
                     <SignInMenu />
-                    
-                    {isBusy && <NavItem active={true}>
-                        <Busy theme='secondary' size='lg' />
-                        &nbsp;
-                        {(isSigningOut || session) ? 'Signing out...' : 'Loading...'}
-                    </NavItem>}
-                    
-                    {isFullySignedOut && <NavItem>
-                        <Link href='/signin'>Sign In</Link>
-                    </NavItem>}
-                    
-                    {isFullySignedIn  && <NavItem onClick={handleSignOut}>
-                        Sign Out
-                    </NavItem>}
                 </Nav>
             </Collapse>
         </>

@@ -27,7 +27,7 @@ import {
 // cssfn:
 import {
     // style sheets:
-    dynamicStyleSheet,
+    dynamicStyleSheets,
 }                           from '@cssfn/cssfn-react'               // writes css in react hook
 
 // reusable-ui core:
@@ -51,10 +51,7 @@ import {
     // composite-components:
     NavItemProps,
     NavItem,
-    Nav,
-    TabPanelProps,
     TabPanel,
-    TabProps,
     Tab,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
@@ -62,6 +59,20 @@ import {
 import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
+
+// configs:
+import {
+    authConfigClient,
+}                           from '@/auth.config.client'
+
+
+
+// styles:
+import './styles/styles';
+export const useSignInMenuStyleSheet = dynamicStyleSheets(
+    () => import(/* webpackPrefetch: true */ './styles/styles')
+, { id: 'w97dk60p1d' }); // a unique salt for SSR support, ensures the server-side & client-side have the same generated class names
+
 
 
 
@@ -73,18 +84,30 @@ export interface SignInMenuProps
 {
 }
 const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
+    // configs:
+    const {
+        signIn : {
+            path : signInPath,
+        }
+    } = authConfigClient;
+    
+    
+    
+    // styles:
+    const styleSheet = useSignInMenuStyleSheet();
+    
+    
+    
     // sessions:
     const { data: session, status: sessionStatus } = useSession();
     const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
     const isFullySignedIn  = !isSigningOut && (sessionStatus === 'authenticated')   && !!session;
     const isFullySignedOut = !isSigningOut && (sessionStatus === 'unauthenticated') &&  !session;
     const isBusy           =  isSigningOut || (sessionStatus === 'loading');
-    const role = session?.role;
     const { name: customerName, image: customerImage } = session?.user ?? {};
     const customerNameParts = customerName?.split(/\s+/gi);
     const customerFirstName = customerNameParts?.[0];
     const customerShortRestName = !!customerNameParts && (customerNameParts.length >= 2) ? customerNameParts[customerNameParts.length - 1][0] : undefined;
-    console.log({customerImage, resolved: resolveMediaUrl(customerImage ?? undefined)});
     
     
     
@@ -106,7 +129,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     const pathname = usePathname();
     const handleClick = useEvent(() => {
         if (isFullySignedOut) {
-            router.push('/signin');
+            router.push(signInPath);
         }
         else if (isFullySignedIn) {
             setIsSigningOut(true); // set signing out
@@ -125,7 +148,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             
             
             // states:
-            active={(isBusy || (pathname === '/signin')) ? true : undefined}
+            active={(isBusy || pathname?.startsWith(signInPath)) ? true : undefined}
             
             
             
@@ -143,24 +166,25 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 }
                 
                 
+                
                 // components:
                 bodyComponent={<Basic nude={true} />}
                 headerComponent={null} // headless <Tab>
             >
-                <TabPanel>
+                <TabPanel className={styleSheet.signInMenu}>
                     <Icon icon='login' size='lg' />
                     <span>
                         Sign In
                     </span>
                 </TabPanel>
-                <TabPanel>
+                <TabPanel className={styleSheet.signInMenu}>
                     <Icon icon='busy' size='lg' />
                     <span>
                         Loading...
                     </span>
                 </TabPanel>
-                <TabPanel>
-                    <Icon icon='person' size='lg' style={customerImage ? { backgroundImage: `url("${resolveMediaUrl(customerImage)}")` } : undefined} />
+                <TabPanel className={styleSheet.signInMenu}>
+                    <Icon icon='person' size='lg' className={styleSheet.profileImage} style={customerImage ? { backgroundImage: `url("${resolveMediaUrl(customerImage)}")` } : undefined} />
                     <span>
                         <span>
                             {customerFirstName}
