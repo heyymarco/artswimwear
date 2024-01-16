@@ -211,7 +211,10 @@ const SiteNavbarMenu = ({
                         />
                     </ListItem>}
                     
-                    <SignInMenu />
+                    <SignInMenu
+                        // states:
+                        navbarExpanded={navbarExpanded}
+                    />
                 </Nav>
             </Collapse>
         </>

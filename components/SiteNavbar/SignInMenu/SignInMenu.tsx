@@ -86,6 +86,8 @@ export interface SignInMenuProps
         // bases:
         NavItemProps
 {
+    // states:
+    navbarExpanded : boolean
 }
 const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     // configs:
@@ -99,6 +101,14 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     
     // styles:
     const styleSheet = useSignInMenuStyleSheet();
+    
+    
+    
+    // rest props:
+    const {
+        // states:
+        navbarExpanded,
+    ...restNavItemProps} = props;
     
     
     
@@ -155,6 +165,11 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                         
                         
                         
+                        // states:
+                        navbarExpanded={navbarExpanded}
+                        
+                        
+                        
                         // floatable:
                         floatingOn={menuRef}
                         floatingPlacement='bottom-end'
@@ -192,12 +207,17 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     return (
         <NavItem
             // other props:
-            {...props}
+            {...restNavItemProps}
             
             
             
             // refs:
             elmRef={menuRef}
+            
+            
+            
+            // classes:
+            className={!navbarExpanded ? 'navbarCollapsed' : undefined}
             
             
             
@@ -210,6 +230,11 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             onClick={handleClick}
         >
             <Tab
+                // classes:
+                className={styleSheet.signInWrapper}
+                
+                
+                
                 // states:
                 expandedTabIndex={
                     isFullySignedOut

@@ -28,9 +28,13 @@ import {
     ListItem,
     ListSeparatorItem,
     
+    ListProps,
+    List,
+    
     
     
     // menu-components:
+    Dropdown,
     DropdownListExpandedChangeEvent,
     DropdownListProps,
     DropdownList,
@@ -63,10 +67,25 @@ export interface SignInDropdownProps<TElement extends Element = HTMLElement, TDr
         // bases:
         DropdownListProps<TElement, TDropdownListExpandedChangeEvent>
 {
+    // states:
+    navbarExpanded : boolean
 }
 const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
     // styles:
     const styleSheet = useSignInMenuStyleSheet();
+    
+    
+    
+    // rest props:
+    const {
+        // states:
+        navbarExpanded,
+        
+        
+        
+        // components:
+        listComponent = (<List /> as React.ReactComponentElement<any, ListProps>),
+    ...restDropdownListProps} = props;
     
     
     
@@ -88,12 +107,25 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
     return (
         <DropdownList
             // other props:
-            {...props}
+            {...restDropdownListProps}
             
             
             
             // classes:
             className={styleSheet.signInDropdown}
+            
+            
+            
+            // components:
+            listComponent={listComponent}
+            dropdownComponent={
+                <Dropdown
+                    // classes:
+                    className={`${styleSheet.signInDropdownDropdown} ${!navbarExpanded ? 'navbarCollapsed' : ''}`}
+                >
+                    {listComponent}
+                </Dropdown>
+            }
         >
             <ListItem
                 // classes:
