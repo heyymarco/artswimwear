@@ -64,6 +64,11 @@ export const useProfileImageStyleSheet = dynamicStyleSheet(
 
 
 
+// caches:
+const validProfileImageCache = new Map<string, boolean>();
+
+
+
 // react components:
 export interface ProfileImageProps
     extends
@@ -110,7 +115,7 @@ const ProfileImage = (props: ProfileImageProps): JSX.Element|null => {
     
     
     // states:
-    const [hasValidImage, setHasValidImage] = useState<boolean>(false);
+    const [hasValidImage, setHasValidImage] = useState<boolean>((src ? validProfileImageCache.get(src) : undefined) ?? false);
     
     
     
@@ -159,22 +164,35 @@ const ProfileImage = (props: ProfileImageProps): JSX.Element|null => {
     const isMounted = useMountedFlag();
     useEffect(() => {
         // conditions:
-        setHasValidImage(false); // reset
-        if (!src) return; // no image => no need to verify
+        if (!src) { // no image => no need to verify
+            setHasValidImage(false); // reset
+            return;
+        } // if
         
         
         
         // actions:
-        (async () => {
-            try {
-                const response = await fetch(src, { method: 'HEAD' });
-                if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-                if (response.ok) setHasValidImage(true); // verified
-            }
-            catch {
-                // error => invalid image
-            } // try
-        })();
+        const isImageValidCache = validProfileImageCache.get(src);
+        if (isImageValidCache !== undefined) {
+            setHasValidImage(isImageValidCache);
+        }
+        else {
+            setHasValidImage(false); // reset
+            (async () => {
+                try {
+                    const response = await fetch(src, { method: 'HEAD' });
+                    if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+                    if (response.ok) { // verified
+                        validProfileImageCache.set(src, true);
+                        setHasValidImage(true);
+                    } // if
+                }
+                catch {
+                    // error => invalid image
+                    validProfileImageCache.set(src, false);
+                } // try
+            })();
+        } // if
     }, [src]);
     
     
