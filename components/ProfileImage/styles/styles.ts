@@ -93,6 +93,16 @@ export const usesProfileImageLayout = () => {
                 
                 // spacings:
                 margin                  : `calc(0px - ${borderVars.borderWidth})`,
+                
+                
+                
+                // children:
+                ...children('::after', {
+                    // layouts:
+                    display                 : 'grid',
+                    justifyContent          : 'center', // center the icon horizontally
+                    alignContent            : 'center', // center the icon vertically
+                }),
             }),
         }),
     });

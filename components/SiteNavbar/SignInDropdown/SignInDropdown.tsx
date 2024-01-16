@@ -21,6 +21,7 @@ import {
     
     // layout-components:
     ListItem,
+    ListSeparatorItem,
     
     
     
@@ -30,10 +31,21 @@ import {
     DropdownList,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
+// internal components:
+import {
+    EditButton,
+}                           from '@/components/EditButton'
+import {
+    ProfileImage,
+}                           from '@/components/ProfileImage'
+
 // internals:
 import {
     useSignInMenuStyleSheet,
 }                           from '../styles/loader'
+import {
+    resolveMediaUrl,
+}                           from '@/libs/mediaStorage.client'
 
 
 
@@ -46,10 +58,24 @@ export interface SignInDropdownProps<TElement extends Element = HTMLElement, TDr
         // bases:
         DropdownListProps<TElement, TDropdownListExpandedChangeEvent>
 {
+    // data:
+    customerName  : string|null|undefined
+    customerEmail : string|null|undefined
+    customerImage : string|null|undefined
 }
 const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
     // styles:
     const styleSheet = useSignInMenuStyleSheet();
+    
+    
+    
+    // rest props:
+    const {
+        // data:
+        customerName,
+        customerEmail,
+        customerImage,
+    ...restDropdownListProps} = props;
     
     
     
@@ -65,19 +91,52 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
     return (
         <DropdownList
             // other props:
-            {...props}
+            {...restDropdownListProps}
             
             
             
             // classes:
             className={styleSheet.signInDropdown}
         >
-            <ListItem onClick={(event) => handleClose(event, 'editProfile')}>
-                <Icon icon='edit' size='md' />
-                <span>
-                    Edit Profile
+            <ListItem
+                // classes:
+                className={styleSheet.signInEditProfile}
+                
+                
+                
+                // behaviors:
+                actionCtrl={false}
+                
+                
+                
+                // handlers:
+                onClick={(event) => handleClose(event, 'editProfile')}
+            >
+                <ProfileImage
+                    // appearances:
+                    src={resolveMediaUrl(customerImage ?? undefined)}
+                    
+                    
+                    
+                    // variants:
+                    profileImageStyle='circle'
+                    
+                    
+                    
+                    // classes:
+                    className='image'
+                />
+                <span className='name'>
+                    {customerName}
                 </span>
+                <span className='email'>
+                    {customerEmail}
+                </span>
+                <EditButton className='edit'>
+                    Edit Profile
+                </EditButton>
             </ListItem>
+            <ListSeparatorItem />
             <ListItem onClick={(event) => handleClose(event, 'signOut')}>
                 <Icon icon='logout' size='md' />
                 <span>

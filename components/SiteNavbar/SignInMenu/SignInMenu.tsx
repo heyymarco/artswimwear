@@ -108,7 +108,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     const isFullySignedIn  = !isSigningOut && (sessionStatus === 'authenticated')   && !!session;
     const isFullySignedOut = !isSigningOut && (sessionStatus === 'unauthenticated') &&  !session;
     const isBusy           =  isSigningOut || (sessionStatus === 'loading');
-    const { name: customerName, image: customerImage } = session?.user ?? {};
+    const { name: customerName, email: customerEmail, image: customerImage } = session?.user ?? {};
     const customerNameParts = customerName?.split(/\s+/gi);
     const customerFirstName = customerNameParts?.[0];
     const customerShortRestName = !!customerNameParts && (customerNameParts.length >= 2) ? customerNameParts[customerNameParts.length - 1][0] : undefined;
@@ -150,6 +150,13 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             else {
                 const newShownMenu = showDialog<SignInDropdownResult>(
                     <SignInDropdown
+                        // data:
+                        customerName={customerName}
+                        customerEmail={customerEmail}
+                        customerImage={customerImage}
+                        
+                        
+                        
                         // variants:
                         theme='primary'
                         
@@ -238,8 +245,16 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                     </span>
                 </TabPanel>
                 <TabPanel className={styleSheet.signInMenu}>
-                    <ProfileImage theme='danger' profileImageStyle='circle' src={resolveMediaUrl(customerImage ?? undefined)} />
-                    <span>
+                    <ProfileImage
+                        // appearances:
+                        src={resolveMediaUrl(customerImage ?? undefined)}
+                        
+                        
+                        
+                        // variants:
+                        profileImageStyle='circle'
+                    />
+                    <span className={styleSheet.signInName}>
                         <span>
                             {customerFirstName}
                         </span>
