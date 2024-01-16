@@ -150,13 +150,6 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             else {
                 const newShownMenu = showDialog<SignInDropdownResult>(
                     <SignInDropdown
-                        // data:
-                        customerName={customerName}
-                        customerEmail={customerEmail}
-                        customerImage={customerImage}
-                        
-                        
-                        
                         // variants:
                         theme='primary'
                         

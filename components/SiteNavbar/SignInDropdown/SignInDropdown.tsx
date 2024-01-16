@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -58,10 +63,6 @@ export interface SignInDropdownProps<TElement extends Element = HTMLElement, TDr
         // bases:
         DropdownListProps<TElement, TDropdownListExpandedChangeEvent>
 {
-    // data:
-    customerName  : string|null|undefined
-    customerEmail : string|null|undefined
-    customerImage : string|null|undefined
 }
 const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
     // styles:
@@ -69,13 +70,9 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
     
     
     
-    // rest props:
-    const {
-        // data:
-        customerName,
-        customerEmail,
-        customerImage,
-    ...restDropdownListProps} = props;
+    // sessions:
+    const { data: session } = useSession();
+    const { name: customerName, email: customerEmail, image: customerImage } = session?.user ?? {};
     
     
     
@@ -91,7 +88,7 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
     return (
         <DropdownList
             // other props:
-            {...restDropdownListProps}
+            {...props}
             
             
             
