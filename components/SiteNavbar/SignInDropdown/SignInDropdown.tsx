@@ -68,7 +68,7 @@ export interface SignInDropdownProps<TElement extends Element = HTMLElement, TDr
         DropdownListProps<TElement, TDropdownListExpandedChangeEvent>
 {
     // states:
-    navbarExpanded : boolean
+    navbarExpanded : boolean // out of <NavbarContextProvider>, we need to drill props the navbar's state
 }
 const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
     // styles:
@@ -135,11 +135,6 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
                 
                 // behaviors:
                 actionCtrl={false}
-                
-                
-                
-                // handlers:
-                onClick={(event) => handleClose(event, 'editProfile')}
             >
                 <ProfileImage
                     // appearances:
@@ -155,13 +150,27 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
                     // classes:
                     className='image'
                 />
-                <span className='name'>
+                <span
+                    // classes:
+                    className='name'
+                >
                     {customerName}
                 </span>
-                <span className='email'>
+                <span
+                    // classes:
+                    className='email'
+                >
                     {customerEmail}
                 </span>
-                <EditButton className='edit'>
+                <EditButton
+                    // classes:
+                    className='edit'
+                    
+                    
+                    
+                    // handlers:
+                    onClick={(event) => handleClose(event, 'editProfile')}
+                >
                     Edit Profile
                 </EditButton>
             </ListItem>

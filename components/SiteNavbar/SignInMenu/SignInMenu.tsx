@@ -48,6 +48,7 @@ import {
     NavItem,
     TabPanel,
     Tab,
+    useNavbarState,
     
     
     
@@ -86,8 +87,6 @@ export interface SignInMenuProps
         // bases:
         NavItemProps
 {
-    // states:
-    navbarExpanded : boolean
 }
 const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     // configs:
@@ -99,16 +98,21 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     
     
     
-    // styles:
-    const styleSheet = useSignInMenuStyleSheet();
-    
-    
-    
-    // rest props:
+    // states:
     const {
         // states:
         navbarExpanded,
-    ...restNavItemProps} = props;
+        
+        
+        
+        // handlers:
+        toggleList,
+    } = useNavbarState();
+    
+    
+    
+    // styles:
+    const styleSheet = useSignInMenuStyleSheet();
     
     
     
@@ -152,6 +156,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     const handleClick = useEvent(() => {
         if (isFullySignedOut) {
             router.push(signInPath);
+            toggleList(false);
         }
         else if (isFullySignedIn) {
             if (shownMenu) {
@@ -166,7 +171,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                         
                         
                         // states:
-                        navbarExpanded={navbarExpanded}
+                        navbarExpanded={navbarExpanded} // out of <NavbarContextProvider>, we need to drill props the navbar's state
                         
                         
                         
@@ -191,6 +196,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                             signOut();
                             break;
                     } // switch
+                    toggleList(false);
                 });
             } // if
         } // if
@@ -207,7 +213,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     return (
         <NavItem
             // other props:
-            {...restNavItemProps}
+            {...props}
             
             
             
@@ -218,6 +224,11 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             
             // classes:
             className={!navbarExpanded ? 'navbarCollapsed' : undefined}
+            
+            
+            
+            // behaviors:
+            actionCtrl={props.actionCtrl ?? isFullySignedOut}
             
             
             
@@ -247,11 +258,26 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 
                 
                 // components:
-                bodyComponent={<Basic nude={true} />}
+                bodyComponent={
+                    <Basic
+                        // variants:
+                        nude={true}
+                    />}
                 headerComponent={null} // headless <Tab>
             >
-                <TabPanel className={styleSheet.signInMenu}>
-                    <Icon icon='login' size='lg' />
+                <TabPanel
+                    // classes:
+                    className={styleSheet.signInMenu}
+                >
+                    <Icon
+                        // appearances:
+                        icon='login'
+                        
+                        
+                        
+                        // variants:
+                        size='lg'
+                    />
                     <span>
                         Sign In
                     </span>

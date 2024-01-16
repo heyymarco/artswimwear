@@ -8,6 +8,7 @@ import {
 
 // reusable-ui components:
 import {
+    // composite-components:
     Navbar,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
