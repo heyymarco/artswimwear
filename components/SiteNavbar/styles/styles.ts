@@ -1,7 +1,6 @@
 // cssfn:
 import {
     // writes css in javascript:
-    rule,
     children,
     style,
     scope,
@@ -38,28 +37,6 @@ const usesSignInMenuLayout = () => {
         gapInline : spacers.xs,
     });
 };
-const usesProfileImageLayout = () => {
-    return style({
-        // backgrounds:
-        backgroundRepeat   : 'no-repeat',
-        backgroundPosition : 'center',
-        backgroundSize     : 'contain',
-        
-        
-        
-        // borders:
-        borderRadius       : '50%',
-        
-        
-        
-        // states:
-        ...rule('.hasImage', {
-            ...children('::after', {
-                opacity : 0, // hide the person icon
-            }),
-        }),
-    });
-};
 const usesSignInDropdownLayout = () => {
     return style({
         // children:
@@ -88,10 +65,6 @@ export default () => [
     scope('signInMenu', {
         // layouts:
         ...usesSignInMenuLayout(),
-    }),
-    scope('profileImage', {
-        // layouts:
-        ...usesProfileImageLayout(),
     }),
     scope('signInDropdown', {
         // layouts:
