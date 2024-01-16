@@ -49,8 +49,16 @@ export const usesProfileImageLayout = () => {
         ...style({
             // layouts:
             display                     : 'grid',
-            justifyContent              : 'center', // center horizontally
-            alignContent                : 'center', // center vertically
+            gridTemplate                : [[
+                '"image" 1fr',
+                '/',
+                '1fr',
+            ]],
+            
+            
+            
+            // sizes:
+            aspectRatio                 : '1 / 1',
             
             
             
@@ -63,6 +71,11 @@ export const usesProfileImageLayout = () => {
             // children:
             overflow                    : 'hidden',
             ...children('[role="img"]', {
+                // sizes:
+                blockSize               : '100%',
+                
+                
+                
                 // backgrounds:
                 backgroundRepeat        : 'no-repeat',
                 backgroundPosition      : 'center',
