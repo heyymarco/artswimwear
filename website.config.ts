@@ -41,3 +41,6 @@ export const PAGE_CHECKOUT_PAYMENT_CONFIRM_DESCRIPTION   = 'Confirm your payment
 
 export const PAGE_CHECKOUT_SHIPPING_TRACKING_TITLE       = `Delivery Tracking - ${WEBSITE_TITLE}`
 export const PAGE_CHECKOUT_SHIPPING_TRACKING_DESCRIPTION = 'Track your order delivery.'
+
+export const PAGE_SIGNIN_TITLE                           = `Sign In - ${WEBSITE_TITLE}`
+export const PAGE_SIGNIN_DESCRIPTION                     = 'Customer login.'
