@@ -72,6 +72,8 @@ export function ProfilePageContent() {
                     // classes:
                     className='image'
                 />
+                <span className='name'>{customerName}</span>
+                <span className='email'>{customerEmail}</span>
             </Section>
         </Main>
     );

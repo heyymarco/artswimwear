@@ -191,6 +191,10 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 });
                 newShownMenu.collapseEndEvent().then((event) => {
                     switch (event.data) {
+                        case 'editProfile':
+                            router.push('/profile');
+                            break;
+                        
                         case 'signOut':
                             setIsSigningOut(true); // set signing out
                             signOut();
