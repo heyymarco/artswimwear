@@ -39,9 +39,10 @@ export const usesProfilePageLayout = () => {
             // layouts:
             display        : 'grid',
             gridTemplate   : [[
-                '"image  name" auto',
-                '"image email" auto',
-                '"image ....." auto',
+                '"image     name" auto',
+                '"image username" auto',
+                '"image    email" auto',
+                '"image ........" auto',
                 '/',
                 '100px max-content',
             ]],
@@ -57,11 +58,22 @@ export const usesProfilePageLayout = () => {
             
             
             // children:
+            ...children('*', {
+                margin: 0,
+                ...children('.label', {
+                    display: 'block',
+                    fontSize : typos.fontSizeSm,
+                    fontWeight : typos.fontWeightNormal,
+                }),
+            }),
             ...children('.image', {
                 gridArea: 'image',
             }),
             ...children('.name', {
                 gridArea: 'name',
+            }),
+            ...children('.username', {
+                gridArea: 'username',
             }),
             ...children('.email', {
                 gridArea: 'email',
