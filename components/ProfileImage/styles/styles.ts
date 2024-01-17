@@ -72,6 +72,7 @@ export const usesProfileImageLayout = () => {
             overflow                    : 'hidden',
             ...children('[role="img"]', {
                 // sizes:
+                inlineSize              : '100%',
                 blockSize               : '100%',
                 
                 
@@ -88,11 +89,6 @@ export const usesProfileImageLayout = () => {
                 borderStartEndRadius    : `calc(${borderVars.borderStartEndRadius  } - ${borderVars.borderWidth} - min(${borderVars.borderWidth}, 0.5px))`,
                 borderEndStartRadius    : `calc(${borderVars.borderEndStartRadius  } - ${borderVars.borderWidth} - min(${borderVars.borderWidth}, 0.5px))`,
                 borderEndEndRadius      : `calc(${borderVars.borderEndEndRadius    } - ${borderVars.borderWidth} - min(${borderVars.borderWidth}, 0.5px))`,
-                
-                
-                
-                // spacings:
-                margin                  : `calc(0px - ${borderVars.borderWidth})`,
                 
                 
                 
