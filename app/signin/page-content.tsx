@@ -43,12 +43,14 @@ const useSignInPageStyleSheet = dynamicStyleSheet(
 
 
 
+// react components:
 export function SignInPageContent() {
     // styles:
     const styleSheet = useSignInPageStyleSheet();
     
     
     
+    // jsx:
     return (
         <Main className={styleSheet.main}>
             <Section className='fill-self'>
