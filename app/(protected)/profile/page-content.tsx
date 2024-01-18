@@ -69,7 +69,7 @@ export function ProfilePageContent() {
     // sessions:
     const { data: session } = useSession();
     const { name: customerName, email: customerEmail, image: customerImage } = session?.user ?? {};
-    const customerUsername = 'session.username';
+    const customerUsername = session?.credentials?.username;
     
     
     

@@ -2,6 +2,7 @@
 import {
     // writes css in javascript:
     rule,
+    descendants,
     children,
     style,
 }                           from '@cssfn/core'                  // writes css in javascript
@@ -65,6 +66,15 @@ export const usesProfilePageLayout = () => {
                     display: 'block',
                     fontSize : typos.fontSizeSm,
                     fontWeight : typos.fontWeightNormal,
+                }),
+                ...descendants('.noValue', {
+                    // appearances:
+                    opacity    : 0.5,
+                    
+                    
+                    
+                    // typos:
+                    fontStyle  : 'italic',
                 }),
                 ...children('.edit', {
                     marginInlineStart: '0.25em',
