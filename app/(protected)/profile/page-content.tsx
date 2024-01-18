@@ -4,6 +4,11 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useMemo,
 }                           from 'react'
 
 // next-auth:
@@ -27,6 +32,12 @@ import {
 import {
     // status-components:
     Badge,
+    
+    
+    
+    // utility-components:
+    PromiseDialog,
+    useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // heymarco components:
@@ -45,6 +56,26 @@ import {
 import {
     CompoundWithBadge,
 }                           from '@/components/CompoundWithBadge'
+import {
+    NameEditor,
+}                           from '@/components/editors/NameEditor'
+import {
+    UniqueUsernameEditor,
+}                           from '@/components/editors/UniqueUsernameEditor'
+import {
+    SimpleEditModelDialog,
+}                           from '@/components/dialogs/SimpleEditModelDialog'
+
+// stores:
+import {
+    // types:
+    CustomerDetail,
+    
+    
+    
+    // hooks:
+    useUpdateCustomer,
+}                           from '@/store/features/api/apiSlice'
 
 // internals:
 import {
@@ -68,14 +99,57 @@ export function ProfilePageContent() {
     
     // sessions:
     const { data: session } = useSession();
-    const { name: customerName, email: customerEmail, image: customerImage } = session?.user ?? {};
-    const customerUsername = session?.credentials?.username;
+    const customer = session?.user;
+    const customerUsername = session?.credentials?.username ?? null;
+    const customerModel = useMemo<CustomerDetail|null>(() => {
+        if (!customer) return null;
+        
+        
+        
+        return {
+            id       : '',
+            name     : customer.name,
+            email    : customer.email,
+            image    : customer.image,
+            username : customerUsername,
+        } satisfies CustomerDetail;
+    }, [customer, customerUsername]);
+    const { name: customerName, email: customerEmail, image: customerImage } = customerModel ?? {};
+    
+    
+    
+    // dialogs:
+    const {
+        showDialog,
+    } = useDialogMessage();
     
     
     
     // handlers:
     const handleEdit = useEvent((edit: 'image'|'name'|'username') => {
-
+        showDialog(
+            <SimpleEditModelDialog<CustomerDetail>
+                // data:
+                model={customerModel!}
+                edit={edit}
+                
+                
+                
+                // stores:
+                updateModelApi={useUpdateCustomer}
+                
+                
+                
+                // components:
+                editorComponent={(() => {
+                    switch (edit) {
+                        case 'name'     : return <NameEditor />;
+                        case 'username' : return <UniqueUsernameEditor />;
+                        default         : throw Error('app error');
+                    } // switch
+                })()}
+            />
+        )
     });
     
     
