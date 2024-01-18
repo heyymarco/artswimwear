@@ -97,8 +97,8 @@ export function ProfilePageContent() {
                             
                             // floatable:
                             floatingPlacement='left-start'
-                            floatingShift={10}
-                            floatingOffset={-30}
+                            floatingShift={8}
+                            floatingOffset={-26}
                         >
                             <EditButton className='edit overlay' onClick={() => handleEdit('image')}>
                                 <></>

@@ -1,6 +1,7 @@
 // cssfn:
 import {
     // writes css in javascript:
+    rule,
     children,
     style,
 }                           from '@cssfn/core'                  // writes css in javascript
@@ -52,8 +53,8 @@ export const usesProfilePageLayout = () => {
             
             
             // gap:
-            gapInline : spacers.default,
-            gapBlock  : spacers.sm,
+            gapInline : spacers.xl,
+            gapBlock  : spacers.default,
             
             
             
@@ -64,6 +65,32 @@ export const usesProfilePageLayout = () => {
                     display: 'block',
                     fontSize : typos.fontSizeSm,
                     fontWeight : typos.fontWeightNormal,
+                }),
+                ...children('.edit', {
+                    marginInlineStart: '0.25em',
+                    opacity: 0.5,
+                    fontSize : typos.fontSizeSm,
+                    textDecoration: 'none',
+                    transition: [
+                        ['transform', '300ms', 'ease-out'],
+                    ],
+                    ...rule(':hover', {
+                        opacity: 'unset',
+                        transform: 'scale(105%)',
+                    }),
+                    // invert the edit overlay, so the edit overlay can be seen on busy background
+                    ...rule('.overlay', {
+                        opacity : 0.8,
+                        
+                        
+                        
+                        // children:
+                        ...children('[role="img"]', {
+                            filter : [[
+                                'invert(1)',
+                            ]],
+                        }),
+                    }),
                 }),
             }),
             ...children('.image', {
