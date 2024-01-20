@@ -252,13 +252,13 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         if (isModified) {
             // conditions:
             let answer : 'save'|'dontSave'|'continue'|undefined = 'save';
-            if (onConfirmUnsaved) {
+            {
                 const {
                     title   = <h1>Unsaved Data</h1>,
                     message = <p>
                         Do you want to save the changes?
                     </p>,
-                } = onConfirmUnsaved({model});
+                } = onConfirmUnsaved?.({model}) ?? {};
                 answer = await showMessage<'save'|'dontSave'|'continue'>({
                     theme         : 'warning',
                     title         : title,
