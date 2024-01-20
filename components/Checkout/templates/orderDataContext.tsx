@@ -59,7 +59,7 @@ export type OrderAndData = Order & {
 export interface OrderDataApi {
     // data:
     order                : OrderAndData
-    customerOrGuest      : Omit<(Customer & Guest), 'id'|'createdAt'|'updatedAt'>|null
+    customerOrGuest      : Omit<(Omit<Customer, 'emailVerified'|'image'> & Guest), 'id'|'createdAt'|'updatedAt'>|null
     paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
     isPaid               : boolean
     shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null
@@ -95,7 +95,7 @@ export const useOrderDataContext = () => {
 export interface OrderDataContextProviderProps {
     // data:
     order                : OrderAndData
-    customerOrGuest      : Omit<(Customer & Guest), 'id'|'createdAt'|'updatedAt'>|null
+    customerOrGuest      : Omit<(Omit<Customer, 'emailVerified'|'image'> & Guest), 'id'|'createdAt'|'updatedAt'>|null
     paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
     isPaid               : boolean
     shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null

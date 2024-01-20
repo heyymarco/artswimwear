@@ -294,7 +294,7 @@ const paypalRevertCurrencyIfRequired  = async <TNumber extends number|null>(from
 
 
 
-type CommitCustomerOrGuest = Omit<(Customer & Guest),
+type CommitCustomerOrGuest = Omit<(Omit<Customer, 'emailVerified'|'image'> & Guest),
     |'id'
     |'createdAt'
     |'updatedAt'
