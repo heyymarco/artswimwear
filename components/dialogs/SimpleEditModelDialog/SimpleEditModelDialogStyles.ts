@@ -7,7 +7,7 @@ import {
 
 
 // styles:
-export const usesSimpleEditDialogLayout = () => {
+export const usesSimpleEditModelDialogLayout = () => {
     return style({
         display: 'grid',
         gridTemplate: [[
@@ -35,5 +35,5 @@ export const usesSimpleEditDialogLayout = () => {
 
 export default () => style({
     // layouts:
-    ...usesSimpleEditDialogLayout(),
+    ...usesSimpleEditModelDialogLayout(),
 });
