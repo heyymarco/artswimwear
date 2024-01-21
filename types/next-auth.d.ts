@@ -9,6 +9,6 @@ import type {
 declare module 'next-auth' {
     interface Session
     {
-        user ?: CustomerDetail
+        user ?: Pick<CustomerDetail, 'id'|'name'|'email'|'image'>
     }
 }

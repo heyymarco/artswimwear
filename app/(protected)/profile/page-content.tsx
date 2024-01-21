@@ -98,7 +98,7 @@ export function ProfilePageContent() {
     
     
     // sessions:
-    const { data: session } = useSession();
+    const { data: session, update: updateSession } = useSession();
     const customer = session?.user;
     const customerUsername = session?.credentials?.username ?? null;
     const customerModel = useMemo<CustomerDetail|null>(() => {
@@ -107,7 +107,7 @@ export function ProfilePageContent() {
         
         
         return {
-            id       : '',
+            id       : customer.id,
             name     : customer.name,
             email    : customer.email,
             image    : customer.image,
@@ -126,8 +126,8 @@ export function ProfilePageContent() {
     
     
     // handlers:
-    const handleEdit = useEvent((edit: 'image'|'name'|'username') => {
-        showDialog(
+    const handleEdit = useEvent(async (edit: 'image'|'name'|'username') => {
+        const result = await showDialog(
             <SimpleEditModelDialog<CustomerDetail>
                 // data:
                 model={customerModel!}
@@ -149,7 +149,9 @@ export function ProfilePageContent() {
                     } // switch
                 })()}
             />
-        )
+        );
+        if (result === undefined) return;
+        updateSession();
     });
     
     
