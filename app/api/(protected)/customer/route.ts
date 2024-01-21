@@ -97,8 +97,6 @@ router
         password,
         image,
         
-        roleId,
-        
         username,
     } = await req.json();
     //#endregion parsing request
@@ -137,8 +135,6 @@ router
             email,
             // password : TODO: hashed password,
             image,
-            
-            roleId,
         };
         const select = {
             id               : true,
@@ -146,8 +142,6 @@ router
             name             : true,
             email            : true,
             image            : true,
-            
-            roleId           : true,
             
             customerCredentials : {
                 select : {
