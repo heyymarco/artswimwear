@@ -14,12 +14,13 @@ import {
 import {
     // hooks:
     useAvailableUsername,
+    useNotProhibitedUsername,
 }                           from '@/store/features/api/apiSlice'
 
 // internals:
 import {
     // react components:
-    UniqueEditorProps,
+    ImplementedUniqueEditorProps,
     UniqueEditor,
 }                           from '@/components/editors/UniqueEditor'
 
@@ -34,25 +35,22 @@ import {
 export interface UniqueUsernameEditorProps<TElement extends Element = HTMLElement>
     extends
         // bases:
-        Omit<UniqueEditorProps<TElement>,
-            // constraints:
-            |'minLength'        // already handled internally
-            |'maxLength'        // already handled internally
-            |'format'           // already handled internally
-            |'formatHint'       // already handled internally
-            |'onCheckAvailable' // already handled internally
-        >
+        ImplementedUniqueEditorProps<TElement>
 {
 }
 const UniqueUsernameEditor = <TElement extends Element = HTMLElement>(props: UniqueUsernameEditorProps<TElement>): JSX.Element|null => {
     // stores:
-    const [availableUsername] = useAvailableUsername();
+    const [availableUsername    ] = useAvailableUsername();
+    const [notProhibitedUsername] = useNotProhibitedUsername();
     
     
     
     // handlers:
-    const handleCheckAvailable = useEvent(async (value: string): Promise<boolean> => {
+    const handleCheckAvailable     = useEvent(async (value: string): Promise<boolean> => {
         return await availableUsername(value).unwrap();
+    });
+    const handleCheckNotProhibited = useEvent(async (value: string): Promise<boolean> => {
+        return await notProhibitedUsername(value).unwrap();
     });
     
     
@@ -82,11 +80,16 @@ const UniqueUsernameEditor = <TElement extends Element = HTMLElement>(props: Uni
             
             
             // constraints:
-            minLength        = {credentialsConfigClient.username.minLength}
-            maxLength        = {credentialsConfigClient.username.maxLength}
-            format           = {credentialsConfigClient.username.format}
-            formatHint       = {credentialsConfigClient.username.formatHint}
-            onCheckAvailable = {handleCheckAvailable}
+            minLength            = {credentialsConfigClient.username.minLength}
+            maxLength            = {credentialsConfigClient.username.maxLength}
+            
+            format               = {credentialsConfigClient.username.format}
+            formatHint           = {credentialsConfigClient.username.formatHint}
+            
+            onCheckAvailable     = {handleCheckAvailable}
+            
+            onCheckNotProhibited = {handleCheckNotProhibited}
+            prohibitedHint       = {credentialsConfigClient.username.prohibitedHint}
         />
     );
 };

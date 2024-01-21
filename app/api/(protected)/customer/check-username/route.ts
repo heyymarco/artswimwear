@@ -26,8 +26,8 @@ import {
 
 // configs:
 import {
-    credentialsConfigClient,
-}                           from '@/credentials.config.client'
+    credentialsConfigServer,
+}                           from '@/credentials.config.server'
 
 
 
@@ -76,7 +76,7 @@ router
             maxLength      : usernameMaxLength,
             format         : usernameFormat,
         },
-    } = credentialsConfigClient;
+    } = credentialsConfigServer;
     
     
     
@@ -135,4 +135,77 @@ router
         return NextResponse.json({ error: error }, { status: 500 }); // handled with error
     } // try
     //#endregion query result
+})
+.put(async (req) => {
+    if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
+        await new Promise<void>((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 2000);
+        });
+    } // if
+    
+    
+    
+    const {
+        username : {
+            minLength      : usernameMinLength,
+            maxLength      : usernameMaxLength,
+            format         : usernameFormat,
+            prohibited     : usernameProhibited,
+        },
+    } = credentialsConfigServer;
+    
+    
+    
+    // validate the request parameter(s):
+    const {
+        username,
+    } = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
+    if ((typeof(username) !== 'string') || !username) {
+        return NextResponse.json({
+            error: 'The required username is not provided.',
+        }, { status: 400 }); // handled with error
+    } // if
+    if ((typeof(usernameMinLength) === 'number') && Number.isFinite(usernameMinLength) && (username.length < usernameMinLength)) {
+        return NextResponse.json({
+            error: `The username is too short. Minimum is ${usernameMinLength} characters.`,
+        }, { status: 400 }); // handled with error
+    } // if
+    if ((typeof(usernameMaxLength) === 'number') && Number.isFinite(usernameMaxLength) && (username.length > usernameMaxLength)) {
+        return NextResponse.json({
+            error: `The username is too long. Maximum is ${usernameMaxLength} characters.`,
+        }, { status: 400 }); // handled with error
+    } // if
+    if (!username.match(usernameFormat)) {
+        return NextResponse.json({
+            error: `The username is not well formatted.`,
+        }, { status: 400 }); // handled with error
+    } // if
+    
+    
+    
+    if (((): boolean => {
+        for (const prohibited of usernameProhibited) {
+            if (prohibited instanceof RegExp) {
+                if (prohibited.test(username)) return true; // prohibited word found
+            }
+            else {
+                if (prohibited === username  ) return true; // prohibited word found
+            } // if
+        } // for
+        
+        return false; // all checks passed, no prohibited word was found
+    })()) {
+        return NextResponse.json({
+            error: `The username "${username}" is prohibited.`,
+        }, { status: 409 }); // handled with error
+    } // if
+    
+    
+    
+    return NextResponse.json({
+        ok       : true,
+        message  : `The username "${username}" can be used.`,
+    }); // handled with success
 });

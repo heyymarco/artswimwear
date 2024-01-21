@@ -233,6 +233,12 @@ export const apiSlice = createApi({
                 method : 'GET',
             }),
         }),
+        notProhibitedUsername   : builder.mutation<boolean, string>({
+            query: (username) => ({
+                url    : `customer/check-username?username=${encodeURIComponent(username)}`, // cloned from @heymarco/next-auth, because this api was disabled in auth.config.shared
+                method : 'PUT',
+            }),
+        }),
     }),
 });
 
@@ -254,6 +260,7 @@ export const {
     
     useUpdateCustomerMutation          : useUpdateCustomer,
     useAvailableUsernameMutation       : useAvailableUsername,
+    useNotProhibitedUsernameMutation   : useNotProhibitedUsername,
 } = apiSlice;
 
 export const usePrefetchProductList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList'  , options);

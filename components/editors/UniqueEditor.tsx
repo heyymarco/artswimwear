@@ -72,22 +72,40 @@ export interface UniqueEditorProps<TElement extends Element = HTMLElement>
         TextEditorProps<TElement>
 {
     // values:
-    currentValue     ?: string
+    currentValue         ?: string
     
     
     
     // constraints:
-    minLength         : number
-    maxLength         : number
-    format            : RegExp
-    formatHint        : React.ReactNode
-    onCheckAvailable  : (value: string) => Promise<boolean>
+    minLength             : number
+    maxLength             : number
+    
+    format                : RegExp
+    formatHint            : React.ReactNode
+    
+    onCheckAvailable      : (value: string) => Promise<boolean>
+    
+    prohibitedHint       ?: React.ReactNode
+    onCheckNotProhibited ?: (value: string) => Promise<boolean>
     
     
     
     // components:
-    editorComponent  ?: React.ReactComponentElement<any, TextEditorProps<TElement>>
+    editorComponent      ?: React.ReactComponentElement<any, TextEditorProps<TElement>>
 }
+export type ImplementedUniqueEditorProps<TElement extends Element = HTMLElement> = Omit<UniqueEditorProps<TElement>,
+    // constraints:
+    |'minLength'
+    |'maxLength'
+    
+    |'format'
+    |'formatHint'
+    
+    |'onCheckAvailable'
+    
+    |'prohibitedHint'
+    |'onCheckNotProhibited'
+>
 const UniqueEditor = <TElement extends Element = HTMLElement>(props: UniqueEditorProps<TElement>): JSX.Element|null => {
     // rest props:
     const {
@@ -99,9 +117,14 @@ const UniqueEditor = <TElement extends Element = HTMLElement>(props: UniqueEdito
         // constraints:
         minLength,
         maxLength,
+        
         format,
         formatHint,
+        
         onCheckAvailable,
+        
+        prohibitedHint,
+        onCheckNotProhibited,
         
         
         
@@ -113,10 +136,11 @@ const UniqueEditor = <TElement extends Element = HTMLElement>(props: UniqueEdito
     
     
     // states:
-    const [value           , setValue           ] = useState<string>(props.value ?? props.defaultValue ?? '');
-    const [isUserInteracted, setIsUserInteracted] = useState<boolean>(false);
-    const [isFocused       , setIsFocused       ] = useState<boolean>(false);
-    const [isValidAvailable, setIsValidAvailable] = useState<ValidityStatus>('unknown');
+    const [value               , setValue               ] = useState<string>(props.value ?? props.defaultValue ?? '');
+    const [isUserInteracted    , setIsUserInteracted    ] = useState<boolean>(false);
+    const [isFocused           , setIsFocused           ] = useState<boolean>(false);
+    const [isValidAvailable    , setIsValidAvailable    ] = useState<ValidityStatus>('unknown');
+    const [isValidNotProhibited, setIsValidNotProhibited] = useState<ValidityStatus>('unknown');
     
     
     
@@ -182,9 +206,10 @@ const UniqueEditor = <TElement extends Element = HTMLElement>(props: UniqueEdito
     
     const isMounted = useMountedFlag();
     
-    // validate availability:
     const isValidLength = (!value && !required) || ((value.length >= minLength) && (value.length <= maxLength));
     const isValidFormat = (!value && !required) || !!value.match(format);
+    
+    // validate availability:
     useEffect(() => {
         // conditions:
         if (
@@ -265,6 +290,90 @@ const UniqueEditor = <TElement extends Element = HTMLElement>(props: UniqueEdito
         };
     }, [value, currentValue, isValidLength, isValidFormat]);
     
+    // validate not_prohibited:
+    useEffect(() => {
+        // conditions:
+        if (prohibitedHint === undefined) return;
+        if (!onCheckNotProhibited       ) return;
+        
+        if (
+            !value
+            ||
+            !isValidLength
+            ||
+            !isValidFormat
+        ) {
+            setIsValidNotProhibited('unknown');
+            return;
+        } // if
+        
+        if (value && currentValue && (value.toLowerCase() === currentValue.toLowerCase())) {
+            setIsValidNotProhibited(true);
+            return;
+        } // if
+        
+        
+        
+        // setups:
+        const abortController = new AbortController();
+        (async () => {
+            try {
+                // delay a brief moment, waiting for the user typing:
+                setIsValidNotProhibited('unknown');
+                await new Promise<void>((resolved) => {
+                    setTimeout(() => {
+                        resolved();
+                    }, 500);
+                });
+                if (abortController.signal.aborted) return; // aborted => abort
+                if (!isMounted.current) return; // unmounted => abort
+                
+                
+                
+                setIsValidNotProhibited('loading');
+                const result = await onCheckNotProhibited(value);
+                if (abortController.signal.aborted) return; // aborted => abort
+                if (!isMounted.current) return; // unmounted => abort
+                if (!result) {
+                    // failed
+                    
+                    
+                    
+                    setIsValidNotProhibited(false);
+                    return;
+                } // if
+                
+                
+                
+                // success
+                
+                
+                
+                // save the success:
+                setIsValidNotProhibited(true);
+            }
+            catch (error) {
+                // failed or error
+                
+                
+                
+                if (abortController.signal.aborted) return; // aborted => abort
+                if (!isMounted.current) return; // unmounted => abort
+                
+                
+                
+                setIsValidNotProhibited(isClientError(error) ? false : 'error');
+            } // try
+        })();
+        
+        
+        
+        // cleanups:
+        return () => {
+            abortController.abort();
+        };
+    }, [prohibitedHint, onCheckNotProhibited, value, currentValue, isValidLength, isValidFormat]);
+    
     
     
     // validations:
@@ -272,11 +381,13 @@ const UniqueEditor = <TElement extends Element = HTMLElement>(props: UniqueEdito
         isValidLength,
         isValidFormat,
         isValidAvailable,
+        isValidNotProhibited,
     };
     const validationMap = {
         Length        : <>Must be {minLength}-{maxLength} characters.</>,
         Format        : formatHint,
         Available     : <>Must have never been registered.</>,
+        NotProhibited : ((prohibitedHint !== undefined) && !!onCheckNotProhibited) ? prohibitedHint : undefined,
     };
     
     
@@ -344,6 +455,8 @@ const UniqueEditor = <TElement extends Element = HTMLElement>(props: UniqueEdito
                             isValidFormat
                             &&
                             (isValidAvailable === true)
+                            &&
+                            (isValidNotProhibited === true)
                         )
                     ),
                     
