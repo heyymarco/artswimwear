@@ -66,6 +66,9 @@ export type {
 import type { CustomerDetail }  from '@/app/api/(protected)/customer/route'
 export type { CustomerDetail }  from '@/app/api/(protected)/customer/route'
 
+import type { ImageId }         from '@/app/api/(protected)/uploads/route'
+export type { ImageId }         from '@/app/api/(protected)/uploads/route'
+
 // other libs:
 import {
     default as axios,
@@ -239,6 +242,40 @@ export const apiSlice = createApi({
                 method : 'PUT',
             }),
         }),
+        
+        
+        
+        postImage               : builder.mutation<ImageId, { image: File, folder?: string, onUploadProgress?: (percentage: number) => void, abortSignal?: AbortSignal }>({
+            query: ({ image, folder, onUploadProgress, abortSignal }) => ({
+                url     : 'uploads',
+                method  : 'POST',
+                headers : { 'content-type': 'multipart/form-data' },
+                body    : ((): FormData => {
+                    const formData = new FormData();
+                    formData.append('image' , image);
+                    if (folder) formData.append('folder', folder);
+                    return formData;
+                })(),
+                onUploadProgress(event) {
+                    onUploadProgress?.(
+                        (event.loaded * 100) / (event.total ?? 100)
+                    );
+                },
+                abortSignal,
+            }),
+        }),
+        deleteImage             : builder.mutation<ImageId[], { imageId: string[] }>({
+            query: ({ imageId: imageIds }) => ({
+                url     : 'uploads',
+                method  : 'PATCH',
+                headers : { 'content-type': 'multipart/form-data' },
+                body    : ((): FormData => {
+                    const formData = new FormData();
+                    for (const imageId of imageIds) formData.append('image' , imageId);
+                    return formData;
+                })(),
+            }),
+        }),
     }),
 });
 
@@ -261,6 +298,9 @@ export const {
     useUpdateCustomerMutation          : useUpdateCustomer,
     useAvailableUsernameMutation       : useAvailableUsername,
     useNotProhibitedUsernameMutation   : useNotProhibitedUsername,
+    
+    usePostImageMutation               : usePostImage,
+    useDeleteImageMutation             : useDeleteImage,
 } = apiSlice;
 
 export const usePrefetchProductList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList'  , options);
