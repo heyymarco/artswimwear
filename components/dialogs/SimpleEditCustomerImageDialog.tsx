@@ -163,7 +163,7 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
             
             
             // components:
-            imageComponent={<ProfileImage />}
+            imageComponent={<ProfileImage nude={true} />}
             
             
             
