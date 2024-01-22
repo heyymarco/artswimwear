@@ -82,7 +82,7 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
     
     // stores:
     const [postImage                ] = usePostImage();
-    const [commitOrrevertDeleteImage] = useDeleteImage();
+    const [commitOrRevertDeleteImage] = useDeleteImage();
     
     
     
@@ -117,7 +117,7 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
         
         try {
             if (unusedImageIds.length) {
-                await commitOrrevertDeleteImage({
+                await commitOrRevertDeleteImage({
                     imageId : unusedImageIds,
                 }).unwrap();
             } // if
