@@ -144,7 +144,7 @@ export function ProfilePageContent() {
                 editorComponent={(() => {
                     switch (edit) {
                         case 'name'     : return <NameEditor />;
-                        case 'username' : return <UniqueUsernameEditor />;
+                        case 'username' : return <UniqueUsernameEditor currentValue={customerModel!['username'] ?? ''} />;
                         default         : throw Error('app error');
                     } // switch
                 })()}
