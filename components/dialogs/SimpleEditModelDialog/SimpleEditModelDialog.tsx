@@ -129,6 +129,12 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     
     
     
+    // stores:
+    isCommiting      ?: boolean
+    isReverting      ?: boolean
+    
+    
+    
     // components:
     editorComponent   : React.ReactComponentElement<any, EditorProps<Element, ValueOfModel<TModel>>>
     
@@ -147,6 +153,10 @@ export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit ex
     |'initialValue'
     |'transformValue'
     |'updateModelApi'
+    
+    // stores:
+    |'isCommiting'      // already taken over
+    |'isReverting'      // already taken over
     
     // handlers:
     |'onAfterUpdate'    // already taken over
@@ -171,6 +181,12 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
             [edit] : (value === '') ? (null as typeof value) : value, // auto convert empty string to null
         } as MutationArgs<TModel>),
         updateModelApi,
+        
+        
+        
+        // stores:
+        isCommiting : isCommitingExternal = false,
+        isReverting = false,
         
         
         
@@ -221,7 +237,9 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
     
     
     // stores:
-    const [updateModel, {isLoading}] = (typeof(updateModelApi) === 'function') ? updateModelApi() : updateModelApi;
+    const [updateModel, {isLoading: isCommitingModel}] = (typeof(updateModelApi) === 'function') ? updateModelApi() : updateModelApi;
+    const isCommiting = isCommitingExternal || isCommitingModel;
+    const isLoading   = isCommiting || isReverting;
     
     
     
@@ -426,8 +444,8 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                             },
                         )}
                     </ValidationProvider>
-                    <ButtonIcon className='btnSave' icon={isLoading ? 'busy' : 'save'} theme='success' size='sm' onClick={handleSave}>Save</ButtonIcon>
-                    <ButtonIcon className='btnCancel' icon='cancel' theme='danger' size='sm' onClick={handleCloseDialog}>Cancel</ButtonIcon>
+                    <ButtonIcon className='btnSave' icon={isCommiting ? 'busy' : 'save'} theme='success' size='sm' onClick={handleSave}>Save</ButtonIcon>
+                    <ButtonIcon className='btnCancel' icon={isReverting ? 'busy' : 'cancel'} theme='danger' size='sm' onClick={handleCloseDialog}>{isReverting ? 'Reverting' : 'Cancel'}</ButtonIcon>
                 </CardBody>
             </ModalCard>
         </AccessibilityProvider>
