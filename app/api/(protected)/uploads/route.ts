@@ -37,11 +37,6 @@ export type ImageId = string & {}
 
 
 
-// @ts-ignore
-process.noDeprecation = true;
-
-
-
 // // file processors:
 // const upload = multer({
 //     storage: multer.diskStorage({
@@ -86,7 +81,6 @@ router
     return await next();
 })
 .post(async (req) => {
-    console.log('post upload');
     const data = await req.formData();
     const file = data.get('image');
     // const file : Express.Multer.File = (req as any).file;
@@ -95,33 +89,19 @@ router
             error: 'No file uploaded.',
         }, { status: 400 }); // handled with error
     } // if
-    console.log('post upload with file');
-    
-    
-    
-    const folder = data.get('folder');
-    if ((typeof(folder) !== 'string') || !folder) {
-        return NextResponse.json({
-            error: 'Invalid parameter(s).',
-        }, { status: 400 }); // handled with error
-    } // if
-    console.log('post upload with folder');
     
     
     
     try {
-        console.log('uploading...');
         const fileId = await uploadMedia(file, {
-            folder,
+            folder : 'customerProfiles',
         });
-        console.log('uploaded');
         
         
         
         return NextResponse.json(fileId); // handled with success
     }
     catch (error: any) {
-        console.log('upload failed', error);
         return NextResponse.json({ error: error?.message ?? `${error}` }, { status: 500 }); // handled with error
     } // try
 })

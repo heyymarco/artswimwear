@@ -1,18 +1,19 @@
-import cloudinary from 'cloudinary'
-import { createReadStream } from 'streamifier'
+import {
+    // apis:
+    put as uploadBlob,
+    del as deleteBlob,
+}                           from '@vercel/blob'
+import {
+    // types:
+    HandleUploadBody,
+    
+    
+    
+    // apis:
+    handleUpload as handleUploadBlob,
+}                           from '@vercel/blob/client'
 
 
-
-// @ts-ignore
-process.noDeprecation = true;
-
-
-
-cloudinary.v2.config({ 
-    cloud_name : process.env.NEXT_PUBLIC_CLOUDINARY_ENV, 
-    api_key    : process.env.CLOUDINARY_ID, 
-    api_secret : process.env.CLOUDINARY_SECRET
-});
 
 interface UploadMediaOptions {
     folder?: string
@@ -25,44 +26,19 @@ export const uploadMedia = async (file: File, options?: UploadMediaOptions): Pro
     
     
     
-    return await new Promise<string>(async (resolve, reject) => {
-        try {
-            console.log('creating stream');
-            const uploadStream = cloudinary.v2.uploader.upload_stream(
-                {
-                    filename_override : file.name,
-                    display_name      : file.name, // a user-friendly name for (internal) asset management.
-                    use_filename      : true,      // use a filename + random_string to form the public_id
-                    public_id_prefix  : folder,    // for url-SEO
-                    ...(!folder ? undefined : {
-                        asset_folder  : folder || undefined,
-                        folder        : folder
-                    }),
-                    resource_type     : 'auto',
-                    tags              : folder ? [folder] : undefined,
-                },
-                (err, res) => {
-                    if (err) {
-                        console.log('cloudinary error', err);
-                        reject(err);
-                    }
-                    else {
-                        console.log('cloudinary success', res);
-                        resolve(res?.public_id ?? '')
-                    } // if
-                }
-            );
-            console.log('created stream');
-            createReadStream(Buffer.from(await file.arrayBuffer())).pipe(uploadStream);
-            console.log('piped');
-        }
-        catch (error: any) {
-            console.log('error: ', error);
-            reject(error);
-        } // try
+    const blobResult = await uploadBlob((folder ? `${folder}/${file.name}` : file.name), await file.arrayBuffer(), {
+        token              : process.env.BLOB_READ_WRITE_TOKEN,
+        access             : 'public',
+        contentType        : 'image/*',
+        addRandomSuffix    : true,
+        cacheControlMaxAge : undefined,
+        multipart          : false,
     });
+    return blobResult.url;
 };
 
 export const deleteMedia = async (imageId: string): Promise<void> => {
-    await cloudinary.v2.uploader.destroy(imageId);
+    await deleteBlob(imageId, {
+        token : process.env.BLOB_READ_WRITE_TOKEN,
+    });
 };
