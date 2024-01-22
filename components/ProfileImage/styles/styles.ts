@@ -80,7 +80,7 @@ export const usesProfileImageLayout = () => {
                 // backgrounds:
                 backgroundRepeat        : 'no-repeat',
                 backgroundPosition      : 'center',
-                backgroundSize          : 'contain',
+                backgroundSize          : 'cover',
                 
                 
                 

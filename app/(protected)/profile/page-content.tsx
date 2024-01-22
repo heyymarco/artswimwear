@@ -202,6 +202,7 @@ export function ProfilePageContent() {
                             
                             
                             // variants:
+                            theme='primary'
                             // profileImageStyle='circle'
                             
                             
