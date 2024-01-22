@@ -16,6 +16,9 @@ import {
 import {
     // react helper hooks:
     useEvent,
+    EventHandler,
+    useMergeEvents,
+    useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // internal components:
@@ -32,6 +35,7 @@ import {
     // types:
     ValueOfModel,
     UpdateModelApi,
+    SimpleEditModelDialogExpandedChangeEvent,
     
     
     
@@ -83,9 +87,9 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
     
     
     // handlers:
-    // const handleSideUpdate = useEvent(async (): Promise<void> => {
-    //     await handleSideSave(/*commitImages = */true);
-    // });
+    const handleSideUpdate = useEvent(async (): Promise<void> => {
+        await handleSideSave(/*commitImages = */true);
+    });
     const handleSideDelete = useEvent(async (): Promise<void> => {
         await handleSideSave(/*commitImages = */false);
     });
@@ -127,6 +131,20 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
         
         // substract the drafts:
         for (const unusedImageId of unusedImageIds) draftDeletedImages.delete(unusedImageId);
+    });
+    
+    const handleExpandedChange = useEvent<EventHandler<SimpleEditModelDialogExpandedChangeEvent<CustomerDetail>>>(async (event) => {
+        if (event.data !== undefined) { // save:
+            await handleSideUpdate();
+        }
+        else { // don't save:
+            await handleSideDelete();
+        } // if
+        
+        
+        
+        // then:
+        props.onExpandedChange?.(event);
     });
     
     
@@ -221,6 +239,11 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
             
             // components:
             editorComponent={editorComponent}
+            
+            
+            
+            // handlers:
+            onExpandedChange={handleExpandedChange as unknown as EventHandler<SimpleEditModelDialogExpandedChangeEvent<CustomerImageModel>>}
         />
     );
 };
