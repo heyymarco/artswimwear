@@ -308,7 +308,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         });
     });
     
-    const handleExpandedChange : EventHandler<SimpleEditModelDialogExpandedChangeEvent<TModel>> = useEvent((event) => {
+    const handleExpandedChange = useEvent<EventHandler<SimpleEditModelDialogExpandedChangeEvent<TModel>>>((event) => {
         // conditions:
         if (event.actionType === 'shortcut') return; // prevents closing modal by accidentally pressing [esc]
         
