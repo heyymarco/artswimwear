@@ -115,7 +115,7 @@ router
         return NextResponse.json({
             error: 'Invalid image file.\n\nThe supported images are jpg, png and webp.',
         }, { status: 400 }); // handled with error
-    }
+    } // try
     
     
     
