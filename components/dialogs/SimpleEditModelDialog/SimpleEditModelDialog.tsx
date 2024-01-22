@@ -105,6 +105,11 @@ export type UpdateModelApi<TModel extends Model> = readonly [
     }
 ]
 
+export type AfterUpdateHandler                          = () => Promise<void>
+
+export type UpdateSideHandler                           = () => Promise<void>
+export type DeleteSideHandler                           = () => Promise<void>
+
 export type ConfirmUnsavedHandler<TModel extends Model> = (args: { model: TModel|null }) => { title?: React.ReactNode, message: React.ReactNode }
 
 export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>>
@@ -130,6 +135,11 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     
     
     // handlers:
+    onAfterUpdate    ?: AfterUpdateHandler
+    
+    onSideUpdate     ?: UpdateSideHandler
+    onSideDelete     ?: DeleteSideHandler
+    
     onConfirmUnsaved ?: ConfirmUnsavedHandler<TModel>
 }
 export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>> = Omit<SimpleEditModelDialogProps<TModel, TEdit>,
@@ -137,6 +147,11 @@ export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit ex
     |'initialValue'
     |'transformValue'
     |'updateModelApi'
+    
+    // handlers:
+    |'onAfterUpdate'    // already taken over
+    |'onSideUpdate'     // already taken over
+    |'onSideDelete'     // already taken over
 >
 const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialogProps<TModel>): JSX.Element|null => {
     // styles:
@@ -165,6 +180,11 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         
         
         // handlers:
+        onAfterUpdate,
+        
+        onSideUpdate,
+        onSideDelete,
+        
         onConfirmUnsaved,
         
         onExpandedChange,
@@ -241,11 +261,29 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
             const transformed = transformValue(editorValue, edit, model);
             const updatingModelTask = updateModel(transformed).unwrap();
             
-            await handleFinalizing((await updatingModelTask)[edit], [updatingModelTask]); // result: created|mutated
+            const updatingModelAndOthersTask = (
+                updatingModelTask
+                ? (
+                    onAfterUpdate
+                    ? updatingModelTask.then(onAfterUpdate)
+                    : updatingModelTask
+                )
+                : Promise.resolve(onAfterUpdate)
+            );
+            
+            await handleFinalizing((await updatingModelTask)[edit], /*commitSides = */true, [updatingModelAndOthersTask]); // result: created|mutated
         }
         catch (fetchError: any) {
             showMessageFetchError(fetchError);
         } // try
+    });
+    const handleSideSave       = useEvent(async (commitSides : boolean) => {
+        if (commitSides) {
+            await onSideUpdate?.();
+        }
+        else {
+            await onSideDelete?.();
+        } // if
     });
     
     const handleCloseDialog    = useEvent(async () => {
@@ -285,7 +323,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
                     break;
                 case 'dontSave':
                     // then close the editor (without saving):
-                    await handleFinalizing(undefined); // result: discard changes
+                    await handleFinalizing(undefined, /*commitSides = */false); // result: discard changes
                     break;
                 default:
                     // do nothing (continue editing)
@@ -293,11 +331,14 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
             } // switch
         }
         else {
-            await handleFinalizing(undefined); // result: no changes
+            await handleFinalizing(undefined, /*commitSides = */false); // result: no changes
         } // if
     });
-    const handleFinalizing     = useEvent(async (result: SimpleEditModelDialogResult<TModel>|Promise<SimpleEditModelDialogResult<TModel>>, processingTasks : Promise<any>[] = []) => {
-        await Promise.all(processingTasks);
+    const handleFinalizing     = useEvent(async (result: SimpleEditModelDialogResult<TModel>|Promise<SimpleEditModelDialogResult<TModel>>, commitSides : boolean, processingTasks : Promise<any>[] = []) => {
+        await Promise.all([
+            handleSideSave(commitSides),
+            ...processingTasks,
+        ]);
         
         
         
