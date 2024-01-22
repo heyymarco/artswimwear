@@ -9,11 +9,6 @@ import {
     getServerSession,
 }                           from 'next-auth'
 
-// heymarco:
-import type {
-    Session,
-}                           from '@heymarco/next-auth/server'
-
 // next-connect:
 import {
     createEdgeRouter,
@@ -24,6 +19,9 @@ import {
     uploadMedia,
     deleteMedia,
 }                           from '@/libs/mediaStorage.server'
+import {
+    imageSize,
+}                           from 'image-size'
 
 // internal auth:
 import {
@@ -89,6 +87,35 @@ router
             error: 'No file uploaded.',
         }, { status: 400 }); // handled with error
     } // if
+    if (file.size > (0.5 * 1024 * 1024)) { // limits to max 0.5MB
+        return NextResponse.json({
+            error: 'The file is too big. The limit is 0.5MB.',
+        }, { status: 400 }); // handled with error
+    } // if
+    try {
+        const {
+            width = 0,
+            height = 0,
+            type = '',
+        } = imageSize(new Uint8Array(await file.arrayBuffer()));
+        
+        if ((width < 20) || (width > 1200) || (height < 20) || (height > 1200)) {
+            return NextResponse.json({
+                error: 'The image dimension (width & height) must between 20 to 1200 pixels.',
+            }, { status: 400 }); // handled with error
+        } // if
+        
+        if (!['jpg', 'jpeg', 'png', 'webp'].includes(type.toLowerCase())) {
+            return NextResponse.json({
+                error: 'Invalid image file.\n\nThe supported images are jpg, png and webp.',
+            }, { status: 400 }); // handled with error
+        } // if
+    }
+    catch {
+        return NextResponse.json({
+            error: 'Invalid image file.\n\nThe supported images are jpg, png and webp.',
+        }, { status: 400 }); // handled with error
+    }
     
     
     
