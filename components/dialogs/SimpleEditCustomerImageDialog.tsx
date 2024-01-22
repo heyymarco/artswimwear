@@ -81,8 +81,9 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
     
     
     // stores:
-    const [postImage                ] = usePostImage();
-    const [commitOrRevertDeleteImage] = useDeleteImage();
+    const [postImage] = usePostImage();
+    const [commitDeleteImage, {isLoading : isLoadingCommitDeleteImage}] = useDeleteImage();
+    const [revertDeleteImage, {isLoading : isLoadingRevertDeleteImage}] = useDeleteImage();
     
     
     
@@ -117,7 +118,7 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
         
         try {
             if (unusedImageIds.length) {
-                await commitOrRevertDeleteImage({
+                await (commitImages ? commitDeleteImage : revertDeleteImage)({
                     imageId : unusedImageIds,
                 }).unwrap();
             } // if
@@ -131,20 +132,6 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
         
         // substract the drafts:
         for (const unusedImageId of unusedImageIds) draftDeletedImages.delete(unusedImageId);
-    });
-    
-    const handleExpandedChange = useEvent<EventHandler<SimpleEditModelDialogExpandedChangeEvent<CustomerDetail>>>(async (event) => {
-        if (event.data !== undefined) { // save:
-            await handleSideUpdate();
-        }
-        else { // don't save:
-            await handleSideDelete();
-        } // if
-        
-        
-        
-        // then:
-        props.onExpandedChange?.(event);
     });
     
     
@@ -234,6 +221,8 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
             
             // stores:
             updateModelApi={updateModelApi as (UpdateModelApi<CustomerImageModel> | (() => UpdateModelApi<CustomerImageModel>))}
+            isCommiting={isLoadingCommitDeleteImage}
+            isReverting={isLoadingRevertDeleteImage}
             
             
             
@@ -243,7 +232,8 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
             
             
             // handlers:
-            onExpandedChange={handleExpandedChange as unknown as EventHandler<SimpleEditModelDialogExpandedChangeEvent<CustomerImageModel>>}
+            onSideUpdate={handleSideUpdate}
+            onSideDelete={handleSideDelete}
         />
     );
 };
