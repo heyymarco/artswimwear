@@ -456,7 +456,7 @@ const UniqueEditor = <TElement extends Element = HTMLElement>(props: UniqueEdito
                             &&
                             (isValidAvailable === true)
                             &&
-                            (isValidNotProhibited === true)
+                            (((prohibitedHint === undefined) || !onCheckNotProhibited) || (isValidNotProhibited === true))
                         )
                     ),
                     
