@@ -36,7 +36,6 @@ import {
     
     
     // utility-components:
-    PromiseDialog,
     useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
@@ -65,6 +64,9 @@ import {
 import {
     SimpleEditModelDialog,
 }                           from '@/components/dialogs/SimpleEditModelDialog'
+import {
+    SimpleEditCustomerImageDialog,
+}                           from '@/components/dialogs/SimpleEditCustomerImageDialog'
 
 // stores:
 import {
@@ -128,7 +130,18 @@ export function ProfilePageContent() {
     // handlers:
     const handleEdit = useEvent(async (edit: 'image'|'name'|'username') => {
         const result = await showDialog(
-            <SimpleEditModelDialog<CustomerDetail>
+            (edit === 'image')
+            ? <SimpleEditCustomerImageDialog
+                // data:
+                model={customerModel!}
+                edit={edit}
+                
+                
+                
+                // stores:
+                updateModelApi={useUpdateCustomer}
+            />
+            : <SimpleEditModelDialog<CustomerDetail>
                 // data:
                 model={customerModel!}
                 edit={edit}

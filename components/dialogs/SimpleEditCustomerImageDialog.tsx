@@ -1,35 +1,38 @@
 'use client'
 
-// reusable-ui core:
-import {
-    // react helper hooks:
-    useEvent,
-}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
-
 // internal components:
+import type {
+    EditorProps,
+}                           from '@/components/editors/Editor'
+import {
+    UploadImage,
+}                           from '@/components/editors/UploadImage'
+import {
+    ProfileImage,
+}                           from '@/components/ProfileImage'
 import {
     // types:
-    InitialValueHandler,
-    TransformValueHandler,
+    ValueOfModel,
     UpdateModelApi,
     
     
     
     // react components:
+    SimpleEditModelDialogProps,
     ImplementedSimpleEditModelDialogProps,
     SimpleEditModelDialog,
 }                           from '@/components/dialogs/SimpleEditModelDialog'
 
 // stores:
-import {
+import type {
     // types:
     CustomerDetail,
-    
-    
-    
-    // hooks:
-    useUpdateCustomer,
 }                           from '@/store/features/api/apiSlice'
+
+// internals:
+import {
+    resolveMediaUrl,
+}                           from '@/libs/mediaStorage.client'
 
 
 
@@ -37,25 +40,25 @@ import {
 export interface SimpleEditCustomerImageDialogProps
     extends
         // bases:
-        ImplementedSimpleEditModelDialogProps<CustomerDetail, 'image'>
+        Omit<ImplementedSimpleEditModelDialogProps<CustomerDetail, 'image'>, 'editorComponent'>,
+        Partial<Pick<SimpleEditModelDialogProps<CustomerDetail, 'image'>, 'editorComponent'|'updateModelApi'>>
 {
 }
 export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDialogProps) => {
-    // handlers:
+    // other props:
     interface CustomerImageModel {
         id    : CustomerDetail['id']
         image : string|null
     }
-    const handleInitialValue   = useEvent<InitialValueHandler<CustomerImageModel>>((edit, model) => {
-        return model[edit];
-    });
-    const handleTransformValue = useEvent<TransformValueHandler<CustomerImageModel>>((value, edit, model) => {
-        return {
-            id     : model.id,
-            
-            [edit] : value,
-        };
-    });
+    const {
+        // stores:
+        updateModelApi,
+        
+        
+        
+        // components:
+        editorComponent = (<UploadImage nude={true} imageComponent={<ProfileImage />} onResolveImageUrl={resolveMediaUrl<never>} /> as React.ReactComponentElement<any, EditorProps<Element, ValueOfModel<CustomerImageModel>>>),
+    } = props;
     
     
     
@@ -67,14 +70,13 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
             
             
             
-            // data:
-            initialValue={handleInitialValue}
-            transformValue={handleTransformValue}
-            
-            
-            
             // stores:
-            updateModelApi={useUpdateCustomer as () => UpdateModelApi<CustomerImageModel>}
+            updateModelApi={updateModelApi as (UpdateModelApi<CustomerImageModel> | (() => UpdateModelApi<CustomerImageModel>))}
+            
+            
+            
+            // components:
+            editorComponent={editorComponent}
         />
     );
 };
