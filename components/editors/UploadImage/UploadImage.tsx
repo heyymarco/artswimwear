@@ -67,7 +67,7 @@ import {
     
     
     // utility-components:
-    paragraphify,
+    getFetchErrorMessage,
 }                           from '@reusable-ui/components'
 
 // other libs:
@@ -573,7 +573,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
                 // conditions:
                 if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             }
-            catch (error: any) {
+            catch (fetchError: any) {
                 // conditions:
                 if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
                 const uploadingImageData = uploadingImageRef.current;
@@ -581,12 +581,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
                 
                 
                 
-                const errorJsx : React.ReactNode = (
-                    ((typeof(error?.message) === 'string') || (typeof(error) === 'string'))
-                    ? paragraphify(error?.message ?? error)
-                    : (error ?? <p>Failed to upload image.</p>)
-                );
-                uploadingImageData.uploadError = errorJsx;
+                uploadingImageData.uploadError = getFetchErrorMessage(fetchError);
                 setUploadingImage({...uploadingImageData}); // force to re-render
                 return; // failed => no further actions
             } // try
