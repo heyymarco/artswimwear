@@ -80,6 +80,7 @@ router
 })
 .post(async (req) => {
     const data = await req.formData();
+    
     const file = data.get('image');
     // const file : Express.Multer.File = (req as any).file;
     if (!file || !(file instanceof Object)) {
@@ -133,9 +134,11 @@ router
     } // try
 })
 .patch(async (req) => {
-    const data = await req.formData();
-    const imageIds : string[] = data.getAll('image') as any;
-    if (!imageIds.length || !imageIds.every((imageId) => (typeof(imageId) === 'string'))) {
+    const {
+        image: imageIds,
+    } = await req.json();
+    
+    if (!Array.isArray(imageIds) || !imageIds.length || !imageIds.every((imageId) => (typeof(imageId) === 'string'))) {
         return NextResponse.json({
             error: 'Invalid parameter(s).',
         }, { status: 400 }); // handled with error

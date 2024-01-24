@@ -265,15 +265,12 @@ export const apiSlice = createApi({
             }),
         }),
         deleteImage             : builder.mutation<ImageId[], { imageId: string[] }>({
-            query: ({ imageId: imageIds }) => ({
+            query: ({ imageId }) => ({
                 url     : 'uploads',
                 method  : 'PATCH',
-                headers : { 'content-type': 'multipart/form-data' },
-                body    : ((): FormData => {
-                    const formData = new FormData();
-                    for (const imageId of imageIds) formData.append('image' , imageId);
-                    return formData;
-                })(),
+                body    : {
+                    image : imageId,
+                },
             }),
         }),
     }),
