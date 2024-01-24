@@ -39,7 +39,6 @@
     "color": "^4.2.3",
     "eslint": "^8.35.0",
     "eslint-config-next": "^13.2.3",
-    "image-size": "^1.1.1",
     "lexical": "^0.12.4",
     "mime-matcher": "^1.0.5",
     "nanoid": "^4.0.2",
@@ -52,6 +51,7 @@
     "react-redux": "^8.0.5",
     "redux-persist": "^6.0.0",
     "sass": "^1.58.3",
+    "sharp": "^0.33.2",
     "typescript": "^5.0.3"
   },
   "devDependencies": {
