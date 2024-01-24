@@ -121,7 +121,7 @@ router
     
     
     try {
-        const fileId = await uploadMedia(file, {
+        const fileId = await uploadMedia(file.name, file.stream(), {
             folder : 'customerProfiles',
         });
         
