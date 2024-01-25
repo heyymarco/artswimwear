@@ -191,6 +191,7 @@ router
         return NextResponse.json(fileId); // handled with success
     }
     catch (error: any) {
+        console.log('ERROR: ', error);
         return NextResponse.json({ error: error?.message ?? `${error}` }, { status: 500 }); // handled with error
     } // try
 })
