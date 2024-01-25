@@ -19,9 +19,9 @@ import {
     uploadMedia,
     deleteMedia,
 }                           from '@/libs/mediaStorage.server'
-import {
-    default as sharp,
-}                           from 'sharp'
+// import {
+//     default as sharp,
+// }                           from 'sharp'
 
 // internal auth:
 import {
@@ -94,6 +94,7 @@ router
         }, { status: 400 }); // handled with error
     } // if
     try {
+        const sharp = (await import('sharp')).default;
         const {
             width  = 0,
             height = 0,
@@ -106,13 +107,14 @@ router
             }, { status: 400 }); // handled with error
         } // if
         
-        if (!(['jpg', 'jpeg', 'jp2', 'png', 'webp', 'svg'] as (keyof sharp.FormatEnum)[]).includes(format)) {
+        if (!(['jpg', 'jpeg', 'jp2', 'png', 'webp', 'svg'] /* as (keyof sharp.FormatEnum)[] */).includes(format)) {
             return NextResponse.json({
                 error: 'Invalid image file.\n\nThe supported images are jpg, png, webp, and svg.',
             }, { status: 400 }); // handled with error
         } // if
     }
-    catch {
+    catch (error: any) {
+        console.log('ERROR: ', error);
         return NextResponse.json({
             error: 'Invalid image file.\n\nThe supported images are jpg, png and webp.',
         }, { status: 400 }); // handled with error
