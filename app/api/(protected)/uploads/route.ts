@@ -19,9 +19,9 @@ import {
     uploadMedia,
     deleteMedia,
 }                           from '@/libs/mediaStorage.server'
-import {
-    default as sharp,
-}                           from 'sharp'
+// import {
+//     default as sharp,
+// }                           from 'sharp'
 
 // internal auth:
 import {
@@ -93,30 +93,30 @@ router
             error: 'The file is too big. The limit is 4MB.',
         }, { status: 400 }); // handled with error
     } // if
-    try {
-        const {
-            width  = 0,
-            height = 0,
-            format = 'raw',
-        } = await sharp(await file.arrayBuffer()).metadata();
-        
-        if ((width < 48) || (width > 3840) || (height < 48) || (height > 3840)) {
-            return NextResponse.json({
-                error: 'The image dimension (width & height) must between 48 to 3840 pixels.',
-            }, { status: 400 }); // handled with error
-        } // if
-        
-        if (!(['jpg', 'jpeg', 'jp2', 'png', 'webp', 'svg'] as (keyof sharp.FormatEnum)[]).includes(format)) {
-            return NextResponse.json({
-                error: 'Invalid image file.\n\nThe supported images are jpg, png, webp, and svg.',
-            }, { status: 400 }); // handled with error
-        } // if
-    }
-    catch {
-        return NextResponse.json({
-            error: 'Invalid image file.\n\nThe supported images are jpg, png and webp.',
-        }, { status: 400 }); // handled with error
-    } // try
+    // // try {
+    // //     const {
+    // //         width  = 0,
+    // //         height = 0,
+    // //         format = 'raw',
+    // //     } = await sharp(await file.arrayBuffer()).metadata();
+    // //     
+    // //     if ((width < 48) || (width > 3840) || (height < 48) || (height > 3840)) {
+    // //         return NextResponse.json({
+    // //             error: 'The image dimension (width & height) must between 48 to 3840 pixels.',
+    // //         }, { status: 400 }); // handled with error
+    // //     } // if
+    // //     
+    // //     if (!(['jpg', 'jpeg', 'jp2', 'png', 'webp', 'svg'] as (keyof sharp.FormatEnum)[]).includes(format)) {
+    // //         return NextResponse.json({
+    // //             error: 'Invalid image file.\n\nThe supported images are jpg, png, webp, and svg.',
+    // //         }, { status: 400 }); // handled with error
+    // //     } // if
+    // // }
+    // // catch {
+    // //     return NextResponse.json({
+    // //         error: 'Invalid image file.\n\nThe supported images are jpg, png and webp.',
+    // //     }, { status: 400 }); // handled with error
+    // // } // try
     
     
     
@@ -151,32 +151,31 @@ router
         
         
         
-        // let handleData: ((chunk: any) => void)|undefined = undefined;
-        let signalTransformDone : (() => void)|undefined = undefined;
-        const webImageTransformer = new TransformStream({
-            start(controller) {
-                nodeImageTransformer.on('data', (chunk) => {
-                    controller.enqueue(chunk); // forward a chunk of processed data to the next Stream
-                    
-                    if (signalTransformDone) {
-                        signalTransformDone();
-                    } // if
-                });
-                nodeImageTransformer.on('end', () => {
-                    signalTransformDone?.(); // signal that the last data has been processed
-                });
-            },
-            transform(chunk, controller) {
-                nodeImageTransformer.write(chunk); // write a chunk of data to the Writable
-            },
-            async flush(controller) {
-                const promiseTransformDone = new Promise<void>((resolved) => {
-                    signalTransformDone = resolved;
-                });
-                nodeImageTransformer.end(); // signal that no more data will be written to the Writable
-                await promiseTransformDone; // wait for the last data has been processed
-            },
-        });
+        // // let signalTransformDone : (() => void)|undefined = undefined;
+        // // const webImageTransformer = new TransformStream({
+        // //     start(controller) {
+        // //         nodeImageTransformer.on('data', (chunk) => {
+        // //             controller.enqueue(chunk); // forward a chunk of processed data to the next Stream
+        // //             
+        // //             if (signalTransformDone) {
+        // //                 signalTransformDone();
+        // //             } // if
+        // //         });
+        // //         nodeImageTransformer.on('end', () => {
+        // //             signalTransformDone?.(); // signal that the last data has been processed
+        // //         });
+        // //     },
+        // //     transform(chunk, controller) {
+        // //         nodeImageTransformer.write(chunk); // write a chunk of data to the Writable
+        // //     },
+        // //     async flush(controller) {
+        // //         const promiseTransformDone = new Promise<void>((resolved) => {
+        // //             signalTransformDone = resolved;
+        // //         });
+        // //         nodeImageTransformer.end(); // signal that no more data will be written to the Writable
+        // //         await promiseTransformDone; // wait for the last data has been processed
+        // //     },
+        // // });
         
         
         
