@@ -122,31 +122,31 @@ router
     
     try {
         const nodeImageTransformer = sharp({
-            // failOn           : 'none',
-            // limitInputPixels : 3840*3840,
-            // density          : 72, // dpi
+            failOn           : 'none',
+            limitInputPixels : 3840*3840,
+            density          : 72, // dpi
         })
-        // .resize({
-        //     width              : 160,
-        //     height             : 160,
-        //     fit                : 'cover',
-        //     background : {
-        //         r              : 255,
-        //         g              : 255,
-        //         b              : 255,
-        //         alpha          : 1,
-        //     },
-        //     withoutEnlargement : true,       // do NOT scale up
-        //     withoutReduction   : false,      // do scale down
-        //     kernel             : 'lanczos3', // interpolation kernels
-        // })
-        // .webp({
-        //     quality            : 90,
-        //     alphaQuality       : 90,
-        //     lossless           : false,
-        //     nearLossless       : false,
-        //     effort             : 4,
-        // })
+        .resize({
+            width              : 160,
+            height             : 160,
+            fit                : 'cover',
+            background : {
+                r              : 255,
+                g              : 255,
+                b              : 255,
+                alpha          : 1,
+            },
+            withoutEnlargement : true,       // do NOT scale up
+            withoutReduction   : false,      // do scale down
+            kernel             : 'lanczos3', // interpolation kernels
+        })
+        .webp({
+            quality            : 90,
+            alphaQuality       : 90,
+            lossless           : false,
+            nearLossless       : false,
+            effort             : 4,
+        })
         ;
         
         
@@ -182,7 +182,7 @@ router
         
         const fileName = file.name;
         const fileNameWithoutExt = fileName.match(/^.*(?=\.\w+$)/gi)?.[0] || fileName.split('.')?.[0] || 'image';
-        const fileId = await uploadMedia(`${fileNameWithoutExt}.webp`, file.stream().pipeThrough(webImageTransformer), {
+        const fileId = await uploadMedia(`${fileNameWithoutExt}.webp`, file.stream()/* .pipeThrough(webImageTransformer) */, {
             folder : 'customerProfiles',
         });
         
