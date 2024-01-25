@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "postinstall": "prisma generate && npm install --force --os=linux --cpu=x64 sharp",
+    "install-sharp-linux": "npm install --os=linux --cpu=x64 sharp",
+    "postinstall": "prisma generate",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
@@ -51,6 +52,7 @@
     "react-redux": "^8.0.5",
     "redux-persist": "^6.0.0",
     "sass": "^1.58.3",
+    "sharp": "^0.33.2",
     "typescript": "^5.0.3"
   },
   "devDependencies": {
