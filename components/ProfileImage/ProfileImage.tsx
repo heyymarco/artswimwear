@@ -167,6 +167,10 @@ const ProfileImage = (props: ProfileImageProps): JSX.Element|null => {
         if (!src) { // no image => no need to verify
             setHasValidImage(false); // reset
             return;
+        }
+        else if (!src.startsWith('http://') && !src.startsWith('https://')) { // supports for `data:` and `blob:` => assumes always valid
+            setHasValidImage(true); // set
+            return;
         } // if
         
         
@@ -184,7 +188,7 @@ const ProfileImage = (props: ProfileImageProps): JSX.Element|null => {
                     if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
                     if (response.ok) { // verified
                         validProfileImageCache.set(src, true);
-                        setHasValidImage(true);
+                        setHasValidImage(true); // set
                     } // if
                 }
                 catch {
