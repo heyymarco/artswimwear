@@ -140,13 +140,14 @@ router
             withoutReduction   : false,      // do scale down
             kernel             : 'lanczos3', // interpolation kernels
         })
-        .webp({
-            quality            : 90,
-            alphaQuality       : 90,
-            lossless           : false,
-            nearLossless       : false,
-            effort             : 4,
-        });
+        // .webp({
+        //     quality            : 90,
+        //     alphaQuality       : 90,
+        //     lossless           : false,
+        //     nearLossless       : false,
+        //     effort             : 4,
+        // })
+        ;
         
         
         
