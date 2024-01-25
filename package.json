@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "install-sharp-linux": "npm install --os=linux --cpu=x64 --include=optional sharp && echo '==>> SHARP LINUX installed <<=='",
+    "install-sharp-linux": "npm install sharp && echo '==>> SHARP LINUX installed <<=='",
     "postinstall": "prisma generate && npm run install-sharp-linux",
     "build": "prisma generate && next build",
     "start": "next start",
