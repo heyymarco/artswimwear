@@ -125,11 +125,7 @@ router
             lossless           : false,
             nearLossless       : false,
             effort             : 4,
-        })
-        .on('info', (info) => {
-            console.log('rendered image: ', info);
-        })
-        ;
+        }) ;
         
         
         
@@ -151,13 +147,11 @@ router
                 nodeImageTransformer.write(chunk); // write a chunk of data to the Writable
             },
             async flush(controller) {
-                console.log('event: flushing...');
                 const promiseTransformDone = new Promise<void>((resolved) => {
                     signalTransformDone = resolved;
                 });
                 nodeImageTransformer.end(); // signal that no more data will be written to the Writable
                 await promiseTransformDone; // wait for the last data has been processed
-                console.log('event: flushed');
             },
         });
         
@@ -175,7 +169,7 @@ router
     }
     catch (error: any) {
         console.log('ERROR: ', error);
-        return NextResponse.json({ error: error?.message ?? `${error}` }, { status: 500 }); // handled with error
+        return NextResponse.json({ error: 'Unable to process your image.\n\nPlease choose another image.' }, { status: 500 }); // handled with error
     } // try
 })
 .patch(async (req) => {
