@@ -116,7 +116,7 @@ router
             withoutReduction   : false,      // do scale down
             kernel             : 'lanczos3', // interpolation kernels
         })
-        .flatten({ // merge alpha transparency channel, if any, with background
+        .flatten({ // merge alpha transparency channel, if any, with a background, then remove the alpha channel
             background         : '#ffffff',
         })
         .webp({
