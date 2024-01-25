@@ -63,7 +63,7 @@ export {
     // handler as PUT,
     handler as PATCH,
     // handler as DELETE,
-    // handler as HEAD,
+    handler as HEAD,
 }
 
 router
@@ -121,7 +121,67 @@ router
     
     
     try {
-        const fileId = await uploadMedia(file.name, file.stream(), {
+        const nodeImageTransformer = sharp({
+            failOn           : 'none',
+            limitInputPixels : 3840*3840,
+            density          : 72, // dpi
+        })
+        .resize({
+            width              : 160,
+            height             : 160,
+            fit                : 'cover',
+            background : {
+                r              : 255,
+                g              : 255,
+                b              : 255,
+                alpha          : 1,
+            },
+            withoutEnlargement : true,       // do NOT scale up
+            withoutReduction   : false,      // do scale down
+            kernel             : 'lanczos3', // interpolation kernels
+        })
+        .webp({
+            quality            : 90,
+            alphaQuality       : 90,
+            lossless           : false,
+            nearLossless       : false,
+            effort             : 4,
+        });
+        
+        
+        
+        // let handleData: ((chunk: any) => void)|undefined = undefined;
+        let signalTransformDone : (() => void)|undefined = undefined;
+        const webImageTransformer = new TransformStream({
+            start(controller) {
+                nodeImageTransformer.on('data', (chunk) => {
+                    controller.enqueue(chunk); // forward a chunk of processed data to the next Stream
+                    
+                    if (signalTransformDone) {
+                        signalTransformDone();
+                    } // if
+                });
+                nodeImageTransformer.on('end', () => {
+                    signalTransformDone?.(); // signal that the last data has been processed
+                });
+            },
+            transform(chunk, controller) {
+                nodeImageTransformer.write(chunk); // write a chunk of data to the Writable
+            },
+            async flush(controller) {
+                const promiseTransformDone = new Promise<void>((resolved) => {
+                    signalTransformDone = resolved;
+                });
+                nodeImageTransformer.end(); // signal that no more data will be written to the Writable
+                await promiseTransformDone; // wait for the last data has been processed
+            },
+        });
+        
+        
+        
+        const fileName = file.name;
+        const fileNameWithoutExt = fileName.match(/^.*(?=\.\w+$)/gi)?.[0] || fileName.split('.')?.[0] || 'image';
+        const fileId = await uploadMedia(`${fileNameWithoutExt}.webp`, file.stream().pipeThrough(webImageTransformer), {
             folder : 'customerProfiles',
         });
         
