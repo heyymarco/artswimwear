@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "postinstall": "prisma generate && npm install @img/sharp-linux-x64 --force && npm install sharp --force --os=linux --cpu=x64 --include=optional",
+    "postinstall": "prisma generate && npm install @img/sharp-linux-x64 --force && npm install sharp --force --os=linux --cpu=x64 --include=optional --libc=musl",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
