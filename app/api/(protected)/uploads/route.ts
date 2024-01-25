@@ -122,9 +122,9 @@ router
     
     try {
         const nodeImageTransformer = sharp({
-            failOn           : 'none',
-            limitInputPixels : 3840*3840,
-            density          : 72, // dpi
+            // failOn           : 'none',
+            // limitInputPixels : 3840*3840,
+            // density          : 72, // dpi
         })
         // .resize({
         //     width              : 160,
