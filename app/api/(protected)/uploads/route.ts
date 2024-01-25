@@ -126,20 +126,20 @@ router
             limitInputPixels : 3840*3840,
             density          : 72, // dpi
         })
-        .resize({
-            width              : 160,
-            height             : 160,
-            fit                : 'cover',
-            background : {
-                r              : 255,
-                g              : 255,
-                b              : 255,
-                alpha          : 1,
-            },
-            withoutEnlargement : true,       // do NOT scale up
-            withoutReduction   : false,      // do scale down
-            kernel             : 'lanczos3', // interpolation kernels
-        })
+        // .resize({
+        //     width              : 160,
+        //     height             : 160,
+        //     fit                : 'cover',
+        //     background : {
+        //         r              : 255,
+        //         g              : 255,
+        //         b              : 255,
+        //         alpha          : 1,
+        //     },
+        //     withoutEnlargement : true,       // do NOT scale up
+        //     withoutReduction   : false,      // do scale down
+        //     kernel             : 'lanczos3', // interpolation kernels
+        // })
         // .webp({
         //     quality            : 90,
         //     alphaQuality       : 90,
