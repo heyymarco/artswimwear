@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "postinstall": "prisma generate && npm install --force --os=linux --cpu=x64",
+    "postinstall": "prisma generate && npm install --force --os=linux --cpu=x64 sharp",
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
