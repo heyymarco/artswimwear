@@ -60,6 +60,10 @@ model ProductVariantGroup {
     productId               String
     product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related ProductVariantGroup(s) if the Product deleted
 }
+enum ProductVariantVisibility {
+    PUBLISHED
+    DRAFT
+}
 model ProductVariant {
     // records:
     id                      String                  @id @default(cuid()) @map("_id")
@@ -67,6 +71,8 @@ model ProductVariant {
     updatedAt               DateTime                @updatedAt
     
     // data:
+    visibility              ProductVariantVisibility
+    
     name                    String
     
     price                   Float?                  // min: 0
