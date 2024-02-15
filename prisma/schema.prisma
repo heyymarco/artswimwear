@@ -72,6 +72,7 @@ model ProductVariant {
     
     // data:
     visibility              ProductVariantVisibility
+    sort                    Int
     
     name                    String
     
