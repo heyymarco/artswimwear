@@ -130,7 +130,7 @@ export function ProfilePageContent() {
     
     // handlers:
     const handleEdit = useEvent(async (edit: 'image'|'name'|'username') => {
-        const result = await showDialog<SimpleEditModelDialogResult<CustomerDetail>>(
+        const updatedCustomerModel = await showDialog<SimpleEditModelDialogResult<CustomerDetail>>(
             (edit === 'image')
             ? <SimpleEditCustomerImageDialog
                 // data:
@@ -164,7 +164,7 @@ export function ProfilePageContent() {
                 })()}
             />
         );
-        if (result === undefined) return;
+        if (updatedCustomerModel === undefined) return;
         updateSession();
     });
     
