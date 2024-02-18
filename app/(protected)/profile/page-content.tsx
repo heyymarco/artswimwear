@@ -62,6 +62,7 @@ import {
     UniqueUsernameEditor,
 }                           from '@/components/editors/UniqueUsernameEditor'
 import {
+    SimpleEditModelDialogResult,
     SimpleEditModelDialog,
 }                           from '@/components/dialogs/SimpleEditModelDialog'
 import {
@@ -129,7 +130,7 @@ export function ProfilePageContent() {
     
     // handlers:
     const handleEdit = useEvent(async (edit: 'image'|'name'|'username') => {
-        const result = await showDialog(
+        const result = await showDialog<SimpleEditModelDialogResult<CustomerDetail>>(
             (edit === 'image')
             ? <SimpleEditCustomerImageDialog
                 // data:
