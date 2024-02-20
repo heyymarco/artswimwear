@@ -24,7 +24,6 @@ import {
     useMergeEvents,
     useMergeClasses,
     useMountedFlag,
-    useScheduleTriggerEvent,
     
     
     
@@ -36,6 +35,17 @@ import {
     // a capability of UI to be disabled:
     useDisableable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// heymarco:
+import {
+    // hooks:
+    useScheduleTriggerEvent,
+    
+    
+    
+    // utilities:
+    useControllableAndUncontrollable,
+}                           from '@heymarco/events'
 
 // reusable-ui components:
 import {
@@ -77,11 +87,6 @@ import {
 
 // internals:
 import type {
-    // types:
-    EditorChangeEventHandler,
-    
-    
-    
     // react components:
     EditorProps,
 }                           from '@/components/editors/Editor'
@@ -224,9 +229,9 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
         
         
         // values:
-        defaultValue : defaultImage,
-        value        : image,
-        onChange,
+        defaultValue : defaultUncontrollableValue = null,
+        value        : controllableValue,
+        onChange     : onControllableValueChange,
         
         
         
@@ -294,9 +299,14 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
     
     
     // states:
-    const isControllableImage                  = (image !== undefined);
-    const [imageDn        , setImageDn       ] = useState<TValue|null>(defaultImage ?? null);
-    const imageFn : TValue|null                = ((image !== undefined) ? image /*controllable*/ : imageDn /*uncontrollable*/);
+    const {
+        value              : value,
+        triggerValueChange : triggerValueChange,
+    } = useControllableAndUncontrollable<TValue|null>({
+        defaultValue       : defaultUncontrollableValue,
+        value              : controllableValue,
+        onValueChange      : onControllableValueChange,
+    });
     
     const [uploadingImage , setUploadingImage] = useState<UploadingImageData|null>(null);
     const uploadingImageRef                    = useRef<UploadingImageData|null>(uploadingImage);
@@ -324,26 +334,6 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
     
     
     // handlers:
-    const handleChangeInternal            = useEvent<EditorChangeEventHandler<TValue|null>>((image) => {
-        // update state:
-        if (!isControllableImage) setImageDn(image);
-    });
-    const handleChange                    = useMergeEvents(
-        // preserves the original `onChange` from `props`:
-        onChange,
-        
-        
-        
-        // actions:
-        handleChangeInternal,
-    );
-    const triggerChange                   = useEvent((newDraftImage: TValue|null): void => {
-        if (handleChange) scheduleTriggerEvent(() => { // runs the `onChange` event *next after* current macroTask completed
-            // fire `onChange` react event:
-            handleChange(newDraftImage);
-        });
-    });
-    
     const selectButtonHandleClickInternal = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         inputFileRef.current?.click();
     });
@@ -388,7 +378,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
         
         // conditions:
         if (isBusy)     return; // this component is busy => ignore
-        const imageData = imageFn;
+        const imageData = value;
         if (!imageData) return; // no image => nothing to delete
         if (onDeleteImage) {
             setIsBusy(isBusy /* instant update without waiting for (slow|delayed) re-render */ = true);
@@ -417,7 +407,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
         
         
         // notify the image changed:
-        triggerChange(null); // then at the *next re-render*, the *controllable* `image` will change
+        triggerValueChange(null, { triggerAt: 'macrotask' }); // then at the *next re-render*, the *controllable* `image` will change
     });
     
     const inputFileHandleChange           = useEvent<React.ChangeEventHandler<HTMLInputElement>>(async () => {
@@ -591,13 +581,13 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
             // successfully uploaded:
             if (imageData) {
                 // notify the image changed:
-                triggerChange(imageData); // then at the *next re-render*, the *controllable* `image` will change
+                triggerValueChange(imageData, { triggerAt: 'macrotask' }); // then at the *next re-render*, the *controllable* `image` will change
             } // if
             
             
             
             // remove the uploading status:
-            scheduleTriggerEvent(performRemove); // runs the `performRemove` function *next after* `onChange` event fired (to avoid blinking of previous image issue)
+            scheduleTriggerEvent(performRemove, { triggerAt: 'macrotask' }); // runs the `performRemove` function *next after* `onChange` event fired (to avoid blinking of previous image issue, the controllable image should be *already applied* before we're removing the `uploadingImage` draft)
         };
         performUpload();
     });
@@ -729,7 +719,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
                         // children:
                         mediaGroupComponent.props.children ?? <>
                             {/* <NoImage> */}
-                            {(!uploadingImage && !imageFn) && React.cloneElement<React.HTMLAttributes<HTMLElement>>(noImageComponent,
+                            {(!uploadingImage && !value) && React.cloneElement<React.HTMLAttributes<HTMLElement>>(noImageComponent,
                                 // props:
                                 {
                                     // classes:
@@ -754,7 +744,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
                             )}
                             
                             {/* <Image> */}
-                            { !uploadingImage && !!imageFn && React.cloneElement<React.ImgHTMLAttributes<HTMLImageElement>>(imageComponent,
+                            { !uploadingImage && !!value && React.cloneElement<React.ImgHTMLAttributes<HTMLImageElement>>(imageComponent,
                                 // props:
                                 {
                                     // classes:
@@ -768,8 +758,8 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
                                     
                                     
                                     // images:
-                                    alt              : imageComponent.props.alt   ??  resolveAlt(imageFn),
-                                    src              : imageComponent.props.src   ?? (resolveSrc(imageFn, onResolveImageUrl) || undefined), // convert empty string to undefined
+                                    alt              : imageComponent.props.alt   ??  resolveAlt(value),
+                                    src              : imageComponent.props.src   ?? (resolveSrc(value, onResolveImageUrl) || undefined), // convert empty string to undefined
                                     sizes            : imageComponent.props.sizes ?? uploadImages.imageInlineSize,
                                     
                                     
@@ -781,7 +771,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
                             )}
                             
                             {/* <MediaGroupInner> */}
-                            {((!uploadingImage && !!imageFn && isBusy) || !!uploadingImage) && !readOnly && React.cloneElement<React.HTMLAttributes<HTMLElement>>(mediaGroupComponentInner,
+                            {((!uploadingImage && !!value && isBusy) || !!uploadingImage) && !readOnly && React.cloneElement<React.HTMLAttributes<HTMLElement>>(mediaGroupComponentInner,
                                 // props:
                                 {
                                     // classes:
@@ -793,7 +783,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
                                 // children:
                                 mediaGroupComponentInner.props.children ?? <>
                                     {/* <DeletingImageTitle> + <Busy> */}
-                                    {(!uploadingImage && !!imageFn && isBusy) && <>
+                                    {(!uploadingImage && !!value && isBusy) && <>
                                         {/* <DeletingImageTitle> */}
                                         {!!deletingImageTitleComponent && React.cloneElement<React.HTMLAttributes<HTMLElement>>(deletingImageTitleComponent,
                                             // props:
@@ -943,7 +933,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
                                 )}
                                 
                                 {/* <DeleteButton> */}
-                                {!!imageFn && React.cloneElement<ButtonProps>(deleteButtonComponent,
+                                {!!value && React.cloneElement<ButtonProps>(deleteButtonComponent,
                                     // props:
                                     {
                                         // classes:
