@@ -162,7 +162,7 @@ export interface UploadImageProps<TElement extends Element = HTMLElement, TValue
     // actions:
     deletingImageTitle                ?: React.ReactNode
     deleteButtonText                  ?: React.ReactNode
-    onDeleteImage                     ?: (args: { imageData: TValue }) => Promise<boolean|Error>
+    onDeleteImage                     ?: (args: { imageData: TValue }) => boolean|Error|Promise<boolean|Error>
     
     
     
@@ -181,7 +181,7 @@ export interface UploadImageProps<TElement extends Element = HTMLElement, TValue
     
     
     // upload activities:
-    onUploadImage                     ?: (args: { imageFile: File, reportProgress: (percentage: number) => void, abortSignal: AbortSignal }) => Promise<TValue|Error|null>
+    onUploadImage                     ?: (args: { imageFile: File, reportProgress: (percentage: number) => void, abortSignal: AbortSignal }) => TValue|Error|null|Promise<TValue|Error|null>
     onUploadImageProgress             ?: (args: { imageFile: File, percentage: number|null }) => string
     
     
