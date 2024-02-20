@@ -16,6 +16,12 @@ import {
     EventHandler,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// heymarco:
+import {
+    // utilities:
+    useControllableAndUncontrollable,
+}                           from '@heymarco/events'
+
 // internals:
 import type {
     // react components:
@@ -71,17 +77,22 @@ const TimezoneEditor = <TElement extends Element = HTMLElement>(props: TimezoneE
     // rest props:
     const {
         // values:
-        defaultValue = (0 - (new Date()).getTimezoneOffset()),
-        value : controlledValue,
-        onChange,
+        defaultValue : defaultUncontrollableValue = (0 - (new Date()).getTimezoneOffset()),
+        value        : controllableValue,
+        onChange     : onControllableValueChange,
     ...restTabProps} = props;
     
     
     
     // states:
-    const [uncontrolledValue, setUncontrolledValue] = useState<number>(defaultValue);
-    const value = controlledValue ?? uncontrolledValue;
-    const isControllableValue = (controlledValue !== undefined);
+    const {
+        value              : value,
+        triggerValueChange : triggerValueChange,
+    } = useControllableAndUncontrollable<number>({
+        defaultValue       : defaultUncontrollableValue,
+        value              : controllableValue,
+        onValueChange      : onControllableValueChange,
+    });
     
     const [expanded, setExpanded] = useState<boolean>(false);
     
@@ -130,8 +141,7 @@ const TimezoneEditor = <TElement extends Element = HTMLElement>(props: TimezoneE
                     // states:
                     active={value === timezoneOption}
                     onClick={() => {
-                        if (!isControllableValue) setUncontrolledValue(timezoneOption);
-                        onChange?.(timezoneOption);
+                        triggerValueChange(timezoneOption, { triggerAt: 'immediately' });
                     }}
                 >
                     UTC{convertTimezoneToReadableClock(timezoneOption)}
