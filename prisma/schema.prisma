@@ -94,8 +94,6 @@ model TemplateVariantGroup {
     updatedAt               DateTime                @updatedAt
     
     // data:
-    sort                    Int
-    
     name                    String
     
     // relations:
