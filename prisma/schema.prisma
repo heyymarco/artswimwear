@@ -87,6 +87,17 @@ model ProductVariant {
     productVariantGroupId   String
     productVariantGroup     ProductVariantGroup     @relation(fields: [productVariantGroupId], references: [id], onDelete: Cascade) // delete the related ProductVariant(s) if the ProductVariantGroup deleted
 }
+model ProductVariantTemplate {
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    createdAt               DateTime                @default(now())
+    updatedAt               DateTime                @updatedAt
+    
+    // data:
+    sort                    Int
+    
+    name                    String
+}
 
 
 
