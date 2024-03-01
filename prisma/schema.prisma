@@ -87,7 +87,7 @@ model ProductVariant {
     productVariantGroupId   String
     productVariantGroup     ProductVariantGroup     @relation(fields: [productVariantGroupId], references: [id], onDelete: Cascade) // delete the related ProductVariant(s) if the ProductVariantGroup deleted
 }
-model ProductVariantTemplate {
+model TemplateVariantGroup {
     // records:
     id                      String                  @id @default(cuid()) @map("_id")
     createdAt               DateTime                @default(now())
@@ -97,6 +97,30 @@ model ProductVariantTemplate {
     sort                    Int
     
     name                    String
+    
+    // relations:
+    templateVariants        TemplateVariant[]       // a TemplateVariantGroup may have some related TemplateVariant(s) // one  to many
+}
+model TemplateVariant {
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    createdAt               DateTime                @default(now())
+    updatedAt               DateTime                @updatedAt
+    
+    // data:
+    visibility              ProductVariantVisibility
+    sort                    Int
+    
+    name                    String
+    
+    price                   Float?                  // min: 0
+    shippingWeight          Float?                  // min: 0
+    
+    images                  String[]
+    
+    // relations:
+    templateVariantGroupId  String
+    templateVariantGroup    TemplateVariantGroup    @relation(fields: [templateVariantGroupId], references: [id], onDelete: Cascade) // delete the related TemplateVariant(s) if the TemplateVariantGroup deleted
 }
 
 
