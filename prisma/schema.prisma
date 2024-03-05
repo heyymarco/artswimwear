@@ -56,6 +56,7 @@ model ProductVariantGroup {
     sort                    Int
     
     name                    String
+    hasDedicatedStocks      Boolean
     
     // relations:
     productVariants         ProductVariant[]        // a ProductVariantGroup may have some related ProductVariant(s) // one  to many
@@ -96,6 +97,7 @@ model TemplateVariantGroup {
     
     // data:
     name                    String
+    hasDedicatedStocks      Boolean
     
     // relations:
     templateVariants        TemplateVariant[]       // a TemplateVariantGroup may have some related TemplateVariant(s) // one  to many
