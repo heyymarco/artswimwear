@@ -44,6 +44,7 @@ model Product {
     draftOrders             DraftOrdersOnProducts[] // some Product(s) may have some related DraftOrder(s)    // many to many
     
     productVariantGroups    ProductVariantGroup[]   // a Product may have some related ProductVariantGroup(s) // one  to many
+    stocks                  Stock[]                 // a Product may have some related Stock(s)               // one  to many
 }
 model ProductVariantGroup {
     // records:
@@ -119,6 +120,19 @@ model TemplateVariant {
     // relations:
     templateVariantGroupId  String
     templateVariantGroup    TemplateVariantGroup    @relation(fields: [templateVariantGroupId], references: [id], onDelete: Cascade) // delete the related TemplateVariant(s) if the TemplateVariantGroup deleted
+}
+model Stock {
+    // records:
+    id                      String                  @id @default(cuid()) @map("_id")
+    
+    // data:
+    value                   Int?                    // min: 0
+    
+    // relations:
+    productId               String
+    product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related Stock(s) if the Product deleted
+    
+    productVariantIds       String[]                // manual relation foreign key(s)
 }
 
 
