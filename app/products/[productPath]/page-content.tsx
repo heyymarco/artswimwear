@@ -59,6 +59,9 @@ import {
     WysiwygEditorState,
     WysiwygViewer,
 }                           from '@/components/editors/WysiwygEditor'
+import {
+    SelectVariantEditor,
+}                           from '@/components/editors/SelectVariantEditor'
 
 // internals:
 import {
@@ -252,10 +255,33 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     onChange={handleQuantityChange}
                 />
                 
+                <p
+                    // classes:
+                    className={styleSheet.label}
+                >
+                    Select variant:
+                </p>
                 {productDetail.productVariantGroups.map(({name, productVariants}, groupIndex) =>
-                    productVariants.map(({name}, variantIndex) =>
-                        <span key={`${groupIndex}/${variantIndex}`}>{name}</span>
-                    )
+                    <SelectVariantEditor
+                        // identifiers:
+                        key={groupIndex}
+                        
+                        
+                        
+                        // data:
+                        models={productVariants}
+                        
+                        
+                        
+                        // variants:
+                        theme='primary'
+                        
+                        
+                        
+                        // values:
+                        nullable={false}
+                        defaultValue={productVariants[0]?.id ?? null}
+                    />
                 )}
                 
                 <p>

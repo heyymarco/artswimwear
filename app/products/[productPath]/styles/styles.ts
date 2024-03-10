@@ -33,7 +33,8 @@ export default () => [
                 '"gallery actions" 25rem',
                 '"desc       desc" auto',
                 '/',
-                ' 3fr         2fr',
+                // ' 3fr         2fr',
+                ' 3fr         minmax(20rem, 2fr)',
             ]],
         }),
         
@@ -117,6 +118,7 @@ export default () => [
     }),
     scope('ctrlQty', {
         // sizes:
+        inlineSize: '100%',
         ...descendants('input', {
             boxSizing : 'content-box',
             width     : '2em', // fit for number 99
