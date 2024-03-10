@@ -8,6 +8,11 @@ import {
 
 // reusable-ui core:
 import {
+    // reusable-ui configs:
+    spacers,
+    
+    
+    
     // a responsive management system:
     ifScreenWidthAtLeast,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -30,7 +35,7 @@ export default () => [
         ...ifScreenWidthAtLeast('lg', {
             gridTemplate: [[
                 '"nav         nav" auto',
-                '"gallery actions" 25rem',
+                '"gallery actions" minmax(25rem, 1fr)',
                 '"desc       desc" auto',
                 '/',
                 // ' 3fr         2fr',
@@ -128,6 +133,15 @@ export default () => [
             // typos:
             textAlign : 'center',
         }),
+    }),
+    scope('variants', {
+        // layouts:
+        display: 'grid',
+        
+        
+        
+        // spacings:
+        gap : spacers.sm,
     }),
     scope('ctrlAction', {
         // sizes:

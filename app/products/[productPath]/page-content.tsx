@@ -261,28 +261,30 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                 >
                     Select variant:
                 </p>
-                {productDetail.productVariantGroups.map(({name, productVariants}, groupIndex) =>
-                    <SelectVariantEditor
-                        // identifiers:
-                        key={groupIndex}
-                        
-                        
-                        
-                        // data:
-                        models={productVariants}
-                        
-                        
-                        
-                        // variants:
-                        theme='primary'
-                        
-                        
-                        
-                        // values:
-                        nullable={false}
-                        defaultValue={productVariants[0]?.id ?? null}
-                    />
-                )}
+                <div className={styleSheet.variants}>
+                    {productDetail.productVariantGroups.map(({name, productVariants}, groupIndex) =>
+                        <SelectVariantEditor
+                            // identifiers:
+                            key={groupIndex}
+                            
+                            
+                            
+                            // data:
+                            models={productVariants}
+                            
+                            
+                            
+                            // variants:
+                            theme='primary'
+                            
+                            
+                            
+                            // values:
+                            nullable={false}
+                            defaultValue={productVariants[0]?.id ?? null}
+                        />
+                    )}
+                </div>
                 
                 <p>
                     <ButtonIcon
