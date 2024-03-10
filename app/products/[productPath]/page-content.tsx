@@ -11,11 +11,10 @@ import {
     useState,
 }                           from 'react'
 
-// cssfn:
+// styles:
 import {
-    // style sheets:
-    dynamicStyleSheets,
-}                           from '@cssfn/cssfn-react'           // writes css in react hook
+    useProductDetailPageStyleSheet,
+}                           from './styles/loader'
 
 // reusable-ui core:
 import {
@@ -78,14 +77,6 @@ import {
 import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
-
-
-
-// styles:
-const useProductDetailPageStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */'./page-styles')
-, { id: 'ihi965eoyu' });
-import './page-styles';
 
 
 
