@@ -11,42 +11,20 @@ import {
 
 // models:
 import type {
-    Product,
-}                           from '@prisma/client'
+    ProductPreview,
+    ProductDetail,
+}                           from '@/models'
+export type {
+    ProductPreview,
+    ProductVariantDetail,
+    ProductVariantGroupDetail,
+    ProductDetail,
+}                           from '@/models'
 
 // ORMs:
 import {
     prisma,
 }                           from '@/libs/prisma.server'
-
-
-
-// types:
-export interface ProductPreview
-    extends
-        Pick<Product,
-            |'id'
-            |'name'
-            |'price'
-            |'shippingWeight'
-            |'path'
-        >
-{
-    image: Required<Product>['images'][number]|undefined
-}
-export interface ProductDetail
-    extends
-        Pick<Product,
-            |'id'
-            |'name'
-            |'price'
-            |'path'
-            |'excerpt'
-            |'description'
-            |'images'
-        >
-{
-}
 
 
 
@@ -99,6 +77,34 @@ router
                     description : true,
                     
                     images      : true,
+                    
+                    productVariantGroups : {
+                        select : {
+                            name : true,
+                            
+                            productVariants : {
+                                where    : {
+                                    visibility : { not: 'DRAFT' } // allows access to ProductVariant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                },
+                                select   : {
+                                    id             : true,
+                                    
+                                    name           : true,
+                                    
+                                    price          : true,
+                                    shippingWeight : true,
+                                    
+                                    images         : true,
+                                },
+                                orderBy : {
+                                    sort : 'asc',
+                                },
+                            },
+                        },
+                        orderBy : {
+                            sort : 'asc',
+                        },
+                    },
                 },
             })
         );

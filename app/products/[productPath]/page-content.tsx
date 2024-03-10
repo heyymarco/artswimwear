@@ -222,7 +222,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                 
                 <p
                     // classes:
-                    className={styleSheet.paraQty}
+                    className={styleSheet.label}
                 >
                     Quantity:
                 </p>
@@ -251,6 +251,12 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     // handlers:
                     onChange={handleQuantityChange}
                 />
+                
+                {productDetail.productVariantGroups.map(({name, productVariants}, groupIndex) =>
+                    productVariants.map(({name}, variantIndex) =>
+                        <span key={`${groupIndex}/${variantIndex}`}>{name}</span>
+                    )
+                )}
                 
                 <p>
                     <ButtonIcon

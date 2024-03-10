@@ -111,7 +111,7 @@ export default () => [
         // positions:
         gridArea : 'actions',
     }),
-    scope('paraQty', {
+    scope('label', {
         // spacings:
         marginBlockEnd: '0px',
     }),
