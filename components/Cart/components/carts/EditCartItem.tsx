@@ -92,8 +92,8 @@ export interface EditCartItemProps
     
     
     // handlers:
-    onChange  : (productId: string, quantity: number) => void
-    onDelete  : (productId: string) => void
+    onChange  : (productId: string, productVariantIds: string[], quantity: number) => void
+    onDelete  : (productId: string, productVariantIds: string[]) => void
 }
 const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     // styles:
@@ -106,6 +106,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
         // data:
         cartEntry : {
             productId,
+            productVariantIds,
             quantity,
         },
         
@@ -151,7 +152,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     const handleChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber}}): void => {
         // actions:
         if (valueAsNumber > 0) {
-            onChange(productId, valueAsNumber);
+            onChange(productId, productVariantIds, valueAsNumber);
         }
         else {
             handleDelete();
@@ -159,7 +160,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     });
     const handleDelete = useEvent((): void => {
         // actions:
-        onDelete(productId);
+        onDelete(productId, productVariantIds);
     });
     
     

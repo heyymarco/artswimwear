@@ -57,6 +57,11 @@ import {
     
     
     
+    // version control:
+    resetIfInvalid        as reduxResetIfInvalid,
+    
+    
+    
     // cart data:
     addProductToCart      as reduxAddProductToCart,
     deleteProductFromCart as reduxDeleteProductFromCart,
@@ -129,9 +134,9 @@ export interface CartStateBase {
     
     
     // actions:
-    addProductToCart      : (productId: string, quantity?: number) => void
-    deleteProductFromCart : (productId: string, options?: { showConfirm?: boolean }) => Promise<void>
-    changeProductFromCart : (productId: string, quantity: number, options?: { showConfirm?: boolean }) => Promise<void>
+    addProductToCart      : (productId: string, productVariantIds: string[], quantity?: number) => void
+    deleteProductFromCart : (productId: string, productVariantIds: string[], options?: { showConfirm?: boolean }) => Promise<void>
+    changeProductFromCart : (productId: string, productVariantIds: string[], quantity: number, options?: { showConfirm?: boolean }) => Promise<void>
     clearProductsFromCart : () => void
     trimProductsFromCart  : (limitedStockItems: LimitedStockItem[], options?: { showConfirm?: boolean, showPaymentCanceled?: boolean }) => Promise<void>
     
@@ -322,6 +327,10 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const isMounted = useMountedFlag();
     
     useIsomorphicLayoutEffect(() => {
+        dispatch(reduxResetIfInvalid());
+    }, []);
+    
+    useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!isCartReady)      return; // do not clean up when the related data is still loading
         if (!cartItems.length) return; // no item(s) in the cart => nothing to clean up
@@ -330,13 +339,24 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // clean up invalid productId(s):
-        const invalidProductIds = cartItems.map(({productId}) => productId).filter((productId) => !productList.ids.includes(productId));
-        if (invalidProductIds.length) {
+        const invalidProducts = cartItems.filter(({productId, productVariantIds}) => {
+            const validProductIds = productList.ids;
+            if (!validProductIds.includes(productId)) return true; // invalid
+            
+            const validProductVariantGroups = productList.entities[productId]?.productVariantGroups ?? [];
+            const validProductVariantIds    = validProductVariantGroups.flat().map(({id}) => id)    ?? [];
+            if (productVariantIds.length !== validProductVariantGroups.length) return true; // invalid
+            if (!productVariantIds.every((productVariantId) => validProductVariantIds.includes(productVariantId))) return true; // invalid
+            
+            return false; // valid
+        });
+        if (invalidProducts.length) {
             trimProductsFromCart(
-                invalidProductIds
-                .map((invalidProductId) => ({
-                    productId : invalidProductId,
-                    stock     : 0,
+                invalidProducts
+                .map(({productId, productVariantIds}) => ({
+                    productId         : productId,
+                    productVariantIds : productVariantIds,
+                    stock             : 0,
                 }))
             );
         } // if
@@ -353,11 +373,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stable callbacks:
-    const addProductToCart      = useEvent((productId: string, quantity: number = 1): void => {
+    const addProductToCart      = useEvent((productId: string, productVariantIds: string[], quantity: number = 1): void => {
         // actions:
-        dispatch(reduxAddProductToCart({ productId, quantity }));
+        dispatch(reduxAddProductToCart({ productId, productVariantIds, quantity }));
     });
-    const deleteProductFromCart = useEvent(async (productId: string, options?: { showConfirm?: boolean }): Promise<void> => {
+    const deleteProductFromCart = useEvent(async (productId: string, productVariantIds: string[], options?: { showConfirm?: boolean }): Promise<void> => {
         // conditions:
         if (options?.showConfirm ?? true) {
             if (
@@ -384,15 +404,15 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // actions:
-        dispatch(reduxDeleteProductFromCart({ productId }));
+        dispatch(reduxDeleteProductFromCart({ productId, productVariantIds }));
     });
-    const changeProductFromCart = useEvent(async (productId: string, quantity: number, options?: { showConfirm?: boolean }): Promise<void> => {
+    const changeProductFromCart = useEvent(async (productId: string, productVariantIds: string[], quantity: number, options?: { showConfirm?: boolean }): Promise<void> => {
         // actions:
         if (quantity > 0) {
-            dispatch(reduxChangeProductFromCart({ productId, quantity }));
+            dispatch(reduxChangeProductFromCart({ productId, productVariantIds, quantity }));
         }
         else {
-            await deleteProductFromCart(productId, options);
+            await deleteProductFromCart(productId, productVariantIds, options);
         } // if
     });
     const clearProductsFromCart = useEvent((): void => {

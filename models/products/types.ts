@@ -9,19 +9,19 @@ import type {
 
 
 // types:
-export interface ProductPreview
+export interface ProductVariantPreview
     extends
-        Pick<Product,
-            |'id'
-            |'name'
-            |'price'
-            |'shippingWeight'
-            |'path'
-        >
+    Pick<ProductVariant,
+        |'id'
+        
+        |'name'
+        
+        |'price'
+        |'shippingWeight'
+    >
 {
-    image: Required<Product>['images'][number]|undefined
+    image : Required<ProductVariant>['images'][number]|undefined
 }
-
 export interface ProductVariantDetail
     extends
     Pick<ProductVariant,
@@ -44,6 +44,21 @@ export interface ProductVariantGroupDetail
 {
     productVariants : ProductVariantDetail[]
 }
+
+export interface ProductPreview
+    extends
+        Pick<Product,
+            |'id'
+            |'name'
+            |'price'
+            |'shippingWeight'
+            |'path'
+        >
+{
+    image                : Required<Product>['images'][number]|undefined
+    productVariantGroups : ProductVariantPreview[][]
+}
+
 export interface ProductDetail
     extends
         Pick<Product,

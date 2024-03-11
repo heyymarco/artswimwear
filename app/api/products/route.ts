@@ -126,25 +126,59 @@ router
                 visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
             },
             select : {
-                id             : true,
+                id                   : true,
                 
-                name           : true,
+                name                 : true,
                 
-                price          : true,
-                shippingWeight : true,
+                price                : true,
+                shippingWeight       : true,
                 
-                path           : true,
+                path                 : true,
                 
-                images         : true,
+                images               : true,
+                
+                productVariantGroups : {
+                    select : {
+                        productVariants : {
+                            select : {
+                                id             : true,
+                                
+                                name           : true,
+                                
+                                price          : true,
+                                shippingWeight : true,
+                                
+                                images         : true,
+                            },
+                            orderBy : {
+                                sort : 'asc',
+                            },
+                        },
+                    },
+                    orderBy : {
+                        sort : 'asc',
+                    },
+                },
             },
         }))
         .map((product) => {
             const {
-                images, // take
+                images,               // take
+                productVariantGroups, // take
             ...restProduct} = product;
             return {
                 ...restProduct,
-                image : images?.[0]
+                image                : images?.[0],
+                productVariantGroups : (
+                    productVariantGroups
+                    .map(({productVariants}) =>
+                        productVariants
+                        .map(({images, ...restProductVariantPreview}) => ({
+                            ...restProductVariantPreview,
+                            image : images?.[0],
+                        }))
+                    )
+                ),
             };
         })
     );

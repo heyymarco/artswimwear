@@ -30,11 +30,21 @@ export interface CartState
     extends
         CartData
 {
+    // version control:
+    version  ?: number,
+    
+    
+    
     // cart dialogs:
     showCart  : boolean
 }
 
 const initialState : CartState = {
+    // version control:
+    version   : 2,
+    
+    
+    
     // cart data:
     items     : [],
     
@@ -47,13 +57,28 @@ export const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
+        // version control:
+        resetIfInvalid        : (state) => {
+            if ((state.version === 2) && (!state.items.length || Array.isArray(state.items[0].productVariantIds))) return state; // valid   => ignore
+            return initialState; // invalid => reset
+        },
+        
+        
+        
         // cart data:
-        addProductToCart      : ({items}, {payload: {productId, quantity = 1}}: PayloadAction<CartEntry>) => {
-            const existingEntry = items.find((entry) => entry.productId === productId);
+        addProductToCart      : ({items}, {payload: {productId, productVariantIds, quantity = 1}}: PayloadAction<CartEntry>) => {
+            const existingEntry = items.find((entry) =>
+                (entry.productId === productId)
+                &&
+                (entry.productVariantIds.length === productVariantIds.length)
+                &&
+                entry.productVariantIds.every((productVariantId) => productVariantIds.includes(productVariantId))
+            );
             if (!existingEntry) {
                 if (quantity > 0) {
                     items.push({  // add new
                         productId,
+                        productVariantIds,
                         quantity, // non_zero quantity
                     });
                 } // if
@@ -62,16 +87,29 @@ export const cartSlice = createSlice({
                 existingEntry.quantity += quantity;
             } // if
         },
-        deleteProductFromCart : ({items}, {payload: {productId}}: PayloadAction<Pick<CartEntry, 'productId'>>) => {
-            const itemIndex = items.findIndex((entry) => entry.productId === productId);
+        deleteProductFromCart : ({items}, {payload: {productId, productVariantIds}}: PayloadAction<Pick<CartEntry, 'productId'|'productVariantIds'>>) => {
+            const itemIndex = items.findIndex((entry) =>
+                (entry.productId === productId)
+                &&
+                (entry.productVariantIds.length === productVariantIds.length)
+                &&
+                entry.productVariantIds.every((productVariantId) => productVariantIds.includes(productVariantId))
+            );
             if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
         },
-        changeProductFromCart : ({items}, {payload: {productId, quantity}}: PayloadAction<CartEntry>) => {
-            const existingEntry = items.find((entry) => entry.productId === productId);
+        changeProductFromCart : ({items}, {payload: {productId, productVariantIds, quantity}}: PayloadAction<CartEntry>) => {
+            const existingEntry = items.find((entry) =>
+                (entry.productId === productId)
+                &&
+                (entry.productVariantIds.length === productVariantIds.length)
+                &&
+                entry.productVariantIds.every((productVariantId) => productVariantIds.includes(productVariantId))
+            );
             if (!existingEntry) {
                 if (quantity > 0) {
                     items.push({  // add new
                         productId,
+                        productVariantIds,
                         quantity, // non_zero quantity
                     });
                 } // if
@@ -96,8 +134,14 @@ export const cartSlice = createSlice({
             
             
             // update cart:
-            for (const {productId, stock} of limitedStockItems) {
-                const existingEntry = items.find((entry) => entry.productId === productId);
+            for (const {productId, productVariantIds, stock} of limitedStockItems) {
+                const existingEntry = items.find((entry) =>
+                    (entry.productId === productId)
+                    &&
+                    (entry.productVariantIds.length === productVariantIds.length)
+                    &&
+                    entry.productVariantIds.every((productVariantId) => productVariantIds.includes(productVariantId))
+                );
                 if (!existingEntry) continue;
                 
                 
@@ -129,6 +173,11 @@ export const cartSlice = createSlice({
 
 export default cartSlice.reducer;
 export const {
+    // version control:
+    resetIfInvalid,
+    
+    
+    
     // cart data:
     addProductToCart,
     deleteProductFromCart,

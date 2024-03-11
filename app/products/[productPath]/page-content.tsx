@@ -159,11 +159,12 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     const handleBuyButtonClick = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         // conditions:
         if (!isPageReady) return; // the page is not fully loaded => ignore
+        if (selectedProductVariants.some((selectedProductVariant) => (selectedProductVariant === null))) return; // a/some variants are not selected
         
         
         
         // actions:
-        addProductToCart(productDetail.id, productQty);
+        addProductToCart(productDetail.id, selectedProductVariants as string[], productQty);
     });
     
     

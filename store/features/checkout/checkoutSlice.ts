@@ -47,6 +47,11 @@ export interface CheckoutState
         ShippingData,
         BillingData
 {
+    // version control:
+    version           ?: number,
+    
+    
+    
     // states:
     checkoutStep       : CheckoutStep
     
@@ -77,6 +82,11 @@ export interface CheckoutState
 }
 
 const initialState : CheckoutState = {
+    // version control:
+    version            : 2,
+    
+    
+    
     // states:
     checkoutStep       : 'info',
     
@@ -142,6 +152,14 @@ export const checkoutSlice = createSlice({
     name: 'checkout',
     initialState,
     reducers: {
+        // version control:
+        resetIfInvalid        : (state) => {
+            if (state.version === 2) return state; // valid   => ignore
+            return initialState;                   // invalid => reset
+        },
+        
+        
+        
         // states:
         setCheckoutStep       : (state, {payload: value}: PayloadAction<CheckoutStep>) => {
             state.checkoutStep = value;
@@ -272,6 +290,11 @@ export const checkoutSlice = createSlice({
 
 export default checkoutSlice.reducer;
 export const {
+    // version control:
+    resetIfInvalid,
+    
+    
+    
     // states:
     setCheckoutStep,
     

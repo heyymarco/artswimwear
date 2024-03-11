@@ -138,6 +138,7 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
                                 : <em>Deleted Product</em>
                             }
                         </h3>
+                        {/* TODO: show product variant bar */}
                         
                         <Image
                             // appearances:

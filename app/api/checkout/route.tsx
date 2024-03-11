@@ -481,6 +481,7 @@ export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'payme
 }
 export interface CartEntry {
     productId          : string
+    productVariantIds  : string[]
     quantity           : number
 }
 export interface CartData {
@@ -610,8 +611,9 @@ export interface ShippingTrackingDetail
 }
 
 export interface LimitedStockItem {
-    productId : string
-    stock     : number
+    productId          : string
+    productVariantIds  : string[]
+    stock              : number
 }
 class OutOfStockError extends Error {
     limitedStockItems : LimitedStockItem[];
@@ -796,25 +798,29 @@ router
     type RequiredNonNullable<T> = {
         [P in keyof T]: NonNullable<T[P]>
     };
-    const validFormattedItems : RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'quantity'>>[] = [];
+    const validFormattedItems : RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'productVariantIds'|'quantity'>>[] = [];
     for (const item of items) {
         // validations:
-        if (!item || (typeof(item) !== 'object'))  throw 'INVALID_JSON';
+        if (!item || (typeof(item) !== 'object'))                                                     throw 'INVALID_JSON';
         const {
             productId,
+            productVariantIds,
             quantity,
         } = item;
-        if (typeof(productId) !== 'string')        throw 'INVALID_JSON';
-        if (!productId.length)                     throw 'INVALID_JSON';
-        if (typeof(quantity)  !== 'number')        throw 'INVALID_JSON';
-        if (!isFinite(quantity) || (quantity < 1)) throw 'INVALID_JSON';
-        if ((quantity % 1))                        throw 'INVALID_JSON';
+        if (typeof(productId) !== 'string')                                                           throw 'INVALID_JSON';
+        if (!productId.length)                                                                        throw 'INVALID_JSON';
+        if (!Array.isArray(productVariantIds))                                                        throw 'INVALID_JSON';
+        if (!productVariantIds.every((productVariantId) => (typeof(productVariantIds) === 'string'))) throw 'INVALID_JSON';
+        if (typeof(quantity)  !== 'number')                                                           throw 'INVALID_JSON';
+        if (!isFinite(quantity) || (quantity < 1))                                                    throw 'INVALID_JSON';
+        if ((quantity % 1))                                                                           throw 'INVALID_JSON';
         
         
         
         // collects:
         validFormattedItems.push({
             productId,
+            productVariantIds,
             quantity,
         });
     } // for
@@ -852,6 +858,7 @@ router
                 prismaTransaction.product.findMany({
                     where  : {
                         id         : { in : validFormattedItems.map((item) => item.productId) },
+                        // TODO: get multi stocks by variants
                         visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
                     },
                     select : {
@@ -863,6 +870,7 @@ router
                         shippingWeight : true,
                         
                         stock          : true,
+                        // TODO: get multi stocks by variants
                     },
                 }),
                 !simulateOrder ? prismaTransaction.draftOrder.count({
@@ -932,8 +940,8 @@ router
             
             
             
-            const detailedItems    : (Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'> & { productName: string })[] = [];
-            const reduceStockItems : (RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'>> & { quantity: number })[] = [];
+            const detailedItems    : (Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'> & { productName: string, productVariantNames: string[] })[] = [];
+            const reduceStockItems : (RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'productVariantIds'>> & { quantity: number })[] = [];
             let totalProductPricesConverted = 0, totalProductWeights : number|null = null;
             {
                 const productListAdapter = createEntityAdapter<
@@ -955,12 +963,13 @@ router
                 
                 
                 const limitedStockItems : LimitedStockItem[] = [];
-                for (const { productId, quantity } of validFormattedItems) {
+                for (const { productId, productVariantIds, quantity } of validFormattedItems) {
                     const product = productList[productId];
                     // if (!product) throw 'INVALID_PRODUCT_ID';
                     if (!product) {
                         limitedStockItems.push({
                             productId,
+                            productVariantIds,
                             stock: 0,
                         });
                         continue;
@@ -974,13 +983,15 @@ router
                         if (quantity > stock) {
                             limitedStockItems.push({
                                 productId,
+                                productVariantIds,
                                 stock,
                             });
                         } // if
                         
                         reduceStockItems.push({
-                            productId      : productId,
-                            quantity       : quantity,
+                            productId,
+                            productVariantIds,
+                            quantity,
                         });
                     } // if
                     
@@ -993,12 +1004,14 @@ router
                     
                     
                     detailedItems.push({
-                        productId      : productId,
-                        productName    : product.name,
+                        productId           : productId,
+                        productVariantIds   : productVariantIds,
+                        productName         : product.name,
+                        productVariantNames : [], // TODO: add variant names
                         
-                        price          : unitPriceConverted,
-                        shippingWeight : unitWeight,
-                        quantity       : quantity,
+                        price               : unitPriceConverted,
+                        shippingWeight      : unitWeight,
+                        quantity            : quantity,
                     });
                     
                     
@@ -1030,7 +1043,8 @@ router
             
             
             //#region decrease product stock
-            for (const {productId, quantity} of reduceStockItems) {
+            for (const {productId, productVariantIds, quantity} of reduceStockItems) {
+                // TODO: consider the product variants
                 await prismaTransaction.product.update({
                     where  : {
                         id : productId,
@@ -1136,7 +1150,7 @@ router
                             items                     : detailedItems.map((detailedItem) => ({
                                 // name string required
                                 // The item name or title.
-                                name                  : detailedItem.productName,
+                                name                  : detailedItem.productName + (!detailedItem.productVariantNames.length ? '' : `(${detailedItem.productVariantNames.join(', ')})`),
                                 
                                 // unit_amount Money required
                                 // The item price or rate per unit.
@@ -1786,22 +1800,23 @@ Updating the confirmation is not required.`,
         ([paymentResponse, paymentConfirmationToken, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, string|undefined, OrderAndData|undefined, EntityState<CountryPreview>]> => {
             //#region verify draftOrder_id
             const requiredSelect = {
-                id                     : true,
-                expiresAt              : true,
+                id                        : true,
+                expiresAt                 : true,
                 
-                orderId                : true,
+                orderId                   : true,
                 
-                shippingAddress        : true,
-                shippingCost           : true,
-                shippingProviderId     : true,
+                shippingAddress           : true,
+                shippingCost              : true,
+                shippingProviderId        : true,
                 
                 items : {
                     select : {
-                        productId      : true,
+                        productId         : true,
+                        productVariantIds : true,
                         
-                        price          : true,
-                        shippingWeight : true,
-                        quantity       : true,
+                        price             : true,
+                        shippingWeight    : true,
+                        quantity          : true,
                     },
                 },
             };

@@ -63,6 +63,11 @@ import {
     
     
     
+    // version control:
+    resetIfInvalid        as reduxResetIfInvalid,
+    
+    
+    
     // states:
     setCheckoutStep       as reduxSetCheckoutStep,
     
@@ -786,6 +791,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // dom effects:
+    
+    useIsomorphicLayoutEffect(() => {
+        dispatch(reduxResetIfInvalid());
+    }, []);
     
     // try to recover shippingList on page_refresh:
     useIsomorphicLayoutEffect(() => {
