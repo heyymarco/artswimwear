@@ -297,19 +297,21 @@ export default () => [
         // layouts:
         display      : 'grid',
         gridTemplate : [[
-            '"image " max-content',
-            '"title " max-content',
-            '"info  " max-content',
-            '"action" max-content',
+            '"image   " max-content',
+            '"title   " max-content',
+            '"variants" max-content',
+            '"info    " max-content',
+            '"action  " max-content',
             '/',
             `1fr`,
         ]],
         ...ifScreenWidthAtLeast('sm', {
             gridTemplate : [[
-                '"image  title" max-content',
-                '"image   info" max-content',
-                '"image action" max-content',
-                '"image ......" max-content',
+                '"image    title" max-content',
+                '"image variants" max-content',
+                '"image     info" max-content',
+                '"image   action" max-content',
+                '"image ........" max-content',
                 '/',
                 `min-content auto`,
             ]],
@@ -318,37 +320,38 @@ export default () => [
         
         
         // children:
-    ...children('.prodImg', {
-        // positions:
-        gridArea    : 'image',
-        justifySelf : 'center', // center horizontally
-        alignSelf   : 'center', // center vertically
-        
-        
-        
-        // sizes:
-        width       : `${imageSize}px`,
-        aspectRatio : commerces.defaultProductAspectRatio,
-        
-        
-        
-        // backgrounds:
-        background  : 'white',
-        
-        
-        
-        // spacings:
-        ...ifScreenWidthAtLeast('sm', {
-            marginInlineEnd : spacers.default,
-        }),
-        
-        
-        
-        // children:
-        ...children('img', {
+        ...children('.prodImg', {
+            // positions:
+            gridArea    : 'image',
+            justifySelf : 'center', // center horizontally
+            alignSelf   : 'center', // center vertically
+            
+            
+            
             // sizes:
-            width  : '100% !important',
-            height : '100% !important',
+            width       : `${imageSize}px`,
+            aspectRatio : commerces.defaultProductAspectRatio,
+            
+            
+            
+            // backgrounds:
+            background  : 'white',
+            
+            
+            
+            // spacings:
+            ...ifScreenWidthAtLeast('sm', {
+                marginInlineEnd : spacers.default,
+            }),
+            
+            
+            
+            // children:
+            ...children('img', {
+                // sizes:
+                width  : '100% !important',
+                height : '100% !important',
+            }),
         }),
         ...children('.title', {
             // positions:
@@ -378,6 +381,22 @@ export default () => [
                 textAlign: 'center',
             }),
         }),
+        ...children('.variants', {
+            // positions:
+            gridArea    : 'variants',
+            
+            
+            
+            // layouts:
+            display  : 'flex',
+            flexWrap : 'wrap',
+            
+            
+            
+            // spacings:
+            margin   : 0,
+            gap      : spacers.xs,
+        }),
         ...children('.info', {
             // positions:
             gridArea    : 'info',
@@ -386,6 +405,5 @@ export default () => [
             // positions:
             gridArea    : 'action',
         }),
-    }),
     }, {specificityWeight: 2}),
 ];

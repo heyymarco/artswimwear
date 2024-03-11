@@ -24,6 +24,11 @@ import {
     Image,
 }                           from '@heymarco/image'
 
+// internal components:
+import {
+    VariantIndicator,
+}                           from '@/components/VariantIndicator'
+
 // stores:
 import type {
     // types:
@@ -110,9 +115,10 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
             >
                 Changed {isPlural ? 'Items' : 'Item'}
             </ListItem>
-            {limitedStockItems.map(({productId, stock}, index) => {
+            {limitedStockItems.map(({productId, productVariantIds, stock}, index) => {
                 // fn props:
                 const product          = productList?.entities?.[productId];
+                const productVariants  = product?.productVariantGroups.flat();
                 const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
                 
                 
@@ -138,7 +144,19 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
                                 : <em>Deleted Product</em>
                             }
                         </h3>
-                        {/* TODO: show product variant bar */}
+                        
+                        <p className='variants'>
+                            {
+                                productVariantIds
+                                .map((productVariantId) =>
+                                    productVariants?.find(({id}) => (id === productVariantId))
+                                )
+                                .filter((productVariant): productVariant is Exclude<typeof productVariant, undefined> => !!productVariant)
+                                .map((productVariant, variantIndex) =>
+                                    <VariantIndicator key={variantIndex} model={productVariant} />
+                                )
+                            }
+                        </p>
                         
                         <Image
                             // appearances:
