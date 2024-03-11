@@ -141,6 +141,9 @@ router
                 productVariantGroups : {
                     select : {
                         productVariants : {
+                            where    : {
+                                visibility : { not: 'DRAFT' } // allows access to ProductVariant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                            },
                             select : {
                                 id             : true,
                                 
