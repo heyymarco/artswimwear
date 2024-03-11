@@ -47,6 +47,11 @@ import {
     QuantityInput,
 }                           from '@heymarco/quantity-input'
 
+// internal components:
+import {
+    VariantIndicator,
+}                           from '@/components/VariantIndicator'
+
 // stores:
 import type {
     // types:
@@ -144,6 +149,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     // fn props:
     const product          = productList?.entities?.[productId];
     const productUnitPrice = product?.price;
+    const productVariants  = product?.productVariantGroups.flat();
     const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
     
     
@@ -197,6 +203,19 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                     : <em>Deleted Product</em>
                 }
             </h3>
+            
+            <p className='variants'>
+                {
+                    productVariantIds
+                    .map((productVariantId) =>
+                        productVariants?.find(({id}) => (id === productVariantId))
+                    )
+                    .filter((productVariant): productVariant is Exclude<typeof productVariant, undefined> => !!productVariant)
+                    .map((productVariant, variantIndex) =>
+                        <VariantIndicator key={variantIndex} model={productVariant} />
+                    )
+                }
+            </p>
             
             <Image
                 // appearances:

@@ -91,6 +91,7 @@ export default () => [
         gridTemplate : [[
             '"image    image              image    image" max-content',
             '"title    title              title    title" max-content',
+            '"variants variants        variants variants" max-content',
             '".....    labelUnitPrice unitPrice ........" max-content',
             '".....    labelQuantity   quantity ........" max-content',
             '"subPrice subPrice        subPrice subPrice" max-content',
@@ -100,6 +101,7 @@ export default () => [
         ...ifScreenWidthAtLeast('sm', {
             gridTemplate : [[
                 '"image title              title" max-content',
+                '"image variants        variants" max-content',
                 '"image labelUnitPrice unitPrice" max-content',
                 '"image labelQuantity   quantity" max-content',
                 '"image subPrice        subPrice" max-content',
@@ -181,6 +183,22 @@ export default () => [
             ...ifScreenWidthSmallerThan('sm', {
                 textAlign: 'center',
             }),
+        }),
+        ...children('.variants', {
+            // positions:
+            gridArea    : 'variants',
+            
+            
+            
+            // layouts:
+            display  : 'flex',
+            flexWrap : 'wrap',
+            
+            
+            
+            // spacings:
+            margin   : 0,
+            gap      : spacers.xs,
         }),
         ...children(['.unitPrice', '.quantity'], {
             display             : 'grid',

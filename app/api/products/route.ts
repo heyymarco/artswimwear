@@ -15,6 +15,7 @@ import type {
     ProductDetail,
 }                           from '@/models'
 export type {
+    ProductVariantPreview,
     ProductPreview,
     ProductVariantDetail,
     ProductVariantGroupDetail,

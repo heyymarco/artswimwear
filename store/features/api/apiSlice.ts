@@ -26,6 +26,9 @@ import type {
     ProductDetail,
 }                               from '@/app/api/products/route'
 export type {
+    ProductVariantPreview,
+    ProductVariantDetail,
+    ProductVariantGroupDetail,
     ProductPreview,
     ProductDetail,
 }                               from '@/app/api/products/route'
