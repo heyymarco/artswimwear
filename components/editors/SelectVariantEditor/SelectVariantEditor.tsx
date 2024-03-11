@@ -18,7 +18,7 @@ import {
 // heymarco:
 import {
     // utilities:
-    useControllableAndUncontrollable,
+    useControllable,
 }                           from '@heymarco/events'
 
 // internal components:
@@ -57,7 +57,7 @@ interface SelectVariantEditorProps<TElement extends Element = HTMLElement>
         // bases:
         Omit<ListProps<TElement>,
             // values:
-            |'defaultValue' // already taken over
+            |'defaultValue' // not supported
             |'onChange'     // already taken over
             
             // children:
@@ -65,7 +65,6 @@ interface SelectVariantEditorProps<TElement extends Element = HTMLElement>
         >,
         Pick<EditorProps<TElement, ProductVariantDetail['id']|null>,
             // values:
-            |'defaultValue'
             |'value'
             |'onChange'
         >
@@ -77,6 +76,7 @@ interface SelectVariantEditorProps<TElement extends Element = HTMLElement>
     
     // values:
     nullable  ?: boolean
+    value      : ProductVariantDetail['id']|null
 }
 const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: SelectVariantEditorProps<TElement>): JSX.Element|null => {
     // styles:
@@ -94,7 +94,6 @@ const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: Sele
         // values:
         nullable      = true,
         
-        defaultValue  : defaultUncontrollableValue = null,
         value         : controllableValue,
         onChange      : onControllableValueChange,
         
@@ -110,8 +109,7 @@ const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: Sele
     const {
         value              : value,
         triggerValueChange : triggerValueChange,
-    } = useControllableAndUncontrollable<ProductVariantDetail['id']|null>({
-        defaultValue       : defaultUncontrollableValue,
+    } = useControllable<ProductVariantDetail['id']|null>({
         value              : controllableValue,
         onValueChange      : onControllableValueChange,
     });

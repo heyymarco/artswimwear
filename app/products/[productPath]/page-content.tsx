@@ -10,6 +10,10 @@ import {
     // hooks:
     useState,
 }                           from 'react'
+import {
+    ImmerReducer,
+    useImmerReducer,
+}                           from 'use-immer'
 
 // styles:
 import {
@@ -68,6 +72,12 @@ import {
     useCartState,
 }                           from '@/components/Cart/states/cartState'
 
+// models:
+import type {
+    ProductVariantDetail,
+    ProductVariantGroupDetail,
+}                           from '@/models'
+
 // stores:
 import {
     useGetProductDetail,
@@ -83,20 +93,41 @@ import {
 
 
 
+// utilities:
+type ProductVariantsState = (ProductVariantDetail['id']|null)[];
+type SetVariant  = { type: 'set' , payload: { groupIndex: number, productVariantId: ProductVariantDetail['id']|null } }
+type InitVariant = { type: 'init', payload: ProductVariantGroupDetail[] }
+const selectedProductVariantsReducer : ImmerReducer<ProductVariantsState, InitVariant|SetVariant> = (draftState, action) => {
+    switch (action.type) {
+        case 'init':
+            return (
+                action.payload
+                .map(({productVariants}) =>
+                    productVariants[0]?.id ?? null
+                )
+            );
+            break;
+        case 'set':
+            draftState[action.payload.groupIndex]  = action.payload.productVariantId;
+            break;
+    } // switch
+}
+const selectedProductVariantsInitializer = (productVariantGroups: ProductVariantGroupDetail[]|undefined): ProductVariantsState => {
+    if (!productVariantGroups?.length) return [];
+    return (
+        productVariantGroups
+        .map(({productVariants}) =>
+            productVariants[0]?.id ?? null
+        )
+    );
+}
+
+
+
 // react components:
 export function ProductDetailPageContent({ productPath }: { productPath: string }): JSX.Element|null {
     // styles:
     const styleSheet = useProductDetailPageStyleSheet();
-    
-    
-    
-    // states:
-    const {
-        // actions:
-        addProductToCart,
-    } = useCartState();
-    
-    const [addProductQty, setAddProductQty] = useState(1);
     
     
     
@@ -110,9 +141,20 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     
     
     
+    // states:
+    const {
+        // actions:
+        addProductToCart,
+    } = useCartState();
+    
+    const [productQty, setProductQty] = useState<number>(1);
+    const [selectedProductVariants, setSelectedProductVariants] = useImmerReducer(selectedProductVariantsReducer, productDetail?.productVariantGroups, selectedProductVariantsInitializer);
+    
+    
+    
     // handlers:
     const handleQuantityChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber}}) => {
-        setAddProductQty(valueAsNumber);
+        setProductQty(valueAsNumber);
     });
     const handleBuyButtonClick = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         // conditions:
@@ -121,7 +163,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
         
         
         // actions:
-        addProductToCart(productDetail.id, addProductQty);
+        addProductToCart(productDetail.id, productQty);
     });
     
     
@@ -139,6 +181,12 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
             onRetry={refetch}
         />
     );
+    if (!selectedProductVariants.length) {
+        setSelectedProductVariants({
+            type    : 'init',
+            payload : productDetail.productVariantGroups,
+        });
+    } // if
     return (
         <Main
             // classes:
@@ -241,7 +289,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     
                     
                     // values:
-                    value={addProductQty}
+                    value={productQty}
                     
                     
                     
@@ -281,7 +329,14 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                             
                             // values:
                             nullable={false}
-                            defaultValue={productVariants[0]?.id ?? null}
+                            value={selectedProductVariants[groupIndex]}
+                            onChange={(newValue) => setSelectedProductVariants({
+                                type    : 'set',
+                                payload : {
+                                    groupIndex,
+                                    productVariantId: newValue,
+                                },
+                            })}
                         />
                     )}
                 </div>

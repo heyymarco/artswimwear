@@ -52,7 +52,8 @@
     "redux-persist": "^6.0.0",
     "sass": "^1.58.3",
     "sharp": "0.32.6",
-    "typescript": "^5.0.3"
+    "typescript": "^5.0.3",
+    "use-immer": "^0.9.0"
   },
   "devDependencies": {
     "@paypal/paypal-js": "^5.1.4",
