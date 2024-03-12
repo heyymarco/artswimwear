@@ -1945,7 +1945,7 @@ Updating the confirmation is not required.`,
             if (draftOrder.expiresAt <= new Date()) {
                 // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:
                 try {
-                        await revertOrder(prismaTransaction, { draftOrder });
+                    await revertOrder(prismaTransaction, { draftOrder });
                 }
                 catch (error: any) {
                     console.log('error: ', error);
