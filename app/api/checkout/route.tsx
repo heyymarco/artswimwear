@@ -803,19 +803,19 @@ router
     const validFormattedItems : RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'productVariantIds'|'quantity'>>[] = [];
     for (const item of items) {
         // validations:
-        if (!item || (typeof(item) !== 'object'))                                                     throw 'INVALID_JSON';
+        if (!item || (typeof(item) !== 'object'))                                                    throw 'INVALID_JSON';
         const {
             productId,
             productVariantIds,
             quantity,
         } = item;
-        if (typeof(productId) !== 'string')                                                           throw 'INVALID_JSON';
-        if (!productId.length)                                                                        throw 'INVALID_JSON';
-        if (!Array.isArray(productVariantIds))                                                        throw 'INVALID_JSON';
-        if (!productVariantIds.every((productVariantId) => (typeof(productVariantIds) === 'string'))) throw 'INVALID_JSON';
-        if (typeof(quantity)  !== 'number')                                                           throw 'INVALID_JSON';
-        if (!isFinite(quantity) || (quantity < 1))                                                    throw 'INVALID_JSON';
-        if ((quantity % 1))                                                                           throw 'INVALID_JSON';
+        if (typeof(productId) !== 'string')                                                          throw 'INVALID_JSON';
+        if (!productId.length)                                                                       throw 'INVALID_JSON';
+        if (!Array.isArray(productVariantIds))                                                       throw 'INVALID_JSON';
+        if (!productVariantIds.every((productVariantId) => (typeof(productVariantId) === 'string'))) throw 'INVALID_JSON';
+        if (typeof(quantity)  !== 'number')                                                          throw 'INVALID_JSON';
+        if (!isFinite(quantity) || (quantity < 1))                                                   throw 'INVALID_JSON';
+        if ((quantity % 1))                                                                          throw 'INVALID_JSON';
         
         
         
