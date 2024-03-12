@@ -28,6 +28,7 @@ import {
 import type {
     Product,
     ProductVariant,
+    Stock,
     
     Customer,
     CustomerPreference,
@@ -870,8 +871,6 @@ router
                         price          : true,
                         shippingWeight : true,
                         
-                        stock          : true,
-                        
                         productVariantGroups : {
                             select : {
                                 productVariants : {
@@ -893,6 +892,15 @@ router
                             },
                             orderBy : {
                                 sort : 'asc',
+                            },
+                        },
+                        
+                        stocks : {
+                            select : {
+                                id                : true,
+                                
+                                productVariantIds : true,
+                                value             : true,
                             },
                         },
                     },
@@ -977,12 +985,13 @@ router
                         |'name'
                         |'price'
                         |'shippingWeight'
-                        |'stock'
                     >
                     & {
                         productVariantGroups : {
                             productVariants : Pick<ProductVariant, 'id'|'name'|'price'|'shippingWeight'>[]
                         }[],
+                        
+                        stocks : Pick<Stock, 'id'|'productVariantIds'|'value'>[],
                     }
                 >({
                     selectId : (productData) => productData.id,
@@ -1040,10 +1049,31 @@ router
                         });
                         continue;
                     } // if
+                    const selectedProductVariantIds = selectedProductVariants.map(({id}) => id);
                     
                     
                     
-                    const stock = productList[productId]?.stock;
+                    const currentStock = (
+                        product.stocks
+                        .find(({productVariantIds}) =>
+                            (productVariantIds.length === selectedProductVariantIds.length)
+                            &&
+                            (productVariantIds.every((productVariantId) => selectedProductVariantIds.includes(productVariantId)))
+                        )
+                    );
+                    if (currentStock === undefined) {
+                        // if happened (which it shouldn't), we've a invalid database => invalid product:
+                        limitedStockItems.push({
+                            productId,
+                            productVariantIds,
+                            stock: 0,
+                        });
+                        continue;
+                    } // if
+                    
+                    
+                    
+                    const stock = currentStock.value;
                     if (typeof(stock) === 'number') {
                         // insufficient requested product stock => invalid product stock:
                         if (quantity > stock) {
@@ -1059,7 +1089,7 @@ router
                         // product validation passed => will be used to reduce current product stock:
                         reduceStockItems.push({
                             productId,
-                            productVariantIds : selectedProductVariants.map(({id}) => id),
+                            productVariantIds : selectedProductVariantIds,
                             quantity,
                         });
                     } // if
@@ -1074,7 +1104,7 @@ router
                     
                     detailedItems.push({
                         productId           : productId,
-                        productVariantIds   : selectedProductVariants.map(({id}) => id),
+                        productVariantIds   : selectedProductVariantIds,
                         productName         : product.name,
                         productVariantNames : selectedProductVariants.map(({name}) => name),
                         
