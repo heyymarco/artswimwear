@@ -27,6 +27,7 @@ import {
 // models:
 import type {
     Product,
+    ProductVariant,
     
     Customer,
     CustomerPreference,
@@ -858,7 +859,7 @@ router
                 prismaTransaction.product.findMany({
                     where  : {
                         id         : { in : validFormattedItems.map((item) => item.productId) },
-                        // TODO: get multi stocks by variants
+                        
                         visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
                     },
                     select : {
@@ -870,7 +871,30 @@ router
                         shippingWeight : true,
                         
                         stock          : true,
-                        // TODO: get multi stocks by variants
+                        
+                        productVariantGroups : {
+                            select : {
+                                productVariants : {
+                                    where    : {
+                                        visibility : { not: 'DRAFT' } // allows access to ProductVariant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                    },
+                                    select : {
+                                        id             : true,
+                                        
+                                        name           : true,
+                                        
+                                        price          : true,
+                                        shippingWeight : true,
+                                    },
+                                    orderBy : {
+                                        sort : 'asc',
+                                    },
+                                },
+                            },
+                            orderBy : {
+                                sort : 'asc',
+                            },
+                        },
                     },
                 }),
                 !simulateOrder ? prismaTransaction.draftOrder.count({
@@ -941,17 +965,25 @@ router
             
             
             const detailedItems    : (Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'> & { productName: string, productVariantNames: string[] })[] = [];
+            /**
+             * Contains non_nullable product stocks to be reduced from current stock
+             */
             const reduceStockItems : (RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'productVariantIds'>> & { quantity: number })[] = [];
             let totalProductPricesConverted = 0, totalProductWeights : number|null = null;
             {
                 const productListAdapter = createEntityAdapter<
-                    Pick<Product,
+                    & Pick<Product,
                         |'id'
                         |'name'
                         |'price'
                         |'shippingWeight'
                         |'stock'
                     >
+                    & {
+                        productVariantGroups : {
+                            productVariants : Pick<ProductVariant, 'id'|'name'|'price'|'shippingWeight'>[]
+                        }[],
+                    }
                 >({
                     selectId : (productData) => productData.id,
                 });
@@ -965,8 +997,42 @@ router
                 const limitedStockItems : LimitedStockItem[] = [];
                 for (const { productId, productVariantIds, quantity } of validFormattedItems) {
                     const product = productList[productId];
-                    // if (!product) throw 'INVALID_PRODUCT_ID';
+                    // unknown productId => invalid product:
                     if (!product) {
+                        limitedStockItems.push({
+                            productId,
+                            productVariantIds,
+                            stock: 0,
+                        });
+                        continue;
+                    } // if
+                    
+                    
+                    
+                    const validExistingProductVariantGroups = product.productVariantGroups;
+                    if (productVariantIds.length !== validExistingProductVariantGroups.length) {
+                        // invalid required productVariantIds => invalid product:
+                        limitedStockItems.push({
+                            productId,
+                            productVariantIds,
+                            stock: 0,
+                        });
+                        continue;
+                    } // if
+                    
+                    
+                    
+                    // get selected productVariant by productVariantGroup:
+                    const selectedProductVariants = (
+                        validExistingProductVariantGroups
+                        .map(({productVariants: validProductVariants}) =>
+                            validProductVariants.find(({id: validProductVariantId}) =>
+                                productVariantIds.includes(validProductVariantId)
+                            )
+                        )
+                    );
+                    if (!selectedProductVariants.every((selectedProductVariant): selectedProductVariant is Exclude<typeof selectedProductVariant, undefined> => (selectedProductVariants !== undefined))) {
+                        // one/some required productVariants are not selected => invalid product:
                         limitedStockItems.push({
                             productId,
                             productVariantIds,
@@ -979,7 +1045,7 @@ router
                     
                     const stock = productList[productId]?.stock;
                     if (typeof(stock) === 'number') {
-                        // if (quantity > stock) throw 'INSUFFICIENT_PRODUCT_STOCK';
+                        // insufficient requested product stock => invalid product stock:
                         if (quantity > stock) {
                             limitedStockItems.push({
                                 productId,
@@ -988,9 +1054,12 @@ router
                             });
                         } // if
                         
+                        
+                        
+                        // product validation passed => will be used to reduce current product stock:
                         reduceStockItems.push({
                             productId,
-                            productVariantIds,
+                            productVariantIds : selectedProductVariants.map(({id}) => id),
                             quantity,
                         });
                     } // if
@@ -1005,9 +1074,9 @@ router
                     
                     detailedItems.push({
                         productId           : productId,
-                        productVariantIds   : productVariantIds,
+                        productVariantIds   : selectedProductVariants.map(({id}) => id),
                         productName         : product.name,
-                        productVariantNames : [], // TODO: add variant names
+                        productVariantNames : selectedProductVariants.map(({name}) => name),
                         
                         price               : unitPriceConverted,
                         shippingWeight      : unitWeight,
