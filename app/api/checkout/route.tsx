@@ -323,90 +323,92 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
         preference: preferenceData,
     ...customerOrGuestData} = customerOrGuest;
     
-    const newOrder = await prismaTransaction.order.create({
-        data   : {
-            orderId          : draftOrder.orderId,
-            
-            items            : {
-                create           : draftOrder.items,
-            },
-            
-            // TODO: connect to existing customer
-            // customer         : {
-            //     connect      : {
-            //         ...customerOrGuestData,
-            //         customerPreference : {
-            //             ...preferenceData,
-            //         },
-            //     },
-            // },
-            guest            : {
-                create           : {
-                    ...customerOrGuestData,
-                    guestPreference : {
-                        create   : preferenceData,
-                    },
+    const [newOrder] = await Promise.all([
+        prismaTransaction.order.create({
+            data   : {
+                orderId          : draftOrder.orderId,
+                
+                items            : {
+                    create           : draftOrder.items,
                 },
-            },
-            
-            shippingAddress  : draftOrder.shippingAddress,
-            shippingCost     : draftOrder.shippingCost,
-            shippingProvider : !draftOrder.shippingProviderId ? undefined : {
-                connect          : {
-                    id           : draftOrder.shippingProviderId,
-                },
-            },
-            
-            payment          : payment,
-            paymentConfirmation : !paymentConfirmationToken ? undefined : {
-                create : {
-                    token: paymentConfirmationToken,
-                },
-            },
-        },
-        // select : {
-        //     id : true,
-        // },
-        include : {
-            items : {
-                select : {
-                    // data:
-                    price          : true,
-                    shippingWeight : true,
-                    quantity       : true,
-                    
-                    // relations:
-                    product        : {
-                        select : {
-                            name   : true,
-                            images : true,
+                
+                // TODO: connect to existing customer
+                // customer         : {
+                //     connect      : {
+                //         ...customerOrGuestData,
+                //         customerPreference : {
+                //             ...preferenceData,
+                //         },
+                //     },
+                // },
+                guest            : {
+                    create           : {
+                        ...customerOrGuestData,
+                        guestPreference : {
+                            create   : preferenceData,
                         },
                     },
                 },
-            },
-            shippingProvider : {
-                select : {
-                    name            : true, // optional for displaying email report
-                    
-                    weightStep      : true, // required for calculating `getMatchingShipping()`
-                    
-                    estimate        : true, // optional for displaying email report
-                    shippingRates   : true, // required for calculating `getMatchingShipping()`
-                    
-                    useSpecificArea : true, // required for calculating `getMatchingShipping()`
-                    countries       : true, // required for calculating `getMatchingShipping()`
+                
+                shippingAddress  : draftOrder.shippingAddress,
+                shippingCost     : draftOrder.shippingCost,
+                shippingProvider : !draftOrder.shippingProviderId ? undefined : {
+                    connect          : {
+                        id           : draftOrder.shippingProviderId,
+                    },
+                },
+                
+                payment          : payment,
+                paymentConfirmation : !paymentConfirmationToken ? undefined : {
+                    create : {
+                        token: paymentConfirmationToken,
+                    },
                 },
             },
-        },
-    });
-    await prismaTransaction.draftOrder.delete({
-        where  : {
-            id : draftOrder.id,
-        },
-        select : {
-            id : true,
-        },
-    });
+            // select : {
+            //     id : true,
+            // },
+            include : {
+                items : {
+                    select : {
+                        // data:
+                        price          : true,
+                        shippingWeight : true,
+                        quantity       : true,
+                        
+                        // relations:
+                        product        : {
+                            select : {
+                                name   : true,
+                                images : true,
+                            },
+                        },
+                    },
+                },
+                shippingProvider : {
+                    select : {
+                        name            : true, // optional for displaying email report
+                        
+                        weightStep      : true, // required for calculating `getMatchingShipping()`
+                        
+                        estimate        : true, // optional for displaying email report
+                        shippingRates   : true, // required for calculating `getMatchingShipping()`
+                        
+                        useSpecificArea : true, // required for calculating `getMatchingShipping()`
+                        countries       : true, // required for calculating `getMatchingShipping()`
+                    },
+                },
+            },
+        }),
+        prismaTransaction.draftOrder.delete({
+            where  : {
+                id : draftOrder.id,
+            },
+            select : {
+                id : true,
+            },
+        }),
+    ]);
     const shippingAddress  = newOrder.shippingAddress;
     const shippingProvider = newOrder.shippingProvider;
     return {
