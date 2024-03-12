@@ -28,6 +28,7 @@ import {
 import type {
     Product,
     ProductVariant,
+    ProductVariantGroup,
     Stock,
     
     Customer,
@@ -875,7 +876,8 @@ router
                         
                         productVariantGroups : {
                             select : {
-                                productVariants : {
+                                hasDedicatedStocks : true,
+                                productVariants    : {
                                     where    : {
                                         visibility : { not: 'DRAFT' } // allows access to ProductVariant with visibility: 'PUBLISHED' but NOT 'DRAFT'
                                     },
@@ -989,9 +991,12 @@ router
                         |'shippingWeight'
                     >
                     & {
-                        productVariantGroups : {
-                            productVariants : Pick<ProductVariant, 'id'|'name'|'price'|'shippingWeight'>[]
-                        }[],
+                        productVariantGroups : (
+                            & Pick<ProductVariantGroup, 'hasDedicatedStocks'>
+                            & {
+                                productVariants : Pick<ProductVariant, 'id'|'name'|'price'|'shippingWeight'>[]
+                            }
+                        )[],
                         
                         stocks : Pick<Stock, 'id'|'productVariantIds'|'value'>[],
                     }
@@ -1036,11 +1041,16 @@ router
                     // get selected productVariant by productVariantGroup:
                     const selectedProductVariants = (
                         validExistingProductVariantGroups
-                        .map(({productVariants: validProductVariants}) =>
-                            validProductVariants.find(({id: validProductVariantId}) =>
+                        .map(({hasDedicatedStocks, productVariants: validProductVariants}) => {
+                            const validProductVariant = validProductVariants.find(({id: validProductVariantId}) =>
                                 productVariantIds.includes(validProductVariantId)
-                            )
-                        )
+                            );
+                            if (validProductVariant === undefined) return undefined;
+                            return {
+                                ...validProductVariant,
+                                hasDedicatedStocks,
+                            };
+                        })
                     );
                     if (!selectedProductVariants.every((selectedProductVariant): selectedProductVariant is Exclude<typeof selectedProductVariant, undefined> => (selectedProductVariants !== undefined))) {
                         // one/some required productVariants are not selected => invalid product:
@@ -1051,16 +1061,17 @@ router
                         });
                         continue;
                     } // if
-                    const selectedProductVariantIds = selectedProductVariants.map(({id}) => id);
+                    const selectedProductVariantIds          = selectedProductVariants.map(({id}) => id);
+                    const selectedProductVariantWithStockIds = selectedProductVariants.filter(({hasDedicatedStocks}) => hasDedicatedStocks).map(({id}) => id);
                     
                     
                     
                     const currentStock = (
                         product.stocks
                         .find(({productVariantIds}) =>
-                            (productVariantIds.length === selectedProductVariantIds.length)
+                            (productVariantIds.length === selectedProductVariantWithStockIds.length)
                             &&
-                            (productVariantIds.every((productVariantId) => selectedProductVariantIds.includes(productVariantId)))
+                            (productVariantIds.every((productVariantId) => selectedProductVariantWithStockIds.includes(productVariantId)))
                         )
                     );
                     if (currentStock === undefined) {
