@@ -437,36 +437,36 @@ type RevertDraftOrder = Pick<DraftOrder,
 > & {
     items : Pick<DraftOrdersOnProducts,
         |'productId'
+        |'productVariantIds'
         
         |'quantity'
     >[]
 }
 const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder } : { draftOrder: RevertDraftOrder }) => {
-    for (const {productId, quantity} of draftOrder.items) {
-        if (!productId) continue;
-        
-        
-        
-        await prismaTransaction.product.update({
+    await Promise.all([
+        ...(draftOrder.items.map(({productId, productVariantIds, quantity}) =>
+            !productId
+            ? undefined
+            : prismaTransaction.stock.updateMany({
+                where  : {
+                    productId         : productId,
+                    value             : { not      : null },
+                    productVariantIds : { hasEvery : productVariantIds },
+                },
+                data   : {
+                    value : { increment : quantity }
+                },
+            })
+        )),
+        prismaTransaction.draftOrder.delete({
             where  : {
-                id : productId,
-            },
-            data   : {
-                stock : { decrement: quantity }
+                id : draftOrder.id,
             },
             select : {
                 id : true,
             },
-        });
-    } // for
-    await prismaTransaction.draftOrder.delete({
-        where  : {
-            id : draftOrder.id,
-        },
-        select : {
-            id : true,
-        },
-    });
+        }),
+    ]);
 }
 
 
