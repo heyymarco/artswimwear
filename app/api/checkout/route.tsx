@@ -1144,7 +1144,7 @@ router
             
             
             //#region decrease product stock
-            await Promise.all(
+            const decreaseStocksPromise = Promise.all(
                 reduceStockItems
                 .map(({stockId, quantity}) =>
                     prismaTransaction.stock.update({
@@ -1425,7 +1425,7 @@ router
             
             
             //#region create a newDraftOrder
-            await prismaTransaction.draftOrder.create({
+            const createNewDraftOrderPromise = prismaTransaction.draftOrder.create({
                 data : {
                     expiresAt                  : new Date(Date.now() + (1 * 60 * 1000)),
                     
@@ -1474,6 +1474,13 @@ router
                 },
             });
             //#endregion create a newDraftOrder
+            
+            
+            
+            await Promise.all([
+                decreaseStocksPromise,
+                createNewDraftOrderPromise,
+            ]);
             
             
             
