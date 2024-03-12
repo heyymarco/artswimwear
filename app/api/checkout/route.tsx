@@ -976,7 +976,7 @@ router
             /**
              * Contains non_nullable product stocks to be reduced from current stock
              */
-            const reduceStockItems : (RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'productVariantIds'>> & { quantity: number })[] = [];
+            const reduceStockItems : (RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'>> & { stockId: string, quantity: number })[] = [];
             let totalProductPricesConverted = 0, totalProductWeights : number|null = null;
             {
                 const productListAdapter = createEntityAdapter<
@@ -1089,7 +1089,7 @@ router
                         // product validation passed => will be used to reduce current product stock:
                         reduceStockItems.push({
                             productId,
-                            productVariantIds : selectedProductVariantIds,
+                            stockId : currentStock.id,
                             quantity,
                         });
                     } // if
@@ -1142,20 +1142,22 @@ router
             
             
             //#region decrease product stock
-            for (const {productId, productVariantIds, quantity} of reduceStockItems) {
-                // TODO: consider the product variants
-                await prismaTransaction.product.update({
-                    where  : {
-                        id : productId,
-                    },
-                    data   : {
-                        stock : { decrement: quantity }
-                    },
-                    select : {
-                        id : true,
-                    },
-                });
-            } // for
+            await Promise.all(
+                reduceStockItems
+                .map(({stockId, quantity}) =>
+                    prismaTransaction.stock.update({
+                        where  : {
+                            id : stockId,
+                        },
+                        data   : {
+                            value : { decrement : quantity },
+                        },
+                        select : {
+                            id : true,
+                        },
+                    })
+                )
+            );
             //#endregion decrease product stock
             
             
