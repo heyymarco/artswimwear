@@ -144,7 +144,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
             {cartItems.map((cartEntry, itemIndex) =>
                 <EditCartItem
                     // identifiers:
-                    key={cartEntry.productId || itemIndex}
+                    key={`${cartEntry.productId}/${cartEntry.productVariantIds.join('/')}` || itemIndex}
                     
                     
                     
