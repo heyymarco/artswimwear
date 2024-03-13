@@ -126,7 +126,7 @@ const selectedProductVariantsInitializer = (initVariantArg: InitVariantArg): Pro
     
     const existingProductInCart = !productDetail ? undefined : (
         cartItems
-        .find(({productId}) =>
+        .findLast(({productId}) =>
             (productId === productDetail.id)
         )
     );
@@ -192,7 +192,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
         )
         ? (
             cartItems
-            .find(({productId, productVariantIds}) =>
+            .findLast(({productId, productVariantIds}) =>
                 (productId === productDetail.id)
                 &&
                 (productVariantIds.length === selectedProductVariants.length)
