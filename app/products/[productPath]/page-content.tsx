@@ -106,17 +106,23 @@ interface InitVariantArg {
     cartItems     : CartEntry[]
 }
 type InitVariant = { type: 'init', payload: InitVariantArg }
-const selectedVariantsReducer : ImmerReducer<VariantsState, InitVariant|SetVariant> = (draftState, action) => {
+const selectedVariantsReducer : ImmerReducer<VariantsState|undefined, InitVariant|SetVariant> = (draftState, action) => {
     switch (action.type) {
         case 'init':
             return selectedVariantsInitializer(action.payload);
             break;
         case 'set':
-            draftState[action.payload.groupIndex]  = action.payload.variantId;
+            if (draftState === undefined) {
+                const newDraftState : VariantsState = [];
+                newDraftState[action.payload.groupIndex]  = action.payload.variantId;
+                return newDraftState;
+            } else {
+                draftState[action.payload.groupIndex]  = action.payload.variantId;
+            } // if
             break;
     } // switch
 }
-const selectedVariantsInitializer = (initVariantArg: InitVariantArg): VariantsState => {
+const selectedVariantsInitializer = (initVariantArg: InitVariantArg): VariantsState|undefined => {
     const {
         productDetail,
         cartItems,
@@ -140,7 +146,7 @@ const selectedVariantsInitializer = (initVariantArg: InitVariantArg): VariantsSt
     
     
     
-    return []; // defaults to no selection
+    return undefined; // defaults to uninitialized
 }
 
 
@@ -186,6 +192,8 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
         (
             !!productDetail
             &&
+            (selectedVariants !== undefined)
+            &&
             selectedVariants.every((selectedVariant): selectedVariant is Exclude<typeof selectedVariant, null> =>
                 (selectedVariant !== null)
             )
@@ -228,6 +236,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     const handleBuyButtonClick = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         // conditions:
         if (!isPageReady) return; // the page is not fully loaded => ignore
+        if (selectedVariants === undefined) return; // variants state is not already initialized
         if (selectedVariants.some((selectedVariant) => (selectedVariant === null))) return; // a/some variants are not selected
         
         
@@ -256,7 +265,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
             onRetry={refetch}
         />
     );
-    if (!selectedVariants.length) {
+    if (selectedVariants === undefined) {
         setSelectedVariants({
             type    : 'init',
             payload : { productDetail, cartItems },
@@ -378,43 +387,45 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     onChange={handleQuantityChange}
                 />
                 
-                <p
-                    // classes:
-                    className={styleSheet.label}
-                >
-                    Select variant:
-                </p>
-                <div className={styleSheet.variants}>
-                    {productDetail.variantGroups.map(({name, variants}, groupIndex) =>
-                        <SelectVariantEditor
-                            // identifiers:
-                            key={groupIndex}
-                            
-                            
-                            
-                            // data:
-                            models={variants}
-                            
-                            
-                            
-                            // variants:
-                            theme='primary'
-                            
-                            
-                            
-                            // values:
-                            nullable={false}
-                            value={selectedVariants[groupIndex]}
-                            onChange={(newValue) => setSelectedVariants({
-                                type    : 'set',
-                                payload : {
-                                    groupIndex,
-                                    variantId: newValue,
-                                },
-                            })}
-                        />
-                    )}
-                </div>
+                {(selectedVariants !== undefined) && (selectedVariants.length > 0) && <>
+                    <p
+                        // classes:
+                        className={styleSheet.label}
+                    >
+                        Select variant:
+                    </p>
+                    <div className={styleSheet.variants}>
+                        {productDetail.variantGroups.map(({name, variants}, groupIndex) =>
+                            <SelectVariantEditor
+                                // identifiers:
+                                key={groupIndex}
+                                
+                                
+                                
+                                // data:
+                                models={variants}
+                                
+                                
+                                
+                                // variants:
+                                theme='primary'
+                                
+                                
+                                
+                                // values:
+                                nullable={false}
+                                value={selectedVariants[groupIndex]}
+                                onChange={(newValue) => setSelectedVariants({
+                                    type    : 'set',
+                                    payload : {
+                                        groupIndex,
+                                        variantId: newValue,
+                                    },
+                                })}
+                            />
+                        )}
+                    </div>
+                </>}
                 
                 <p>
                     <ButtonIcon
