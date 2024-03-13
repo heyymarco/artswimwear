@@ -1479,6 +1479,7 @@ router
                                         id     : detailedItem.productId,
                                     },
                                 },
+                                variantIds     : detailedItem.variantIds,
                                 
                                 price          : usePaypalGateway ? (await paypalRevertCurrencyIfRequired(detailedItem.price)) : detailedItem.price,
                                 shippingWeight : detailedItem.shippingWeight,
