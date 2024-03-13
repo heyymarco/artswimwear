@@ -74,11 +74,16 @@ import {
 
 // models:
 import type {
+    ProductDetail,
     ProductVariantDetail,
     ProductVariantGroupDetail,
 }                           from '@/models'
 
 // stores:
+import type {
+    // types:
+    CartEntry,
+}                           from '@/store/features/cart/cartSlice'
 import {
     useGetProductDetail,
 }                           from '@/store/features/api/apiSlice'
@@ -96,30 +101,46 @@ import {
 // utilities:
 type ProductVariantsState = (ProductVariantDetail['id']|null)[];
 type SetVariant  = { type: 'set' , payload: { groupIndex: number, productVariantId: ProductVariantDetail['id']|null } }
-type InitVariant = { type: 'init', payload: ProductVariantGroupDetail[] }
+interface InitVariantArg {
+    productDetail : ProductDetail|undefined
+    cartItems     : CartEntry[]
+}
+type InitVariant = { type: 'init', payload: InitVariantArg }
 const selectedProductVariantsReducer : ImmerReducer<ProductVariantsState, InitVariant|SetVariant> = (draftState, action) => {
     switch (action.type) {
         case 'init':
-            return (
-                action.payload
-                .map(({productVariants}) =>
-                    productVariants[0]?.id ?? null
-                )
-            );
+            return selectedProductVariantsInitializer(action.payload);
             break;
         case 'set':
             draftState[action.payload.groupIndex]  = action.payload.productVariantId;
             break;
     } // switch
 }
-const selectedProductVariantsInitializer = (productVariantGroups: ProductVariantGroupDetail[]|undefined): ProductVariantsState => {
-    if (!productVariantGroups?.length) return [];
-    return (
-        productVariantGroups
-        .map(({productVariants}) =>
-            productVariants[0]?.id ?? null
+const selectedProductVariantsInitializer = (initVariantArg: InitVariantArg): ProductVariantsState => {
+    const {
+        productDetail,
+        cartItems,
+    } = initVariantArg;
+    
+    
+    
+    const existingProductInCart = !productDetail ? undefined : (
+        cartItems
+        .find(({productId}) =>
+            (productId === productDetail.id)
         )
     );
+    if (existingProductInCart !== undefined) return existingProductInCart.productVariantIds;
+    
+    
+    
+    if (productDetail !== undefined) return productDetail.productVariantGroups.map(({productVariants}) =>
+        productVariants[0]?.id ?? null
+    );
+    
+    
+    
+    return []; // defaults to no selection
 }
 
 
@@ -143,12 +164,21 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     
     // states:
     const {
+        // cart data:
+        cartItems,
+        
+        
+        
         // actions:
         addProductToCart,
     } = useCartState();
     
     const [productQty, setProductQty] = useState<number>(1);
-    const [selectedProductVariants, setSelectedProductVariants] = useImmerReducer(selectedProductVariantsReducer, productDetail?.productVariantGroups, selectedProductVariantsInitializer);
+    const [selectedProductVariants, setSelectedProductVariants] = useImmerReducer(
+        selectedProductVariantsReducer,
+        { productDetail, cartItems },
+        selectedProductVariantsInitializer
+    );
     
     
     
@@ -185,7 +215,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     if (!selectedProductVariants.length) {
         setSelectedProductVariants({
             type    : 'init',
-            payload : productDetail.productVariantGroups,
+            payload : { productDetail, cartItems },
         });
     } // if
     return (
