@@ -294,28 +294,72 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         return totalProductQuantity;
     }, [cartItems]);
     
-    const {totalProductWeight, totalProductPrice} = useMemo<{totalProductWeight: number|null, totalProductPrice: number}>(() => {
-        let totalProductWeight : number|null = null;
+    const {totalProductPrice, totalProductWeight} = useMemo<{totalProductPrice: number, totalProductWeight: number|null}>(() => {
         let totalProductPrice  : number      = 0;
-        for (const {productId, quantity} of cartItems) {
+        let totalProductWeight : number|null = null;
+        for (const {productId, productVariantIds, quantity} of cartItems) {
             const product = productList?.entities?.[productId];
             if (!product) continue;
-            const {price, shippingWeight} = product;
             
             
             
-            if (shippingWeight !== null) { // not a physical product => ignore
-                if (totalProductWeight === null) totalProductWeight = 0; // has a/some physical products => reset the counter from zero if null
-                totalProductWeight += (shippingWeight * quantity);
+            const selectedProductVariants = (
+                product.productVariantGroups
+                .map((productVariants) =>
+                    productVariants.find(({id: productVariantId}) =>
+                        productVariantIds.includes(productVariantId)
+                    )
+                )
+            );
+            if (!selectedProductVariants.every((selectedProductVariant): selectedProductVariant is Exclude<typeof selectedProductVariant, undefined> => (selectedProductVariants !== undefined))) {
+                // one/some required productVariants are not selected => invalid product => ignore
+                continue;
             } // if
             
             
             
-            totalProductPrice += (price * quantity);
+            const unitPrice          = (
+                [
+                    // base price:
+                    product.price,
+                    
+                    // additional prices, based on selected variants:
+                    ...selectedProductVariants.map(({price}) => price),
+                ]
+                .reduce<number|null>((accum, value): number|null => {
+                    if (value === null) return accum;
+                    if (accum === null) return value;
+                    return (accum + value);
+                }, null)
+                ??
+                0
+            );
+            totalProductPrice += (unitPrice * quantity);
+            
+            
+            
+            const unitWeight         = (
+                [
+                    // base shippingWeight:
+                    product.shippingWeight,
+                    
+                    // additional shippingWeight, based on selected variants:
+                    ...selectedProductVariants.map(({shippingWeight}) => shippingWeight),
+                ]
+                .reduce<number|null>((accum, value): number|null => {
+                    if (value === null) return accum;
+                    if (accum === null) return value;
+                    return (accum + value);
+                }, null)
+            );
+            if (unitWeight !== null) { // not a physical product => ignore
+                if (totalProductWeight === null) totalProductWeight = 0; // has a/some physical products => reset the counter from zero if null
+                totalProductWeight += (unitWeight * quantity);
+            } // if
         } // for
         return {
-            totalProductWeight,
             totalProductPrice,
+            totalProductWeight,
         };
     }, [cartItems, productList]);
     

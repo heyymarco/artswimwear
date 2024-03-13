@@ -1109,9 +1109,37 @@ router
                     
                     
                     
-                    const unitPrice          = product.price;
+                    const unitPrice          = (
+                        [
+                            // base price:
+                            product.price,
+                            
+                            // additional prices, based on selected variants:
+                            ...selectedProductVariants.map(({price}) => price),
+                        ]
+                        .reduce<number|null>((accum, value): number|null => {
+                            if (value === null) return accum;
+                            if (accum === null) return value;
+                            return (accum + value);
+                        }, null)
+                        ??
+                        0
+                    );
                     const unitPriceConverted = usePaypalGateway ? (await paypalConvertCurrencyIfRequired(unitPrice)) : unitPrice;
-                    const unitWeight         = product.shippingWeight ?? null;
+                    const unitWeight         = (
+                        [
+                            // base shippingWeight:
+                            product.shippingWeight,
+                            
+                            // additional shippingWeight, based on selected variants:
+                            ...selectedProductVariants.map(({shippingWeight}) => shippingWeight),
+                        ]
+                        .reduce<number|null>((accum, value): number|null => {
+                            if (value === null) return accum;
+                            if (accum === null) return value;
+                            return (accum + value);
+                        }, null)
+                    );
                     
                     
                     
