@@ -9,6 +9,7 @@ import {
     
     // hooks:
     useState,
+    useRef,
 }                           from 'react'
 import {
     ImmerReducer,
@@ -76,7 +77,6 @@ import {
 import type {
     ProductDetail,
     ProductVariantDetail,
-    ProductVariantGroupDetail,
 }                           from '@/models'
 
 // stores:
@@ -171,6 +171,8 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
         
         // actions:
         addProductToCart,
+        changeProductFromCart,
+        showCart,
     } = useCartState();
     
     const [productQty, setProductQty] = useState<number>(1);
@@ -180,11 +182,48 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
         selectedProductVariantsInitializer
     );
     
+    const existingItemInCart = (
+        (
+            !!productDetail
+            &&
+            selectedProductVariants.every((selectedProductVariant): selectedProductVariant is Exclude<typeof selectedProductVariant, null> =>
+                (selectedProductVariant !== null)
+            )
+        )
+        ? (
+            cartItems
+            .find(({productId, productVariantIds}) =>
+                (productId === productDetail.id)
+                &&
+                (productVariantIds.length === selectedProductVariants.length)
+                &&
+                productVariantIds.every((productVariantId) =>
+                    selectedProductVariants.includes(productVariantId)
+                )
+            )
+        )
+        : undefined
+    );
+    const prevExistingItemInCart = useRef<CartEntry|undefined>(existingItemInCart);
+    if (prevExistingItemInCart.current !== existingItemInCart) {
+        prevExistingItemInCart.current = existingItemInCart; // track changes
+        
+        
+        
+        if (!existingItemInCart) {
+            if (productQty !== 1) setProductQty(1); // reset
+        } // if
+    } // if
+    
     
     
     // handlers:
-    const handleQuantityChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber}}) => {
-        setProductQty(valueAsNumber);
+    const handleQuantityChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber: quantity}}) => {
+        if (existingItemInCart) {
+            changeProductFromCart(existingItemInCart.productId, existingItemInCart.productVariantIds, quantity);
+        } else {
+            setProductQty(quantity);
+        } // if
     });
     const handleBuyButtonClick = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         // conditions:
@@ -194,7 +233,12 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
         
         
         // actions:
-        addProductToCart(productDetail.id, selectedProductVariants as string[], productQty);
+        if (existingItemInCart) {
+            showCart();
+        } else {
+            addProductToCart(productDetail.id, selectedProductVariants as string[], productQty);
+            if (productQty !== 1) setProductQty(1); // reset
+        } // if
     });
     
     
@@ -320,7 +364,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     
                     
                     // values:
-                    value={productQty}
+                    value={!!existingItemInCart ? existingItemInCart.quantity : productQty}
                     
                     
                     
@@ -375,14 +419,14 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                 <p>
                     <ButtonIcon
                         // appearances:
-                        icon='add_shopping_cart'
+                        icon={!!existingItemInCart ? 'shopping_cart' : 'add_shopping_cart'}
                         
                         
                         
                         // variants:
                         size='lg'
-                        theme='primary'
-                        gradient={true}
+                        theme={!!existingItemInCart ? 'success' : 'primary'}
+                        gradient={!!existingItemInCart ? false : true}
                         
                         
                         
@@ -394,7 +438,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                         // handlers:
                         onClick={handleBuyButtonClick}
                     >
-                        Add to cart
+                        {!!existingItemInCart ? 'Already in Cart' : 'Add to Cart'}
                     </ButtonIcon>
                 </p>
             </Section>
