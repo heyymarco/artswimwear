@@ -27,8 +27,8 @@ import {
 // models:
 import type {
     Product,
-    ProductVariant,
-    ProductVariantGroup,
+    Variant,
+    VariantGroup,
     Stock,
     
     Customer,
@@ -438,21 +438,21 @@ type RevertDraftOrder = Pick<DraftOrder,
 > & {
     items : Pick<DraftOrdersOnProducts,
         |'productId'
-        |'productVariantIds'
+        |'variantIds'
         
         |'quantity'
     >[]
 }
 const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder } : { draftOrder: RevertDraftOrder }) => {
     await Promise.all([
-        ...(draftOrder.items.map(({productId, productVariantIds, quantity}) =>
+        ...(draftOrder.items.map(({productId, variantIds, quantity}) =>
             !productId
             ? undefined
             : prismaTransaction.stock.updateMany({
                 where  : {
-                    productId         : productId,
-                    value             : { not      : null },
-                    productVariantIds : { hasEvery : productVariantIds },
+                    productId  : productId,
+                    value      : { not      : null       },
+                    variantIds : { hasEvery : variantIds },
                 },
                 data   : {
                     value : { increment : quantity }
@@ -485,9 +485,9 @@ export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'payme
     captcha       ?: string
 }
 export interface CartEntry {
-    productId          : string
-    productVariantIds  : string[]
-    quantity           : number
+    productId   : string
+    variantIds  : string[]
+    quantity    : number
 }
 export interface CartData {
     // cart data:
@@ -616,9 +616,9 @@ export interface ShippingTrackingDetail
 }
 
 export interface LimitedStockItem {
-    productId          : string
-    productVariantIds  : string[]
-    stock              : number
+    productId   : string
+    variantIds  : string[]
+    stock       : number
 }
 class OutOfStockError extends Error {
     limitedStockItems : LimitedStockItem[];
@@ -803,29 +803,29 @@ router
     type RequiredNonNullable<T> = {
         [P in keyof T]: NonNullable<T[P]>
     };
-    const validFormattedItems : RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'productVariantIds'|'quantity'>>[] = [];
+    const validFormattedItems : RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'variantIds'|'quantity'>>[] = [];
     for (const item of items) {
         // validations:
-        if (!item || (typeof(item) !== 'object'))                                                    throw 'INVALID_JSON';
+        if (!item || (typeof(item) !== 'object'))                               throw 'INVALID_JSON';
         const {
             productId,
-            productVariantIds,
+            variantIds,
             quantity,
         } = item;
-        if (typeof(productId) !== 'string')                                                          throw 'INVALID_JSON';
-        if (!productId.length)                                                                       throw 'INVALID_JSON';
-        if (!Array.isArray(productVariantIds))                                                       throw 'INVALID_JSON';
-        if (!productVariantIds.every((productVariantId) => (typeof(productVariantId) === 'string'))) throw 'INVALID_JSON';
-        if (typeof(quantity)  !== 'number')                                                          throw 'INVALID_JSON';
-        if (!isFinite(quantity) || (quantity < 1))                                                   throw 'INVALID_JSON';
-        if ((quantity % 1))                                                                          throw 'INVALID_JSON';
+        if (typeof(productId) !== 'string')                                     throw 'INVALID_JSON';
+        if (!productId.length)                                                  throw 'INVALID_JSON';
+        if (!Array.isArray(variantIds))                                         throw 'INVALID_JSON';
+        if (!variantIds.every((variantId) => (typeof(variantId) === 'string'))) throw 'INVALID_JSON';
+        if (typeof(quantity)  !== 'number')                                     throw 'INVALID_JSON';
+        if (!isFinite(quantity) || (quantity < 1))                              throw 'INVALID_JSON';
+        if ((quantity % 1))                                                     throw 'INVALID_JSON';
         
         
         
         // collects:
         validFormattedItems.push({
             productId,
-            productVariantIds,
+            variantIds,
             quantity,
         });
     } // for
@@ -874,12 +874,12 @@ router
                         price          : true,
                         shippingWeight : true,
                         
-                        productVariantGroups : {
+                        variantGroups : {
                             select : {
                                 hasDedicatedStocks : true,
-                                productVariants    : {
+                                variants           : {
                                     where    : {
-                                        visibility : { not: 'DRAFT' } // allows access to ProductVariant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                        visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
                                     },
                                     select : {
                                         id             : true,
@@ -901,10 +901,10 @@ router
                         
                         stocks : {
                             select : {
-                                id                : true,
+                                id         : true,
                                 
-                                productVariantIds : true,
-                                value             : true,
+                                variantIds : true,
+                                value      : true,
                             },
                         },
                     },
@@ -976,7 +976,7 @@ router
             
             
             
-            const detailedItems    : (Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'> & { productName: string, productVariantNames: string[] })[] = [];
+            const detailedItems    : (Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'> & { productName: string, variantNames: string[] })[] = [];
             /**
              * Contains non_nullable product stocks to be reduced from current stock
              */
@@ -991,14 +991,14 @@ router
                         |'shippingWeight'
                     >
                     & {
-                        productVariantGroups : (
-                            & Pick<ProductVariantGroup, 'hasDedicatedStocks'>
+                        variantGroups : (
+                            & Pick<VariantGroup, 'hasDedicatedStocks'>
                             & {
-                                productVariants : Pick<ProductVariant, 'id'|'name'|'price'|'shippingWeight'>[]
+                                variants : Pick<Variant, 'id'|'name'|'price'|'shippingWeight'>[]
                             }
                         )[],
                         
-                        stocks : Pick<Stock, 'id'|'productVariantIds'|'value'>[],
+                        stocks : Pick<Stock, 'id'|'variantIds'|'value'>[],
                     }
                 >({
                     selectId : (productData) => productData.id,
@@ -1011,13 +1011,13 @@ router
                 
                 
                 const limitedStockItems : LimitedStockItem[] = [];
-                for (const { productId, productVariantIds, quantity } of validFormattedItems) {
+                for (const { productId, variantIds, quantity } of validFormattedItems) {
                     const product = productList[productId];
                     // unknown productId => invalid product:
                     if (!product) {
                         limitedStockItems.push({
                             productId,
-                            productVariantIds,
+                            variantIds,
                             stock: 0,
                         });
                         continue;
@@ -1025,12 +1025,12 @@ router
                     
                     
                     
-                    const validExistingProductVariantGroups = product.productVariantGroups;
-                    if (productVariantIds.length !== validExistingProductVariantGroups.length) {
-                        // invalid required productVariantIds => invalid product:
+                    const validExistingVariantGroups = product.variantGroups;
+                    if (variantIds.length !== validExistingVariantGroups.length) {
+                        // invalid required variantIds => invalid product:
                         limitedStockItems.push({
                             productId,
-                            productVariantIds,
+                            variantIds,
                             stock: 0,
                         });
                         continue;
@@ -1038,47 +1038,47 @@ router
                     
                     
                     
-                    // get selected productVariant by productVariantGroup:
-                    const selectedProductVariants = (
-                        validExistingProductVariantGroups
-                        .map(({hasDedicatedStocks, productVariants: validProductVariants}) => {
-                            const validProductVariant = validProductVariants.find(({id: validProductVariantId}) =>
-                                productVariantIds.includes(validProductVariantId)
+                    // get selected variant by variantGroup:
+                    const selectedVariants = (
+                        validExistingVariantGroups
+                        .map(({hasDedicatedStocks, variants: validVariants}) => {
+                            const validVariant = validVariants.find(({id: validVariantId}) =>
+                                variantIds.includes(validVariantId)
                             );
-                            if (validProductVariant === undefined) return undefined;
+                            if (validVariant === undefined) return undefined;
                             return {
-                                ...validProductVariant,
+                                ...validVariant,
                                 hasDedicatedStocks,
                             };
                         })
                     );
-                    if (!selectedProductVariants.every((selectedProductVariant): selectedProductVariant is Exclude<typeof selectedProductVariant, undefined> => (selectedProductVariants !== undefined))) {
-                        // one/some required productVariants are not selected => invalid product:
+                    if (!selectedVariants.every((selectedVariant): selectedVariant is Exclude<typeof selectedVariant, undefined> => (selectedVariants !== undefined))) {
+                        // one/some required variants are not selected => invalid product:
                         limitedStockItems.push({
                             productId,
-                            productVariantIds,
+                            variantIds,
                             stock: 0,
                         });
                         continue;
                     } // if
-                    const selectedProductVariantIds          = selectedProductVariants.map(({id}) => id);
-                    const selectedProductVariantWithStockIds = selectedProductVariants.filter(({hasDedicatedStocks}) => hasDedicatedStocks).map(({id}) => id);
+                    const selectedVariantIds          = selectedVariants.map(({id}) => id);
+                    const selectedVariantWithStockIds = selectedVariants.filter(({hasDedicatedStocks}) => hasDedicatedStocks).map(({id}) => id);
                     
                     
                     
                     const currentStock = (
                         product.stocks
-                        .find(({productVariantIds}) =>
-                            (productVariantIds.length === selectedProductVariantWithStockIds.length)
+                        .find(({variantIds}) =>
+                            (variantIds.length === selectedVariantWithStockIds.length)
                             &&
-                            (productVariantIds.every((productVariantId) => selectedProductVariantWithStockIds.includes(productVariantId)))
+                            (variantIds.every((variantId) => selectedVariantWithStockIds.includes(variantId)))
                         )
                     );
                     if (currentStock === undefined) {
                         // if happened (which it shouldn't), we've a invalid database => invalid product:
                         limitedStockItems.push({
                             productId,
-                            productVariantIds,
+                            variantIds,
                             stock: 0,
                         });
                         continue;
@@ -1092,7 +1092,7 @@ router
                         if (quantity > stock) {
                             limitedStockItems.push({
                                 productId,
-                                productVariantIds,
+                                variantIds,
                                 stock,
                             });
                         } // if
@@ -1115,7 +1115,7 @@ router
                             product.price,
                             
                             // additional prices, based on selected variants:
-                            ...selectedProductVariants.map(({price}) => price),
+                            ...selectedVariants.map(({price}) => price),
                         ]
                         .reduce<number|null>((accum, value): number|null => {
                             if (value === null) return accum;
@@ -1132,7 +1132,7 @@ router
                             product.shippingWeight,
                             
                             // additional shippingWeight, based on selected variants:
-                            ...selectedProductVariants.map(({shippingWeight}) => shippingWeight),
+                            ...selectedVariants.map(({shippingWeight}) => shippingWeight),
                         ]
                         .reduce<number|null>((accum, value): number|null => {
                             if (value === null) return accum;
@@ -1144,14 +1144,14 @@ router
                     
                     
                     detailedItems.push({
-                        productId           : productId,
-                        productVariantIds   : selectedProductVariantIds,
-                        productName         : product.name,
-                        productVariantNames : selectedProductVariants.map(({name}) => name),
+                        productId      : productId,
+                        variantIds     : selectedVariantIds,
+                        productName    : product.name,
+                        variantNames   : selectedVariants.map(({name}) => name),
                         
-                        price               : unitPriceConverted,
-                        shippingWeight      : unitWeight,
-                        quantity            : quantity,
+                        price          : unitPriceConverted,
+                        shippingWeight : unitWeight,
+                        quantity       : quantity,
                     });
                     
                     
@@ -1292,7 +1292,7 @@ router
                             items                     : detailedItems.map((detailedItem) => ({
                                 // name string required
                                 // The item name or title.
-                                name                  : detailedItem.productName + (!detailedItem.productVariantNames.length ? '' : `(${detailedItem.productVariantNames.join(', ')})`),
+                                name                  : detailedItem.productName + (!detailedItem.variantNames.length ? '' : `(${detailedItem.variantNames.join(', ')})`),
                                 
                                 // unit_amount Money required
                                 // The item price or rate per unit.
@@ -1949,23 +1949,23 @@ Updating the confirmation is not required.`,
         ([paymentResponse, paymentConfirmationToken, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, string|undefined, OrderAndData|undefined, EntityState<CountryPreview>]> => {
             //#region verify draftOrder_id
             const requiredSelect = {
-                id                        : true,
-                expiresAt                 : true,
+                id                     : true,
+                expiresAt              : true,
                 
-                orderId                   : true,
+                orderId                : true,
                 
-                shippingAddress           : true,
-                shippingCost              : true,
-                shippingProviderId        : true,
+                shippingAddress        : true,
+                shippingCost           : true,
+                shippingProviderId     : true,
                 
                 items : {
                     select : {
-                        productId         : true,
-                        productVariantIds : true,
+                        productId      : true,
+                        variantIds     : true,
                         
-                        price             : true,
-                        shippingWeight    : true,
-                        quantity          : true,
+                        price          : true,
+                        shippingWeight : true,
+                        quantity       : true,
                     },
                 },
             };

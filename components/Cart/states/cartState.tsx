@@ -134,9 +134,9 @@ export interface CartStateBase {
     
     
     // actions:
-    addProductToCart      : (productId: string, productVariantIds: string[], quantity?: number) => void
-    deleteProductFromCart : (productId: string, productVariantIds: string[], options?: { showConfirm?: boolean }) => Promise<void>
-    changeProductFromCart : (productId: string, productVariantIds: string[], quantity: number, options?: { showConfirm?: boolean }) => Promise<void>
+    addProductToCart      : (productId: string, variantIds: string[], quantity?: number) => void
+    deleteProductFromCart : (productId: string, variantIds: string[], options?: { showConfirm?: boolean }) => Promise<void>
+    changeProductFromCart : (productId: string, variantIds: string[], quantity: number, options?: { showConfirm?: boolean }) => Promise<void>
     clearProductsFromCart : () => void
     trimProductsFromCart  : (limitedStockItems: LimitedStockItem[], options?: { showConfirm?: boolean, showPaymentCanceled?: boolean }) => Promise<void>
     
@@ -297,22 +297,22 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const {totalProductPrice, totalProductWeight} = useMemo<{totalProductPrice: number, totalProductWeight: number|null}>(() => {
         let totalProductPrice  : number      = 0;
         let totalProductWeight : number|null = null;
-        for (const {productId, productVariantIds, quantity} of cartItems) {
+        for (const {productId, variantIds, quantity} of cartItems) {
             const product = productList?.entities?.[productId];
             if (!product) continue;
             
             
             
-            const selectedProductVariants = (
-                product.productVariantGroups
-                .map((productVariants) =>
-                    productVariants.find(({id: productVariantId}) =>
-                        productVariantIds.includes(productVariantId)
+            const selectedVariants = (
+                product.variantGroups
+                .map((variants) =>
+                    variants.find(({id: variantId}) =>
+                        variantIds.includes(variantId)
                     )
                 )
             );
-            if (!selectedProductVariants.every((selectedProductVariant): selectedProductVariant is Exclude<typeof selectedProductVariant, undefined> => (selectedProductVariants !== undefined))) {
-                // one/some required productVariants are not selected => invalid product => ignore
+            if (!selectedVariants.every((selectedVariant): selectedVariant is Exclude<typeof selectedVariant, undefined> => (selectedVariants !== undefined))) {
+                // one/some required variants are not selected => invalid product => ignore
                 continue;
             } // if
             
@@ -324,7 +324,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     product.price,
                     
                     // additional prices, based on selected variants:
-                    ...selectedProductVariants.map(({price}) => price),
+                    ...selectedVariants.map(({price}) => price),
                 ]
                 .reduce<number|null>((accum, value): number|null => {
                     if (value === null) return accum;
@@ -344,7 +344,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     product.shippingWeight,
                     
                     // additional shippingWeight, based on selected variants:
-                    ...selectedProductVariants.map(({shippingWeight}) => shippingWeight),
+                    ...selectedVariants.map(({shippingWeight}) => shippingWeight),
                 ]
                 .reduce<number|null>((accum, value): number|null => {
                     if (value === null) return accum;
@@ -383,24 +383,24 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // clean up invalid productId(s):
-        const invalidProducts = cartItems.filter(({productId, productVariantIds}) => {
+        const invalidProducts = cartItems.filter(({productId, variantIds}) => {
             const validProductIds = productList.ids;
             if (!validProductIds.includes(productId)) return true; // invalid
             
-            const validProductVariantGroups = productList.entities[productId]?.productVariantGroups ?? [];
-            const validProductVariantIds    = validProductVariantGroups.flat().map(({id}) => id)    ?? [];
-            if (productVariantIds.length !== validProductVariantGroups.length) return true; // invalid
-            if (!productVariantIds.every((productVariantId) => validProductVariantIds.includes(productVariantId))) return true; // invalid
+            const validVariantGroups = productList.entities[productId]?.variantGroups ?? [];
+            const validVariantIds    = validVariantGroups.flat().map(({id}) => id)    ?? [];
+            if (variantIds.length !== validVariantGroups.length) return true; // invalid
+            if (!variantIds.every((variantId) => validVariantIds.includes(variantId))) return true; // invalid
             
             return false; // valid
         });
         if (invalidProducts.length) {
             trimProductsFromCart(
                 invalidProducts
-                .map(({productId, productVariantIds}) => ({
-                    productId         : productId,
-                    productVariantIds : productVariantIds,
-                    stock             : 0,
+                .map(({productId, variantIds}) => ({
+                    productId  : productId,
+                    variantIds : variantIds,
+                    stock      : 0,
                 }))
             );
         } // if
@@ -417,11 +417,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stable callbacks:
-    const addProductToCart      = useEvent((productId: string, productVariantIds: string[], quantity: number = 1): void => {
+    const addProductToCart      = useEvent((productId: string, variantIds: string[], quantity: number = 1): void => {
         // actions:
-        dispatch(reduxAddProductToCart({ productId, productVariantIds, quantity }));
+        dispatch(reduxAddProductToCart({ productId, variantIds, quantity }));
     });
-    const deleteProductFromCart = useEvent(async (productId: string, productVariantIds: string[], options?: { showConfirm?: boolean }): Promise<void> => {
+    const deleteProductFromCart = useEvent(async (productId: string, variantIds: string[], options?: { showConfirm?: boolean }): Promise<void> => {
         // conditions:
         if (options?.showConfirm ?? true) {
             if (
@@ -448,15 +448,15 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // actions:
-        dispatch(reduxDeleteProductFromCart({ productId, productVariantIds }));
+        dispatch(reduxDeleteProductFromCart({ productId, variantIds }));
     });
-    const changeProductFromCart = useEvent(async (productId: string, productVariantIds: string[], quantity: number, options?: { showConfirm?: boolean }): Promise<void> => {
+    const changeProductFromCart = useEvent(async (productId: string, variantIds: string[], quantity: number, options?: { showConfirm?: boolean }): Promise<void> => {
         // actions:
         if (quantity > 0) {
-            dispatch(reduxChangeProductFromCart({ productId, productVariantIds, quantity }));
+            dispatch(reduxChangeProductFromCart({ productId, variantIds, quantity }));
         }
         else {
-            await deleteProductFromCart(productId, productVariantIds, options);
+            await deleteProductFromCart(productId, variantIds, options);
         } // if
     });
     const clearProductsFromCart = useEvent((): void => {

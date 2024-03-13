@@ -76,7 +76,7 @@ import {
 // models:
 import type {
     ProductDetail,
-    ProductVariantDetail,
+    VariantDetail,
 }                           from '@/models'
 
 // stores:
@@ -99,24 +99,24 @@ import {
 
 
 // utilities:
-type ProductVariantsState = (ProductVariantDetail['id']|null)[];
-type SetVariant  = { type: 'set' , payload: { groupIndex: number, productVariantId: ProductVariantDetail['id']|null } }
+type VariantsState = (VariantDetail['id']|null)[];
+type SetVariant  = { type: 'set' , payload: { groupIndex: number, variantId: VariantDetail['id']|null } }
 interface InitVariantArg {
     productDetail : ProductDetail|undefined
     cartItems     : CartEntry[]
 }
 type InitVariant = { type: 'init', payload: InitVariantArg }
-const selectedProductVariantsReducer : ImmerReducer<ProductVariantsState, InitVariant|SetVariant> = (draftState, action) => {
+const selectedVariantsReducer : ImmerReducer<VariantsState, InitVariant|SetVariant> = (draftState, action) => {
     switch (action.type) {
         case 'init':
-            return selectedProductVariantsInitializer(action.payload);
+            return selectedVariantsInitializer(action.payload);
             break;
         case 'set':
-            draftState[action.payload.groupIndex]  = action.payload.productVariantId;
+            draftState[action.payload.groupIndex]  = action.payload.variantId;
             break;
     } // switch
 }
-const selectedProductVariantsInitializer = (initVariantArg: InitVariantArg): ProductVariantsState => {
+const selectedVariantsInitializer = (initVariantArg: InitVariantArg): VariantsState => {
     const {
         productDetail,
         cartItems,
@@ -130,12 +130,12 @@ const selectedProductVariantsInitializer = (initVariantArg: InitVariantArg): Pro
             (productId === productDetail.id)
         )
     );
-    if (existingProductInCart !== undefined) return existingProductInCart.productVariantIds;
+    if (existingProductInCart !== undefined) return existingProductInCart.variantIds;
     
     
     
-    if (productDetail !== undefined) return productDetail.productVariantGroups.map(({productVariants}) =>
-        productVariants[0]?.id ?? null
+    if (productDetail !== undefined) return productDetail.variantGroups.map(({variants}) =>
+        variants[0]?.id ?? null
     );
     
     
@@ -176,29 +176,29 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     } = useCartState();
     
     const [productQty, setProductQty] = useState<number>(1);
-    const [selectedProductVariants, setSelectedProductVariants] = useImmerReducer(
-        selectedProductVariantsReducer,
+    const [selectedVariants, setSelectedVariants] = useImmerReducer(
+        selectedVariantsReducer,
         { productDetail, cartItems },
-        selectedProductVariantsInitializer
+        selectedVariantsInitializer
     );
     
     const existingItemInCart = (
         (
             !!productDetail
             &&
-            selectedProductVariants.every((selectedProductVariant): selectedProductVariant is Exclude<typeof selectedProductVariant, null> =>
-                (selectedProductVariant !== null)
+            selectedVariants.every((selectedVariant): selectedVariant is Exclude<typeof selectedVariant, null> =>
+                (selectedVariant !== null)
             )
         )
         ? (
             cartItems
-            .findLast(({productId, productVariantIds}) =>
+            .findLast(({productId, variantIds}) =>
                 (productId === productDetail.id)
                 &&
-                (productVariantIds.length === selectedProductVariants.length)
+                (variantIds.length === selectedVariants.length)
                 &&
-                productVariantIds.every((productVariantId) =>
-                    selectedProductVariants.includes(productVariantId)
+                variantIds.every((variantId) =>
+                    selectedVariants.includes(variantId)
                 )
             )
         )
@@ -220,7 +220,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     // handlers:
     const handleQuantityChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber: quantity}}) => {
         if (existingItemInCart) {
-            changeProductFromCart(existingItemInCart.productId, existingItemInCart.productVariantIds, quantity);
+            changeProductFromCart(existingItemInCart.productId, existingItemInCart.variantIds, quantity);
         } else {
             setProductQty(quantity);
         } // if
@@ -228,7 +228,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     const handleBuyButtonClick = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         // conditions:
         if (!isPageReady) return; // the page is not fully loaded => ignore
-        if (selectedProductVariants.some((selectedProductVariant) => (selectedProductVariant === null))) return; // a/some variants are not selected
+        if (selectedVariants.some((selectedVariant) => (selectedVariant === null))) return; // a/some variants are not selected
         
         
         
@@ -236,7 +236,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
         if (existingItemInCart) {
             showCart();
         } else {
-            addProductToCart(productDetail.id, selectedProductVariants as string[], productQty);
+            addProductToCart(productDetail.id, selectedVariants as string[], productQty);
             if (productQty !== 1) setProductQty(1); // reset
         } // if
     });
@@ -256,8 +256,8 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
             onRetry={refetch}
         />
     );
-    if (!selectedProductVariants.length) {
-        setSelectedProductVariants({
+    if (!selectedVariants.length) {
+        setSelectedVariants({
             type    : 'init',
             payload : { productDetail, cartItems },
         });
@@ -385,7 +385,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     Select variant:
                 </p>
                 <div className={styleSheet.variants}>
-                    {productDetail.productVariantGroups.map(({name, productVariants}, groupIndex) =>
+                    {productDetail.variantGroups.map(({name, variants}, groupIndex) =>
                         <SelectVariantEditor
                             // identifiers:
                             key={groupIndex}
@@ -393,7 +393,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                             
                             
                             // data:
-                            models={productVariants}
+                            models={variants}
                             
                             
                             
@@ -404,12 +404,12 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                             
                             // values:
                             nullable={false}
-                            value={selectedProductVariants[groupIndex]}
-                            onChange={(newValue) => setSelectedProductVariants({
+                            value={selectedVariants[groupIndex]}
+                            onChange={(newValue) => setSelectedVariants({
                                 type    : 'set',
                                 payload : {
                                     groupIndex,
-                                    productVariantId: newValue,
+                                    variantId: newValue,
                                 },
                             })}
                         />

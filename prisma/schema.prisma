@@ -40,13 +40,13 @@ model Product {
     images                  String[]
     
     // relations:
-    orders                  OrdersOnProducts[]      // some Product(s) may have some related Order(s)         // many to many
-    draftOrders             DraftOrdersOnProducts[] // some Product(s) may have some related DraftOrder(s)    // many to many
+    orders                  OrdersOnProducts[]      // some Product(s) may have some related Order(s)      // many to many
+    draftOrders             DraftOrdersOnProducts[] // some Product(s) may have some related DraftOrder(s) // many to many
     
-    productVariantGroups    ProductVariantGroup[]   // a Product may have some related ProductVariantGroup(s) // one  to many
-    stocks                  Stock[]                 // a Product may have some related Stock(s)               // one  to many
+    variantGroups           VariantGroup[]          // a Product may have some related VariantGroup(s)     // one  to many
+    stocks                  Stock[]                 // a Product may have some related Stock(s)            // one  to many
 }
-model ProductVariantGroup {
+model VariantGroup {
     // records:
     id                      String                  @id @default(cuid()) @map("_id")
     createdAt               DateTime                @default(now())
@@ -59,23 +59,23 @@ model ProductVariantGroup {
     hasDedicatedStocks      Boolean
     
     // relations:
-    productVariants         ProductVariant[]        // a ProductVariantGroup may have some related ProductVariant(s) // one  to many
+    variants                Variant[]               // a VariantGroup may have some related Variant(s) // one  to many
     
     productId               String
-    product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related ProductVariantGroup(s) if the Product deleted
+    product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related VariantGroup(s) if the Product deleted
 }
-enum ProductVariantVisibility {
+enum VariantVisibility {
     PUBLISHED
     DRAFT
 }
-model ProductVariant {
+model Variant {
     // records:
     id                      String                  @id @default(cuid()) @map("_id")
     createdAt               DateTime                @default(now())
     updatedAt               DateTime                @updatedAt
     
     // data:
-    visibility              ProductVariantVisibility
+    visibility              VariantVisibility
     sort                    Int
     
     name                    String
@@ -86,8 +86,8 @@ model ProductVariant {
     images                  String[]
     
     // relations:
-    productVariantGroupId   String
-    productVariantGroup     ProductVariantGroup     @relation(fields: [productVariantGroupId], references: [id], onDelete: Cascade) // delete the related ProductVariant(s) if the ProductVariantGroup deleted
+    variantGroupId          String
+    variantGroup            VariantGroup            @relation(fields: [variantGroupId], references: [id], onDelete: Cascade) // delete the related Variant(s) if the VariantGroup deleted
 }
 model TemplateVariantGroup {
     // records:
@@ -109,7 +109,7 @@ model TemplateVariant {
     updatedAt               DateTime                @updatedAt
     
     // data:
-    visibility              ProductVariantVisibility
+    visibility              VariantVisibility
     sort                    Int
     
     name                    String
@@ -134,7 +134,7 @@ model Stock {
     productId               String
     product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related Stock(s) if the Product deleted
     
-    productVariantIds       String[]                // manual relation foreign key(s)
+    variantIds              String[]                // manual relation foreign key(s)
 }
 
 
@@ -387,7 +387,7 @@ model OrdersOnProducts {
     productId               String?
     product                 Product?                @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
     
-    productVariantIds       String[]                // manual relation foreign key(s)
+    variantIds              String[]                // manual relation foreign key(s)
 }
 model DraftOrder {
     // records:
@@ -425,7 +425,7 @@ model DraftOrdersOnProducts {
     productId               String?
     product                 Product?                @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
     
-    productVariantIds       String[]                // manual relation foreign key(s)
+    variantIds              String[]                // manual relation foreign key(s)
 }
 model ShippingTracking {
     // records:

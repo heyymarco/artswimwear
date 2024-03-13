@@ -115,10 +115,10 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
             >
                 Changed {isPlural ? 'Items' : 'Item'}
             </ListItem>
-            {limitedStockItems.map(({productId, productVariantIds, stock}, index) => {
+            {limitedStockItems.map(({productId, variantIds, stock}, index) => {
                 // fn props:
                 const product          = productList?.entities?.[productId];
-                const productVariants  = product?.productVariantGroups.flat();
+                const variants         = product?.variantGroups.flat();
                 const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
                 
                 
@@ -147,13 +147,13 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
                         
                         <p className='variants'>
                             {
-                                productVariantIds
-                                .map((productVariantId) =>
-                                    productVariants?.find(({id}) => (id === productVariantId))
+                                variantIds
+                                .map((variantId) =>
+                                    variants?.find(({id}) => (id === variantId))
                                 )
-                                .filter((productVariant): productVariant is Exclude<typeof productVariant, undefined> => !!productVariant)
-                                .map((productVariant, variantIndex) =>
-                                    <VariantIndicator key={variantIndex} model={productVariant} />
+                                .filter((variant): variant is Exclude<typeof variant, undefined> => !!variant)
+                                .map((variant, variantIndex) =>
+                                    <VariantIndicator key={variantIndex} model={variant} />
                                 )
                             }
                         </p>

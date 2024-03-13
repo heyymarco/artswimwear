@@ -86,13 +86,13 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
     
     
     // handlers:
-    const handleChange = useEvent((productId: string, productVariantIds: string[], quantity: number) => {
+    const handleChange = useEvent((productId: string, variantIds: string[], quantity: number) => {
         // actions:
-        changeProductFromCart(productId, productVariantIds, quantity);
+        changeProductFromCart(productId, variantIds, quantity);
     });
-    const handleDelete = useEvent(async (productId: string, productVariantIds: string[]): Promise<void> => {
+    const handleDelete = useEvent(async (productId: string, variantIds: string[]): Promise<void> => {
         // actions:
-        deleteProductFromCart(productId, productVariantIds);
+        deleteProductFromCart(productId, variantIds);
     });
     
     
@@ -144,7 +144,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
             {cartItems.map((cartEntry, itemIndex) =>
                 <EditCartItem
                     // identifiers:
-                    key={`${cartEntry.productId}/${cartEntry.productVariantIds.join('/')}` || itemIndex}
+                    key={`${cartEntry.productId}/${cartEntry.variantIds.join('/')}` || itemIndex}
                     
                     
                     

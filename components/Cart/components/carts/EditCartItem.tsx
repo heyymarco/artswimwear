@@ -97,8 +97,8 @@ export interface EditCartItemProps
     
     
     // handlers:
-    onChange  : (productId: string, productVariantIds: string[], quantity: number) => void
-    onDelete  : (productId: string, productVariantIds: string[]) => void
+    onChange  : (productId: string, variantIds: string[], quantity: number) => void
+    onDelete  : (productId: string, variantIds: string[]) => void
 }
 const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     // styles:
@@ -111,7 +111,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
         // data:
         cartEntry : {
             productId,
-            productVariantIds,
+            variantIds,
             quantity,
         },
         
@@ -147,22 +147,22 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     
     
     // fn props:
-    const product                 = productList?.entities?.[productId];
-    const selectedProductVariants = !product ? undefined : (
-        product.productVariantGroups
-        .map((productVariants) =>
-            productVariants.find(({id: productVariantId}) =>
-                productVariantIds.includes(productVariantId)
+    const product          = productList?.entities?.[productId];
+    const selectedVariants = !product ? undefined : (
+        product.variantGroups
+        .map((variants) =>
+            variants.find(({id: variantId}) =>
+                variantIds.includes(variantId)
             )
         )
     );
-    const productUnitPrice        = (
+    const productUnitPrice = (
         (
             !product
             ||
-            !selectedProductVariants
+            !selectedVariants
             ||
-            (!selectedProductVariants.every((selectedProductVariant): selectedProductVariant is Exclude<typeof selectedProductVariant, undefined> => (selectedProductVariants !== undefined)))
+            (!selectedVariants.every((selectedVariant): selectedVariant is Exclude<typeof selectedVariant, undefined> => (selectedVariants !== undefined)))
         )
         ? undefined
         : (
@@ -171,7 +171,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                 product.price,
                 
                 // additional prices, based on selected variants:
-                ...selectedProductVariants.map(({price}) => price),
+                ...selectedVariants.map(({price}) => price),
             ]
             .reduce<number|null>((accum, value): number|null => {
                 if (value === null) return accum;
@@ -182,8 +182,8 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             0
         )
     );
-    const productVariants         = product?.productVariantGroups.flat();
-    const isProductDeleted        = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
+    const variants         = product?.variantGroups.flat();
+    const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
     
     
     
@@ -191,7 +191,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     const handleChange = useEvent<React.ChangeEventHandler<HTMLInputElement>>(({target: {valueAsNumber}}): void => {
         // actions:
         if (valueAsNumber > 0) {
-            onChange(productId, productVariantIds, valueAsNumber);
+            onChange(productId, variantIds, valueAsNumber);
         }
         else {
             handleDelete();
@@ -199,7 +199,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     });
     const handleDelete = useEvent((): void => {
         // actions:
-        onDelete(productId, productVariantIds);
+        onDelete(productId, variantIds);
     });
     
     
@@ -239,13 +239,13 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             
             <p className='variants'>
                 {
-                    productVariantIds
-                    .map((productVariantId) =>
-                        productVariants?.find(({id}) => (id === productVariantId))
+                    variantIds
+                    .map((variantId) =>
+                        variants?.find(({id}) => (id === variantId))
                     )
-                    .filter((productVariant): productVariant is Exclude<typeof productVariant, undefined> => !!productVariant)
-                    .map((productVariant, variantIndex) =>
-                        <VariantIndicator key={variantIndex} model={productVariant} />
+                    .filter((variant): variant is Exclude<typeof variant, undefined> => !!variant)
+                    .map((variant, variantIndex) =>
+                        <VariantIndicator key={variantIndex} model={variant} />
                     )
                 }
             </p>

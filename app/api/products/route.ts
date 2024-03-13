@@ -15,10 +15,10 @@ import type {
     ProductDetail,
 }                           from '@/models'
 export type {
-    ProductVariantPreview,
+    VariantPreview,
     ProductPreview,
-    ProductVariantDetail,
-    ProductVariantGroupDetail,
+    VariantDetail,
+    VariantGroupDetail,
     ProductDetail,
 }                           from '@/models'
 
@@ -79,13 +79,13 @@ router
                     
                     images      : true,
                     
-                    productVariantGroups : {
+                    variantGroups : {
                         select : {
                             name : true,
                             
-                            productVariants : {
+                            variants : {
                                 where    : {
-                                    visibility : { not: 'DRAFT' } // allows access to ProductVariant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                    visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
                                 },
                                 select   : {
                                     id             : true,
@@ -138,11 +138,11 @@ router
                 
                 images               : true,
                 
-                productVariantGroups : {
+                variantGroups : {
                     select : {
-                        productVariants : {
+                        variants : {
                             where    : {
-                                visibility : { not: 'DRAFT' } // allows access to ProductVariant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
                             },
                             select : {
                                 id             : true,
@@ -167,18 +167,18 @@ router
         }))
         .map((product) => {
             const {
-                images,               // take
-                productVariantGroups, // take
+                images,        // take
+                variantGroups, // take
             ...restProduct} = product;
             return {
                 ...restProduct,
-                image                : images?.[0],
-                productVariantGroups : (
-                    productVariantGroups
-                    .map(({productVariants}) =>
-                        productVariants
-                        .map(({images, ...restProductVariantPreview}) => ({
-                            ...restProductVariantPreview,
+                image         : images?.[0],
+                variantGroups : (
+                    variantGroups
+                    .map(({variants}) =>
+                        variants
+                        .map(({images, ...restVariantPreview}) => ({
+                            ...restVariantPreview,
                             image : images?.[0],
                         }))
                     )

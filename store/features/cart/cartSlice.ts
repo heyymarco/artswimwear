@@ -59,26 +59,26 @@ export const cartSlice = createSlice({
     reducers: {
         // version control:
         resetIfInvalid        : (state) => {
-            if ((state.version === 2) && (!state.items.length || Array.isArray(state.items[0].productVariantIds))) return state; // valid   => ignore
+            if ((state.version === 2) && (!state.items.length || Array.isArray(state.items[0].variantIds))) return state; // valid   => ignore
             return initialState; // invalid => reset
         },
         
         
         
         // cart data:
-        addProductToCart      : ({items}, {payload: {productId, productVariantIds, quantity = 1}}: PayloadAction<CartEntry>) => {
+        addProductToCart      : ({items}, {payload: {productId, variantIds, quantity = 1}}: PayloadAction<CartEntry>) => {
             const existingEntry = items.find((entry) =>
                 (entry.productId === productId)
                 &&
-                (entry.productVariantIds.length === productVariantIds.length)
+                (entry.variantIds.length === variantIds.length)
                 &&
-                entry.productVariantIds.every((productVariantId) => productVariantIds.includes(productVariantId))
+                entry.variantIds.every((variantId) => variantIds.includes(variantId))
             );
             if (!existingEntry) {
                 if (quantity > 0) {
                     items.push({  // add new
                         productId,
-                        productVariantIds,
+                        variantIds,
                         quantity, // non_zero quantity
                     });
                 } // if
@@ -87,29 +87,29 @@ export const cartSlice = createSlice({
                 existingEntry.quantity += quantity;
             } // if
         },
-        deleteProductFromCart : ({items}, {payload: {productId, productVariantIds}}: PayloadAction<Pick<CartEntry, 'productId'|'productVariantIds'>>) => {
+        deleteProductFromCart : ({items}, {payload: {productId, variantIds}}: PayloadAction<Pick<CartEntry, 'productId'|'variantIds'>>) => {
             const itemIndex = items.findIndex((entry) =>
                 (entry.productId === productId)
                 &&
-                (entry.productVariantIds.length === productVariantIds.length)
+                (entry.variantIds.length === variantIds.length)
                 &&
-                entry.productVariantIds.every((productVariantId) => productVariantIds.includes(productVariantId))
+                entry.variantIds.every((variantId) => variantIds.includes(variantId))
             );
             if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
         },
-        changeProductFromCart : ({items}, {payload: {productId, productVariantIds, quantity}}: PayloadAction<CartEntry>) => {
+        changeProductFromCart : ({items}, {payload: {productId, variantIds, quantity}}: PayloadAction<CartEntry>) => {
             const existingEntry = items.find((entry) =>
                 (entry.productId === productId)
                 &&
-                (entry.productVariantIds.length === productVariantIds.length)
+                (entry.variantIds.length === variantIds.length)
                 &&
-                entry.productVariantIds.every((productVariantId) => productVariantIds.includes(productVariantId))
+                entry.variantIds.every((variantId) => variantIds.includes(variantId))
             );
             if (!existingEntry) {
                 if (quantity > 0) {
                     items.push({  // add new
                         productId,
-                        productVariantIds,
+                        variantIds,
                         quantity, // non_zero quantity
                     });
                 } // if
@@ -134,13 +134,13 @@ export const cartSlice = createSlice({
             
             
             // update cart:
-            for (const {productId, productVariantIds, stock} of limitedStockItems) {
+            for (const {productId, variantIds, stock} of limitedStockItems) {
                 const existingEntry = items.find((entry) =>
                     (entry.productId === productId)
                     &&
-                    (entry.productVariantIds.length === productVariantIds.length)
+                    (entry.variantIds.length === variantIds.length)
                     &&
-                    entry.productVariantIds.every((productVariantId) => productVariantIds.includes(productVariantId))
+                    entry.variantIds.every((variantId) => variantIds.includes(variantId))
                 );
                 if (!existingEntry) continue;
                 

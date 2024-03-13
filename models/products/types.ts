@@ -1,7 +1,7 @@
 // models:
 import type {
-    ProductVariant,
-    ProductVariantGroup,
+    Variant,
+    VariantGroup,
     Product,
     Stock,
 }                           from '@prisma/client'
@@ -9,9 +9,9 @@ import type {
 
 
 // types:
-export interface ProductVariantPreview
+export interface VariantPreview
     extends
-    Pick<ProductVariant,
+    Pick<Variant,
         |'id'
         
         |'name'
@@ -20,11 +20,11 @@ export interface ProductVariantPreview
         |'shippingWeight'
     >
 {
-    image : Required<ProductVariant>['images'][number]|undefined
+    image : Required<Variant>['images'][number]|undefined
 }
-export interface ProductVariantDetail
+export interface VariantDetail
     extends
-    Pick<ProductVariant,
+    Pick<Variant,
             |'id'
             
             |'name'
@@ -36,13 +36,13 @@ export interface ProductVariantDetail
         >
 {
 }
-export interface ProductVariantGroupDetail
+export interface VariantGroupDetail
     extends
-        Pick<ProductVariantGroup,
+        Pick<VariantGroup,
             |'name'
         >
 {
-    productVariants : ProductVariantDetail[]
+    variants : VariantDetail[]
 }
 
 export interface ProductPreview
@@ -55,8 +55,8 @@ export interface ProductPreview
             |'path'
         >
 {
-    image                : Required<Product>['images'][number]|undefined
-    productVariantGroups : ProductVariantPreview[][]
+    image         : Required<Product>['images'][number]|undefined
+    variantGroups : VariantPreview[][]
 }
 
 export interface ProductDetail
@@ -71,5 +71,5 @@ export interface ProductDetail
             |'images'
         >
 {
-    productVariantGroups : ProductVariantGroupDetail[]
+    variantGroups : VariantGroupDetail[]
 }

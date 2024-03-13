@@ -46,7 +46,7 @@ import {
 
 // models:
 import type {
-    ProductVariantDetail,
+    VariantDetail,
 }                           from '@/models'
 
 
@@ -63,20 +63,20 @@ interface SelectVariantEditorProps<TElement extends Element = HTMLElement>
             // children:
             |'children'     // already taken over
         >,
-        Pick<EditorProps<TElement, ProductVariantDetail['id']|null>,
+        Pick<EditorProps<TElement, VariantDetail['id']|null>,
             // values:
             |'value'
             |'onChange'
         >
 {
     // data:
-    models     : ProductVariantDetail[]
+    models     : VariantDetail[]
     
     
     
     // values:
     nullable  ?: boolean
-    value      : ProductVariantDetail['id']|null
+    value      : VariantDetail['id']|null
 }
 const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: SelectVariantEditorProps<TElement>): JSX.Element|null => {
     // styles:
@@ -109,7 +109,7 @@ const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: Sele
     const {
         value              : value,
         triggerValueChange : triggerValueChange,
-    } = useControllable<ProductVariantDetail['id']|null>({
+    } = useControllable<VariantDetail['id']|null>({
         value              : controllableValue,
         onValueChange      : onControllableValueChange,
     });
@@ -117,7 +117,7 @@ const SelectVariantEditor = <TElement extends Element = HTMLElement>(props: Sele
     
     
     // handlers:
-    const handleChange = useEvent<EditorChangeEventHandler<ProductVariantDetail['id']|null>>((newValue) => {
+    const handleChange = useEvent<EditorChangeEventHandler<VariantDetail['id']|null>>((newValue) => {
         triggerValueChange(newValue, { triggerAt: 'immediately' });
     });
     
