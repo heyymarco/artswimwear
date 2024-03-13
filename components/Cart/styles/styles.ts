@@ -174,6 +174,11 @@ export default () => [
             
             
             
+            // spacings:
+            margin       : 0,
+            
+            
+            
             // typos:
             whiteSpace   : 'normal',
             textOverflow : 'ellipsis', // long text...
