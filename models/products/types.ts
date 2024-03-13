@@ -24,7 +24,7 @@ export interface VariantPreview
 }
 export interface VariantDetail
     extends
-    Pick<Variant,
+        Pick<Variant,
             |'id'
             
             |'name'
