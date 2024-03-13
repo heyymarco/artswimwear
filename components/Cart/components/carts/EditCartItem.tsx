@@ -147,10 +147,43 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     
     
     // fn props:
-    const product          = productList?.entities?.[productId];
-    const productUnitPrice = product?.price;
-    const productVariants  = product?.productVariantGroups.flat();
-    const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
+    const product                 = productList?.entities?.[productId];
+    const selectedProductVariants = !product ? undefined : (
+        product.productVariantGroups
+        .map((productVariants) =>
+            productVariants.find(({id: productVariantId}) =>
+                productVariantIds.includes(productVariantId)
+            )
+        )
+    );
+    const productUnitPrice        = (
+        (
+            !product
+            ||
+            !selectedProductVariants
+            ||
+            (!selectedProductVariants.every((selectedProductVariant): selectedProductVariant is Exclude<typeof selectedProductVariant, undefined> => (selectedProductVariants !== undefined)))
+        )
+        ? undefined
+        : (
+            [
+                // base price:
+                product.price,
+                
+                // additional prices, based on selected variants:
+                ...selectedProductVariants.map(({price}) => price),
+            ]
+            .reduce<number|null>((accum, value): number|null => {
+                if (value === null) return accum;
+                if (accum === null) return value;
+                return (accum + value);
+            }, null)
+            ??
+            0
+        )
+    );
+    const productVariants         = product?.productVariantGroups.flat();
+    const isProductDeleted        = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
     
     
     
