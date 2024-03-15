@@ -244,7 +244,7 @@ const UploadImage = <TElement extends Element = HTMLElement, TValue extends Imag
         
         // upload images:
         selectButtonText                  = 'Select Image',
-        uploadImageType                   = 'image/jpg, image/jpeg, image/png, image/svg',
+        uploadImageType                   = 'image/jpg, image/jpeg, image/png, image/webp',
         
         
         
