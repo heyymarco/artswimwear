@@ -18,7 +18,7 @@ import {
 import {
     uploadMedia,
     deleteMedia,
-}                           from '@/libs/mediaStorage.server'
+}                           from '@/libs/mediaStorage.aws.server'
 import {
     default as sharp,
 }                           from 'sharp'
@@ -160,7 +160,7 @@ router
         const fileName = file.name;
         const fileNameWithoutExt = fileName.match(/^.*(?=\.\w+$)/gi)?.[0] || fileName.split('.')?.[0] || 'image';
         const fileId = await uploadMedia(`${fileNameWithoutExt}.webp`, file.stream().pipeThrough(webImageTransformer), {
-            folder : 'customerProfiles',
+            folder : 'customer-profiles',
         });
         
         

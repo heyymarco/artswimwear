@@ -2,17 +2,7 @@ import {
     // apis:
     put  as uploadBlob,
     del  as deleteBlob,
-    head as infoBlob,
 }                           from '@vercel/blob'
-import {
-    // types:
-    HandleUploadBody,
-    
-    
-    
-    // apis:
-    handleUpload as handleUploadBlob,
-}                           from '@vercel/blob/client'
 
 
 
@@ -36,23 +26,10 @@ export const uploadMedia = async (fileName: string, stream: ReadableStream, opti
         multipart          : false,
     });
     return blobResult.url;
-};
+}
 
 export const deleteMedia = async (imageId: string): Promise<void> => {
     await deleteBlob(imageId, {
         token : process.env.BLOB_READ_WRITE_TOKEN,
     });
-};
-
-export const hasMedia    = async (imageId: string): Promise<boolean> => {
-    try {
-        await infoBlob(imageId, {
-            token : process.env.BLOB_READ_WRITE_TOKEN,
-        });
-        
-        return true; // succeeded => the media is exist
-    }
-    catch {
-        return false; // errored => the media is not exist
-    } // try
-};
+}
