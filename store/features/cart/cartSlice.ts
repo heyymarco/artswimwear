@@ -24,6 +24,11 @@ export type {
     CartData,
 }                           from '@/app/api/checkout/route'
 
+// configs:
+import {
+    paymentConfig,
+}                           from '@/payment.config'
+
 
 
 export interface CartState
@@ -31,27 +36,37 @@ export interface CartState
         CartData
 {
     // version control:
-    version  ?: number,
+    version           ?: number,
+    
+    
+    
+    // accessibilities:
+    preferredCurrency  : string
     
     
     
     // cart dialogs:
-    showCart  : boolean
+    showCart           : boolean
 }
 
 const initialState : CartState = {
     // version control:
-    version   : 2,
+    version            : 2,
+    
+    
+    
+    // accessibilities:
+    preferredCurrency  : paymentConfig.defaultCurrency,
     
     
     
     // cart data:
-    items     : [],
+    items              : [],
     
     
     
     // cart dialogs:
-    showCart  : false,
+    showCart           : false,
 };
 export const cartSlice = createSlice({
     name: 'cart',
@@ -61,6 +76,13 @@ export const cartSlice = createSlice({
         resetIfInvalid        : (state) => {
             if ((state.version === 2) && (!state.items.length || Array.isArray(state.items[0].variantIds))) return state; // valid   => ignore
             return initialState; // invalid => reset
+        },
+        
+        
+        
+        // accessibilities:
+        setPreferredCurrency  : (state, {payload: preferredCurrency = paymentConfig.defaultCurrency}: PayloadAction<string|undefined>) => {
+            state.preferredCurrency = preferredCurrency;
         },
         
         
@@ -178,6 +200,11 @@ export const {
     
     
     
+    // accessibilities:
+    setPreferredCurrency,
+    
+    
+    
     // cart data:
     addProductToCart,
     deleteProductFromCart,
@@ -195,10 +222,8 @@ export const {
 
 
 // selectors:
-export const selectCartTotalQuantity = (state: RootState) => {
-    let counter = 0;
-    for (const item of state.cart.items) counter += item.quantity;
-    return counter;
+export const selectPreferredCurrency = (state: RootState) => {
+    return state.cart.preferredCurrency;
 };
 export const selectCartItems         = (state: RootState) => {
     return state.cart.items;

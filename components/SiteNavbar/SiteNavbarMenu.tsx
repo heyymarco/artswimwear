@@ -46,6 +46,9 @@ import {
     SiteLogo,
 }                           from './SiteLogo'
 import {
+    CurrencyMenu,
+}                           from './CurrencyMenu'
+import {
     SignInMenu,
 }                           from './SignInMenu'
 
@@ -177,6 +180,7 @@ const SiteNavbarMenu = ({
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
                     <NavItem href='https://www.instagram.com/'><Icon icon='instagram' size='lg' /></NavItem>
                     
+                    <CurrencyMenu />
                     {navbarExpanded && !isCartEmpty && <ListItem<HTMLElement>
                         // refs:
                         elmRef={setCartTogglerRef}

@@ -153,10 +153,14 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     // handlers:
     const router = useRouter();
     const pathname = usePathname();
-    const handleClick = useEvent(() => {
+    const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
+        
+        
+        
         if (isFullySignedOut) {
             router.push(signInPath);
-            toggleList(false);
+            toggleList(false); // collapse the <Navbar> manually
         }
         else if (isFullySignedIn) {
             if (shownMenu) {
@@ -200,7 +204,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                             signOut();
                             break;
                     } // switch
-                    toggleList(false);
+                    toggleList(false); // collapse the <Navbar> manually
                 });
             } // if
         } // if
