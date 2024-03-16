@@ -1,5 +1,6 @@
 import type {
     CurrencyCode,
+    CurrencyConversionRounding,
 }   from './commerce.config'
 
 
@@ -8,7 +9,7 @@ export interface PaymentConfig {
     paypal : {
         supportedCurrencies        : CurrencyCode[]
         defaultCurrency            : CurrencyCode
-        currencyConversionRounding : 'ROUND'|'FLOOR'|'CEIL'
+        currencyConversionRounding : CurrencyConversionRounding
     },
     preferredPaymentProcessor      : (keyof Omit<PaymentConfig, 'preferredPaymentProcessor'>)[]
 }
