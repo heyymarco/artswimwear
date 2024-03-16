@@ -12,7 +12,7 @@ export interface PaymentConfig {
             defaultCurrency     : CurrencyCode
         },
     },
-    preferredPaymentProcessor   : (keyof PaymentConfig['paymentProcessors'])[]
+    preferredPaymentProcessors  : (keyof PaymentConfig['paymentProcessors'])[]
     currencyConversionRounding  : CurrencyConversionRounding
 }
 export const paymentConfig : PaymentConfig = {
@@ -24,7 +24,7 @@ export const paymentConfig : PaymentConfig = {
             defaultCurrency     : 'IDR',
         },
     },
-    preferredPaymentProcessor   : [
+    preferredPaymentProcessors  : [
         'paypal',
     ],
     currencyConversionRounding  : 'FLOOR',
