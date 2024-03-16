@@ -111,10 +111,6 @@ import {
 
 // configs:
 import {
-    COMMERCE_CURRENCY,
-    COMMERCE_CURRENCY_FRACTION_UNIT,
-    COMMERCE_CURRENCY_FRACTION_ROUNDING,
-    
     PAYPAL_CURRENCY,
     PAYPAL_CURRENCY_FRACTION_UNIT,
     PAYPAL_CURRENCY_FRACTION_ROUNDING,
@@ -225,7 +221,7 @@ const getCurrencyRate = async (toCurrency: string): Promise<number> => {
         rates.clear();
         
         //#region fetch https://www.exchangerate-api.com
-        const exchangeRateResponse = await fetch(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGERATEAPI_KEY}/latest/${COMMERCE_CURRENCY}`);
+        const exchangeRateResponse = await fetch(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGERATEAPI_KEY}/latest/${commerceConfig.defaultCurrency}`);
         if (exchangeRateResponse.status !== 200) throw Error('api error');
         const data = await exchangeRateResponse.json();
         const apiRates = data?.conversion_rates;
@@ -280,13 +276,13 @@ const paypalRevertCurrencyIfRequired  = async <TNumber extends number|null>(from
     
     
     const {rate}       = await getPaypalCurrencyConverter(currency);
-    const fractionUnit = COMMERCE_CURRENCY_FRACTION_UNIT;
+    const fractionUnit = commerceConfig.currencies[commerceConfig.defaultCurrency].fractionUnit;
     const rawReverted  = from * rate;
     const rounding     = {
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[COMMERCE_CURRENCY_FRACTION_ROUNDING];
+    }[commerceConfig.currencies[commerceConfig.defaultCurrency].fractionRounding];
     const fractions    = rounding(rawReverted / fractionUnit);
     const stepped      = fractions * fractionUnit;
     

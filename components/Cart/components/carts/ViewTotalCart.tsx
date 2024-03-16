@@ -18,7 +18,7 @@ import {
 
 // configs:
 import {
-    COMMERCE_CURRENCY,
+    commerceConfig,
 }                           from '@/commerce.config'
 
 
@@ -63,7 +63,7 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
                     ? <>
                         {formatCurrency(totalProductPrice + (totalShippingCost ?? 0))}
                         {' '}
-                        <span>{COMMERCE_CURRENCY}</span>
+                        <span>{commerceConfig.defaultCurrency}</span>
                     </>
                     : 'calculated at next step'
                 }

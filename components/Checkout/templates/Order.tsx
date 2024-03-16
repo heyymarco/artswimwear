@@ -24,7 +24,7 @@ import {
 
 // configs:
 import {
-    COMMERCE_CURRENCY,
+    commerceConfig,
 }                           from '@/commerce.config'
 
 
@@ -212,7 +212,7 @@ const OrderTotalValue = (props: OrderTotalProps): React.ReactNode => {
             }}
         >
             {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
-            <span>{COMMERCE_CURRENCY}</span>
+            <span>{commerceConfig.defaultCurrency}</span>
         </span>
     );
 };
