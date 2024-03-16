@@ -9,23 +9,28 @@ export interface PaymentConfig {
     paymentProcessors : {
         paypal : {
             supportedCurrencies : CurrencyCode[]
-            defaultCurrency     : CurrencyCode
+            defaultCurrency     : PaymentConfig['paymentProcessors']['paypal']['supportedCurrencies'][number]
         },
     },
     preferredPaymentProcessors  : (keyof PaymentConfig['paymentProcessors'])[]
+    currencyOptions             : CurrencyCode[]
     currencyConversionRounding  : CurrencyConversionRounding
 }
 export const paymentConfig : PaymentConfig = {
     paymentProcessors : {
         paypal : {
             supportedCurrencies : [
-                'IDR',
+                'USD',
             ],
-            defaultCurrency     : 'IDR',
+            defaultCurrency     : 'USD',
         },
     },
     preferredPaymentProcessors  : [
         'paypal',
+    ],
+    currencyOptions             : [
+        'USD',
+        'IDR',
     ],
     currencyConversionRounding  : 'FLOOR',
 };
