@@ -8,33 +8,32 @@ export interface CurrencyConfig {
     fractionMin      : number,
     fractionMax      : number,
     fractionUnit     : number,
-    fractionRounding : 'ROUND'|'FLOOR'|'CEIL',
 }
 export interface CurrenciesConfig {
     [currencyCode: CurrencyCode]: CurrencyConfig
 }
 export interface CommerceConfig {
-    locale          : string,
-    currencies      : CurrenciesConfig
-    defaultCurrency : CurrencyCode
+    locale                     : string,
+    currencies                 : CurrenciesConfig
+    defaultCurrency            : CurrencyCode
+    currencyConversionRounding : 'ROUND'|'FLOOR'|'CEIL'
 }
 export const commerceConfig : CommerceConfig = {
-    locale                   : 'id-ID',
-    currencies               : {
+    locale                     : 'id-ID',
+    currencies                 : {
         IDR: {
-            sign             : 'Rp',
-            fractionMin      : 2,
-            fractionMax      : 2,
-            fractionUnit     : 100,
-            fractionRounding : 'ROUND',
+            sign               : 'Rp',
+            fractionMin        : 2,
+            fractionMax        : 2,
+            fractionUnit       : 100,
         },
         USD: {
-            sign             : '$',
-            fractionMin      : 2,
-            fractionMax      : 2,
-            fractionUnit     : 0.01,
-            fractionRounding : 'ROUND',
+            sign               : '$',
+            fractionMin        : 2,
+            fractionMax        : 2,
+            fractionUnit       : 0.01,
         },
     },
-    defaultCurrency          : 'IDR',
+    defaultCurrency            : 'IDR',
+    currencyConversionRounding : 'ROUND',
 };

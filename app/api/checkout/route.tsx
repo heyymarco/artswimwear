@@ -282,7 +282,7 @@ const paypalRevertCurrencyIfRequired  = async <TNumber extends number|null>(from
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[commerceConfig.currencies[commerceConfig.defaultCurrency].fractionRounding];
+    }[commerceConfig.currencyConversionRounding];
     const fractions    = rounding(rawReverted / fractionUnit);
     const stepped      = fractions * fractionUnit;
     
