@@ -7,9 +7,26 @@ import {
     scope,
 }                           from '@cssfn/core'                  // writes css in javascript
 
+// reusable-ui components:
+import {
+    // simple-components:
+    icons,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
 
 
 // styles:
+const usesCurrencyMenuLayout = () => {
+    return style({
+        // sizes:
+        inlineSize : icons.sizeLg,
+        
+        
+        
+        // typos:
+        fontWeight: 700,
+    });
+};
 const usesCurrencyDropdownDropdownLayout = () => {
     return style({
         ...rule('.navbarCollapsed', {
@@ -24,6 +41,10 @@ const usesCurrencyDropdownDropdownLayout = () => {
 
 
 export default () => [
+    scope('currencyMenu', {
+        // layouts:
+        ...usesCurrencyMenuLayout(),
+    }, { specificityWeight: 2 }),
     scope('currencyDropdownDropdown', {
         // layouts:
         ...usesCurrencyDropdownDropdownLayout(),

@@ -43,6 +43,11 @@ import {
     useCartState,
 }                           from '@/components/Cart'
 
+// internals:
+import {
+    useCurrencyMenuStyleSheet,
+}                           from './styles/loader'
+
 
 
 // react components:
@@ -53,6 +58,11 @@ export interface CurrencyMenuProps
 {
 }
 const CurrencyMenu = (props: CurrencyMenuProps): JSX.Element|null => {
+    // styles:
+    const styleSheet = useCurrencyMenuStyleSheet();
+    
+    
+    
     // states:
     const {
         // states:
@@ -147,7 +157,7 @@ const CurrencyMenu = (props: CurrencyMenuProps): JSX.Element|null => {
             
             
             // classes:
-            className={!navbarExpanded ? 'navbarCollapsed' : undefined}
+            className={`${styleSheet.currencyMenu} ${!navbarExpanded ? 'navbarCollapsed' : ''}`}
             
             
             
