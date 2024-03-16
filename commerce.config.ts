@@ -8,11 +8,12 @@ export interface CurrencyConfig {
 export interface CurrenciesConfig {
     [currencyCode: CurrencyCode]: CurrencyConfig
 }
+export type CurrencyConversionRounding = 'ROUND'|'FLOOR'|'CEIL'
 export interface CommerceConfig {
     locale                     : string,
     currencies                 : CurrenciesConfig
     defaultCurrency            : CurrencyCode
-    currencyConversionRounding : 'ROUND'|'FLOOR'|'CEIL'
+    currencyConversionRounding : CurrencyConversionRounding
 }
 export const commerceConfig : CommerceConfig = {
     locale                     : 'id-ID',
