@@ -6,8 +6,8 @@ import type {
 
 
 export interface PaymentConfig {
-    currencyOptions             : CurrencyCode[]
-    defaultCurrency             : PaymentConfig['currencyOptions'][number]
+    paymentCurrencyOptions      : CurrencyCode[]
+    defaultPaymentCurrency      : PaymentConfig['paymentCurrencyOptions'][number]
     
     paymentProcessors           : {
         paypal : {
@@ -20,11 +20,11 @@ export interface PaymentConfig {
     currencyConversionRounding  : CurrencyConversionRounding
 }
 export const paymentConfig : PaymentConfig = {
-    currencyOptions             : [
+    paymentCurrencyOptions      : [
         'USD',
         'IDR',
     ],
-    defaultCurrency             : 'IDR',
+    defaultPaymentCurrency      : 'IDR',
     
     paymentProcessors           : {
         paypal : {

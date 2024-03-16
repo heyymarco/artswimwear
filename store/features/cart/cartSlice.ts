@@ -56,7 +56,7 @@ const initialState : CartState = {
     
     
     // accessibilities:
-    preferredCurrency  : paymentConfig.defaultCurrency,
+    preferredCurrency  : paymentConfig.defaultPaymentCurrency,
     
     
     
@@ -81,7 +81,7 @@ export const cartSlice = createSlice({
         
         
         // accessibilities:
-        setPreferredCurrency  : (state, {payload: preferredCurrency = paymentConfig.defaultCurrency}: PayloadAction<string|undefined>) => {
+        setPreferredCurrency  : (state, {payload: preferredCurrency = paymentConfig.defaultPaymentCurrency}: PayloadAction<string|undefined>) => {
             state.preferredCurrency = preferredCurrency;
         },
         

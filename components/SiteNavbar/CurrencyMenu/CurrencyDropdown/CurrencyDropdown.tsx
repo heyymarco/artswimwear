@@ -96,9 +96,9 @@ const CurrencyDropdown = (props: CurrencyDropdownProps): JSX.Element|null => {
                 </Dropdown>
             }
         >
-            {paymentConfig.currencyOptions.map((currencyOption) =>
-                <ListItem key={currencyOption} onClick={(event) => handleClose(event, currencyOption)}>
-                    {currencyOption}
+            {paymentConfig.paymentCurrencyOptions.map((paymentCurrencyOption) =>
+                <ListItem key={paymentCurrencyOption} onClick={(event) => handleClose(event, paymentCurrencyOption)}>
+                    {paymentCurrencyOption}
                 </ListItem>
             )}
         </DropdownList>
