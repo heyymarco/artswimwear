@@ -1,7 +1,3 @@
-export const PAYPAL_CURRENCY                     = 'USD'
-export const PAYPAL_CURRENCY_FRACTION_UNIT       = 0.01
-export const PAYPAL_CURRENCY_FRACTION_ROUNDING   = 'FLOOR'
-
 export type CurrencyCode = string & {}
 export interface CurrencyConfig {
     sign             : string,

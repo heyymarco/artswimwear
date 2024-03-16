@@ -74,8 +74,8 @@ import {
 
 // configs:
 import {
-    PAYPAL_CURRENCY,
-}                           from '@/commerce.config'
+    paymentConfig,
+}                           from '@/payment.config'
 
 
 
@@ -123,7 +123,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
         'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
         'data-client-token' : paymentToken?.paymentToken,
-        currency            : PAYPAL_CURRENCY,
+        currency            : paymentConfig.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
         intent              : 'capture',
         components          : 'hosted-fields,buttons',
     }), [paymentToken?.paymentToken]);

@@ -111,12 +111,11 @@ import {
 
 // configs:
 import {
-    PAYPAL_CURRENCY,
-    PAYPAL_CURRENCY_FRACTION_UNIT,
-    PAYPAL_CURRENCY_FRACTION_ROUNDING,
-    
     commerceConfig,
 }                           from '@/commerce.config'
+import {
+    paymentConfig,
+}                           from '@/payment.config'
 import {
     checkoutConfig,
 }                           from '@/checkout.config.server'
@@ -215,7 +214,11 @@ const currencyExchange = {
     expires : new Date(),
     rates   : new Map<string, number>(),
 };
-const getCurrencyRate = async (toCurrency: string): Promise<number> => {
+/**
+ * Gets the conversion ratio  
+ * from app's default currency to `targetCurrency`.
+ */
+const getCurrencyRate = async (targetCurrency: string): Promise<number> => {
     if (currencyExchange.expires <= new Date()) {
         const rates = currencyExchange.rates;
         rates.clear();
@@ -236,32 +239,42 @@ const getCurrencyRate = async (toCurrency: string): Promise<number> => {
     
     
     
-    const toRate = currencyExchange.rates.get(toCurrency);
+    const toRate = currencyExchange.rates.get(targetCurrency);
     if (toRate === undefined) throw Error('unknown currency');
     return 1 / toRate;
 }
 
 
 
-const getPaypalCurrencyConverter      = async (currency?: string): Promise<{rate: number, fractionUnit: number}> => {
+/**
+ * Gets the conversion ratio (and fraction unit)
+ * from user's preferred currency  
+ * to the **most suitable currency** (no conversion if possible) that paypal's supports.
+ */
+const getPaypalCurrencyConverter      = async (paypalCurrency?: string): Promise<{rate: number, fractionUnit: number}> => {
     return {
-        rate         : await getCurrencyRate(currency || PAYPAL_CURRENCY),
-        fractionUnit : PAYPAL_CURRENCY_FRACTION_UNIT,
+        rate         : await getCurrencyRate(paypalCurrency || paymentConfig.paypal.defaultCurrency), // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+        fractionUnit : commerceConfig.currencies[paypalCurrency || paymentConfig.paypal.defaultCurrency].fractionUnit, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
     };
 }
-const paypalConvertCurrencyIfRequired = async <TNumber extends number|null>(from: TNumber, currency?: string): Promise<TNumber> => {
+/**
+ * Converts:  
+ * from user's preferred currency  
+ * to the **most suitable currency** (no conversion if possible) that paypal's supports.
+ */
+const paypalConvertCurrencyIfRequired = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency?: string): Promise<TNumber> => {
     // conditions:
-    if (typeof(from) !== 'number') return from;
+    if (typeof(fromAmount) !== 'number') return fromAmount;
     
     
     
-    const {rate, fractionUnit} = await getPaypalCurrencyConverter(currency);
-    const rawConverted         = from / rate;
+    const {rate, fractionUnit} = await getPaypalCurrencyConverter(paypalCurrency);
+    const rawConverted         = fromAmount / rate;
     const rounding     = {
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[PAYPAL_CURRENCY_FRACTION_ROUNDING];
+    }[paymentConfig.paypal.currencyConversionRounding];
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
@@ -269,15 +282,20 @@ const paypalConvertCurrencyIfRequired = async <TNumber extends number|null>(from
     
     return trimNumber(stepped) as TNumber;
 }
-const paypalRevertCurrencyIfRequired  = async <TNumber extends number|null>(from: TNumber, currency?: string): Promise<TNumber> => {
+/**
+ * Reverts back:  
+ * to user's preferred currency  
+ * from the **most suitable currency** (no conversion if possible) that paypal's supports.
+ */
+const paypalRevertCurrencyIfRequired  = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency?: string): Promise<TNumber> => {
     // conditions:
-    if (typeof(from) !== 'number') return from;
+    if (typeof(fromAmount) !== 'number') return fromAmount;
     
     
     
-    const {rate}       = await getPaypalCurrencyConverter(currency);
+    const {rate}       = await getPaypalCurrencyConverter(paypalCurrency);
     const fractionUnit = commerceConfig.currencies[commerceConfig.defaultCurrency].fractionUnit;
-    const rawReverted  = from * rate;
+    const rawReverted  = fromAmount * rate;
     const rounding     = {
         ROUND : Math.round,
         CEIL  : Math.ceil,
@@ -972,7 +990,7 @@ router
             
             
             
-            const detailedItems    : (Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'> & { productName: string, variantNames: string[] })[] = [];
+            const detailedItems    : (Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'|'price'> & { productName: string, variantNames: string[], priceConverted: DraftOrdersOnProducts['price'] })[] = [];
             /**
              * Contains non_nullable product stocks to be reduced from current stock
              */
@@ -1145,7 +1163,7 @@ router
                         productName    : product.name,
                         variantNames   : selectedVariants.map(({name}) => name),
                         
-                        price          : unitPriceConverted,
+                        priceConverted : unitPriceConverted,
                         shippingWeight : unitWeight,
                         quantity       : quantity,
                     });
@@ -1222,7 +1240,7 @@ router
                             amount                    : {
                                 // currency_code string required
                                 // The three-character ISO-4217 currency code that identifies the currency.
-                                currency_code         : PAYPAL_CURRENCY,
+                                currency_code         : paymentConfig.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
                                 
                                 // value string required
                                 /*
@@ -1250,14 +1268,14 @@ router
                                     // item_total Money|undefined
                                     // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                                     item_total        : {
-                                        currency_code : PAYPAL_CURRENCY,
+                                        currency_code : paymentConfig.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
                                         value         : totalProductPricesConverted,
                                     },
                                     
                                     // shipping Money|undefined
                                     // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
                                     shipping          : (totalShippingCostConverted === null) ? undefined : {
-                                        currency_code : PAYPAL_CURRENCY,
+                                        currency_code : paymentConfig.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
                                         value         : totalShippingCostConverted,
                                     },
                                     
@@ -1295,7 +1313,7 @@ router
                                 unit_amount           : {
                                     // currency_code string required
                                     // The three-character ISO-4217 currency code that identifies the currency.
-                                    currency_code     : PAYPAL_CURRENCY,
+                                    currency_code     : paymentConfig.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
                                     
                                     // value string required
                                     /*
@@ -1303,7 +1321,7 @@ router
                                         * An integer for currencies like JPY that are not typically fractional.
                                         * A decimal fraction for currencies like TND that are subdivided into thousandths.
                                     */
-                                    value             : detailedItem.price,
+                                    value             : detailedItem.priceConverted,
                                 },
                                 
                                 // quantity string required
@@ -1477,7 +1495,7 @@ router
                                 },
                                 variantIds     : detailedItem.variantIds,
                                 
-                                price          : usePaypalGateway ? (await paypalRevertCurrencyIfRequired(detailedItem.price)) : detailedItem.price,
+                                price          : usePaypalGateway ? (await paypalRevertCurrencyIfRequired(detailedItem.priceConverted)) : detailedItem.priceConverted,
                                 shippingWeight : detailedItem.shippingWeight,
                                 quantity       : detailedItem.quantity,
                             };
