@@ -64,12 +64,12 @@ import {
 import {
     SignInDropdownResult,
     SignInDropdown,
-}                           from '../SignInDropdown'
+}                           from './SignInDropdown'
 
 // internals:
 import {
     useSignInMenuStyleSheet,
-}                           from '../styles/loader'
+}                           from './styles/loader'
 import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
