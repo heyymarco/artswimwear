@@ -253,8 +253,8 @@ const getCurrencyRate = async (targetCurrency: string): Promise<number> => {
  */
 const getPaypalCurrencyConverter      = async (paypalCurrency?: string): Promise<{rate: number, fractionUnit: number}> => {
     return {
-        rate         : await getCurrencyRate(paypalCurrency || paymentConfig.paypal.defaultCurrency), // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
-        fractionUnit : commerceConfig.currencies[paypalCurrency || paymentConfig.paypal.defaultCurrency].fractionUnit, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+        rate         : await getCurrencyRate(paypalCurrency || paymentConfig.paymentProcessors.paypal.defaultCurrency), // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+        fractionUnit : commerceConfig.currencies[paypalCurrency || paymentConfig.paymentProcessors.paypal.defaultCurrency].fractionUnit, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
     };
 }
 /**
@@ -274,7 +274,7 @@ const paypalConvertCurrencyIfRequired = async <TNumber extends number|null>(from
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[paymentConfig.paypal.currencyConversionRounding];
+    }[paymentConfig.currencyConversionRounding];
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
@@ -1240,7 +1240,7 @@ router
                             amount                    : {
                                 // currency_code string required
                                 // The three-character ISO-4217 currency code that identifies the currency.
-                                currency_code         : paymentConfig.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+                                currency_code         : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
                                 
                                 // value string required
                                 /*
@@ -1268,14 +1268,14 @@ router
                                     // item_total Money|undefined
                                     // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                                     item_total        : {
-                                        currency_code : paymentConfig.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+                                        currency_code : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
                                         value         : totalProductPricesConverted,
                                     },
                                     
                                     // shipping Money|undefined
                                     // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
                                     shipping          : (totalShippingCostConverted === null) ? undefined : {
-                                        currency_code : paymentConfig.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+                                        currency_code : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
                                         value         : totalShippingCostConverted,
                                     },
                                     
@@ -1313,7 +1313,7 @@ router
                                 unit_amount           : {
                                     // currency_code string required
                                     // The three-character ISO-4217 currency code that identifies the currency.
-                                    currency_code     : paymentConfig.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+                                    currency_code     : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
                                     
                                     // value string required
                                     /*
