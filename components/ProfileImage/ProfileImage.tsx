@@ -184,9 +184,16 @@ const ProfileImage = (props: ProfileImageProps): JSX.Element|null => {
             setHasValidImage(false); // reset
             (async () => {
                 try {
-                    const response = await fetch(src, { method: 'HEAD' });
+                    const testResult = await new Promise<boolean>((resolve) => {
+                        const testImage = new Image();
+                        testImage.onload  = () => { clearTimeout(cancelAssumeError); resolve(true)  }
+                        testImage.onerror = () => { clearTimeout(cancelAssumeError); resolve(false) }
+                        testImage.setAttribute('loading', 'eager');
+                        testImage.setAttribute('src', src);
+                        const cancelAssumeError = setTimeout(() => resolve(false), 10000);
+                    });
                     if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-                    if (response.ok) { // verified
+                    if (testResult) { // verified
                         validProfileImageCache.set(src, true);
                         setHasValidImage(true); // set
                     } // if
