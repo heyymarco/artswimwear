@@ -6,18 +6,27 @@ import type {
 
 
 export interface PaymentConfig {
-    paymentProcessors : {
+    currencyOptions             : CurrencyCode[]
+    defaultCurrency             : PaymentConfig['currencyOptions'][number]
+    
+    paymentProcessors           : {
         paypal : {
             supportedCurrencies : CurrencyCode[]
             defaultCurrency     : PaymentConfig['paymentProcessors']['paypal']['supportedCurrencies'][number]
         },
     },
     preferredPaymentProcessors  : (keyof PaymentConfig['paymentProcessors'])[]
-    currencyOptions             : CurrencyCode[]
+    
     currencyConversionRounding  : CurrencyConversionRounding
 }
 export const paymentConfig : PaymentConfig = {
-    paymentProcessors : {
+    currencyOptions             : [
+        'USD',
+        'IDR',
+    ],
+    defaultCurrency             : 'IDR',
+    
+    paymentProcessors           : {
         paypal : {
             supportedCurrencies : [
                 'USD',
@@ -28,9 +37,6 @@ export const paymentConfig : PaymentConfig = {
     preferredPaymentProcessors  : [
         'paypal',
     ],
-    currencyOptions             : [
-        'USD',
-        'IDR',
-    ],
+    
     currencyConversionRounding  : 'FLOOR',
 };
