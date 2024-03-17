@@ -63,7 +63,6 @@ router
         const exchangeRateResponse = await fetch(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGERATEAPI_KEY}/latest/${commerceConfig.defaultCurrency}`);
         if (exchangeRateResponse.status !== 200) throw Error('api error');
         const data = await exchangeRateResponse.json();
-        console.log(data);
         const apiRates = data?.conversion_rates;
         if (typeof(apiRates) !== 'object') throw Error('api error');
         for (const currency in apiRates) {
