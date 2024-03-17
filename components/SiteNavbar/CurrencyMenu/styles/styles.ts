@@ -19,7 +19,7 @@ import {
 const usesCurrencyMenuLayout = () => {
     return style({
         // sizes:
-        inlineSize : icons.sizeLg,
+        minInlineSize : icons.sizeLg, // has min size in desktop mode has 100% width in mobile mode
         
         
         
