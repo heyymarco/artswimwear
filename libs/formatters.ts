@@ -4,18 +4,18 @@ import {
 
 
 
-const currencyFormatter = new Intl.NumberFormat(commerceConfig.locale, {
-    style                 : 'currency',
-    currency              : commerceConfig.defaultCurrency,
-    // These options are needed to round to whole numbers if that's what you want.
-    minimumFractionDigits : commerceConfig.currencies[commerceConfig.defaultCurrency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-    maximumFractionDigits : commerceConfig.currencies[commerceConfig.defaultCurrency].fractionMax, // (causes 2500.99 to be printed as $2,501)
-});
-
-
-
-export const formatCurrency = (value?: number|null|undefined): string => {
+export const formatCurrency = (value: number|null|undefined, currency: string = commerceConfig.defaultCurrency): string => {
     if ((value === null) || (value === undefined) || isNaN(value)) return '-';
+    
+    
+    
+    const currencyFormatter = new Intl.NumberFormat(commerceConfig.locale, {
+        style                 : 'currency',
+        currency              : currency,
+        // These options are needed to round to whole numbers if that's what you want.
+        minimumFractionDigits : commerceConfig.currencies[currency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+        maximumFractionDigits : commerceConfig.currencies[currency].fractionMax, // (causes 2500.99 to be printed as $2,501)
+    });
     return currencyFormatter.format(value)
 };
 
