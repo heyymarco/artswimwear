@@ -899,7 +899,7 @@ router
              * Contains non_nullable product stocks to be reduced from current stock
              */
             const reduceStockItems : (RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'>> & { stockId: string, quantity: number })[] = [];
-            let totalProductPricesConverted = 0, totalProductWeights : number|null = null;
+            let totalProductPricesConverted = 0, totalProductWeight : number|null = null;
             {
                 const productListAdapter = createEntityAdapter<
                     & Pick<Product,
@@ -1080,10 +1080,10 @@ router
                     
                     
                     if (unitWeight !== null) {
-                        if (totalProductWeights === null) totalProductWeights = 0; // contains at least 1 PHYSICAL_GOODS
+                        if (totalProductWeight === null) totalProductWeight = 0; // contains at least 1 PHYSICAL_GOODS
                         
-                        totalProductWeights     += unitWeight         * quantity;
-                        totalProductWeights      = trimNumber(totalProductWeights);
+                        totalProductWeight      += unitWeight         * quantity;
+                        totalProductWeight       = trimNumber(totalProductWeight);
                     } // if
                 } // for
                 if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
@@ -1092,8 +1092,8 @@ router
                     paypalOrderId : null,
                 };
             }
-            if ((totalProductWeights != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
-            const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeights, matchingShipping) : null;
+            if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
+            const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeight, matchingShipping) : null;
             const totalShippingCostConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
             const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
             //#endregion validate cart items: check existing products => check product quantities => create detailed items
