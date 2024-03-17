@@ -68,7 +68,7 @@ const getCurrencyConverter = async (targetCurrency: string): Promise<{rate: numb
  * from app's default currency  
  * to the customer's preferred currency.
  */
-export const convertCustomerCurrencyIfRequired = async <TNumber extends number|null>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
+export const convertCustomerCurrencyIfRequired = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;
     
@@ -93,7 +93,7 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
  * to app's default currency  
  * from the customer's preferred currency.
  */
-export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|null>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
+export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;
     
@@ -120,7 +120,7 @@ export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|n
  * from user's preferred currency  
  * to the **most suitable currency** (no conversion if possible) that paypal's supports.
  */
-export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
+export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|null|undefined>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;
     
@@ -145,7 +145,7 @@ export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|n
  * to user's preferred currency  
  * from the **most suitable currency** (no conversion if possible) that paypal's supports.
  */
-export const revertPaypalCurrencyIfRequired    = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
+export const revertPaypalCurrencyIfRequired    = async <TNumber extends number|null|undefined>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;
     
