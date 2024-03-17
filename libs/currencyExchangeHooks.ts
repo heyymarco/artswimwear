@@ -37,7 +37,10 @@ export const useConvertCustomerCurrencyIfRequired = <TNumber extends number|null
     const isMounted = useMountedFlag();
     useEffect(() => {
         // conditions:
-        if (amount === undefined) return;
+        if (typeof(amount) !== 'number') {
+            setConvertedAmount(amount); // undefined|null => nothing to convert
+            return;
+        } // if
         
         
         
