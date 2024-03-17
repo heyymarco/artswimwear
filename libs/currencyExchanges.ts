@@ -115,6 +115,33 @@ export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|n
     
     return trimNumber(stepped) as TNumber;
 }
+/**
+ * Converts:  
+ * from app's default currency  
+ * to app's default currency  
+ * by multiplication of smallest unit of customer's preferred currency.
+ */
+export const trimCustomerCurrencyIfRequired    = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
+    // conditions:
+    if (typeof(fromAmount) !== 'number') return fromAmount;
+    
+    
+    
+    const {rate, fractionUnit} = await getCurrencyConverter(customerCurrency);
+    const rawConverted         = fromAmount / rate;
+    const rounding     = {
+        ROUND : Math.round,
+        CEIL  : Math.ceil,
+        FLOOR : Math.floor,
+    }[paymentConfig.currencyConversionRounding];
+    const fractions            = rounding(rawConverted / fractionUnit);
+    const stepped              = fractions * fractionUnit;
+    const trimmed              = stepped   * rate;
+    
+    
+    
+    return trimNumber(trimmed) as TNumber;
+}
 
 /**
  * Converts:  
