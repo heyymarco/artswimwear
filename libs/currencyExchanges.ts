@@ -65,10 +65,62 @@ const getCurrencyConverter = async (targetCurrency: string): Promise<{rate: numb
 // exchangers:
 /**
  * Converts:  
+ * from app's default currency  
+ * to the customer's preferred currency.
+ */
+export const convertCustomerCurrencyIfRequired = async <TNumber extends number|null>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
+    // conditions:
+    if (typeof(fromAmount) !== 'number') return fromAmount;
+    
+    
+    
+    const {rate, fractionUnit} = await getCurrencyConverter(customerCurrency);
+    const rawConverted         = fromAmount / rate;
+    const rounding     = {
+        ROUND : Math.round,
+        CEIL  : Math.ceil,
+        FLOOR : Math.floor,
+    }[paymentConfig.currencyConversionRounding];
+    const fractions            = rounding(rawConverted / fractionUnit);
+    const stepped              = fractions * fractionUnit;
+    
+    
+    
+    return trimNumber(stepped) as TNumber;
+}
+/**
+ * Reverts back:  
+ * to app's default currency  
+ * from the customer's preferred currency.
+ */
+export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|null>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
+    // conditions:
+    if (typeof(fromAmount) !== 'number') return fromAmount;
+    
+    
+    
+    const {rate}       = await getCurrencyConverter(customerCurrency);
+    const fractionUnit = commerceConfig.currencies[commerceConfig.defaultCurrency].fractionUnit;
+    const rawReverted  = fromAmount * rate;
+    const rounding     = {
+        ROUND : Math.round,
+        CEIL  : Math.ceil,
+        FLOOR : Math.floor,
+    }[commerceConfig.currencyConversionRounding];
+    const fractions    = rounding(rawReverted / fractionUnit);
+    const stepped      = fractions * fractionUnit;
+    
+    
+    
+    return trimNumber(stepped) as TNumber;
+}
+
+/**
+ * Converts:  
  * from user's preferred currency  
  * to the **most suitable currency** (no conversion if possible) that paypal's supports.
  */
-export const convertPaypalCurrencyIfRequired = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
+export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;
     
@@ -93,7 +145,7 @@ export const convertPaypalCurrencyIfRequired = async <TNumber extends number|nul
  * to user's preferred currency  
  * from the **most suitable currency** (no conversion if possible) that paypal's supports.
  */
-export const revertPaypalCurrencyIfRequired  = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
+export const revertPaypalCurrencyIfRequired    = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;
     
