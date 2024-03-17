@@ -16,7 +16,10 @@ export const formatCurrency = (value: number|null|undefined, currency: string = 
         minimumFractionDigits : commerceConfig.currencies[currency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
         maximumFractionDigits : commerceConfig.currencies[currency].fractionMax, // (causes 2500.99 to be printed as $2,501)
     });
-    return currencyFormatter.format(value)
+    return (
+        currencyFormatter.format(value)
+        .replace(/^([^\d\s]+)(\s*)/, '$1 ') // add a space after currencySymbol if not already exist
+    );
 };
 
 
