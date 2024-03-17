@@ -25,18 +25,18 @@ import {
 
 // utilities:
 import {
-    convertCustomerCurrencyIfRequired,
-}                           from '@/libs/currencyExchanges'
-import {
     formatCurrency,
 }                           from '@/libs/formatters'
+import {
+    convertCustomerCurrencyIfRequired,
+}                           from '@/libs/currencyExchanges'
 
 
 
 // utilities:
 const amountReducer = (accum: number|null|undefined, current: number|null|undefined): number|null|undefined => {
-    if (typeof(current) !== 'number') return accum; // ignore null
-    if (typeof(accum) !== 'number') return current;
+    if (typeof(current) !== 'number') return accum;   // ignore null
+    if (typeof(accum)   !== 'number') return current; // ignore null
     return (accum + current);
 };
 
@@ -44,7 +44,7 @@ const amountReducer = (accum: number|null|undefined, current: number|null|undefi
 
 // react components:
 export interface CurrencyDisplayProps {
-    amount : number|null|undefined|Array<number|null|undefined>
+    amount : number|null|undefined | Array<number|null|undefined>
 }
 const CurrencyDisplay = ({amount: amountRaw}: CurrencyDisplayProps): JSX.Element|null => {
     // states:
@@ -52,17 +52,17 @@ const CurrencyDisplay = ({amount: amountRaw}: CurrencyDisplayProps): JSX.Element
         // accessibilities:
         preferredCurrency,
     } = useCartState();
+    const [convertedAmount, setConvertedAmount] = useState<number|null|undefined>(undefined);
     
     
     
-    // states:
-    const amount = (
+    // effects:
+    const isMounted = useMountedFlag();
+    const amount    = (
         !Array.isArray(amountRaw)
         ? amountRaw
-        : amountRaw.reduce(amountReducer, null)
+        : amountRaw.reduce(amountReducer, undefined)
     );
-    const [convertedAmount, setConvertedAmount] = useState<number|null|undefined>(undefined);
-    const isMounted = useMountedFlag();
     useEffect(() => {
         // conditions:
         if (typeof(amount) !== 'number') {
@@ -74,10 +74,7 @@ const CurrencyDisplay = ({amount: amountRaw}: CurrencyDisplayProps): JSX.Element
         
         // actions:
         (async () => {
-            const convertedAmount = await convertCustomerCurrencyIfRequired(
-                amount,
-                preferredCurrency
-            );
+            const convertedAmount = await convertCustomerCurrencyIfRequired(amount, preferredCurrency);
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(convertedAmount);
         })();
