@@ -251,10 +251,10 @@ const getCurrencyRate = async (targetCurrency: string): Promise<number> => {
  * from user's preferred currency  
  * to the **most suitable currency** (no conversion if possible) that paypal's supports.
  */
-const getPaypalCurrencyConverter      = async (paypalCurrency?: string): Promise<{rate: number, fractionUnit: number}> => {
+const getCurrencyConverter            = async (targetCurrency: string): Promise<{rate: number, fractionUnit: number}> => {
     return {
-        rate         : await getCurrencyRate(paypalCurrency || paymentConfig.paymentProcessors.paypal.defaultCurrency), // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
-        fractionUnit : commerceConfig.currencies[paypalCurrency || paymentConfig.paymentProcessors.paypal.defaultCurrency].fractionUnit, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+        rate         : await getCurrencyRate(targetCurrency),
+        fractionUnit : commerceConfig.currencies[targetCurrency].fractionUnit,
     };
 }
 /**
@@ -262,13 +262,13 @@ const getPaypalCurrencyConverter      = async (paypalCurrency?: string): Promise
  * from user's preferred currency  
  * to the **most suitable currency** (no conversion if possible) that paypal's supports.
  */
-const paypalConvertCurrencyIfRequired = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency?: string): Promise<TNumber> => {
+const convertPaypalCurrencyIfRequired = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;
     
     
     
-    const {rate, fractionUnit} = await getPaypalCurrencyConverter(paypalCurrency);
+    const {rate, fractionUnit} = await getCurrencyConverter(paypalCurrency);
     const rawConverted         = fromAmount / rate;
     const rounding     = {
         ROUND : Math.round,
@@ -287,13 +287,13 @@ const paypalConvertCurrencyIfRequired = async <TNumber extends number|null>(from
  * to user's preferred currency  
  * from the **most suitable currency** (no conversion if possible) that paypal's supports.
  */
-const paypalRevertCurrencyIfRequired  = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency?: string): Promise<TNumber> => {
+const revertPaypalCurrencyIfRequired  = async <TNumber extends number|null>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;
     
     
     
-    const {rate}       = await getPaypalCurrencyConverter(paypalCurrency);
+    const {rate}       = await getCurrencyConverter(paypalCurrency);
     const fractionUnit = commerceConfig.currencies[commerceConfig.defaultCurrency].fractionUnit;
     const rawReverted  = fromAmount * rate;
     const rounding     = {
@@ -1139,7 +1139,7 @@ router
                         ??
                         0
                     );
-                    const unitPriceConverted = usePaypalGateway ? (await paypalConvertCurrencyIfRequired(unitPrice)) : unitPrice;
+                    const unitPriceConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(unitPrice)) : unitPrice;
                     const unitWeight         = (
                         [
                             // base shippingWeight:
@@ -1190,7 +1190,7 @@ router
             }
             if ((totalProductWeights != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeights, matchingShipping) : null;
-            const totalShippingCostConverted = usePaypalGateway ? (await paypalConvertCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
+            const totalShippingCostConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
             const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
             //#endregion validate cart items: check existing products => check product quantities => create detailed items
             
@@ -1495,7 +1495,7 @@ router
                                 },
                                 variantIds     : detailedItem.variantIds,
                                 
-                                price          : usePaypalGateway ? (await paypalRevertCurrencyIfRequired(detailedItem.priceConverted)) : detailedItem.priceConverted,
+                                price          : usePaypalGateway ? (await revertPaypalCurrencyIfRequired(detailedItem.priceConverted)) : detailedItem.priceConverted,
                                 shippingWeight : detailedItem.shippingWeight,
                                 quantity       : detailedItem.quantity,
                             };
@@ -1515,7 +1515,7 @@ router
                             zip                    : shippingZip,
                             country                : shippingCountry.toUpperCase(),
                         },
-                        shippingCost               : usePaypalGateway ? (await paypalRevertCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
+                        shippingCost               : usePaypalGateway ? (await revertPaypalCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
                         shippingProvider           : {
                             connect                : {
                                 id                 : shippingProviderId,
@@ -2281,8 +2281,8 @@ Updating the confirmation is not required.`,
                                     brand      : card.brand?.toLowerCase() ?? null,
                                     identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
                                     
-                                    amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
-                                    fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
+                                    amount     : await revertPaypalCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
+                                    fee        : await revertPaypalCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
                                 };
                             } //if
                             
@@ -2293,8 +2293,8 @@ Updating the confirmation is not required.`,
                                     brand      : 'paypal',
                                     identifier : paypal.email_address || null,
                                     
-                                    amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
-                                    fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
+                                    amount     : await revertPaypalCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
+                                    fee        : await revertPaypalCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
                                 };
                             } //if
                             
@@ -2303,8 +2303,8 @@ Updating the confirmation is not required.`,
                                 brand      : null,
                                 identifier : null,
                                 
-                                amount     : await paypalRevertCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
-                                fee        : await paypalRevertCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
+                                amount     : await revertPaypalCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
+                                fee        : await revertPaypalCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
                             };
                         })();
                     }; break;
