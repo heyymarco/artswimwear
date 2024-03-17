@@ -27,16 +27,17 @@ const getCurrencyRate      = async (targetCurrency: string): Promise<number> => 
         const rates = currencyExchange.rates;
         rates.clear();
         
-        //#region fetch https://www.exchangerate-api.com
-        const exchangeRateResponse = await fetch(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGERATEAPI_KEY}/latest/${commerceConfig.defaultCurrency}`);
+        
+        
+        const exchangeRateResponse = await fetch(`/api/currency-exchange`);
         if (exchangeRateResponse.status !== 200) throw Error('api error');
-        const data = await exchangeRateResponse.json();
-        const apiRates = data?.conversion_rates;
+        const apiRates = await exchangeRateResponse.json();
         if (typeof(apiRates) !== 'object') throw Error('api error');
         for (const currency in apiRates) {
             rates.set(currency, apiRates[currency]);
         } // for
-        //#endregion fetch https://www.exchangerate-api.com
+        
+        
         
         currencyExchange.expires = new Date(Date.now() + (1 * 3600 * 1000));
     } // if
