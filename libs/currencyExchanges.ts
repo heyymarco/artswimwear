@@ -44,6 +44,7 @@ export const getCurrencyRate = async (targetCurrency: string): Promise<number> =
             currencyExchange.expires = new Date(Date.now() + (1 * 3600 * 1000));
         })();
         await currencyExchangeUpdatedPromise;
+        currencyExchangeUpdatedPromise = undefined;
     } // if
     
     
