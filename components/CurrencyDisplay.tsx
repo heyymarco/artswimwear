@@ -20,6 +20,7 @@ import {
 
 // internals:
 import {
+    ProductPricePart,
     useCartState,
 }                           from '@/components/Cart/states/cartState'
 
@@ -34,10 +35,10 @@ import {
 
 
 // utilities:
-const amountReducer = (accum: number|null|undefined, value: number|null|undefined): number|null|undefined => {
+const sumReducer = <TNumber extends number|null|undefined>(accum: TNumber, value: TNumber): TNumber => {
     if (typeof(value) !== 'number') return accum; // ignore null
     if (typeof(accum) !== 'number') return value; // ignore null
-    return (accum + value);
+    return (accum + value) as TNumber;
 };
 
 
@@ -49,7 +50,7 @@ export interface CurrencyDisplayProps {
      * `false`: Do not convert the amount, assumes as already *customerPreferenceCurrency*
      */
     convertAmount  : boolean
-    amount         : number|null|undefined | Array<number|null|undefined>
+    amount         : number|null|undefined | Array<ProductPricePart|number|null|undefined>
     multiply      ?: number
 }
 const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
@@ -96,13 +97,39 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
             const summedAmount = (
                 (await Promise.all(
                     amountList
-                    .map((amountItem) =>
-                        convertAmount
-                        ? convertCustomerCurrencyIfRequired(amountItem, preferredCurrency)
-                        : amountItem
-                    )
+                    .flatMap((amountItem): number|null|undefined | Promise<number|null|undefined> => {
+                        if (amountItem && typeof(amountItem) === 'object') {
+                            const {
+                                priceParts,
+                                quantity,
+                            } = amountItem;
+                            
+                            return (
+                                Promise.all(
+                                    priceParts
+                                    .map((pricePart): number | Promise<number> =>
+                                        convertAmount
+                                        ? convertCustomerCurrencyIfRequired(pricePart, preferredCurrency)
+                                        : pricePart
+                                    )
+                                )
+                                .then((priceParts): number =>
+                                    priceParts
+                                    .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
+                                    *
+                                    quantity
+                                )
+                            );
+                        } else {
+                            return (
+                                convertAmount
+                                ? convertCustomerCurrencyIfRequired(amountItem, preferredCurrency)
+                                : amountItem
+                            );
+                        } // if
+                    })
                 ))
-                .reduce(amountReducer, undefined) // may produces ugly_fractional_decimal
+                .reduce(sumReducer, undefined) // may produces ugly_fractional_decimal
             );
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(summedAmount);
