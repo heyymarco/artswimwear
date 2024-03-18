@@ -1117,7 +1117,9 @@ router
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeight, matchingShipping) : null;
             const totalShippingCostTrimmed   = await trimCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency);
             const totalShippingCostConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(totalShippingCostTrimmed)) : totalShippingCostTrimmed;
-            const totalCostConverted         = trimNumber(totalProductPriceConverted + (totalShippingCostConverted ?? 0));
+            const totalCostConverted         = trimNumber( // decimalize summed numbers to avoid producing ugly_fractional_decimal
+                totalProductPriceConverted + (totalShippingCostConverted ?? 0) // may produces ugly_fractional_decimal
+            );
             //#endregion validate cart items: check existing products => check product quantities => create detailed items
             
             
