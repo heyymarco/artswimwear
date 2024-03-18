@@ -615,6 +615,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
+        // accessibilities:
+        preferredCurrency,
+        
+        
+        
         // cart data:
         cartItems : globalCartItems,
         totalProductWeight,
@@ -1318,6 +1323,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
         try {
             const draftOrderDetail = await placeOrder({
+                // currency options:
+                preferredCurrency, // informs the customer's preferredCurrency, so we know the selected currency when he/she made an order
+                
+                
+                
                 // cart item(s):
                 items : cartItems,
                 
@@ -1385,6 +1395,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             try {
                 await placeOrder({
+                    // currency options:
+                    // preferredCurrency, // no need to inform the preferredCurrency, we just check for the available stocks
+                    
+                    
+                    
                     // cart item(s):
                     items : cartItems,
                     

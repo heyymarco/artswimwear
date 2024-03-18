@@ -38,6 +38,7 @@ import type {
     
     Payment,
     PaymentConfirmation,
+    PreferredCurrency,
     DraftOrder,
     DraftOrdersOnProducts,
     ShippingTracking,
@@ -96,6 +97,7 @@ import {
     trimNumber,
 }                           from '@/libs/formatters'
 import {
+    getCurrencyRate,
     convertPaypalCurrencyIfRequired,
     revertPaypalCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
@@ -404,6 +406,9 @@ export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'payme
     simulateOrder ?: boolean
     captcha       ?: string
 }
+export interface CurrencyOptions {
+    preferredCurrency ?: PreferredCurrency['currency']
+}
 export interface CartEntry {
     productId   : string
     variantIds  : string[]
@@ -452,8 +457,9 @@ export interface BillingData {
 }
 export interface PlaceOrderDataBasic
     extends
-        CartData,         // cart item(s)
-        PlaceOrderOptions // options: pay manually | paymentSource
+        CartData,          // cart item(s)
+        PlaceOrderOptions, // options: pay manually | paymentSource
+        CurrencyOptions    // options: preferredCurrency
 {
 }
 export interface PlaceOrderDataWithShippingAddress
@@ -592,9 +598,15 @@ router
     
     //#region validate options
     const {
+        preferredCurrency,
         paymentSource, // options: pay manually | paymentSource
         simulateOrder = false,
     } = placeOrderData;
+    if ((preferredCurrency !== undefined) && ((typeof(preferredCurrency) !== 'string') || !paymentConfig.paymentCurrencyOptions.includes(preferredCurrency))) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
     if ((paymentSource !== undefined) && ((typeof(paymentSource) !== 'string') || !paymentSource)) {
         return NextResponse.json({
             error: 'Invalid data.',
@@ -1408,7 +1420,10 @@ router
                         })),
                     },
                     
-                    preferredCurrency          : null, // TODO: fix this
+                    preferredCurrency          : (!preferredCurrency || (preferredCurrency === commerceConfig.defaultCurrency)) ? null : {
+                        currency               : preferredCurrency,
+                        rate                   : await getCurrencyRate(preferredCurrency),
+                    },
                     
                     ...(hasShippingAddress ? {
                         shippingAddress            : {
