@@ -245,10 +245,10 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
     const [newOrder] = await Promise.all([
         prismaTransaction.order.create({
             data   : {
-                orderId          : draftOrder.orderId,
+                orderId             : draftOrder.orderId,
                 
-                items            : {
-                    create           : draftOrder.items,
+                items               : {
+                    create          : draftOrder.items,
                 },
                 
                 // TODO: connect to existing customer
@@ -260,24 +260,26 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
                 //         },
                 //     },
                 // },
-                guest            : {
-                    create           : {
+                guest               : {
+                    create          : {
                         ...customerOrGuestData,
                         guestPreference : {
-                            create   : preferenceData,
+                            create  : preferenceData,
                         },
                     },
                 },
                 
-                shippingAddress  : draftOrder.shippingAddress,
-                shippingCost     : draftOrder.shippingCost,
-                shippingProvider : !draftOrder.shippingProviderId ? undefined : {
-                    connect          : {
-                        id           : draftOrder.shippingProviderId,
+                preferredCurrency   : draftOrder.preferredCurrency,
+                
+                shippingAddress     : draftOrder.shippingAddress,
+                shippingCost        : draftOrder.shippingCost,
+                shippingProvider    : !draftOrder.shippingProviderId ? undefined : {
+                    connect         : {
+                        id          : draftOrder.shippingProviderId,
                     },
                 },
                 
-                payment          : payment,
+                payment             : payment,
                 paymentConfirmation : !paymentConfirmationToken ? undefined : {
                     create : {
                         token: paymentConfirmationToken,
@@ -1406,6 +1408,8 @@ router
                         })),
                     },
                     
+                    preferredCurrency          : null, // TODO: fix this
+                    
                     ...(hasShippingAddress ? {
                         shippingAddress            : {
                             firstName              : shippingFirstName,
@@ -1872,6 +1876,8 @@ Updating the confirmation is not required.`,
                 expiresAt              : true,
                 
                 orderId                : true,
+                
+                preferredCurrency      : true,
                 
                 shippingAddress        : true,
                 shippingCost           : true,
