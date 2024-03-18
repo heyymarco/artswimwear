@@ -93,7 +93,9 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
                 (await Promise.all(
                     amountList
                     .map((amountItem) =>
-                        convertAmount ? convertCustomerCurrencyIfRequired(amountItem, preferredCurrency) : amountItem
+                        convertAmount
+                        ? convertCustomerCurrencyIfRequired(amountItem, preferredCurrency)
+                        : amountItem
                     )
                 ))
                 .reduce(amountReducer, undefined) // may produces ugly_fractional_decimal
