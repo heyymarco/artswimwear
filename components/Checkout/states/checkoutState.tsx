@@ -38,6 +38,7 @@ import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
     useEvent,
+    useMountedFlag,
     
     
     
@@ -52,6 +53,11 @@ import {
     useWindowResizeObserver,
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// utilities:
+import {
+    trimCustomerCurrencyIfRequired,
+}                           from '@/libs/currencyExchanges'
 
 // stores:
 import {
@@ -756,7 +762,26 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
         return calculateShippingCost(totalProductWeight, selectedShipping);
     }, [totalProductWeight, shippingList, shippingProvider]);
-    const totalShippingCost              = finishedOrderState ? finishedOrderState.totalShippingCost : realTotalShippingCost;
+    const totalShippingCostUntrimmed     = finishedOrderState ? finishedOrderState.totalShippingCost : realTotalShippingCost;
+    
+    const isMounted = useMountedFlag();
+    const [totalShippingCost, setTotalShippingCost] = useState<number|null|undefined>(undefined);
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (typeof(totalShippingCostUntrimmed) !== 'number') {
+            setTotalShippingCost(totalShippingCostUntrimmed); // undefined|null => nothing to trim
+            return;
+        } // if
+        
+        
+        
+        // actions:
+        (async () => {
+            const convertedAmount = await trimCustomerCurrencyIfRequired(totalShippingCostUntrimmed, preferredCurrency);
+            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+            setTotalShippingCost(convertedAmount);
+        })();
+    }, [totalShippingCostUntrimmed, preferredCurrency]);
     
     const customerValidation             = reduxCustomerValidation;
     
