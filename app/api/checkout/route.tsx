@@ -1056,7 +1056,7 @@ router
                             .filter((pricePart): pricePart is Exclude<typeof pricePart, null> => (pricePart !== null))
                             // trim *each*: base price + additional prices, based on selected variants:
                             .map((pricePart) =>
-                                trimCustomerCurrencyIfRequired(pricePart, preferredCurrency)
+                                simulateOrder ? pricePart : trimCustomerCurrencyIfRequired(pricePart, preferredCurrency)
                             )
                         ))
                         // sum trimmed base price + trimmed additional prices, based on selected variants:
