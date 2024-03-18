@@ -44,9 +44,10 @@ const amountReducer = (accum: number|null|undefined, current: number|null|undefi
 
 // react components:
 export interface CurrencyDisplayProps {
-    amount : number|null|undefined | Array<number|null|undefined>
+    amount    : number|null|undefined | Array<number|null|undefined>
+    multiply ?: number
 }
-const CurrencyDisplay = ({amount: amountRaw}: CurrencyDisplayProps): JSX.Element|null => {
+const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps): JSX.Element|null => {
     // states:
     const {
         // accessibilities:
@@ -85,7 +86,11 @@ const CurrencyDisplay = ({amount: amountRaw}: CurrencyDisplayProps): JSX.Element
     // jsx:
     return (
         <>
-            {formatCurrency(convertedAmount, preferredCurrency)}
+            {formatCurrency(
+                (typeof(convertedAmount) === 'number')
+                ? (convertedAmount * multiply)
+                : convertedAmount
+            , preferredCurrency)}
         </>
     );
 };
