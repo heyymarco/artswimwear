@@ -157,6 +157,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
         )
     );
     const productUnitPriceParts = (
+        // is valid product & valid selected variants?
         (
             !product
             ||
@@ -164,7 +165,9 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
             ||
             (!selectedVariants.every((selectedVariant): selectedVariant is Exclude<typeof selectedVariant, undefined> => (selectedVariants !== undefined)))
         )
+        // invalid product:
         ? undefined
+        // valid product:
         : [
             // base price:
             product.price,
@@ -325,7 +328,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                 {isProductDeleted && <>This product was deleted</>}
                 
                 {!isProductDeleted && <span className='currency'>
-                    <CurrencyDisplay amount={productUnitPriceParts} multiply={quantity} />
+                    <CurrencyDisplay convertAmount={true} amount={productUnitPriceParts} multiply={quantity} />
                 </span>}
             </p>
         </ListItem>
