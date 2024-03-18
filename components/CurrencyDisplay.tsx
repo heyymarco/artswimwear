@@ -28,17 +28,16 @@ import {
     formatCurrency,
 }                           from '@/libs/formatters'
 import {
-    trimCustomerCurrencyIfRequired,
     convertCustomerCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
 
 
 
 // utilities:
-const amountReducer = (accum: number|null|undefined, current: number|null|undefined): number|null|undefined => {
-    if (typeof(current) !== 'number') return accum;   // ignore null
-    if (typeof(accum)   !== 'number') return current; // ignore null
-    return (accum + current);
+const amountReducer = (accum: number|null|undefined, value: number|null|undefined): number|null|undefined => {
+    if (typeof(value) !== 'number') return accum; // ignore null
+    if (typeof(accum) !== 'number') return value; // ignore null
+    return (accum + value);
 };
 
 
@@ -60,15 +59,15 @@ const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps
     
     // effects:
     const isMounted = useMountedFlag();
-    const amount    = (
-        !Array.isArray(amountRaw)
-        ? amountRaw
-        : amountRaw.reduce(amountReducer, undefined) // may produces ugly_fractional_decimal
-    );
     useEffect(() => {
         // conditions:
-        if (typeof(amount) !== 'number') {
-            setConvertedAmount(amount); // undefined|null => nothing to convert
+        const amountList = (
+            !Array.isArray(amountRaw)
+            ? [amountRaw]
+            : amountRaw
+        );
+        if (!amountList.length) { // empty => nothing to convert
+            setConvertedAmount(undefined);
             return;
         } // if
         
@@ -76,11 +75,23 @@ const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps
         
         // actions:
         (async () => {
-            const convertedAmount = await convertCustomerCurrencyIfRequired(amount, preferredCurrency);
+            /*
+                ConvertCurrency *each* item first, then sum them all.
+                Do not sum first, to avoid precision error.
+            */
+            const summedAmount = (
+                (await Promise.all(
+                    amountList
+                    .map((amountItem) =>
+                        convertCustomerCurrencyIfRequired(amountItem, preferredCurrency)
+                    )
+                ))
+                .reduce(amountReducer, undefined) // may produces ugly_fractional_decimal
+            );
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-            setConvertedAmount(convertedAmount);
+            setConvertedAmount(summedAmount);
         })();
-    }, [amount, preferredCurrency]);
+    }, [amountRaw, preferredCurrency]);
     
     
     
