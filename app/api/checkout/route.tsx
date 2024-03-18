@@ -1413,7 +1413,11 @@ router
                                 },
                                 variantIds     : detailedItem.variantIds,
                                 
-                                price          : usePaypalGateway ? (await revertPaypalCurrencyIfRequired(detailedItem.priceConverted)) : detailedItem.priceConverted,
+                                price          : (
+                                    usePaypalGateway
+                                    ? (await revertPaypalCurrencyIfRequired(detailedItem.priceConverted)) // revert from foreignCurrency to appDefaultCurrency
+                                    : detailedItem.priceConverted
+                                ),
                                 shippingWeight : detailedItem.shippingWeight,
                                 quantity       : detailedItem.quantity,
                             };
@@ -1438,7 +1442,11 @@ router
                             zip                    : shippingZip,
                             country                : shippingCountry.toUpperCase(),
                         },
-                        shippingCost               : usePaypalGateway ? (await revertPaypalCurrencyIfRequired(totalShippingCostConverted)) : totalShippingCostConverted,
+                        shippingCost               : (
+                            usePaypalGateway
+                            ? (await revertPaypalCurrencyIfRequired(totalShippingCostConverted)) // revert from foreignCurrency to appDefaultCurrency
+                            : totalShippingCostConverted
+                        ),
                         shippingProvider           : {
                             connect                : {
                                 id                 : shippingProviderId,
@@ -2191,6 +2199,9 @@ Updating the confirmation is not required.`,
                 const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
                 const paymentFee            = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
                 
+                const paymentAmountReverted = await revertPaypalCurrencyIfRequired(paymentAmount, paymentAmountCurrency); // revert from foreignCurrency to appDefaultCurrency
+                const paymentFeeReverted    = await revertPaypalCurrencyIfRequired(paymentFee   , paymentFeeCurrency);    // revert from foreignCurrency to appDefaultCurrency
+                
                 
                 
                 switch (captureData?.status) {
@@ -2206,8 +2217,8 @@ Updating the confirmation is not required.`,
                                     brand      : card.brand?.toLowerCase() ?? null,
                                     identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
                                     
-                                    amount     : await revertPaypalCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
-                                    fee        : await revertPaypalCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
+                                    amount     : paymentAmountReverted,
+                                    fee        : paymentFeeReverted,
                                 };
                             } //if
                             
@@ -2218,8 +2229,8 @@ Updating the confirmation is not required.`,
                                     brand      : 'paypal',
                                     identifier : paypal.email_address || null,
                                     
-                                    amount     : await revertPaypalCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
-                                    fee        : await revertPaypalCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
+                                    amount     : paymentAmountReverted,
+                                    fee        : paymentFeeReverted,
                                 };
                             } //if
                             
@@ -2228,8 +2239,8 @@ Updating the confirmation is not required.`,
                                 brand      : null,
                                 identifier : null,
                                 
-                                amount     : await revertPaypalCurrencyIfRequired(paymentAmount, paymentAmountCurrency),
-                                fee        : await revertPaypalCurrencyIfRequired(paymentFee   , paymentFeeCurrency),
+                                amount     : paymentAmountReverted,
+                                fee        : paymentFeeReverted,
                             };
                         })();
                     }; break;
