@@ -98,6 +98,9 @@ import {
 }                           from '@/libs/formatters'
 import {
     getCurrencyRate,
+    
+    trimCustomerCurrencyIfRequired,
+    
     convertPaypalCurrencyIfRequired,
     revertPaypalCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
@@ -1042,20 +1045,24 @@ router
                     
                     
                     const unitPrice          = (
-                        [
-                            // base price:
-                            product.price,
-                            
-                            // additional prices, based on selected variants:
-                            ...selectedVariants.map(({price}) => price),
-                        ]
-                        .reduce<number|null>((accum, value): number|null => {
-                            if (value === null) return accum;
-                            if (accum === null) return value;
+                        (await Promise.all(
+                            [
+                                // base price:
+                                product.price,
+                                
+                                // additional prices, based on selected variants:
+                                ...selectedVariants.map(({price}) => price),
+                            ]
+                            .filter((pricePart): pricePart is Exclude<typeof pricePart, null> => (pricePart !== null))
+                            // trim *each*: base price + additional prices, based on selected variants:
+                            .map((pricePart) =>
+                                trimCustomerCurrencyIfRequired(pricePart, preferredCurrency)
+                            )
+                        ))
+                        // merge trimmed base price + trimmed additional prices, based on selected variants:
+                        .reduce<number>((accum, value): number => {
                             return (accum + value);
-                        }, null)
-                        ??
-                        0
+                        }, 0)
                     );
                     const unitPriceConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(unitPrice)) : unitPrice;
                     const unitWeight         = (
