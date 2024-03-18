@@ -131,7 +131,7 @@ const ProductItem = ({product}: ProductItemProps) => {
                     // classes:
                     className='price h6'
                 >
-                    <CurrencyDisplay amount={product.price} />
+                    <CurrencyDisplay convertAmount={true} amount={product.price} />
                 </span>
             </header>
             <Link
