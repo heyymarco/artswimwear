@@ -18,28 +18,32 @@ const currencyExchange = {
     expires : new Date(),
     rates   : new Map<string, number>(),
 };
+let currencyExchangeUpdatedPromise : Promise<void>|undefined = undefined;
 /**
  * Gets the conversion ratio  
  * from app's default currency to `targetCurrency`.
  */
 export const getCurrencyRate = async (targetCurrency: string): Promise<number> => {
     if (currencyExchange.expires <= new Date()) {
-        const rates = currencyExchange.rates;
-        rates.clear();
-        
-        
-        
-        const exchangeRateResponse = await fetch(`${process.env.WEBSITE_URL ?? ''}/api/currency-exchange`);
-        if (exchangeRateResponse.status !== 200) throw Error('api error');
-        const apiRates = await exchangeRateResponse.json();
-        if (typeof(apiRates) !== 'object') throw Error('api error');
-        for (const currency in apiRates) {
-            rates.set(currency, apiRates[currency]);
-        } // for
-        
-        
-        
-        currencyExchange.expires = new Date(Date.now() + (1 * 3600 * 1000));
+        if (!currencyExchangeUpdatedPromise) currencyExchangeUpdatedPromise = (async (): Promise<void> => {
+            const rates = currencyExchange.rates;
+            rates.clear();
+            
+            
+            
+            const exchangeRateResponse = await fetch(`${process.env.WEBSITE_URL ?? ''}/api/currency-exchange`);
+            if (exchangeRateResponse.status !== 200) throw Error('api error');
+            const apiRates = await exchangeRateResponse.json();
+            if (typeof(apiRates) !== 'object') throw Error('api error');
+            for (const currency in apiRates) {
+                rates.set(currency, apiRates[currency]);
+            } // for
+            
+            
+            
+            currencyExchange.expires = new Date(Date.now() + (1 * 3600 * 1000));
+        })();
+        await currencyExchangeUpdatedPromise;
     } // if
     
     
