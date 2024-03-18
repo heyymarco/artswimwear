@@ -44,14 +44,18 @@ const amountReducer = (accum: number|null|undefined, value: number|null|undefine
 
 // react components:
 export interface CurrencyDisplayProps {
-    convertAmount ?: boolean
+    /**
+     * `true`: Converts the amount in *app_defaultCurrency* to *customerPreferenceCurrency*  
+     * `false`: Do not convert the amount, assumes as already *customerPreferenceCurrency*
+     */
+    convertAmount  : boolean
     amount         : number|null|undefined | Array<number|null|undefined>
     multiply      ?: number
 }
 const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     // props:
     const {
-        convertAmount = true,
+        convertAmount,
         amount        : amountRaw,
         multiply      = 1,
     } = props;
