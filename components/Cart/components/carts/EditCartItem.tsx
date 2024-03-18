@@ -334,7 +334,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                 {isProductDeleted && <>This product was deleted</>}
                 
                 {!isProductDeleted && <span className='currency'>
-                    <CurrencyDisplay amount={(productUnitPrice !== undefined) ? (productUnitPrice * quantity) : undefined} />
+                    <CurrencyDisplay amount={productUnitPrice} multiply={quantity} />
                 </span>}
             </p>
         </ListItem>
