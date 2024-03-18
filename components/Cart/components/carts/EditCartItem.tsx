@@ -261,7 +261,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                         @
                     </span>
                     <span className='value txt-sec'>
-                        <CurrencyDisplay amount={productUnitPriceParts} />
+                        <CurrencyDisplay convertAmount={true} amount={productUnitPriceParts} />
                     </span>
             </p>}
             
