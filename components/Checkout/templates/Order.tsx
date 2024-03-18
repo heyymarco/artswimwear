@@ -31,6 +31,7 @@ import {
 
 // utilities:
 const getTotalProductPrice = (items: ReturnType<typeof useOrderDataContext>['order']['items']): number => {
+    // TODO: fix this with multi currency support
     let totalProductPrice = 0;
     for (const {price, quantity} of items) {
         totalProductPrice += (price * quantity);
