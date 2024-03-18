@@ -52,7 +52,7 @@ const ViewShippingCart = (props: ViewShippingCartProps): JSX.Element|null => {
             <span className='currency'>
                 {
                     !isNotShippingSelected
-                    ? <CurrencyDisplay convertAmount={false} amount={totalShippingCost} />
+                    ? <CurrencyDisplay convertAmount={true} amount={totalShippingCost} />
                     : 'calculated at next step'
                 }
             </span>

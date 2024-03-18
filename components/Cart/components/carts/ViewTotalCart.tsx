@@ -45,7 +45,7 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
         
         
         // cart data:
-        totalProductPrice,
+        productPriceParts,
     } = useCartState();
     const isNotShippingSelected = (totalShippingCost === undefined);
     
@@ -61,7 +61,7 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
                 {
                     !isNotShippingSelected
                     ? <>
-                        <CurrencyDisplay convertAmount={false} amount={[totalProductPrice, totalShippingCost]} />
+                        <CurrencyDisplay convertAmount={true} amount={[...productPriceParts, totalShippingCost]} />
                         {' '}
                         <span>{preferredCurrency}</span>
                     </>

@@ -28,7 +28,7 @@ const ViewSubtotalCart = (): JSX.Element|null => {
         
         
         // cart data:
-        totalProductPrice,
+        productPriceParts,
     } = useCartState();
     
     
@@ -40,7 +40,7 @@ const ViewSubtotalCart = (): JSX.Element|null => {
             <span>Subtotal</span>
             
             <span className='currency'>
-                <CurrencyDisplay convertAmount={false} amount={totalProductPrice} />
+                <CurrencyDisplay convertAmount={true} amount={productPriceParts} />
             </span>
         </p>
     );

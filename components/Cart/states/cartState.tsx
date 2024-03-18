@@ -123,6 +123,10 @@ export type {
 //#region checkoutState
 
 // contexts:
+export interface ProductPricePart {
+    priceParts : number[],
+    quantity   : number
+}
 export interface CartStateBase {
     // states:
     isCartShown           : boolean
@@ -144,7 +148,7 @@ export interface CartStateBase {
     cartItems             : CartEntry[]
     totalProductQuantity  : number
     totalProductWeight    : number|null
-    totalProductPrice     : number|undefined
+    productPriceParts     : ProductPricePart[]
     hasPhysicalProduct    : boolean
     
     
@@ -236,7 +240,7 @@ const CartStateContext = createContext<CartState>({
     cartItems             : [],
     totalProductQuantity  : 0,
     totalProductWeight    : null,
-    totalProductPrice     : undefined,
+    productPriceParts     : [],
     hasPhysicalProduct    : false,
     
     
@@ -323,9 +327,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         return totalProductQuantity;
     }, [cartItems]);
     
-    const {listProductPriceAndQuantity, totalProductWeight} = useMemo<{listProductPriceAndQuantity: { priceParts: number[], quantity: number }[], totalProductWeight: number|null}>(() => {
-        const listProductPriceAndQuantity : { priceParts: number[], quantity: number }[] = [];
-        let   totalProductWeight          : number|null = null;
+    const {productPriceParts, totalProductWeight} = useMemo<{productPriceParts: ProductPricePart[], totalProductWeight: number|null}>(() => {
+        const productPriceParts  : ProductPricePart[] = [];
+        let   totalProductWeight : number|null        = null;
         for (const {productId, variantIds, quantity} of cartItems) {
             const product = productList?.entities?.[productId];
             if (!product) continue;
@@ -347,7 +351,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             
             
             
-            const unitPriceParts     = (
+            const unitPriceParts   = (
                 [
                     // base price:
                     product.price,
@@ -357,14 +361,14 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 ]
                 .filter((pricePart): pricePart is Exclude<typeof pricePart, null> => (pricePart !== null))
             );
-            listProductPriceAndQuantity.push({
+            productPriceParts.push({
                 priceParts : unitPriceParts,
                 quantity   : quantity,
             });
             
             
             
-            const unitWeight         = (
+            const unitWeight       = (
                 [
                     // base shippingWeight:
                     product.shippingWeight,
@@ -385,48 +389,10 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             } // if
         } // for
         return {
-            listProductPriceAndQuantity,
+            productPriceParts,
             totalProductWeight,
         };
     }, [cartItems, productList]);
-    
-    const [totalProductPrice, setTotalProductPrice] = useState<number|undefined>(undefined);
-    useIsomorphicLayoutEffect(() => {
-        setTotalProductPrice(undefined);
-        (async () => {
-            const trimmedListProductPriceAndQuantity = await Promise.all(
-                listProductPriceAndQuantity
-                .map(async ({ priceParts, quantity }) =>
-                    ({
-                        price : trimNumber( // decimalize summed numbers to avoid producing ugly_fractional_decimal
-                            // trim *each*: base price + additional prices, based on selected variants:
-                            (await Promise.all(
-                                priceParts
-                                .map((pricePart) =>
-                                    convertCustomerCurrencyIfRequired(pricePart, preferredCurrency)
-                                )
-                            ))
-                            // sum trimmed base price + trimmed additional prices, based on selected variants:
-                            .reduce<number>((accum, value): number => {
-                                return (accum + value); // may produces ugly_fractional_decimal
-                            }, 0)
-                        ),
-                        quantity,
-                    })
-                )
-            );
-            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-            
-            
-            
-            let newTotalProductPrice = 0;
-            for (const {price, quantity} of trimmedListProductPriceAndQuantity) {
-                newTotalProductPrice += (price * quantity);               // may produces ugly_fractional_decimal
-                newTotalProductPrice  = trimNumber(newTotalProductPrice); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
-            } // for
-            setTotalProductPrice(newTotalProductPrice);
-        })();
-    }, [listProductPriceAndQuantity, preferredCurrency]);
     
     const hasPhysicalProduct = (totalProductWeight !== null);
     
@@ -620,7 +586,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         cartItems,
         totalProductQuantity,
         totalProductWeight,
-        totalProductPrice,
+        productPriceParts,
         hasPhysicalProduct,
         
         
@@ -662,7 +628,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         cartItems,
         totalProductQuantity,
         totalProductWeight,
-        totalProductPrice,
+        productPriceParts,
         hasPhysicalProduct,
         
         
