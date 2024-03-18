@@ -421,8 +421,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             
             let newTotalProductPrice = 0;
             for (const {price, quantity} of trimmedListProductPriceAndQuantity) {
-                newTotalProductPrice += (price * quantity);
-                newTotalProductPrice  = trimNumber(newTotalProductPrice);
+                newTotalProductPrice += (price * quantity);               // may produces ugly_fractional_decimal
+                newTotalProductPrice  = trimNumber(newTotalProductPrice); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
             } // for
             setTotalProductPrice(newTotalProductPrice);
         })();

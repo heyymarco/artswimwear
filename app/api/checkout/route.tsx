@@ -1095,8 +1095,8 @@ router
                     
                     
                     
-                    totalProductPriceConverted  += unitPriceConverted * quantity;
-                    totalProductPriceConverted   = trimNumber(totalProductPriceConverted);
+                    totalProductPriceConverted  += unitPriceConverted * quantity;          // may produces ugly_fractional_decimal
+                    totalProductPriceConverted   = trimNumber(totalProductPriceConverted); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
                     
                     
                     
