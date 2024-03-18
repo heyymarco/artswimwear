@@ -62,7 +62,7 @@ const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps
     const amount    = (
         !Array.isArray(amountRaw)
         ? amountRaw
-        : amountRaw.reduce(amountReducer, undefined)
+        : amountRaw.reduce(amountReducer, undefined) // may produces ugly_fractional_decimal
     );
     useEffect(() => {
         // conditions:
@@ -88,8 +88,8 @@ const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps
         <>
             {formatCurrency(
                 (typeof(convertedAmount) === 'number')
-                ? (convertedAmount * multiply)
-                : convertedAmount
+                ? (convertedAmount * multiply) // may produces ugly_fractional_decimal
+                : convertedAmount              // no need to decimalize accumulated numbers to avoid producing ugly_fractional_decimal // `formatCurrency()` wouldn't produce ugly_fractional_decimal
             , preferredCurrency)}
         </>
     );
