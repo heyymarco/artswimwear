@@ -67,6 +67,9 @@ import {
 import {
     SelectVariantEditor,
 }                           from '@/components/editors/SelectVariantEditor'
+import {
+    CurrencyDisplay,
+}                           from '@/components/CurrencyDisplay'
 
 // internals:
 import {
@@ -89,9 +92,6 @@ import {
 }                           from '@/store/features/api/apiSlice'
 
 // utilities:
-import {
-    formatCurrency,
-}                           from '@/libs/formatters'
 import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
@@ -352,7 +352,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     // classes:
                     className='price h5'
                 >
-                    {formatCurrency(productDetail.price)}
+                    <CurrencyDisplay amount={productDetail.price} />
                 </span>
                 
                 <p

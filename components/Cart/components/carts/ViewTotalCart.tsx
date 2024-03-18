@@ -6,20 +6,15 @@ import {
     default as React,
 }                           from 'react'
 
-// utilities:
+// internal components:
 import {
-    formatCurrency,
-}                           from '@/libs/formatters'
+    CurrencyDisplay,
+}                           from '@/components/CurrencyDisplay'
 
 // internals:
 import {
     useCartState,
 }                           from '../../states/cartState'
-
-// configs:
-import {
-    commerceConfig,
-}                           from '@/commerce.config'
 
 
 
@@ -44,6 +39,11 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
         
         
         
+        // accessibilities:
+        preferredCurrency,
+        
+        
+        
         // cart data:
         totalProductPrice,
     } = useCartState();
@@ -61,9 +61,9 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
                 {
                     !isNotShippingSelected
                     ? <>
-                        {formatCurrency(totalProductPrice + (totalShippingCost ?? 0))}
+                        <CurrencyDisplay amount={[totalProductPrice, totalShippingCost]} />
                         {' '}
-                        <span>{commerceConfig.defaultCurrency}</span>
+                        <span>{preferredCurrency}</span>
                     </>
                     : 'calculated at next step'
                 }

@@ -22,6 +22,9 @@ import {
 import {
     RadioDecorator,
 }                           from '@/components/RadioDecorator'
+import {
+    CurrencyDisplay,
+}                           from '@/components/CurrencyDisplay'
 
 // contexts:
 import {
@@ -32,9 +35,6 @@ import {
 }                           from '../../states/checkoutState'
 
 // utilities:
-import {
-    formatCurrency,
-}                           from '@/libs/formatters'
 import {
     calculateShippingCost,
 }                           from '@/libs/shippings'
@@ -129,7 +129,7 @@ const EditShippingMethod = (): JSX.Element|null => {
                                 </p>}
                                 
                                 <p className='cost'>
-                                    {formatCurrency(totalShippingCost)}
+                                    <CurrencyDisplay amount={totalShippingCost} />
                                 </p>
                             </ListItem>
                         );

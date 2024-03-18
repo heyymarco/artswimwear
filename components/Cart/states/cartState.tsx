@@ -15,6 +15,7 @@ import {
     // hooks:
     useContext,
     useMemo,
+    useState,
 }                           from 'react'
 
 // redux:
@@ -49,6 +50,14 @@ import {
 import {
     ViewOutOfStock,
 }                           from '../components/carts/ViewOutOfStock'
+
+// utilities:
+import {
+    trimNumber,
+}                           from '@/libs/formatters'
+import {
+    trimCustomerCurrencyIfRequired,
+}                           from '@/libs/currencyExchanges'
 
 // stores:
 import {
@@ -135,7 +144,7 @@ export interface CartStateBase {
     cartItems             : CartEntry[]
     totalProductQuantity  : number
     totalProductWeight    : number|null
-    totalProductPrice     : number
+    totalProductPrice     : number|undefined
     hasPhysicalProduct    : boolean
     
     
@@ -227,7 +236,7 @@ const CartStateContext = createContext<CartState>({
     cartItems             : [],
     totalProductQuantity  : 0,
     totalProductWeight    : null,
-    totalProductPrice     : 0,
+    totalProductPrice     : undefined,
     hasPhysicalProduct    : false,
     
     
@@ -314,9 +323,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         return totalProductQuantity;
     }, [cartItems]);
     
-    const {totalProductPrice, totalProductWeight} = useMemo<{totalProductPrice: number, totalProductWeight: number|null}>(() => {
-        let totalProductPrice  : number      = 0;
-        let totalProductWeight : number|null = null;
+    const {listProductPriceAndQuantity, totalProductWeight} = useMemo<{listProductPriceAndQuantity: { price: number, quantity: number }[], totalProductWeight: number|null}>(() => {
+        const listProductPriceAndQuantity : { price: number, quantity: number }[] = [];
+        let   totalProductWeight          : number|null = null;
         for (const {productId, variantIds, quantity} of cartItems) {
             const product = productList?.entities?.[productId];
             if (!product) continue;
@@ -354,7 +363,10 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 ??
                 0
             );
-            totalProductPrice += (unitPrice * quantity);
+            listProductPriceAndQuantity.push({
+                price    : unitPrice,
+                quantity : quantity,
+            });
             
             
             
@@ -375,13 +387,40 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             if (unitWeight !== null) { // not a physical product => ignore
                 if (totalProductWeight === null) totalProductWeight = 0; // has a/some physical products => reset the counter from zero if null
                 totalProductWeight += (unitWeight * quantity);
+                totalProductWeight = trimNumber(totalProductWeight);
             } // if
         } // for
         return {
-            totalProductPrice,
+            listProductPriceAndQuantity,
             totalProductWeight,
         };
     }, [cartItems, productList]);
+    
+    const [totalProductPrice, setTotalProductPrice] = useState<number|undefined>(undefined);
+    useIsomorphicLayoutEffect(() => {
+        setTotalProductPrice(undefined);
+        (async () => {
+            const trimmedListProductPriceAndQuantity = await Promise.all(
+                listProductPriceAndQuantity
+                .map(async ({ price, quantity }) =>
+                    ({
+                        price : await trimCustomerCurrencyIfRequired(price, preferredCurrency),
+                        quantity,
+                    })
+                )
+            );
+            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+            
+            
+            
+            let newTotalProductPrice = 0;
+            for (const {price, quantity} of trimmedListProductPriceAndQuantity) {
+                newTotalProductPrice += (price * quantity);
+                newTotalProductPrice  = trimNumber(newTotalProductPrice);
+            } // for
+            setTotalProductPrice(newTotalProductPrice);
+        })();
+    }, [listProductPriceAndQuantity, preferredCurrency]);
     
     const hasPhysicalProduct = (totalProductWeight !== null);
     

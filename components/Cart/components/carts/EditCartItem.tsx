@@ -51,6 +51,9 @@ import {
 import {
     VariantIndicator,
 }                           from '@/components/VariantIndicator'
+import {
+    CurrencyDisplay,
+}                           from '@/components/CurrencyDisplay'
 
 // stores:
 import type {
@@ -59,9 +62,6 @@ import type {
 }                           from '@/store/features/cart/cartSlice'
 
 // utilities:
-import {
-    formatCurrency,
-}                           from '@/libs/formatters'
 import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
@@ -267,7 +267,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                         @
                     </span>
                     <span className='value txt-sec'>
-                        {formatCurrency(productUnitPrice)}
+                        <CurrencyDisplay amount={productUnitPrice} />
                     </span>
             </p>}
             
@@ -334,7 +334,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
                 {isProductDeleted && <>This product was deleted</>}
                 
                 {!isProductDeleted && <span className='currency'>
-                    {formatCurrency((productUnitPrice !== undefined) ? (productUnitPrice * quantity) : undefined)}
+                    <CurrencyDisplay amount={(productUnitPrice !== undefined) ? (productUnitPrice * quantity) : undefined} />
                 </span>}
             </p>
         </ListItem>

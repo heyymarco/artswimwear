@@ -22,6 +22,11 @@ import {
     Image,
 }                           from '@heymarco/image'
 
+// internal components:
+import {
+    CurrencyDisplay,
+}                           from '@/components/CurrencyDisplay'
+
 // stores:
 import {
     // types:
@@ -34,9 +39,6 @@ import {
 }                           from '@/store/features/api/apiSlice'
 
 // utilities:
-import {
-    formatCurrency,
-}                           from '@/libs/formatters'
 import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
@@ -129,7 +131,7 @@ const ProductItem = ({product}: ProductItemProps) => {
                     // classes:
                     className='price h6'
                 >
-                    {formatCurrency(product.price)}
+                    <CurrencyDisplay amount={product.price} />
                 </span>
             </header>
             <Link

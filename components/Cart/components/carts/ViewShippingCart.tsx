@@ -6,10 +6,10 @@ import {
     default as React,
 }                           from 'react'
 
-// utilities:
+// internal components:
 import {
-    formatCurrency,
-}                           from '@/libs/formatters'
+    CurrencyDisplay,
+}                           from '@/components/CurrencyDisplay'
 
 // internals:
 import {
@@ -52,7 +52,7 @@ const ViewShippingCart = (props: ViewShippingCartProps): JSX.Element|null => {
             <span className='currency'>
                 {
                     !isNotShippingSelected
-                    ? formatCurrency(totalShippingCost)
+                    ? <CurrencyDisplay amount={totalShippingCost} />
                     : 'calculated at next step'
                 }
             </span>

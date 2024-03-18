@@ -6,10 +6,10 @@ import {
     default as React,
 }                           from 'react'
 
-// utilities:
+// internal components:
 import {
-    formatCurrency,
-}                           from '@/libs/formatters'
+    CurrencyDisplay,
+}                           from '@/components/CurrencyDisplay'
 
 // internals:
 import {
@@ -40,7 +40,7 @@ const ViewSubtotalCart = (): JSX.Element|null => {
             <span>Subtotal</span>
             
             <span className='currency'>
-                {formatCurrency(totalProductPrice)}
+                <CurrencyDisplay amount={totalProductPrice} />
             </span>
         </p>
     );
