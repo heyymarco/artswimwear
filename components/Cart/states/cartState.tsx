@@ -56,7 +56,7 @@ import {
     trimNumber,
 }                           from '@/libs/formatters'
 import {
-    trimCustomerCurrencyIfRequired,
+    convertCustomerCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
 
 // stores:
@@ -403,7 +403,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                             (await Promise.all(
                                 priceParts
                                 .map((pricePart) =>
-                                    trimCustomerCurrencyIfRequired(pricePart, preferredCurrency)
+                                    convertCustomerCurrencyIfRequired(pricePart, preferredCurrency)
                                 )
                             ))
                             // sum trimmed base price + trimmed additional prices, based on selected variants:
