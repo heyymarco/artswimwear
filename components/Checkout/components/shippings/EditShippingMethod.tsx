@@ -129,7 +129,7 @@ const EditShippingMethod = (): JSX.Element|null => {
                                 </p>}
                                 
                                 <p className='cost'>
-                                    <CurrencyDisplay amount={totalShippingCost} />
+                                    <CurrencyDisplay convertAmount={true} amount={totalShippingCost} />
                                 </p>
                             </ListItem>
                         );
