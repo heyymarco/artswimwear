@@ -1103,8 +1103,8 @@ router
                     if (unitWeight !== null) {
                         if (totalProductWeight === null) totalProductWeight = 0; // contains at least 1 PHYSICAL_GOODS
                         
-                        totalProductWeight      += unitWeight         * quantity;
-                        totalProductWeight       = trimNumber(totalProductWeight);
+                        totalProductWeight      += unitWeight         * quantity;  // may produces ugly_fractional_decimal
+                        totalProductWeight       = trimNumber(totalProductWeight); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
                     } // if
                 } // for
                 if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);

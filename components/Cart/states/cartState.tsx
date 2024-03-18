@@ -380,8 +380,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             );
             if (unitWeight !== null) { // not a physical product => ignore
                 if (totalProductWeight === null) totalProductWeight = 0; // has a/some physical products => reset the counter from zero if null
-                totalProductWeight += (unitWeight * quantity);
-                totalProductWeight = trimNumber(totalProductWeight);
+                totalProductWeight += (unitWeight * quantity);       // may produces ugly_fractional_decimal
+                totalProductWeight = trimNumber(totalProductWeight); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
             } // if
         } // for
         return {
