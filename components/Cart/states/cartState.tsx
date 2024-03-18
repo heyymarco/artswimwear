@@ -399,14 +399,14 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 .map(async ({ priceParts, quantity }) =>
                     ({
                         price : (
-                            // trim base price + additional prices, based on selected variants:
+                            // trim *each*: base price + additional prices, based on selected variants:
                             (await Promise.all(
                                 priceParts
                                 .map((pricePart) =>
                                     trimCustomerCurrencyIfRequired(pricePart, preferredCurrency)
                                 )
                             ))
-                            // merge base price + additional prices, based on selected variants:
+                            // merge trimmed base price + trimmed additional prices, based on selected variants:
                             .reduce<number>((accum, value): number => {
                                 return (accum + value);
                             }, 0)
