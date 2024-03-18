@@ -45,20 +45,14 @@ const sumReducer = <TNumber extends number|null|undefined>(accum: TNumber, value
 
 // react components:
 export interface CurrencyDisplayProps {
-    /**
-     * `true`: Converts the amount in *app_defaultCurrency* to *customerPreferenceCurrency*  
-     * `false`: Do not convert the amount, assumes as already *customerPreferenceCurrency*
-     */
-    convertAmount  : boolean
-    amount         : number|null|undefined | Array<ProductPricePart|number|null|undefined>
-    multiply      ?: number
+    amount    : number|null|undefined | Array<ProductPricePart|number|null|undefined>
+    multiply ?: number
 }
 const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     // props:
     const {
-        convertAmount,
-        amount        : amountRaw,
-        multiply      = 1,
+        amount   : amountRaw,
+        multiply = 1,
     } = props;
     
     
@@ -97,7 +91,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
             const summedAmount = (
                 (await Promise.all(
                     amountList
-                    .flatMap((amountItem): number|null|undefined | Promise<number|null|undefined> => {
+                    .flatMap((amountItem): Promise<number|null|undefined> => {
                         if (amountItem && typeof(amountItem) === 'object') {
                             const {
                                 priceParts,
@@ -107,10 +101,8 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
                             return (
                                 Promise.all(
                                     priceParts
-                                    .map((pricePart): number | Promise<number> =>
-                                        convertAmount
-                                        ? convertCustomerCurrencyIfRequired(pricePart, preferredCurrency)
-                                        : pricePart
+                                    .map((pricePart): Promise<number> =>
+                                        convertCustomerCurrencyIfRequired(pricePart, preferredCurrency)
                                     )
                                 )
                                 .then((priceParts): number =>
@@ -121,11 +113,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
                                 )
                             );
                         } else {
-                            return (
-                                convertAmount
-                                ? convertCustomerCurrencyIfRequired(amountItem, preferredCurrency)
-                                : amountItem
-                            );
+                            return convertCustomerCurrencyIfRequired(amountItem, preferredCurrency);
                         } // if
                     })
                 ))
@@ -134,7 +122,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(summedAmount);
         })();
-    }, [convertAmount, amountRaw, preferredCurrency]);
+    }, [amountRaw, preferredCurrency]);
     
     
     
