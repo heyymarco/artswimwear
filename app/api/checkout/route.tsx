@@ -1115,7 +1115,8 @@ router
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeight, matchingShipping) : null;
-            const totalShippingCostConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
+            const totalShippingCostTrimmed   = await trimCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency);
+            const totalShippingCostConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(totalShippingCostTrimmed)) : totalShippingCostTrimmed;
             const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
             //#endregion validate cart items: check existing products => check product quantities => create detailed items
             
