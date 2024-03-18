@@ -44,10 +44,20 @@ const amountReducer = (accum: number|null|undefined, value: number|null|undefine
 
 // react components:
 export interface CurrencyDisplayProps {
-    amount    : number|null|undefined | Array<number|null|undefined>
-    multiply ?: number
+    convertAmount ?: boolean
+    amount         : number|null|undefined | Array<number|null|undefined>
+    multiply      ?: number
 }
-const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps): JSX.Element|null => {
+const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
+    // props:
+    const {
+        convertAmount = true,
+        amount        : amountRaw,
+        multiply      = 1,
+    } = props;
+    
+    
+    
     // states:
     const {
         // accessibilities:
@@ -83,7 +93,7 @@ const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps
                 (await Promise.all(
                     amountList
                     .map((amountItem) =>
-                        convertCustomerCurrencyIfRequired(amountItem, preferredCurrency)
+                        convertAmount ? convertCustomerCurrencyIfRequired(amountItem, preferredCurrency) : amountItem
                     )
                 ))
                 .reduce(amountReducer, undefined) // may produces ugly_fractional_decimal
@@ -91,7 +101,7 @@ const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(summedAmount);
         })();
-    }, [amountRaw, preferredCurrency]);
+    }, [convertAmount, amountRaw, preferredCurrency]);
     
     
     
