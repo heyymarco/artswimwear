@@ -71,7 +71,8 @@ const getCurrencyConverter   = async (targetCurrency: string): Promise<{rate: nu
  */
 export const convertCustomerCurrencyIfRequired = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
     // conditions:
-    if (typeof(fromAmount) !== 'number') return fromAmount;
+    if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
+    if (customerCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
     
     
     
@@ -96,7 +97,8 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
  */
 export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
     // conditions:
-    if (typeof(fromAmount) !== 'number') return fromAmount;
+    if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
+    if (customerCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
     
     
     
@@ -123,7 +125,8 @@ export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|n
  */
 export const trimCustomerCurrencyIfRequired    = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
     // conditions:
-    if (typeof(fromAmount) !== 'number') return fromAmount;
+    if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
+    if (customerCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
     
     
     
@@ -143,6 +146,8 @@ export const trimCustomerCurrencyIfRequired    = async <TNumber extends number|n
     return trimNumber(trimmed) as TNumber;
 }
 
+
+
 /**
  * Converts:  
  * from user's preferred currency  
@@ -150,7 +155,8 @@ export const trimCustomerCurrencyIfRequired    = async <TNumber extends number|n
  */
 export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|null|undefined>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
-    if (typeof(fromAmount) !== 'number') return fromAmount;
+    if (typeof(fromAmount) !== 'number') return fromAmount;                   // null|undefined    => nothing to convert
+    if (paypalCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
     
     
     
@@ -175,7 +181,8 @@ export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|n
  */
 export const revertPaypalCurrencyIfRequired    = async <TNumber extends number|null|undefined>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
-    if (typeof(fromAmount) !== 'number') return fromAmount;
+    if (typeof(fromAmount) !== 'number') return fromAmount;                   // null|undefined    => nothing to convert
+    if (paypalCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
     
     
     
