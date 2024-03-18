@@ -82,7 +82,7 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[paymentConfig.currencyConversionRounding];
+    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
@@ -109,7 +109,7 @@ export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|n
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[commerceConfig.currencyConversionRounding];
+    }[commerceConfig.currencyConversionRounding]; // reverts using app's currencyConversionRounding
     const fractions    = rounding(rawReverted / fractionUnit);
     const stepped      = fractions * fractionUnit;
     
@@ -136,7 +136,7 @@ export const trimCustomerCurrencyIfRequired    = async <TNumber extends number|n
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[paymentConfig.currencyConversionRounding];
+    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     const trimmed              = stepped   * rate;
@@ -166,7 +166,7 @@ export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|n
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[paymentConfig.currencyConversionRounding];
+    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
@@ -193,7 +193,7 @@ export const revertPaypalCurrencyIfRequired    = async <TNumber extends number|n
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[commerceConfig.currencyConversionRounding];
+    }[commerceConfig.currencyConversionRounding]; // reverts using app's currencyConversionRounding
     const fractions    = rounding(rawReverted / fractionUnit);
     const stepped      = fractions * fractionUnit;
     
