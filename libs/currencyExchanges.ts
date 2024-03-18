@@ -22,7 +22,7 @@ const currencyExchange = {
  * Gets the conversion ratio  
  * from app's default currency to `targetCurrency`.
  */
-const getCurrencyRate      = async (targetCurrency: string): Promise<number> => {
+export const getCurrencyRate = async (targetCurrency: string): Promise<number> => {
     if (currencyExchange.expires <= new Date()) {
         const rates = currencyExchange.rates;
         rates.clear();
@@ -54,7 +54,7 @@ const getCurrencyRate      = async (targetCurrency: string): Promise<number> => 
  * from user's preferred currency  
  * to the **most suitable currency** (no conversion if possible) that paypal's supports.
  */
-const getCurrencyConverter = async (targetCurrency: string): Promise<{rate: number, fractionUnit: number}> => {
+const getCurrencyConverter   = async (targetCurrency: string): Promise<{rate: number, fractionUnit: number}> => {
     return {
         rate         : await getCurrencyRate(targetCurrency),
         fractionUnit : commerceConfig.currencies[targetCurrency].fractionUnit,
