@@ -28,6 +28,7 @@ import {
     formatCurrency,
 }                           from '@/libs/formatters'
 import {
+    trimCustomerCurrencyIfRequired,
     convertCustomerCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
 
@@ -46,8 +47,9 @@ const amountReducer = (accum: number|null|undefined, current: number|null|undefi
 export interface CurrencyDisplayProps {
     amount    : number|null|undefined | Array<number|null|undefined>
     multiply ?: number
+    trim     ?: boolean
 }
-const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps): JSX.Element|null => {
+const CurrencyDisplay = ({amount: amountRaw, multiply = 1, trim = false}: CurrencyDisplayProps): JSX.Element|null => {
     // states:
     const {
         // accessibilities:
@@ -75,11 +77,12 @@ const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps
         
         // actions:
         (async () => {
-            const convertedAmount = await convertCustomerCurrencyIfRequired(amount, preferredCurrency);
+            const trimmedAmount   = trim ? await trimCustomerCurrencyIfRequired(amount, preferredCurrency) : amount;
+            const convertedAmount = await convertCustomerCurrencyIfRequired(trimmedAmount, preferredCurrency);
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(convertedAmount);
         })();
-    }, [amount, preferredCurrency]);
+    }, [amount, preferredCurrency, trim]);
     
     
     
