@@ -1061,7 +1061,7 @@ router
                         ))
                         // sum trimmed base price + trimmed additional prices, based on selected variants:
                         .reduce<number>((accum, value): number => {
-                            return (accum + value);
+                            return (accum + value); // may produces ugly_fractional_decimal
                         }, 0)
                     );
                     const unitPriceConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(unitPriceTrimmed)) : unitPriceTrimmed;
