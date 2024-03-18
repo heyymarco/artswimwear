@@ -1044,7 +1044,7 @@ router
                     
                     
                     
-                    const unitPriceTrimmed   = (
+                    const unitPriceTrimmed   = trimNumber( // decimalize summed numbers to avoid producing ugly_fractional_decimal
                         (await Promise.all(
                             [
                                 // base price:
@@ -1059,7 +1059,7 @@ router
                                 trimCustomerCurrencyIfRequired(pricePart, preferredCurrency)
                             )
                         ))
-                        // merge trimmed base price + trimmed additional prices, based on selected variants:
+                        // sum trimmed base price + trimmed additional prices, based on selected variants:
                         .reduce<number>((accum, value): number => {
                             return (accum + value);
                         }, 0)

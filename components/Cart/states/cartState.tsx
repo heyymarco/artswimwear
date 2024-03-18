@@ -398,7 +398,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 listProductPriceAndQuantity
                 .map(async ({ priceParts, quantity }) =>
                     ({
-                        price : (
+                        price : trimNumber( // decimalize summed numbers to avoid producing ugly_fractional_decimal
                             // trim *each*: base price + additional prices, based on selected variants:
                             (await Promise.all(
                                 priceParts
@@ -406,7 +406,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                                     trimCustomerCurrencyIfRequired(pricePart, preferredCurrency)
                                 )
                             ))
-                            // merge trimmed base price + trimmed additional prices, based on selected variants:
+                            // sum trimmed base price + trimmed additional prices, based on selected variants:
                             .reduce<number>((accum, value): number => {
                                 return (accum + value);
                             }, 0)
