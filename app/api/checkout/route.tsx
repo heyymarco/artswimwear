@@ -916,7 +916,7 @@ router
              * Contains non_nullable product stocks to be reduced from current stock
              */
             const reduceStockItems : (RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'>> & { stockId: string, quantity: number })[] = [];
-            let totalProductPricesConverted = 0, totalProductWeight : number|null = null;
+            let totalProductPriceConverted = 0, totalProductWeight : number|null = null;
             {
                 const productListAdapter = createEntityAdapter<
                     & Pick<Product,
@@ -1095,8 +1095,8 @@ router
                     
                     
                     
-                    totalProductPricesConverted += unitPriceConverted * quantity;
-                    totalProductPricesConverted  = trimNumber(totalProductPricesConverted);
+                    totalProductPriceConverted  += unitPriceConverted * quantity;
+                    totalProductPriceConverted   = trimNumber(totalProductPriceConverted);
                     
                     
                     
@@ -1117,7 +1117,7 @@ router
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeight, matchingShipping) : null;
             const totalShippingCostTrimmed   = await trimCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency);
             const totalShippingCostConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(totalShippingCostTrimmed)) : totalShippingCostTrimmed;
-            const totalCostConverted         = trimNumber(totalProductPricesConverted + (totalShippingCostConverted ?? 0));
+            const totalCostConverted         = trimNumber(totalProductPriceConverted + (totalShippingCostConverted ?? 0));
             //#endregion validate cart items: check existing products => check product quantities => create detailed items
             
             
@@ -1195,7 +1195,7 @@ router
                                     // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                                     item_total        : {
                                         currency_code : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
-                                        value         : totalProductPricesConverted,
+                                        value         : totalProductPriceConverted,
                                     },
                                     
                                     // shipping Money|undefined
