@@ -47,9 +47,8 @@ const amountReducer = (accum: number|null|undefined, current: number|null|undefi
 export interface CurrencyDisplayProps {
     amount    : number|null|undefined | Array<number|null|undefined>
     multiply ?: number
-    trim     ?: boolean
 }
-const CurrencyDisplay = ({amount: amountRaw, multiply = 1, trim = false}: CurrencyDisplayProps): JSX.Element|null => {
+const CurrencyDisplay = ({amount: amountRaw, multiply = 1}: CurrencyDisplayProps): JSX.Element|null => {
     // states:
     const {
         // accessibilities:
@@ -77,12 +76,11 @@ const CurrencyDisplay = ({amount: amountRaw, multiply = 1, trim = false}: Curren
         
         // actions:
         (async () => {
-            const trimmedAmount   = trim ? await trimCustomerCurrencyIfRequired(amount, preferredCurrency) : amount;
-            const convertedAmount = await convertCustomerCurrencyIfRequired(trimmedAmount, preferredCurrency);
+            const convertedAmount = await convertCustomerCurrencyIfRequired(amount, preferredCurrency);
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(convertedAmount);
         })();
-    }, [amount, preferredCurrency, trim]);
+    }, [amount, preferredCurrency]);
     
     
     
