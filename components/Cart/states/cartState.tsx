@@ -323,8 +323,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         return totalProductQuantity;
     }, [cartItems]);
     
-    const {listProductPriceAndQuantity, totalProductWeight} = useMemo<{listProductPriceAndQuantity: { price: number, quantity: number }[], totalProductWeight: number|null}>(() => {
-        const listProductPriceAndQuantity : { price: number, quantity: number }[] = [];
+    const {listProductPriceAndQuantity, totalProductWeight} = useMemo<{listProductPriceAndQuantity: { priceParts: number[], quantity: number }[], totalProductWeight: number|null}>(() => {
+        const listProductPriceAndQuantity : { priceParts: number[], quantity: number }[] = [];
         let   totalProductWeight          : number|null = null;
         for (const {productId, variantIds, quantity} of cartItems) {
             const product = productList?.entities?.[productId];
@@ -347,7 +347,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             
             
             
-            const unitPrice          = (
+            const unitPriceParts     = (
                 [
                     // base price:
                     product.price,
@@ -355,17 +355,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     // additional prices, based on selected variants:
                     ...selectedVariants.map(({price}) => price),
                 ]
-                .reduce<number|null>((accum, value): number|null => {
-                    if (value === null) return accum;
-                    if (accum === null) return value;
-                    return (accum + value);
-                }, null)
-                ??
-                0
+                .filter((pricePart): pricePart is Exclude<typeof pricePart, null> => (pricePart !== null))
             );
             listProductPriceAndQuantity.push({
-                price    : unitPrice,
-                quantity : quantity,
+                priceParts : unitPriceParts,
+                quantity   : quantity,
             });
             
             
@@ -402,9 +396,21 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         (async () => {
             const trimmedListProductPriceAndQuantity = await Promise.all(
                 listProductPriceAndQuantity
-                .map(async ({ price, quantity }) =>
+                .map(async ({ priceParts, quantity }) =>
                     ({
-                        price : await trimCustomerCurrencyIfRequired(price, preferredCurrency),
+                        price : (
+                            // trim base price + additional prices, based on selected variants:
+                            (await Promise.all(
+                                priceParts
+                                .map((pricePart) =>
+                                    trimCustomerCurrencyIfRequired(pricePart, preferredCurrency)
+                                )
+                            ))
+                            // merge base price + additional prices, based on selected variants:
+                            .reduce<number>((accum, value): number => {
+                                return (accum + value);
+                            }, 0)
+                        ),
                         quantity,
                     })
                 )
