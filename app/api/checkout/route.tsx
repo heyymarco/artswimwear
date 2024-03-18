@@ -1044,7 +1044,7 @@ router
                     
                     
                     
-                    const unitPrice          = (
+                    const unitPriceTrimmed   = (
                         (await Promise.all(
                             [
                                 // base price:
@@ -1064,7 +1064,7 @@ router
                             return (accum + value);
                         }, 0)
                     );
-                    const unitPriceConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(unitPrice)) : unitPrice;
+                    const unitPriceConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(unitPriceTrimmed)) : unitPriceTrimmed;
                     const unitWeight         = (
                         [
                             // base shippingWeight:
