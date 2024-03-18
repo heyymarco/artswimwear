@@ -352,7 +352,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     // classes:
                     className='price h5'
                 >
-                    <CurrencyDisplay amount={productDetail.price} />
+                    <CurrencyDisplay convertAmount={true} amount={productDetail.price} />
                 </span>
                 
                 <p
