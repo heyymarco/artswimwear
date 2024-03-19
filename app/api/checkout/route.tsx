@@ -1,3 +1,8 @@
+// react:
+import type {
+    ServerOptions,
+}                           from 'react-dom/server'
+
 // redux:
 import {
     createEntityAdapter
@@ -2447,7 +2452,19 @@ Updating the confirmation is not required.`,
                 
                 
                 
-                const { renderToStaticMarkup } = await import('react-dom/server');
+                const { renderToStaticNodeStream } = await import('react-dom/server');
+                const renderToStaticMarkupAsync = async (element: React.ReactElement<any, React.JSXElementConstructor<any>>, options?: ServerOptions): Promise<string> => {
+                    const readableStream = renderToStaticNodeStream(element, options);
+                    const chunks : Buffer[] = [];
+                    return await new Promise<string>((resolve, reject) => {
+                        readableStream.on('data' , (chunk) => chunks.push(Buffer.from(chunk)));
+                        readableStream.on('error', (error) => reject(error));
+                        readableStream.on('end'  , ()      => resolve(Buffer.concat(chunks).toString('utf8')));
+                    });
+                };
+                
+                
+                
                 const businessContextProviderProps  : BusinessContextProviderProps = {
                     // data:
                     model : business,
@@ -2493,7 +2510,7 @@ Updating the confirmation is not required.`,
                     await transporter.sendMail({
                         from        : checkoutEmail.from,
                         to          : customerEmail,
-                        subject     : renderToStaticMarkup(
+                        subject     : (await renderToStaticMarkupAsync(
                             <BusinessContextProvider {...businessContextProviderProps}>
                                 <OrderDataContextProvider {...orderDataContextProviderProps}>
                                     <PaymentContextProvider {...paymentContextProviderProps}>
@@ -2503,8 +2520,8 @@ Updating the confirmation is not required.`,
                                     </PaymentContextProvider>
                                 </OrderDataContextProvider>
                             </BusinessContextProvider>
-                        ).replace(/[\r\n\t]+/g, ' ').trim(),
-                        html        : renderToStaticMarkup(
+                        )).replace(/[\r\n\t]+/g, ' ').trim(),
+                        html        : await renderToStaticMarkupAsync(
                             <BusinessContextProvider {...businessContextProviderProps}>
                                 <OrderDataContextProvider {...orderDataContextProviderProps}>
                                     <PaymentContextProvider {...paymentContextProviderProps}>
