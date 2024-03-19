@@ -508,3 +508,15 @@ export const tableColumnAutoSize   : React.CSSProperties = {
     // sizes:
     width : '100%', // fills the rest of table width
 };
+
+
+export const basicBox              : React.CSSProperties = {
+    // borders:
+    border       : borderStroke('primary'),
+    borderRadius : `${borderRadiusValues.sm}`,
+    
+    
+    
+    // spacings:
+    padding      : `${spacerValues.sm}`,
+};

@@ -286,7 +286,11 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
             // styles:
             style={style}
         >
-            {items.map(({price, quantity, product}, itemIndex, {length: itemsCount}) => {
+            {items.map(({price, quantity, product, variantIds}, itemIndex, {length: itemsCount}) => {
+                const variants = product?.variantGroups.flat();
+                
+                
+                
                 // jsx:
                 return (
                     <table
@@ -355,6 +359,30 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                 >
                                     {product?.name}
                                 </th>
+                            </tr>
+                            
+                            {/* variants */}
+                            <tr>
+                                <td colSpan={3}
+                                    // styles:
+                                    style={styles.tableColumnAutoSize}
+                                >
+                                    {
+                                        variantIds
+                                        .map((variantId) =>
+                                            variants?.find(({id}) => (id === variantId))?.name
+                                        )
+                                        .filter((variantName): variantName is Exclude<typeof variantName, undefined> => !!variantName)
+                                        .map((variantName, variantIndex) =>
+                                            <span key={variantIndex}
+                                                // styles:
+                                                style={styles.basicBox}
+                                            >
+                                                {variantName}
+                                            </span>
+                                        )
+                                    }
+                                </td>
                             </tr>
                             
                             {/* unit price */}

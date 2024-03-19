@@ -12,6 +12,7 @@ import type {
 // models:
 import type {
     Product,
+    Variant,
     Customer,
     Guest,
     PaymentConfirmation,
@@ -45,11 +46,14 @@ import type {
 
 // contexts:
 export type ProductData = Pick<Product, 'name'> & {
-    image        : Product['images'][number]|null
-    imageBase64 ?: string
-    imageId     ?: string
+    image         : Product['images'][number]|null
+    imageBase64  ?: string
+    imageId      ?: string
+    
+    // relations:
+    variantGroups : Pick<Variant, 'id'|'name'>[][]
 }
-export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'> & {
+export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'|'variantIds'> & {
     product : ProductData|null
 }
 export type OrderAndData = Order & {
