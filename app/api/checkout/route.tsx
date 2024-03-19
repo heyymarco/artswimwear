@@ -104,7 +104,7 @@ import {
 import {
     getCurrencyRate,
     
-    convertCustomerCurrencyIfRequired,
+    trimCustomerCurrencyIfRequired,
     
     convertPaypalCurrencyIfRequired,
     revertPaypalCurrencyIfRequired,
@@ -1101,7 +1101,7 @@ router
                         .map(async (unitPricePart): Promise<number> => {
                             const unitPricePartAsCustomerCurrency = (
                                 !!preferredCurrency
-                                ? await convertCustomerCurrencyIfRequired(unitPricePart, preferredCurrency)
+                                ? await trimCustomerCurrencyIfRequired(unitPricePart, preferredCurrency)
                                 : unitPricePart
                             );
                             
@@ -1171,7 +1171,7 @@ router
             const totalShippingCostConverted = await (async (): Promise<number|null> => {
                 const totalShippingCostAsCustomerCurrency = (
                     !!preferredCurrency
-                    ? await convertCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency)
+                    ? await trimCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency)
                     : totalShippingCost
                 );
                 
