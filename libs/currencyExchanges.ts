@@ -86,7 +86,14 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
     
     
     
-    const {rate, fractionUnit} = await getCurrencyConverter((typeof(customerCurrency) === 'object') ? customerCurrency.currency : customerCurrency);
+    const {rate, fractionUnit} = (
+        (typeof(customerCurrency) === 'string')
+        ? await getCurrencyConverter(customerCurrency)
+        : {
+            rate         : customerCurrency.rate,
+            fractionUnit : commerceConfig.currencies[customerCurrency.currency].fractionUnit
+        }
+    );
     const rawConverted         = fromAmount * rate;
     const rounding     = {
         ROUND : Math.round,
