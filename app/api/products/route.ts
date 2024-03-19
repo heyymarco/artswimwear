@@ -16,10 +16,13 @@ import type {
 }                           from '@/models'
 export type {
     VariantPreview,
-    ProductPreview,
     VariantDetail,
     VariantGroupDetail,
+    
+    ProductPreview,
     ProductDetail,
+    
+    ProductPricePart,
 }                           from '@/models'
 
 // ORMs:

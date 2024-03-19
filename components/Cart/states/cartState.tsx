@@ -95,6 +95,7 @@ import {
 import {
     // types:
     ProductPreview,
+    ProductPricePart,
     LimitedStockItem,
     
     
@@ -120,10 +121,6 @@ export type {
 //#region checkoutState
 
 // contexts:
-export interface ProductPricePart {
-    priceParts : number[],
-    quantity   : number
-}
 export interface CartStateBase {
     // states:
     isCartShown           : boolean

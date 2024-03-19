@@ -45,6 +45,8 @@ export interface VariantGroupDetail
     variants : VariantDetail[]
 }
 
+
+
 export interface ProductPreview
     extends
         Pick<Product,
@@ -58,7 +60,6 @@ export interface ProductPreview
     image         : Required<Product>['images'][number]|undefined
     variantGroups : VariantPreview[][]
 }
-
 export interface ProductDetail
     extends
         Pick<Product,
@@ -72,4 +73,11 @@ export interface ProductDetail
         >
 {
     variantGroups : VariantGroupDetail[]
+}
+
+
+
+export interface ProductPricePart {
+    priceParts : number[],
+    quantity   : number
 }

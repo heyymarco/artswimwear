@@ -29,8 +29,11 @@ export type {
     VariantPreview,
     VariantDetail,
     VariantGroupDetail,
+    
     ProductPreview,
     ProductDetail,
+    
+    ProductPricePart,
 }                               from '@/app/api/products/route'
 import type {
     PaymentToken,

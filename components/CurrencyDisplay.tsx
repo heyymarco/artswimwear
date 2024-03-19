@@ -20,9 +20,13 @@ import {
 
 // internals:
 import {
-    ProductPricePart,
     useCartState,
 }                           from '@/components/Cart/states/cartState'
+
+// stores:
+import type {
+    ProductPricePart,
+}                           from '@/store/features/api/apiSlice'
 
 // utilities:
 import {
