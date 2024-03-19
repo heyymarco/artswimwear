@@ -107,6 +107,46 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
     
     return trimNumber(stepped) as TNumber;
 }
+/**
+ * Trims:  
+ * from app's default currency  
+ * to current app's default currency with equivalent value of the customer's preferred currency.
+ */
+export const trimCustomerCurrencyIfRequired    = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string|PreferredCurrency): Promise<TNumber> => {
+    // conditions:
+    if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
+    if (customerCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
+    
+    
+    
+    const {rate, fractionUnit} = (
+        (typeof(customerCurrency) === 'string')
+        ? await getCurrencyConverter(customerCurrency)
+        : {
+            rate         : customerCurrency.rate,
+            fractionUnit : commerceConfig.currencies[customerCurrency.currency].fractionUnit,
+        }
+    );
+    const rawConverted         = fromAmount * rate;
+    const rounding     = {
+        ROUND : Math.round,
+        CEIL  : Math.ceil,
+        FLOOR : Math.floor,
+    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding
+    const fractions            = rounding(rawConverted / fractionUnit);
+    const stepped              = fractions * fractionUnit;
+    
+    
+    
+    const rawTrimmed           = stepped / rate;
+    const fractionUnitTrimmed  = commerceConfig.currencies[commerceConfig.defaultCurrency].fractionUnit;
+    const fractionsTrimmed     = rounding(rawTrimmed / fractionUnitTrimmed);
+    const steppedTrimmed       = fractionsTrimmed * fractionUnitTrimmed;
+    
+    
+    
+    return trimNumber(steppedTrimmed) as TNumber;
+}
 
 
 
