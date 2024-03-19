@@ -139,7 +139,7 @@ export const trimCustomerCurrencyIfRequired    = async <TNumber extends number|n
     
     
     const rawTrimmed           = stepped / rate;
-    const fractionUnitTrimmed  = 0.001;
+    const fractionUnitTrimmed  = 0.0001; // as accurate as possible to avoid currency conversion confusion to the customer
     const fractionsTrimmed     = rounding(rawTrimmed / fractionUnitTrimmed);
     const steppedTrimmed       = fractionsTrimmed * fractionUnitTrimmed;
     
@@ -190,7 +190,7 @@ export const revertPaypalCurrencyIfRequired    = async <TNumber extends number|n
     
     
     const {rate}       = await getCurrencyConverter(paypalCurrency);
-    const fractionUnit = 0.001;
+    const fractionUnit = 0.0001; // as accurate as possible to avoid currency conversion confusion to the customer
     const rawReverted  = fromAmount / rate;
     const fractions    = Math.round(rawReverted / fractionUnit);
     const stepped      = fractions * fractionUnit;
