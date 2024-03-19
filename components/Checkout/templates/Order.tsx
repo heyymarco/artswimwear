@@ -366,40 +366,45 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                             <tr>
                                 <td colSpan={3}
                                     // styles:
-                                    style={{
-                                        // layouts:
-                                        ...styles.tableColumnAutoSize,
-                                        display : 'flex',
-                                        
-                                        
-                                        
-                                        // spacings:
-                                        gap     : `calc(${spacerValues.md} / 4)`,
-                                    }}
+                                    style={styles.tableColumnAutoSize}
                                 >
-                                    {
-                                        variantIds
-                                        .map((variantId) =>
-                                            variants?.find(({id}) => (id === variantId))?.name
-                                        )
-                                        .filter((variantName): variantName is Exclude<typeof variantName, undefined> => !!variantName)
-                                        .map((variantName, variantIndex) =>
-                                            <span key={variantIndex}
-                                                // styles:
-                                                style={{
-                                                    // layouts:
-                                                    ...styles.basicBox,
-                                                    
-                                                    
-                                                    
-                                                    // typos:
-                                                    lineHeight: 1,
-                                                }}
-                                            >
-                                                {variantName}
-                                            </span>
-                                        )
-                                    }
+                                    <div
+                                        // styles:
+                                        style={{
+                                            // layouts:
+                                            display      : 'flex',
+                                            
+                                            
+                                            
+                                            // spacings:
+                                            columnGap    : `calc(${spacerValues.md} / 4)`,
+                                            marginBottom : `calc(${spacerValues.md} / 4)`,
+                                        }}
+                                    >
+                                        {
+                                            variantIds
+                                            .map((variantId) =>
+                                                variants?.find(({id}) => (id === variantId))?.name
+                                            )
+                                            .filter((variantName): variantName is Exclude<typeof variantName, undefined> => !!variantName)
+                                            .map((variantName, variantIndex) =>
+                                                <span key={variantIndex}
+                                                    // styles:
+                                                    style={{
+                                                        // layouts:
+                                                        ...styles.basicBox,
+                                                        
+                                                        
+                                                        
+                                                        // typos:
+                                                        lineHeight: 1,
+                                                    }}
+                                                >
+                                                    {variantName}
+                                                </span>
+                                            )
+                                        }
+                                    </div>
                                 </td>
                             </tr>
                             
