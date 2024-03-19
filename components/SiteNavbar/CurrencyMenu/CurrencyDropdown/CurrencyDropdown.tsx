@@ -29,6 +29,11 @@ import {
     DropdownList,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
+// internal components:
+import {
+    RadioDecorator,
+}                           from '@/components/RadioDecorator'
+
 // internals:
 import {
     useCurrencyMenuStyleSheet,
@@ -48,7 +53,8 @@ export interface CurrencyDropdownProps<TElement extends Element = HTMLElement, T
         DropdownListProps<TElement, TDropdownListExpandedChangeEvent>
 {
     // states:
-    navbarExpanded : boolean // out of <NavbarContextProvider>, we need to drill props the navbar's state
+    navbarExpanded    : boolean // out of <NavbarContextProvider>, we need to drill props the navbar's state
+    preferredCurrency : string
 }
 const CurrencyDropdown = (props: CurrencyDropdownProps): JSX.Element|null => {
     // styles:
@@ -60,6 +66,7 @@ const CurrencyDropdown = (props: CurrencyDropdownProps): JSX.Element|null => {
     const {
         // states:
         navbarExpanded,
+        preferredCurrency,
         
         
         
@@ -97,8 +104,27 @@ const CurrencyDropdown = (props: CurrencyDropdownProps): JSX.Element|null => {
             }
         >
             {paymentConfig.paymentCurrencyOptions.map((paymentCurrencyOption) =>
-                <ListItem key={paymentCurrencyOption} onClick={(event) => handleClose(event, paymentCurrencyOption)}>
-                    {paymentCurrencyOption}
+                <ListItem
+                    // identifiers:
+                    key={paymentCurrencyOption}
+                    
+                    
+                    
+                    // styles:
+                    className={styleSheet.currencyItem}
+                    
+                    
+                    
+                    // accessibilities:
+                    active={paymentCurrencyOption === preferredCurrency}
+                    
+                    
+                    
+                    // handlers:
+                    onClick={(event) => handleClose(event, paymentCurrencyOption)}
+                >
+                    <RadioDecorator className='indicator' />
+                    <span className='name'>{paymentCurrencyOption}</span>
                 </ListItem>
             )}
         </DropdownList>

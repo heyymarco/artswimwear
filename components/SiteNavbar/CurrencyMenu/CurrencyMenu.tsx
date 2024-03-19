@@ -112,6 +112,7 @@ const CurrencyMenu = (props: CurrencyMenuProps): JSX.Element|null => {
                     
                     // states:
                     navbarExpanded={navbarExpanded} // out of <NavbarContextProvider>, we need to drill props the navbar's state
+                    preferredCurrency={preferredCurrency}
                     
                     
                     

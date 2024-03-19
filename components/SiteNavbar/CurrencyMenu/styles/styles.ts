@@ -7,6 +7,12 @@ import {
     scope,
 }                           from '@cssfn/core'                  // writes css in javascript
 
+// reusable-ui core:
+import {
+    // reusable-ui configs:
+    spacers,
+}                           from '@reusable-ui/core'        // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
 import {
     // simple-components:
@@ -37,6 +43,32 @@ const usesCurrencyDropdownDropdownLayout = () => {
         }),
     });
 };
+const usesCurrencyItemLayout = () => {
+    return style({
+        // layout:
+        display : 'grid',
+        gridTemplate : [[
+            '"indicator name"  auto',
+            '/',
+            'auto 1fr',
+        ]],
+        
+        
+        
+        // spacings:
+        gap : spacers.sm,
+        
+        
+        
+        // children:
+        ...children('.indicator', {
+            gridArea : 'indicator',
+        }),
+        ...children('.name', {
+            gridArea : 'name',
+        }),
+    });
+};
 
 
 
@@ -48,5 +80,9 @@ export default () => [
     scope('currencyDropdownDropdown', {
         // layouts:
         ...usesCurrencyDropdownDropdownLayout(),
+    }),
+    scope('currencyItem', {
+        // layouts:
+        ...usesCurrencyItemLayout(),
     }),
 ];
