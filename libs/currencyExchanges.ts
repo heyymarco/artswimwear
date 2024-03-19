@@ -51,7 +51,7 @@ export const getCurrencyRate = async (targetCurrency: string): Promise<number> =
     
     const toRate = currencyExchange.rates.get(targetCurrency);
     if (toRate === undefined) throw Error('unknown currency');
-    return 1 / toRate;
+    return toRate;
 }
 
 /**
@@ -82,7 +82,7 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
     
     
     const {rate, fractionUnit} = await getCurrencyConverter(customerCurrency);
-    const rawConverted         = fromAmount / rate;
+    const rawConverted         = fromAmount * rate;
     const rounding     = {
         ROUND : Math.round,
         CEIL  : Math.ceil,
@@ -90,33 +90,6 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
     }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
-    
-    
-    
-    return trimNumber(stepped) as TNumber;
-}
-/**
- * Reverts back:  
- * to app's default currency  
- * from the customer's preferred currency.
- */
-export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
-    // conditions:
-    if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
-    if (customerCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
-    
-    
-    
-    const {rate}       = await getCurrencyConverter(customerCurrency);
-    const fractionUnit = commerceConfig.currencies[commerceConfig.defaultCurrency].fractionUnit;
-    const rawReverted  = fromAmount * rate;
-    const rounding     = {
-        ROUND : Math.round,
-        CEIL  : Math.ceil,
-        FLOOR : Math.floor,
-    }[commerceConfig.currencyConversionRounding]; // reverts using app's currencyConversionRounding
-    const fractions    = rounding(rawReverted / fractionUnit);
-    const stepped      = fractions * fractionUnit;
     
     
     
@@ -130,15 +103,16 @@ export const revertCustomerCurrencyIfRequired  = async <TNumber extends number|n
  * from user's preferred currency  
  * to the **most suitable currency** (no conversion if possible) that paypal's supports.
  */
-export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|null|undefined>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
+export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|null|undefined>(fromAmount: TNumber, sourceCurrency: string, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;                   // null|undefined    => nothing to convert
     if (paypalCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
     
     
     
+    const {rate: sourceRate  } = await getCurrencyConverter(sourceCurrency);
     const {rate, fractionUnit} = await getCurrencyConverter(paypalCurrency);
-    const rawConverted         = fromAmount / rate;
+    const rawConverted         = fromAmount * rate / sourceRate;
     const rounding     = {
         ROUND : Math.round,
         CEIL  : Math.ceil,
@@ -165,7 +139,7 @@ export const revertPaypalCurrencyIfRequired    = async <TNumber extends number|n
     
     const {rate}       = await getCurrencyConverter(paypalCurrency);
     const fractionUnit = commerceConfig.currencies[commerceConfig.defaultCurrency].fractionUnit;
-    const rawReverted  = fromAmount * rate;
+    const rawReverted  = fromAmount / rate;
     const rounding     = {
         ROUND : Math.round,
         CEIL  : Math.ceil,

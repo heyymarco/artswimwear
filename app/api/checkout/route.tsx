@@ -99,6 +99,8 @@ import {
 import {
     getCurrencyRate,
     
+    convertCustomerCurrencyIfRequired,
+    
     convertPaypalCurrencyIfRequired,
     revertPaypalCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
@@ -608,15 +610,17 @@ router
     
     //#region validate options
     const {
-        preferredCurrency,
+        preferredCurrency : preferredCurrencyRaw,
         paymentSource, // options: pay manually | paymentSource
         simulateOrder = false,
     } = placeOrderData;
-    if ((preferredCurrency !== undefined) && ((typeof(preferredCurrency) !== 'string') || !paymentConfig.paymentCurrencyOptions.includes(preferredCurrency))) {
+    if ((preferredCurrencyRaw !== undefined) && ((typeof(preferredCurrencyRaw) !== 'string') || !paymentConfig.paymentCurrencyOptions.includes(preferredCurrencyRaw))) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
+    const preferredCurrency : string|undefined = preferredCurrencyRaw;
+    
     if ((paymentSource !== undefined) && ((typeof(paymentSource) !== 'string') || !paymentSource)) {
         return NextResponse.json({
             error: 'Invalid data.',
@@ -1063,11 +1067,21 @@ router
                     );
                     const unitPricePartsConverted = await Promise.all(
                         unitPriceParts
-                        .map((unitPricePart) =>
-                            usePaypalGateway
-                            ? convertPaypalCurrencyIfRequired(unitPricePart)
-                            : unitPricePart
-                        )
+                        .map(async (unitPricePart): Promise<number> => {
+                            const unitPricePartAsCustomerCurrency = (
+                                !!preferredCurrency
+                                ? await convertCustomerCurrencyIfRequired(unitPricePart, preferredCurrency)
+                                : unitPricePart
+                            );
+                            
+                            const unitPricePartAsPaypalCurrency = (
+                                !!usePaypalGateway
+                                ? await convertPaypalCurrencyIfRequired(unitPricePartAsCustomerCurrency, preferredCurrency ?? commerceConfig.defaultCurrency)
+                                : unitPricePartAsCustomerCurrency
+                            );
+                            
+                            return unitPricePartAsPaypalCurrency;
+                        })
                     );
                     const unitPriceConverted      = (
                         unitPricePartsConverted
@@ -1123,7 +1137,21 @@ router
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeight, matchingShipping) : null;
-            const totalShippingCostConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
+            const totalShippingCostConverted = await (async (): Promise<number|null> => {
+                const totalShippingCostAsCustomerCurrency = (
+                    !!preferredCurrency
+                    ? await convertCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency)
+                    : totalShippingCost
+                );
+                
+                const totalShippingCostAsPaypalCurrency = (
+                    !!usePaypalGateway
+                    ? await convertPaypalCurrencyIfRequired(totalShippingCostAsCustomerCurrency, preferredCurrency ?? commerceConfig.defaultCurrency)
+                    : totalShippingCostAsCustomerCurrency
+                );
+                
+                return totalShippingCostAsPaypalCurrency;
+            })();
             const totalCostConverted         = trimNumber(                                 // decimalize summed numbers to avoid producing ugly_fractional_decimal
                 totalProductPriceConverted + (totalShippingCostConverted ?? 0)             // may produces ugly_fractional_decimal
             );
