@@ -371,7 +371,7 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
                 imageId       : undefined,
                 
                 // relations:
-                variantGroups : item.product.variantGroups.map(({variants}) => variants)
+                variantGroups : item.product.variantGroups.map(({variants}) => variants),
             } : null,
         })),
         shippingProvider : (
