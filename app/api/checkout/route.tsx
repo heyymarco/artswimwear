@@ -2521,8 +2521,8 @@ Updating the confirmation is not required.`,
                                     </PaymentContextProvider>
                                 </OrderDataContextProvider>
                             </BusinessContextProvider>
-                        )).replace(/[\r\n\t]+/g, ' ').trim(),
-                        html        : await renderToStaticMarkupAsync(
+                        )).replace(/<!--(.|[^.])*?-->/g, '').replace(/[\r\n\t]+/g, ' ').trim(),
+                        html        : (await renderToStaticMarkupAsync(
                             <BusinessContextProvider {...businessContextProviderProps}>
                                 <OrderDataContextProvider {...orderDataContextProviderProps}>
                                     <PaymentContextProvider {...paymentContextProviderProps}>
@@ -2532,7 +2532,7 @@ Updating the confirmation is not required.`,
                                     </PaymentContextProvider>
                                 </OrderDataContextProvider>
                             </BusinessContextProvider>
-                        ),
+                        )).replace(/<!--(.|[^.])*?-->/g, '').trim(),
                         attachments : (
                             newOrderItems
                             .filter(({product}) => !!product && !!product.imageBase64 && !!product.imageId)
