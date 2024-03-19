@@ -99,7 +99,7 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding
+    }[commerceConfig.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
@@ -132,14 +132,14 @@ export const trimCustomerCurrencyIfRequired    = async <TNumber extends number|n
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding
+    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding (usually FLOOR, to avoid customer complain)
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
     
     
     const rawTrimmed           = stepped / rate;
-    const fractionUnitTrimmed  = commerceConfig.currencies[commerceConfig.defaultCurrency].fractionUnit;
+    const fractionUnitTrimmed  = 0.001;
     const fractionsTrimmed     = rounding(rawTrimmed / fractionUnitTrimmed);
     const steppedTrimmed       = fractionsTrimmed * fractionUnitTrimmed;
     
@@ -169,7 +169,7 @@ export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|n
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding
+    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding (usually FLOOR, to avoid customer complain)
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
@@ -190,14 +190,9 @@ export const revertPaypalCurrencyIfRequired    = async <TNumber extends number|n
     
     
     const {rate}       = await getCurrencyConverter(paypalCurrency);
-    const fractionUnit = commerceConfig.currencies[commerceConfig.defaultCurrency].fractionUnit;
+    const fractionUnit = 0.001;
     const rawReverted  = fromAmount / rate;
-    const rounding     = {
-        ROUND : Math.round,
-        CEIL  : Math.ceil,
-        FLOOR : Math.floor,
-    }[commerceConfig.currencyConversionRounding]; // reverts using app's currencyConversionRounding
-    const fractions    = rounding(rawReverted / fractionUnit);
+    const fractions    = Math.round(rawReverted / fractionUnit);
     const stepped      = fractions * fractionUnit;
     
     
