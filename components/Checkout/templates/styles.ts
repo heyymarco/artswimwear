@@ -518,5 +518,5 @@ export const basicBox              : React.CSSProperties = {
     
     
     // spacings:
-    padding      : `${spacerValues.sm}`,
+    padding      : `calc(${spacerValues.md} / 4)`,
 };
