@@ -317,9 +317,10 @@ const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
                                 variantGroups : {
                                     select : {
                                         variants : {
-                                            where    : {
-                                                visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                                            },
+                                            // always allow to access DRAFT variants when the customer is already ordered:
+                                            // where    : {
+                                            //     visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                            // },
                                             select : {
                                                 id   : true,
                                                 
