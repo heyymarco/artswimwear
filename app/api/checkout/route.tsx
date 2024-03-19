@@ -99,8 +99,6 @@ import {
 import {
     getCurrencyRate,
     
-    trimCustomerCurrencyIfRequired,
-    
     convertPaypalCurrencyIfRequired,
     revertPaypalCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
@@ -556,6 +554,15 @@ class OutOfStockError extends Error {
         this.limitedStockItems = limitedStockItems;
     }
 }
+
+
+
+// utilities:
+const sumReducer = <TNumber extends number|null|undefined>(accum: TNumber, value: TNumber): TNumber => {
+    if (typeof(value) !== 'number') return accum; // ignore null
+    if (typeof(accum) !== 'number') return value; // ignore null
+    return (accum + value) as TNumber;
+};
 
 
 
@@ -1044,28 +1051,29 @@ router
                     
                     
                     
-                    const unitPriceTrimmed   = trimNumber( // decimalize summed numbers to avoid producing ugly_fractional_decimal
-                        (await Promise.all(
-                            [
-                                // base price:
-                                product.price,
-                                
-                                // additional prices, based on selected variants:
-                                ...selectedVariants.map(({price}) => price),
-                            ]
-                            .filter((pricePart): pricePart is Exclude<typeof pricePart, null> => (pricePart !== null))
-                            // trim *each*: base price + additional prices, based on selected variants:
-                            .map((pricePart) =>
-                                simulateOrder ? pricePart : trimCustomerCurrencyIfRequired(pricePart, preferredCurrency)
-                            )
-                        ))
-                        // sum trimmed base price + trimmed additional prices, based on selected variants:
-                        .reduce<number>((accum, value): number => {
-                            return (accum + value); // may produces ugly_fractional_decimal
-                        }, 0)
+                    const unitPriceParts          = (
+                        [
+                            // base price:
+                            product.price,
+                            
+                            // additional prices, based on selected variants:
+                            ...selectedVariants.map(({price}) => price),
+                        ]
+                        .filter((pricePart): pricePart is Exclude<typeof pricePart, null> => (pricePart !== null))
                     );
-                    const unitPriceConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(unitPriceTrimmed)) : unitPriceTrimmed;
-                    const unitWeight         = (
+                    const unitPricePartsConverted = await Promise.all(
+                        unitPriceParts
+                        .map((unitPricePart) =>
+                            usePaypalGateway
+                            ? convertPaypalCurrencyIfRequired(unitPricePart)
+                            : unitPricePart
+                        )
+                    );
+                    const unitPriceConverted      = (
+                        unitPricePartsConverted
+                        .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
+                    );
+                    const unitWeight              = (
                         [
                             // base shippingWeight:
                             product.shippingWeight,
@@ -1103,8 +1111,8 @@ router
                     if (unitWeight !== null) {
                         if (totalProductWeight === null) totalProductWeight = 0; // contains at least 1 PHYSICAL_GOODS
                         
-                        totalProductWeight      += unitWeight         * quantity;  // may produces ugly_fractional_decimal
-                        totalProductWeight       = trimNumber(totalProductWeight); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
+                        totalProductWeight      += unitWeight         * quantity;          // may produces ugly_fractional_decimal
+                        totalProductWeight       = trimNumber(totalProductWeight);         // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
                     } // if
                 } // for
                 if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
@@ -1115,10 +1123,9 @@ router
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeight, matchingShipping) : null;
-            const totalShippingCostTrimmed   = await trimCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency);
-            const totalShippingCostConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(totalShippingCostTrimmed)) : totalShippingCostTrimmed;
-            const totalCostConverted         = trimNumber( // decimalize summed numbers to avoid producing ugly_fractional_decimal
-                totalProductPriceConverted + (totalShippingCostConverted ?? 0) // may produces ugly_fractional_decimal
+            const totalShippingCostConverted = usePaypalGateway ? (await convertPaypalCurrencyIfRequired(totalShippingCost)) : totalShippingCost;
+            const totalCostConverted         = trimNumber(                                 // decimalize summed numbers to avoid producing ugly_fractional_decimal
+                totalProductPriceConverted + (totalShippingCostConverted ?? 0)             // may produces ugly_fractional_decimal
             );
             //#endregion validate cart items: check existing products => check product quantities => create detailed items
             
