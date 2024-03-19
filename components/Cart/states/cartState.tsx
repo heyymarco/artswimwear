@@ -55,9 +55,6 @@ import {
 import {
     trimNumber,
 }                           from '@/libs/formatters'
-import {
-    convertCustomerCurrencyIfRequired,
-}                           from '@/libs/currencyExchanges'
 
 // stores:
 import {
