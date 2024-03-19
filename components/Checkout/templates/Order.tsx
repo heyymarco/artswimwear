@@ -366,7 +366,16 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                             <tr>
                                 <td colSpan={3}
                                     // styles:
-                                    style={styles.tableColumnAutoSize}
+                                    style={{
+                                        // layouts:
+                                        ...styles.tableColumnAutoSize,
+                                        display : 'flex',
+                                        
+                                        
+                                        
+                                        // spacings:
+                                        gap     : `calc(${spacerValues.md} / 4)`,
+                                    }}
                                 >
                                     {
                                         variantIds
@@ -377,7 +386,15 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                         .map((variantName, variantIndex) =>
                                             <span key={variantIndex}
                                                 // styles:
-                                                style={styles.basicBox}
+                                                style={{
+                                                    // layouts:
+                                                    ...styles.basicBox,
+                                                    
+                                                    
+                                                    
+                                                    // typos:
+                                                    lineHeight: 1,
+                                                }}
                                             >
                                                 {variantName}
                                             </span>

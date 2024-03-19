@@ -511,6 +511,11 @@ export const tableColumnAutoSize   : React.CSSProperties = {
 
 
 export const basicBox              : React.CSSProperties = {
+    // backgrounds & foregrounds:
+    ...theme('primary', /*gradient: */false),
+    
+    
+    
     // borders:
     border       : borderStroke('primary'),
     borderRadius : `${borderRadiusValues.sm}`,
