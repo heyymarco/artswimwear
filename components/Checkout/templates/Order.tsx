@@ -314,7 +314,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                             {/* image + title */}
                             <tr>
                                 {/* image */}
-                                <td rowSpan={4}
+                                <td rowSpan={5}
                                     // styles:
                                     style={{
                                         // spacings:
