@@ -113,7 +113,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
                                     priceParts
                                     .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
                                     *
-                                    quantity
+                                    quantity               // may produces ugly_fractional_decimal
                                 )
                             );
                         } else {
@@ -121,7 +121,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
                         } // if
                     })
                 ))
-                .reduce(sumReducer, undefined) // may produces ugly_fractional_decimal
+                .reduce(sumReducer, undefined)             // may produces ugly_fractional_decimal
             );
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(summedAmount);
@@ -135,8 +135,8 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
         <>
             {formatCurrency(
                 (typeof(convertedAmount) === 'number')
-                ? (convertedAmount * multiply) // may produces ugly_fractional_decimal
-                : convertedAmount              // no need to decimalize accumulated numbers to avoid producing ugly_fractional_decimal // `formatCurrency()` wouldn't produce ugly_fractional_decimal
+                ? (convertedAmount * multiply)             // may produces ugly_fractional_decimal
+                : convertedAmount                          // no need to decimalize accumulated numbers to avoid producing ugly_fractional_decimal // `formatCurrency()` wouldn't produce ugly_fractional_decimal
             , preferredCurrency)}
         </>
     );
