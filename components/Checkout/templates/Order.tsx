@@ -16,11 +16,16 @@ import {
     // hooks:
     useOrderDataContext,
 }                           from './orderDataContext'
-
-// utilities:
 import {
-    formatCurrency,
-}                           from '@/libs/formatters'
+    // react components:
+    CurrencyDisplay,
+}                           from './CurrencyDisplay'
+
+// stores:
+import {
+    // types:
+    ProductPricePart,
+}                           from '@/store/features/api/apiSlice'
 
 // configs:
 import {
@@ -30,13 +35,15 @@ import {
 
 
 // utilities:
-const getTotalProductPrice = (items: ReturnType<typeof useOrderDataContext>['order']['items']): number => {
-    // TODO: fix this with multi currency support
-    let totalProductPrice = 0;
+const getProductPriceParts = (items: ReturnType<typeof useOrderDataContext>['order']['items']): ProductPricePart[] => {
+    const productPriceParts  : ProductPricePart[] = [];
     for (const {price, quantity} of items) {
-        totalProductPrice += (price * quantity);
+        productPriceParts.push({
+            priceParts : [price],
+            quantity   : quantity,
+        });
     } // for
-    return totalProductPrice;
+    return productPriceParts;
 };
 
 
@@ -94,7 +101,7 @@ const OrderSubtotalValue = (props: OrderSubtotalProps): React.ReactNode => {
                 ...styles.numberCurrency,
             }}
         >
-            {formatCurrency(getTotalProductPrice(items))}
+            <CurrencyDisplay amount={getProductPriceParts(items)} />
         </span>
     );
 };
@@ -143,7 +150,7 @@ const OrderShippingValue = (props: OrderShippingProps): React.ReactNode => {
                 ...styles.numberCurrency,
             }}
         >
-            {formatCurrency(shippingCost)}
+            <CurrencyDisplay amount={shippingCost} />
         </span>
     );
 };
@@ -212,7 +219,7 @@ const OrderTotalValue = (props: OrderTotalProps): React.ReactNode => {
                 ...styles.numberCurrency,
             }}
         >
-            {formatCurrency(getTotalProductPrice(items) + (shippingCost ?? 0))}
+            <CurrencyDisplay amount={[...getProductPriceParts(items), shippingCost]} />
             <span>{commerceConfig.defaultCurrency}</span>
         </span>
     );
@@ -380,7 +387,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                         ...styles.textSmall,
                                     }}
                                 >
-                                    {formatCurrency(price)}
+                                    <CurrencyDisplay amount={price} />
                                 </td>
                             </tr>
                             
@@ -432,7 +439,7 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
                                         textAlign : 'end', // align to right_most
                                     }}
                                 >
-                                    {formatCurrency((price !== undefined) ? (price * quantity) : undefined)}
+                                    <CurrencyDisplay amount={price} multiply={quantity} />
                                 </td>
                             </tr>
                             

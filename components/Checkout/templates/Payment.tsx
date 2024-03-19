@@ -44,6 +44,10 @@ import {
     // hooks:
     useOrderDataContext,
 }                           from './orderDataContext'
+import {
+    // react components:
+    CurrencyDisplay,
+}                           from './CurrencyDisplay'
 
 // utilities:
 import {
@@ -170,7 +174,7 @@ const PaymentAmount = (): React.ReactNode => {
                         // ...styles.numberCurrency, // no need to place right_most
                     }}
                 >
-                    {formatCurrency(paymentAmount)}
+                    <CurrencyDisplay amount={paymentAmount} />
                 </span>
             </p>
         </>
