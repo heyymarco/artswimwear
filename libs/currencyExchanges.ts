@@ -3,6 +3,11 @@ import {
     trimNumber,
 }                           from '@/libs/formatters'
 
+// models:
+import type {
+    PreferredCurrency,
+}                           from '@prisma/client'
+
 // configs:
 import {
     commerceConfig,
@@ -74,14 +79,14 @@ const getCurrencyConverter   = async (targetCurrency: string): Promise<{rate: nu
  * from app's default currency  
  * to the customer's preferred currency.
  */
-export const convertCustomerCurrencyIfRequired = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string): Promise<TNumber> => {
+export const convertCustomerCurrencyIfRequired = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string|PreferredCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
     if (customerCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
     
     
     
-    const {rate, fractionUnit} = await getCurrencyConverter(customerCurrency);
+    const {rate, fractionUnit} = await getCurrencyConverter((typeof(customerCurrency) === 'object') ? customerCurrency.currency : customerCurrency);
     const rawConverted         = fromAmount * rate;
     const rounding     = {
         ROUND : Math.round,
