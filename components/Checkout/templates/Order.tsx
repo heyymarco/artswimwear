@@ -192,6 +192,7 @@ const OrderTotalValue = (props: OrderTotalProps): React.ReactNode => {
     const {
         // data:
         order : {
+            preferredCurrency,
             shippingCost,
             items,
         },
@@ -220,7 +221,7 @@ const OrderTotalValue = (props: OrderTotalProps): React.ReactNode => {
             }}
         >
             <CurrencyDisplay amount={[...getProductPriceParts(items), shippingCost]} />
-            <span>{commerceConfig.defaultCurrency}</span>
+            <span>{preferredCurrency ? preferredCurrency.currency : commerceConfig.defaultCurrency}</span>
         </span>
     );
 };
