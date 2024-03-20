@@ -12,11 +12,17 @@ export interface PaymentConfig {
     paymentProcessors           : {
         paypal : {
             supportedCurrencies : CurrencyCode[]
+            /**
+             * @deprecated
+             */
             defaultCurrency     : PaymentConfig['paymentProcessors']['paypal']['supportedCurrencies'][number]
         },
     },
     preferredPaymentProcessors  : (keyof PaymentConfig['paymentProcessors'])[]
     
+    /**
+     * @deprecated
+     */
     currencyConversionRounding  : CurrencyConversionRounding
 }
 export const paymentConfig : PaymentConfig = {
