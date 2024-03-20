@@ -105,8 +105,6 @@ import {
     getCurrencyRate,
     
     convertCustomerCurrencyIfRequired,
-    
-    convertPaypalCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
 import {
     resolveMediaUrl,
@@ -662,6 +660,12 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
+    const usePaypalGateway = !simulateOrder && (paymentSource !== 'manual'); // if undefined || not 'manual' => use paypal gateway
+    if (usePaypalGateway && !preferredCurrency) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
     //#endregion validate options
     
     
@@ -949,10 +953,6 @@ router
             
             
             //#region validate cart items: check existing products => check product quantities => create detailed items
-            const usePaypalGateway = !simulateOrder && (paymentSource !== 'manual'); // if undefined || not 'manual' => use paypal gateway
-            
-            
-            
             const detailedItems    : (Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'|'price'> & { productName: string, variantNames: string[], priceConverted: DraftOrdersOnProducts['price'] })[] = [];
             /**
              * Contains non_nullable product stocks to be reduced from current stock
@@ -1105,13 +1105,13 @@ router
                                 : unitPricePart
                             );
                             
-                            const unitPricePartAsPaypalCurrency = (
-                                !!usePaypalGateway
-                                ? await convertPaypalCurrencyIfRequired(unitPricePartAsCustomerCurrency, preferredCurrency ?? commerceConfig.defaultCurrency)
-                                : unitPricePartAsCustomerCurrency
-                            );
+                            // const unitPricePartAsPaypalCurrency = (
+                            //     !!usePaypalGateway
+                            //     ? await convertPaypalCurrencyIfRequired(unitPricePartAsCustomerCurrency, preferredCurrency ?? commerceConfig.defaultCurrency)
+                            //     : unitPricePartAsCustomerCurrency
+                            // );
                             
-                            return unitPricePartAsPaypalCurrency;
+                            return unitPricePartAsCustomerCurrency;
                         })
                     );
                     const unitPriceConverted      = (
@@ -1175,13 +1175,13 @@ router
                     : totalShippingCost
                 );
                 
-                const totalShippingCostAsPaypalCurrency = (
-                    !!usePaypalGateway
-                    ? await convertPaypalCurrencyIfRequired(totalShippingCostAsCustomerCurrency, preferredCurrency ?? commerceConfig.defaultCurrency)
-                    : totalShippingCostAsCustomerCurrency
-                );
+                // const totalShippingCostAsPaypalCurrency = (
+                //     !!usePaypalGateway
+                //     ? await convertPaypalCurrencyIfRequired(totalShippingCostAsCustomerCurrency, preferredCurrency ?? commerceConfig.defaultCurrency)
+                //     : totalShippingCostAsCustomerCurrency
+                // );
                 
-                return totalShippingCostAsPaypalCurrency;
+                return totalShippingCostAsCustomerCurrency;
             })();
             const totalCostConverted         = trimNumber(                                 // decimalize summed numbers to avoid producing ugly_fractional_decimal
                 totalProductPriceConverted + (totalShippingCostConverted ?? 0)             // may produces ugly_fractional_decimal
