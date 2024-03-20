@@ -643,7 +643,7 @@ router
         paymentSource, // options: pay manually | paymentSource
         simulateOrder = false,
     } = placeOrderData;
-    if ((preferredCurrencyRaw !== undefined) && ((typeof(preferredCurrencyRaw) !== 'string') || !paymentConfig.paymentCurrencyOptions.includes(preferredCurrencyRaw))) {
+    if ((typeof(preferredCurrencyRaw) !== 'string') || !paymentConfig.paymentCurrencyOptions.includes(preferredCurrencyRaw)) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
