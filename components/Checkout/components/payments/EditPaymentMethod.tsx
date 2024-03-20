@@ -63,6 +63,10 @@ import {
     useCheckoutStyleSheet,
 }                           from '../../styles/loader'
 import {
+    // states:
+    useCartState,
+}                           from '@/components/Cart'
+import {
     // types:
     PaymentMethod,
     
@@ -87,6 +91,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     
     // states:
+    const {
+        // accessibilities:
+        preferredCurrency,
+    } = useCartState();
     const {
         // payment data:
         paymentMethod,
@@ -123,7 +131,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
         'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
         'data-client-token' : paymentToken?.paymentToken,
-        currency            : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+        currency            : paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(preferredCurrency) ? preferredCurrency : 'USD',
         intent              : 'capture',
         components          : 'hosted-fields,buttons',
     }), [paymentToken?.paymentToken]);
