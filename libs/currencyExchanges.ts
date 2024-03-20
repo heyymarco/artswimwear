@@ -108,6 +108,7 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
     return trimNumber(stepped) as TNumber;
 }
 /**
+ * @deprecated
  * Trims:  
  * from app's default currency  
  * to current app's default currency with equivalent value of the customer's preferred currency.
@@ -178,6 +179,7 @@ export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|n
     return trimNumber(stepped) as TNumber;
 }
 /**
+ * @deprecated
  * Reverts back:  
  * to user's preferred currency  
  * from the **most suitable currency** (no conversion if possible) that paypal's supports.

@@ -19,9 +19,6 @@ import type {
 import {
     formatCurrency,
 }                           from '@/libs/formatters'
-import {
-    convertCustomerCurrencyIfRequired,
-}                           from '@/libs/currencyExchanges'
 
 
 
@@ -39,7 +36,7 @@ export interface CurrencyDisplayProps {
     amount    : number|null|undefined | Array<ProductPricePart|number|null|undefined>
     multiply ?: number
 }
-const CurrencyDisplay = async (props: CurrencyDisplayProps): Promise<JSX.Element|null> => {
+const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     // props:
     const {
         amount   : amountRaw,
@@ -64,42 +61,70 @@ const CurrencyDisplay = async (props: CurrencyDisplayProps): Promise<JSX.Element
         ? [amountRaw]
         : amountRaw
     );
-    const convertedAmount = (
-        (await Promise.all(
-            amountList
-            .flatMap((amountItem): number|null|undefined | Promise<number|null|undefined> => {
-                if (amountItem && typeof(amountItem) === 'object') {
-                    const {
-                        priceParts,
-                        quantity,
-                    } = amountItem;
-                    
-                    return (
-                        Promise.all(
-                            priceParts
-                            .map((pricePart): number | Promise<number> =>
-                                !!preferredCurrency
-                                ? convertCustomerCurrencyIfRequired(pricePart, preferredCurrency)
-                                : pricePart
-                            )
-                        )
-                        .then((priceParts): number =>
-                            priceParts
-                            .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
-                            *
-                            quantity               // may produces ugly_fractional_decimal
-                        )
-                    );
-                } else {
-                    return (
-                        !!preferredCurrency
-                        ? convertCustomerCurrencyIfRequired(amountItem, preferredCurrency)
-                        : amountItem
-                    );
-                } // if
-            })
-        ))
-        .reduce(sumReducer, undefined)             // may produces ugly_fractional_decimal
+    
+    
+    
+    // no need to convert. The saved amount is already in customer's preference currency
+    // const convertedAmount = (
+    //     (await Promise.all(
+    //         amountList
+    //         .flatMap((amountItem): number|null|undefined | Promise<number|null|undefined> => {
+    //             if (amountItem && typeof(amountItem) === 'object') {
+    //                 const {
+    //                     priceParts,
+    //                     quantity,
+    //                 } = amountItem;
+    //                 
+    //                 return (
+    //                     Promise.all(
+    //                         priceParts
+    //                         .map((pricePart): number | Promise<number> =>
+    //                             !!preferredCurrency
+    //                             ? convertCustomerCurrencyIfRequired(pricePart, preferredCurrency)
+    //                             : pricePart
+    //                         )
+    //                     )
+    //                     .then((priceParts): number =>
+    //                         priceParts
+    //                         .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
+    //                         *
+    //                         quantity               // may produces ugly_fractional_decimal
+    //                     )
+    //                 );
+    //             } else {
+    //                 return (
+    //                     !!preferredCurrency
+    //                     ? convertCustomerCurrencyIfRequired(amountItem, preferredCurrency)
+    //                     : amountItem
+    //                 );
+    //             } // if
+    //         })
+    //     ))
+    //     .reduce(sumReducer, undefined)             // may produces ugly_fractional_decimal
+    // );
+    
+    
+    
+    const mergedAmount = (
+        amountList
+        .flatMap((amountItem): number|null|undefined => {
+            if (amountItem && typeof(amountItem) === 'object') {
+                const {
+                    priceParts,
+                    quantity,
+                } = amountItem;
+                
+                return (
+                    priceParts
+                    .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
+                    *
+                    quantity               // may produces ugly_fractional_decimal
+                );
+            } else {
+                return amountItem;
+            } // if
+        })
+        .reduce(sumReducer, undefined)     // may produces ugly_fractional_decimal
     );
     
     
@@ -108,9 +133,9 @@ const CurrencyDisplay = async (props: CurrencyDisplayProps): Promise<JSX.Element
     return (
         <>
             {formatCurrency(
-                (typeof(convertedAmount) === 'number')
-                ? (convertedAmount * multiply)     // may produces ugly_fractional_decimal
-                : convertedAmount                  // no need to decimalize accumulated numbers to avoid producing ugly_fractional_decimal // `formatCurrency()` wouldn't produce ugly_fractional_decimal
+                (typeof(mergedAmount) === 'number')
+                ? (mergedAmount * multiply)     // may produces ugly_fractional_decimal
+                : mergedAmount                  // no need to decimalize accumulated numbers to avoid producing ugly_fractional_decimal // `formatCurrency()` wouldn't produce ugly_fractional_decimal
             , preferredCurrency?.currency)}
         </>
     );

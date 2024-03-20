@@ -104,10 +104,9 @@ import {
 import {
     getCurrencyRate,
     
-    trimCustomerCurrencyIfRequired,
+    convertCustomerCurrencyIfRequired,
     
     convertPaypalCurrencyIfRequired,
-    revertPaypalCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
 import {
     resolveMediaUrl,
@@ -1102,7 +1101,7 @@ router
                         .map(async (unitPricePart): Promise<number> => {
                             const unitPricePartAsCustomerCurrency = (
                                 !!preferredCurrency
-                                ? await trimCustomerCurrencyIfRequired(unitPricePart, preferredCurrency)
+                                ? await convertCustomerCurrencyIfRequired(unitPricePart, preferredCurrency)
                                 : unitPricePart
                             );
                             
@@ -1172,7 +1171,7 @@ router
             const totalShippingCostConverted = await (async (): Promise<number|null> => {
                 const totalShippingCostAsCustomerCurrency = (
                     !!preferredCurrency
-                    ? await trimCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency)
+                    ? await convertCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency)
                     : totalShippingCost
                 );
                 
@@ -1473,6 +1472,7 @@ router
             
             
             //#region create a newDraftOrder
+            let savingCurrency = preferredCurrency || commerceConfig.defaultCurrency;
             const createNewDraftOrderPromise = prismaTransaction.draftOrder.create({
                 data : {
                     expiresAt                  : new Date(Date.now() + (1 * 60 * 1000)),
@@ -1481,7 +1481,7 @@ router
                     paypalOrderId              : paypalOrderId,
                     
                     items                      : {
-                        create                 : await Promise.all(detailedItems.map(async (detailedItem) => {
+                        create                 : detailedItems.map((detailedItem) => {
                             return {
                                 product        : {
                                     connect    : {
@@ -1490,20 +1490,16 @@ router
                                 },
                                 variantIds     : detailedItem.variantIds,
                                 
-                                price          : (
-                                    usePaypalGateway
-                                    ? (await revertPaypalCurrencyIfRequired(detailedItem.priceConverted)) // revert from foreignCurrency to appDefaultCurrency
-                                    : detailedItem.priceConverted
-                                ),
+                                price          : detailedItem.priceConverted,
                                 shippingWeight : detailedItem.shippingWeight,
                                 quantity       : detailedItem.quantity,
                             };
-                        })),
+                        }),
                     },
                     
-                    preferredCurrency          : (!preferredCurrency || (preferredCurrency === commerceConfig.defaultCurrency)) ? null : {
-                        currency               : preferredCurrency,
-                        rate                   : await getCurrencyRate(preferredCurrency),
+                    preferredCurrency          : (savingCurrency === commerceConfig.defaultCurrency) ? null : {
+                        currency               : savingCurrency,
+                        rate                   : await getCurrencyRate(savingCurrency),
                     },
                     
                     ...(hasShippingAddress ? {
@@ -1519,11 +1515,7 @@ router
                             zip                    : shippingZip,
                             country                : shippingCountry.toUpperCase(),
                         },
-                        shippingCost               : (
-                            usePaypalGateway
-                            ? (await revertPaypalCurrencyIfRequired(totalShippingCostConverted)) // revert from foreignCurrency to appDefaultCurrency
-                            : totalShippingCostConverted
-                        ),
+                        shippingCost               : totalShippingCostConverted,
                         shippingProvider           : {
                             connect                : {
                                 id                 : shippingProviderId,
@@ -2271,13 +2263,14 @@ Updating the confirmation is not required.`,
                 console.log('captureData : ', captureData);
                 console.log('captureData.status : ', captureData?.status);
                 const paymentBreakdown      = captureData?.seller_receivable_breakdown;
-                const paymentAmountCurrency : string = paymentBreakdown?.gross_amount?.currency_code || '';
+                // const paymentAmountCurrency : string = paymentBreakdown?.gross_amount?.currency_code || '';
                 const paymentAmount         = Number.parseFloat(paymentBreakdown?.gross_amount?.value);
-                const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
+                // const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
                 const paymentFee            = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
                 
-                const paymentAmountReverted = await revertPaypalCurrencyIfRequired(paymentAmount, paymentAmountCurrency); // revert from foreignCurrency to appDefaultCurrency
-                const paymentFeeReverted    = await revertPaypalCurrencyIfRequired(paymentFee   , paymentFeeCurrency);    // revert from foreignCurrency to appDefaultCurrency
+                
+                
+                // if (paymentAmountCurrency !== paymentFeeCurrency) throw Error('unexpected API response');
                 
                 
                 
@@ -2294,8 +2287,8 @@ Updating the confirmation is not required.`,
                                     brand      : card.brand?.toLowerCase() ?? null,
                                     identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
                                     
-                                    amount     : paymentAmountReverted,
-                                    fee        : paymentFeeReverted,
+                                    amount     : paymentAmount,
+                                    fee        : paymentFee,
                                 };
                             } //if
                             
@@ -2306,8 +2299,8 @@ Updating the confirmation is not required.`,
                                     brand      : 'paypal',
                                     identifier : paypal.email_address || null,
                                     
-                                    amount     : paymentAmountReverted,
-                                    fee        : paymentFeeReverted,
+                                    amount     : paymentAmount,
+                                    fee        : paymentFee,
                                 };
                             } //if
                             
@@ -2316,8 +2309,8 @@ Updating the confirmation is not required.`,
                                 brand      : null,
                                 identifier : null,
                                 
-                                amount     : paymentAmountReverted,
-                                fee        : paymentFeeReverted,
+                                amount     : paymentAmount,
+                                fee        : paymentFee,
                             };
                         })();
                     }; break;
