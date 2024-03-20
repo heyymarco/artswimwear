@@ -661,7 +661,7 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const usePaypalGateway = !simulateOrder && (paymentSource !== 'manual'); // if undefined || not 'manual' => use paypal gateway
-    if (usePaypalGateway && !preferredCurrency) {
+    if (usePaypalGateway && !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(preferredCurrency)) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -1234,7 +1234,7 @@ router
                             amount                    : {
                                 // currency_code string required
                                 // The three-character ISO-4217 currency code that identifies the currency.
-                                currency_code         : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+                                currency_code         : preferredCurrency,
                                 
                                 // value string required
                                 /*
@@ -1262,14 +1262,14 @@ router
                                     // item_total Money|undefined
                                     // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                                     item_total        : {
-                                        currency_code : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+                                        currency_code : preferredCurrency,
                                         value         : totalProductPriceConverted,
                                     },
                                     
                                     // shipping Money|undefined
                                     // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
                                     shipping          : (totalShippingCostConverted === null) ? undefined : {
-                                        currency_code : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+                                        currency_code : preferredCurrency,
                                         value         : totalShippingCostConverted,
                                     },
                                     
@@ -1307,7 +1307,7 @@ router
                                 unit_amount           : {
                                     // currency_code string required
                                     // The three-character ISO-4217 currency code that identifies the currency.
-                                    currency_code     : paymentConfig.paymentProcessors.paypal.defaultCurrency, // TODO: change to user's preferred currency that paypal supports ?? fallback to paypal's default currency; to minimize conversion lost
+                                    currency_code     : preferredCurrency,
                                     
                                     // value string required
                                     /*
