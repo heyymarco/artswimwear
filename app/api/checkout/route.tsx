@@ -648,7 +648,7 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    const preferredCurrency : string|undefined = preferredCurrencyRaw;
+    const preferredCurrency : string = preferredCurrencyRaw;
     
     if ((paymentSource !== undefined) && ((typeof(paymentSource) !== 'string') || !paymentSource)) {
         return NextResponse.json({
