@@ -175,7 +175,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const [originatingBank  , setOriginatingBank  ] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
     const [destinationBank  , setDestinationBank  ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     
-    const currency = commerceConfig.currencies[paymentConfirmationData?.currency || commerceConfig.defaultCurrency] ?? commerceConfig.currencies[commerceConfig.defaultCurrency];
+    const currencyCode  = paymentConfirmationData?.currency || commerceConfig.defaultCurrency;
+    const currency      = commerceConfig.currencies[currencyCode] ?? commerceConfig.currencies[commerceConfig.defaultCurrency];
     
     const [rejectionReason  , setRejectionReason  ] = useState<WysiwygEditorState|null>(null);
     const isReviewed    = !!reviewedAt;
@@ -535,34 +536,39 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     />
                                 </Group>}
                                 
-                                <CurrencyEditor
-                                    // appearances:
-                                    currencySign={currency.sign}
-                                    currencyFraction={currency.fractionMax}
-                                    
-                                    
-                                    
-                                    // accessibilities:
-                                    aria-label='Transfered Amount'
-                                    
-                                    
-                                    
-                                    // values:
-                                    value={amount}
-                                    onChange={(value) => setAmount(value)}
-                                    
-                                    
-                                    
-                                    // validations:
-                                    enableValidation={(hasInitialData && !hasModified) ? false : true}
-                                    required={true}
-                                    min={0}
-                                    
-                                    
-                                    
-                                    // formats:
-                                    placeholder='Transfered Amount'
-                                />
+                                <Group>
+                                    <Label className='solid'>
+                                        {currencyCode}
+                                    </Label>
+                                    <CurrencyEditor
+                                        // appearances:
+                                        currencySign={currency.sign}
+                                        currencyFraction={currency.fractionMax}
+                                        
+                                        
+                                        
+                                        // accessibilities:
+                                        aria-label='Transfered Amount'
+                                        
+                                        
+                                        
+                                        // values:
+                                        value={amount}
+                                        onChange={(value) => setAmount(value)}
+                                        
+                                        
+                                        
+                                        // validations:
+                                        enableValidation={(hasInitialData && !hasModified) ? false : true}
+                                        required={true}
+                                        min={0}
+                                        
+                                        
+                                        
+                                        // formats:
+                                        placeholder='Transfered Amount'
+                                    />
+                                </Group>
                                 
                                 <NameEditor
                                     // classes:
