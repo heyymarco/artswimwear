@@ -542,7 +542,6 @@ export interface PaymentConfirmationDetail
             |'reportedAt'
             |'reviewedAt'
             
-            |'currency'
             |'amount'
             |'payerName'
             |'paymentDate'
@@ -554,6 +553,7 @@ export interface PaymentConfirmationDetail
             |'rejectionReason'
         >
 {
+    currency : string
 }
 
 export interface ShippingTrackingRequest {
@@ -1638,7 +1638,6 @@ router
         
         
         const {
-            currency,
             amount,
             payerName,
             paymentDate,
@@ -1647,16 +1646,6 @@ router
             originatingBank,
             destinationBank,
         } = paymentConfirmation;
-        if ((currency !== undefined) !== (amount !== undefined)) { // both currency & amount must be defined or undefined
-            return NextResponse.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
-        } // if
-        if (((currency !== undefined) && (currency !== null)) && ((typeof(currency) !== 'string') || !Object.keys(commerceConfig.currencies).includes(currency))) {
-            return NextResponse.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
-        } // if
         if ((amount !== undefined) && ((typeof(amount) !== 'number') || (amount < 0) || !isFinite(amount))) {
             return NextResponse.json({
                 error: 'Invalid data.',
@@ -1702,7 +1691,6 @@ router
             reportedAt        : true,
             reviewedAt        : true,
             
-            currency          : true,
             amount            : true,
             payerName         : true,
             paymentDate       : true,
@@ -1712,8 +1700,15 @@ router
             destinationBank   : true,
             
             rejectionReason   : true,
+            
+            // relations:
+            order : {
+                select : {
+                    preferredCurrency : true
+                },
+            },
         };
-        const paymentConfirmationDetail : PaymentConfirmationDetail|'ALREADY_APPROVED'|null = (
+        const paymentConfirmationDetailRaw = (
             (amount === undefined)
             ? await prisma.paymentConfirmation.findUnique({
                 where  : {
@@ -1740,7 +1735,6 @@ router
                             reportedAt : new Date(), // set the confirmation date
                             reviewedAt : null, // reset for next review
                             
-                            currency,
                             amount,
                             payerName,
                             paymentDate      : paymentDateAsDate ?? new Date(paymentDate),
@@ -1761,7 +1755,7 @@ router
                 } // try
             })()
         );
-        if (paymentConfirmationDetail === 'ALREADY_APPROVED') {
+        if (paymentConfirmationDetailRaw === 'ALREADY_APPROVED') {
             return NextResponse.json({
                 error:
 `The previous payment confirmation has been approved.
@@ -1769,12 +1763,27 @@ router
 Updating the confirmation is not required.`,
             }, { status: 409 }); // handled with conflict error
         }
-        if (!paymentConfirmationDetail) {
+        if (!paymentConfirmationDetailRaw) {
             return NextResponse.json({
                 error: 'Invalid payment confirmation token.',
             }, { status: 400 }); // handled with error
         } // if
-        return NextResponse.json(paymentConfirmationDetail); // handled with success
+        
+        
+        
+        const {
+            // relations:
+            order,
+            
+            
+            
+            // data:
+            ...restPaymentConfirmationDetail
+        } = paymentConfirmationDetailRaw;
+        return NextResponse.json({
+            ...restPaymentConfirmationDetail,
+            currency : order.preferredCurrency?.currency ?? commerceConfig.defaultCurrency,
+        } satisfies PaymentConfirmationDetail); // handled with success
     } // if
     
     

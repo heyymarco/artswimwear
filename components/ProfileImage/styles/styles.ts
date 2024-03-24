@@ -145,6 +145,18 @@ export const usesProfileImageStates = () => {
             rule('.hasImage', {
                 // children:
                 ...children('[role="img"]', {
+                    // appearances:
+                    maskImage       : 'none',
+                    WebkitMaskImage : 'none',
+                    
+                    
+                    
+                    // backgrounds:
+                    backgroundImage : 'transparent',
+                    
+                    
+                    
+                    // children:
                     ...children('::after', {
                         opacity : 0, // hide the person icon
                     }),

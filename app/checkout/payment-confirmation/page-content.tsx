@@ -168,14 +168,14 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const [reviewedAt       , setReviewedAt       ] = useState<Date|null>(null);
     
     const [enableValidation , setEnableValidation ] = useState<boolean>(false);
-    const [currency         , setCurrency         ] = useState<string>(paymentConfirmationData?.currency || commerceConfig.defaultCurrency);
     const [amount           , setAmount           ] = useState<number|null>(paymentConfirmationData?.amount ?? null);
     const [payerName        , setPayerName        ] = useState<string|null>(paymentConfirmationData?.payerName || null);
     const [paymentDate      , setPaymentDate      ] = useState<Date|null>(paymentConfirmationData?.paymentDate || null);
     const [preferredTimezone, setPreferredTimezone] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
     const [originatingBank  , setOriginatingBank  ] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
     const [destinationBank  , setDestinationBank  ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
-    const selectedCurrency = commerceConfig.currencies?.[currency as keyof typeof commerceConfig.currencies];
+    
+    const currency = commerceConfig.currencies[paymentConfirmationData?.currency || commerceConfig.defaultCurrency] ?? commerceConfig.currencies[commerceConfig.defaultCurrency];
     
     const [rejectionReason  , setRejectionReason  ] = useState<WysiwygEditorState|null>(null);
     const isReviewed    = !!reviewedAt;
@@ -224,7 +224,6 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                 reportedAt : reportedAtAsString,
                 reviewedAt : reviewedAtAsString,
                 
-                currency,
                 amount,
                 payerName,
                 paymentDate: paymentDateAsString,
@@ -241,7 +240,6 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
             setReportedAt(reportedAtAsString ? new Date(reportedAtAsString) : null);
             setReviewedAt(reviewedAtAsString ? new Date(reviewedAtAsString) : null);
             
-            setCurrency(currency || commerceConfig.defaultCurrency);
             setAmount(amount);
             setPayerName(payerName);
             setPaymentDate(paymentDateAsString ? new Date(paymentDateAsString) : null); // the paymentDateAsString returned from server is a 'string', we need to convert back to Date type
@@ -287,7 +285,6 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                 paymentConfirmation   : {
                     token             : token,
                     
-                    currency          : currency,
                     amount            : amount,
                     payerName         : payerName       || null, // convert empty string to null
                     paymentDate       : paymentDate,
@@ -538,108 +535,34 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     />
                                 </Group>}
                                 
-                                <Group>
-                                    <DropdownListButton
-                                        // variants:
-                                        theme='primary'
-                                        mild={true}
-                                        
-                                        
-                                        
-                                        // classes:
-                                        className='solid'
-                                        
-                                        
-                                        
-                                        // accessibilities:
-                                        aria-label='Payment Currency'
-                                        
-                                        
-                                        
-                                        // floatable:
-                                        floatingPlacement='bottom-end'
-                                        
-                                        
-                                        
-                                        // components:
-                                        buttonComponent={
-                                            <EditableButton
-                                                // accessibilities:
-                                                assertiveFocusable={true}
-                                                
-                                                
-                                                
-                                                // validations:
-                                                isValid={!!currency}
-                                                
-                                                
-                                                
-                                                // components:
-                                                buttonComponent={
-                                                    <ButtonIcon
-                                                        // appearances:
-                                                        icon='dropdown'
-                                                        iconPosition='end'
-                                                    />
-                                                }
-                                            >
-                                                {currency}
-                                            </EditableButton>
-                                        }
-                                    >
-                                        {Object.keys(commerceConfig.currencies).map((currencyOption) =>
-                                            <ListItem
-                                                // identifiers:
-                                                key={currencyOption}
-                                                
-                                                
-                                                
-                                                // accessibilities:
-                                                active={(currencyOption === currency)}
-                                                
-                                                
-                                                
-                                                // handlers:
-                                                onClick={() => setCurrency(currencyOption)}
-                                            >
-                                                {currencyOption}
-                                            </ListItem>
-                                        )}
-                                    </DropdownListButton>
-                                    <CurrencyEditor
-                                        // appearances:
-                                        currencySign={selectedCurrency?.sign}
-                                        currencyFraction={selectedCurrency.fractionMax}
-                                        
-                                        
-                                        
-                                        // classes:
-                                        className='fluid'
-                                        
-                                        
-                                        
-                                        // accessibilities:
-                                        aria-label='Transfered Amount'
-                                        
-                                        
-                                        
-                                        // values:
-                                        value={amount}
-                                        onChange={(value) => setAmount(value)}
-                                        
-                                        
-                                        
-                                        // validations:
-                                        enableValidation={(hasInitialData && !hasModified) ? false : true}
-                                        required={true}
-                                        min={0}
-                                        
-                                        
-                                        
-                                        // formats:
-                                        placeholder='Transfered Amount'
-                                    />
-                                </Group>
+                                <CurrencyEditor
+                                    // appearances:
+                                    currencySign={currency.sign}
+                                    currencyFraction={currency.fractionMax}
+                                    
+                                    
+                                    
+                                    // accessibilities:
+                                    aria-label='Transfered Amount'
+                                    
+                                    
+                                    
+                                    // values:
+                                    value={amount}
+                                    onChange={(value) => setAmount(value)}
+                                    
+                                    
+                                    
+                                    // validations:
+                                    enableValidation={(hasInitialData && !hasModified) ? false : true}
+                                    required={true}
+                                    min={0}
+                                    
+                                    
+                                    
+                                    // formats:
+                                    placeholder='Transfered Amount'
+                                />
                                 
                                 <NameEditor
                                     // classes:
