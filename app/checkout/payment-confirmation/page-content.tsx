@@ -175,8 +175,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const [originatingBank  , setOriginatingBank  ] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
     const [destinationBank  , setDestinationBank  ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     
-    const currencyCode  = paymentConfirmationData?.currency || commerceConfig.defaultCurrency;
-    const currency      = commerceConfig.currencies[currencyCode] ?? commerceConfig.currencies[commerceConfig.defaultCurrency];
+    const currency       = paymentConfirmationData?.currency || commerceConfig.defaultCurrency;
+    const currencyConfig = commerceConfig.currencies[currency] ?? commerceConfig.currencies[commerceConfig.defaultCurrency];
     
     const [rejectionReason  , setRejectionReason  ] = useState<WysiwygEditorState|null>(null);
     const isReviewed    = !!reviewedAt;
@@ -538,12 +538,12 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                 
                                 <Group>
                                     <Label className='solid'>
-                                        {currencyCode}
+                                        {currency}
                                     </Label>
                                     <CurrencyEditor
                                         // appearances:
-                                        currencySign={currency.sign}
-                                        currencyFraction={currency.fractionMax}
+                                        currencySign={currencyConfig.sign}
+                                        currencyFraction={currencyConfig.fractionMax}
                                         
                                         
                                         

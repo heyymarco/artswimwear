@@ -7,7 +7,7 @@ export interface CurrencyConfig {
     fractionUnit     : number,
 }
 export interface CurrenciesConfig {
-    [currencyCode: CurrencyCode]: CurrencyConfig
+    [currency: CurrencyCode]: CurrencyConfig
 }
 export type CurrencyConversionRounding = 'ROUND'|'FLOOR'|'CEIL'
 export interface CommerceConfig {

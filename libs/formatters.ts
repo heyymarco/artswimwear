@@ -4,20 +4,20 @@ import {
 
 
 
-export const formatCurrency = (value: number|null|undefined, currencyCode: string = commerceConfig.defaultCurrency): string => {
+export const formatCurrency = (value: number|null|undefined, currency: string = commerceConfig.defaultCurrency): string => {
     if ((value === null) || (value === undefined) || isNaN(value)) return '-';
     
     
     
-    const currencySign = getCurrencySign(currencyCode);
-    const currencyFormatter = new Intl.NumberFormat(commerceConfig.currencies[currencyCode]?.locale ?? commerceConfig.locale, {
+    const currencySign = getCurrencySign(currency);
+    const currencyFormatter = new Intl.NumberFormat(commerceConfig.currencies[currency]?.locale ?? commerceConfig.locale, {
         style                 : 'currency',
-        currency              : currencyCode,
+        currency              : currency,
         currencyDisplay       : 'narrowSymbol',
         
         // These options are needed to round to whole numbers if that's what you want.
-        minimumFractionDigits : commerceConfig.currencies[currencyCode].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-        maximumFractionDigits : commerceConfig.currencies[currencyCode].fractionMax, // (causes 2500.99 to be printed as $2,501)
+        minimumFractionDigits : commerceConfig.currencies[currency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+        maximumFractionDigits : commerceConfig.currencies[currency].fractionMax, // (causes 2500.99 to be printed as $2,501)
     });
     return (
         currencyFormatter.formatToParts(value)
@@ -30,20 +30,20 @@ export const formatCurrency = (value: number|null|undefined, currencyCode: strin
         .map(({value}) => value)
     ).join('');
 };
-export const getCurrencySign = (currencyCode: string = commerceConfig.defaultCurrency): string => {
-    const currencySignFromConfig = commerceConfig.currencies[currencyCode]?.sign;
+export const getCurrencySign = (currency: string = commerceConfig.defaultCurrency): string => {
+    const currencySignFromConfig = commerceConfig.currencies[currency]?.sign;
     if (!!currencySignFromConfig) return currencySignFromConfig;
     
     
     
-    const currencyFormatter = new Intl.NumberFormat(commerceConfig.currencies[currencyCode]?.locale ?? commerceConfig.locale, {
+    const currencyFormatter = new Intl.NumberFormat(commerceConfig.currencies[currency]?.locale ?? commerceConfig.locale, {
         style                 : 'currency',
-        currency              : currencyCode,
+        currency              : currency,
         currencyDisplay       : 'narrowSymbol',
         
         // These options are needed to round to whole numbers if that's what you want.
-        minimumFractionDigits : commerceConfig.currencies[currencyCode].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-        maximumFractionDigits : commerceConfig.currencies[currencyCode].fractionMax, // (causes 2500.99 to be printed as $2,501)
+        minimumFractionDigits : commerceConfig.currencies[currency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+        maximumFractionDigits : commerceConfig.currencies[currency].fractionMax, // (causes 2500.99 to be printed as $2,501)
     });
     return currencyFormatter.formatToParts(/* test value to render: */1).find(({type}) => (type === 'currency'))?.value ?? '';
 }
