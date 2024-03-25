@@ -107,47 +107,6 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
     
     return trimNumber(stepped) as TNumber;
 }
-/**
- * @deprecated
- * Trims:  
- * from app's default currency  
- * to current app's default currency with equivalent value of the customer's preferred currency.
- */
-export const trimCustomerCurrencyIfRequired    = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string|PreferredCurrency): Promise<TNumber> => {
-    // conditions:
-    if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
-    if (customerCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
-    
-    
-    
-    const {rate, fractionUnit} = (
-        (typeof(customerCurrency) === 'string')
-        ? await getCurrencyConverter(customerCurrency)
-        : {
-            rate         : customerCurrency.rate,
-            fractionUnit : commerceConfig.currencies[customerCurrency.currency].fractionUnit,
-        }
-    );
-    const rawConverted         = fromAmount * rate;
-    const rounding     = {
-        ROUND : Math.round,
-        CEIL  : Math.ceil,
-        FLOOR : Math.floor,
-    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding (usually FLOOR, to avoid customer complain)
-    const fractions            = rounding(rawConverted / fractionUnit);
-    const stepped              = fractions * fractionUnit;
-    
-    
-    
-    const rawTrimmed           = stepped / rate;
-    const fractionUnitTrimmed  = 0.0001; // as accurate as possible to avoid currency conversion confusion to the customer
-    const fractionsTrimmed     = rounding(rawTrimmed / fractionUnitTrimmed);
-    const steppedTrimmed       = fractionsTrimmed * fractionUnitTrimmed;
-    
-    
-    
-    return trimNumber(steppedTrimmed) as TNumber;
-}
 
 
 
@@ -173,29 +132,6 @@ export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|n
     }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding (usually FLOOR, to avoid customer complain)
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
-    
-    
-    
-    return trimNumber(stepped) as TNumber;
-}
-/**
- * @deprecated
- * Reverts back:  
- * to user's preferred currency  
- * from the **most suitable currency** (no conversion if possible) that paypal's supports.
- */
-export const revertPaypalCurrencyIfRequired    = async <TNumber extends number|null|undefined>(fromAmount: TNumber, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
-    // conditions:
-    if (typeof(fromAmount) !== 'number') return fromAmount;                   // null|undefined    => nothing to convert
-    if (paypalCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
-    
-    
-    
-    const {rate}       = await getCurrencyConverter(paypalCurrency);
-    const fractionUnit = 0.0001; // as accurate as possible to avoid currency conversion confusion to the customer
-    const rawReverted  = fromAmount / rate;
-    const fractions    = Math.round(rawReverted / fractionUnit);
-    const stepped      = fractions * fractionUnit;
     
     
     
