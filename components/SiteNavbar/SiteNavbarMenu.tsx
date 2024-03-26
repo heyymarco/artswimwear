@@ -180,7 +180,7 @@ const SiteNavbarMenu = ({
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
                     <NavItem href='https://www.instagram.com/'><Icon icon='instagram' size='lg' /></NavItem>
                     
-                    <CurrencyMenu />
+                    <CurrencyMenu theme='primary' />
                     {navbarExpanded && !isCartEmpty && <ListItem<HTMLElement>
                         // refs:
                         elmRef={setCartTogglerRef}

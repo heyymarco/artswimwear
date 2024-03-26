@@ -1,25 +1,46 @@
-'use client'
-
 // react:
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useState,
-    useRef,
 }                           from 'react'
 
 // reusable-ui core:
 import {
     // react helper hooks:
     useEvent,
+    EventHandler,
+    useMergeEvents,
+    
+    
+    
+    // a capability of UI to rotate its layout:
+    useOrientationableWithDirection,
+    
+    
+    
+    // basic variants of UI:
+    useBasicVariantProps,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
+    // layout-components:
+    ListItem,
+    
+    ListProps,
+    List,
+    
+    
+    
+    // menu-components:
+    defaultOrientationableWithDirectionOptions,
+    Dropdown,
+    DropdownListExpandedChangeEvent,
+    DropdownListProps,
+    DropdownList,
+    
+    
+    
     // composite-components:
     NavItemProps,
     NavItem,
@@ -33,9 +54,13 @@ import {
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // internal components:
+import type {
+    EditorChangeEventHandler,
+}                           from '@/components/editors/Editor'
 import {
-    CurrencyDropdown,
-}                           from './CurrencyDropdown'
+    SelectCurrencyEditorProps,
+    SelectCurrencyEditor,
+}                           from '@/components/editors/SelectCurrencyEditor'
 
 // contexts:
 import {
@@ -48,18 +73,60 @@ import {
     useCurrencyMenuStyleSheet,
 }                           from './styles/loader'
 
+// configs:
+import {
+    paymentConfig,
+}                           from '@/payment.config'
+
 
 
 // react components:
-export interface CurrencyMenuProps
+interface CurrencyMenuProps<TElement extends Element = HTMLElement>
     extends
         // bases:
-        NavItemProps
+        Omit<SelectCurrencyEditorProps<TElement>,
+            // values:
+            |'valueOptions'
+            |'value'
+        >
 {
 }
-const CurrencyMenu = (props: CurrencyMenuProps): JSX.Element|null => {
+const CurrencyMenu = <TElement extends Element = HTMLElement>(props: CurrencyMenuProps<TElement>): JSX.Element|null => {
+    // props:
+    const {
+        // other props:
+        ...CurrencyMenuProps
+    } = props;
+    
+    // accessibility props:
+    const {
+        enabled,
+        inheritEnabled,
+        readOnly,
+        inheritReadOnly,
+        // active,        // activating the <Button> will not cause the <List> to active
+        // inheritActive, // activating the <Button> will not cause the <List> to active
+    } = props;
+    
+    
+    
     // styles:
     const styleSheet = useCurrencyMenuStyleSheet();
+    
+    
+    
+    // variants:
+    const basicVariantProps              = useBasicVariantProps(props);
+    
+    const dropdownOrientationableVariant = useOrientationableWithDirection(props, defaultOrientationableWithDirectionOptions);
+    const determineDropdownOrientation   = () => {
+        switch(dropdownOrientationableVariant.orientation) {
+            case 'inline-start': return 'inline';
+            case 'inline-end'  : return 'inline';
+            case 'block-start' : return 'block';
+            default            : return 'block';
+        } // switch
+    };
     
     
     
@@ -85,96 +152,163 @@ const CurrencyMenu = (props: CurrencyMenuProps): JSX.Element|null => {
     
     
     
-    // dialogs:
-    const {
-        showDialog,
-    } = useDialogMessage();
-    const [shownMenu, setShownMenu] = useState<PromiseDialog<any>|null>(null);
-    
-    
-    
     // handlers:
-    const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+    const handleClickInternal       = useEvent<React.MouseEventHandler<HTMLButtonElement>>((event) => {
         event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
+    });
+    const handleClick               = useMergeEvents(
+        // preserves the original `onClick` from `props`:
+        props.onClick,
         
         
         
-        if (shownMenu) {
-            shownMenu.closeDialog(undefined);
-        }
-        else {
-            const newShownMenu = showDialog<string>(
-                <CurrencyDropdown
-                    // variants:
-                    theme='primary'
+        // actions:
+        handleClickInternal,
+    );
+    
+    const handleCollapseEndInternal = useEvent<EventHandler<void>>(() => {
+        toggleList(false); // collapse the <Navbar> manually
+    });
+    const handleCollapseEnd         = useMergeEvents(
+        // preserves the original `onCollapseEnd` from `props`:
+        props.onCollapseEnd,
+        
+        
+        
+        // actions:
+        handleCollapseEndInternal,
+    );
+    
+    const handleChangeInternal      = useEvent<EditorChangeEventHandler<string>>((newValue) => {
+        setPreferredCurrency(newValue);
+    });
+    const handleChange              = useMergeEvents(
+        // preserves the original `onChange` from `props`:
+        props.onChange,
+        
+        
+        
+        // actions:
+        handleChangeInternal,
+    );
+    
+    
+    
+    // default props:
+    const {
+        // classes:
+        className           = `${styleSheet.currencyMenu} ${!navbarExpanded ? 'navbarCollapsed' : ''}`,
+        
+        
+        
+        // values:
+        onChange            = handleChange,
+        
+        
+        
+        // components:
+        listRef,
+        listOrientation     = 'block',
+        listStyle,
+        listComponent       = (<List<Element> /> as React.ReactElement<ListProps<Element>>),
+        
+        dropdownRef,
+        dropdownOrientation = determineDropdownOrientation(),
+        dropdownComponent   = (() => {
+            const mutatedListComponent = React.cloneElement<ListProps<Element>>(listComponent,
+                // props:
+                {
+                    // basic variant props:
+                    ...basicVariantProps,
                     
                     
                     
-                    // states:
-                    navbarExpanded={navbarExpanded} // out of <NavbarContextProvider>, we need to drill props the navbar's state
-                    preferredCurrency={preferredCurrency}
+                    // other props:
+                    ...listComponent.props,
                     
                     
                     
-                    // floatable:
-                    floatingOn={menuRef}
-                    floatingPlacement='bottom-end'
+                    // accessibility props:
+                    enabled         : listComponent.props.enabled         ?? enabled,
+                    inheritEnabled  : listComponent.props.inheritEnabled  ?? inheritEnabled,
+                    readOnly        : listComponent.props.readOnly        ?? readOnly,
+                    inheritReadOnly : listComponent.props.inheritReadOnly ?? inheritReadOnly,
+                 // active          : listComponent.props.active          ?? active,       // activating the <Button> will not cause the <List> to active
+                 // inheritActive   : listComponent.props.inheritActive   ?? inheritActive, // activating the <Button> will not cause the <List> to active
+                },
+            );
+            
+            
+            
+            // jsx:
+            return (
+                <DropdownList<Element>
+                    // components:
+                    elmRef              = {listRef}
+                    orientation         = {listOrientation}
+                    listStyle           = {listStyle}
+                    listComponent={mutatedListComponent}
+                    dropdownComponent={
+                        <Dropdown<Element>
+                            // classes:
+                            className={`${styleSheet.currencyDropdown} ${!navbarExpanded ? 'navbarCollapsed' : ''}`}
+                        >
+                            {mutatedListComponent}
+                        </Dropdown>
+                    }
                     
-                    
-                    
-                    // auto focusable:
-                    restoreFocusOn={menuRef}
+                    dropdownRef         = {dropdownRef}
+                    dropdownOrientation = {dropdownOrientation}
                 />
             );
-            setShownMenu(newShownMenu);
-            newShownMenu.collapseStartEvent().then(() => {
-                setShownMenu(null);
-            });
-            newShownMenu.collapseEndEvent().then((event) => {
-                setPreferredCurrency(event.data);
-                toggleList(false); // collapse the <Navbar> manually
-            });
-        } // if
-    });
-    
-    
-    
-    // refs:
-    const menuRef = useRef<HTMLElement|null>(null);
+        })(),
+        
+        
+        
+        // handlers:
+        onClick           = handleClick,
+        onCollapseEnd     = handleCollapseEnd,
+        
+        
+        
+        // other props:
+        ...restSelectDropdownEditorProps
+    } = CurrencyMenuProps;
     
     
     
     // jsx:
     return (
-        <NavItem
-            // other props:
-            {...props}
-            
-            
-            
-            // refs:
-            elmRef={menuRef}
-            
-            
-            
+        <SelectCurrencyEditor<TElement>
             // classes:
-            className={`${styleSheet.currencyMenu} ${!navbarExpanded ? 'navbarCollapsed' : ''}`}
+            className         = {className}
             
             
             
-            // behaviors:
-            actionCtrl={true}
+            // values:
+            valueOptions      = {paymentConfig.paymentCurrencyOptions}
+            value             = {preferredCurrency}
+            onChange          = {onChange}
+            
+            
+            
+            // components:
+            dropdownComponent = {dropdownComponent}
             
             
             
             // handlers:
-            onClick={handleClick}
-        >
-            {preferredCurrency}
-        </NavItem>
+            onClick           = {onClick}
+            onCollapseEnd     = {onCollapseEnd}
+            
+            
+            
+            // other props:
+            {...restSelectDropdownEditorProps}
+        />
     );
 };
 export {
-    CurrencyMenu,
-    CurrencyMenu as default,
+    CurrencyMenu,            // named export for readibility
+    CurrencyMenu as default, // default export to support React.lazy
 }

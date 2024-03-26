@@ -9,9 +9,9 @@ import {
 
 // reusable-ui core:
 import {
-    // reusable-ui configs:
-    spacers,
-}                           from '@reusable-ui/core'        // a set of reusable-ui packages which are responsible for building any component
+    // border (stroke) stuff of UI:
+    usesBorder,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
@@ -23,9 +23,21 @@ import {
 
 // styles:
 const usesCurrencyMenuLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {borderVars} = usesBorder();
+    
+    
+    
     return style({
         // sizes:
         minInlineSize : icons.sizeLg, // has min size in desktop mode has 100% width in mobile mode
+        
+        
+        
+        // borders:
+        [borderVars.borderWidth]: '0px',
         
         
         
@@ -33,7 +45,7 @@ const usesCurrencyMenuLayout = () => {
         fontWeight: 700,
     });
 };
-const usesCurrencyDropdownDropdownLayout = () => {
+const usesCurrencyDropdownListLayout = () => {
     return style({
         ...rule('.navbarCollapsed', {
             inlineSize : '100%',
@@ -41,32 +53,6 @@ const usesCurrencyDropdownDropdownLayout = () => {
                 inlineSize : '100%',
                 textAlign  : 'center',
             }),
-        }),
-    });
-};
-const usesCurrencyItemLayout = () => {
-    return style({
-        // layout:
-        display : 'grid',
-        gridTemplate : [[
-            '"indicator name"  auto',
-            '/',
-            'auto 1fr',
-        ]],
-        
-        
-        
-        // spacings:
-        gap : spacers.sm,
-        
-        
-        
-        // children:
-        ...children('.indicator', {
-            gridArea : 'indicator',
-        }),
-        ...children('.name', {
-            gridArea : 'name',
         }),
     });
 };
@@ -78,12 +64,8 @@ export default () => [
         // layouts:
         ...usesCurrencyMenuLayout(),
     }, { specificityWeight: 2 }),
-    scope('currencyDropdownDropdown', {
+    scope('currencyDropdown', {
         // layouts:
-        ...usesCurrencyDropdownDropdownLayout(),
-    }),
-    scope('currencyItem', {
-        // layouts:
-        ...usesCurrencyItemLayout(),
+        ...usesCurrencyDropdownListLayout(),
     }),
 ];
