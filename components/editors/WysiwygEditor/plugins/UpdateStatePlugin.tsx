@@ -58,14 +58,14 @@ export const normalizeWysiwygEditorState = (value: WysiwygEditorState|null): Wys
                 return null;
             }
             else {
-                const firstKey = root?.__first;
+                const firstKey = (root as any)?.__first;
                 if (!firstKey) {
                     // no child => empty content => null:
                     return null;
                 }
                 else {
                     const firstChild = nodeMap?.get(firstKey);
-                    if (!firstChild || ((firstChild?.__type === 'paragraph') && !firstChild?.__first)) {
+                    if (!firstChild || ((firstChild?.__type === 'paragraph') && !(firstChild as any)?.__first)) {
                         // empty paragraph => empty content => null:
                         return null;
                     } // if
