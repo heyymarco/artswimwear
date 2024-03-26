@@ -16,6 +16,7 @@ import {
 import {
     // simple-components:
     Icon,
+    Button,
     ButtonIcon,
     HamburgerMenuButton,
     
@@ -180,7 +181,7 @@ const SiteNavbarMenu = ({
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
                     <NavItem href='https://www.instagram.com/'><Icon icon='instagram' size='lg' /></NavItem>
                     
-                    <CurrencyMenu theme='primary' />
+                    <CurrencyMenu theme='primary' buttonComponent={<Button />} />
                     {navbarExpanded && !isCartEmpty && <ListItem<HTMLElement>
                         // refs:
                         elmRef={setCartTogglerRef}
