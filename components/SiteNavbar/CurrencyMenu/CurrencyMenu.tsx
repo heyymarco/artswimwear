@@ -25,8 +25,6 @@ import {
 // reusable-ui components:
 import {
     // layout-components:
-    ListItem,
-    
     ListProps,
     List,
     
@@ -35,22 +33,12 @@ import {
     // menu-components:
     defaultOrientationableWithDirectionOptions,
     Dropdown,
-    DropdownListExpandedChangeEvent,
-    DropdownListProps,
     DropdownList,
     
     
     
     // composite-components:
-    NavItemProps,
-    NavItem,
     useNavbarState,
-    
-    
-    
-    // utility-components:
-    PromiseDialog,
-    useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // internal components:
