@@ -42,6 +42,12 @@ const handleRadioDecorator : React.MouseEventHandler<HTMLSpanElement> = (event) 
 
 
 // react components:
+export interface RadioDecoratorProps<TElement extends Element = HTMLSpanElement>
+    extends
+        // bases:
+        RadioProps<TElement>
+{
+}
 const RadioDecorator = (props: RadioProps) => {
     // styles:
     const styleSheet = useRadioDecoratorStyleSheet();
@@ -95,4 +101,12 @@ const RadioDecorator = (props: RadioProps) => {
 export {
     RadioDecorator,
     RadioDecorator as default,
+}
+
+
+
+export interface RadioDecoratorComponentProps
+{
+    // components:
+    radioDecoratorComponent ?: React.ReactComponentElement<any, RadioDecoratorProps<Element>>|null
 }
