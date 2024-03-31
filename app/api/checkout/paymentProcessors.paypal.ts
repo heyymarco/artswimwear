@@ -55,8 +55,9 @@ export const paypalGeneratePaymentToken = async (): Promise<PaypalPaymentToken> 
         method  : 'POST',
         headers : {
             'Content-Type'    : 'application/json',
-            'Authorization'   : `Bearer ${await paypalGenerateAccessToken()}`,
+            'Accept'          : 'application/json',
             'Accept-Language' : 'en_US',
+            'Authorization'   : `Bearer ${await paypalGenerateAccessToken()}`,
         },
     });
     const paymentTokenData = await response.json();
