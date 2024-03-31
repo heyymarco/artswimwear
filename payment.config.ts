@@ -19,6 +19,7 @@ export interface PaymentConfig {
              */
             defaultCurrency     : PaymentConfig['paymentProcessors']['paypal']['supportedCurrencies'][number]
         },
+        midtrans : PaymentProcessorConfig,
     },
     preferredPaymentProcessors  : (keyof PaymentConfig['paymentProcessors'])[]
     
@@ -40,6 +41,11 @@ export const paymentConfig : PaymentConfig = {
                 'USD',
             ],
             defaultCurrency     : 'USD',
+        },
+        midtrans : {
+            supportedCurrencies : [
+                'IDR',
+            ],
         },
     },
     preferredPaymentProcessors  : [
