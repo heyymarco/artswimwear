@@ -5,13 +5,15 @@ import type {
 
 
 
+export interface PaymentProcessorConfig {
+    supportedCurrencies : CurrencyCode[]
+}
 export interface PaymentConfig {
     paymentCurrencyOptions      : CurrencyCode[]
     defaultPaymentCurrency      : PaymentConfig['paymentCurrencyOptions'][number]
     
     paymentProcessors           : {
-        paypal : {
-            supportedCurrencies : CurrencyCode[]
+        paypal : PaymentProcessorConfig & {
             /**
              * @deprecated
              */
