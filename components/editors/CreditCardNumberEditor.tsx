@@ -66,11 +66,61 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
         if (cardNumber.startsWith('34') || cardNumber.startsWith('37')) {
             // American Express:
             setDefaultMaskPattern('{{9999}} {{999999}} {{99999}}'); // (4-6-5)
-        }
-        else {
-            // default:
-            setDefaultMaskPattern('{{9999}} {{9999}} {{9999}} {{9999}}'); // (4-4-4-4)
+            return;
         } // if
+        
+        
+        
+        if (cardNumber.startsWith('50')) {
+            // Maestro:
+            setDefaultMaskPattern('{{9999}} {{9999}} {{99999}}'); // (4-4-5)
+            return;
+        } // if
+        
+        
+        
+        if (cardNumber.startsWith('56') || cardNumber.startsWith('57') || cardNumber.startsWith('58')) {
+            // Maestro:
+            setDefaultMaskPattern('{{9999}} {{999999}} {{99999}}'); // (4-6-5)
+            return;
+        } // if
+        
+        
+        
+        if (cardNumber.startsWith('6')) {
+            // Maestro:
+            setDefaultMaskPattern('{{9999}} {{9999}} {{9999}} {{9999}} {{999}}'); // (4-4-4-4-3)
+            return;
+        } // if
+        
+        
+        
+        if ([300, 301, 302, 303, 304, 305].some((num) => cardNumber.startsWith(`${num}`))) {
+            // Diners Club Carte Blanche:
+            setDefaultMaskPattern('{{9999}} {{999999}} {{9999}}'); // (4-6-4)
+            return;
+        } // if
+        
+        
+        
+        if ([309, 36, 38, 39].some((num) => cardNumber.startsWith(`${num}`))) {
+            // Diners Club International:
+            setDefaultMaskPattern('{{9999}} {{999999}} {{9999}}'); // (4-6-4)
+            return;
+        } // if
+        
+        
+        
+        if (cardNumber.startsWith('1')) {
+            // Maestro:
+            setDefaultMaskPattern('{{9999}} {{99999}} {{999999}}'); // (4-5-6)
+            return;
+        } // if
+        
+        
+        
+        // default:
+        setDefaultMaskPattern('{{9999}} {{9999}} {{9999}} {{9999}}'); // (4-4-4-4)
     });
     const handleChange         = useMergeEvents(
         // preserves the original `onChange` from `props`:
