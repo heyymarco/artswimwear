@@ -39,6 +39,7 @@
     "axios": "^1.6.5",
     "cloudinary-build-url": "^0.2.4",
     "color": "^4.2.3",
+    "credit-card-input-mask": "^3.0.0",
     "eslint": "^8.35.0",
     "eslint-config-next": "^13.2.3",
     "lexical": "^0.12.4",
