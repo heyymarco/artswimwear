@@ -47,7 +47,7 @@ export const useFieldState = <TField extends keyof CheckoutState, TValue extends
         dispatch(
             options.set(
                 (typeof(newValue) === 'function')
-                ? newValue(value)
+                ? (newValue as ((oldValue: TValue) => TValue))(value)
                 : newValue
             )
         );
