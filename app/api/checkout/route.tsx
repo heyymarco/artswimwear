@@ -134,23 +134,20 @@ import {
 
 
 // utilities:
-
-const basePaypalURL = {
+const paypalBaseUrl = {
     development : 'https://api-m.sandbox.paypal.com',
-    production  : 'https://api-m.paypal.com'
+    production  : 'https://api-m.paypal.com',
 };
-const paypalURL = basePaypalURL.development; // TODO: auto switch development vs production
-// const accessTokenExpiresThreshold = 0.5;
-const paymentTokenExpiresThreshold = 0.5;
+const paypalUrl = paypalBaseUrl.development; // TODO: auto switch development vs production
 
 
 
 /**
  * Access token is used to authenticate all REST API requests.
  */
-const generateAccessToken = async () => {
+const paypalGenerateAccessToken  = async () => {
     const auth = Buffer.from(`${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
-    const response = await fetch(`${paypalURL}/v1/oauth2/token`, {
+    const response = await fetch(`${paypalUrl}/v1/oauth2/token`, {
         method  : 'POST',
         body    : 'grant_type=client_credentials',
         headers : {
@@ -175,17 +172,17 @@ const generateAccessToken = async () => {
     return accessTokenData.access_token;
 }
 
+const paypalPaymentTokenExpiresThreshold = 0.5;
 /**
  * Call this function to create your client token (paymentToken).
  */
-const generatePaymentToken = async (): Promise<PaymentToken> => {
-    const accessToken = await generateAccessToken();
-    const response    = await fetch(`${paypalURL}/v1/identity/generate-token`, {
+const paypalGeneratePaymentToken = async (): Promise<PaymentToken> => {
+    const response    = await fetch(`${paypalUrl}/v1/identity/generate-token`, {
         method  : 'POST',
         headers : {
-            Authorization: `Bearer ${accessToken}`,
-            'Accept-Language' : 'en_US',
             'Content-Type'    : 'application/json',
+            'Authorization'   : `Bearer ${await paypalGenerateAccessToken()}`,
+            'Accept-Language' : 'en_US',
         },
     });
     const paymentTokenData = await response.json();
@@ -204,11 +201,11 @@ const generatePaymentToken = async (): Promise<PaymentToken> => {
     return {
         paymentToken : paymentTokenData.client_token,
         expiresAt    : Date.now() +  expiresIn,
-        refreshAt    : Date.now() + (expiresIn * paymentTokenExpiresThreshold),
+        refreshAt    : Date.now() + (expiresIn * paypalPaymentTokenExpiresThreshold),
     };
 }
 
-const handlePaypalResponse = async (response: Response) => {
+const paypalHandleResponse       = async (response: Response) => {
     if (response.status === 200 || response.status === 201) {
         return response.json();
     } // if
@@ -620,7 +617,7 @@ router
  * intialize paymentToken
  */
 .get(async (req) => {
-    const paymentToken : PaymentToken = await generatePaymentToken();
+    const paymentToken : PaymentToken = await paypalGeneratePaymentToken();
     return NextResponse.json(paymentToken); // handled with success
 })
 
@@ -1214,15 +1211,15 @@ router
             //#region fetch paypal API
             let paypalOrderId : string|null;
             if (usePaypalGateway) {
-                const accessToken = await generateAccessToken();
-                const url = `${paypalURL}/v2/checkout/orders`;
+                const url = `${paypalUrl}/v2/checkout/orders`;
                 const paypalResponse = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${accessToken}`,
+                    method  : 'POST',
+                    headers : {
+                        'Content-Type'    : 'application/json',
+                        'Authorization'   : `Bearer ${await paypalGenerateAccessToken()}`,
+                        'Accept-Language' : 'en_US',
                     },
-                    body: JSON.stringify({
+                    body    : JSON.stringify({
                         // intent enum required
                         // The intent to either capture payment immediately or authorize a payment for an order after order creation.
                         // The possible values are: 'CAPTURE'|'AUTHORIZE'
@@ -1427,7 +1424,7 @@ router
                         },
                     }),
                 });
-                const paypalOrderData = await handlePaypalResponse(paypalResponse);
+                const paypalOrderData = await paypalHandleResponse(paypalResponse);
                 /*
                     example:
                     {
@@ -1556,7 +1553,7 @@ router
         /*
             Possible server errors:
             * Network error.
-            * Unable to generate accessToken (invalid `NEXT_PUBLIC_PAYPAL_CLIENT_ID` and/or invalid `PAYPAL_SECRET`).
+            * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_CLIENT_ID` and/or invalid `PAYPAL_SECRET`).
             * Configured currency is not supported by PayPal.
             * Invalid API_request body JSON (programming bug).
             * unexpected API response (programming bug).
@@ -2056,16 +2053,16 @@ Updating the confirmation is not required.`,
             let paymentResponse : PaymentDetail|PaymentDeclined;
             let paymentConfirmationToken : string|undefined = undefined;
             if (paypalOrderId) {
-                const accessToken = await generateAccessToken();
-                const url = `${paypalURL}/v2/checkout/orders/${paypalOrderId}/capture`;
+                const url = `${paypalUrl}/v2/checkout/orders/${paypalOrderId}/capture`;
                 const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type'  : 'application/json',
-                        'Authorization' : `Bearer ${accessToken}`,
+                    method  : 'POST',
+                    headers : {
+                        'Content-Type'    : 'application/json',
+                        'Authorization'   : `Bearer ${await paypalGenerateAccessToken()}`,
+                        'Accept-Language' : 'en_US',
                     },
                 });
-                const paypalPaymentData = await handlePaypalResponse(response);
+                const paypalPaymentData = await paypalHandleResponse(response);
                 /*
                     example:
                     {
@@ -2570,7 +2567,7 @@ Updating the confirmation is not required.`,
         /*
             Possible server errors:
             * Network error.
-            * Unable to generate accessToken (invalid `NEXT_PUBLIC_PAYPAL_CLIENT_ID` and/or invalid `PAYPAL_SECRET`).
+            * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_CLIENT_ID` and/or invalid `PAYPAL_SECRET`).
             * Invalid API_request headers (programming bug).
             * unexpected API response (programming bug).
         */
