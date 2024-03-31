@@ -23,10 +23,10 @@ export const paypalGenerateAccessToken  = async () => {
     const auth = Buffer.from(`${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
     const response = await fetch(`${paypalUrl}/v1/oauth2/token`, {
         method  : 'POST',
-        body    : 'grant_type=client_credentials',
         headers : {
-            Authorization: `Basic ${auth}`,
+            'Authorization'   : `Basic ${auth}`,
         },
+        body    : 'grant_type=client_credentials',
     });
     const accessTokenData = await response.json();
     /*
