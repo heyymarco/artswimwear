@@ -6,6 +6,7 @@ import type {
 
 
 export interface PaymentProcessorConfig {
+    enabled             : boolean
     supportedCurrencies : CurrencyCode[]
 }
 export interface PaymentConfig {
@@ -37,12 +38,14 @@ export const paymentConfig : PaymentConfig = {
     
     paymentProcessors           : {
         paypal : {
+            enabled             : true,
             supportedCurrencies : [
                 'USD',
             ],
             defaultCurrency     : 'USD',
         },
         midtrans : {
+            enabled             : true,
             supportedCurrencies : [
                 'IDR',
             ],
