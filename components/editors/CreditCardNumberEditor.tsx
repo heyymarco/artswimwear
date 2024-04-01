@@ -51,7 +51,7 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
     
     
     // states:
-    const [defaultMaskPattern, setDefaultMaskPattern] = useState<string>('{{1234}} {{1234}} {{1234}} {{1234}} {{000}}'); // (4-4-4-4_3)
+    const [defaultMaskPattern, setDefaultMaskPattern] = useState<string>('{{4444}} {{4444}} {{4444}} {{4444}} {{000}}'); // (4-4-4-4_3)
     
     
     
@@ -69,7 +69,7 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
         // actions:
         if (((cardNumberLength >= 13) && (cardNumberLength <= 19)) && cardNumber.startsWith('4')) {
             // Visa (incl. VPay):
-            setDefaultMaskPattern('{{1234}} {{1234}} {{1234}} {{1234}} {{123}}'); // (4-4-4-4) || (4-4-4-4-3) // Pattern not known for 13-15 and 17-19 digit cards.
+            setDefaultMaskPattern('{{4444}} {{4444}} {{4444}} {{4444}} {{333}}'); // (4-4-4-4) || (4-4-4-4-3) // Pattern not known for 13-15 and 17-19 digit cards.
             return;
         } // if
         
@@ -77,7 +77,7 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
         
         if ((cardNumberLength === 15) && [34, 37].some((num) => cardNumber.startsWith(`${num}`))) {
             // American Express:
-            setDefaultMaskPattern('{{1234}} {{123456}} {{12345}} {{0000}}'); // (4-6-5_4)
+            setDefaultMaskPattern('{{4444}} {{666666}} {{55555}} {{0000}}'); // (4-6-5_4)
             return;
         } // if
         
@@ -85,7 +85,7 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
         
         if ((cardNumberLength === 13) && cardNumber.startsWith('50')) {
             // Maestro:
-            setDefaultMaskPattern('{{1234}} {{1234}} {{12345}} {{000000}}'); // (4-4-5_6) // Pattern not known for 12, 14, 17, and 18 digit cards.
+            setDefaultMaskPattern('{{4444}} {{4444}} {{55555}} {{000000}}'); // (4-4-5_6) // Pattern not known for 12, 14, 17, and 18 digit cards.
             return;
         } // if
         
@@ -93,7 +93,7 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
         
         if ((cardNumberLength === 15) && [56, 57, 58].some((num) => cardNumber.startsWith(`${num}`))) {
             // Maestro:
-            setDefaultMaskPattern('{{1234}} {{123456}} {{12345}} {{0000}}'); // (4-6-5_4) // Pattern not known for 12, 14, 17, and 18 digit cards.
+            setDefaultMaskPattern('{{4444}} {{666666}} {{55555}} {{0000}}'); // (4-6-5_4) // Pattern not known for 12, 14, 17, and 18 digit cards.
             return;
         } // if
         
@@ -101,7 +101,7 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
         
         if (((cardNumberLength >= 16) && (cardNumberLength <= 19)) && cardNumber.startsWith('6')) {
             // Maestro:
-            setDefaultMaskPattern('{{1234}} {{1234}} {{1234}} {{1234}} {{123}}'); // (4-4-4-4) || (4-4-4-4-3) // Pattern not known for 12, 14, 17, and 18 digit cards.
+            setDefaultMaskPattern('{{4444}} {{4444}} {{4444}} {{4444}} {{333}}'); // (4-4-4-4) || (4-4-4-4-3) // Pattern not known for 12, 14, 17, and 18 digit cards.
             return;
         } // if
         
@@ -109,7 +109,7 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
         
         if ((cardNumberLength === 14) && [300, 301, 302, 303, 304, 305].some((num) => cardNumber.startsWith(`${num}`))) {
             // Diners Club Carte Blanche:
-            setDefaultMaskPattern('{{1234}} {{123456}} {{1234}} {{00000}}'); // (4-6-4_5)
+            setDefaultMaskPattern('{{4444}} {{666666}} {{4444}} {{00000}}'); // (4-6-4_5)
             return;
         } // if
         
@@ -117,7 +117,7 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
         
         if ((cardNumberLength === 14) && [309, 36, 38, 39].some((num) => cardNumber.startsWith(`${num}`))) {
             // Diners Club International:
-            setDefaultMaskPattern('{{1234}} {{123456}} {{1234}} {{00000}}'); // (4-6-4_5)
+            setDefaultMaskPattern('{{4444}} {{666666}} {{4444}} {{00000}}'); // (4-6-4_5)
             return;
         } // if
         
@@ -125,14 +125,14 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
         
         if ((cardNumberLength === 15) && cardNumber.startsWith('1')) {
             // UATP:
-            setDefaultMaskPattern('{{1234}} {{12345}} {{123456}} {{0000}}'); // (4-5-6_4)
+            setDefaultMaskPattern('{{4444}} {{55555}} {{666666}} {{0000}}'); // (4-5-6_4)
             return;
         } // if
         
         
         
         // default:
-        setDefaultMaskPattern('{{1234}} {{1234}} {{1234}} {{1234}} {{000}}'); // (4-4-4-4_3)
+        setDefaultMaskPattern('{{4444}} {{4444}} {{4444}} {{4444}} {{000}}'); // (4-4-4-4_3)
     });
     const handleChange         = useMergeEvents(
         // preserves the original `onChange` from `props`:
