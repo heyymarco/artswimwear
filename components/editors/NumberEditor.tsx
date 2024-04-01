@@ -25,7 +25,7 @@ import {
 
 
 // react components:
-export interface NumberEditorProps<TElement extends Element = HTMLElement>
+export interface NumberEditorProps<TElement extends Element = HTMLSpanElement>
     extends
         // bases:
         Omit<EditorProps<TElement, number|null>,
@@ -45,7 +45,7 @@ export interface NumberEditorProps<TElement extends Element = HTMLElement>
     max  ?: number
     step ?: number
 }
-const NumberEditor = <TElement extends Element = HTMLElement>(props: NumberEditorProps<TElement>): JSX.Element|null => {
+const NumberEditor = <TElement extends Element = HTMLSpanElement>(props: NumberEditorProps<TElement>): JSX.Element|null => {
     // rest props:
     const {
         // values:

@@ -46,7 +46,7 @@ import {
 
 
 // react components:
-export interface SelectDropdownEditorProps<TElement extends Element = HTMLElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>
+export interface SelectDropdownEditorProps<TElement extends Element = HTMLButtonElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>
     extends
         // bases:
         Pick<EditorProps<TElement, TValue>,
@@ -67,7 +67,7 @@ export interface SelectDropdownEditorProps<TElement extends Element = HTMLElemen
     
     value         : TValue
 }
-const SelectDropdownEditor = <TElement extends Element = HTMLElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>(props: SelectDropdownEditorProps<TElement, TValue, TDropdownListExpandedChangeEvent>): JSX.Element|null => {
+const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>(props: SelectDropdownEditorProps<TElement, TValue, TDropdownListExpandedChangeEvent>): JSX.Element|null => {
     // props:
     const {
         // values:

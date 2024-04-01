@@ -26,7 +26,7 @@ import {
 
 
 // react components:
-export interface CurrencyEditorProps<TElement extends Element = HTMLSpanElement>
+export interface CurrencyEditorProps<TElement extends Element = HTMLDivElement>
     extends
         // bases:
         NumberEditorProps<TElement>
@@ -37,7 +37,7 @@ export interface CurrencyEditorProps<TElement extends Element = HTMLSpanElement>
     currencySign     ?: string
     currencyFraction ?: number
 }
-const CurrencyEditor = <TElement extends Element = HTMLSpanElement>(props: CurrencyEditorProps<TElement>): JSX.Element|null => {
+const CurrencyEditor = <TElement extends Element = HTMLDivElement>(props: CurrencyEditorProps<TElement>): JSX.Element|null => {
     // rest props:
     const {
         // refs:

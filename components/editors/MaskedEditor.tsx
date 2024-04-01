@@ -35,7 +35,7 @@ export interface MaskPasteEvent {
     unformattedValue : string
     maskedInput      : MaskedInput
 }
-export interface MaskedEditorProps<TElement extends Element = HTMLElement>
+export interface MaskedEditorProps<TElement extends Element = HTMLSpanElement>
     extends
         // bases:
         TextEditorProps<TElement>
@@ -43,7 +43,7 @@ export interface MaskedEditorProps<TElement extends Element = HTMLElement>
     // masks:
     maskPattern ?: string
 }
-const MaskedEditor = <TElement extends Element = HTMLElement>(props: MaskedEditorProps<TElement>): JSX.Element|null => {
+const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedEditorProps<TElement>): JSX.Element|null => {
     // props:
     const {
         // refs:

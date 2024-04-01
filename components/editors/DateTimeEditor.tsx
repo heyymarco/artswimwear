@@ -49,7 +49,7 @@ export {
 
 
 // react components:
-export interface DateTimeEditorProps<TElement extends Element = HTMLElement>
+export interface DateTimeEditorProps<TElement extends Element = HTMLDivElement>
     extends
         // bases:
         Omit<EditorProps<TElement, Date|null>,
@@ -76,7 +76,7 @@ export interface DateTimeEditorProps<TElement extends Element = HTMLElement>
     max  ?: Date
     step ?: number
 }
-const DateTimeEditor = <TElement extends Element = HTMLElement>(props: DateTimeEditorProps<TElement>): JSX.Element|null => {
+const DateTimeEditor = <TElement extends Element = HTMLDivElement>(props: DateTimeEditorProps<TElement>): JSX.Element|null => {
     // rest props:
     const {
         // refs:

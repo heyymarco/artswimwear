@@ -14,13 +14,13 @@ import {
 
 
 // react components:
-export interface NameEditorProps<TElement extends Element = HTMLElement>
+export interface NameEditorProps<TElement extends Element = HTMLSpanElement>
     extends
         // bases:
         TextEditorProps<TElement>
 {
 }
-const NameEditor = <TElement extends Element = HTMLElement>(props: NameEditorProps<TElement>): JSX.Element|null => {
+const NameEditor = <TElement extends Element = HTMLSpanElement>(props: NameEditorProps<TElement>): JSX.Element|null => {
     // jsx:
     return (
         <TextEditor<TElement>

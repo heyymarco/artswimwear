@@ -18,13 +18,13 @@ import {
 
 
 // react components:
-export interface SelectCurrencyEditorProps<TElement extends Element = HTMLElement>
+export interface SelectCurrencyEditorProps<TElement extends Element = HTMLButtonElement>
     extends
         // bases:
         SelectDropdownEditorProps<TElement, string>
 {
 }
-const SelectCurrencyEditor = <TElement extends Element = HTMLElement>(props: SelectCurrencyEditorProps<TElement>): JSX.Element|null => {
+const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(props: SelectCurrencyEditorProps<TElement>): JSX.Element|null => {
     // default props:
     const {
         // values:

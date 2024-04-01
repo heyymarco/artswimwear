@@ -25,7 +25,7 @@ export type EditorChangeEventHandler<TValue> = (value: TValue) => void
 
 
 // react components:
-export interface EditorProps<TElement extends Element = HTMLElement, TValue extends any = string>
+export interface EditorProps<TElement extends Element = HTMLSpanElement, TValue extends any = string>
     extends
         // bases:
         Omit<InputProps<TElement>,
@@ -39,7 +39,7 @@ export interface EditorProps<TElement extends Element = HTMLElement, TValue exte
     onChange       ?: EditorChangeEventHandler<TValue>
     onChangeAsText ?: EditorChangeEventHandler<string>
 }
-const Editor = <TElement extends Element = HTMLElement, TValue extends any = string>(props: EditorProps<TElement, TValue>): JSX.Element|null => {
+const Editor = <TElement extends Element = HTMLSpanElement, TValue extends any = string>(props: EditorProps<TElement, TValue>): JSX.Element|null => {
     // rest props:
     const {
         // values:

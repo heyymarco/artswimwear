@@ -31,12 +31,12 @@ import {
 
 
 // react components:
-export interface CreditCardNumberEditorProps
+export interface CreditCardNumberEditorProps<TElement extends Element = HTMLSpanElement>
     extends
-        MaskedEditorProps
+        MaskedEditorProps<TElement>
 {
 }
-const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
+const CreditCardNumberEditor = <TElement extends Element = HTMLSpanElement>(props: CreditCardNumberEditorProps<TElement>) => {
     // props:
     const {
         // handlers:
@@ -161,7 +161,7 @@ const CreditCardNumberEditor = (props: CreditCardNumberEditorProps) => {
     
     // jsx:
     return (
-        <MaskedEditor
+        <MaskedEditor<TElement>
             // other props:
             {...restMaskedEditorProps}
             

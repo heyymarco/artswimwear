@@ -32,13 +32,13 @@ import {
 
 
 // react components:
-export interface UniqueUsernameEditorProps<TElement extends Element = HTMLElement>
+export interface UniqueUsernameEditorProps<TElement extends Element = HTMLSpanElement>
     extends
         // bases:
         ImplementedUniqueEditorProps<TElement>
 {
 }
-const UniqueUsernameEditor = <TElement extends Element = HTMLElement>(props: UniqueUsernameEditorProps<TElement>): JSX.Element|null => {
+const UniqueUsernameEditor = <TElement extends Element = HTMLSpanElement>(props: UniqueUsernameEditorProps<TElement>): JSX.Element|null => {
     // stores:
     const [availableUsername    ] = useAvailableUsername();
     const [notProhibitedUsername] = useNotProhibitedUsername();

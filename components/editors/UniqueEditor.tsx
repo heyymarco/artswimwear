@@ -66,7 +66,7 @@ import {
 
 
 // react components:
-export interface UniqueEditorProps<TElement extends Element = HTMLElement>
+export interface UniqueEditorProps<TElement extends Element = HTMLSpanElement>
     extends
         // bases:
         TextEditorProps<TElement>
@@ -93,7 +93,7 @@ export interface UniqueEditorProps<TElement extends Element = HTMLElement>
     // components:
     editorComponent      ?: React.ReactComponentElement<any, TextEditorProps<TElement>>
 }
-export type ImplementedUniqueEditorProps<TElement extends Element = HTMLElement> = Omit<UniqueEditorProps<TElement>,
+export type ImplementedUniqueEditorProps<TElement extends Element = HTMLSpanElement> = Omit<UniqueEditorProps<TElement>,
     // constraints:
     |'minLength'
     |'maxLength'
@@ -106,7 +106,7 @@ export type ImplementedUniqueEditorProps<TElement extends Element = HTMLElement>
     |'prohibitedHint'
     |'onCheckNotProhibited'
 >
-const UniqueEditor = <TElement extends Element = HTMLElement>(props: UniqueEditorProps<TElement>): JSX.Element|null => {
+const UniqueEditor = <TElement extends Element = HTMLSpanElement>(props: UniqueEditorProps<TElement>): JSX.Element|null => {
     // rest props:
     const {
         // values:
