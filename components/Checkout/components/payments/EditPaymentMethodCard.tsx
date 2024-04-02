@@ -48,6 +48,9 @@ import {
     CreditCardNumberEditor,
 }                           from '@/components/editors/CreditCardNumberEditor'
 import {
+    CreditCardExpiresEditor,
+}                           from '@/components/editors/CreditCardExpiresEditor'
+import {
     PortalToNavCheckoutSection,
 }                           from '../navigations/PortalToNavCheckoutSection'
 import {
@@ -224,7 +227,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                                 
                                 
                                 // accessibilities:
-                                placeholder='Card Number'
+                                placeholder='1111-2222-3333-4444'
                             />
                         );
                     })()
@@ -400,14 +403,14 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             />
                         );
                         return (
-                            <CreditCardNumberEditor
+                            <CreditCardExpiresEditor
                                 // identifiers:
                                 id='cardExpires'
                                 
                                 
                                 
                                 // accessibilities:
-                                placeholder='Card Number'
+                                placeholder='11/2020'
                             />
                         );
                     })()
