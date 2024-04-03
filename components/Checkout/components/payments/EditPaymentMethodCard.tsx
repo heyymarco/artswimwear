@@ -456,7 +456,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
             
             <InputWithLabel
                 // appearances:
-                icon='fiber_pin'
+                icon='edit'
                 
                 
                 
