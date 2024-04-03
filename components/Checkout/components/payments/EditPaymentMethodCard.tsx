@@ -493,11 +493,6 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             <CreditCardCvvEditor
                                 // identifiers:
                                 id='cardCvv'
-                                
-                                
-                                
-                                // accessibilities:
-                                placeholder='123'
                             />
                         );
                     })()

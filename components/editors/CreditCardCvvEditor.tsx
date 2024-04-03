@@ -31,8 +31,21 @@ const CreditCardCvvEditor = <TElement extends Element = HTMLSpanElement>(props: 
     
     // default props:
     const {
+        // accessibilities:
+        placeholder    = '123',
+        
+        
+        
         // validations:
-        maskPattern = '{{1234}}',
+        required       = true,
+        pattern        = '[0-9]{3,4}',
+        maskPattern    = '{{1234}}',
+        
+        
+        
+        // formats:
+        inputMode      = 'numeric',
+        autoComplete   = 'cc-csc',
         
         
         
@@ -50,8 +63,21 @@ const CreditCardCvvEditor = <TElement extends Element = HTMLSpanElement>(props: 
             
             
             
+            // accessibilities:
+            placeholder  = {placeholder}
+            
+            
+            
             // validations:
-            maskPattern={maskPattern}
+            required     = {required}
+            pattern      = {pattern}
+            maskPattern  = {maskPattern}
+            
+            
+            
+            // formats:
+            inputMode    = {inputMode}
+            autoComplete = {autoComplete}
         />
     );
 };
