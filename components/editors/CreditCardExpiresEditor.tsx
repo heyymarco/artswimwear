@@ -90,10 +90,10 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
     
     
     // handlers:
-    const handleChangeInternal = useEvent<EditorChangeEventHandler<string>>((value) => {
+    const handleChangeInternal         = useEvent<EditorChangeEventHandler<string>>((value) => {
         valueRef.current = value;
     });
-    const handleChange         = useMergeEvents(
+    const handleChange                 = useMergeEvents(
         // preserves the original `onChange` from `props`:
         onChange,
         
