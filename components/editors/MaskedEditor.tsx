@@ -94,8 +94,27 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
         
         
         // setups:
+        const proxyInputElm = {
+            // @ts-ignore
+            addEventListener    : (...params: any[]) => inputElm.addEventListener(...params),
+            // @ts-ignore
+            removeEventListener : (...params: any[]) => inputElm.removeEventListener(...params),
+            // @ts-ignore
+            dispatchEvent       : (...params: any[]) => inputElm.dispatchEvent(...params),
+        }
+        Object.defineProperty(proxyInputElm, 'value', {
+            get() {
+                return inputElm.value;
+            },
+            set(newValue) {
+                if (inputElm.value === newValue) return;
+                inputElm.value = newValue;
+                (inputElm as any)._valueTracker?.setValue(newValue);
+                inputElm.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: false, composed: true, data: newValue, dataTransfer: null, inputType: 'insertReplacementText', isComposing: false, view: null, detail: 0 }));
+            },
+        })
         maskedInputRef.current = new MaskedInput({
-            element : inputElm,
+            element : proxyInputElm as any,
             pattern : maskPattern,
         });
     }, []);
