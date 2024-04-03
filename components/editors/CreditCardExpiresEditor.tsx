@@ -64,7 +64,6 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
     // props:
     const {
         // handlers:
-        onChange,
         onKeyDownCapture,
         
         
