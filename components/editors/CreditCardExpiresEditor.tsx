@@ -204,7 +204,7 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
     
     // default props:
     const {
-        // masks:
+        // validations:
         maskPattern = '{{12}}/{{2020}}',
         
         
@@ -223,7 +223,7 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
             
             
             
-            // masks:
+            // validations:
             maskPattern={maskPattern}
             
             

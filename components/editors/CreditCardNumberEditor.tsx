@@ -148,7 +148,7 @@ const CreditCardNumberEditor = <TElement extends Element = HTMLSpanElement>(prop
     
     // default props:
     const {
-        // masks:
+        // validations:
         maskPattern = defaultMaskPattern,
         
         
@@ -167,7 +167,7 @@ const CreditCardNumberEditor = <TElement extends Element = HTMLSpanElement>(prop
             
             
             
-            // masks:
+            // validations:
             maskPattern={maskPattern}
             
             

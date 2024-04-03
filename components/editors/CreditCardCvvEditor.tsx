@@ -31,7 +31,7 @@ const CreditCardCvvEditor = <TElement extends Element = HTMLSpanElement>(props: 
     
     // default props:
     const {
-        // masks:
+        // validations:
         maskPattern = '{{1234}}',
         
         
@@ -50,7 +50,7 @@ const CreditCardCvvEditor = <TElement extends Element = HTMLSpanElement>(props: 
             
             
             
-            // masks:
+            // validations:
             maskPattern={maskPattern}
         />
     );

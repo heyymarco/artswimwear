@@ -40,7 +40,7 @@ export interface MaskedEditorProps<TElement extends Element = HTMLSpanElement>
         // bases:
         TextEditorProps<TElement>
 {
-    // masks:
+    // validations:
     maskPattern ?: string
 }
 const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedEditorProps<TElement>): JSX.Element|null => {
@@ -51,7 +51,7 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
         
         
         
-        // masks:
+        // validations:
         maskPattern = '',
         
         
