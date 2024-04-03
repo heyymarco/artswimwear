@@ -181,20 +181,20 @@ const CreditCardNumberEditor = <TElement extends Element = HTMLSpanElement>(prop
             
             
             // accessibilities:
-            placeholder  = {placeholder}
+            placeholder    = {placeholder}
             
             
             
             // validations:
-            required     = {required}
-            pattern      = {pattern}
-            maskPattern  = {maskPattern}
+            required       = {required}
+            pattern        = {pattern}
+            maskPattern    = {maskPattern}
             
             
             
             // formats:
-            inputMode    = {inputMode}
-            autoComplete = {autoComplete}
+            inputMode      = {inputMode}
+            autoComplete   = {autoComplete}
             
             
             

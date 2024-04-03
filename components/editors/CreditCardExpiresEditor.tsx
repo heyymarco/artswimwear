@@ -265,20 +265,20 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
             
             
             // accessibilities:
-            placeholder  = {placeholder}
+            placeholder    = {placeholder}
             
             
             
             // validations:
-            required     = {required}
-            pattern      = {pattern}
-            maskPattern  = {maskPattern}
+            required       = {required}
+            pattern        = {pattern}
+            maskPattern    = {maskPattern}
             
             
             
             // formats:
-            inputMode    = {inputMode}
-            autoComplete = {autoComplete}
+            inputMode      = {inputMode}
+            autoComplete   = {autoComplete}
             
             
             
