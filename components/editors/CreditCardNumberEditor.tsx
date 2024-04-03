@@ -155,7 +155,7 @@ const CreditCardNumberEditor = <TElement extends Element = HTMLSpanElement>(prop
         
         // validations:
         required       = true,
-        pattern        = '([0-9][ ]){11,18}[0-9]', // min 12 digit, max 19 digit, excluding space
+        pattern        = '([0-9][ ]?){11,18}[0-9]', // min 12 digit, max 19 digit, excluding space
         maskPattern    = defaultMaskPattern,
         
         
