@@ -27,7 +27,6 @@ import {
     // simple-components:
     Icon,
     Label,
-    TextInput,
     
     
     
@@ -44,6 +43,9 @@ import {
 import {
     InputWithLabel,
 }                           from '@/components/InputWithLabel'
+import {
+    CreditCardNameEditor,
+}                           from '@/components/editors/CreditCardNameEditor'
 import {
     CreditCardNumberEditor,
 }                           from '@/components/editors/CreditCardNumberEditor'
@@ -297,26 +299,9 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 
                 // components:
                 inputComponent={
-                    <TextInput
+                    <CreditCardNameEditor
                         // refs:
                         elmRef={cardholderInputRef}
-                        
-                        
-                        
-                        // accessibilities:
-                        placeholder='Cardholder Name'
-                        
-                        
-                        
-                        // validations:
-                        required={true}
-                        
-                        
-                        
-                        // formats:
-                        inputMode='text'
-                        autoComplete='cc-name'
-                        autoCapitalize='words'
                     />
                 }
                 
