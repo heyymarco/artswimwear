@@ -104,7 +104,34 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
         const prevValue    = value.slice(0, selectionStart!);
         
         
-        
+        /*
+            ^
+            (
+                0[1-9]?                     // month     :  01    to  09
+                |                           // ------------or-------------
+                1[0-2]?                     // month     :  10    to  12
+            )?
+            (
+                [/]                         // separator :  /
+                (
+                    2                       // only support year of 2000+, 1999- is not supported
+                    (
+                        (
+                            0               // year      :  20
+                            [0-9]{0,2}      // year      :  2000  to  2099
+                        )?
+                        |                   // ------------or-------------
+                        [1-9]?              // year      :  21    to  29
+                    )
+                )?
+            )?
+            $
+        */
+        /*
+            trimmed:
+            
+            ^(0[1-9]?|1[0-2]?)?([/](2((0[0-9]{0,2})?|[1-9]?))?)?$
+        */
         const number = Number.parseInt(key);
         if (!(
             ((selectionStart === 0) && (number >= 0) && (number <= 1))                                                                           // 1st digit month                  , the current digit must 0-1
