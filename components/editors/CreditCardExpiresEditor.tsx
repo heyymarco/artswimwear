@@ -23,6 +23,7 @@ import {
 
 // utilities:
 /*
+    partial match:
     ^
     (
         0[1-9]?                     // month     :  01    to  09
@@ -30,7 +31,7 @@ import {
         1[0-2]?                     // month     :  10    to  12
     )?
     (
-        [/]                         // separator :  /
+        \/                          // separator :  /
         (
             2                       // only support year of 2000+, 1999- is not supported
             (
@@ -46,11 +47,38 @@ import {
     $
 */
 /*
-    trimmed:
-    
-    ^(0[1-9]?|1[0-2]?)?([/](2((0[0-9]{0,2})?|[1-9]?))?)?$
+    complete match:
+    ^
+    (
+        0[1-9]                      // month     :  01    to  09
+        |                           // ------------or-------------
+        1[0-2]                      // month     :  10    to  12
+    ) 
+    (
+        \/                          // separator :  /
+        (
+            2                       // only support year of 2000+, 1999- is not supported
+            (
+                (
+                    0               // year      :  20
+                    ([0-9]{2,2})?   // year      :  2000  to  2099
+                ) 
+                |                   // ------------or-------------
+                [1-9]               // year      :  21    to  29
+            )
+        ) 
+    ) 
+    $
 */
-const regexpPatternPartial = /^(0[1-9]?|1[0-2]?)?([/](2((0[0-9]{0,2})?|[1-9]?))?)?$/;
+/*
+    partial match:
+    ^(0[1-9]?|1[0-2]?)?(\/(2((0[0-9]{0,2})?|[1-9]?))?)?$
+    
+    complete match:
+    ^(0[1-9]|1[0-2])(\/(2((0([0-9]{2,2})?)|[1-9])))$
+
+*/
+const regexpPatternPartial = /^(0[1-9]?|1[0-2]?)?(\/(2((0[0-9]{0,2})?|[1-9]?))?)?$/;
 
 
 
@@ -204,8 +232,21 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
     
     // default props:
     const {
+        // accessibilities:
+        placeholder    = '11/2020',
+        
+        
+        
         // validations:
-        maskPattern = '{{12}}/{{2020}}',
+        required       = true,
+        pattern        = '(0[1-9]|1[0-2])(\\/(2((0([0-9]{2,2})?)|[1-9])))',
+        maskPattern    = '{{12}}/{{2020}}',
+        
+        
+        
+        // formats:
+        inputMode      = 'numeric',
+        autoComplete   = 'cc-exp',
         
         
         
@@ -223,8 +264,21 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
             
             
             
+            // accessibilities:
+            placeholder  = {placeholder}
+            
+            
+            
             // validations:
-            maskPattern={maskPattern}
+            required     = {required}
+            pattern      = {pattern}
+            maskPattern  = {maskPattern}
+            
+            
+            
+            // formats:
+            inputMode    = {inputMode}
+            autoComplete = {autoComplete}
             
             
             

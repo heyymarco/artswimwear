@@ -404,11 +404,6 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             <CreditCardExpiresEditor
                                 // identifiers:
                                 id='cardExpires'
-                                
-                                
-                                
-                                // accessibilities:
-                                placeholder='11/2020'
                             />
                         );
                     })()
