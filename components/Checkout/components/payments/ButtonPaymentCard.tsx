@@ -74,6 +74,11 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         
         
         
+        // payment data:
+        appropriatePaymentProcessor,
+        
+        
+        
         // fields:
         cardholderInputRef,
         
@@ -81,6 +86,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         
         // actions:
         doTransaction,
+        doPlaceOrder,
         doMakePayment,
     } = useCheckoutState();
     
@@ -93,49 +99,72 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     
     
+    const isPayUsingPaypal = (appropriatePaymentProcessor === 'paypal');
+    
+    
+    
     // handlers:
     const hostedFields = usePayPalHostedFields();
     const handlePayButtonClick = useEvent(() => {
         const paypalDoPlaceOrder = hostedFields.cardFields?.submit;
-        if (typeof(paypalDoPlaceOrder) !== 'function') return; // validate that `submit()` exists before invoke it
+        const proxyDoPlaceOrder : (() => Promise<string>)|undefined = (
+            isPayUsingPaypal
+            ? (
+                (typeof(paypalDoPlaceOrder) !== 'function') // validate that `submit()` exists before invoke it
+                ? undefined
+                : async (): Promise<string> => {
+                    // submit card data to PayPal_API to get authentication:
+                    const paypalAuthentication = await paypalDoPlaceOrder({
+                        // trigger 3D Secure authentication:
+                        contingencies  : ['SCA_WHEN_REQUIRED'],
+                        
+                        cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
+                        billingAddress : {
+                            streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
+                         // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
+                            locality          : billingAsShipping ? shippingCity    : billingCity,    // city
+                            region            : billingAsShipping ? shippingZone    : billingZone,    // state
+                            postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
+                            countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
+                        },
+                    });
+                    /*
+                        example:
+                        {
+                            authenticationReason: undefined
+                            authenticationStatus: "APPROVED",
+                            card: {
+                                brand: "VISA",
+                                card_type: "VISA",
+                                last_digits: "7704",
+                                type: "CREDIT",
+                            },
+                            liabilityShift: undefined
+                            liabilityShifted: undefined
+                            orderId: "1N785713SG267310M"
+                        }
+                    */
+                    return paypalAuthentication.orderId;
+                }
+            )
+            : async (): Promise<string> => {
+                const orderId = await doPlaceOrder();
+                return orderId;
+            }
+        );
+        if (!proxyDoPlaceOrder) return;
+        
+        
+        
         doTransaction(async () => {
             try {
-                // submit card data to PayPal_API to get authentication:
-                const paypalAuthentication = await paypalDoPlaceOrder({
-                    // trigger 3D Secure authentication:
-                    contingencies  : ['SCA_WHEN_REQUIRED'],
-                    
-                    cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
-                    billingAddress : {
-                        streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
-                     // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
-                        locality          : billingAsShipping ? shippingCity    : billingCity,    // city
-                        region            : billingAsShipping ? shippingZone    : billingZone,    // state
-                        postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
-                        countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
-                    },
-                });
-                /*
-                    example:
-                    {
-                        authenticationReason: undefined
-                        authenticationStatus: "APPROVED",
-                        card: {
-                            brand: "VISA",
-                            card_type: "VISA",
-                            last_digits: "7704",
-                            type: "CREDIT",
-                        },
-                        liabilityShift: undefined
-                        liabilityShifted: undefined
-                        orderId: "1N785713SG267310M"
-                    }
-                */
+                // createOrder:
+                const orderId = await proxyDoPlaceOrder();
                 
                 
                 
                 // then forward the authentication to backend_API to receive the fund:
-                await doMakePayment(paypalAuthentication.orderId, /*paid:*/true);
+                await doMakePayment(orderId, /*paid:*/true);
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
