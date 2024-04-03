@@ -32,19 +32,20 @@ const CreditCardNameEditor = <TElement extends Element = HTMLSpanElement>(props:
     // default props:
     const {
         // accessibilities:
-        placeholder    = 'John Doe',
+        'aria-label' : ariaLabel = 'Cardholder Name',
+        placeholder              = 'John Doe',
         
         
         
         // validations:
-        required       = true,
+        required                 = true,
         
         
         
         // formats:
-        inputMode      = 'text',
-        autoComplete   = 'cc-name',
-        autoCapitalize = 'words',
+        inputMode                = 'text',
+        autoComplete             = 'cc-name',
+        autoCapitalize           = 'words',
         
         
         
@@ -63,6 +64,7 @@ const CreditCardNameEditor = <TElement extends Element = HTMLSpanElement>(props:
             
             
             // accessibilities:
+            aria-label     = {ariaLabel}
             placeholder    = {placeholder}
             
             

@@ -233,20 +233,21 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
     // default props:
     const {
         // accessibilities:
-        placeholder    = '11/2020',
+        'aria-label' : ariaLabel = 'Card Expiry Date',
+        placeholder              = '11/2020',
         
         
         
         // validations:
-        required       = true,
-        pattern        = '(0[1-9]|1[0-2])(\\/(2((0([0-9]{2,2})?)|[1-9])))',
-        maskPattern    = '{{12}}/{{2020}}',
+        required                 = true,
+        pattern                  = '(0[1-9]|1[0-2])(\\/(2((0([0-9]{2,2})?)|[1-9])))',
+        maskPattern              = '{{12}}/{{2020}}',
         
         
         
         // formats:
-        inputMode      = 'numeric',
-        autoComplete   = 'cc-exp',
+        inputMode                = 'numeric',
+        autoComplete             = 'cc-exp',
         
         
         
@@ -265,6 +266,7 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
             
             
             // accessibilities:
+            aria-label     = {ariaLabel}
             placeholder    = {placeholder}
             
             

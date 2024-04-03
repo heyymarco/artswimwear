@@ -149,20 +149,21 @@ const CreditCardNumberEditor = <TElement extends Element = HTMLSpanElement>(prop
     // default props:
     const {
         // accessibilities:
-        placeholder    = '1111-2222-3333-4444',
+        'aria-label' : ariaLabel = 'Card Number',
+        placeholder              = '1111-2222-3333-4444',
         
         
         
         // validations:
-        required       = true,
-        pattern        = '([0-9][ ]?){11,18}[0-9]', // min 12 digit, max 19 digit, excluding space
-        maskPattern    = defaultMaskPattern,
+        required                 = true,
+        pattern                  = '([0-9][ ]?){11,18}[0-9]', // min 12 digit, max 19 digit, excluding space
+        maskPattern              = defaultMaskPattern,
         
         
         
         // formats:
-        inputMode      = 'numeric',
-        autoComplete   = 'cc-number',
+        inputMode                = 'numeric',
+        autoComplete             = 'cc-number',
         
         
         
@@ -181,6 +182,7 @@ const CreditCardNumberEditor = <TElement extends Element = HTMLSpanElement>(prop
             
             
             // accessibilities:
+            aria-label     = {ariaLabel}
             placeholder    = {placeholder}
             
             
