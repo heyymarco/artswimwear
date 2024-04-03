@@ -51,6 +51,9 @@ import {
     CreditCardExpiresEditor,
 }                           from '@/components/editors/CreditCardExpiresEditor'
 import {
+    CreditCardCvvEditor,
+}                           from '@/components/editors/CreditCardCvvEditor'
+import {
     PortalToNavCheckoutSection,
 }                           from '../navigations/PortalToNavCheckoutSection'
 import {
@@ -497,14 +500,14 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             />
                         );
                         return (
-                            <CreditCardNumberEditor
+                            <CreditCardCvvEditor
                                 // identifiers:
                                 id='cardCvv'
                                 
                                 
                                 
                                 // accessibilities:
-                                placeholder='Card Number'
+                                placeholder='123'
                             />
                         );
                     })()
