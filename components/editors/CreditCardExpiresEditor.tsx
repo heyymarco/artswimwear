@@ -4,11 +4,6 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useRef,
 }                           from 'react'
 
 // reusable-ui core:
@@ -19,10 +14,6 @@ import {
 }                           from '@reusable-ui/core'                    // a set of reusable-ui packages which are responsible for building any component
 
 // internal components:
-import type {
-    // types:
-    EditorChangeEventHandler,
-}                           from '@/components/editors/Editor'
 import {
     MaskedEditorProps,
     MaskedEditor,
@@ -84,24 +75,7 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
     
     
     
-    // refs:
-    const valueRef = useRef<string>(restCreditCardNumberInputProps.value ?? '');
-    
-    
-    
     // handlers:
-    const handleChangeInternal         = useEvent<EditorChangeEventHandler<string>>((value) => {
-        valueRef.current = value;
-    });
-    const handleChange                 = useMergeEvents(
-        // preserves the original `onChange` from `props`:
-        onChange,
-        
-        
-        
-        // actions:
-        handleChangeInternal,
-    );
     const handleKeyDownCaptureInternal = useEvent<React.KeyboardEventHandler<TElement>>((event) => {
         // data:
         const {
@@ -256,7 +230,6 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
             
             
             // handlers:
-            onChange={handleChange}
             onKeyDownCapture={handleKeyDownCapture}
         />
     );
