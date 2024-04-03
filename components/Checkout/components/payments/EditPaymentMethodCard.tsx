@@ -88,11 +88,6 @@ import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
-// configs:
-import {
-    paymentConfig,
-}                           from '@/payment.config'
-
 
 
 // utilities:
@@ -121,6 +116,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     const {
         // payment data:
+        appropriatePaymentProcessor,
         paymentValidation,
         paymentMethod,
         
@@ -165,19 +161,6 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     
     
-    const appropriatePaymentProcessor = (
-        paymentConfig.preferredPaymentProcessors
-        .map((paymentProcessorName) => [
-            paymentProcessorName,
-            paymentConfig.paymentProcessors[paymentProcessorName]
-        ] as const)
-        .find(([paymentProcessorName, {enabled, supportedCurrencies}]) =>
-            enabled
-            &&
-            supportedCurrencies.includes(preferredCurrency)
-        )
-        ?.[0]
-    );
     const isUsingPaypal   = (appropriatePaymentProcessor === 'paypal');
     const isUsingMidtrans = (appropriatePaymentProcessor === 'midtrans');
     
