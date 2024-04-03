@@ -96,19 +96,19 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     // handlers:
     const hostedFields = usePayPalHostedFields();
     const handlePayButtonClick = useEvent(() => {
-        if (typeof(hostedFields.cardFields?.submit) !== 'function') return; // validate that `submit()` exists before invoke it
-        const submitCardData = hostedFields.cardFields?.submit;
+        const paypalDoPlaceOrder = hostedFields.cardFields?.submit;
+        if (typeof(paypalDoPlaceOrder) !== 'function') return; // validate that `submit()` exists before invoke it
         doTransaction(async () => {
             try {
                 // submit card data to PayPal_API to get authentication:
-                const paypalAuthentication = await submitCardData({
+                const paypalAuthentication = await paypalDoPlaceOrder({
                     // trigger 3D Secure authentication:
                     contingencies  : ['SCA_WHEN_REQUIRED'],
                     
                     cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
                     billingAddress : {
                         streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
-                    // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
+                     // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
                         locality          : billingAsShipping ? shippingCity    : billingCity,    // city
                         region            : billingAsShipping ? shippingZone    : billingZone,    // state
                         postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
