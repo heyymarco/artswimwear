@@ -30,6 +30,39 @@ import {
 
 
 
+// utilities:
+/*
+    ^
+    (
+        0[1-9]?                     // month     :  01    to  09
+        |                           // ------------or-------------
+        1[0-2]?                     // month     :  10    to  12
+    )?
+    (
+        [/]                         // separator :  /
+        (
+            2                       // only support year of 2000+, 1999- is not supported
+            (
+                (
+                    0               // year      :  20
+                    [0-9]{0,2}      // year      :  2000  to  2099
+                )?
+                |                   // ------------or-------------
+                [1-9]?              // year      :  21    to  29
+            )
+        )?
+    )?
+    $
+*/
+/*
+    trimmed:
+    
+    ^(0[1-9]?|1[0-2]?)?([/](2((0[0-9]{0,2})?|[1-9]?))?)?$
+*/
+const regexpPatternPartial = /^(0[1-9]?|1[0-2]?)?([/](2((0[0-9]{0,2})?|[1-9]?))?)?$/;
+
+
+
 // react components:
 export interface CreditCardExpiresEditorProps<TElement extends Element = HTMLSpanElement>
     extends
@@ -87,10 +120,17 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
         // conditions:
         if (shiftKey || altKey || ctrlKey || metaKey) return; // ignore when [shift] [alt] [ctrl] [win] key is pressed
         if (!code || !key)                            return; // ignore autocomplete event
-        if (key.length !== 1)                         return; // ignore control keys like [backspace], [delete], [home], [end], etc
-        if ((key < '0') || (key > '9')) {
-            event.preventDefault();
-            return;                                           // prevents non_numeric characters
+        if (
+            (
+                (key.length !== 1)
+                ||
+                ((key < '0') || (key > '9'))
+            )
+            &&
+            !['Backspace', 'Delete'].includes(key)
+        ) {
+            if (key.length === 1) event.preventDefault();     // prevents non_numeric characters except [backspace], [delete]
+            return;
         } // if
         
         
@@ -101,58 +141,81 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
             selectionStart = value.length,
             selectionEnd   = value.length,
         } = inputElm;
-        const prevValue    = value.slice(0, selectionStart!);
-        
-        
-        /*
-            ^
-            (
-                0[1-9]?                     // month     :  01    to  09
-                |                           // ------------or-------------
-                1[0-2]?                     // month     :  10    to  12
-            )?
-            (
-                [/]                         // separator :  /
-                (
-                    2                       // only support year of 2000+, 1999- is not supported
-                    (
-                        (
-                            0               // year      :  20
-                            [0-9]{0,2}      // year      :  2000  to  2099
-                        )?
-                        |                   // ------------or-------------
-                        [1-9]?              // year      :  21    to  29
-                    )
-                )?
-            )?
-            $
-        */
-        /*
-            trimmed:
-            
-            ^(0[1-9]?|1[0-2]?)?([/](2((0[0-9]{0,2})?|[1-9]?))?)?$
-        */
-        const number = Number.parseInt(key);
-        if (!(
-            ((selectionStart === 0) && (number >= 0) && (number <= 1))                                                                           // 1st digit month                  , the current digit must 0-1
-            ||
-            ((selectionStart === 1) &&
-                ((prevValue === '0') && (number >= 1) && (number <= 9))                                                                          // if 1st digit is 0                , the current digit must 1-9, so produces 01-09
-                ||
-                ((prevValue === '1') && (number >= 0) && (number <= 2))                                                                          // if 1st digit is 1                , the current digit must 0-2, so produces 10-12
+        const hasSelection = !!(selectionEnd! - selectionStart!);
+        const prevValue    = value.slice(0, selectionStart!);             // the value before selection
+     // const selValue     = value.slice(selectionStart!, selectionEnd!); // the selected value
+        const nextValue    = value.slice(selectionEnd!);                  // the value after selection
+        const willValue    = (                                            // the future value if this event is not prevented
+            (key === 'Backspace')
+            ? (
+                hasSelection
+                ? `${prevValue}${nextValue}`
+                : `${prevValue.slice(0, -1)}${nextValue}`
             )
-            ||
-            ((selectionStart === 3) && (number >= 2) && (number <= 9))                                                                           // 1st digit year                   , the current digit must 2-9
-            ||
-            ((selectionStart === 4) && (number >= 0) && (number <= 9))                                                                           // 2nd digit year                   , the current digit must 0-9, so produces 20-99
-            ||
-            ((selectionStart === 5) && (prevValue.slice(prevValue.length - 2) === '20') && (number >= 0) && (number <= 9))                       // 3rd digit year, starting with 20 , the current digit must 0-9, so produces 200-209
-            ||
-            ((selectionStart === 6) && (prevValue.slice(prevValue.length - 3, prevValue.length - 1) === '20') && (number >= 0) && (number <= 9)) // 3rd digit year, starting with 20x, the current digit must 0-9, so produces 20x0-20x9
-        )) {
-            event.preventDefault(); // prevents prohibited characters
+            : (
+                (key === 'Delete')
+                ? (
+                    hasSelection
+                    ? `${prevValue}${nextValue}`
+                    : `${prevValue}${nextValue.slice(1)}`
+                )
+                : `${prevValue}${key}${nextValue}`
+            )
+        );
+        
+        
+        
+        if (!regexpPatternPartial.test(willValue)) { // the future value is not valid pattern
+            // try to recover by removing characters after selection:
+            const willValuePartial = (                                            // the future value if this event is not prevented
+                (key === 'Backspace')
+                ? (
+                    hasSelection
+                    ? `${prevValue}`
+                    : `${prevValue.slice(0, -1)}`
+                )
+                : (
+                    (key === 'Delete')
+                    ? (
+                        hasSelection
+                        ? `${prevValue}`
+                        : `${prevValue}`
+                    )
+                    : `${prevValue}${key}`
+                )
+            );
+            if (regexpPatternPartial.test(willValuePartial)) {
+                // success to partially recover => update value & update selection:
+                inputElm.value = willValuePartial;
+                const newSelection = selectionStart! + ((key.length == 1) ? 1 : 0);
+                inputElm.setSelectionRange(newSelection, newSelection);
+                
+                event.preventDefault();
+                return;
+            } // if
+            
+            
+            
+            // try to recover by preventing the new changes:
+            if (regexpPatternPartial.test(value)) {
+                event.preventDefault();
+                return;
+            } // if
+            
+            
+            
+            // failed to recover => clear value & update selection:
+            inputElm.value = '';
+            const newSelection = 0;
+            inputElm.setSelectionRange(newSelection, newSelection);
+            
+            event.preventDefault();
             return;
         } // if
+        
+        
+        
+        // passed
     });
     const handleKeyDownCapture         = useMergeEvents(
         // preserves the original `onKeyDown` from `props`:
