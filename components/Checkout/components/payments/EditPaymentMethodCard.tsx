@@ -226,11 +226,6 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             <CreditCardNumberEditor
                                 // identifiers:
                                 id='cardNumber'
-                                
-                                
-                                
-                                // accessibilities:
-                                placeholder='1111-2222-3333-4444'
                             />
                         );
                     })()
