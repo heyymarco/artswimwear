@@ -161,8 +161,8 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     
     
-    const isUsingPaypal   = (appropriatePaymentProcessor === 'paypal');
-    const isUsingMidtrans = (appropriatePaymentProcessor === 'midtrans');
+    const isPayUsingPaypal   = (appropriatePaymentProcessor === 'paypal');
+    const isPayUsingMidtrans = (appropriatePaymentProcessor === 'midtrans');
     
     
     
@@ -186,7 +186,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 // components:
                 inputComponent={
                     (() => {
-                        if (isUsingPaypal) return (
+                        if (isPayUsingPaypal) return (
                             <PayPalHostedFieldExtended
                                 // identifiers:
                                 id='cardNumber'
@@ -347,7 +347,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 // components:
                 inputComponent={
                     (() => {
-                        if (isUsingPaypal) return (
+                        if (isPayUsingPaypal) return (
                             <PayPalHostedFieldExtended
                                 // identifiers:
                                 id='cardExpires'
@@ -436,7 +436,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 // components:
                 inputComponent={
                     (() => {
-                        if (isUsingPaypal) return (
+                        if (isPayUsingPaypal) return (
                             <PayPalHostedFieldExtended
                                 // identifiers:
                                 id='cardCvv'
@@ -519,7 +519,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
             </PortalToNavCheckoutSection>}
         </ValidationProvider>
     );
-    if (isUsingPaypal) return (
+    if (isPayUsingPaypal) return (
         <PayPalHostedFieldsProvider
             // styles:
             styles={hostedFieldsStyle}
