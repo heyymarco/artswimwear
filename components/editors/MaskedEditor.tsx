@@ -8,6 +8,7 @@ import {
     // hooks:
     useEffect,
     useRef,
+    useState,
 }                           from 'react'
 
 // reusable-ui core:
@@ -27,6 +28,11 @@ import {
 import {
     default as MaskedInput,
 }                           from 'credit-card-input-mask'
+
+
+
+// utilities:
+const reactHackTriggerOnChangeEventMark = Symbol();
 
 
 
@@ -83,6 +89,41 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
     
     // effects:
     
+    // proxied `onInput` event listeners:
+    const [proxiedOnInputEventListeners] = useState<Set<((this: HTMLInputElement, ev: HTMLElementEventMap['input']) => any)>>(() => new Set<((this: HTMLInputElement, ev: HTMLElementEventMap['input']) => any)>());
+    useEffect(() => {
+        // conditions:
+        const inputElm = inputRefInternal.current;
+        if (!inputElm) return; // the <Input> is not loaded => ignore
+        
+        
+        
+        // handlers:
+        const handleInput = (event: HTMLElementEventMap['input']): void => {
+            if (reactHackTriggerOnChangeEventMark in event) {
+                return; // intercepted and not forwarded to `MaskedInput` to avoid ugly side effect
+            } // if
+            
+            
+            
+            for (const proxiedOnInputEventListener of proxiedOnInputEventListeners) {
+                proxiedOnInputEventListener.call(inputElm, event);
+            } // for
+        };
+        
+        
+        
+        // setups:
+        inputElm.addEventListener('input', handleInput);
+        
+        
+        
+        // cleanups:
+        return () => {
+            inputElm.removeEventListener('input', handleInput);
+        };
+    }, []);
+    
     // setup `MaskedInput`:
     const maskedInputRef = useRef<MaskedInput|null>(null);
     useEffect(() => {
@@ -95,12 +136,27 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
         
         // setups:
         const proxyInputElm = {
-            // @ts-ignore
-            addEventListener    : (...params: any[]) => inputElm.addEventListener(...params),
-            // @ts-ignore
-            removeEventListener : (...params: any[]) => inputElm.removeEventListener(...params),
-            // @ts-ignore
-            dispatchEvent       : (...params: any[]) => inputElm.dispatchEvent(...params),
+            addEventListener    : <K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLInputElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void => {
+                if (type === 'input') {
+                    proxiedOnInputEventListeners.add(listener as ((this: HTMLInputElement, ev: HTMLElementEventMap['input']) => any));
+                    return;
+                } // if
+                
+                
+                
+                inputElm.addEventListener(type, listener, options);
+            },
+            removeEventListener : <K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLInputElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void => {
+                if (type === 'input') {
+                    proxiedOnInputEventListeners.delete(listener as ((this: HTMLInputElement, ev: HTMLElementEventMap['input']) => any));
+                    return;
+                } // if
+                
+                
+                
+                inputElm.removeEventListener(type, listener, options);
+            },
+            dispatchEvent       : (event: Event) => inputElm.dispatchEvent(event),
         }
         Object.defineProperty(proxyInputElm, 'value', {
             get() {
@@ -108,9 +164,20 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
             },
             set(newValue) {
                 if (inputElm.value === newValue) return;
-                inputElm.value = newValue;
-                (inputElm as any)._valueTracker?.setValue(newValue);
-                inputElm.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: false, composed: true, data: newValue, dataTransfer: null, inputType: 'insertReplacementText', isComposing: false, view: null, detail: 0 }));
+                inputElm.value = newValue;                           // react *hack* set_value *before* firing `input` event
+                
+                
+                
+                // react *hack*: trigger `onChange` event:
+                (inputElm as any)._valueTracker?.setValue(newValue); // react *hack* in order to React *see* the changes when `input` event fired
+                
+                
+                
+                // fire `input` native event to trigger `onChange` synthetic event:
+                const inputEvent = new InputEvent('input', { bubbles: true, cancelable: false, composed: true, data: newValue, dataTransfer: null, inputType: 'insertReplacementText', isComposing: false, view: null, detail: 0 });
+                // @ts-ignore
+                inputEvent[reactHackTriggerOnChangeEventMark] = true;
+                inputElm.dispatchEvent(inputEvent);
             },
         })
         maskedInputRef.current = new MaskedInput({
