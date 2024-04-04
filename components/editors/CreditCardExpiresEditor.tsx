@@ -103,6 +103,23 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
     
     
     // handlers:
+    const handleAutoFormat = useEvent((inputElm: HTMLInputElement, newValue: string): void => {
+        // conditions:
+        if (inputElm.value === newValue) return;
+        
+        
+        
+        // react *hack*: trigger `onChange` event:
+        const oldValue = inputElm.value;                     // react *hack* get_prev_value *before* modifying
+        inputElm.value = newValue;                           // react *hack* set_value *before* firing `input` event
+        (inputElm as any)._valueTracker?.setValue(oldValue); // react *hack* in order to React *see* the changes when `input` event fired
+        
+        
+        
+        // fire `input` native event to trigger `onChange` synthetic event:
+        const inputEvent = new InputEvent('input', { bubbles: true, cancelable: false, composed: true, data: newValue, dataTransfer: null, inputType: 'insertReplacementText', isComposing: false, view: null, detail: 0 });
+        inputElm.dispatchEvent(inputEvent);
+    });
     const handleKeyDownCaptureInternal = useEvent<React.KeyboardEventHandler<TElement>>((event) => {
         // data:
         const {
@@ -187,7 +204,7 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
             );
             if (regexpPatternPartial.test(willValuePartial)) {
                 // success to partially recover => update value & update selection:
-                inputElm.value = willValuePartial;
+                handleAutoFormat(inputElm, willValuePartial);
                 const newSelection = selectionStart! + ((key.length == 1) ? 1 : 0);
                 inputElm.setSelectionRange(newSelection, newSelection);
                 
@@ -206,7 +223,7 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
             
             
             // failed to recover => clear value & update selection:
-            inputElm.value = '';
+            handleAutoFormat(inputElm, '');
             const newSelection = 0;
             inputElm.setSelectionRange(newSelection, newSelection);
             
