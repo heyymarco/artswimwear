@@ -163,12 +163,13 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
                 return inputElm.value;
             },
             set(newValue) {
+                // conditions:
                 if (inputElm.value === newValue) return;
-                inputElm.value = newValue;                           // react *hack* set_value *before* firing `input` event
                 
                 
                 
                 // react *hack*: trigger `onChange` event:
+                inputElm.value = newValue;                           // react *hack* set_value *before* firing `input` event
                 (inputElm as any)._valueTracker?.setValue(newValue); // react *hack* in order to React *see* the changes when `input` event fired
                 
                 
