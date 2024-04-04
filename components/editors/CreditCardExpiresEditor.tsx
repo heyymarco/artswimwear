@@ -233,7 +233,9 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
         
         
         
-        // passed
+        // passed:
+        if (key.length === 1) return; // nothing further to do
+        handleAutoFormat(inputElm, willValue);
     });
     const handleKeyDownCapture         = useMergeEvents(
         // preserves the original `onKeyDown` from `props`:
