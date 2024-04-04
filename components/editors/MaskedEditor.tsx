@@ -134,6 +134,29 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
         
         
         
+        // handlers:
+        const handleAutoFormat = (newValue: string): void => {
+            // conditions:
+            if (inputElm.value === newValue) return;
+            
+            
+            
+            // react *hack*: trigger `onChange` event:
+            const oldValue = inputElm.value;                     // react *hack* get_prev_value *before* modifying
+            inputElm.value = newValue;                           // react *hack* set_value *before* firing `input` event
+            (inputElm as any)._valueTracker?.setValue(oldValue); // react *hack* in order to React *see* the changes when `input` event fired
+            
+            
+            
+            // fire `input` native event to trigger `onChange` synthetic event:
+            const inputEvent = new InputEvent('input', { bubbles: true, cancelable: false, composed: true, data: newValue, dataTransfer: null, inputType: 'insertReplacementText', isComposing: false, view: null, detail: 0 });
+            // @ts-ignore
+            inputEvent[reactHackTriggerOnChangeEventMark] = true;
+            inputElm.dispatchEvent(inputEvent);
+        };
+        
+        
+        
         // setups:
         const proxyInputElm = {
             addEventListener    : <K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLInputElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void => {
@@ -163,23 +186,7 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
                 return inputElm.value;
             },
             set(newValue) {
-                // conditions:
-                if (inputElm.value === newValue) return;
-                
-                
-                
-                // react *hack*: trigger `onChange` event:
-                const oldValue = inputElm.value;                     // react *hack* get_prev_value *before* modifying
-                inputElm.value = newValue;                           // react *hack* set_value *before* firing `input` event
-                (inputElm as any)._valueTracker?.setValue(oldValue); // react *hack* in order to React *see* the changes when `input` event fired
-                
-                
-                
-                // fire `input` native event to trigger `onChange` synthetic event:
-                const inputEvent = new InputEvent('input', { bubbles: true, cancelable: false, composed: true, data: newValue, dataTransfer: null, inputType: 'insertReplacementText', isComposing: false, view: null, detail: 0 });
-                // @ts-ignore
-                inputEvent[reactHackTriggerOnChangeEventMark] = true;
-                inputElm.dispatchEvent(inputEvent);
+                handleAutoFormat(newValue);
             },
         })
         maskedInputRef.current = new MaskedInput({
