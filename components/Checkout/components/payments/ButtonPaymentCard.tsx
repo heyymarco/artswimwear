@@ -148,11 +148,37 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 }
             )
             : async (): Promise<string> => {
-                const orderId = await doPlaceOrder();
+                const orderId = await doPlaceOrder({paymentSource: 'midtransCard'});
                 return orderId;
             }
         );
         if (!proxyDoPlaceOrder) return;
+        
+        const proxyDoMakePayment : ((orderId: string) => Promise<void>) = (
+            isPayUsingPaypal
+            ? async (orderId: string): Promise<void> => doMakePayment(orderId, /*paid:*/true)
+            : async (orderId: string): Promise<void> => {
+                const MidtransNew3ds = (window as any).MidtransNew3ds;
+                const cardToken = await new Promise<string>((resolve, reject) => {
+                    const card = {
+                        card_number: "4811111111111114",
+                        card_cvv: "123",
+                        card_exp_month: "12",
+                        card_exp_year: "2025",
+                        bank_one_time_token: "12345678"
+                    }
+                    MidtransNew3ds.getCardToken(card, {
+                        onSuccess : (response: any) => {
+                            resolve(response.token_id);
+                        },
+                        onFailure : (response: any) => {
+                            reject(response?.validation_messages ?? 'Cannot make transactions with this card. Try using another card.');
+                        },
+                    })
+                });
+                return doMakePayment(orderId, /*paid:*/true, { midtransPaymentToken: cardToken });
+            }
+        );
         
         
         
@@ -164,7 +190,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 
                 
                 // then forward the authentication to backend_API to receive the fund:
-                await doMakePayment(orderId, /*paid:*/true);
+                await proxyDoMakePayment(orderId);
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });

@@ -20,7 +20,7 @@ export const paypalUrl = paypalBaseUrl.development; // TODO: auto switch develop
  * Access token is used to authenticate all REST API requests.
  */
 export const paypalGenerateAccessToken  = async () => {
-    const auth = Buffer.from(`${process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
+    const auth = Buffer.from(`${process.env.NEXT_PUBLIC_PAYPAL_ID}:${process.env.PAYPAL_SECRET}`).toString('base64');
     const response = await fetch(`${paypalUrl}/v1/oauth2/token`, {
         method  : 'POST',
         headers : {

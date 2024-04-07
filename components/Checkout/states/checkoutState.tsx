@@ -130,6 +130,8 @@ import {
     CountryPreview,
     PaymentDetail,
     PlaceOrderOptions,
+    
+    MakePaymentOptions,
     LimitedStockItem,
     
     
@@ -192,6 +194,8 @@ export type {
     ProductPreview,
     PaymentDetail,
     PlaceOrderOptions,
+    
+    MakePaymentOptions,
     
     CountryPreview,
     
@@ -381,7 +385,7 @@ export interface CheckoutStateBase {
     
     doTransaction               : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                : (options?: PlaceOrderOptions) => Promise<string>
-    doMakePayment               : (orderId: string, paid: boolean) => Promise<void>
+    doMakePayment               : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
     
     refetchCheckout             : () => void
 }
@@ -1454,7 +1458,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             verifyStockPromise.current = performance.now(); // limits the future request rate
         } // try
     });
-    const doMakePayment        = useEvent(async (orderId: string, paid: boolean): Promise<void> => {
+    const doMakePayment        = useEvent(async (orderId: string, paid: boolean, options?: MakePaymentOptions): Promise<void> => {
         const paymentDetail = await makePayment({
             orderId,
             
@@ -1484,6 +1488,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 billingZip       : billingAsShipping ? shippingZip       : billingZip,
                 billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
             } : undefined),
+            
+            
+            
+            // options: midtransPaymentToken
+            ...options,
         }).unwrap();
         
         

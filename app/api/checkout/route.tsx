@@ -354,7 +354,7 @@ const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
 // types:
 export interface PaymentToken extends PaypalPaymentToken {}
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'
+    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
     simulateOrder ?: boolean
     captcha       ?: string
 }
@@ -440,6 +440,12 @@ export interface AuthenticationPaymentDataWithBillingAddress
 {
 }
 export type AuthenticationPaymentData = AuthenticationPaymentDataBasic | AuthenticationPaymentDataWithBillingAddress
+export interface MakePaymentOptions {
+    midtransPaymentToken ?: string
+}
+export type MakePaymentData =
+    &AuthenticationPaymentData
+    &MakePaymentOptions
 export interface PaymentDetail
     extends
         Omit<Payment,
@@ -580,8 +586,16 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    const usePaypalGateway = !simulateOrder && (paymentSource !== 'manual'); // if undefined || not 'manual' => use paypal gateway
+    
+    const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
+    const useMidtransGateway = !simulateOrder && (paymentSource === 'midtransCard');
+    
     if (usePaypalGateway && !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(preferredCurrency)) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    if (useMidtransGateway && !paymentConfig.paymentProcessors.midtrans.supportedCurrencies.includes(preferredCurrency)) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -1132,7 +1146,7 @@ router
             
             
             //#region fetch paypal API
-            let paypalOrderId : string|null;
+            let paypalOrderId : string|null = null;
             if (usePaypalGateway) {
                 const url = `${paypalUrl}/v2/checkout/orders`;
                 const paypalResponse = await fetch(url, {
@@ -1384,9 +1398,6 @@ router
                     throw Error('unexpected API response');
                 } // if
                 paypalOrderId = paypalOrderData?.id;
-            }
-            else {
-                paypalOrderId = null;
             } // if
             //#endregion fetch paypal API
             
@@ -1477,7 +1488,7 @@ router
         /*
             Possible server errors:
             * Network error.
-            * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_CLIENT_ID` and/or invalid `PAYPAL_SECRET`).
+            * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_ID` and/or invalid `PAYPAL_SECRET`).
             * Configured currency is not supported by PayPal.
             * Invalid API_request body JSON (programming bug).
             * unexpected API response (programming bug).
@@ -1515,7 +1526,15 @@ router
     
     // draftOrder created:
     const draftOrderDetail : DraftOrderDetail = {
-        orderId: paypalOrderId ?? `#ORDER_${orderId}`,
+        orderId: (
+            paypalOrderId
+            ? `#PAYPAL_${paypalOrderId}`
+            : (
+                useMidtransGateway
+                ? `#MIDTRANS_${orderId}`
+                : orderId
+            )
+        ),
     };
     return NextResponse.json(draftOrderDetail); // handled with success
 })
@@ -1791,18 +1810,28 @@ Updating the confirmation is not required.`,
     
     
     
-    let orderId       : string|null = null;
-    let paypalOrderId : string|null = null;
-    if (rawOrderId.startsWith('#ORDER_')) {
-        orderId = rawOrderId.slice(7);
-        if (!orderId.length) {
+    let orderId              : string|null = null;
+    let paypalOrderId        : string|null = null;
+    let midtransPaymentToken : string|null = null;
+    if (rawOrderId.startsWith('#PAYPAL_')) {
+        paypalOrderId = rawOrderId.slice(8); // remove prefix #PAYPAL_
+        if (!paypalOrderId.length) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+    }
+    else if (rawOrderId.startsWith('#MIDTRANS_')) {
+        orderId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
+        midtransPaymentToken = paymentData.midtransPaymentToken;
+        if ((typeof(midtransPaymentToken) !== 'string') || !midtransPaymentToken) {
             return NextResponse.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
     }
     else {
-        paypalOrderId = rawOrderId;
+        orderId = rawOrderId;
     } // if
     
     
@@ -2208,7 +2237,7 @@ Updating the confirmation is not required.`,
                 switch (captureData?.status) {
                     case 'COMPLETED' : {
                         // payment APPROVED:
-                        paymentResponse = await (async (): Promise<Omit<Payment, 'billingAddress'>> => {
+                        paymentResponse = ((): Omit<Payment, 'billingAddress'> => {
                             const payment_source = paypalPaymentData?.payment_source;
                             
                             const card = payment_source?.card;
@@ -2257,6 +2286,16 @@ Updating the confirmation is not required.`,
                         throw Error('unexpected API response');
                     }; break;
                 } // switch
+            }
+            else if (midtransPaymentToken) {
+                paymentResponse =  {
+                    type       : 'CARD',
+                    brand      : 'VISA'?.toLowerCase() ?? null,
+                    identifier : `ending with ${'1234'}`,
+                    
+                    amount     : 145000,
+                    fee        : 0,
+                };
             }
             else {
                 // paylater APPROVED (we waiting for your payment confirmation within xx days):
@@ -2492,7 +2531,7 @@ Updating the confirmation is not required.`,
         /*
             Possible server errors:
             * Network error.
-            * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_CLIENT_ID` and/or invalid `PAYPAL_SECRET`).
+            * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_ID` and/or invalid `PAYPAL_SECRET`).
             * Invalid API_request headers (programming bug).
             * unexpected API response (programming bug).
         */
