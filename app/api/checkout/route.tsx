@@ -1148,8 +1148,7 @@ router
             //#region fetch paypal API
             let paypalOrderId : string|null = null;
             if (usePaypalGateway) {
-                const url = `${paypalUrl}/v2/checkout/orders`;
-                const paypalResponse = await fetch(url, {
+                const paypalResponse = await fetch(`${paypalUrl}/v2/checkout/orders`, {
                     method  : 'POST',
                     headers : {
                         'Content-Type'    : 'application/json',
@@ -2006,8 +2005,7 @@ Updating the confirmation is not required.`,
             let paymentResponse : PaymentDetail|PaymentDeclined;
             let paymentConfirmationToken : string|undefined = undefined;
             if (paypalOrderId) {
-                const url = `${paypalUrl}/v2/checkout/orders/${paypalOrderId}/capture`;
-                const response = await fetch(url, {
+                const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paypalOrderId}/capture`, {
                     method  : 'POST',
                     headers : {
                         'Content-Type'    : 'application/json',
