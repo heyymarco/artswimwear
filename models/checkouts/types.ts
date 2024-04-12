@@ -10,22 +10,32 @@ export type DetailedItem =
     &{ productName: string, variantNames: string[], priceConverted: DraftOrdersOnProducts['price'] }
 
 export interface CreateOrderOptions {
-    preferredCurrency          : string
-    totalCostConverted         : number
-    totalProductPriceConverted : number
-    totalShippingCostConverted : number|null
+    preferredCurrency           : string
+    totalCostConverted          : number
+    totalProductPriceConverted  : number
+    totalShippingCostConverted  : number|null
     
-    hasShippingAddress         : boolean
-    shippingFirstName          : string|undefined
-    shippingLastName           : string|undefined
-    shippingPhone              : string|undefined
-    shippingAddress            : string|undefined
-    shippingCity               : string|undefined
-    shippingZone               : string|undefined
-    shippingZip                : string|undefined
-    shippingCountry            : string|undefined
+    detailedItems               : DetailedItem[]
     
-    detailedItems              : DetailedItem[]
+    hasShippingAddress          : boolean
+    shippingFirstName           : string|undefined
+    shippingLastName            : string|undefined
+    shippingPhone               : string|undefined
+    shippingAddress             : string|undefined
+    shippingCity                : string|undefined
+    shippingZone                : string|undefined
+    shippingZip                 : string|undefined
+    shippingCountry             : string|undefined
+    
+    hasBillingAddress          ?: boolean
+    billingFirstName           ?: string|undefined
+    billingLastName            ?: string|undefined
+    billingPhone               ?: string|undefined
+    billingAddress             ?: string|undefined
+    billingCity                ?: string|undefined
+    billingZone                ?: string|undefined
+    billingZip                 ?: string|undefined
+    billingCountry             ?: string|undefined
 }
 export interface CaptureFundData {
     paymentSource : any

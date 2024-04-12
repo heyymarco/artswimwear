@@ -111,6 +111,8 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<st
         totalProductPriceConverted,
         totalShippingCostConverted,
         
+        detailedItems,
+        
         hasShippingAddress,
         shippingFirstName,
         shippingLastName,
@@ -120,8 +122,6 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<st
         shippingZone,
         shippingZip,
         shippingCountry,
-        
-        detailedItems,
     } = options;
     
     
