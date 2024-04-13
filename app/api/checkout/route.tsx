@@ -112,6 +112,9 @@ import {
     paypalCreateOrder,
     paypalCaptureFund,
 }                           from './paymentProcessors.paypal'
+import {
+    midtransCaptureFund,
+}                           from './paymentProcessors.midtrans'
 
 // utilities:
 import {
@@ -356,9 +359,10 @@ const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
 // types:
 export interface PaymentToken extends PaypalPaymentToken {}
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
-    simulateOrder ?: boolean
-    captcha       ?: string
+    paymentSource        ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
+    midtransPaymentToken ?: string
+    simulateOrder        ?: boolean
+    captcha              ?: string
 }
 export interface CurrencyOptions {
     preferredCurrency ?: PreferredCurrency['currency']
@@ -443,7 +447,7 @@ export interface AuthenticationPaymentDataWithBillingAddress
 }
 export type AuthenticationPaymentData = AuthenticationPaymentDataBasic | AuthenticationPaymentDataWithBillingAddress
 export interface MakePaymentOptions {
-    midtransPaymentToken ?: string
+    /* empty yet */
 }
 export type MakePaymentData =
     &AuthenticationPaymentData
@@ -597,10 +601,24 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
+    
     if (useMidtransGateway && !paymentConfig.paymentProcessors.midtrans.supportedCurrencies.includes(preferredCurrency)) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
+    } // if
+    let midtransPaymentToken : string|null = null;
+    if (useMidtransGateway) {
+        const {
+            midtransPaymentToken: midtransPaymentTokenRaw,
+        } = placeOrderData;
+        
+        if ((typeof(midtransPaymentTokenRaw) !== 'string') || !midtransPaymentTokenRaw) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        midtransPaymentToken = midtransPaymentTokenRaw;
     } // if
     //#endregion validate options
     
@@ -1168,6 +1186,37 @@ router
                     
                     detailedItems,
                 });
+            }
+            else if (midtransPaymentToken) {
+                const captureFundData = await midtransCaptureFund(midtransPaymentToken, {
+                    preferredCurrency,
+                    totalCostConverted,
+                    totalProductPriceConverted,
+                    totalShippingCostConverted,
+                    
+                    hasShippingAddress,
+                    shippingFirstName,
+                    shippingLastName,
+                    shippingPhone,
+                    shippingAddress,
+                    shippingCity,
+                    shippingZone,
+                    shippingZip,
+                    shippingCountry,
+                    
+                    // TODO:
+                    // hasBillingAddress,
+                    // billingFirstName,
+                    // billingLastName,
+                    // billingPhone,
+                    // billingAddress,
+                    // billingCity,
+                    // billingZone,
+                    // billingZip,
+                    // billingCountry,
+                    
+                    detailedItems,
+                });
             } // if
             //#endregion fetch paypal API
             
@@ -1580,9 +1629,8 @@ Updating the confirmation is not required.`,
     
     
     
-    let orderId              : string|null = null;
-    let paypalOrderId        : string|null = null;
-    let midtransPaymentToken : string|null = null;
+    let orderId       : string|null = null;
+    let paypalOrderId : string|null = null;
     if (rawOrderId.startsWith('#PAYPAL_')) {
         paypalOrderId = rawOrderId.slice(8); // remove prefix #PAYPAL_
         if (!paypalOrderId.length) {
@@ -1593,12 +1641,6 @@ Updating the confirmation is not required.`,
     }
     else if (rawOrderId.startsWith('#MIDTRANS_')) {
         orderId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
-        midtransPaymentToken = paymentData.midtransPaymentToken;
-        if ((typeof(midtransPaymentToken) !== 'string') || !midtransPaymentToken) {
-            return NextResponse.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
-        } // if
     }
     else {
         orderId = rawOrderId;
@@ -1829,16 +1871,16 @@ Updating the confirmation is not required.`,
                     })();
                 } // if
             }
-            else if (midtransPaymentToken) {
-                paymentResponse =  {
-                    type       : 'CARD',
-                    brand      : 'VISA'?.toLowerCase() ?? null,
-                    identifier : `ending with ${'1234'}`,
-                    
-                    amount     : 145000,
-                    fee        : 0,
-                };
-            }
+            // else if (midtransPaymentToken) {
+            //     paymentResponse =  {
+            //         type       : 'CARD',
+            //         brand      : 'VISA'?.toLowerCase() ?? null,
+            //         identifier : `ending with ${'1234'}`,
+            //         
+            //         amount     : 145000,
+            //         fee        : 0,
+            //     };
+            // }
             else {
                 // paylater APPROVED (we waiting for your payment confirmation within xx days):
                 paymentResponse = {
