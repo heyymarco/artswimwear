@@ -738,6 +738,54 @@ router
     
     
     
+    //#region validate billing address
+    const {
+        // billings:
+        billingFirstName,
+        billingLastName,
+        
+        billingPhone,
+        
+        billingAddress,
+        billingCity,
+        billingZone,
+        billingZip,
+        billingCountry,
+    } = placeOrderData;
+    const hasBillingAddress = (
+        !!billingFirstName ||
+        !!billingLastName ||
+        
+        !!billingPhone ||
+        
+        !!billingAddress ||
+        !!billingCity ||
+        !!billingZone ||
+        !!billingZip ||
+        !!billingCountry
+    );
+    if (hasBillingAddress) {
+        if (
+               !billingFirstName || (typeof(billingFirstName) !== 'string')
+            || !billingLastName  || (typeof(billingLastName) !== 'string')
+            
+            || !billingPhone     || (typeof(billingPhone) !== 'string')
+            
+            || !billingAddress   || (typeof(billingAddress) !== 'string')
+            || !billingCity      || (typeof(billingCity) !== 'string')
+            || !billingZone      || (typeof(billingZone) !== 'string')
+            || !billingZip       || (typeof(billingZip) !== 'string')
+            || !billingCountry   || (typeof(billingCountry) !== 'string') // todo validate country id
+        ) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+    } // if
+    //#endregion validate billing address
+    
+    
+    
     //#region validate cart items: check format
     const {
         // cart item(s):
@@ -1218,16 +1266,15 @@ router
                     shippingZip,
                     shippingCountry,
                     
-                    // TODO:
-                    // hasBillingAddress,
-                    // billingFirstName,
-                    // billingLastName,
-                    // billingPhone,
-                    // billingAddress,
-                    // billingCity,
-                    // billingZone,
-                    // billingZip,
-                    // billingCountry,
+                    hasBillingAddress,
+                    billingFirstName,
+                    billingLastName,
+                    billingPhone,
+                    billingAddress,
+                    billingCity,
+                    billingZone,
+                    billingZip,
+                    billingCountry,
                     
                     detailedItems,
                 });

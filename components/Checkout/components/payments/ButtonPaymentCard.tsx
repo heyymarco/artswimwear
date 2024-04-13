@@ -151,12 +151,12 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 const MidtransNew3ds = (window as any).MidtransNew3ds;
                 const cardToken = await new Promise<string>((resolve, reject) => {
                     const card = {
-                        card_number: "4811111111111114",
-                        card_cvv: "123",
-                        card_exp_month: "12",
-                        card_exp_year: "2025",
-                        bank_one_time_token: "12345678"
-                    }
+                        card_number         : "4811111111111114",
+                        card_cvv            : "123",
+                        card_exp_month      : "12",
+                        card_exp_year       : "2025",
+                        bank_one_time_token : "12345678"
+                    };
                     MidtransNew3ds.getCardToken(card, {
                         onSuccess : (response: any) => {
                             resolve(response.token_id);

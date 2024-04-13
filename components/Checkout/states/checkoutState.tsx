@@ -1380,6 +1380,22 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 
+                // billing data:
+                ...(isBillingAddressRequired ? {
+                    billingFirstName : billingAsShipping ? shippingFirstName : billingFirstName,
+                    billingLastName  : billingAsShipping ? shippingLastName  : billingLastName,
+                    
+                    billingPhone     : billingAsShipping ? shippingPhone     : billingPhone,
+                    
+                    billingAddress   : billingAsShipping ? shippingAddress   : billingAddress,
+                    billingCity      : billingAsShipping ? shippingCity      : billingCity,
+                    billingZone      : billingAsShipping ? shippingZone      : billingZone,
+                    billingZip       : billingAsShipping ? shippingZip       : billingZip,
+                    billingCountry   : billingAsShipping ? shippingCountry   : billingCountry,
+                } : undefined),
+                
+                
+                
                 // options: pay manually | paymentSource (by <PayPalButtons>)
                 ...options,
             }).unwrap();
