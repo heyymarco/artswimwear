@@ -1,0 +1,13 @@
+Error Response
+
+{
+    // records:
+    "id": "1a1a66f7-27a7-4844-ba1f-d86dcc16ab27",
+    "validation_messages": [
+      "unsupported token request parameter(s)"
+    ]
+
+    // status:
+    "status_code": "400",
+    "status_message": "One or more parameters in the payload is invalid.",
+}

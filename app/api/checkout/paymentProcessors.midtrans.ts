@@ -20,11 +20,22 @@ const midtransUrl = midtransBaseUrl.development; // TODO: auto switch developmen
 
 
 
+const midtransHandleResponse = async (response: Response) => {
+    if (response.status === 200 || response.status === 201) {
+        return response.json();
+    } // if
+    
+    
+    
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
+}
+
 const midtransCreateAuthToken = () => {
     const auth = Buffer.from(`${process.env.MIDTRANS_ID}:`).toString('base64');
     return auth;
 }
-export const midtransCaptureFund = async (midtransPaymentToken: string, options: CreateOrderOptions): Promise<CaptureFundData|null> => {
+export const midtransCaptureFund = async (midtransPaymentToken: string, options: CreateOrderOptions): Promise<CaptureFundData|null|string> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -72,6 +83,8 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, options:
             },
             credit_card          : {
                 token_id         : midtransPaymentToken,
+                authentication   : true,
+                callback_type    : 'js_event',
             },
             item_details         : detailedItems.map((detailedItem) => ({
                 name             : detailedItem.productName + (!detailedItem.variantNames.length ? '' : `(${detailedItem.variantNames.join(', ')})`),
@@ -81,7 +94,7 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, options:
             customer_details     : {
                 first_name       : shippingFirstName,
                 last_name        : shippingLastName,
-                email            : 'test@midtrans.com', // TODO
+                email            : undefined,
                 phone            : shippingPhone,
                 shipping_address : {
                     first_name   : shippingFirstName,
@@ -106,4 +119,63 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, options:
             },
         }),
     });
+    const midtransPaymentData = await midtransHandleResponse(response);
+    switch (`${midtransPaymentData.status_code}` /* stringify */) {
+        case '202': {
+            // Deny Notification
+            
+            
+            
+            return null;
+        }
+        case '201' : {
+            // Success
+            // -or-
+            // Challenge Notification
+            
+            
+            
+            const redirectUrl = midtransPaymentData.redirect_url;
+            if ((midtransPaymentData.fraud_status === 'challenge') || (typeof(redirectUrl) !== 'string') || !redirectUrl) {
+                // The transaction is successfully sent to the bank but yet to be approved
+                
+                
+                
+                // assumes as denied:
+                return null;
+            } // if
+            
+            
+            
+            return redirectUrl;
+        }
+        case '200' : {
+            // Capture Notification after submit OTP 3DS 2.0
+            // Capture Notification
+            // Settlement Notification
+            
+            
+            
+            return {
+                paymentSource : {
+                    card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
+                        type       : 'CARD',
+                        brand      : midtransPaymentData.bank?.toLowerCase() ?? null,
+                        identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
+                    },
+                },
+                paymentAmount : midtransPaymentData.gross_amount,
+                paymentFee    : 0,
+            };
+        }
+        
+        // case '300' :
+        // case '400' :
+        // case '500' :
+        default    : {
+            // TODO: log unexpected response
+            console.log('unexpected response: ', midtransPaymentData);
+            throw Error('unexpected API response');
+        }
+    } // switch
 }

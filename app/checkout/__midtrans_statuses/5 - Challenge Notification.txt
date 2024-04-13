@@ -1,0 +1,39 @@
+Challenge Notification
+
+{
+    // records:
+    "order_id": "C17550",
+    "transaction_id": "1a1a66f7-27a7-4844-ba1f-d86dcc16ab27",
+    "transaction_time": "2014-08-24 15:39:22",
+
+
+    // status:
+    "status_code": "201",
+    "status_message": "midtrans payment notification",
+    "transaction_status": "capture",
+
+
+
+
+
+    // 3ds:
+    "three_ds_version": "2",
+
+
+    // amounts:
+    "gross_amount": "145000.00",
+
+    // payment methods:
+    "payment_type": "credit_card",
+    "card_type": "credit",
+    "masked_card": "48111111-1114",
+
+    // approval status:
+    "approval_code": "xxx",
+    "bank": "bni",
+    "eci": "05",
+    "signature_key": "lorem ipsum",
+    "fraud_status": "challenge",
+    "channel_response_code": "00",
+    "channel_response_message": "Approved",
+}

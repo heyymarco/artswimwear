@@ -1,0 +1,42 @@
+Success
+
+{
+    // records:
+    "order_id": "C17550",
+    "transaction_id": "1a1a66f7-27a7-4844-ba1f-d86dcc16ab27",
+    "transaction_time": "2018-09-12 22:10:23",
+
+
+    // status:
+    "status_code": "201", // Transaction is successfully made but the 3D secure process has yet to be completed. Transaction will expire expire within 15 minutes.
+    "status_message": "Success, Credit Card transaction is successful",
+    "transaction_status": "pending",
+
+    // verification:
+    "on_us": true,
+    "redirect_url": "https://api.veritrans.co.id/v2/3ds/redirect/451249-2595-e14aac7f-cfb3-4ab2-98ab-5cc5e70f4b2c",
+
+    // 3ds:
+    "three_ds_version": "2",
+
+
+    // amounts:
+    "gross_amount": "145000.00",
+
+    // payment methods:
+    "payment_type": "credit_card",
+    "card_type": "credit",
+    "masked_card": "48111111-1114",
+
+
+
+
+
+
+
+
+
+
+    // currencies:
+    "currency": "IDR",
+}
