@@ -35,7 +35,7 @@ const midtransCreateAuthToken = () => {
     const auth = Buffer.from(`${process.env.MIDTRANS_ID}:`).toString('base64');
     return auth;
 }
-export const midtransCaptureFund = async (midtransPaymentToken: string, options: CreateOrderOptions): Promise<CaptureFundData|null|string> => {
+export const midtransCaptureFund = async (midtransPaymentToken: string, orderId: string, options: CreateOrderOptions): Promise<CaptureFundData|null|string> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -78,7 +78,7 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, options:
         body    : JSON.stringify({
             payment_type         : 'credit_card',
             transaction_details  : {
-                order_id         : 'C17550', // TODO
+                order_id         : orderId,
                 gross_amount     : totalCostConverted,
             },
             credit_card          : {

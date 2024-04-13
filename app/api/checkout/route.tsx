@@ -51,6 +51,8 @@ import type {
 }                           from '@prisma/client'
 import type {
     DetailedItem,
+    
+    CaptureFundData,
 }                           from '@/models'
 
 // ORMs:
@@ -837,10 +839,10 @@ router
     
     
     
-    let orderId       : string;
+    let orderId       : string|null;
     let paypalOrderId : string|null;
     try {
-        ({orderId, paypalOrderId} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string, paypalOrderId: string|null }> => {
+        ({orderId, paypalOrderId} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|null, paypalOrderId: string|null }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
@@ -1227,8 +1229,9 @@ router
             
             
             
-            //#region fetch paypal API
+            //#region fetch payment gateway API
             let paypalOrderId : string|null = null;
+            let isPaid : CaptureFundData|null = null;
             if (usePaypalGateway) {
                 paypalOrderId = await paypalCreateOrder({
                     preferredCurrency,
@@ -1250,7 +1253,7 @@ router
                 });
             }
             else if (midtransPaymentToken) {
-                const captureFundData = await midtransCaptureFund(midtransPaymentToken, {
+                const captureFundData = await midtransCaptureFund(midtransPaymentToken, orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -1278,8 +1281,17 @@ router
                     
                     detailedItems,
                 });
+                if (captureFundData === null) {
+                    // payment DECLINED:
+                    
+                    return {
+                        orderId       : null,
+                        paypalOrderId : null,
+                    };
+                }
+                if (!!captureFundData && typeof(captureFundData) === 'object') isPaid = captureFundData;
             } // if
-            //#endregion fetch paypal API
+            //#endregion fetch payment gateway API
             
             
             
@@ -1405,6 +1417,15 @@ router
     
     
     // draftOrder created:
+    if (!orderId) {
+        // payment approved -or- rejected:
+        return NextResponse.json({
+            error     : 'payment declined',
+        }, {
+            status : 402 // payment DECLINED
+        });
+    } // if
+    
     const draftOrderDetail : DraftOrderDetail = {
         orderId: (
             paypalOrderId
