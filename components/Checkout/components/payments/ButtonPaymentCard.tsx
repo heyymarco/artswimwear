@@ -148,16 +148,6 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 }
             )
             : async (): Promise<string> => {
-                const orderId = await doPlaceOrder({paymentSource: 'midtransCard'});
-                return orderId;
-            }
-        );
-        if (!proxyDoPlaceOrder) return;
-        
-        const proxyDoMakePayment : ((orderId: string) => Promise<void>) = (
-            isPayUsingPaypal
-            ? async (orderId: string): Promise<void> => doMakePayment(orderId, /*paid:*/true)
-            : async (orderId: string): Promise<void> => {
                 const MidtransNew3ds = (window as any).MidtransNew3ds;
                 const cardToken = await new Promise<string>((resolve, reject) => {
                     const card = {
@@ -176,9 +166,15 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                         },
                     })
                 });
-                return doMakePayment(orderId, /*paid:*/true, { midtransPaymentToken: cardToken });
+                
+                const orderId = await doPlaceOrder({
+                    paymentSource        : 'midtransCard',
+                    midtransPaymentToken : cardToken,
+                });
+                return orderId;
             }
         );
+        if (!proxyDoPlaceOrder) return;
         
         
         
@@ -190,7 +186,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 
                 
                 // then forward the authentication to backend_API to receive the fund:
-                await proxyDoMakePayment(orderId);
+                await doMakePayment(orderId, /*paid:*/true);
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
