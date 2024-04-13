@@ -358,15 +358,7 @@ const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prism
 
 // types:
 export interface PaymentToken extends PaypalPaymentToken {}
-export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource        ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
-    midtransPaymentToken ?: string
-    simulateOrder        ?: boolean
-    captcha              ?: string
-}
-export interface CurrencyOptions {
-    preferredCurrency ?: PreferredCurrency['currency']
-}
+
 export interface CartEntry {
     productId   : string
     variantIds  : string[]
@@ -412,6 +404,16 @@ export interface BillingData {
     billingZone        : string
     billingZip         : string
     billingCountry     : string
+}
+
+export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
+    paymentSource        ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
+    midtransPaymentToken ?: string
+    simulateOrder        ?: boolean
+    captcha              ?: string
+}
+export interface CurrencyOptions {
+    preferredCurrency ?: PreferredCurrency['currency']
 }
 export interface PlaceOrderDataBasic
     extends
