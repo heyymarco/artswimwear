@@ -418,6 +418,7 @@ export interface CurrencyOptions {
 export interface PlaceOrderDataBasic
     extends
         CartData,          // cart item(s)
+        
         PlaceOrderOptions, // options: pay manually | paymentSource
         CurrencyOptions    // options: preferredCurrency
 {
@@ -428,32 +429,43 @@ export interface PlaceOrderDataWithShippingAddress
         ShippingData // shippings
 {
 }
-export type PlaceOrderData = PlaceOrderDataBasic | PlaceOrderDataWithShippingAddress
+export interface PlaceOrderDataWithBillingAddress
+    extends
+        PlaceOrderDataBasic,
+        BillingData // billings
+{
+}
+export type PlaceOrderData =
+    |PlaceOrderDataBasic
+    |PlaceOrderDataWithShippingAddress
+    |PlaceOrderDataWithBillingAddress
+    |(PlaceOrderDataWithShippingAddress & PlaceOrderDataWithBillingAddress)
 export interface DraftOrderDetail
 {
     orderId : string
 }
 
-export interface AuthenticationPaymentDataBasic
-    extends
-        ExtraData,   // extra data
-        CustomerData // customer data
-{
-    orderId : string
-}
-export interface AuthenticationPaymentDataWithBillingAddress
-    extends
-        AuthenticationPaymentDataBasic,
-        BillingData  // billing data
-{
-}
-export type AuthenticationPaymentData = AuthenticationPaymentDataBasic | AuthenticationPaymentDataWithBillingAddress
 export interface MakePaymentOptions {
     /* empty yet */
 }
+export interface MakePaymentDataBasic
+    extends
+        ExtraData,         // extra data
+        CustomerData,      // customer data
+        
+        MakePaymentOptions // options: empty yet
+{
+    orderId : string
+}
+export interface MakePaymentDataWithBillingAddress
+    extends
+        MakePaymentDataBasic,
+        BillingData  // billing data
+{
+}
 export type MakePaymentData =
-    &AuthenticationPaymentData
-    &MakePaymentOptions
+    |MakePaymentDataBasic
+    |MakePaymentDataWithBillingAddress
 export interface PaymentDetail
     extends
         Omit<Payment,
