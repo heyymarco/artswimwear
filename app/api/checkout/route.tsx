@@ -1331,7 +1331,7 @@ router
             
             
             
-            //#region create a newDraftOrder
+            //#region create a new(Draft|Real)Order
             const newCustomerOrGuest : CommitCustomerOrGuest = {
                 name                 : customerName,
                 email                : customerEmail,
@@ -1598,7 +1598,7 @@ router
                 })()
                 : null
             );
-            //#endregion create a newDraftOrder
+            //#endregion create a new(Draft|Real)Order
             
             
             
