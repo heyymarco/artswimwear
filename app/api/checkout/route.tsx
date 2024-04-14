@@ -1388,6 +1388,9 @@ router
                     country        : billingCountry.toUpperCase(),
                 }
             );
+            
+            
+            
             const createNewDraftOrderPromise = (
                 !((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null)) // not CaptureFundData (object excepts null)
                 // pending_paid => create new (draft)Order:
