@@ -1346,8 +1346,50 @@ router
                 ? undefined
                 : totalShippingCostConverted
             );
+            const paymentDetail : PaymentDetail|null = (
+                !((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null)) // not CaptureFundData
+                ? null
+                : ((): PaymentDetail => {
+                    const card = paidDataOrRedirectUrl.paymentSource?.card;
+                    if (card) {
+                        return {
+                            type       : 'CARD',
+                            brand      : card.brand?.toLowerCase() ?? null,
+                            identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
+                            
+                            amount     : paidDataOrRedirectUrl.paymentAmount,
+                            fee        : paidDataOrRedirectUrl.paymentFee,
+                        };
+                    } //if
+                    
+                    return {
+                        type       : 'CUSTOM',
+                        brand      : null,
+                        identifier : null,
+                        
+                        amount     : paidDataOrRedirectUrl.paymentAmount,
+                        fee        : paidDataOrRedirectUrl.paymentFee,
+                    };
+                })()
+            );
+            const billingAddressData = (
+                !hasBillingAddress
+                ? undefined
+                : {
+                    firstName      : billingFirstName,
+                    lastName       : billingLastName,
+                    
+                    phone          : billingPhone,
+                    
+                    address        : billingAddress,
+                    city           : billingCity,
+                    zone           : billingZone,
+                    zip            : billingZip,
+                    country        : billingCountry.toUpperCase(),
+                }
+            );
             const createNewDraftOrderPromise = (
-                (typeof(paidDataOrRedirectUrl) === 'object')
+                ((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null)) // is CaptureFundData
                 ? null // paid => no need to create new draftOrder
                 : prismaTransaction.draftOrder.create({
                     data : {
@@ -1376,7 +1418,7 @@ router
                 })
             );
             const createNewOrderPromise = (
-                (typeof(paidDataOrRedirectUrl) !== 'object')
+                !((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null)) // not CaptureFundData
                 ? null // unpaid => no need to crate new order
                 : (async (): Promise<OrderAndData> => {
                     const newOrder = await prismaTransaction.order.create({
@@ -1415,7 +1457,10 @@ router
                                 },
                             },
                             
-                            payment             : payment,
+                            payment             : {
+                                ...paymentDetail!,
+                                billingAddress  : billingAddressData,
+                            },
                             paymentConfirmation : !paymentConfirmationToken ? undefined : {
                                 create : {
                                     token: paymentConfirmationToken,
@@ -2167,16 +2212,16 @@ Updating the confirmation is not required.`,
             
             //#region save the database
             let newOrder : OrderAndData|undefined = undefined;
-            const paymentPartial = !('error' in paymentResponse) ? paymentResponse : undefined;
-            if (paymentPartial) {
-                // const isBillingAddressRequired = (paymentPartial.type === 'CARD');
+            const paymentDetail = !('error' in paymentResponse) ? paymentResponse : undefined;
+            if (paymentDetail) {
+                // const isBillingAddressRequired = (paymentDetail.type === 'CARD');
                 
                 // payment APPROVED => move the `draftOrder` to `order`:
                 newOrder = await commitOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
                     customerOrGuest    : newCustomerOrGuest,
                     payment            : {
-                        ...paymentPartial,
+                        ...paymentDetail,
                         billingAddress : hasBillingAddress ? {
                             firstName  : billingFirstName,
                             lastName   : billingLastName,
