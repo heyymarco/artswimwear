@@ -839,10 +839,11 @@ router
     
     
     
-    let orderId       : string|null;
-    let paypalOrderId : string|null;
+    let orderId               : string|null;
+    let paypalOrderId         : string|null;
+    let paidDataOrRedirectUrl : CaptureFundData|string|null;
     try {
-        ({orderId, paypalOrderId} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|null, paypalOrderId: string|null }> => {
+        ({orderId, paypalOrderId, paidDataOrRedirectUrl} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|null, paypalOrderId: string|null, paidDataOrRedirectUrl : CaptureFundData|string|null }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
@@ -1180,8 +1181,9 @@ router
                 } // for
                 if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
                 if (simulateOrder) return {
-                    orderId       : '',
-                    paypalOrderId : null,
+                    orderId               : '', // empty string => simulateOrder
+                    paypalOrderId         : null,
+                    paidDataOrRedirectUrl : null
                 };
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
@@ -1230,8 +1232,8 @@ router
             
             
             //#region fetch payment gateway API
-            let paypalOrderId : string|null = null;
-            let isPaid : CaptureFundData|null = null;
+            let paypalOrderId         : string|null = null;
+            let paidDataOrRedirectUrl : CaptureFundData|string|null = null;
             if (usePaypalGateway) {
                 paypalOrderId = await paypalCreateOrder({
                     preferredCurrency,
@@ -1281,15 +1283,19 @@ router
                     
                     detailedItems,
                 });
+                
                 if (captureFundData === null) {
                     // payment DECLINED:
                     
                     return {
-                        orderId       : null,
-                        paypalOrderId : null,
+                        orderId               : null, // null => declined
+                        paypalOrderId         : null,
+                        paidDataOrRedirectUrl : null,
                     };
                 }
-                if (!!captureFundData && typeof(captureFundData) === 'object') isPaid = captureFundData;
+                else {
+                    paidDataOrRedirectUrl = captureFundData;
+                } // if
             } // if
             //#endregion fetch payment gateway API
             
@@ -1366,6 +1372,7 @@ router
             return {
                 orderId,
                 paypalOrderId,
+                paidDataOrRedirectUrl,
             };
         }));
     }
@@ -1417,10 +1424,18 @@ router
     
     
     // draftOrder created:
-    if (!orderId) {
-        // payment approved -or- rejected:
+    if (orderId === '') { // empty string => simulateOrder
+        // simulateOrder:
+        const draftOrderDetail : DraftOrderDetail = {
+            orderId : '',
+        };
+        return NextResponse.json(draftOrderDetail); // handled with success
+    } // if
+    
+    if (orderId === null) { // null => declined
+        // payment rejected:
         return NextResponse.json({
-            error     : 'payment declined',
+            error  : 'payment declined',
         }, {
             status : 402 // payment DECLINED
         });
