@@ -66,7 +66,7 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, orderId:
     } = options;
     
     
-    console.log({totalCostConverted, detailedItems});
+    
     const response = await fetch(`${midtransUrl}/v2/charge`, {
         method  : 'POST',
         headers : {
@@ -86,18 +86,18 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, orderId:
                 authentication   : true,
                 callback_type    : 'js_event',
             },
-            item_details         : {
+            item_details         : [
                 ...detailedItems.map((detailedItem) => ({
                     name             : detailedItem.productName + (!detailedItem.variantNames.length ? '' : `(${detailedItem.variantNames.join(', ')})`),
                     price            : detailedItem.priceConverted,
                     quantity         : detailedItem.quantity,
                 })),
-                ...((totalShippingCostConverted === null) ? undefined : {
+                ...((totalShippingCostConverted === null) ? [] : [{
                     name     : 'Shipping',
                     price    : totalShippingCostConverted,
                     quantity : 1,
-                }),
-            },
+                }]),
+            ],
             customer_details     : {
                 first_name       : shippingFirstName,
                 last_name        : shippingLastName,
