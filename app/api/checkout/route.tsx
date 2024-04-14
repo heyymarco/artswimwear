@@ -1347,9 +1347,8 @@ router
                 : totalShippingCostConverted
             );
             const paymentDetail : PaymentDetail|null = (
-                !((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null)) // not CaptureFundData
-                ? null
-                : ((): PaymentDetail => {
+                ((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null))  // is CaptureFundData (object excepts null)
+                ? ((): PaymentDetail => {
                     const card = paidDataOrRedirectUrl.paymentSource?.card;
                     if (card) {
                         return {
@@ -1371,6 +1370,7 @@ router
                         fee        : paidDataOrRedirectUrl.paymentFee,
                     };
                 })()
+                : null
             );
             const billingAddressData = (
                 !hasBillingAddress
@@ -1389,9 +1389,9 @@ router
                 }
             );
             const createNewDraftOrderPromise = (
-                ((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null)) // is CaptureFundData
-                ? null // paid => no need to create new draftOrder
-                : prismaTransaction.draftOrder.create({
+                !((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null)) // not CaptureFundData (object excepts null)
+                // pending_paid => create new (draft)Order:
+                ? prismaTransaction.draftOrder.create({
                     data : {
                         expiresAt               : new Date(Date.now() + (1 * 60 * 1000)),
                         
@@ -1416,11 +1416,12 @@ router
                         id : true,
                     },
                 })
+                : null
             );
             const createNewOrderPromise = (
-                !((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null)) // not CaptureFundData
-                ? null // unpaid => no need to crate new order
-                : (async (): Promise<OrderAndData> => {
+                ((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null))  // is CaptureFundData (object excepts null)
+                // paid_immediately => crate new (real)Order:
+                ? (async (): Promise<OrderAndData> => {
                     const newOrder = await prismaTransaction.order.create({
                         data   : {
                             orderId             : orderId,
@@ -1461,11 +1462,13 @@ router
                                 ...paymentDetail!,
                                 billingAddress  : billingAddressData,
                             },
-                            paymentConfirmation : !paymentConfirmationToken ? undefined : {
-                                create : {
-                                    token: paymentConfirmationToken,
-                                },
-                            },
+                            
+                            // no need for `paymentConfirmation`, because the order is paid_immediately
+                            // paymentConfirmation : !paymentConfirmationToken ? undefined : {
+                            //     create : {
+                            //         token: paymentConfirmationToken,
+                            //     },
+                            // },
                         },
                         // select : {
                         //     id : true,
@@ -1549,6 +1552,7 @@ router
                         ),
                     };
                 })()
+                : null
             );
             //#endregion create a newDraftOrder
             
