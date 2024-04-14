@@ -1325,42 +1325,50 @@ router
                     rate           : await getCurrencyRate(savingCurrency),
                 }
             );
+            const shippingAddressData = (
+                !hasShippingAddress
+                ? undefined
+                : {
+                    firstName      : shippingFirstName,
+                    lastName       : shippingLastName,
+                    
+                    phone          : shippingPhone,
+                    
+                    address        : shippingAddress,
+                    city           : shippingCity,
+                    zone           : shippingZone,
+                    zip            : shippingZip,
+                    country        : shippingCountry.toUpperCase(),
+                }
+            );
+            const shippingCostData = (
+                !hasShippingAddress
+                ? undefined
+                : totalShippingCostConverted
+            );
             const createNewDraftOrderPromise = (
                 (typeof(paidDataOrRedirectUrl) === 'object')
                 ? null // paid => no need to create new draftOrder
                 : prismaTransaction.draftOrder.create({
                     data : {
-                        expiresAt                  : new Date(Date.now() + (1 * 60 * 1000)),
+                        expiresAt               : new Date(Date.now() + (1 * 60 * 1000)),
                         
-                        orderId                    : orderId,
-                        paypalOrderId              : paypalOrderId,
+                        orderId                 : orderId,
+                        paypalOrderId           : paypalOrderId,
                         
-                        items                      : {
-                            create                 : orderItemsData,
+                        items                   : {
+                            create              : orderItemsData,
                         },
                         
-                        preferredCurrency          : preferredCurrencyData,
+                        preferredCurrency       : preferredCurrencyData,
                         
-                        ...(hasShippingAddress ? {
-                            shippingAddress            : {
-                                firstName              : shippingFirstName,
-                                lastName               : shippingLastName,
-                                
-                                phone                  : shippingPhone,
-                                
-                                address                : shippingAddress,
-                                city                   : shippingCity,
-                                zone                   : shippingZone,
-                                zip                    : shippingZip,
-                                country                : shippingCountry.toUpperCase(),
+                        shippingAddress         : shippingAddressData,
+                        shippingCost            : shippingCostData,
+                        shippingProvider        : !hasShippingAddress ? undefined : {
+                            connect             : {
+                                id              : shippingProviderId,
                             },
-                            shippingCost               : totalShippingCostConverted,
-                            shippingProvider           : {
-                                connect                : {
-                                    id                 : shippingProviderId,
-                                },
-                            },
-                        } : undefined),
+                        },
                     },
                     select : {
                         id : true,
@@ -1399,11 +1407,11 @@ router
                             
                             preferredCurrency   : preferredCurrencyData,
                             
-                            shippingAddress     : draftOrder.shippingAddress,
-                            shippingCost        : draftOrder.shippingCost,
-                            shippingProvider    : !draftOrder.shippingProviderId ? undefined : {
+                            shippingAddress     : shippingAddressData,
+                            shippingCost        : shippingCostData,
+                            shippingProvider    : !hasShippingAddress ? undefined : {
                                 connect         : {
-                                    id          : draftOrder.shippingProviderId,
+                                    id          : shippingProviderId,
                                 },
                             },
                             
