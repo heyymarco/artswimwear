@@ -447,7 +447,8 @@ export type PlaceOrderData =
     |(PlaceOrderDataWithShippingAddress & PlaceOrderDataWithBillingAddress)
 export interface DraftOrderDetail
 {
-    orderId : string
+    orderId     : string
+    redirectUrl : string|undefined
 }
 
 export interface MakePaymentOptions {
@@ -869,11 +870,11 @@ router
     
     
     
-    let orderId               : string|null;
-    let paypalOrderId         : string|null;
-    let paidDataOrRedirectUrl : CaptureFundData|string|null;
+    let orderId               : string|undefined;
+    let paypalOrderId         : string|undefined;
+    let paidDataOrRedirectUrl : CaptureFundData|string|undefined;
     try {
-        ({orderId, paypalOrderId, paidDataOrRedirectUrl} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|null, paypalOrderId: string|null, paidDataOrRedirectUrl : CaptureFundData|string|null }> => {
+        ({orderId, paypalOrderId, paidDataOrRedirectUrl} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, paypalOrderId: string|undefined, paidDataOrRedirectUrl : CaptureFundData|string|undefined }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
@@ -1212,8 +1213,8 @@ router
                 if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
                 if (simulateOrder) return {
                     orderId               : '', // empty string => simulateOrder
-                    paypalOrderId         : null,
-                    paidDataOrRedirectUrl : null
+                    paypalOrderId         : undefined,
+                    paidDataOrRedirectUrl : undefined
                 };
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
@@ -1262,8 +1263,8 @@ router
             
             
             //#region fetch payment gateway API
-            let paypalOrderId         : string|null = null;
-            let paidDataOrRedirectUrl : CaptureFundData|string|null = null;
+            let paypalOrderId         : string|undefined                 = undefined;
+            let paidDataOrRedirectUrl : CaptureFundData|string|undefined = undefined;
             if (usePaypalGateway) {
                 paypalOrderId = await paypalCreateOrder({
                     preferredCurrency,
@@ -1318,9 +1319,9 @@ router
                     // payment DECLINED:
                     
                     return {
-                        orderId               : null, // null => declined
-                        paypalOrderId         : null,
-                        paidDataOrRedirectUrl : null,
+                        orderId               : undefined, // undefined => declined
+                        paypalOrderId         : undefined,
+                        paidDataOrRedirectUrl : undefined,
                     };
                 }
                 else {
@@ -1673,12 +1674,13 @@ router
     if (orderId === '') { // empty string => simulateOrder
         // simulateOrder:
         const draftOrderDetail : DraftOrderDetail = {
-            orderId : '',
+            orderId     : '',
+            redirectUrl : undefined,
         };
         return NextResponse.json(draftOrderDetail); // handled with success
     } // if
     
-    if (orderId === null) { // null => declined
+    if (orderId === undefined) { // undefined => declined
         // payment rejected:
         return NextResponse.json({
             error  : 'payment declined',
@@ -1688,7 +1690,7 @@ router
     } // if
     
     const draftOrderDetail : DraftOrderDetail = {
-        orderId: (
+        orderId     : (
             paypalOrderId
             ? `#PAYPAL_${paypalOrderId}`
             : (
@@ -1697,6 +1699,7 @@ router
                 : orderId
             )
         ),
+        redirectUrl : (typeof(paidDataOrRedirectUrl) === 'string') ? paidDataOrRedirectUrl : undefined,
     };
     return NextResponse.json(draftOrderDetail); // handled with success
 })
