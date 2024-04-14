@@ -419,10 +419,13 @@ export interface CurrencyOptions {
 }
 export interface PlaceOrderDataBasic
     extends
-        CartData,          // cart item(s)
+        CartData,              // cart item(s)
         
-        PlaceOrderOptions, // options: pay manually | paymentSource
-        CurrencyOptions    // options: preferredCurrency
+        Partial<ExtraData>,    // extra data
+        Partial<CustomerData>, // customer data
+        
+        PlaceOrderOptions,     // options: pay manually | paymentSource
+        CurrencyOptions        // options: preferredCurrency
 {
 }
 export interface PlaceOrderDataWithShippingAddress
@@ -637,6 +640,33 @@ router
         midtransPaymentToken = midtransPaymentTokenRaw;
     } // if
     //#endregion validate options
+    
+    
+    
+    //#region validate customer data & extra
+    const {
+        // marketings:
+        marketingOpt,
+        
+        
+        
+        // customers:
+        customerName,
+        customerEmail,
+    } = placeOrderData;
+    if (!simulateOrder) {
+        if (
+            ((marketingOpt !== undefined) && (typeof(marketingOpt) !== 'boolean'))
+            
+            || !customerName || (typeof(customerName) !== 'string')
+            || !customerEmail    || (typeof(customerEmail) !== 'string') // TODO: validate email
+        ) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+    } // if
+    //#endregion validate customer data & extra
     
     
     
@@ -1302,6 +1332,17 @@ router
             
             
             //#region create a newDraftOrder
+            const newCustomerOrGuest : CommitCustomerOrGuest = {
+                name                 : customerName,
+                email                : customerEmail,
+                preference           : {
+                    marketingOpt     : marketingOpt,
+                },
+            };
+            const {
+                preference: preferenceData,
+            ...customerOrGuestData} = newCustomerOrGuest;
+            
             let savingCurrency   = preferredCurrency || commerceConfig.defaultCurrency;
             const orderItemsData = detailedItems.map((detailedItem) => {
                 return {
@@ -1950,6 +1991,7 @@ Updating the confirmation is not required.`,
     
     
     
+    //#region validate customer data & extra
     const {
         // marketings:
         marketingOpt,
@@ -1970,6 +2012,7 @@ Updating the confirmation is not required.`,
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
+    //#endregion validate customer data & extra
     
     
     

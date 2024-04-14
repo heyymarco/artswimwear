@@ -1362,8 +1362,21 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 
+                ...((!options?.simulateOrder) ? {
+                    // extra data:
+                    marketingOpt,
+                    
+                    
+                    
+                    // customer data:
+                    customerName,
+                    customerEmail,
+                } : undefined),
+                
+                
+                
                 // shipping data:
-                ...(isShippingAddressRequired ? {
+                ...((!options?.simulateOrder && isShippingAddressRequired) ? {
                     shippingFirstName,
                     shippingLastName,
                     
@@ -1381,7 +1394,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 // billing data:
-                ...(isBillingAddressRequired ? {
+                ...((!options?.simulateOrder && isBillingAddressRequired) ? {
                     billingFirstName : billingAsShipping ? shippingFirstName : billingFirstName,
                     billingLastName  : billingAsShipping ? shippingLastName  : billingLastName,
                     
