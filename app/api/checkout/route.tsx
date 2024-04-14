@@ -591,7 +591,7 @@ router
     
     //#region validate options
     const {
-        preferredCurrency : preferredCurrencyRaw,
+        preferredCurrency : preferredCurrencyRaw = paymentConfig.defaultPaymentCurrency,
         paymentSource, // options: pay manually | paymentSource
         simulateOrder = false,
     } = placeOrderData;
@@ -1150,9 +1150,7 @@ router
                         unitPriceParts
                         .map(async (unitPricePart): Promise<number> => {
                             const unitPricePartAsCustomerCurrency = (
-                                !!preferredCurrency
-                                ? await convertCustomerCurrencyIfRequired(unitPricePart, preferredCurrency)
-                                : unitPricePart
+                                await convertCustomerCurrencyIfRequired(unitPricePart, preferredCurrency)
                             );
                             
                             // const unitPricePartAsPaypalCurrency = (
@@ -1221,9 +1219,7 @@ router
             const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeight, matchingShipping) : null;
             const totalShippingCostConverted = await (async (): Promise<number|null> => {
                 const totalShippingCostAsCustomerCurrency = (
-                    !!preferredCurrency
-                    ? await convertCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency)
-                    : totalShippingCost
+                    await convertCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency)
                 );
                 
                 // const totalShippingCostAsPaypalCurrency = (
