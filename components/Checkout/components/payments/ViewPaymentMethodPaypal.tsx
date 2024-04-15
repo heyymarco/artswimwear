@@ -61,7 +61,9 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     // handlers:
     const handleCreateOrder    = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
         try {
-            return await doPlaceOrder(data);
+            const draftOrderDetail = await doPlaceOrder(data);
+            if (!draftOrderDetail) throw Error('Oops, an error occured!');
+            return draftOrderDetail.orderId;
         }
         catch (fetchError: any) {
             if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });

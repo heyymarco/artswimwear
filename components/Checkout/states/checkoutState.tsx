@@ -385,7 +385,7 @@ export interface CheckoutStateBase {
     gotoPayment                 : () => Promise<boolean>
     
     doTransaction               : (transaction: (() => Promise<void>)) => Promise<boolean>
-    doPlaceOrder                : (options?: PlaceOrderOptions) => Promise<DraftOrderDetail|PaymentDetail>
+    doPlaceOrder                : (options?: PlaceOrderOptions) => Promise<DraftOrderDetail|undefined>
     doMakePayment               : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
     
     refetchCheckout             : () => void
@@ -1350,7 +1350,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<DraftOrderDetail|PaymentDetail> => {
+    const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<DraftOrderDetail|undefined> => {
         try {
             const draftOrderDetailOrPaymentDetail = await placeOrder({
                 // currency options:
@@ -1413,7 +1413,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 // options: pay manually | paymentSource (by <PayPalButtons>)
                 ...options,
             }).unwrap();
-            return draftOrderDetailOrPaymentDetail;
+            
+            
+            
+            if (!('orderId' in draftOrderDetailOrPaymentDetail)) {
+                gotoFinished(draftOrderDetailOrPaymentDetail, /*paid:*/true);
+                return undefined;
+            }
+            else {
+                return draftOrderDetailOrPaymentDetail;
+            } // if
         }
         catch (fetchError: any) {
             await trimProductsFromCart(fetchError?.data?.limitedStockItems, {
@@ -1527,6 +1536,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
+        gotoFinished(paymentDetail, paid);
+    });
+    const gotoFinished         = useEvent((paymentDetail: PaymentDetail, paid: boolean): void => {
         // save the finished order states:
         // setCheckoutStep(paid ? 'paid' : 'pending'); // not needed this code, already handled by `setFinishedOrderState` below:
         setFinishedOrderState({ // backup the cart & checkout states in redux

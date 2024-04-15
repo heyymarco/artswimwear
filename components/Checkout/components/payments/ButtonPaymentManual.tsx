@@ -82,12 +82,13 @@ const ButtonPaymentManual = (): JSX.Element|null => {
         doTransaction(async () => {
             try {
                 // createOrder:
-                const orderId = await doPlaceOrder({paymentSource: 'manual', captcha});
+                const draftOrderDetail = await doPlaceOrder({paymentSource: 'manual', captcha});
+                if (!draftOrderDetail) throw Error('Oops, an error occured!');
                 
                 
                 
                 // then forward the authentication to backend_API to book the order (but not paid yet):
-                await doMakePayment(orderId, /*paid:*/false);
+                await doMakePayment(draftOrderDetail.orderId, /*paid:*/false);
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });

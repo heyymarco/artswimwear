@@ -151,7 +151,9 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     // handlers:
     const handleCreateOrder    = useEvent(async (): Promise<string> => {
         try {
-            return await doPlaceOrder();
+            const draftOrderDetail = await doPlaceOrder();
+            if (!draftOrderDetail) throw Error('Oops, an error occured!');
+            return draftOrderDetail.orderId;
         }
         catch (fetchError: any) {
             if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });

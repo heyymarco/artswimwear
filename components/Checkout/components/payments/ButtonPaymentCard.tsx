@@ -28,6 +28,12 @@ import {
     ButtonWithBusy,
 }                           from '../ButtonWithBusy'
 
+// stores:
+import type {
+    // types:
+    DraftOrderDetail,
+}                           from '@/store/features/api/apiSlice'
+
 // paypal:
 import {
     usePayPalHostedFields,
@@ -35,6 +41,7 @@ import {
 
 // internals:
 import {
+    PaymentDetail,
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -107,12 +114,12 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     const hostedFields = usePayPalHostedFields();
     const handlePayButtonClick = useEvent(() => {
         const paypalDoPlaceOrder = hostedFields.cardFields?.submit;
-        const proxyDoPlaceOrder : (() => Promise<string>)|undefined = (
+        const proxyDoPlaceOrder : (() => Promise<DraftOrderDetail|undefined>)|undefined = (
             isPayUsingPaypal
             ? (
                 (typeof(paypalDoPlaceOrder) !== 'function') // validate that `submit()` exists before invoke it
                 ? undefined
-                : async (): Promise<string> => {
+                : async (): Promise<DraftOrderDetail> => {
                     // submit card data to PayPal_API to get authentication:
                     const paypalAuthentication = await paypalDoPlaceOrder({
                         // trigger 3D Secure authentication:
@@ -144,10 +151,13 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                             orderId: "1N785713SG267310M"
                         }
                     */
-                    return paypalAuthentication.orderId;
+                    return {
+                        orderId     : paypalAuthentication.orderId,
+                        redirectUrl : undefined,
+                    };
                 }
             )
-            : async (): Promise<string> => {
+            : async (): Promise<DraftOrderDetail|undefined> => {
                 const MidtransNew3ds = (window as any).MidtransNew3ds;
                 const cardToken = await new Promise<string>((resolve, reject) => {
                     const card = {
@@ -167,11 +177,12 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                     })
                 });
                 
-                const orderId = await doPlaceOrder({
+                const draftOrderDetail = await doPlaceOrder({
                     paymentSource        : 'midtransCard',
                     midtransPaymentToken : cardToken,
                 });
-                return orderId;
+                if (!draftOrderDetail) return undefined;
+                return draftOrderDetail;
             }
         );
         if (!proxyDoPlaceOrder) return;
@@ -181,12 +192,17 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         doTransaction(async () => {
             try {
                 // createOrder:
-                const orderId = await proxyDoPlaceOrder();
+                const draftOrderDetail = await proxyDoPlaceOrder();
+                if (!draftOrderDetail) return; // paid => no need redirection
+                
+                
+                
+                const redirectUrl = draftOrderDetail.redirectUrl;
                 
                 
                 
                 // then forward the authentication to backend_API to receive the fund:
-                await doMakePayment(orderId, /*paid:*/true);
+                await doMakePayment(draftOrderDetail.orderId, /*paid:*/true);
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
