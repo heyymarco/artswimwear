@@ -128,6 +128,7 @@ import {
 import {
     // types:
     CountryPreview,
+    DraftOrderDetail,
     PaymentDetail,
     PlaceOrderOptions,
     
@@ -384,7 +385,7 @@ export interface CheckoutStateBase {
     gotoPayment                 : () => Promise<boolean>
     
     doTransaction               : (transaction: (() => Promise<void>)) => Promise<boolean>
-    doPlaceOrder                : (options?: PlaceOrderOptions) => Promise<string>
+    doPlaceOrder                : (options?: PlaceOrderOptions) => Promise<DraftOrderDetail|PaymentDetail>
     doMakePayment               : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
     
     refetchCheckout             : () => void
@@ -1349,9 +1350,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<string> => {
+    const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<DraftOrderDetail|PaymentDetail> => {
         try {
-            const draftOrderDetail = await placeOrder({
+            const draftOrderDetailOrPaymentDetail = await placeOrder({
                 // currency options:
                 preferredCurrency, // informs the customer's preferredCurrency, so we know the selected currency when he/she made an order
                 
@@ -1412,7 +1413,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 // options: pay manually | paymentSource (by <PayPalButtons>)
                 ...options,
             }).unwrap();
-            return draftOrderDetail.orderId;
+            return draftOrderDetailOrPaymentDetail;
         }
         catch (fetchError: any) {
             await trimProductsFromCart(fetchError?.data?.limitedStockItems, {

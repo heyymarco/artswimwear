@@ -873,8 +873,9 @@ router
     let orderId               : string|undefined;
     let paypalOrderId         : string|undefined;
     let paidDataOrRedirectUrl : CaptureFundData|string|undefined;
+    let paymentDetail         : PaymentDetail|undefined;
     try {
-        ({orderId, paypalOrderId, paidDataOrRedirectUrl} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, paypalOrderId: string|undefined, paidDataOrRedirectUrl : CaptureFundData|string|undefined }> => {
+        ({orderId, paypalOrderId, paidDataOrRedirectUrl, paymentDetail} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, paypalOrderId: string|undefined, paidDataOrRedirectUrl: CaptureFundData|string|undefined, paymentDetail: PaymentDetail|undefined }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
@@ -1212,7 +1213,8 @@ router
                 if (simulateOrder) return {
                     orderId               : '', // empty string => simulateOrder
                     paypalOrderId         : undefined,
-                    paidDataOrRedirectUrl : undefined
+                    paidDataOrRedirectUrl : undefined,
+                    paymentDetail         : undefined,
                 };
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
@@ -1318,6 +1320,7 @@ router
                         orderId               : undefined, // undefined => declined
                         paypalOrderId         : undefined,
                         paidDataOrRedirectUrl : undefined,
+                        paymentDetail         : undefined,
                     };
                 }
                 else {
@@ -1384,7 +1387,7 @@ router
                 ? undefined
                 : totalShippingCostConverted
             );
-            const paymentDetail : PaymentDetail|null = (
+            const paymentDetail : PaymentDetail|undefined = (
                 ((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null))  // is CaptureFundData (object excepts null)
                 ? ((): PaymentDetail => {
                     const card = paidDataOrRedirectUrl.paymentSource?.card;
@@ -1408,7 +1411,7 @@ router
                         fee        : paidDataOrRedirectUrl.paymentFee,
                     };
                 })()
-                : null
+                : undefined
             );
             const billingAddressData = (
                 !hasBillingAddress
@@ -1616,6 +1619,7 @@ router
                 orderId,
                 paypalOrderId,
                 paidDataOrRedirectUrl,
+                paymentDetail,
             };
         }));
     }
@@ -1678,10 +1682,18 @@ router
     
     if (orderId === undefined) { // undefined => declined
         // payment rejected:
-        return NextResponse.json({
+        const paymentDeclined : PaymentDeclined = {
             error  : 'payment declined',
-        }, {
+        };
+        return NextResponse.json(paymentDeclined, {
             status : 402 // payment DECLINED
+        });
+    } // if
+    
+    if (paymentDetail) {  // is CaptureFundData (object excepts null)
+        // payment approved:
+        return NextResponse.json(paymentDetail, {
+            status : 200 // payment APPROVED
         });
     } // if
     

@@ -200,7 +200,7 @@ export const apiSlice = createApi({
                 method : 'GET',
             }),
         }),
-        placeOrder              : builder.mutation<DraftOrderDetail, PlaceOrderData>({
+        placeOrder              : builder.mutation<DraftOrderDetail|PaymentDetail, PlaceOrderData>({
             query : (orderData) => ({
                 url    : 'checkout',
                 method : 'POST',
