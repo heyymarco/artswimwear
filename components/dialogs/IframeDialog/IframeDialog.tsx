@@ -52,8 +52,8 @@ import {
 
 // internals:
 import {
-    useCheckoutStyleSheet,
-}                           from '../../styles/loader'
+    useIframeDialogStyleSheet,
+}                           from './styles/loader'
 
 
 
@@ -94,7 +94,7 @@ const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     
     
     // styles:
-    const styleSheet = useCheckoutStyleSheet();
+    const styleSheet = useIframeDialogStyleSheet();
     
     
     
@@ -225,7 +225,7 @@ const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
                 {!!title && <h1>{title}</h1>}
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
-            <CardBody className={styleSheet.iframeDialogBody}>
+            <CardBody className={styleSheet.cardBody}>
                 <iframe
                     // identifiers:
                     key={recaptchaKey}
@@ -234,6 +234,11 @@ const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
                     
                     // refs:
                     ref={iframeRef}
+                    
+                    
+                    
+                    // classes:
+                    className={styleSheet.iframe}
                     
                     
                     
@@ -248,11 +253,11 @@ const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
                     onError={handleErrored}
                 />
                 
-                {(isLoaded === LoadedState.Errored) && <ErrorBlankSection className='error' onRetry={handleReload} />}
+                {(isLoaded === LoadedState.Errored) && <ErrorBlankSection className={styleSheet.error} onRetry={handleReload} />}
                 
                 <Busy
                     // classes:
-                    className='loading'
+                    className={styleSheet.loading}
                     
                     
                     

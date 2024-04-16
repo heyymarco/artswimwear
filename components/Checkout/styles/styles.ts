@@ -634,44 +634,5 @@ export default () => {
                 marginBlock  : `calc(0px - ${groupableVars.paddingBlock })`,
             }, {specificityWeight: 2}),
         }, {specificityWeight: 2}),
-        
-        scope('iframeDialogBody', {
-            // layouts:
-            display      : 'grid',
-            justifyItems : 'center',
-            alignItems   : 'center',
-            
-            
-            
-            // sizes:
-            boxSizing     : 'content-box',
-            // minInlineSize : '304px', // the width  of google captcha
-            // minBlockSize  : '78px',  // the height of google captcha
-            
-            
-            
-            // spacings:
-            [paddingVars.paddingInline] : '0px',
-            [paddingVars.paddingBlock ] : '0px',
-            
-            
-            
-            // children:
-            ...children('*', {
-                gridArea: '1 / 1 / -1 / -1',
-            }),
-            ...children('.loading', {
-                fontSize: '3rem',
-            }),
-            ...children('.error', {
-                justifySelf  : 'stretch',
-                alignSelf    : 'stretch',
-                
-                [groupableVars.paddingInline]: 'inherit !important',
-                [groupableVars.paddingBlock ]: 'inherit !important',
-                marginInline : `calc(0px - ${groupableVars.paddingInline})`,
-                marginBlock  : `calc(0px - ${groupableVars.paddingBlock })`,
-            }, {specificityWeight: 2}),
-        }, {specificityWeight: 2}),
     ];
 };

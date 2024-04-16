@@ -27,6 +27,9 @@ import {
 import {
     ButtonWithBusy,
 }                           from '../ButtonWithBusy'
+import {
+    IframeDialog,
+}                           from '@/components/dialogs/IframeDialog'
 
 // stores:
 import type {
@@ -101,6 +104,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     // dialogs:
     const {
+        showDialog,
         showMessageFetchError,
     } = useDialogMessage();
     
@@ -112,7 +116,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     // handlers:
     const hostedFields = usePayPalHostedFields();
-    const handlePayButtonClick = useEvent(() => {
+    const handlePayButtonClick = useEvent(async () => {
         const paypalDoPlaceOrder = hostedFields.cardFields?.submit;
         const proxyDoPlaceOrder : (() => Promise<DraftOrderDetail|undefined>)|undefined = (
             isPayUsingPaypal
@@ -198,6 +202,20 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 
                 
                 const redirectUrl = draftOrderDetail.redirectUrl;
+                if (redirectUrl) {
+                    const captcha = await showDialog<string>(
+                        <IframeDialog
+                            // accessibilities:
+                            title='3DS Verification'
+                            
+                            
+                            
+                            // resources:
+                            src={redirectUrl}
+                        />
+                    );
+                    if (!captcha) return;
+                } // if
                 
                 
                 
