@@ -111,9 +111,10 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     // dialogs:
     const {
         showDialog,
+        showMessageError,
         showMessageFetchError,
     } = useDialogMessage();
-    const modal3dsRef = useRef<PromiseDialog|null>(null);
+    const modal3dsRef = useRef<PromiseDialog<boolean|null|undefined>|null>(null);
     
     
     
@@ -211,12 +212,12 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 const redirectUrl = draftOrderDetail.redirectUrl;
                 if (redirectUrl) {
                     // trigger `authenticate` function
-                    const isVerified = await new Promise<boolean>((resolve) => {
+                    const isVerified = await new Promise<boolean|null|undefined>((resolve) => {
                         const MidtransNew3ds = (window as any).MidtransNew3ds;
                         MidtransNew3ds.authenticate(redirectUrl, {
                             performAuthentication: function(redirectUrl: string){
                                 // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
-                                modal3dsRef.current = showDialog<undefined>(
+                                modal3dsRef.current = showDialog<boolean|null>(
                                     <IframeDialog
                                         // accessibilities:
                                         title='3DS Verification'
@@ -227,29 +228,45 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                                         src={redirectUrl}
                                     />
                                 );
+                                modal3dsRef.current.collapseEndEvent().then(({data}) => {
+                                    resolve(data); // undefined : payment aborted
+                                    modal3dsRef.current = null;
+                                });
                             },
                             onSuccess: function(response: Response){
                                 // 3ds authentication success, implement payment success scenario
-                                modal3dsRef.current?.closeDialog(undefined, 'ui');
-                                modal3dsRef.current = null;
-                                resolve(true);
+                                modal3dsRef.current?.closeDialog(true, 'ui'); // true: payment succeed
                             },
                             onFailure: function(response: Response){
                                 // 3ds authentication failure, implement payment failure scenario
-                                modal3dsRef.current?.closeDialog(undefined, 'ui');
-                                modal3dsRef.current = null;
-                                resolve(false);
+                                modal3dsRef.current?.closeDialog(false, 'ui'); // false     : payment failed
                             },
                             onPending: function(response: Response){
                                 // transaction is pending, transaction result will be notified later via 
                                 // HTTP POST notification, implement as you wish here
-                                modal3dsRef.current?.closeDialog(undefined, 'ui');
-                                modal3dsRef.current = null;
+                                modal3dsRef.current?.closeDialog(null, 'ui'); // null      : payment pending
                                 // TODO: handle pending transaction
-                            }
+                            },
                         });
                     });
-                    if (!isVerified) return;
+                    if (!isVerified) {
+                        /*
+                            false     : payment failed
+                            null      : payment pending
+                            undefined : payment aborted
+                        */
+                        await showMessageError({
+                            error: <>
+                                <p>
+                                    The transaction is <strong>canceled</strong> by user.
+                                </p>
+                                <p>
+                                    <strong>No funds</strong> have been deducted.
+                                </p>
+                            </>
+                        });
+                        return;
+                    } // if
                 } // if
                 
                 

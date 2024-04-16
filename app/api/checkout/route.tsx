@@ -116,6 +116,7 @@ import {
 }                           from './paymentProcessors.paypal'
 import {
     midtransCaptureFund,
+    midtransGetPaymentStatus,
 }                           from './paymentProcessors.midtrans'
 
 // utilities:
@@ -1983,8 +1984,9 @@ Updating the confirmation is not required.`,
     
     
     
-    let orderId       : string|null = null;
-    let paypalOrderId : string|null = null;
+    let orderId         : string|null = null;
+    let paypalOrderId   : string|null = null;
+    let midtransOrderId : string|null = null;
     if (rawOrderId.startsWith('#PAYPAL_')) {
         paypalOrderId = rawOrderId.slice(8); // remove prefix #PAYPAL_
         if (!paypalOrderId.length) {
@@ -1995,6 +1997,7 @@ Updating the confirmation is not required.`,
     }
     else if (rawOrderId.startsWith('#MIDTRANS_')) {
         orderId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
+        midtransOrderId = orderId;
     }
     else {
         orderId = rawOrderId;
@@ -2227,16 +2230,48 @@ Updating the confirmation is not required.`,
                     })();
                 } // if
             }
-            // else if (midtransPaymentToken) {
-            //     paymentResponse =  {
-            //         type       : 'CARD',
-            //         brand      : 'VISA'?.toLowerCase() ?? null,
-            //         identifier : `ending with ${'1234'}`,
-            //         
-            //         amount     : 145000,
-            //         fee        : 0,
-            //     };
-            // }
+            else if (midtransOrderId) {
+                const captureFundData = await midtransGetPaymentStatus(midtransOrderId);
+                if (!captureFundData) {
+                    // payment DECLINED:
+                    
+                    paymentResponse = {
+                        error     : 'payment declined',
+                    };
+                }
+                else {
+                    // payment APPROVED:
+                    
+                    const {
+                        paymentSource,
+                        paymentAmount,
+                        paymentFee,
+                    } = captureFundData;
+                    
+                    paymentResponse = ((): Omit<Payment, 'billingAddress'> => {
+                        const card = paymentSource?.card;
+                        if (card) {
+                            return {
+                                type       : 'CARD',
+                                brand      : card.brand?.toLowerCase() ?? null,
+                                identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
+                                
+                                amount     : paymentAmount,
+                                fee        : paymentFee,
+                            };
+                        } //if
+                        
+                        return {
+                            type       : 'CUSTOM',
+                            brand      : null,
+                            identifier : null,
+                            
+                            amount     : paymentAmount,
+                            fee        : paymentFee,
+                        };
+                    })();
+                } // if
+            }
             else {
                 // paylater APPROVED (we waiting for your payment confirmation within xx days):
                 paymentResponse = {

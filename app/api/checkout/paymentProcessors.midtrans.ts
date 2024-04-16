@@ -1,3 +1,8 @@
+// reusable-ui core:
+import {
+    decimalify,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // models:
 import type {
     CreateOrderOptions,
@@ -163,6 +168,12 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, orderId:
             
             
             
+            let paymentAmountRaw = midtransPaymentData.gross_amount;
+            const paymentAmount  = decimalify(
+                (typeof(paymentAmountRaw) === 'number')
+                ? paymentAmountRaw
+                : Number.parseFloat(paymentAmountRaw)
+            );
             return {
                 paymentSource : {
                     card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
@@ -171,7 +182,63 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, orderId:
                         identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
                     },
                 },
-                paymentAmount : midtransPaymentData.gross_amount,
+                paymentAmount : paymentAmount,
+                paymentFee    : 0,
+            };
+        }
+        
+        // case '300' :
+        // case '400' :
+        // case '500' :
+        default    : {
+            // TODO: log unexpected response
+            console.log('unexpected response: ', midtransPaymentData);
+            throw Error('unexpected API response');
+        }
+    } // switch
+}
+export const midtransGetPaymentStatus = async (orderId: string): Promise<CaptureFundData|null|undefined> => {
+    const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status?`, {
+        method  : 'GET',
+        headers : {
+            'Content-Type'    : 'application/json',
+            'Accept'          : 'application/json',
+            'Accept-Language' : 'en_US',
+            'Authorization'   : `Basic ${midtransCreateAuthToken()}`,
+        },
+    });
+    const midtransPaymentData = await midtransHandleResponse(response);
+    switch (`${midtransPaymentData.status_code}` /* stringify */) {
+        case '404': {
+            // NotFound Notification
+            
+            
+            
+            return undefined;
+        }
+        case '200' : {
+            // Capture Notification after submit OTP 3DS 2.0
+            // Capture Notification
+            // Settlement Notification
+            if (!['capture', 'authorize'].includes(midtransPaymentData.transaction_status)) return null; // Deny
+            
+            
+            
+            let paymentAmountRaw = midtransPaymentData.gross_amount;
+            const paymentAmount  = decimalify(
+                (typeof(paymentAmountRaw) === 'number')
+                ? paymentAmountRaw
+                : Number.parseFloat(paymentAmountRaw)
+            );
+            return {
+                paymentSource : {
+                    card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
+                        type       : 'CARD',
+                        brand      : midtransPaymentData.bank?.toLowerCase() ?? null,
+                        identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
+                    },
+                },
+                paymentAmount : paymentAmount,
                 paymentFee    : 0,
             };
         }
