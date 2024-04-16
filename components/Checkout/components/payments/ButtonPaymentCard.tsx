@@ -4,6 +4,7 @@
 import {
     // react:
     default as React,
+    useRef,
 }                           from 'react'
 
 // reusable-ui core:
@@ -16,6 +17,11 @@ import {
 import {
     // simple-components:
     ButtonIcon,
+    
+    
+    
+    // dialog-components:
+    PromiseDialog,
     
     
     
@@ -107,6 +113,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         showDialog,
         showMessageFetchError,
     } = useDialogMessage();
+    const modal3dsRef = useRef<PromiseDialog|null>(null);
     
     
     
@@ -203,18 +210,42 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 
                 const redirectUrl = draftOrderDetail.redirectUrl;
                 if (redirectUrl) {
-                    const captcha = await showDialog<string>(
-                        <IframeDialog
-                            // accessibilities:
-                            title='3DS Verification'
-                            
-                            
-                            
-                            // resources:
-                            src={redirectUrl}
-                        />
-                    );
-                    if (!captcha) return;
+                    // trigger `authenticate` function
+                    const isVerified = await new Promise<boolean>((resolve) => {
+                        const MidtransNew3ds = (window as any).MidtransNew3ds;
+                        MidtransNew3ds.authenticate(redirectUrl, {
+                            performAuthentication: function(redirectUrl: string){
+                                // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
+                                modal3dsRef.current = showDialog<undefined>(
+                                    <IframeDialog
+                                        // accessibilities:
+                                        title='3DS Verification'
+                                        
+                                        
+                                        
+                                        // resources:
+                                        src={redirectUrl}
+                                    />
+                                );
+                            },
+                            onSuccess: function(response: Response){
+                                // 3ds authentication success, implement payment success scenario
+                                modal3dsRef.current?.closeDialog(undefined, 'ui');
+                                resolve(true);
+                            },
+                            onFailure: function(response: Response){
+                                // 3ds authentication failure, implement payment failure scenario
+                                modal3dsRef.current?.closeDialog(undefined, 'ui');
+                                resolve(false);
+                            },
+                            onPending: function(response: Response){
+                                // transaction is pending, transaction result will be notified later via 
+                                // HTTP POST notification, implement as you wish here
+                                modal3dsRef.current?.closeDialog(undefined, 'ui');
+                            }
+                        });
+                    });
+                    if (!isVerified) return;
                 } // if
                 
                 

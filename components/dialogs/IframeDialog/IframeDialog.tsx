@@ -58,7 +58,7 @@ import {
 
 
 // react components:
-export interface IframeDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<string> = ModalExpandedChangeEvent<string>>
+export interface IframeDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<undefined> = ModalExpandedChangeEvent<undefined>>
     extends
         // bases:
         Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
@@ -74,7 +74,7 @@ export interface IframeDialogProps<TElement extends Element = HTMLElement, TModa
     // resources:
     src    : string
 }
-const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<string> = ModalExpandedChangeEvent<string>>(props: IframeDialogProps<TElement, TModalExpandedChangeEvent>) => {
+const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<undefined> = ModalExpandedChangeEvent<undefined>>(props: IframeDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
     const {
         // accessibilities:
