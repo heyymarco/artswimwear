@@ -231,17 +231,21 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                             onSuccess: function(response: Response){
                                 // 3ds authentication success, implement payment success scenario
                                 modal3dsRef.current?.closeDialog(undefined, 'ui');
+                                modal3dsRef.current = null;
                                 resolve(true);
                             },
                             onFailure: function(response: Response){
                                 // 3ds authentication failure, implement payment failure scenario
                                 modal3dsRef.current?.closeDialog(undefined, 'ui');
+                                modal3dsRef.current = null;
                                 resolve(false);
                             },
                             onPending: function(response: Response){
                                 // transaction is pending, transaction result will be notified later via 
                                 // HTTP POST notification, implement as you wish here
                                 modal3dsRef.current?.closeDialog(undefined, 'ui');
+                                modal3dsRef.current = null;
+                                // TODO: handle pending transaction
                             }
                         });
                     });
