@@ -1,6 +1,7 @@
 // models:
 import type {
     CreateOrderOptions,
+    AuthorizedFundData,
     PaidFundData,
 }                           from '@/models'
 
@@ -104,7 +105,7 @@ const paypalHandleResponse       = async (response: Response) => {
     throw new Error(errorMessage);
 }
 
-export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<string> => {
+export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<AuthorizedFundData> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -369,12 +370,25 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<st
             ]
         }
     */
-    if ((paypalOrderData?.status !== 'CREATED') || (typeof(paypalOrderData?.id) !== 'string')) {
+    if ((paypalOrderData?.status !== 'CREATED')) {
         // TODO: log unexpected response
         console.log('unexpected response: ', paypalOrderData);
         throw Error('unexpected API response');
     } // if
-    return paypalOrderData?.id;
+    
+    const paymentId   = paypalOrderData?.id;
+    if ((typeof(paymentId) !== 'string') || !paymentId) {
+        // TODO: log unexpected response
+        console.log('unexpected response: ', paypalOrderData);
+        throw Error('unexpected API response');
+    } // if
+    
+    
+    
+    return {
+        paymentId,
+        redirectUrl : undefined, // no redirectUrl required but require a `paypalCaptureFund()` to capture the fund
+    };
 }
 
 export const paypalCaptureFund = async (paymentId: string): Promise<PaidFundData|null> => {

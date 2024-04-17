@@ -1,12 +1,12 @@
 // models:
 import type {
-    AuthorizeFundData,
+    AuthorizedFundData,
     PaidFundData,
 }                           from './types'
 
 
 
-export const isAuthorizeFundData = (data: AuthorizeFundData|PaidFundData|string|undefined): data is AuthorizeFundData => {
+export const isAuthorizedFundData = (data: AuthorizedFundData|PaidFundData|string|undefined): data is AuthorizedFundData => {
     return (
         !!data
         &&
@@ -15,7 +15,7 @@ export const isAuthorizeFundData = (data: AuthorizeFundData|PaidFundData|string|
         !('paymentAmount' in data)
     );
 }
-export const isPaidFundData      = (data: AuthorizeFundData|PaidFundData|string|undefined): data is PaidFundData => {
+export const isPaidFundData      = (data: AuthorizedFundData|PaidFundData|string|undefined): data is PaidFundData => {
     return (
         !!data
         &&

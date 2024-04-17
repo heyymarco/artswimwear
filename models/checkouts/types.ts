@@ -37,7 +37,7 @@ export interface CreateOrderOptions {
     billingZip                 ?: string|undefined
     billingCountry             ?: string|undefined
 }
-export interface AuthorizeFundData {
+export interface AuthorizedFundData {
     paymentId     : string
     redirectUrl  ?: string
 }

@@ -52,10 +52,10 @@ import type {
 import {
     DetailedItem,
     
-    AuthorizeFundData,
+    AuthorizedFundData,
     PaidFundData,
     
-    isAuthorizeFundData,
+    isAuthorizedFundData,
     isPaidFundData,
 }                           from '@/models'
 
@@ -875,12 +875,11 @@ router
     
     
     
-    let orderId               : string|undefined;
-    let paymentId             : string|undefined;
-    let paidDataOrRedirectUrl : PaidFundData|string|undefined;
-    let paymentDetail         : PaymentDetail|undefined;
+    let orderId                  : string|undefined;
+    let authorizedOrPaidFundData : AuthorizedFundData|PaidFundData|undefined;
+    let paymentDetail            : PaymentDetail|undefined;
     try {
-        ({orderId, paymentId, paidDataOrRedirectUrl, paymentDetail} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, paymentId: string|undefined, paidDataOrRedirectUrl: PaidFundData|string|undefined, paymentDetail: PaymentDetail|undefined }> => {
+        ({orderId, authorizedOrPaidFundData, paymentDetail} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, authorizedOrPaidFundData: AuthorizedFundData|PaidFundData|undefined, paymentDetail: PaymentDetail|undefined }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
@@ -1216,10 +1215,9 @@ router
                 } // for
                 if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
                 if (simulateOrder) return {
-                    orderId               : '', // empty string => simulateOrder
-                    paymentId             : undefined,
-                    paidDataOrRedirectUrl : undefined,
-                    paymentDetail         : undefined,
+                    orderId                  : '', // empty string => simulateOrder
+                    authorizedOrPaidFundData : undefined,
+                    paymentDetail            : undefined,
                 };
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
@@ -1266,10 +1264,10 @@ router
             
             
             //#region fetch payment gateway API
-            let paymentId             : string|undefined              = undefined;
-            let paidDataOrRedirectUrl : PaidFundData|string|undefined = undefined;
+            let authorizeFundData        : AuthorizedFundData|undefined              = undefined;
+            let authorizedOrPaidFundData : AuthorizedFundData|PaidFundData|undefined = undefined;
             if (usePaypalGateway) {
-                paymentId = await paypalCreateOrder({
+                authorizedOrPaidFundData = await paypalCreateOrder({
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -1289,7 +1287,7 @@ router
                 });
             }
             else if (midtransPaymentToken) {
-                const paidFundData = await midtransCreateOrder(midtransPaymentToken, orderId, {
+                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrder(midtransPaymentToken, orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -1318,18 +1316,17 @@ router
                     detailedItems,
                 });
                 
-                if (paidFundData === null) {
+                if (authorizedOrPaidFundDataOrDeclined === null) {
                     // payment DECLINED:
                     
                     return {
-                        orderId               : undefined, // undefined => declined
-                        paymentId             : undefined,
-                        paidDataOrRedirectUrl : undefined,
-                        paymentDetail         : undefined,
+                        orderId                  : undefined, // undefined => declined
+                        authorizedOrPaidFundData : undefined,
+                        paymentDetail            : undefined,
                     };
                 }
                 else {
-                    paidDataOrRedirectUrl = paidFundData;
+                    authorizedOrPaidFundData = authorizedOrPaidFundDataOrDeclined;
                 } // if
             } // if
             //#endregion fetch payment gateway API
@@ -1393,17 +1390,17 @@ router
                 : totalShippingCostConverted
             );
             const paymentDetail : PaymentDetail|undefined = (
-                isPaidFundData(paidDataOrRedirectUrl)  // is PaidFundData (object excepts null)
+                isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
                 ? ((): PaymentDetail => {
-                    const card = paidDataOrRedirectUrl.paymentSource?.card;
+                    const card = authorizedOrPaidFundData.paymentSource?.card;
                     if (card) {
                         return {
                             type       : 'CARD',
                             brand      : card.brand?.toLowerCase() ?? null,
                             identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
                             
-                            amount     : paidDataOrRedirectUrl.paymentAmount,
-                            fee        : paidDataOrRedirectUrl.paymentFee,
+                            amount     : authorizedOrPaidFundData.paymentAmount,
+                            fee        : authorizedOrPaidFundData.paymentFee,
                         };
                     } //if
                     
@@ -1412,8 +1409,8 @@ router
                         brand      : null,
                         identifier : null,
                         
-                        amount     : paidDataOrRedirectUrl.paymentAmount,
-                        fee        : paidDataOrRedirectUrl.paymentFee,
+                        amount     : authorizedOrPaidFundData.paymentAmount,
+                        fee        : authorizedOrPaidFundData.paymentFee,
                     };
                 })()
                 : undefined
@@ -1438,14 +1435,14 @@ router
             
             
             const createNewDraftOrderPromise = (
-                !isPaidFundData(paidDataOrRedirectUrl) // not PaidFundData (object excepts null)
+                isAuthorizedFundData(authorizedOrPaidFundData) // is AuthorizedFundData
                 // pending_paid => create new (draft)Order:
                 ? prismaTransaction.draftOrder.create({
                     data : {
                         expiresAt               : new Date(Date.now() + (1 * 60 * 1000)),
                         
                         orderId                 : orderId,
-                        paymentId               : paymentId,
+                        paymentId               : authorizedOrPaidFundData.paymentId,
                         
                         items                   : {
                             create              : orderItemsData,
@@ -1468,7 +1465,7 @@ router
                 : null
             );
             const createNewOrderPromise = (
-                isPaidFundData(paidDataOrRedirectUrl)  // is PaidFundData (object excepts null)
+                isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
                 // paid_immediately => crate new (real)Order:
                 ? (async (): Promise<OrderAndData> => {
                     const newOrder = await prismaTransaction.order.create({
@@ -1622,8 +1619,7 @@ router
             // report the createOrder result:
             return {
                 orderId,
-                paymentId,
-                paidDataOrRedirectUrl,
+                authorizedOrPaidFundData,
                 paymentDetail,
             };
         }));
@@ -1695,7 +1691,7 @@ router
         });
     } // if
     
-    if (paymentDetail) {  // is PaidFundData (object excepts null)
+    if (paymentDetail) {  // is PaidFundData
         // payment approved:
         return NextResponse.json(paymentDetail, {
             status : 200 // payment APPROVED
@@ -1704,15 +1700,19 @@ router
     
     const draftOrderDetail : DraftOrderDetail = {
         orderId     : (
-            usePaypalGateway
-            ? `#PAYPAL_${paymentId}`
-            : (
-                useMidtransGateway
-                ? `#MIDTRANS_${paymentId}`
-                : orderId
+            isAuthorizedFundData(authorizedOrPaidFundData)
+            ? (
+                usePaypalGateway
+                ? `#PAYPAL_${authorizedOrPaidFundData.paymentId}`
+                : (
+                    useMidtransGateway
+                    ? `#MIDTRANS_${authorizedOrPaidFundData.paymentId}`
+                    : authorizedOrPaidFundData.paymentId
+                )
             )
+            : orderId
         ),
-        redirectUrl : (typeof(paidDataOrRedirectUrl) === 'string') ? paidDataOrRedirectUrl : undefined,
+        redirectUrl : isAuthorizedFundData(authorizedOrPaidFundData) ? authorizedOrPaidFundData.redirectUrl : undefined,
     };
     return NextResponse.json(draftOrderDetail); // handled with success
 })

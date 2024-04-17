@@ -6,13 +6,9 @@ import {
 // models:
 import type {
     CreateOrderOptions,
+    AuthorizedFundData,
     PaidFundData,
 }                           from '@/models'
-
-// configs:
-import {
-    checkoutConfig,
-}                           from '@/checkout.config.server'
 
 
 
@@ -40,7 +36,7 @@ const midtransCreateAuthToken = () => {
     const auth = Buffer.from(`${process.env.MIDTRANS_ID}:`).toString('base64');
     return auth;
 }
-export const midtransCreateOrder = async (midtransPaymentToken: string, orderId: string, options: CreateOrderOptions): Promise<PaidFundData|null|string> => {
+export const midtransCreateOrder = async (midtransPaymentToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -152,8 +148,9 @@ export const midtransCreateOrder = async (midtransPaymentToken: string, orderId:
             
             switch (midtransPaymentData.fraud_status) {
                 case 'accept': {
+                    const paymentId   = midtransPaymentData.transaction_id;
                     const redirectUrl = midtransPaymentData.redirect_url;
-                    if (typeof(redirectUrl) !== 'string') {
+                    if ((typeof(paymentId) !== 'string') || (typeof(redirectUrl) !== 'string') || !paymentId || !redirectUrl) {
                         // TODO: log unexpected response
                         console.log('unexpected response: ', midtransPaymentData);
                         throw Error('unexpected API response');
@@ -162,7 +159,10 @@ export const midtransCreateOrder = async (midtransPaymentToken: string, orderId:
                     
                     
                     // redirectUrl for 3DS verification:
-                    return redirectUrl;
+                    return {
+                        paymentId,
+                        redirectUrl,
+                    };
                 }
                 
                 case 'challenge': { // The transaction is successfully sent to the bank but yet to be approved
@@ -186,7 +186,19 @@ export const midtransCreateOrder = async (midtransPaymentToken: string, orderId:
             
             switch (midtransPaymentData.transaction_status) {
                 case 'authorize': {
-                    return ''; // no redirectUrl required but require a `midtransCaptureFund()` to capture the fund
+                    const paymentId   = midtransPaymentData.transaction_id;
+                    if ((typeof(paymentId) !== 'string') || !paymentId) {
+                        // TODO: log unexpected response
+                        console.log('unexpected response: ', midtransPaymentData);
+                        throw Error('unexpected API response');
+                    } // if
+                    
+                    
+                    
+                    return {
+                        paymentId,
+                        redirectUrl : undefined, // no redirectUrl required but require a `midtransCaptureFund()` to capture the fund
+                    };
                 }
                 
                 case 'capture':
