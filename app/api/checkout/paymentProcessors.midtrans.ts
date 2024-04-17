@@ -93,7 +93,7 @@ export const midtransCreateOrder = async (midtransPaymentToken: string, orderId:
             },
             item_details         : [
                 ...detailedItems.map((detailedItem) => ({
-                    name             : detailedItem.productName + (!detailedItem.variantNames.length ? '' : `(${detailedItem.variantNames.join(', ')})`),
+                    name             : detailedItem.productName + (!detailedItem.variantNames.length ? '' : ` (${detailedItem.variantNames.join(', ')})`),
                     price            : detailedItem.priceConverted,
                     quantity         : detailedItem.quantity,
                 })),

@@ -212,7 +212,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<st
                 items                     : detailedItems.map((detailedItem) => ({
                     // name string required
                     // The item name or title.
-                    name                  : detailedItem.productName + (!detailedItem.variantNames.length ? '' : `(${detailedItem.variantNames.join(', ')})`),
+                    name                  : detailedItem.productName + (!detailedItem.variantNames.length ? '' : ` (${detailedItem.variantNames.join(', ')})`),
                     
                     // unit_amount Money required
                     // The item price or rate per unit.
