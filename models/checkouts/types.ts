@@ -37,7 +37,11 @@ export interface CreateOrderOptions {
     billingZip                 ?: string|undefined
     billingCountry             ?: string|undefined
 }
-export interface CaptureFundData {
+export interface AuthorizeFundData {
+    paymentId     : string
+    redirectUrl  ?: string
+}
+export interface PaidFundData {
     paymentSource : any
     paymentAmount : number
     paymentFee    : number

@@ -1,7 +1,7 @@
 // models:
 import type {
     CreateOrderOptions,
-    CaptureFundData,
+    PaidFundData,
 }                           from '@/models'
 
 // configs:
@@ -377,7 +377,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<st
     return paypalOrderData?.id;
 }
 
-export const paypalCaptureFund = async (paymentId: string): Promise<CaptureFundData|null> => {
+export const paypalCaptureFund = async (paymentId: string): Promise<PaidFundData|null> => {
     const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paymentId}/capture`, {
         method  : 'POST',
         headers : {

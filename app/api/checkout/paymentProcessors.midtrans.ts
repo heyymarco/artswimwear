@@ -6,7 +6,7 @@ import {
 // models:
 import type {
     CreateOrderOptions,
-    CaptureFundData,
+    PaidFundData,
 }                           from '@/models'
 
 // configs:
@@ -40,7 +40,7 @@ const midtransCreateAuthToken = () => {
     const auth = Buffer.from(`${process.env.MIDTRANS_ID}:`).toString('base64');
     return auth;
 }
-export const midtransCreateOrder = async (midtransPaymentToken: string, orderId: string, options: CreateOrderOptions): Promise<CaptureFundData|null|string> => {
+export const midtransCreateOrder = async (midtransPaymentToken: string, orderId: string, options: CreateOrderOptions): Promise<PaidFundData|null|string> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -228,7 +228,7 @@ export const midtransCreateOrder = async (midtransPaymentToken: string, orderId:
         }
     } // switch
 }
-export const midtransCaptureFund = async (paymentId: string): Promise<CaptureFundData|null|undefined> => {
+export const midtransCaptureFund = async (paymentId: string): Promise<PaidFundData|undefined> => {
     // const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status`, {
     //     method  : 'GET',
     //     headers : {

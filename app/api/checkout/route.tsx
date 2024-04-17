@@ -49,10 +49,14 @@ import type {
     ShippingTracking,
     ShippingTrackingLog,
 }                           from '@prisma/client'
-import type {
+import {
     DetailedItem,
     
-    CaptureFundData,
+    AuthorizeFundData,
+    PaidFundData,
+    
+    isAuthorizeFundData,
+    isPaidFundData,
 }                           from '@/models'
 
 // ORMs:
@@ -873,10 +877,10 @@ router
     
     let orderId               : string|undefined;
     let paymentId             : string|undefined;
-    let paidDataOrRedirectUrl : CaptureFundData|string|undefined;
+    let paidDataOrRedirectUrl : PaidFundData|string|undefined;
     let paymentDetail         : PaymentDetail|undefined;
     try {
-        ({orderId, paymentId, paidDataOrRedirectUrl, paymentDetail} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, paymentId: string|undefined, paidDataOrRedirectUrl: CaptureFundData|string|undefined, paymentDetail: PaymentDetail|undefined }> => {
+        ({orderId, paymentId, paidDataOrRedirectUrl, paymentDetail} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, paymentId: string|undefined, paidDataOrRedirectUrl: PaidFundData|string|undefined, paymentDetail: PaymentDetail|undefined }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
@@ -1262,8 +1266,8 @@ router
             
             
             //#region fetch payment gateway API
-            let paymentId             : string|undefined                 = undefined;
-            let paidDataOrRedirectUrl : CaptureFundData|string|undefined = undefined;
+            let paymentId             : string|undefined              = undefined;
+            let paidDataOrRedirectUrl : PaidFundData|string|undefined = undefined;
             if (usePaypalGateway) {
                 paymentId = await paypalCreateOrder({
                     preferredCurrency,
@@ -1285,7 +1289,7 @@ router
                 });
             }
             else if (midtransPaymentToken) {
-                const captureFundData = await midtransCreateOrder(midtransPaymentToken, orderId, {
+                const paidFundData = await midtransCreateOrder(midtransPaymentToken, orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -1314,7 +1318,7 @@ router
                     detailedItems,
                 });
                 
-                if (captureFundData === null) {
+                if (paidFundData === null) {
                     // payment DECLINED:
                     
                     return {
@@ -1325,7 +1329,7 @@ router
                     };
                 }
                 else {
-                    paidDataOrRedirectUrl = captureFundData;
+                    paidDataOrRedirectUrl = paidFundData;
                 } // if
             } // if
             //#endregion fetch payment gateway API
@@ -1389,7 +1393,7 @@ router
                 : totalShippingCostConverted
             );
             const paymentDetail : PaymentDetail|undefined = (
-                ((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null))  // is CaptureFundData (object excepts null)
+                isPaidFundData(paidDataOrRedirectUrl)  // is PaidFundData (object excepts null)
                 ? ((): PaymentDetail => {
                     const card = paidDataOrRedirectUrl.paymentSource?.card;
                     if (card) {
@@ -1434,7 +1438,7 @@ router
             
             
             const createNewDraftOrderPromise = (
-                !((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null)) // not CaptureFundData (object excepts null)
+                !isPaidFundData(paidDataOrRedirectUrl) // not PaidFundData (object excepts null)
                 // pending_paid => create new (draft)Order:
                 ? prismaTransaction.draftOrder.create({
                     data : {
@@ -1464,7 +1468,7 @@ router
                 : null
             );
             const createNewOrderPromise = (
-                ((typeof(paidDataOrRedirectUrl) === 'object') && (paidDataOrRedirectUrl !== null))  // is CaptureFundData (object excepts null)
+                isPaidFundData(paidDataOrRedirectUrl)  // is PaidFundData (object excepts null)
                 // paid_immediately => crate new (real)Order:
                 ? (async (): Promise<OrderAndData> => {
                     const newOrder = await prismaTransaction.order.create({
@@ -1691,7 +1695,7 @@ router
         });
     } // if
     
-    if (paymentDetail) {  // is CaptureFundData (object excepts null)
+    if (paymentDetail) {  // is PaidFundData (object excepts null)
         // payment approved:
         return NextResponse.json(paymentDetail, {
             status : 200 // payment APPROVED
@@ -2184,8 +2188,8 @@ Updating the confirmation is not required.`,
             let paymentResponse : PaymentDetail|PaymentDeclined;
             let paymentConfirmationToken : string|undefined = undefined;
             if (paypalPaymentId) {
-                const captureFundData = await paypalCaptureFund(paypalPaymentId);
-                if (captureFundData === null) {
+                const paidFundData = await paypalCaptureFund(paypalPaymentId);
+                if (paidFundData === null) {
                     // payment DECLINED:
                     
                     paymentResponse = {
@@ -2199,7 +2203,7 @@ Updating the confirmation is not required.`,
                         paymentSource,
                         paymentAmount,
                         paymentFee,
-                    } = captureFundData;
+                    } = paidFundData;
                     
                     paymentResponse = ((): Omit<Payment, 'billingAddress'> => {
                         const card = paymentSource?.card;
@@ -2238,8 +2242,8 @@ Updating the confirmation is not required.`,
                 } // if
             }
             else if (midtransPaymentId) {
-                const captureFundData = await midtransCaptureFund(midtransPaymentId);
-                if (!captureFundData) {
+                const paidFundData = await midtransCaptureFund(midtransPaymentId);
+                if (!paidFundData) {
                     // payment DECLINED:
                     
                     paymentResponse = {
@@ -2253,7 +2257,7 @@ Updating the confirmation is not required.`,
                         paymentSource,
                         paymentAmount,
                         paymentFee,
-                    } = captureFundData;
+                    } = paidFundData;
                     
                     paymentResponse = ((): Omit<Payment, 'billingAddress'> => {
                         const card = paymentSource?.card;
