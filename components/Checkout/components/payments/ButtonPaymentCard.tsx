@@ -210,7 +210,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 
                 
                 const redirectUrl = draftOrderDetail.redirectUrl;
-                if (redirectUrl) {
+                if (redirectUrl) { // not undefined && not empty_string
                     // trigger `authenticate` function
                     const isVerified = await new Promise<boolean|null|undefined>((resolve) => {
                         const MidtransNew3ds = (window as any).MidtransNew3ds;

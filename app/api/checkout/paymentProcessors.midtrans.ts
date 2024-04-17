@@ -147,19 +147,32 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, orderId:
             
             
             
-            const redirectUrl = midtransPaymentData.redirect_url;
-            if ((midtransPaymentData.fraud_status === 'challenge') || (typeof(redirectUrl) !== 'string') || !redirectUrl) {
-                // The transaction is successfully sent to the bank but yet to be approved
+            switch (midtransPaymentData.fraud_status) {
+                case 'accept': {
+                    const redirectUrl = midtransPaymentData.redirect_url;
+                    if (typeof(redirectUrl) !== 'string') {
+                        // TODO: log unexpected response
+                        console.log('unexpected response: ', midtransPaymentData);
+                        throw Error('unexpected API response');
+                    } // if
+                    
+                    
+                    
+                    // redirectUrl for 3DS verification:
+                    return redirectUrl;
+                }
                 
+                case 'challenge': { // The transaction is successfully sent to the bank but yet to be approved
+                    // assumes as denied:
+                    return null;
+                }
                 
-                
-                // assumes as denied:
-                return null;
-            } // if
-            
-            
-            
-            return redirectUrl;
+                default : {
+                    // TODO: log unexpected response
+                    console.log('unexpected response: ', midtransPaymentData);
+                    throw Error('unexpected API response');
+                }
+            } // switch
         }
         case '200' : {
             // Capture Notification after submit OTP 3DS 2.0
@@ -168,23 +181,38 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, orderId:
             
             
             
-            let paymentAmountRaw = midtransPaymentData.gross_amount;
-            const paymentAmount  = decimalify(
-                (typeof(paymentAmountRaw) === 'number')
-                ? paymentAmountRaw
-                : Number.parseFloat(paymentAmountRaw)
-            );
-            return {
-                paymentSource : {
-                    card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
-                        type       : 'CARD',
-                        brand      : midtransPaymentData.bank?.toLowerCase() ?? null,
-                        identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
-                    },
-                },
-                paymentAmount : paymentAmount,
-                paymentFee    : 0,
-            };
+            switch (midtransPaymentData.transaction_status) {
+                case 'authorize': {
+                    return ''; // no redirectUrl required but require a `midtransGetPaymentStatus()` to capture the fund
+                }
+                
+                case 'capture':
+                case 'settlement': {
+                    let paymentAmountRaw = midtransPaymentData.gross_amount;
+                    const paymentAmount  = decimalify(
+                        (typeof(paymentAmountRaw) === 'number')
+                        ? paymentAmountRaw
+                        : Number.parseFloat(paymentAmountRaw)
+                    );
+                    return {
+                        paymentSource : {
+                            card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
+                                type       : 'CARD',
+                                brand      : midtransPaymentData.bank?.toLowerCase() ?? null,
+                                identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
+                            },
+                        },
+                        paymentAmount : paymentAmount,
+                        paymentFee    : 0,
+                    };
+                }
+                
+                default : {
+                    // TODO: log unexpected response
+                    console.log('unexpected response: ', midtransPaymentData);
+                    throw Error('unexpected API response');
+                }
+            } // switch
         }
         
         // case '300' :
