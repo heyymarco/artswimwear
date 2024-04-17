@@ -377,8 +377,8 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<st
     return paypalOrderData?.id;
 }
 
-export const paypalCaptureFund = async (paypalOrderId: string): Promise<CaptureFundData|null> => {
-    const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paypalOrderId}/capture`, {
+export const paypalCaptureFund = async (paymentId: string): Promise<CaptureFundData|null> => {
+    const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paymentId}/capture`, {
         method  : 'POST',
         headers : {
             'Content-Type'    : 'application/json',

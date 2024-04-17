@@ -90,6 +90,9 @@ export const midtransCreateOrder = async (midtransPaymentToken: string, orderId:
                 token_id         : midtransPaymentToken,
                 authentication   : true,
                 callback_type    : 'js_event',
+                
+                // features:
+                type             : 'authorize',
             },
             item_details         : [
                 ...detailedItems.map((detailedItem) => ({
@@ -225,15 +228,27 @@ export const midtransCreateOrder = async (midtransPaymentToken: string, orderId:
         }
     } // switch
 }
-export const midtransVerifyFund  = async (orderId: string): Promise<CaptureFundData|null|undefined> => {
-    const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status?`, {
-        method  : 'GET',
+export const midtransCaptureFund = async (paymentId: string): Promise<CaptureFundData|null|undefined> => {
+    // const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status`, {
+    //     method  : 'GET',
+    //     headers : {
+    //         'Content-Type'    : 'application/json',
+    //         'Accept'          : 'application/json',
+    //         'Accept-Language' : 'en_US',
+    //         'Authorization'   : `Basic ${midtransCreateAuthToken()}`,
+    //     },
+    // });
+    const response = await fetch(`${midtransUrl}/v2/capture`, {
+        method  : 'POST',
         headers : {
             'Content-Type'    : 'application/json',
             'Accept'          : 'application/json',
             'Accept-Language' : 'en_US',
             'Authorization'   : `Basic ${midtransCreateAuthToken()}`,
         },
+        body    : JSON.stringify({
+            transaction_id    : paymentId,
+        }),
     });
     const midtransPaymentData = await midtransHandleResponse(response);
     switch (`${midtransPaymentData.status_code}` /* stringify */) {
@@ -248,27 +263,41 @@ export const midtransVerifyFund  = async (orderId: string): Promise<CaptureFundD
             // Capture Notification after submit OTP 3DS 2.0
             // Capture Notification
             // Settlement Notification
-            if (!['capture', 'authorize'].includes(midtransPaymentData.transaction_status)) return null; // Deny
             
             
             
-            let paymentAmountRaw = midtransPaymentData.gross_amount;
-            const paymentAmount  = decimalify(
-                (typeof(paymentAmountRaw) === 'number')
-                ? paymentAmountRaw
-                : Number.parseFloat(paymentAmountRaw)
-            );
-            return {
-                paymentSource : {
-                    card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
-                        type       : 'CARD',
-                        brand      : midtransPaymentData.bank?.toLowerCase() ?? null,
-                        identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
-                    },
-                },
-                paymentAmount : paymentAmount,
-                paymentFee    : 0,
-            };
+            switch (midtransPaymentData.transaction_status) {
+                // case 'authorize': {
+                //     return ''; // no redirectUrl required but require a `midtransCaptureFund()` to capture the fund
+                // }
+                
+                case 'capture':
+                case 'settlement': {
+                    let paymentAmountRaw = midtransPaymentData.gross_amount;
+                    const paymentAmount  = decimalify(
+                        (typeof(paymentAmountRaw) === 'number')
+                        ? paymentAmountRaw
+                        : Number.parseFloat(paymentAmountRaw)
+                    );
+                    return {
+                        paymentSource : {
+                            card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
+                                type       : 'CARD',
+                                brand      : midtransPaymentData.bank?.toLowerCase() ?? null,
+                                identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
+                            },
+                        },
+                        paymentAmount : paymentAmount,
+                        paymentFee    : 0,
+                    };
+                }
+                
+                default : {
+                    // TODO: log unexpected response
+                    console.log('unexpected response: ', midtransPaymentData);
+                    throw Error('unexpected API response');
+                }
+            } // switch
         }
         
         // case '300' :

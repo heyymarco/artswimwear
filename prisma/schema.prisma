@@ -403,7 +403,7 @@ model DraftOrder {
     
     // data:
     orderId                 String                  @unique // a secondary id for public identifier
-    paypalOrderId           String?                 @unique // a secondary id for public identifier
+    paymentId               String?                 @unique // a secondary id for public identifier
     
     preferredCurrency       PreferredCurrency?
     

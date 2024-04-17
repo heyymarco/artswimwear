@@ -116,7 +116,7 @@ import {
 }                           from './paymentProcessors.paypal'
 import {
     midtransCreateOrder,
-    midtransVerifyFund,
+    midtransCaptureFund,
 }                           from './paymentProcessors.midtrans'
 
 // utilities:
@@ -169,7 +169,7 @@ type CommitCustomerOrGuest = Omit<(Omit<Customer, 'emailVerified'|'image'> & Gue
 type CommitDraftOrder = Omit<DraftOrder,
     |'createdAt'
     
-    |'paypalOrderId'
+    |'paymentId'
 > & {
     items : Omit<DraftOrdersOnProducts,
         |'id'
@@ -872,11 +872,11 @@ router
     
     
     let orderId               : string|undefined;
-    let paypalOrderId         : string|undefined;
+    let paymentId             : string|undefined;
     let paidDataOrRedirectUrl : CaptureFundData|string|undefined;
     let paymentDetail         : PaymentDetail|undefined;
     try {
-        ({orderId, paypalOrderId, paidDataOrRedirectUrl, paymentDetail} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, paypalOrderId: string|undefined, paidDataOrRedirectUrl: CaptureFundData|string|undefined, paymentDetail: PaymentDetail|undefined }> => {
+        ({orderId, paymentId, paidDataOrRedirectUrl, paymentDetail} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, paymentId: string|undefined, paidDataOrRedirectUrl: CaptureFundData|string|undefined, paymentDetail: PaymentDetail|undefined }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
@@ -1213,7 +1213,7 @@ router
                 if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
                 if (simulateOrder) return {
                     orderId               : '', // empty string => simulateOrder
-                    paypalOrderId         : undefined,
+                    paymentId             : undefined,
                     paidDataOrRedirectUrl : undefined,
                     paymentDetail         : undefined,
                 };
@@ -1262,10 +1262,10 @@ router
             
             
             //#region fetch payment gateway API
-            let paypalOrderId         : string|undefined                 = undefined;
+            let paymentId             : string|undefined                 = undefined;
             let paidDataOrRedirectUrl : CaptureFundData|string|undefined = undefined;
             if (usePaypalGateway) {
-                paypalOrderId = await paypalCreateOrder({
+                paymentId = await paypalCreateOrder({
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -1319,7 +1319,7 @@ router
                     
                     return {
                         orderId               : undefined, // undefined => declined
-                        paypalOrderId         : undefined,
+                        paymentId             : undefined,
                         paidDataOrRedirectUrl : undefined,
                         paymentDetail         : undefined,
                     };
@@ -1441,7 +1441,7 @@ router
                         expiresAt               : new Date(Date.now() + (1 * 60 * 1000)),
                         
                         orderId                 : orderId,
-                        paypalOrderId           : paypalOrderId,
+                        paymentId               : paymentId,
                         
                         items                   : {
                             create              : orderItemsData,
@@ -1618,7 +1618,7 @@ router
             // report the createOrder result:
             return {
                 orderId,
-                paypalOrderId,
+                paymentId,
                 paidDataOrRedirectUrl,
                 paymentDetail,
             };
@@ -1700,11 +1700,11 @@ router
     
     const draftOrderDetail : DraftOrderDetail = {
         orderId     : (
-            paypalOrderId
-            ? `#PAYPAL_${paypalOrderId}`
+            usePaypalGateway
+            ? `#PAYPAL_${paymentId}`
             : (
                 useMidtransGateway
-                ? `#MIDTRANS_${orderId}`
+                ? `#MIDTRANS_${paymentId}`
                 : orderId
             )
         ),
@@ -1984,20 +1984,27 @@ Updating the confirmation is not required.`,
     
     
     
-    let orderId         : string|null = null;
-    let paypalOrderId   : string|null = null;
-    let midtransOrderId : string|null = null;
+    let orderId           : string|null = null;
+    let paymentId         : string|null = null;
+    let paypalPaymentId   : string|null = null;
+    let midtransPaymentId : string|null = null;
     if (rawOrderId.startsWith('#PAYPAL_')) {
-        paypalOrderId = rawOrderId.slice(8); // remove prefix #PAYPAL_
-        if (!paypalOrderId.length) {
+        paymentId = rawOrderId.slice(8); // remove prefix #PAYPAL_
+        if (!paymentId.length) {
             return NextResponse.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
+        paypalPaymentId = paymentId;
     }
     else if (rawOrderId.startsWith('#MIDTRANS_')) {
-        orderId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
-        midtransOrderId = orderId;
+        paymentId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
+        if (!paymentId.length) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        midtransPaymentId = paymentId;
     }
     else {
         orderId = rawOrderId;
@@ -2120,14 +2127,14 @@ Updating the confirmation is not required.`,
                 !!orderId
                 ? await prismaTransaction.draftOrder.findUnique({
                     where  : {
-                        orderId       : orderId,
+                        orderId : orderId,
                     },
                     select  : requiredSelect,
                 })
-                : !!paypalOrderId
+                : !!paymentId
                 ? await prismaTransaction.draftOrder.findUnique({
                     where : {
-                        paypalOrderId : paypalOrderId
+                        paymentId : paymentId,
                     },
                     select : requiredSelect,
                 })
@@ -2176,8 +2183,8 @@ Updating the confirmation is not required.`,
             //#region process the payment
             let paymentResponse : PaymentDetail|PaymentDeclined;
             let paymentConfirmationToken : string|undefined = undefined;
-            if (paypalOrderId) {
-                const captureFundData = await paypalCaptureFund(paypalOrderId);
+            if (paypalPaymentId) {
+                const captureFundData = await paypalCaptureFund(paypalPaymentId);
                 if (captureFundData === null) {
                     // payment DECLINED:
                     
@@ -2230,8 +2237,8 @@ Updating the confirmation is not required.`,
                     })();
                 } // if
             }
-            else if (midtransOrderId) {
-                const captureFundData = await midtransVerifyFund(midtransOrderId);
+            else if (midtransPaymentId) {
+                const captureFundData = await midtransCaptureFund(midtransPaymentId);
                 if (!captureFundData) {
                     // payment DECLINED:
                     
