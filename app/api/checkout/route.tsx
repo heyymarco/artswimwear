@@ -115,8 +115,8 @@ import {
     paypalCaptureFund,
 }                           from './paymentProcessors.paypal'
 import {
-    midtransCaptureFund,
-    midtransGetPaymentStatus,
+    midtransCreateOrder,
+    midtransVerifyFund,
 }                           from './paymentProcessors.midtrans'
 
 // utilities:
@@ -1285,7 +1285,7 @@ router
                 });
             }
             else if (midtransPaymentToken) {
-                const captureFundData = await midtransCaptureFund(midtransPaymentToken, orderId, {
+                const captureFundData = await midtransCreateOrder(midtransPaymentToken, orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -2231,7 +2231,7 @@ Updating the confirmation is not required.`,
                 } // if
             }
             else if (midtransOrderId) {
-                const captureFundData = await midtransGetPaymentStatus(midtransOrderId);
+                const captureFundData = await midtransVerifyFund(midtransOrderId);
                 if (!captureFundData) {
                     // payment DECLINED:
                     

@@ -40,7 +40,7 @@ const midtransCreateAuthToken = () => {
     const auth = Buffer.from(`${process.env.MIDTRANS_ID}:`).toString('base64');
     return auth;
 }
-export const midtransCaptureFund = async (midtransPaymentToken: string, orderId: string, options: CreateOrderOptions): Promise<CaptureFundData|null|string> => {
+export const midtransCreateOrder = async (midtransPaymentToken: string, orderId: string, options: CreateOrderOptions): Promise<CaptureFundData|null|string> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -183,7 +183,7 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, orderId:
             
             switch (midtransPaymentData.transaction_status) {
                 case 'authorize': {
-                    return ''; // no redirectUrl required but require a `midtransGetPaymentStatus()` to capture the fund
+                    return ''; // no redirectUrl required but require a `midtransCaptureFund()` to capture the fund
                 }
                 
                 case 'capture':
@@ -225,7 +225,7 @@ export const midtransCaptureFund = async (midtransPaymentToken: string, orderId:
         }
     } // switch
 }
-export const midtransGetPaymentStatus = async (orderId: string): Promise<CaptureFundData|null|undefined> => {
+export const midtransVerifyFund  = async (orderId: string): Promise<CaptureFundData|null|undefined> => {
     const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status?`, {
         method  : 'GET',
         headers : {
