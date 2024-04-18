@@ -95,6 +95,11 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         
         
         
+        // sections:
+        paymentCardSectionRef,
+        
+        
+        
         // fields:
         cardholderInputRef,
         
@@ -126,6 +131,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     const hostedFields = usePayPalHostedFields();
     const handlePayButtonClick = useEvent(async () => {
         const paypalDoPlaceOrder = hostedFields.cardFields?.submit;
+        const paymentCardSectionElm = paymentCardSectionRef?.current;
         const proxyDoPlaceOrder : (() => Promise<DraftOrderDetail|undefined>)|undefined = (
             isPayUsingPaypal
             ? (
@@ -169,33 +175,49 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                     };
                 }
             )
-            : async (): Promise<DraftOrderDetail|undefined> => {
-                const MidtransNew3ds = (window as any).MidtransNew3ds;
-                const cardToken = await new Promise<string>((resolve, reject) => {
-                    const card = {
-                        card_number         : "4811111111111114",
-                        card_cvv            : "123",
-                        card_exp_month      : "12",
-                        card_exp_year       : "2025",
-                        bank_one_time_token : "12345678"
-                    };
-                    MidtransNew3ds.getCardToken(card, {
-                        onSuccess : (response: any) => {
-                            resolve(response.token_id);
-                        },
-                        onFailure : (response: any) => {
-                            reject(response?.validation_messages ?? 'Cannot make transactions with this card. Try using another card.');
-                        },
-                    })
-                });
-                
-                const draftOrderDetail = await doPlaceOrder({
-                    paymentSource        : 'midtransCard',
-                    midtransPaymentToken : cardToken,
-                });
-                if (!draftOrderDetail) return undefined;
-                return draftOrderDetail;
-            }
+            : (
+                !paymentCardSectionElm
+                ? undefined
+                : async (): Promise<DraftOrderDetail|undefined> => {
+                    const MidtransNew3ds = (window as any).MidtransNew3ds;
+                    const cardToken = await new Promise<string>((resolve, reject) => {
+                        const formData = new FormData(paymentCardSectionElm);
+                        const card = {
+                            card_number         : formData.get('cardNumber' )?.toString()?.replaceAll(' ', '')?.trim(),
+                            card_exp_month      : formData.get('cardExpires')?.toString()?.split('/')?.[0] || undefined,
+                            card_exp_year       : formData.get('cardExpires')?.toString()?.split('/')?.[1] || undefined,
+                            card_cvv            : formData.get('cardCvv'    )?.toString(),
+                            // bank_one_time_token : "12345678"
+                        };
+                        MidtransNew3ds.getCardToken(card, {
+                            onSuccess : (response: any) => {
+                                resolve(response.token_id);
+                            },
+                            onFailure : (response: any) => {
+                                const defaultErrorMessage = 'Cannot make transactions with this card. Try using another card.';
+                                let errorMessage = response?.validation_messages ?? defaultErrorMessage;
+                                if (Array.isArray(errorMessage)) errorMessage = errorMessage?.[0] ?? defaultErrorMessage;
+                                reject(
+                                    Error(errorMessage, {
+                                        cause : new Response(errorMessage, {
+                                            headers : {
+                                                'Content-Type': 'text/plain',
+                                            },
+                                        }),
+                                    })
+                                );
+                            },
+                        })
+                    });
+                    
+                    const draftOrderDetail = await doPlaceOrder({
+                        paymentSource        : 'midtransCard',
+                        midtransPaymentToken : cardToken,
+                    });
+                    if (!draftOrderDetail) return undefined;
+                    return draftOrderDetail;
+                }
+            )
         );
         if (!proxyDoPlaceOrder) return;
         

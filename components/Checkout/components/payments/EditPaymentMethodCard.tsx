@@ -211,8 +211,8 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                         );
                         return (
                             <CreditCardNumberEditor
-                                // identifiers:
-                                id='cardNumber'
+                                // forms:
+                                name='cardNumber'
                             />
                         );
                     })()
@@ -287,6 +287,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     <CreditCardNameEditor
                         // refs:
                         elmRef={cardholderInputRef}
+                        
+                        
+                        
+                        // forms:
+                        name='cardHolder'
                     />
                 }
                 
@@ -372,8 +377,8 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                         );
                         return (
                             <CreditCardExpiresEditor
-                                // identifiers:
-                                id='cardExpires'
+                                // forms:
+                                name='cardExpires'
                             />
                         );
                     })()
@@ -461,8 +466,8 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                         );
                         return (
                             <CreditCardCvvEditor
-                                // identifiers:
-                                id='cardCvv'
+                                // forms:
+                                name='cardCvv'
                             />
                         );
                     })()

@@ -366,7 +366,7 @@ export interface CheckoutStateBase {
     regularCheckoutSectionRef   : React.MutableRefObject<HTMLElement|null>      | undefined
     shippingMethodOptionRef     : React.MutableRefObject<HTMLElement|null>      | undefined
     billingAddressSectionRef    : React.MutableRefObject<HTMLElement|null>      | undefined
-    paymentCardSectionRef       : React.MutableRefObject<HTMLElement|null>      | undefined
+    paymentCardSectionRef       : React.MutableRefObject<HTMLFormElement|null>  | undefined
     currentStepSectionRef       : React.MutableRefObject<HTMLElement|null>      | undefined
     navCheckoutSectionElm       : React.MutableRefObject<HTMLElement|null>      | undefined
     
@@ -1076,7 +1076,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const regularCheckoutSectionRef = useRef<HTMLElement|null>(null);
     const shippingMethodOptionRef   = useRef<HTMLElement|null>(null);
     const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
-    const paymentCardSectionRef     = useRef<HTMLElement|null>(null);
+    const paymentCardSectionRef     = useRef<HTMLFormElement|null>(null);
     const currentStepSectionRef     = useRef<HTMLElement|null>(null);
     const navCheckoutSectionElm     = useRef<HTMLElement|null>(null);
     

@@ -205,6 +205,11 @@ const EditPaymentMethod = (): JSX.Element|null => {
                                 
                                 
                                 
+                                // semantics:
+                                tag='form'
+                                
+                                
+                                
                                 // classes:
                                 className={styleSheet.paymentEntryCard}
                             />
