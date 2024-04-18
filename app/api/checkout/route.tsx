@@ -1707,17 +1707,16 @@ router
     
     const draftOrderDetail : DraftOrderDetail = {
         orderId     : (
-            isAuthorizedFundData(authorizedOrPaidFundData)
-            ? (
-                usePaypalGateway
-                ? `#PAYPAL_${authorizedOrPaidFundData.paymentId}`
-                : (
-                    useMidtransGateway
-                    ? `#MIDTRANS_${authorizedOrPaidFundData.paymentId}`
-                    : authorizedOrPaidFundData.paymentId
-                )
-            )
-            : orderId
+            !isAuthorizedFundData(authorizedOrPaidFundData)
+            ? orderId
+            : (() => {
+                let prefix = '';
+                
+                if      (usePaypalGateway  ) prefix = '#PAYPAL_';
+                else if (useMidtransGateway) prefix = '#MIDTRANS_';
+                
+                return `${prefix}${authorizedOrPaidFundData.paymentId}`;
+            })()
         ),
         redirectUrl : isAuthorizedFundData(authorizedOrPaidFundData) ? authorizedOrPaidFundData.redirectUrl : undefined,
     };
