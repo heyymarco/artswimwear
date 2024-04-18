@@ -639,8 +639,9 @@ router
     let orderId                  : string|undefined;
     let authorizedOrPaidFundData : AuthorizedFundData|PaidFundData|undefined;
     let paymentDetail            : PaymentDetail|undefined;
+    let newOrder                 : OrderAndData|undefined = undefined;
     try {
-        ({orderId, authorizedOrPaidFundData, paymentDetail} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, authorizedOrPaidFundData: AuthorizedFundData|PaidFundData|undefined, paymentDetail: PaymentDetail|undefined }> => {
+        ({orderId, authorizedOrPaidFundData, paymentDetail, newOrder} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, authorizedOrPaidFundData: AuthorizedFundData|PaidFundData|undefined, paymentDetail: PaymentDetail|undefined, newOrder : OrderAndData|undefined }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
@@ -979,6 +980,7 @@ router
                     orderId                  : '', // empty string => simulateOrder
                     authorizedOrPaidFundData : undefined,
                     paymentDetail            : undefined,
+                    newOrder                 : undefined,
                 };
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
@@ -1083,6 +1085,7 @@ router
                         orderId                  : undefined, // undefined => declined
                         authorizedOrPaidFundData : undefined,
                         paymentDetail            : undefined,
+                        newOrder                 : undefined,
                     };
                 }
                 else {
@@ -1398,13 +1401,14 @@ router
                 orderId,
                 authorizedOrPaidFundData,
                 paymentDetail,
+                newOrder,
             };
         }));
         
         
         
         // send email confirmation:
-        if (paymentDetail) {
+        if (paymentDetail && newOrder) {
             // TODO: duplicate on `PATCH`:
             const newCustomerOrGuest : CommitCustomerOrGuest = {
                 name                 : customerName,
