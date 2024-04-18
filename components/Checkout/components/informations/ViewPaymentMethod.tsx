@@ -34,11 +34,11 @@ const ViewPaymentMethod = (): JSX.Element|null => {
     return (
         <>
             {
-                !!paymentBrand
+                (!!paymentBrand && ['amex', 'discover', 'jcb', 'maestro', 'mastercard', 'paypal', 'visa'].includes(paymentBrand.toLowerCase()))
                 ? <Image
                     // appearances:
                     alt={paymentBrand}
-                    src={`/brands/${paymentBrand}.svg`}
+                    src={`/brands/${paymentBrand.toLowerCase()}.svg`}
                     width={42}
                     height={26}
                     
@@ -47,7 +47,7 @@ const ViewPaymentMethod = (): JSX.Element|null => {
                     // classes:
                     className='paymentProvider'
                 />
-                : (paymentType?.toUpperCase() ?? paymentType)
+                : (paymentBrand?.toUpperCase() || paymentType)
             }
             
             {!!paymentIdentifier && <span

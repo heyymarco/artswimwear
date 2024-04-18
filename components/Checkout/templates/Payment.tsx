@@ -136,9 +136,7 @@ const PaymentMethod = (): React.ReactNode => {
                 }}
             >
                 {
-                    !!paymentBrand
-                    ? <>{paymentBrand.toUpperCase()}</>
-                    : (paymentType?.toUpperCase() ?? paymentType)
+                    (paymentBrand?.toUpperCase() || paymentType)
                 }
                 
                 {!!paymentIdentifier && <span style={styles.textSmall}>
