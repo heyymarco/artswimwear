@@ -1335,6 +1335,15 @@ router
                 else {
                     authorizedOrPaidFundData = authorizedOrPaidFundDataOrDeclined;
                 } // if
+            }
+            else if (paymentSource === 'manual') {
+                authorizedOrPaidFundData = {
+                    paymentSource : {
+                        manual : {},
+                    },
+                    paymentAmount : 0,
+                    paymentFee    : 0,
+                } satisfies PaidFundData;
             } // if
             //#endregion fetch payment gateway API
             
@@ -1409,7 +1418,19 @@ router
                             amount     : authorizedOrPaidFundData.paymentAmount,
                             fee        : authorizedOrPaidFundData.paymentFee,
                         };
-                    } //if
+                    } // if
+                    
+                    const manual = authorizedOrPaidFundData.paymentSource?.manual;
+                    if (manual) {
+                        return {
+                            type       : 'MANUAL',
+                            brand      : null,
+                            identifier : null,
+                            
+                            amount     : 0,
+                            fee        : 0,
+                        };
+                    } // if
                     
                     return {
                         type       : 'CUSTOM',

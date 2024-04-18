@@ -83,7 +83,7 @@ const ButtonPaymentManual = (): JSX.Element|null => {
             try {
                 // createOrder:
                 const draftOrderDetail = await doPlaceOrder({paymentSource: 'manual', captcha});
-                if (!draftOrderDetail) throw Error('Oops, an error occured!');
+                if (!draftOrderDetail) return; // paid => no need redirection
                 
                 
                 
