@@ -1401,7 +1401,7 @@ router
                 orderId,
                 authorizedOrPaidFundData,
                 paymentDetail,
-                newOrder,
+                newOrder : (await createNewOrderPromise) ?? undefined,
             };
         }));
         
