@@ -1264,7 +1264,6 @@ router
             
             
             //#region fetch payment gateway API
-            let authorizeFundData        : AuthorizedFundData|undefined              = undefined;
             let authorizedOrPaidFundData : AuthorizedFundData|PaidFundData|undefined = undefined;
             if (usePaypalGateway) {
                 authorizedOrPaidFundData = await paypalCreateOrder({
