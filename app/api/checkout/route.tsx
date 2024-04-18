@@ -1,8 +1,3 @@
-// react:
-import type {
-    ServerOptions,
-}                           from 'react-dom/server'
-
 // redux:
 import {
     createEntityAdapter
@@ -24,11 +19,6 @@ import {
     createEdgeRouter,
 }                           from 'next-connect'
 
-// webs:
-import {
-    default as nodemailer,
-}                           from 'nodemailer'
-
 // models:
 import type {
     Product,
@@ -36,15 +26,9 @@ import type {
     VariantGroup,
     Stock,
     
-    Customer,
-    CustomerPreference,
-    Guest,
-    GuestPreference,
-    
     Payment,
     PaymentConfirmation,
     PreferredCurrency,
-    DraftOrder,
     DraftOrdersOnProducts,
     ShippingTracking,
     ShippingTrackingLog,
@@ -70,31 +54,10 @@ import type {
 }                           from '@/app/api/countries/route'
 
 // templates:
-import {
-    // react components:
-    BusinessContextProviderProps,
-    BusinessContextProvider,
-}                           from '@/components/Checkout/templates/businessDataContext'
-import {
+import type {
     // types:
     OrderAndData,
-    
-    
-    
-    // react components:
-    OrderDataContextProviderProps,
-    OrderDataContextProvider,
 }                           from '@/components/Checkout/templates/orderDataContext'
-import {
-    // react components:
-    PaymentContextProviderProps,
-    PaymentContextProvider,
-}                           from '@/components/Checkout/templates/paymentDataContext'
-import {
-    // react components:
-    ShippingContextProviderProps,
-    ShippingContextProvider,
-}                           from '@/components/Checkout/templates/shippingDataContext'
 
 // paypal:
 import type {
@@ -108,7 +71,16 @@ import {
 
 // internals:
 import {
+    // types:
+    CommitCustomerOrGuest,
+    
+    
+    
+    
     sumReducer,
+    commitOrder,
+    revertOrder,
+    sendEmailConfirmation,
 }                           from './utilities'
 import {
     // types:
@@ -137,15 +109,9 @@ import {
     convertCustomerCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
 import {
-    resolveMediaUrl,
-}                           from '@/libs/mediaStorage.client'
-import {
     getMatchingShipping,
     calculateShippingCost,
 }                           from '@/libs/shippings'
-import {
-    downloadImageAsBase64,
-}                           from '@/libs/images'
 import {
     possibleTimezoneValues,
 }                           from '@/components/editors/TimezoneEditor/types'
@@ -157,213 +123,6 @@ import {
 import {
     paymentConfig,
 }                           from '@/payment.config'
-import {
-    checkoutConfig,
-}                           from '@/checkout.config.server'
-
-
-
-type CommitCustomerOrGuest = Omit<(Omit<Customer, 'emailVerified'|'image'> & Guest),
-    |'id'
-    |'createdAt'
-    |'updatedAt'
-> & {
-    preference ?: Omit<Partial<(CustomerPreference & GuestPreference)>,
-        |'id'
-        |'customerId'
-        |'guestId'
-    >
-}
-type CommitDraftOrder = Omit<DraftOrder,
-    |'createdAt'
-    
-    |'paymentId'
-> & {
-    items : Omit<DraftOrdersOnProducts,
-        |'id'
-        
-        |'draftOrderId'
-    >[]
-}
-const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customerOrGuest, payment, paymentConfirmationToken } : { draftOrder: CommitDraftOrder, customerOrGuest: CommitCustomerOrGuest, payment: Payment, paymentConfirmationToken: string|undefined }): Promise<OrderAndData> => {
-    const {
-        preference: preferenceData,
-    ...customerOrGuestData} = customerOrGuest;
-    
-    const [newOrder] = await Promise.all([
-        prismaTransaction.order.create({
-            data   : {
-                orderId             : draftOrder.orderId,
-                
-                items               : {
-                    create          : draftOrder.items,
-                },
-                
-                // TODO: connect to existing customer
-                // customer         : {
-                //     connect      : {
-                //         ...customerOrGuestData,
-                //         customerPreference : {
-                //             ...preferenceData,
-                //         },
-                //     },
-                // },
-                guest               : {
-                    create          : {
-                        ...customerOrGuestData,
-                        guestPreference : {
-                            create  : preferenceData,
-                        },
-                    },
-                },
-                
-                preferredCurrency   : draftOrder.preferredCurrency,
-                
-                shippingAddress     : draftOrder.shippingAddress,
-                shippingCost        : draftOrder.shippingCost,
-                shippingProvider    : !draftOrder.shippingProviderId ? undefined : {
-                    connect         : {
-                        id          : draftOrder.shippingProviderId,
-                    },
-                },
-                
-                payment             : payment,
-                paymentConfirmation : !paymentConfirmationToken ? undefined : {
-                    create : {
-                        token: paymentConfirmationToken,
-                    },
-                },
-            },
-            // select : {
-            //     id : true,
-            // },
-            include : {
-                items : {
-                    select : {
-                        // data:
-                        price          : true,
-                        shippingWeight : true,
-                        quantity       : true,
-                        
-                        // relations:
-                        product        : {
-                            select : {
-                                name   : true,
-                                images : true,
-                                
-                                // relations:
-                                variantGroups : {
-                                    select : {
-                                        variants : {
-                                            // always allow to access DRAFT variants when the customer is already ordered:
-                                            // where    : {
-                                            //     visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                                            // },
-                                            select : {
-                                                id   : true,
-                                                
-                                                name : true,
-                                            },
-                                            orderBy : {
-                                                sort : 'asc',
-                                            },
-                                        },
-                                    },
-                                    orderBy : {
-                                        sort : 'asc',
-                                    },
-                                },
-                            },
-                        },
-                        variantIds     : true,
-                    },
-                },
-                shippingProvider : {
-                    select : {
-                        name            : true, // optional for displaying email report
-                        
-                        weightStep      : true, // required for calculating `getMatchingShipping()`
-                        
-                        estimate        : true, // optional for displaying email report
-                        shippingRates   : true, // required for calculating `getMatchingShipping()`
-                        
-                        useSpecificArea : true, // required for calculating `getMatchingShipping()`
-                        countries       : true, // required for calculating `getMatchingShipping()`
-                    },
-                },
-            },
-        }),
-        prismaTransaction.draftOrder.delete({
-            where  : {
-                id : draftOrder.id,
-            },
-            select : {
-                id : true,
-            },
-        }),
-    ]);
-    const shippingAddress  = newOrder.shippingAddress;
-    const shippingProvider = newOrder.shippingProvider;
-    return {
-        ...newOrder,
-        items: newOrder.items.map((item) => ({
-            ...item,
-            product : !!item.product ? {
-                name          : item.product.name,
-                image         : item.product.images?.[0] ?? null,
-                imageBase64   : undefined,
-                imageId       : undefined,
-                
-                // relations:
-                variantGroups : item.product.variantGroups.map(({variants}) => variants),
-            } : null,
-        })),
-        shippingProvider : (
-            (shippingAddress && shippingProvider)
-            ? getMatchingShipping(shippingProvider, { city: shippingAddress.city, zone: shippingAddress.zone, country: shippingAddress.country })
-            : null
-        ),
-    };
-}
-
-type RevertDraftOrder = Pick<DraftOrder,
-    |'id'
-    
-    |'orderId'
-> & {
-    items : Pick<DraftOrdersOnProducts,
-        |'productId'
-        |'variantIds'
-        
-        |'quantity'
-    >[]
-}
-const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder } : { draftOrder: RevertDraftOrder }) => {
-    await Promise.all([
-        ...(draftOrder.items.map(({productId, variantIds, quantity}) =>
-            !productId
-            ? undefined
-            : prismaTransaction.stock.updateMany({
-                where  : {
-                    productId  : productId,
-                    value      : { not      : null       },
-                    variantIds : { hasEvery : variantIds },
-                },
-                data   : {
-                    value : { increment : quantity }
-                },
-            })
-        )),
-        prismaTransaction.draftOrder.delete({
-            where  : {
-                id : draftOrder.id,
-            },
-            select : {
-                id : true,
-            },
-        }),
-    ]);
-}
 
 
 
@@ -2449,150 +2208,20 @@ Updating the confirmation is not required.`,
         
         
         
-        //#region send email confirmation
+        // send email confirmation:
         if (newOrder) {
-            //#region download image url to base64
-            const newOrderItems = newOrder.items;
-            const imageUrls     = newOrderItems.map((item) => item.product?.image);
-            const imageBase64s  = await Promise.all(
-                imageUrls.map(async (imageUrl): Promise<string|undefined> => {
-                    if (!imageUrl) return undefined;
-                    const resolvedImageUrl = resolveMediaUrl(imageUrl);
-                    if (!resolvedImageUrl) return undefined;
-                    try {
-                        return await downloadImageAsBase64(resolvedImageUrl, 64);
-                    }
-                    catch (error: any) { // silently ignore the error and resulting as undefined:
-                        console.log('ERROR DOWNLOADING IMAGE: ', error);
-                        return undefined;
-                    } // if
-                })
-            );
-            console.log('downloaded images: ', imageBase64s);
-            imageBase64s.forEach((imageBase64, index) => {
-                if (!imageBase64) return;
-                const itemProduct = newOrderItems[index].product;
-                if (!itemProduct) return;
-                itemProduct.imageBase64 = imageBase64;
-                itemProduct.imageId     = `i${index}`;
+            await sendEmailConfirmation({
+                customerEmail,
+                
+                newCustomerOrGuest,
+                newOrder,
+                
+                countryList,
+                
+                isPaid : !('error' in paymentResponse) && (paymentResponse.type !== 'MANUAL'),
+                paymentConfirmationToken,
             });
-            //#endregion download image url to base64
-            
-            
-            
-            try {
-                const {
-                    business,
-                    payment,
-                    shipping,
-                    emails : {
-                        checkout : checkoutEmail,
-                    },
-                } = checkoutConfig;
-                
-                
-                
-                const { renderToStaticNodeStream } = await import('react-dom/server');
-                const renderToStaticMarkupAsync = async (element: React.ReactElement<any, React.JSXElementConstructor<any>>, options?: ServerOptions): Promise<string> => {
-                    const readableStream = renderToStaticNodeStream(element, options);
-                    const chunks : Buffer[] = [];
-                    return await new Promise<string>((resolve, reject) => {
-                        readableStream.on('data' , (chunk) => chunks.push(Buffer.from(chunk)));
-                        readableStream.on('error', (error) => reject(error));
-                        readableStream.on('end'  , ()      => resolve(Buffer.concat(chunks).toString('utf8')));
-                    });
-                };
-                
-                
-                
-                const businessContextProviderProps  : BusinessContextProviderProps = {
-                    // data:
-                    model : business,
-                };
-                const orderDataContextProviderProps : OrderDataContextProviderProps = {
-                    // data:
-                    order                : newOrder,
-                    customerOrGuest      : newCustomerOrGuest,
-                    paymentConfirmation  : {
-                        token            : paymentConfirmationToken ?? '',
-                        rejectionReason  : null,
-                    },
-                    isPaid               : !('error' in paymentResponse) && (paymentResponse.type !== 'MANUAL'),
-                    shippingTracking     : null,
-                    
-                    
-                    
-                    // relation data:
-                    countryList          : countryList,
-                };
-                const paymentContextProviderProps  : PaymentContextProviderProps = {
-                    // data:
-                    model : payment,
-                };
-                const shippingContextProviderProps  : ShippingContextProviderProps = {
-                    // data:
-                    model : shipping,
-                };
-                
-                
-                
-                const transporter = nodemailer.createTransport({
-                    host     : checkoutEmail.host,
-                    port     : checkoutEmail.port,
-                    secure   : checkoutEmail.secure,
-                    auth     : {
-                        user : checkoutEmail.username,
-                        pass : checkoutEmail.password,
-                    },
-                });
-                try {
-                    console.log('sending email...');
-                    await transporter.sendMail({
-                        from        : checkoutEmail.from,
-                        to          : customerEmail,
-                        subject     : (await renderToStaticMarkupAsync(
-                            <BusinessContextProvider {...businessContextProviderProps}>
-                                <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                    <PaymentContextProvider {...paymentContextProviderProps}>
-                                        <ShippingContextProvider {...shippingContextProviderProps}>
-                                            {checkoutEmail.subject}
-                                        </ShippingContextProvider>
-                                    </PaymentContextProvider>
-                                </OrderDataContextProvider>
-                            </BusinessContextProvider>
-                        )).replace(/<!--(.|[^.])*?-->/g, '').replace(/[\r\n\t]+/g, ' ').trim(),
-                        html        : (await renderToStaticMarkupAsync(
-                            <BusinessContextProvider {...businessContextProviderProps}>
-                                <OrderDataContextProvider {...orderDataContextProviderProps}>
-                                    <PaymentContextProvider {...paymentContextProviderProps}>
-                                        <ShippingContextProvider {...shippingContextProviderProps}>
-                                            {checkoutEmail.message}
-                                        </ShippingContextProvider>
-                                    </PaymentContextProvider>
-                                </OrderDataContextProvider>
-                            </BusinessContextProvider>
-                        )).replace(/<!--(.|[^.])*?-->/g, '').trim(),
-                        attachments : (
-                            newOrderItems
-                            .filter(({product}) => !!product && !!product.imageBase64 && !!product.imageId)
-                            .map(({product}) => ({
-                                path : product?.imageBase64,
-                                cid  : product?.imageId,
-                            }))
-                        ),
-                    });
-                    console.log('email sent.');
-                }
-                finally {
-                    transporter.close();
-                } // try
-            }
-            catch (error: any) {
-                console.log('ERROR: ', error);
-                // ignore send email error
-            } // try
         } // if
-        //#endregion send email confirmation
     }
     catch (error: any) {
         // await session.abortTransaction(); // already implicitly aborted
