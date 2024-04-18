@@ -121,6 +121,7 @@ import {
 import {
     midtransCreateOrder,
     midtransCaptureFund,
+    midtransCancelOrder,
 }                           from './paymentProcessors.midtrans'
 
 // utilities:
@@ -457,14 +458,14 @@ export interface DraftOrderDetail
 }
 
 export interface MakePaymentOptions {
-    /* empty yet */
+    cancelOrder ?: true
 }
 export interface MakePaymentDataBasic
     extends
         ExtraData,         // extra data
         CustomerData,      // customer data
         
-        MakePaymentOptions // options: empty yet
+        Omit<MakePaymentOptions, 'cancelOrder'> // options: empty yet
 {
     orderId : string
 }
@@ -474,9 +475,16 @@ export interface MakePaymentDataWithBillingAddress
         BillingData  // billing data
 {
 }
+export interface MakePaymentDataWithCancelation
+    extends
+        Pick<MakePaymentDataBasic, 'orderId'>,
+        Required<Pick<MakePaymentOptions, 'cancelOrder'>>
+{
+}
 export type MakePaymentData =
     |MakePaymentDataBasic
     |MakePaymentDataWithBillingAddress
+    |MakePaymentDataWithCancelation
 export interface PaymentDetail
     extends
         Omit<Payment,
@@ -2012,6 +2020,38 @@ Updating the confirmation is not required.`,
     else {
         orderId = rawOrderId;
     } // if
+    
+    
+    
+    //#region validate options
+    const {
+        cancelOrder,
+    } = paymentData;
+    if ((cancelOrder !== undefined) && (cancelOrder !== true)) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    //#endregion validate options
+    
+    
+    
+    //#region cancel the payment
+    if (cancelOrder) {
+        if (paypalPaymentId) {
+            // TODO: cancel paypal payment
+        }
+        else if (midtransPaymentId) {
+            await midtransCancelOrder(midtransPaymentId);
+        } // if
+        
+        
+        
+        return NextResponse.json({
+            canceled: true,
+        });
+    };
+    //#endregion cancel the payment
     
     
     

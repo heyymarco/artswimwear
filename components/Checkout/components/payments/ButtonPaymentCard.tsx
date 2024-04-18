@@ -252,7 +252,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                     switch (isVerified) {
                         case null  :   // payment pending => assumes as payment failed
                         case false : { // payment failed
-                            await showMessageError({
+                            showMessageError({
                                 error: <>
                                     <p>
                                         The credit card <strong>verification failed</strong>.
@@ -269,7 +269,15 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                         }
                         
                         case undefined: {
-                            await showMessageError({
+                            // notify cancel transaction, so the authorized payment will be released:
+                            (doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true }))
+                            .catch(() => {
+                                // ignore any error
+                            });
+                            
+                            
+                            
+                            showMessageError({
                                 error: <>
                                     <p>
                                         The transaction has been <strong>canceled</strong> by the user.

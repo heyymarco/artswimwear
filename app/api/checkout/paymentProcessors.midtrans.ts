@@ -322,3 +322,15 @@ export const midtransCaptureFund = async (paymentId: string): Promise<PaidFundDa
         }
     } // switch
 }
+export const midtransCancelOrder = async (paymentId: string): Promise<boolean> => {
+    const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(paymentId)}/cancel`, {
+        method  : 'POST',
+        headers : {
+            'Content-Type'    : 'application/json',
+            'Accept'          : 'application/json',
+            'Accept-Language' : 'en_US',
+            'Authorization'   : `Basic ${midtransCreateAuthToken()}`,
+        },
+    });
+    return response.ok;
+}

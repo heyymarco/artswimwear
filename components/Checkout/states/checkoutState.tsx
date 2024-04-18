@@ -1498,6 +1498,22 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         } // try
     });
     const doMakePayment        = useEvent(async (orderId: string, paid: boolean, options?: MakePaymentOptions): Promise<void> => {
+        if (options?.cancelOrder) {
+            console.log('canceling order...');
+            await makePayment({
+                orderId,
+                
+                
+                
+                // options: cancel the order
+                cancelOrder: true,
+            }).unwrap();
+            console.log('canceled');
+            return;
+        } // if
+        
+        
+        
         const paymentDetail = await makePayment({
             orderId,
             
