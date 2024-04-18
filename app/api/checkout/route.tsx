@@ -2038,11 +2038,48 @@ Updating the confirmation is not required.`,
     
     //#region cancel the payment
     if (cancelOrder) {
-        if (paypalPaymentId) {
-            // TODO: cancel paypal payment
+        let orderDeletedFromDatabase = false;
+        try {
+            const requiredSelect = {
+                id : true,
+            };
+            const deletedDraftOrder = (
+                !!orderId
+                ? await prisma.draftOrder.delete({
+                    where  : {
+                        orderId : orderId,
+                    },
+                    select  : requiredSelect,
+                })
+                : !!paymentId
+                ? await prisma.draftOrder.delete({
+                    where : {
+                        paymentId : paymentId,
+                    },
+                    select : requiredSelect,
+                })
+                : null
+            );
+            orderDeletedFromDatabase = true;
         }
-        else if (midtransPaymentId) {
-            await midtransCancelOrder(midtransPaymentId);
+        catch {
+            // ignore any error
+        } // try
+        
+        
+        
+        if (orderDeletedFromDatabase) {
+            try {
+                if (paypalPaymentId) {
+                    // no need an order cancelation for paypal
+                }
+                else if (midtransPaymentId) {
+                    await midtransCancelOrder(midtransPaymentId);
+                } // if
+            }
+            catch {
+                // ignore any error
+            } // try
         } // if
         
         
