@@ -249,24 +249,39 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                             },
                         });
                     });
-                    if (!isVerified) {
-                        /*
-                            false     : payment failed
-                            null      : payment pending
-                            undefined : payment aborted
-                        */
-                        await showMessageError({
-                            error: <>
-                                <p>
-                                    The transaction is <strong>canceled</strong> by user.
-                                </p>
-                                <p>
-                                    <strong>No funds</strong> have been deducted.
-                                </p>
-                            </>
-                        });
-                        return;
-                    } // if
+                    switch (isVerified) {
+                        case null  :   // payment pending => assumes as payment failed
+                        case false : { // payment failed
+                            await showMessageError({
+                                error: <>
+                                    <p>
+                                        The credit card <strong>verification failed</strong>.
+                                    </p>
+                                    <p>
+                                        <strong>No funds</strong> have been deducted.
+                                    </p>
+                                    <p>
+                                        Please try using another card.
+                                    </p>
+                                </>
+                            });
+                            return;
+                        }
+                        
+                        case undefined: {
+                            await showMessageError({
+                                error: <>
+                                    <p>
+                                        The transaction has been <strong>canceled</strong> by the user.
+                                    </p>
+                                    <p>
+                                        <strong>No funds</strong> have been deducted.
+                                    </p>
+                                </>
+                            });
+                            return;
+                        }
+                    } // switch
                 } // if
                 
                 
