@@ -1393,10 +1393,6 @@ router
             
             
             
-            // TODO: send email confirmation
-            
-            
-            
             // report the createOrder result:
             return {
                 orderId,
@@ -1404,6 +1400,78 @@ router
                 paymentDetail,
             };
         }));
+        
+        
+        
+        // send email confirmation:
+        if (paymentDetail) {
+            // TODO: duplicate on `PATCH`:
+            const newCustomerOrGuest : CommitCustomerOrGuest = {
+                name                 : customerName,
+                email                : customerEmail,
+                preference           : {
+                    marketingOpt     : marketingOpt,
+                },
+            };
+            
+            
+            
+            //#region related data
+            const allCountries = await prisma.country.findMany({
+                select : {
+                    name    : true,
+                    
+                    code    : true,
+                },
+                // enabled: true
+            });
+            const countryListAdapter = createEntityAdapter<CountryPreview>({
+                selectId : (countryEntry) => countryEntry.code,
+            });
+            const countryList = countryListAdapter.addMany(
+                countryListAdapter.getInitialState(),
+                allCountries
+            );
+            //#endregion related data
+            
+            
+            
+            const isPaid = (paymentSource !== 'manual');
+            const paymentConfirmationToken = (
+                isPaid
+                ? undefined
+                : await (async (): Promise<string> => {
+                    const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
+                    let tempToken = await nanoid();
+                    
+                    for (let attempts = 10; attempts > 0; attempts--) {
+                        const foundDuplicate = await prisma.paymentConfirmation.count({
+                            where : {
+                                token : tempToken,
+                            },
+                            take : 1,
+                        });
+                        if (!foundDuplicate) return tempToken;
+                    } // for
+                    console.log('INTERNAL ERROR AT GENERATE UNIQUE TOKEN');
+                    throw 'INTERNAL_ERROR';
+                })()
+            );
+            
+            
+            
+            await sendEmailConfirmation({
+                customerEmail,
+                
+                newCustomerOrGuest,
+                newOrder,
+                
+                countryList,
+                
+                isPaid,
+                paymentConfirmationToken,
+            });
+        } // if
     }
     catch (error: any) {
         /*
@@ -1943,6 +2011,7 @@ Updating the confirmation is not required.`,
     let newOrder                 : OrderAndData|undefined = undefined;
     let countryList              : EntityState<CountryPreview>;
     try {
+        // TODO: duplicate on `POST`:
         const newCustomerOrGuest : CommitCustomerOrGuest = {
             name                 : customerName,
             email                : customerEmail,
