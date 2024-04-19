@@ -91,7 +91,72 @@ export const sumReducer = <TNumber extends number|null|undefined>(accum: TNumber
 
 
 
+export interface CreateDraftOrderData
+    extends
+        // bases:
+        Omit<CreateOrderData,
+            // extended data:
+            |'customerOrGuest'
+            |'payment'
+            |'paymentConfirmationToken'
+        >
+{
+    // temporary data:
+    expiresAt : Date
+    paymentId : string
+}
+export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createDraftOrderData: CreateDraftOrderData): Promise<string> => {
+    // data:
+    const {
+        // temporary data:
+        expiresAt,
+        paymentId,
+        
+        // primary data:
+        orderId,
+        items,
+        preferredCurrency,
+        shippingAddress,
+        shippingCost,
+        shippingProviderId,
+    } = createDraftOrderData;
+    
+    
+    
+    const newDraftOrder = await prismaTransaction.draftOrder.create({
+        data : {
+            // temporary data:
+            
+            expiresAt           : expiresAt,
+            paymentId           : paymentId,
+            
+            // primary data:
+            
+            orderId             : orderId,
+            
+            items               : {
+                create          : items,
+            },
+            
+            preferredCurrency   : preferredCurrency,
+            
+            shippingAddress     : shippingAddress,
+            shippingCost        : shippingCost,
+            shippingProvider    : !shippingProviderId ? undefined : {
+                connect         : {
+                    id          : shippingProviderId,
+                },
+            },
+        },
+        select : {
+            id : true,
+        },
+    });
+    return newDraftOrder.id;
+}
+
 export interface CreateOrderData {
+    // primary data:
     orderId                  : string
     items                    : Omit<OrdersOnProducts,
         // records:
@@ -100,24 +165,29 @@ export interface CreateOrderData {
         // relations:
         |'orderId'
     >[]
-    customerOrGuest          : CommitCustomerOrGuest
     preferredCurrency        : PreferredCurrency|null
     shippingAddress          : Address|null
     shippingCost             : number|null
     shippingProviderId       : string|null
+    
+    // extended data:
+    customerOrGuest          : CommitCustomerOrGuest
     payment                  : Payment
     paymentConfirmationToken : string|null
 }
 export const createOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createOrderData: CreateOrderData): Promise<OrderAndData> => {
     // data:
     const {
+        // primary data:
         orderId,
         items,
-        customerOrGuest,
         preferredCurrency,
         shippingAddress,
         shippingCost,
         shippingProviderId,
+        
+        // extended data:
+        customerOrGuest,
         payment,
         paymentConfirmationToken,
     } = createOrderData;
@@ -129,11 +199,25 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
     
     const newOrder = await prismaTransaction.order.create({
         data   : {
+            // primary data:
+            
             orderId             : orderId,
             
             items               : {
                 create          : items,
             },
+            
+            preferredCurrency   : preferredCurrency,
+            
+            shippingAddress     : shippingAddress,
+            shippingCost        : shippingCost,
+            shippingProvider    : !shippingProviderId ? undefined : {
+                connect         : {
+                    id          : shippingProviderId,
+                },
+            },
+            
+            // extended data:
             
             // TODO: connect to existing customer
             // customer         : {
@@ -150,16 +234,6 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                     guestPreference : {
                         create  : preferenceData,
                     },
-                },
-            },
-            
-            preferredCurrency   : preferredCurrency,
-            
-            shippingAddress     : shippingAddress,
-            shippingCost        : shippingCost,
-            shippingProvider    : !shippingProviderId ? undefined : {
-                connect         : {
-                    id          : shippingProviderId,
                 },
             },
             

@@ -79,6 +79,7 @@ import {
     
     sumReducer,
     
+    createDraftOrder,
     createOrder,
     commitOrder,
     revertOrder,
@@ -1109,14 +1110,6 @@ router
             
             
             //#region create a new(Draft|Real)Order
-            const customerOrGuest : CommitCustomerOrGuest = {
-                name                 : customerName,
-                email                : customerEmail,
-                preference           : {
-                    marketingOpt     : marketingOpt,
-                },
-            };
-            
             let savingCurrency   = preferredCurrency || commerceConfig.defaultCurrency;
             const orderItemsData = detailedItems.map((detailedItem) => {
                 return {
@@ -1157,6 +1150,14 @@ router
                 ? null
                 : totalShippingCostConverted
             );
+            
+            const customerOrGuest : CommitCustomerOrGuest = {
+                name                 : customerName,
+                email                : customerEmail,
+                preference           : {
+                    marketingOpt     : marketingOpt,
+                },
+            };
             const paymentDetail : PaymentDetail|null = (
                 isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
                 ? ((): PaymentDetail => {
@@ -1217,30 +1218,18 @@ router
             const createNewDraftOrderPromise = (
                 isAuthorizedFundData(authorizedOrPaidFundData) // is AuthorizedFundData
                 // pending_paid => create new (draft)Order:
-                ? prismaTransaction.draftOrder.create({
-                    data : {
-                        expiresAt               : new Date(Date.now() + (1 * 60 * 1000)),
-                        
-                        orderId                 : orderId,
-                        paymentId               : authorizedOrPaidFundData.paymentId,
-                        
-                        items                   : {
-                            create              : orderItemsData,
-                        },
-                        
-                        preferredCurrency       : preferredCurrencyData,
-                        
-                        shippingAddress         : shippingAddressData,
-                        shippingCost            : shippingCostData,
-                        shippingProvider        : !hasShippingAddress ? undefined : {
-                            connect             : {
-                                id              : shippingProviderId,
-                            },
-                        },
-                    },
-                    select : {
-                        id : true,
-                    },
+                ? createDraftOrder(prismaTransaction, {
+                    // temporary data:
+                    expiresAt                : new Date(Date.now() + (1 * 60 * 1000)),
+                    paymentId                : authorizedOrPaidFundData.paymentId,
+                    
+                    // primary data:
+                    orderId                  : orderId,
+                    items                    : orderItemsData,
+                    preferredCurrency        : preferredCurrencyData,
+                    shippingAddress          : shippingAddressData,
+                    shippingCost             : shippingCostData,
+                    shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,
                 })
                 : null
             );
@@ -1248,13 +1237,16 @@ router
                 isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
                 // paid_immediately => crate new (real)Order:
                 ? createOrder(prismaTransaction, {
+                    // primary data:
                     orderId                  : orderId,
                     items                    : orderItemsData,
-                    customerOrGuest          : customerOrGuest,
                     preferredCurrency        : preferredCurrencyData,
                     shippingAddress          : shippingAddressData,
                     shippingCost             : shippingCostData,
                     shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,
+                    
+                    // extended data:
+                    customerOrGuest          : customerOrGuest,
                     payment                  : {
                         ...paymentDetail!,
                         billingAddress       : billingAddressData,
