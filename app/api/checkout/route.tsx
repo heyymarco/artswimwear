@@ -78,8 +78,11 @@ import {
     
     
     sumReducer,
+    
+    createOrder,
     commitOrder,
     revertOrder,
+    
     sendEmailConfirmation,
 }                           from './utilities'
 import {
@@ -1106,25 +1109,18 @@ router
             
             
             //#region create a new(Draft|Real)Order
-            const newCustomerOrGuest : CommitCustomerOrGuest = {
+            const customerOrGuest : CommitCustomerOrGuest = {
                 name                 : customerName,
                 email                : customerEmail,
                 preference           : {
                     marketingOpt     : marketingOpt,
                 },
             };
-            const {
-                preference: preferenceData,
-            ...customerOrGuestData} = newCustomerOrGuest;
             
             let savingCurrency   = preferredCurrency || commerceConfig.defaultCurrency;
             const orderItemsData = detailedItems.map((detailedItem) => {
                 return {
-                    product        : {
-                        connect    : {
-                            id     : detailedItem.productId,
-                        },
-                    },
+                    productId      : detailedItem.productId,
                     variantIds     : detailedItem.variantIds,
                     
                     price          : detailedItem.priceConverted,
@@ -1142,7 +1138,7 @@ router
             );
             const shippingAddressData = (
                 !hasShippingAddress
-                ? undefined
+                ? null
                 : {
                     firstName      : shippingFirstName,
                     lastName       : shippingLastName,
@@ -1158,10 +1154,10 @@ router
             );
             const shippingCostData = (
                 !hasShippingAddress
-                ? undefined
+                ? null
                 : totalShippingCostConverted
             );
-            const paymentDetail : PaymentDetail|undefined = (
+            const paymentDetail : PaymentDetail|null = (
                 isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
                 ? ((): PaymentDetail => {
                     const card = authorizedOrPaidFundData.paymentSource?.card;
@@ -1197,11 +1193,11 @@ router
                         fee        : authorizedOrPaidFundData.paymentFee,
                     };
                 })()
-                : undefined
+                : null
             );
             const billingAddressData = (
                 !hasBillingAddress
-                ? undefined
+                ? null
                 : {
                     firstName      : billingFirstName,
                     lastName       : billingLastName,
@@ -1251,137 +1247,20 @@ router
             const createNewOrderPromise = (
                 isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
                 // paid_immediately => crate new (real)Order:
-                ? (async (): Promise<OrderAndData> => {
-                    const newOrder = await prismaTransaction.order.create({
-                        data   : {
-                            orderId             : orderId,
-                            
-                            items               : {
-                                create          : orderItemsData,
-                            },
-                            
-                            // TODO: connect to existing customer
-                            // customer         : {
-                            //     connect      : {
-                            //         ...customerOrGuestData,
-                            //         customerPreference : {
-                            //             ...preferenceData,
-                            //         },
-                            //     },
-                            // },
-                            guest               : {
-                                create          : {
-                                    ...customerOrGuestData,
-                                    guestPreference : {
-                                        create  : preferenceData,
-                                    },
-                                },
-                            },
-                            
-                            preferredCurrency   : preferredCurrencyData,
-                            
-                            shippingAddress     : shippingAddressData,
-                            shippingCost        : shippingCostData,
-                            shippingProvider    : !hasShippingAddress ? undefined : {
-                                connect         : {
-                                    id          : shippingProviderId,
-                                },
-                            },
-                            
-                            payment             : {
-                                ...paymentDetail!,
-                                billingAddress  : billingAddressData,
-                            },
-                            
-                            // no need for `paymentConfirmation`, because the order is paid_immediately
-                            // paymentConfirmation : !paymentConfirmationToken ? undefined : {
-                            //     create : {
-                            //         token: paymentConfirmationToken,
-                            //     },
-                            // },
-                        },
-                        // select : {
-                        //     id : true,
-                        // },
-                        include : {
-                            items : {
-                                select : {
-                                    // data:
-                                    price          : true,
-                                    shippingWeight : true,
-                                    quantity       : true,
-                                    
-                                    // relations:
-                                    product        : {
-                                        select : {
-                                            name   : true,
-                                            images : true,
-                                            
-                                            // relations:
-                                            variantGroups : {
-                                                select : {
-                                                    variants : {
-                                                        // always allow to access DRAFT variants when the customer is already ordered:
-                                                        // where    : {
-                                                        //     visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                                                        // },
-                                                        select : {
-                                                            id   : true,
-                                                            
-                                                            name : true,
-                                                        },
-                                                        orderBy : {
-                                                            sort : 'asc',
-                                                        },
-                                                    },
-                                                },
-                                                orderBy : {
-                                                    sort : 'asc',
-                                                },
-                                            },
-                                        },
-                                    },
-                                    variantIds     : true,
-                                },
-                            },
-                            shippingProvider : {
-                                select : {
-                                    name            : true, // optional for displaying email report
-                                    
-                                    weightStep      : true, // required for calculating `getMatchingShipping()`
-                                    
-                                    estimate        : true, // optional for displaying email report
-                                    shippingRates   : true, // required for calculating `getMatchingShipping()`
-                                    
-                                    useSpecificArea : true, // required for calculating `getMatchingShipping()`
-                                    countries       : true, // required for calculating `getMatchingShipping()`
-                                },
-                            },
-                        },
-                    });
-                    const shippingAddress  = newOrder.shippingAddress;
-                    const shippingProvider = newOrder.shippingProvider;
-                    return {
-                        ...newOrder,
-                        items: newOrder.items.map((item) => ({
-                            ...item,
-                            product : !!item.product ? {
-                                name          : item.product.name,
-                                image         : item.product.images?.[0] ?? null,
-                                imageBase64   : undefined,
-                                imageId       : undefined,
-                                
-                                // relations:
-                                variantGroups : item.product.variantGroups.map(({variants}) => variants),
-                            } : null,
-                        })),
-                        shippingProvider : (
-                            (shippingAddress && shippingProvider)
-                            ? getMatchingShipping(shippingProvider, { city: shippingAddress.city, zone: shippingAddress.zone, country: shippingAddress.country })
-                            : null
-                        ),
-                    };
-                })()
+                ? createOrder(prismaTransaction, {
+                    orderId                  : orderId,
+                    items                    : orderItemsData,
+                    customerOrGuest          : customerOrGuest,
+                    preferredCurrency        : preferredCurrencyData,
+                    shippingAddress          : shippingAddressData,
+                    shippingCost             : shippingCostData,
+                    shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,
+                    payment                  : {
+                        ...paymentDetail!,
+                        billingAddress       : billingAddressData,
+                    } satisfies Payment,
+                    paymentConfirmationToken : null, // no need for `paymentConfirmation`, because the order is paid_immediately
+                })
                 : null
             );
             //#endregion create a new(Draft|Real)Order
@@ -1400,7 +1279,7 @@ router
             return {
                 orderId,
                 authorizedOrPaidFundData,
-                paymentDetail,
+                paymentDetail : paymentDetail ?? undefined,
                 newOrder : (await createNewOrderPromise) ?? undefined,
             };
         }));
@@ -1410,7 +1289,7 @@ router
         // send email confirmation:
         if (paymentDetail && newOrder) {
             // TODO: duplicate on `PATCH`:
-            const newCustomerOrGuest : CommitCustomerOrGuest = {
+            const customerOrGuest : CommitCustomerOrGuest = {
                 name                 : customerName,
                 email                : customerEmail,
                 preference           : {
@@ -1467,7 +1346,7 @@ router
             await sendEmailConfirmation({
                 customerEmail,
                 
-                newCustomerOrGuest,
+                customerOrGuest,
                 newOrder,
                 
                 countryList,
@@ -2016,7 +1895,7 @@ Updating the confirmation is not required.`,
     let countryList              : EntityState<CountryPreview>;
     try {
         // TODO: duplicate on `POST`:
-        const newCustomerOrGuest : CommitCustomerOrGuest = {
+        const customerOrGuest : CommitCustomerOrGuest = {
             name                 : customerName,
             email                : customerEmail,
             preference           : {
@@ -2248,7 +2127,7 @@ Updating the confirmation is not required.`,
                 // payment APPROVED => move the `draftOrder` to `order`:
                 newOrder = await commitOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
-                    customerOrGuest    : newCustomerOrGuest,
+                    customerOrGuest    : customerOrGuest,
                     payment            : {
                         ...paymentDetail,
                         billingAddress : hasBillingAddress ? {
@@ -2286,7 +2165,7 @@ Updating the confirmation is not required.`,
             await sendEmailConfirmation({
                 customerEmail,
                 
-                newCustomerOrGuest,
+                customerOrGuest,
                 newOrder,
                 
                 countryList,
