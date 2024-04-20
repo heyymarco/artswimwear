@@ -69,6 +69,35 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             console.log('payment failed: ', midtransPaymentData);
             break;
         }
+        case '201' : {
+            // Success
+            // -or-
+            // Challenge Notification
+            
+            
+            
+            switch (midtransPaymentData.fraud_status) {
+                case 'accept': {
+                    // TODO: payment notification
+                    console.log('payment notification: ', midtransPaymentData);
+                    break;
+                }
+                
+                case 'challenge': { // The transaction is successfully sent to the bank but yet to be approved
+                    // assumes as denied:
+                    // TODO: payment failed
+                    console.log('payment failed: ', midtransPaymentData);
+                    break;
+                }
+                
+                default : {
+                    // TODO: log unexpected response
+                    console.log('unexpected response: ', midtransPaymentData);
+                    throw Error('unexpected API response');
+                }
+            } // switch
+            break;
+        }
         case '200' : {
             // Capture Notification after submit OTP 3DS 2.0
             // Capture Notification
