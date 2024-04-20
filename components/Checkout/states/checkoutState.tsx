@@ -1546,7 +1546,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             
-            // options: midtransCardToken
+            // options: cardToken
             ...options,
         }).unwrap();
         

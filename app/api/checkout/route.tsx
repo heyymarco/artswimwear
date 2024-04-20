@@ -181,10 +181,10 @@ export interface BillingData {
 }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource     ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
-    midtransCardToken ?: string
-    simulateOrder     ?: boolean
-    captcha           ?: string
+    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
+    cardToken     ?: string
+    simulateOrder ?: boolean
+    captcha       ?: string
 }
 export interface CurrencyOptions {
     preferredCurrency ?: PreferredCurrency['currency']
@@ -397,18 +397,18 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    let midtransCardToken : string|null = null;
+    let cardToken : string|null = null;
     if (useMidtransGateway) {
         const {
-            midtransCardToken: midtransCardTokenRaw,
+            cardToken: cardTokenRaw,
         } = placeOrderData;
         
-        if ((typeof(midtransCardTokenRaw) !== 'string') || !midtransCardTokenRaw) {
+        if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
             return NextResponse.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
-        midtransCardToken = midtransCardTokenRaw;
+        cardToken = cardTokenRaw;
     } // if
     //#endregion validate options
     
@@ -1052,8 +1052,8 @@ router
                     detailedItems,
                 });
             }
-            else if (midtransCardToken) {
-                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrderWithCard(midtransCardToken, orderId, {
+            else if (cardToken) {
+                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrderWithCard(cardToken, orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,

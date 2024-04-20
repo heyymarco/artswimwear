@@ -243,11 +243,11 @@ export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPayme
         }
     } // switch
 }
-export const midtransCreateOrderWithCard = async (midtransCardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
+export const midtransCreateOrderWithCard = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
     return midtransCreateOrderGeneric<'credit_card'>({
         payment_type         : 'credit_card',
         credit_card          : {
-            token_id         : midtransCardToken,
+            token_id         : cardToken,
             authentication   : true,
             callback_type    : 'js_event',
             
