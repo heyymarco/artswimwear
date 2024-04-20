@@ -17,7 +17,7 @@ const sha512test = async (str: string) => {
     return Array.prototype.map.call(new Uint8Array(buffer), x=>(('00'+x.toString(16)).slice(-2))).join('');
 }
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request, res: Response): Promise<Response> {
     const midtransPaymentData = await req.json();
     const {
         // records:
@@ -59,47 +59,75 @@ export async function POST(req: Request, res: Response) {
     
     
     
-    switch (midtransPaymentData.transaction_status) {
-        // case 'authorize': {
-        //     const paymentId   = midtransPaymentData.transaction_id;
-        //     if ((typeof(paymentId) !== 'string') || !paymentId) {
-        //         // TODO: log unexpected response
-        //         console.log('unexpected response: ', midtransPaymentData);
-        //         throw Error('unexpected API response');
-        //     } // if
-        //     
-        //     
-        //     
-        //     return {
-        //         paymentId,
-        //         redirectData : undefined, // no redirectData required but require a `midtransCaptureFund()` to capture the fund
-        //     };
-        // }
-        
-        case 'capture':
-        case 'settlement': {
-            let paymentAmountRaw = midtransPaymentData.gross_amount;
-            const paymentAmount  = decimalify(
-                (typeof(paymentAmountRaw) === 'number')
-                ? paymentAmountRaw
-                : Number.parseFloat(paymentAmountRaw)
-            );
-            const paidFundData: PaidFundData = {
-                paymentSource : {
-                    ewallet : {
-                        type       : 'EWALLET',
-                        brand      : midtransPaymentData.payment_type?.toLowerCase() ?? null,
-                        identifier : midtransPaymentData.merchant_id ?? null,
-                    },
-                },
-                paymentAmount : paymentAmount,
-                paymentFee    : 0,
-            };
-            console.log('payment: ', paidFundData);
+    switch (`${midtransPaymentData.status_code}` /* stringify */) {
+        case '404': {
+            // NotFound Notification
+            
+            
+            
+            // TODO: payment failed
+            console.log('payment failed: ', midtransPaymentData);
             break;
         }
+        case '200' : {
+            // Capture Notification after submit OTP 3DS 2.0
+            // Capture Notification
+            // Settlement Notification
+            
+            
+            
+            switch (midtransPaymentData.transaction_status) {
+                // case 'authorize': {
+                //     const paymentId   = midtransPaymentData.transaction_id;
+                //     if ((typeof(paymentId) !== 'string') || !paymentId) {
+                //         // TODO: log unexpected response
+                //         console.log('unexpected response: ', midtransPaymentData);
+                //         throw Error('unexpected API response');
+                //     } // if
+                //     
+                //     
+                //     
+                //     return {
+                //         paymentId,
+                //         redirectData : undefined, // no redirectData required but require a `midtransCaptureFund()` to capture the fund
+                //     };
+                // }
+                
+                case 'capture':
+                case 'settlement': {
+                    let paymentAmountRaw = midtransPaymentData.gross_amount;
+                    const paymentAmount  = decimalify(
+                        (typeof(paymentAmountRaw) === 'number')
+                        ? paymentAmountRaw
+                        : Number.parseFloat(paymentAmountRaw)
+                    );
+                    const paidFundData: PaidFundData = {
+                        paymentSource : {
+                            ewallet : {
+                                type       : 'EWALLET',
+                                brand      : midtransPaymentData.payment_type?.toLowerCase() ?? null,
+                                identifier : midtransPaymentData.merchant_id ?? null,
+                            },
+                        },
+                        paymentAmount : paymentAmount,
+                        paymentFee    : 0,
+                    };
+                    console.log('payment: ', paidFundData);
+                    break;
+                }
+                
+                default : {
+                    // TODO: log unexpected response
+                    console.log('unexpected response: ', midtransPaymentData);
+                    throw Error('unexpected API response');
+                }
+            } // switch
+        }
         
-        default : {
+        // case '300' :
+        // case '400' :
+        // case '500' :
+        default    : {
             // TODO: log unexpected response
             console.log('unexpected response: ', midtransPaymentData);
             throw Error('unexpected API response');
