@@ -1,4 +1,4 @@
-export async function POSTs(req: Request, res: Response) {
+export async function POST(req: Request, res: Response) {
     console.log('webhook: ', {
         headers: Array.from(req.headers.entries()).map(([key, value]) => ({key, value})),
         data: await req.json(),
