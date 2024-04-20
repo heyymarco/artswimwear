@@ -151,9 +151,9 @@ export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPayme
             
             switch (midtransPaymentData.fraud_status) {
                 case 'accept': {
-                    const paymentId   = midtransPaymentData.transaction_id;
-                    const redirectUrl = midtransPaymentData.redirect_url;
-                    if ((typeof(paymentId) !== 'string') || (typeof(redirectUrl) !== 'string') || !paymentId || !redirectUrl) {
+                    const paymentId    = midtransPaymentData.transaction_id;
+                    const redirectData = midtransPaymentData.redirect_url;
+                    if ((typeof(paymentId) !== 'string') || (typeof(redirectData) !== 'string') || !paymentId || !redirectData) {
                         // TODO: log unexpected response
                         console.log('unexpected response: ', midtransPaymentData);
                         throw Error('unexpected API response');
@@ -161,10 +161,10 @@ export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPayme
                     
                     
                     
-                    // redirectUrl for 3DS verification:
+                    // redirectData for 3DS verification:
                     return {
                         paymentId,
-                        redirectUrl,
+                        redirectData,
                     };
                 }
                 
@@ -200,7 +200,7 @@ export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPayme
                     
                     return {
                         paymentId,
-                        redirectUrl : undefined, // no redirectUrl required but require a `midtransCaptureFund()` to capture the fund
+                        redirectData : undefined, // no redirectData required but require a `midtransCaptureFund()` to capture the fund
                     };
                 }
                 
@@ -304,7 +304,19 @@ export const midtransCaptureFund         = async (paymentId: string): Promise<Pa
             
             switch (midtransPaymentData.transaction_status) {
                 // case 'authorize': {
-                //     return ''; // no redirectUrl required but require a `midtransCaptureFund()` to capture the fund
+                //     const paymentId   = midtransPaymentData.transaction_id;
+                //     if ((typeof(paymentId) !== 'string') || !paymentId) {
+                //         // TODO: log unexpected response
+                //         console.log('unexpected response: ', midtransPaymentData);
+                //         throw Error('unexpected API response');
+                //     } // if
+                //     
+                //     
+                //     
+                //     return {
+                //         paymentId,
+                //         redirectData : undefined, // no redirectData required but require a `midtransCaptureFund()` to capture the fund
+                //     };
                 // }
                 
                 case 'capture':

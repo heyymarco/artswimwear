@@ -170,8 +170,8 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                         }
                     */
                     return {
-                        orderId     : paypalAuthentication.orderId,
-                        redirectUrl : undefined,
+                        orderId      : paypalAuthentication.orderId,
+                        redirectData : undefined,
                     };
                 }
             )
@@ -231,12 +231,12 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 
                 
                 
-                const redirectUrl = draftOrderDetail.redirectUrl;
-                if (redirectUrl) { // not undefined && not empty_string
+                const redirectData = draftOrderDetail.redirectData;
+                if (redirectData) { // not undefined && not empty_string
                     // trigger `authenticate` function
                     const isVerified = await new Promise<boolean|null|undefined>((resolve) => {
                         const MidtransNew3ds = (window as any).MidtransNew3ds;
-                        MidtransNew3ds.authenticate(redirectUrl, {
+                        MidtransNew3ds.authenticate(redirectData, {
                             performAuthentication: function(redirectUrl: string){
                                 // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
                                 modal3dsRef.current = showDialog<boolean|null>(

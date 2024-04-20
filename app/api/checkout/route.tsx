@@ -219,8 +219,8 @@ export type PlaceOrderData =
     |(PlaceOrderDataWithShippingAddress & PlaceOrderDataWithBillingAddress)
 export interface DraftOrderDetail
 {
-    orderId     : string
-    redirectUrl : string|undefined
+    orderId      : string
+    redirectData : string|undefined
 }
 
 export interface MakePaymentOptions {
@@ -1399,8 +1399,8 @@ router
     if (orderId === '') { // empty string => simulateOrder
         // simulateOrder:
         const draftOrderDetail : DraftOrderDetail = {
-            orderId     : '',
-            redirectUrl : undefined,
+            orderId      : '',
+            redirectData : undefined,
         };
         return NextResponse.json(draftOrderDetail); // handled with success
     } // if
@@ -1423,7 +1423,7 @@ router
     } // if
     
     const draftOrderDetail : DraftOrderDetail = {
-        orderId     : (
+        orderId      : (
             !isAuthorizedFundData(authorizedOrPaidFundData)
             ? orderId
             : (() => {
@@ -1435,7 +1435,7 @@ router
                 return `${prefix}${authorizedOrPaidFundData.paymentId}`;
             })()
         ),
-        redirectUrl : isAuthorizedFundData(authorizedOrPaidFundData) ? authorizedOrPaidFundData.redirectUrl : undefined,
+        redirectData : isAuthorizedFundData(authorizedOrPaidFundData) ? authorizedOrPaidFundData.redirectData : undefined,
     };
     return NextResponse.json(draftOrderDetail); // handled with success
 })

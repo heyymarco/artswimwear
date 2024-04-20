@@ -39,7 +39,7 @@ export interface CreateOrderOptions {
 }
 export interface AuthorizedFundData {
     paymentId     : string
-    redirectUrl  ?: string
+    redirectData ?: string
 }
 export interface PaidFundData {
     paymentSource : any
