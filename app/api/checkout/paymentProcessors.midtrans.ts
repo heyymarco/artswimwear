@@ -36,7 +36,17 @@ const midtransCreateAuthToken = () => {
     const auth = Buffer.from(`${process.env.MIDTRANS_ID}:`).toString('base64');
     return auth;
 }
-export const midtransCreateOrder = async (midtransPaymentToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
+type MidtransPaymentOption =
+    |'credit_card'
+    |'qris'
+type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
+    &{
+        payment_type: TPayment;
+    }
+    &{
+        [payment in TPayment]: object;
+    }
+export const midtransCreateOrderGeneric = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -77,18 +87,11 @@ export const midtransCreateOrder = async (midtransPaymentToken: string, orderId:
             'Authorization'   : `Basic ${midtransCreateAuthToken()}`,
         },
         body    : JSON.stringify({
-            payment_type         : 'credit_card',
+            ...midtransPaymentDetail,
+            
             transaction_details  : {
                 order_id         : orderId,
                 gross_amount     : totalCostConverted,
-            },
-            credit_card          : {
-                token_id         : midtransPaymentToken,
-                authentication   : true,
-                callback_type    : 'js_event',
-                
-                // features:
-                type             : 'authorize',
             },
             item_details         : [
                 ...detailedItems.map((detailedItem) => ({
@@ -239,6 +242,19 @@ export const midtransCreateOrder = async (midtransPaymentToken: string, orderId:
             throw Error('unexpected API response');
         }
     } // switch
+}
+export const midtransCreateOrderWithCard = async (midtransCardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
+    return midtransCreateOrderGeneric<'credit_card'>({
+        payment_type         : 'credit_card',
+        credit_card          : {
+            token_id         : midtransCardToken,
+            authentication   : true,
+            callback_type    : 'js_event',
+            
+            // features:
+            type             : 'authorize',
+        },
+    }, orderId, options);
 }
 export const midtransCaptureFund = async (paymentId: string): Promise<PaidFundData|undefined> => {
     // const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status`, {

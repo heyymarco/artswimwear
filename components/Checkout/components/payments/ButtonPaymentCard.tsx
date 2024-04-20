@@ -211,8 +211,8 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                     });
                     
                     const draftOrderDetail = await doPlaceOrder({
-                        paymentSource        : 'midtransCard',
-                        midtransPaymentToken : cardToken,
+                        paymentSource     : 'midtransCard',
+                        midtransCardToken : cardToken,
                     });
                     if (!draftOrderDetail) return undefined;
                     return draftOrderDetail;

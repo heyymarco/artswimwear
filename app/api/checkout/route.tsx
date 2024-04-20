@@ -98,7 +98,7 @@ import {
     paypalCaptureFund,
 }                           from './paymentProcessors.paypal'
 import {
-    midtransCreateOrder,
+    midtransCreateOrderWithCard,
     midtransCaptureFund,
     midtransCancelOrder,
 }                           from './paymentProcessors.midtrans'
@@ -181,10 +181,10 @@ export interface BillingData {
 }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource        ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
-    midtransPaymentToken ?: string
-    simulateOrder        ?: boolean
-    captcha              ?: string
+    paymentSource     ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
+    midtransCardToken ?: string
+    simulateOrder     ?: boolean
+    captcha           ?: string
 }
 export interface CurrencyOptions {
     preferredCurrency ?: PreferredCurrency['currency']
@@ -397,18 +397,18 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    let midtransPaymentToken : string|null = null;
+    let midtransCardToken : string|null = null;
     if (useMidtransGateway) {
         const {
-            midtransPaymentToken: midtransPaymentTokenRaw,
+            midtransCardToken: midtransCardTokenRaw,
         } = placeOrderData;
         
-        if ((typeof(midtransPaymentTokenRaw) !== 'string') || !midtransPaymentTokenRaw) {
+        if ((typeof(midtransCardTokenRaw) !== 'string') || !midtransCardTokenRaw) {
             return NextResponse.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
-        midtransPaymentToken = midtransPaymentTokenRaw;
+        midtransCardToken = midtransCardTokenRaw;
     } // if
     //#endregion validate options
     
@@ -1052,8 +1052,8 @@ router
                     detailedItems,
                 });
             }
-            else if (midtransPaymentToken) {
-                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrder(midtransPaymentToken, orderId, {
+            else if (midtransCardToken) {
+                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrderWithCard(midtransCardToken, orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
