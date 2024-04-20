@@ -41,10 +41,10 @@ type MidtransPaymentOption =
     |'qris'
 type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
-        payment_type: TPayment;
+        payment_type          : TPayment;
     }
     &{
-        [payment in TPayment]: object;
+        [payment in TPayment] : object;
     }
 export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
     const {
@@ -253,6 +253,14 @@ export const midtransCreateOrderWithCard = async (midtransCardToken: string, ord
             
             // features:
             type             : 'authorize',
+        },
+    }, orderId, options);
+}
+export const midtransCreateOrderWithQris = async (acquirer: 'gopay'|'airpay shopee', orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
+    return midtransCreateOrderGeneric<'qris'>({
+        payment_type         : 'qris',
+        qris                 : {
+            acquirer         : acquirer,
         },
     }, orderId, options);
 }
