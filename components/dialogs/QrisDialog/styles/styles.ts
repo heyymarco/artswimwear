@@ -53,13 +53,13 @@ export const usesCardBodyLayout  = () => {
             boxSizing         : 'border-box',
             inlineSize        : `calc(100svw - (${containers.paddingInline} * 2))`,
             ...ifScreenWidthAtLeast('md', {
-                inlineSize    : `${breakpoints.sm}px`,
+                inlineSize    : `calc(${breakpoints.sm}px / 2)`,
             }),
             // blockSize         : `calc(100svh - (${containers.paddingBlock} * 2))`,
             // ...ifScreenWidthAtLeast('md', {
-            //     blockSize     : `${breakpoints.sm}px`,
+            //     blockSize     : `calc(${breakpoints.sm}px / 2)`,
             // }),
-            blockSize         : `${breakpoints.sm}px`,
+            // blockSize         : `calc(${breakpoints.sm}px / 2)`,
             
             
             
@@ -117,6 +117,11 @@ export const usesErrorLayout   = () => {
 };
 export const usesQrisLayout   = () => {
     return style({
+        // layouts:
+        display: 'grid',
+        
+        
+        
         // sizes:
         justifySelf  : 'stretch',
         alignSelf    : 'stretch',

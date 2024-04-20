@@ -110,7 +110,6 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
     const enum LoadedState {
         Loading,
         Errored,
-        PartialLoaded,
         FullyLoaded,
     }
     const [isLoaded, setIsLoaded] = useState<LoadedState>(LoadedState.Loading); // 0: loading true: loaded, false: errored
@@ -119,7 +118,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
     
     // handlers:
     const handleLoaded      = useEvent((): void => {
-        setIsLoaded(LoadedState.PartialLoaded);
+        setIsLoaded(LoadedState.FullyLoaded);
     });
     const handleErrored     = useEvent((): void => {
         // conditions:
@@ -172,6 +171,10 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
     const [svgString, setSvgString] = useState<React.ReactNode>(null);
     useIsomorphicLayoutEffect(() => {
         QrCode.toString(data, (error, str) => {
+            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+            
+            
+            
             if (error) {
                 handleErrored();
                 return;
@@ -241,7 +244,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
                     
                     
                     // states:
-                    expanded={(isLoaded === LoadedState.Loading) || (isLoaded === LoadedState.PartialLoaded)}
+                    expanded={(isLoaded === LoadedState.Loading)}
                 />
             </CardBody>
             <CardFooter>
