@@ -85,6 +85,11 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                             console.log('payment notification PENDING: ', midtransPaymentData);
                             break;
                         }
+                        case 'cancel': {
+                            // TODO: payment notification
+                            console.log('payment notification CANCEL: ', midtransPaymentData);
+                            break;
+                        }
                         case 'expire': {
                             // TODO: payment notification
                             console.log('payment notification EXPIRE: ', midtransPaymentData);
