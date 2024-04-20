@@ -263,6 +263,29 @@ export const midtransCreateOrderWithQris = async (acquirer: 'gopay'|'airpay shop
             acquirer         : acquirer,
         },
     }, orderId, options);
+    /*
+    {
+        status_code: '201',
+        status_message: 'QRIS transaction is created',
+        transaction_id: '0523d017-6097-4482-9140-10d22e628288',
+        order_id: '5480522141858852',
+        merchant_id: 'G551313466',
+        gross_amount: '421000.00',
+        currency: 'IDR',
+        payment_type: 'qris',
+        transaction_time: '2024-04-20 13:31:49',
+        transaction_status: 'pending',
+        fraud_status: 'accept',
+            name: 'generate-qr-code',
+            method: 'GET',
+            url: 'https://api.sandbox.midtrans.com/v2/qris/0523d017-6097-4482-9140-10d22e628288/qr-code'
+            }
+        ],
+        qr_string: '00020101021226620014COM.GO-JEK.WWW011993600914355131346650210G5513134660303UKE51440014ID.CO.QRIS.WWW0215AID4019422100900303UKE5204318553033605802ID5911Artswimwear6011TANAH BUMBU6105722755409421000.006247503661b2d76c-2e99-4d66-9228-9216b2920e530703A0163048BC5',
+        acquirer: 'gopay',
+        expiry_time: '2024-04-20 13:46:49'
+    }
+    */
 }
 export const midtransCaptureFund         = async (paymentId: string): Promise<PaidFundData|undefined> => {
     // const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status`, {
