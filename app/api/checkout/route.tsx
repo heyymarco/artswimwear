@@ -99,6 +99,7 @@ import {
 }                           from './paymentProcessors.paypal'
 import {
     midtransCreateOrderWithCard,
+    midtransCreateOrderWithQris,
     midtransCaptureFund,
     midtransCancelOrder,
 }                           from './paymentProcessors.midtrans'
@@ -181,8 +182,9 @@ export interface BillingData {
 }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'
+    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'|'midtransQris'
     cardToken     ?: string
+    acquirer      ?: string
     simulateOrder ?: boolean
     captcha       ?: string
 }
@@ -383,8 +385,8 @@ router
         }, { status: 400 }); // handled with error
     } // if
     
-    const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
-    const useMidtransGateway = !simulateOrder && (paymentSource === 'midtransCard');
+    const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard', 'midtransQris'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
+    const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris'].includes(paymentSource);
     
     if (usePaypalGateway && !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(preferredCurrency)) {
         return NextResponse.json({
@@ -398,17 +400,30 @@ router
         }, { status: 400 }); // handled with error
     } // if
     let cardToken : string|null = null;
+    let acquirer  : string|null = null;
     if (useMidtransGateway) {
         const {
             cardToken: cardTokenRaw,
+            acquirer : acquirerRaw,
         } = placeOrderData;
         
-        if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
-            return NextResponse.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
+        if (paymentSource === 'midtransCard') {
+            if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
+                return NextResponse.json({
+                    error: 'Invalid data.',
+                }, { status: 400 }); // handled with error
+            } // if
+            cardToken = cardTokenRaw;
         } // if
-        cardToken = cardTokenRaw;
+        
+        if (paymentSource === 'midtransQris') {
+            if ((typeof(acquirerRaw) !== 'string') || !acquirerRaw) {
+                return NextResponse.json({
+                    error: 'Invalid data.',
+                }, { status: 400 }); // handled with error
+            } // if
+            acquirer = acquirerRaw;
+        } // if
     } // if
     //#endregion validate options
     
@@ -1054,6 +1069,50 @@ router
             }
             else if (cardToken) {
                 const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrderWithCard(cardToken, orderId, {
+                    preferredCurrency,
+                    totalCostConverted,
+                    totalProductPriceConverted,
+                    totalShippingCostConverted,
+                    
+                    hasShippingAddress,
+                    shippingFirstName,
+                    shippingLastName,
+                    shippingPhone,
+                    shippingAddress,
+                    shippingCity,
+                    shippingZone,
+                    shippingZip,
+                    shippingCountry,
+                    
+                    hasBillingAddress,
+                    billingFirstName,
+                    billingLastName,
+                    billingPhone,
+                    billingAddress,
+                    billingCity,
+                    billingZone,
+                    billingZip,
+                    billingCountry,
+                    
+                    detailedItems,
+                });
+                
+                if (authorizedOrPaidFundDataOrDeclined === null) {
+                    // payment DECLINED:
+                    
+                    return {
+                        orderId                  : undefined, // undefined => declined
+                        authorizedOrPaidFundData : undefined,
+                        paymentDetail            : undefined,
+                        newOrder                 : undefined,
+                    };
+                }
+                else {
+                    authorizedOrPaidFundData = authorizedOrPaidFundDataOrDeclined;
+                } // if
+            }
+            else if (acquirer) {
+                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrderWithQris(acquirer as any, orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,

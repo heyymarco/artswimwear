@@ -152,7 +152,7 @@ export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPayme
             switch (midtransPaymentData.fraud_status) {
                 case 'accept': {
                     const paymentId    = midtransPaymentData.transaction_id;
-                    const redirectData = midtransPaymentData.redirect_url;
+                    const redirectData = midtransPaymentData.qr_string ?? midtransPaymentData.redirect_url;
                     if ((typeof(paymentId) !== 'string') || (typeof(redirectData) !== 'string') || !paymentId || !redirectData) {
                         // TODO: log unexpected response
                         console.log('unexpected response: ', midtransPaymentData);
