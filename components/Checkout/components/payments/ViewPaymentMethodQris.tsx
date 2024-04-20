@@ -66,7 +66,16 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
             
             <div className='actionButtons'>
                 <ButtonIcon
+                    // appearances:
                     icon='qr_code_scanner'
+                    
+                    
+                    
+                    // variants:
+                    gradient={true}
+                    
+                    
+                    
                     // handlers:
                 >
                     <span className='text'>
@@ -75,7 +84,16 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                 </ButtonIcon>
                 
                 <ButtonIcon
+                    // appearances:
                     icon='qr_code_scanner'
+                    
+                    
+                    
+                    // variants:
+                    gradient={true}
+                    
+                    
+                    
                     // handlers:
                 >
                     <span className='text'>
