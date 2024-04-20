@@ -46,7 +46,7 @@ type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
         [payment in TPayment]: object;
     }
-export const midtransCreateOrderGeneric = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
+export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -256,7 +256,7 @@ export const midtransCreateOrderWithCard = async (midtransCardToken: string, ord
         },
     }, orderId, options);
 }
-export const midtransCaptureFund = async (paymentId: string): Promise<PaidFundData|undefined> => {
+export const midtransCaptureFund         = async (paymentId: string): Promise<PaidFundData|undefined> => {
     // const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status`, {
     //     method  : 'GET',
     //     headers : {
@@ -338,7 +338,7 @@ export const midtransCaptureFund = async (paymentId: string): Promise<PaidFundDa
         }
     } // switch
 }
-export const midtransCancelOrder = async (paymentId: string): Promise<boolean> => {
+export const midtransCancelOrder         = async (paymentId: string): Promise<boolean> => {
     const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(paymentId)}/cancel`, {
         method  : 'POST',
         headers : {
