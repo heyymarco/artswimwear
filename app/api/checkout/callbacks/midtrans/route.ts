@@ -60,7 +60,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     
     
     switch (`${midtransPaymentData.status_code}` /* stringify */) {
-        case '404': {
+        case '404' : {
             // NotFound Notification
             
             
@@ -69,7 +69,8 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             console.log('payment failed: ', midtransPaymentData);
             break;
         }
-        case '201' : {
+        case '201' :
+        case '202' : {
             // Success
             // -or-
             // Challenge Notification
@@ -78,8 +79,23 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             switch (midtransPaymentData.fraud_status) {
                 case 'accept': {
-                    // TODO: payment notification
-                    console.log('payment notification: ', midtransPaymentData);
+                    switch (midtransPaymentData.transaction_status) {
+                        case 'pending': {
+                            // TODO: payment notification
+                            console.log('payment notification PENDING: ', midtransPaymentData);
+                            break;
+                        }
+                        case 'expire': {
+                            // TODO: payment notification
+                            console.log('payment notification EXPIRE: ', midtransPaymentData);
+                            break;
+                        }
+                        default: {
+                            // TODO: payment notification
+                            console.log('payment notification OTHER: ', midtransPaymentData);
+                            break;
+                        }
+                    } // switch
                     break;
                 }
                 
