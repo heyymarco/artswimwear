@@ -39,6 +39,7 @@ export type CheckoutStep =
 export type PaymentMethod =
     |'card'
     |'paypal'
+    |'qris'
     |'manual'
 export interface CheckoutState
     extends

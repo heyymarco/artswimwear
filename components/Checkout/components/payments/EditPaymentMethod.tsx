@@ -47,6 +47,9 @@ import {
     ViewPaymentMethodPaypal,
 }                           from '../payments/ViewPaymentMethodPaypal'
 import {
+    ViewPaymentMethodQris,
+}                           from '../payments/ViewPaymentMethodQris'
+import {
     ViewPaymentMethodManual,
 }                           from '../payments/ViewPaymentMethodManual'
 
@@ -116,7 +119,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     
     // payment method options:
-    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'manual'];
+    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'qris', 'manual'];
     
     
     
@@ -247,6 +250,37 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         }
                     >
                         <ViewPaymentMethodPaypal />
+                    </AccordionItem>
+                    
+                    <AccordionItem
+                        // accessibilities:
+                        label={<>
+                            <RadioDecorator />
+                            QRIS
+                        </>}
+                        
+                        
+                        
+                        // behaviors:
+                        lazy={true}
+                        
+                        
+                        
+                        // components:
+                        listItemComponent={
+                            <ListItem
+                                // classes:
+                                className={styleSheet.optionEntryHeader}
+                            />
+                        }
+                        bodyComponent={
+                            <Section
+                                // classes:
+                                className={styleSheet.paymentEntryPaymentButton}
+                            />
+                        }
+                    >
+                        <ViewPaymentMethodQris />
                     </AccordionItem>
                     
                     <AccordionItem
