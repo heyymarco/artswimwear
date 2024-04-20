@@ -49,6 +49,7 @@
     "next": "^13.2.3",
     "next-connect": "^1.0.0",
     "nodemailer": "^6.9.7",
+    "qrcode": "^1.5.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-google-recaptcha": "^3.1.0",
@@ -62,6 +63,7 @@
   "devDependencies": {
     "@paypal/paypal-js": "^5.1.4",
     "@types/mime-types": "^2.1.4",
+    "@types/qrcode": "^1.5.5",
     "@types/react-google-recaptcha": "^2.1.8",
     "prisma": "^5.0.0"
   }
