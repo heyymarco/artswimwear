@@ -14,11 +14,6 @@ import {
     useMemo,
 }                           from 'react'
 
-// next-js:
-import {
-    default as Image,
-}                           from 'next/image'
-
 // reusable-ui core:
 import {
     // react helper hooks:
