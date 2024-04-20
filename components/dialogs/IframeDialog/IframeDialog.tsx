@@ -105,8 +105,8 @@ const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
         PartialLoaded,
         FullyLoaded,
     }
-    const [isLoaded    , setIsLoaded    ] = useState<LoadedState>(LoadedState.Loading); // 0: loading true: loaded, false: errored
-    const [recaptchaKey, setRecaptchaKey] = useState<number>(1);
+    const [isLoaded , setIsLoaded ] = useState<LoadedState>(LoadedState.Loading); // 0: loading true: loaded, false: errored
+    const [iframeKey, setIframeKey] = useState<number>(1);
     
     
     
@@ -132,7 +132,7 @@ const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     });
     const handleReload      = useEvent((): void => {
         setIsLoaded(LoadedState.Loading);
-        setRecaptchaKey((current) => (current + 1));
+        setIframeKey((current) => (current + 1));
         // iframeRef.current?.reset?.();
     });
     
@@ -228,7 +228,7 @@ const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
             <CardBody className={styleSheet.cardBody}>
                 <iframe
                     // identifiers:
-                    key={recaptchaKey}
+                    key={iframeKey}
                     
                     
                     
