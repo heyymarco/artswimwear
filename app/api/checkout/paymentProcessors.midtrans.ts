@@ -74,23 +74,27 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
             
             
             switch (midtransPaymentData.fraud_status) {
-                case 'accept': {
+                case undefined :
+                case 'accept'  : {
                     switch (midtransPaymentData.transaction_status) {
                         case 'pending': {
                             const paymentId    = midtransPaymentData.transaction_id;
+                            if ((typeof(paymentId) !== 'string') || !paymentId) {
+                                console.log('unexpected response: ', midtransPaymentData);
+                                throw Error('unexpected API response');
+                            } // if
+                            
                             const redirectData = midtransPaymentData.qr_string ?? midtransPaymentData.redirect_url;
-                            if ((typeof(paymentId) !== 'string') || (typeof(redirectData) !== 'string') || !paymentId || !redirectData) {
-                                // TODO: log unexpected response
+                            if ((redirectData !== undefined) && ((typeof(redirectData) !== 'string') || !redirectData)) {
                                 console.log('unexpected response: ', midtransPaymentData);
                                 throw Error('unexpected API response');
                             } // if
                             
                             
                             
-                            // redirectData for 3DS verification:
                             return {
                                 paymentId,
-                                redirectData,
+                                redirectData, // redirectData for 3DS verification (credit_card) // undefined for gopay, shopeepay
                             } satisfies AuthorizedFundData;
                         }
                         
@@ -189,7 +193,9 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                 
                                 
                                 
-                                case 'qris': return {
+                                case 'gopay'    :
+                                case 'shopeepay':
+                                case 'qris'     : return {
                                     ewallet : {
                                         type       : 'EWALLET',
                                         brand      : midtransPaymentData.payment_type?.toLowerCase() ?? null,
