@@ -89,6 +89,7 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                 console.log('unexpected response: ', midtransPaymentData);
                                 throw Error('unexpected API response');
                             } // if
+                            console.log('QR url: ', midtransPaymentData.actions?.[0]?.url);
                             
                             
                             
