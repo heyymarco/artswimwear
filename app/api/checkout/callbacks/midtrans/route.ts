@@ -1,14 +1,7 @@
-// reusable-ui core:
+// internals:
 import {
-    decimalify,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
-
-// models:
-import type {
-    CreateOrderOptions,
-    AuthorizedFundData,
-    PaidFundData,
-}                           from '@/models'
+    midtransTranslateData,
+}                           from '../../paymentProcessors.midtrans'
 
 
 
@@ -59,130 +52,8 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     
     
     
-    switch (`${midtransPaymentData.status_code}` /* stringify */) {
-        case '404' : {
-            // NotFound Notification
-            
-            
-            
-            // TODO: payment failed
-            console.log('payment failed: ', midtransPaymentData);
-            break;
-        }
-        case '201' :
-        case '202' : {
-            // Success
-            // -or-
-            // Challenge Notification
-            
-            
-            
-            switch (midtransPaymentData.fraud_status) {
-                case 'accept': {
-                    switch (midtransPaymentData.transaction_status) {
-                        case 'pending': {
-                            // TODO: payment notification
-                            console.log('payment notification PENDING: ', midtransPaymentData);
-                            break;
-                        }
-                        case 'cancel': {
-                            // TODO: payment notification
-                            console.log('payment notification CANCEL: ', midtransPaymentData);
-                            break;
-                        }
-                        case 'expire': {
-                            // TODO: payment notification
-                            console.log('payment notification EXPIRE: ', midtransPaymentData);
-                            break;
-                        }
-                        default: {
-                            // TODO: payment notification
-                            console.log('payment notification OTHER: ', midtransPaymentData);
-                            break;
-                        }
-                    } // switch
-                    break;
-                }
-                
-                case 'challenge': { // The transaction is successfully sent to the bank but yet to be approved
-                    // assumes as denied:
-                    // TODO: payment failed
-                    console.log('payment failed: ', midtransPaymentData);
-                    break;
-                }
-                
-                default : {
-                    // TODO: log unexpected response
-                    console.log('unexpected response: ', midtransPaymentData);
-                    throw Error('unexpected API response');
-                }
-            } // switch
-            break;
-        }
-        case '200' : {
-            // Capture Notification after submit OTP 3DS 2.0
-            // Capture Notification
-            // Settlement Notification
-            
-            
-            
-            switch (midtransPaymentData.transaction_status) {
-                // case 'authorize': {
-                //     const paymentId   = midtransPaymentData.transaction_id;
-                //     if ((typeof(paymentId) !== 'string') || !paymentId) {
-                //         // TODO: log unexpected response
-                //         console.log('unexpected response: ', midtransPaymentData);
-                //         throw Error('unexpected API response');
-                //     } // if
-                //     
-                //     
-                //     
-                //     return {
-                //         paymentId,
-                //         redirectData : undefined, // no redirectData required but require a `midtransCaptureFund()` to capture the fund
-                //     };
-                // }
-                
-                case 'capture':
-                case 'settlement': {
-                    let paymentAmountRaw = midtransPaymentData.gross_amount;
-                    const paymentAmount  = decimalify(
-                        (typeof(paymentAmountRaw) === 'number')
-                        ? paymentAmountRaw
-                        : Number.parseFloat(paymentAmountRaw)
-                    );
-                    const paidFundData: PaidFundData = {
-                        paymentSource : {
-                            ewallet : {
-                                type       : 'EWALLET',
-                                brand      : midtransPaymentData.payment_type?.toLowerCase() ?? null,
-                                identifier : midtransPaymentData.merchant_id ?? null,
-                            },
-                        },
-                        paymentAmount : paymentAmount,
-                        paymentFee    : 0,
-                    };
-                    console.log('payment: ', paidFundData);
-                    break;
-                }
-                
-                default : {
-                    // TODO: log unexpected response
-                    console.log('unexpected response: ', midtransPaymentData);
-                    throw Error('unexpected API response');
-                }
-            } // switch
-        }
-        
-        // case '300' :
-        // case '400' :
-        // case '500' :
-        default    : {
-            // TODO: log unexpected response
-            console.log('unexpected response: ', midtransPaymentData);
-            throw Error('unexpected API response');
-        }
-    } // switch
+    const result = midtransTranslateData(midtransPaymentData);
+    console.log('midtrans webhook: ', result);
     
     
     
