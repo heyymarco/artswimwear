@@ -4,10 +4,16 @@ import {
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // models:
-import type {
-    CreateOrderOptions,
-    AuthorizedFundData,
-    PaidFundData,
+import {
+    // types:
+    type CreateOrderOptions,
+    type AuthorizedFundData,
+    type PaidFundData,
+    
+    
+    
+    // utilities:
+    isAuthorizedFundData,
 }                           from '@/models'
 
 
@@ -411,75 +417,25 @@ export const midtransCaptureFund         = async (paymentId: string): Promise<Pa
         }),
     });
     const midtransPaymentData = await midtransHandleResponse(response);
-    switch (`${midtransPaymentData.status_code}` /* stringify */) {
-        case '404' : {
-            // NotFound Notification
-            
-            
-            
-            return undefined;
-        }
-        case '200' : {
-            // Capture Notification after submit OTP 3DS 2.0
-            // Capture Notification
-            // Settlement Notification
-            
-            
-            
-            switch (midtransPaymentData.transaction_status) {
-                // case 'authorize': {
-                //     const paymentId   = midtransPaymentData.transaction_id;
-                //     if ((typeof(paymentId) !== 'string') || !paymentId) {
-                //         // TODO: log unexpected response
-                //         console.log('unexpected response: ', midtransPaymentData);
-                //         throw Error('unexpected API response');
-                //     } // if
-                //     
-                //     
-                //     
-                //     return {
-                //         paymentId,
-                //         redirectData : undefined, // no redirectData required but require a `midtransCaptureFund()` to capture the fund
-                //     };
-                // }
-                
-                case 'capture':
-                case 'settlement': {
-                    let paymentAmountRaw = midtransPaymentData.gross_amount;
-                    const paymentAmount  = decimalify(
-                        (typeof(paymentAmountRaw) === 'number')
-                        ? paymentAmountRaw
-                        : Number.parseFloat(paymentAmountRaw)
-                    );
-                    return {
-                        paymentSource : {
-                            card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
-                                type       : 'CARD',
-                                brand      : midtransPaymentData.bank?.toLowerCase() ?? null,
-                                identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
-                            },
-                        },
-                        paymentAmount : paymentAmount,
-                        paymentFee    : 0,
-                    };
-                }
-                
-                default : {
-                    // TODO: log unexpected response
-                    console.log('unexpected response: ', midtransPaymentData);
-                    throw Error('unexpected API response');
-                }
-            } // switch
-        }
-        
-        // case '300' :
-        // case '400' :
-        // case '500' :
-        default    : {
-            // TODO: log unexpected response
+    const result = midtransTranslateData(midtransPaymentData);
+    switch (result) {
+        case null      :   // Transaction creation was denied.
+        case false     : { // Transaction was deleted due to canceled or expired.
             console.log('unexpected response: ', midtransPaymentData);
             throw Error('unexpected API response');
         }
+        
+        
+        
+        default:
+            // undefined          : Transaction not found.
+            // AuthorizedFundData : Authorized for payment.
+            // PaidFundData       : Paid.
+            if (isAuthorizedFundData(result)) {
+                console.log('unexpected response: ', midtransPaymentData);
+                throw Error('unexpected API response');
+            } // if
+            return result;
     } // switch
 }
 export const midtransCancelOrder         = async (paymentId: string): Promise<boolean> => {
