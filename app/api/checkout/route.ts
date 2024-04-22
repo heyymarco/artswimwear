@@ -196,8 +196,8 @@ export interface PlaceOrderDataBasic
     extends
         CartData,              // cart item(s)
         
-        Partial<ExtraData>,    // extra data
-        Partial<CustomerData>, // customer data
+        Partial<ExtraData>,    // extra data    // conditionally required if no simulateOrder
+        Partial<CustomerData>, // customer data // conditionally required if no simulateOrder
         
         PlaceOrderOptions,     // options: pay manually | paymentSource
         CurrencyOptions        // options: preferredCurrency
@@ -231,9 +231,6 @@ export interface MakePaymentOptions {
 }
 export interface MakePaymentDataBasic
     extends
-        ExtraData,         // extra data
-        CustomerData,      // customer data
-        
         Omit<MakePaymentOptions, 'cancelOrder'> // options: empty yet
 {
     orderId : string
@@ -1842,31 +1839,6 @@ Updating the confirmation is not required.`,
         });
     };
     //#endregion cancel the payment
-    
-    
-    
-    //#region validate customer data & extra
-    const {
-        // marketings:
-        marketingOpt,
-        
-        
-        
-        // customers:
-        customerName,
-        customerEmail,
-    } = paymentData;
-    if (
-        ((marketingOpt !== undefined) && (typeof(marketingOpt) !== 'boolean'))
-        
-        || !customerName || (typeof(customerName) !== 'string')
-        || !customerEmail    || (typeof(customerEmail) !== 'string') // TODO: validate email
-    ) {
-        return NextResponse.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
-    } // if
-    //#endregion validate customer data & extra
     
     
     

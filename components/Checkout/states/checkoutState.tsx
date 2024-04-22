@@ -1519,17 +1519,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             
-            // extra data:
-            marketingOpt,
-            
-            
-            
-            // customer data:
-            customerName,
-            customerEmail,
-            
-            
-            
             // billing data:
             ...(isBillingAddressRequired ? {
                 billingFirstName : billingAsShipping ? shippingFirstName : billingFirstName,
