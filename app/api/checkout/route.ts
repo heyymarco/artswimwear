@@ -56,6 +56,7 @@ import type {
 // templates:
 import type {
     // types:
+    CustomerOrGuestData,
     OrderAndData,
 }                           from '@/components/Checkout/templates/orderDataContext'
 
@@ -71,12 +72,7 @@ import {
 
 // internals:
 import {
-    // types:
-    CommitCustomerOrGuest,
-    
-    
-    
-    
+    // utilities:
     sumReducer,
     
     createDraftOrder,
@@ -653,7 +649,7 @@ router
     
     
     
-    const customerOrGuest : CommitCustomerOrGuest = {
+    const customerOrGuest : CustomerOrGuestData = {
         name                 : customerName,
         email                : customerEmail,
         preference           : {
@@ -2161,7 +2157,7 @@ Updating the confirmation is not required.`,
         // send email confirmation:
         if (newOrder) {
             // TODO: duplicate on `POST`:
-            const customerOrGuest : CommitCustomerOrGuest = {
+            const customerOrGuest : CustomerOrGuestData = {
                 name                 : customerName,
                 email                : customerEmail,
                 preference           : {

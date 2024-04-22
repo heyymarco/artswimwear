@@ -46,6 +46,7 @@ import {
 }                           from '@/components/Checkout/templates/businessDataContext'
 import {
     // types:
+    CustomerOrGuestData,
     OrderAndData,
     
     
@@ -105,7 +106,7 @@ export interface CreateDraftOrderData
     paymentId       : string
     
     // extended data:
-    customerOrGuest : CommitCustomerOrGuest
+    customerOrGuest : CustomerOrGuestData
 }
 export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createDraftOrderData: CreateDraftOrderData): Promise<string> => {
     // data:
@@ -170,7 +171,7 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
             guest               : {
                 create          : {
                     ...customerOrGuestData,
-                    guestPreference : {
+                    guestPreference : !preferenceData ? undefined : {
                         create  : preferenceData,
                     },
                 },
@@ -253,7 +254,7 @@ export type CreateOrderData =
     &(
         |{
             // extended data:
-            customerOrGuest  : CommitCustomerOrGuest
+            customerOrGuest  : CustomerOrGuestData
         }
         |{
             // extended data:
@@ -279,7 +280,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
     
     
     
-    const newOrder = await prismaTransaction.order.create({
+    const {customer, guest, ...newOrder} = await prismaTransaction.order.create({
         data   : {
             // primary data:
             
@@ -320,7 +321,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                         guest               : {
                             create          : {
                                 ...customerOrGuestData,
-                                guestPreference : {
+                                guestPreference : !preferenceData ? undefined : {
                                     create  : preferenceData,
                                 },
                             },
@@ -420,6 +421,28 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                     countries       : true, // required for calculating `getMatchingShipping()`
                 },
             },
+            customer : {
+                select : {
+                    name  : true,
+                    email : true,
+                    customerPreference : {
+                        select : {
+                            marketingOpt : true,
+                        },
+                    },
+                },
+            },
+            guest    : {
+                select : {
+                    name  : true,
+                    email : true,
+                    guestPreference : {
+                        select : {
+                            marketingOpt : true,
+                        },
+                    },
+                },
+            },
         },
     });
     const shippingAddressData  = newOrder.shippingAddress;
@@ -443,22 +466,32 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             ? getMatchingShipping(shippingProviderData, { city: shippingAddressData.city, zone: shippingAddressData.zone, country: shippingAddressData.country })
             : null
         ),
-    };
+        customerOrGuest : (
+            !!customer
+            ? (() => {
+                const {customerPreference: preference, ...customerData} = customer;
+                return {
+                    ...customerData,
+                    preference,
+                };
+            })()
+            : (
+                !!guest
+                ? (() => {
+                    const {guestPreference: preference, ...guestData} = guest;
+                    return {
+                        ...guestData,
+                        preference,
+                    };
+                })()
+                : null
+            )
+        ),
+    } satisfies OrderAndData;
 }
 
 
 
-export type CommitCustomerOrGuest = Omit<(Omit<Customer, 'emailVerified'|'image'> & Guest),
-    |'id'
-    |'createdAt'
-    |'updatedAt'
-> & {
-    preference ?: Omit<Partial<(CustomerPreference & GuestPreference)>,
-        |'id'
-        |'customerId'
-        |'guestId'
-    >
-}
 export type CommitDraftOrder = Omit<DraftOrder,
     |'createdAt'
     
@@ -554,7 +587,7 @@ export const revertOrder = async (prismaTransaction: Parameters<Parameters<typeo
 export interface SendEmailConfirmationOptions {
     customerEmail            : string
     
-    customerOrGuest          : CommitCustomerOrGuest
+    customerOrGuest          : CustomerOrGuestData
     newOrder                 : OrderAndData
     
     countryList              : EntityState<CountryPreview>
