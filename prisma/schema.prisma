@@ -210,14 +210,15 @@ model Customer {
     image                   String?
     
     // relations:
-    orders                          Order[]                         @relation("OrdersOnCustomer") // one Customer may have some related Order(s) // one  to many
-    customerPreference              CustomerPreference?             // a Customer may have one related CustomerPreference                        // one  to one
+    orders                          Order[]                         @relation("OrdersOnCustomer")      // one Customer may have some related Order(s)       // one  to many
+    draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnCustomer") // one Customer may have some related DraftOrder(s)  // one  to many
+    customerPreference              CustomerPreference?             // a Customer may have one related CustomerPreference                                   // one  to one
     
-    customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                       // one  to many
-    customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                       // one  to many
-    customerCredentials             CustomerCredentials?            // a Customer may have one  related CustomerCredentials                      // one  to one
-    customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken               // one  to one
-    customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken           // one  to one
+    customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                                  // one  to many
+    customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                                  // one  to many
+    customerCredentials             CustomerCredentials?            // a Customer may have one  related CustomerCredentials                                 // one  to one
+    customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken                          // one  to one
+    customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken                      // one  to one
     
     // customerRoleId                  String?
     // customerRole                    CustomerRole?                   @relation(fields: [customerRoleId], references: [id], onDelete: SetNull) // preserve the related Customer(s) if the CustomerRole deleted
@@ -245,8 +246,9 @@ model Guest {
     email                   String                          // minLength: 5, maxLength: 50
     
     // relations:
-    orders                  Order[]                 @relation("OrdersOnGuest") // one Guest may have some related Order(s) // one  to many
-    guestPreference         GuestPreference?        // a Guest may have one related GuestPreference                        // one  to one
+    orders                  Order[]                 @relation("OrdersOnGuest")      // one Guest may have some related Order(s)       // one  to many
+    draftOrders             DraftOrder[]            @relation("DraftOrdersOnGuest") // one Guest may have some related DraftOrder(s)  // one  to many
+    guestPreference         GuestPreference?        // a Guest may have one related GuestPreference                                   // one  to one
 }
 model GuestPreference {
     // records:
@@ -412,6 +414,12 @@ model DraftOrder {
     
     // relations:
     items                   DraftOrdersOnProducts[] // some Product(s) may have some related DraftOrder(s)  // many to many
+    
+    customerId              String?
+    customer                Customer?               @relation(fields: [customerId]         , references: [id], "DraftOrdersOnCustomer", onDelete: SetNull) // preserve the related DraftOrder(s) if the Customer deleted
+    
+    guestId                 String?
+    guest                   Guest?                  @relation(fields: [guestId]            , references: [id], "DraftOrdersOnGuest"   , onDelete: SetNull) // preserve the related DraftOrder(s) if the Guest deleted
     
     shippingProviderId      String?
     shippingProvider        ShippingProvider?       @relation(fields: [shippingProviderId] , references: [id], "DraftOrdersOnShipping", onDelete: SetNull) // preserve the related DraftOrder(s) if the ShippingProvider deleted
