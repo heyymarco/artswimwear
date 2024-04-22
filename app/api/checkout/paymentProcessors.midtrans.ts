@@ -435,13 +435,16 @@ export const midtransCaptureFund         = async (paymentId: string): Promise<Pa
         
         
         default:
-            // undefined          : Transaction not found.
-            // AuthorizedFundData : Authorized for payment.
-            // PaidFundData       : Paid.
             if (isAuthorizedFundData(result)) {
+                // AuthorizedFundData : Authorized for payment.
                 console.log('unexpected response: ', midtransPaymentData);
                 throw Error('unexpected API response');
             } // if
+            
+            
+            
+            // undefined    : Transaction not found.
+            // PaidFundData : Paid.
             return result;
     } // switch
 }

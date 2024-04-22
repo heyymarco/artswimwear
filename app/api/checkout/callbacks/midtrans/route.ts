@@ -77,12 +77,16 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         
         
         default: {
-            // AuthorizedFundData : Authorized for payment.
-            // PaidFundData       : Paid.
             if (isAuthorizedFundData(result)) {
+                // AuthorizedFundData : Authorized for payment.
                 // ignore Authorized for payment
                 break;
             } // if
+            
+            
+            
+            // PaidFundData : Paid.
+            // TODO: commit draftOrder => order to DB
         }
     } // switch
     
