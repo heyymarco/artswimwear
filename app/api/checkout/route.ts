@@ -1813,21 +1813,31 @@ Updating the confirmation is not required.`,
     
     //#region cancel the payment
     if (cancelOrder) {
-        let orderDeletedFromDatabase = false;
-        try {
+        const orderDeletedFromDatabase = await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
             const requiredSelect = {
-                id : true,
+                id                     : true,
+                
+                orderId                : true,
+                
+                items : {
+                    select : {
+                        productId      : true,
+                        variantIds     : true,
+                        
+                        quantity       : true,
+                    },
+                },
             };
-            const deletedDraftOrder = (
+            const draftOrder = (
                 !!orderId
-                ? await prisma.draftOrder.delete({
+                ? await prismaTransaction.draftOrder.findUnique({
                     where  : {
                         orderId : orderId,
                     },
                     select  : requiredSelect,
                 })
                 : !!paymentId
-                ? await prisma.draftOrder.delete({
+                ? await prismaTransaction.draftOrder.findUnique({
                     where : {
                         paymentId : paymentId,
                     },
@@ -1835,11 +1845,14 @@ Updating the confirmation is not required.`,
                 })
                 : null
             );
-            orderDeletedFromDatabase = true;
-        }
-        catch {
-            // ignore any error
-        } // try
+            if (!draftOrder) return false;
+            
+            
+            
+            // draftOrder DELETED => restore the `Product` stock and delete the `draftOrder`:
+            await revertOrder(prismaTransaction, { draftOrder });
+            return true;
+        });
         
         
         
@@ -2002,13 +2015,9 @@ Updating the confirmation is not required.`,
             
             if (draftOrder.expiresAt <= new Date()) {
                 // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:
-                try {
-                    await revertOrder(prismaTransaction, { draftOrder });
-                }
-                catch (error: any) {
-                    console.log('error: ', error);
-                    /* ignore any error */
-                } // try
+                await revertOrder(prismaTransaction, { draftOrder });
+                
+                
                 
                 throw 'DRAFT_ORDER_EXPIRED';
             } // if
