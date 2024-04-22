@@ -400,7 +400,23 @@ type CommitDraftOrder = Omit<DraftOrder,
         |'draftOrderId'
     >[]
 }
-export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder, customerOrGuest, payment, paymentConfirmationToken } : { draftOrder: CommitDraftOrder, customerOrGuest: CommitCustomerOrGuest, payment: Payment, paymentConfirmationToken: string|undefined }): Promise<OrderAndData> => {
+export interface CommitOrderData {
+    draftOrder               : CommitDraftOrder
+    customerOrGuest          : CommitCustomerOrGuest
+    payment                  : Payment
+    paymentConfirmationToken : string|undefined
+}
+export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], commitOrderData : CommitOrderData): Promise<OrderAndData> => {
+    // data:
+    const {
+        draftOrder,
+        customerOrGuest,
+        payment,
+        paymentConfirmationToken,
+    } = commitOrderData;
+    
+    
+    
     const [orderAndData] = await Promise.all([
         createOrder(prismaTransaction, {
             orderId                  : draftOrder.orderId,
