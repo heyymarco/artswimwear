@@ -649,16 +649,6 @@ router
     
     
     
-    const customerOrGuest : CustomerOrGuestData = {
-        name                 : customerName,
-        email                : customerEmail,
-        preference           : {
-            marketingOpt     : marketingOpt,
-        },
-    };
-    
-    
-    
     let orderId                  : string|undefined;
     let authorizedOrPaidFundData : AuthorizedFundData|PaidFundData|undefined;
     let paymentDetail            : PaymentDetail|undefined;
@@ -1252,6 +1242,13 @@ router
                 })()
                 : null
             );
+            const customerOrGuest : CustomerOrGuestData = {
+                name                 : customerName,
+                email                : customerEmail,
+                preference           : {
+                    marketingOpt     : marketingOpt,
+                },
+            };
             const billingAddressData = (
                 !hasBillingAddress
                 ? null
@@ -1384,9 +1381,6 @@ router
             
             
             await sendEmailConfirmation({
-                customerEmail,
-                
-                customerOrGuest,
                 newOrder,
                 
                 countryList,
@@ -2156,19 +2150,7 @@ Updating the confirmation is not required.`,
         
         // send email confirmation:
         if (newOrder) {
-            // TODO: duplicate on `POST`:
-            const customerOrGuest : CustomerOrGuestData = {
-                name                 : customerName,
-                email                : customerEmail,
-                preference           : {
-                    marketingOpt     : marketingOpt,
-                },
-            };
-            
             await sendEmailConfirmation({
-                customerEmail,
-                
-                customerOrGuest,
                 newOrder,
                 
                 countryList,

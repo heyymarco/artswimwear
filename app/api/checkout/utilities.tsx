@@ -585,9 +585,6 @@ export const revertOrder = async (prismaTransaction: Parameters<Parameters<typeo
 
 
 export interface SendEmailConfirmationOptions {
-    customerEmail            : string
-    
-    customerOrGuest          : CustomerOrGuestData
     newOrder                 : OrderAndData
     
     countryList              : EntityState<CountryPreview>
@@ -598,9 +595,6 @@ export interface SendEmailConfirmationOptions {
 export const sendEmailConfirmation = async (options: SendEmailConfirmationOptions): Promise<boolean> => {
     // options:
     const {
-        customerEmail,
-        
-        customerOrGuest,
         newOrder,
         
         countryList,
@@ -608,6 +602,8 @@ export const sendEmailConfirmation = async (options: SendEmailConfirmationOption
         isPaid,
         paymentConfirmationToken,
     } = options;
+    const customerEmail = newOrder.customerOrGuest?.email;
+    if (!customerEmail) return false;
     
     
     
@@ -672,7 +668,7 @@ export const sendEmailConfirmation = async (options: SendEmailConfirmationOption
         const orderDataContextProviderProps : OrderDataContextProviderProps = {
             // data:
             order                : newOrder,
-            customerOrGuest      : customerOrGuest,
+            customerOrGuest      : newOrder.customerOrGuest,
             paymentConfirmation  : {
                 token            : paymentConfirmationToken ?? '',
                 rejectionReason  : null,
