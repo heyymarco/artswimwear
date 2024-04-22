@@ -69,7 +69,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         
         
         
-        case false: { // Transaction was deleted due to canceled or expired.  
+        case false: {   // Transaction was deleted due to canceled or expired.  
             // TODO: delete draftOrder from DB
             break;
         }
@@ -84,8 +84,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                 break;
             } // if
         }
-    }
-    console.log('midtrans webhook: ', result);
+    } // switch
     
     
     
