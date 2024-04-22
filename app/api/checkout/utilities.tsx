@@ -386,7 +386,7 @@ export type CommitCustomerOrGuest = Omit<(Omit<Customer, 'emailVerified'|'image'
         |'guestId'
     >
 }
-type CommitDraftOrder = Omit<DraftOrder,
+export type CommitDraftOrder = Omit<DraftOrder,
     |'createdAt'
     
     |'paymentId'
