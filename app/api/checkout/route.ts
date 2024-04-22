@@ -80,6 +80,7 @@ import {
     sumReducer,
     
     createDraftOrder,
+    cancelDraftOrder,
     createOrder,
     commitOrder,
     revertOrder,
@@ -1814,44 +1815,8 @@ Updating the confirmation is not required.`,
     //#region cancel the payment
     if (cancelOrder) {
         const orderDeletedFromDatabase = await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
-            const requiredSelect = {
-                id                     : true,
-                
-                orderId                : true,
-                
-                items : {
-                    select : {
-                        productId      : true,
-                        variantIds     : true,
-                        
-                        quantity       : true,
-                    },
-                },
-            };
-            const draftOrder = (
-                !!orderId
-                ? await prismaTransaction.draftOrder.findUnique({
-                    where  : {
-                        orderId : orderId,
-                    },
-                    select  : requiredSelect,
-                })
-                : !!paymentId
-                ? await prismaTransaction.draftOrder.findUnique({
-                    where : {
-                        paymentId : paymentId,
-                    },
-                    select : requiredSelect,
-                })
-                : null
-            );
-            if (!draftOrder) return false;
-            
-            
-            
             // draftOrder DELETED => restore the `Product` stock and delete the `draftOrder`:
-            await revertOrder(prismaTransaction, { draftOrder });
-            return true;
+            return await cancelDraftOrder(prismaTransaction, { orderId, paymentId });
         });
         
         
