@@ -390,6 +390,9 @@ type CommitDraftOrder = Omit<DraftOrder,
     |'createdAt'
     
     |'paymentId'
+    
+    |'customerId'
+    |'guestId'
 > & {
     items : Omit<DraftOrdersOnProducts,
         |'id'
