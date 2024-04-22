@@ -102,8 +102,11 @@ export interface CreateDraftOrderData
         >
 {
     // temporary data:
-    expiresAt : Date
-    paymentId : string
+    expiresAt       : Date
+    paymentId       : string
+    
+    // extended data:
+    customerOrGuest : CommitCustomerOrGuest
 }
 export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createDraftOrderData: CreateDraftOrderData): Promise<string> => {
     // data:
@@ -119,7 +122,13 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
         shippingAddress,
         shippingCost,
         shippingProviderId,
+        
+        // extended data:
+        customerOrGuest,
     } = createDraftOrderData;
+    const {
+        preference: preferenceData,
+    ...customerOrGuestData} = customerOrGuest;
     
     
     
@@ -145,6 +154,26 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
             shippingProvider    : !shippingProviderId ? undefined : {
                 connect         : {
                     id          : shippingProviderId,
+                },
+            },
+            
+            // extended data:
+            
+            // TODO: connect to existing customer
+            // customer         : {
+            //     connect      : {
+            //         ...customerOrGuestData,
+            //         customerPreference : {
+            //             ...preferenceData,
+            //         },
+            //     },
+            // },
+            guest               : {
+                create          : {
+                    ...customerOrGuestData,
+                    guestPreference : {
+                        create  : preferenceData,
+                    },
                 },
             },
         },
@@ -402,7 +431,6 @@ export type CommitDraftOrder = Omit<DraftOrder,
 }
 export interface CommitOrderData {
     draftOrder               : CommitDraftOrder
-    customerOrGuest          : CommitCustomerOrGuest
     payment                  : Payment
     paymentConfirmationToken : string|undefined
 }
@@ -410,7 +438,6 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
     // data:
     const {
         draftOrder,
-        customerOrGuest,
         payment,
         paymentConfirmationToken,
     } = commitOrderData;

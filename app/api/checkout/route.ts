@@ -653,6 +653,16 @@ router
     
     
     
+    const customerOrGuest : CommitCustomerOrGuest = {
+        name                 : customerName,
+        email                : customerEmail,
+        preference           : {
+            marketingOpt     : marketingOpt,
+        },
+    };
+    
+    
+    
     let orderId                  : string|undefined;
     let authorizedOrPaidFundData : AuthorizedFundData|PaidFundData|undefined;
     let paymentDetail            : PaymentDetail|undefined;
@@ -1208,13 +1218,6 @@ router
                 : totalShippingCostConverted
             );
             
-            const customerOrGuest : CommitCustomerOrGuest = {
-                name                 : customerName,
-                email                : customerEmail,
-                preference           : {
-                    marketingOpt     : marketingOpt,
-                },
-            };
             const paymentDetail : PaymentDetail|null = (
                 isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
                 ? ((): PaymentDetail => {
@@ -1287,6 +1290,9 @@ router
                     shippingAddress          : shippingAddressData,
                     shippingCost             : shippingCostData,
                     shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,
+                    
+                    // extended data:
+                    customerOrGuest          : customerOrGuest,
                 })
                 : null
             );
@@ -1337,17 +1343,6 @@ router
         
         // send email confirmation:
         if (paymentDetail && newOrder) {
-            // TODO: duplicate on `PATCH`:
-            const customerOrGuest : CommitCustomerOrGuest = {
-                name                 : customerName,
-                email                : customerEmail,
-                preference           : {
-                    marketingOpt     : marketingOpt,
-                },
-            };
-            
-            
-            
             //#region related data
             const allCountries = await prisma.country.findMany({
                 select : {
@@ -2124,7 +2119,6 @@ Updating the confirmation is not required.`,
                 // payment APPROVED => move the `draftOrder` to `order`:
                 newOrder = await commitOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
-                    customerOrGuest    : customerOrGuest,
                     payment            : {
                         ...paymentDetail,
                         billingAddress : hasBillingAddress ? {
