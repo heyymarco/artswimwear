@@ -1890,15 +1890,6 @@ Updating the confirmation is not required.`,
     let newOrder                 : OrderAndData|undefined = undefined;
     let countryList              : EntityState<CountryPreview>;
     try {
-        // TODO: duplicate on `POST`:
-        const customerOrGuest : CommitCustomerOrGuest = {
-            name                 : customerName,
-            email                : customerEmail,
-            preference           : {
-                marketingOpt     : marketingOpt,
-            },
-        };
-        
         ([paymentResponse, paymentConfirmationToken, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, string|undefined, OrderAndData|undefined, EntityState<CountryPreview>]> => {
             //#region verify draftOrder_id
             const requiredSelect = {
@@ -1915,6 +1906,20 @@ Updating the confirmation is not required.`,
                 
                 customerId             : true,
                 guestId                : true,
+                customer               : {
+                    select : {
+                        // data:
+                        name  : true,
+                        email : true,
+                    },
+                },
+                guest                  : {
+                    select : {
+                        // data:
+                        name  : true,
+                        email : true,
+                    },
+                },
                 
                 items : {
                     select : {
@@ -2155,6 +2160,15 @@ Updating the confirmation is not required.`,
         
         // send email confirmation:
         if (newOrder) {
+            // TODO: duplicate on `POST`:
+            const customerOrGuest : CommitCustomerOrGuest = {
+                name                 : customerName,
+                email                : customerEmail,
+                preference           : {
+                    marketingOpt     : marketingOpt,
+                },
+            };
+            
             await sendEmailConfirmation({
                 customerEmail,
                 
