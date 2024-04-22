@@ -94,9 +94,8 @@ export const sumReducer = <TNumber extends number|null|undefined>(accum: TNumber
 export interface CreateDraftOrderData
     extends
         // bases:
-        Omit<CreateOrderData,
+        Omit<CreateOrderDataBasic,
             // extended data:
-            |'customerOrGuest'
             |'payment'
             |'paymentConfirmationToken'
         >
@@ -230,7 +229,7 @@ export const cancelDraftOrder = async (prismaTransaction: Parameters<Parameters<
     return true;
 }
 
-export interface CreateOrderData {
+export interface CreateOrderDataBasic {
     // primary data:
     orderId                  : string
     items                    : Omit<OrdersOnProducts,
@@ -246,10 +245,22 @@ export interface CreateOrderData {
     shippingProviderId       : string|null
     
     // extended data:
-    customerOrGuest          : CommitCustomerOrGuest
     payment                  : Payment
     paymentConfirmationToken : string|null
 }
+export type CreateOrderData =
+    &CreateOrderDataBasic
+    &(
+        |{
+            // extended data:
+            customerOrGuest  : CommitCustomerOrGuest
+        }
+        |{
+            // extended data:
+            customerId       : string|null
+            guestId          : string|null
+        }
+    )
 export const createOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createOrderData: CreateOrderData): Promise<OrderAndData> => {
     // data:
     const {
@@ -262,13 +273,9 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
         shippingProviderId,
         
         // extended data:
-        customerOrGuest,
         payment,
         paymentConfirmationToken,
     } = createOrderData;
-    const {
-        preference: preferenceData,
-    ...customerOrGuestData} = customerOrGuest;
     
     
     
@@ -294,23 +301,60 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             
             // extended data:
             
-            // TODO: connect to existing customer
-            // customer         : {
-            //     connect      : {
-            //         ...customerOrGuestData,
-            //         customerPreference : {
-            //             ...preferenceData,
-            //         },
-            //     },
-            // },
-            guest               : {
-                create          : {
-                    ...customerOrGuestData,
-                    guestPreference : {
-                        create  : preferenceData,
-                    },
-                },
-            },
+            ...(() => {
+                if ('customerOrGuest' in createOrderData) {
+                    const {
+                        preference: preferenceData,
+                    ...customerOrGuestData} = createOrderData.customerOrGuest;
+                    
+                    return {
+                        // TODO: connect to existing customer
+                        // customer         : {
+                        //     connect      : {
+                        //         ...customerOrGuestData,
+                        //         customerPreference : {
+                        //             ...preferenceData,
+                        //         },
+                        //     },
+                        // },
+                        guest               : {
+                            create          : {
+                                ...customerOrGuestData,
+                                guestPreference : {
+                                    create  : preferenceData,
+                                },
+                            },
+                        },
+                    };
+                }
+                else {
+                    const {
+                        customerId,
+                        guestId,
+                    } = createOrderData;
+                    if (!!customerId) {
+                        return {
+                            customer : {
+                                connect : {
+                                    id: customerId,
+                                },
+                            },
+                        };
+                    }
+                    else if (!!guestId) {
+                        return {
+                            guest : {
+                                connect : {
+                                    id: guestId,
+                                },
+                            },
+                        };
+                    }
+                    else {
+                        return {};
+                    } // if
+                }
+            })(),
             
             payment             : payment,
             paymentConfirmation : !paymentConfirmationToken ? undefined : {
@@ -419,9 +463,6 @@ export type CommitDraftOrder = Omit<DraftOrder,
     |'createdAt'
     
     |'paymentId'
-    
-    |'customerId'
-    |'guestId'
 > & {
     items : Omit<DraftOrdersOnProducts,
         |'id'
@@ -448,7 +489,8 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
         createOrder(prismaTransaction, {
             orderId                  : draftOrder.orderId,
             items                    : draftOrder.items,
-            customerOrGuest          : customerOrGuest,
+            customerId               : draftOrder.customerId,
+            guestId                  : draftOrder.guestId,
             preferredCurrency        : draftOrder.preferredCurrency,
             shippingAddress          : draftOrder.shippingAddress,
             shippingCost             : draftOrder.shippingCost,

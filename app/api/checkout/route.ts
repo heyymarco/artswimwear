@@ -1913,6 +1913,9 @@ Updating the confirmation is not required.`,
                 shippingCost           : true,
                 shippingProviderId     : true,
                 
+                customerId             : true,
+                guestId                : true,
+                
                 items : {
                     select : {
                         productId      : true,
@@ -1925,21 +1928,20 @@ Updating the confirmation is not required.`,
                 },
             };
             const draftOrder = (
-                !!orderId
-                ? await prismaTransaction.draftOrder.findUnique({
-                    where  : {
-                        orderId : orderId,
-                    },
+                (!orderId && !paymentId)
+                ? null
+                : await prismaTransaction.draftOrder.findUnique({
+                    where  : (
+                        !!orderId
+                        ? {
+                            orderId   : orderId,
+                        }
+                        : {
+                            paymentId : paymentId ?? '',
+                        }
+                    ),
                     select  : requiredSelect,
                 })
-                : !!paymentId
-                ? await prismaTransaction.draftOrder.findUnique({
-                    where : {
-                        paymentId : paymentId,
-                    },
-                    select : requiredSelect,
-                })
-                : null
             );
             if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
             
