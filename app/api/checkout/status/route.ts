@@ -61,6 +61,4 @@ export async function GET(req: Request, res: Response) {
     });
 }
 
-export const config = {
-    runtime: 'edge',
-};
+export const runtime = 'edge';
