@@ -352,6 +352,8 @@ model Order {
     
     // data:
     orderId                 String                  @unique // a secondary id for public identifier
+    paymentId               String?                 @unique // a secondary id for public identifier
+    
     orderStatus             OrderStatus             @default(NEW_ORDER)
     orderTrouble            Json?
     

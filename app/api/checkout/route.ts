@@ -1281,6 +1281,7 @@ router
                 ? createOrder(prismaTransaction, {
                     // primary data:
                     orderId                  : orderId,
+                    paymentId                : null,
                     items                    : orderItemsData,
                     preferredCurrency        : preferredCurrencyData,
                     shippingAddress          : shippingAddressData,

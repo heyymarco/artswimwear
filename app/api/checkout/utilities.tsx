@@ -69,6 +69,11 @@ import {
     ShippingContextProvider,
 }                           from '@/components/Checkout/templates/shippingDataContext'
 
+// others:
+import {
+    customAlphabet,
+}                           from 'nanoid/async'
+
 // utilities:
 import {
     resolveMediaUrl,
@@ -254,6 +259,7 @@ export const findDraftOrder = async (prismaTransaction: Parameters<Parameters<ty
         expiresAt              : true,
         
         orderId                : true,
+        paymentId              : true,
         
         preferredCurrency      : true,
         
@@ -301,6 +307,7 @@ export const findDraftOrder = async (prismaTransaction: Parameters<Parameters<ty
 export interface CreateOrderDataBasic {
     // primary data:
     orderId                  : string
+    paymentId                : string|null
     items                    : Omit<OrdersOnProducts,
         // records:
         |'id'
@@ -335,6 +342,10 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
     const {
         // primary data:
         orderId,
+        paymentId = await (async (): Promise<string> => {
+            const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
+            return await nanoid();
+        })(),
         items,
         preferredCurrency,
         shippingAddress,
@@ -353,6 +364,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             // primary data:
             
             orderId             : orderId,
+            paymentId           : paymentId,
             
             items               : {
                 create          : items,
@@ -704,8 +716,6 @@ export const findOrder = async (prismaTransaction: Parameters<Parameters<typeof 
 
 export type CommitDraftOrder = Omit<DraftOrder,
     |'createdAt'
-    
-    |'paymentId'
 > & {
     items : Omit<DraftOrdersOnProducts,
         |'id'
@@ -731,6 +741,7 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
     const [orderAndData] = await Promise.all([
         createOrder(prismaTransaction, {
             orderId                  : draftOrder.orderId,
+            paymentId                : draftOrder.paymentId,
             items                    : draftOrder.items,
             customerId               : draftOrder.customerId,
             guestId                  : draftOrder.guestId,
