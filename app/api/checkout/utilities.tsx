@@ -233,6 +233,71 @@ export const cancelDraftOrder = async (prismaTransaction: Parameters<Parameters<
     return true;
 }
 
+export interface FindDraftOrderData {
+    orderId   ?: string|null
+    paymentId ?: string|null
+}
+export const findDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findDraftOrderData: FindDraftOrderData): Promise<(CommitDraftOrder & RevertDraftOrder)|null> => {
+    // data:
+    const {
+        orderId   : orderIdRaw,
+        paymentId : paymentIdRaw,
+    } = findDraftOrderData;
+    const orderId   = orderIdRaw   || undefined;
+    const paymentId = paymentIdRaw || undefined;
+    if (!orderId && !paymentId) return null;
+    
+    
+    
+    const requiredSelect = {
+        id                     : true,
+        expiresAt              : true,
+        
+        orderId                : true,
+        
+        preferredCurrency      : true,
+        
+        shippingAddress        : true,
+        shippingCost           : true,
+        shippingProviderId     : true,
+        
+        customerId             : true,
+        guestId                : true,
+        // customer               : {
+        //     select : {
+        //         // data:
+        //         name  : true,
+        //         email : true,
+        //     },
+        // },
+        // guest                  : {
+        //     select : {
+        //         // data:
+        //         name  : true,
+        //         email : true,
+        //     },
+        // },
+        
+        items : {
+            select : {
+                productId      : true,
+                variantIds     : true,
+                
+                price          : true,
+                shippingWeight : true,
+                quantity       : true,
+            },
+        },
+    };
+    return await prismaTransaction.draftOrder.findUnique({
+        where  : {
+            orderId   : orderId,
+            paymentId : paymentId,
+        },
+        select : requiredSelect,
+    });
+}
+
 export interface CreateOrderDataBasic {
     // primary data:
     orderId                  : string

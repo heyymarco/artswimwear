@@ -67,6 +67,8 @@ import {
     
     createDraftOrder,
     cancelDraftOrder,
+    findDraftOrder,
+    
     createOrder,
     commitOrder,
     revertOrder,
@@ -1849,66 +1851,8 @@ Updating the confirmation is not required.`,
     try {
         ([paymentResponse, paymentConfirmationToken, newOrder] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, string|undefined, OrderAndData|undefined]> => {
             //#region verify draftOrder_id
-            const requiredSelect = {
-                id                     : true,
-                expiresAt              : true,
-                
-                orderId                : true,
-                
-                preferredCurrency      : true,
-                
-                shippingAddress        : true,
-                shippingCost           : true,
-                shippingProviderId     : true,
-                
-                customerId             : true,
-                guestId                : true,
-                customer               : {
-                    select : {
-                        // data:
-                        name  : true,
-                        email : true,
-                    },
-                },
-                guest                  : {
-                    select : {
-                        // data:
-                        name  : true,
-                        email : true,
-                    },
-                },
-                
-                items : {
-                    select : {
-                        productId      : true,
-                        variantIds     : true,
-                        
-                        price          : true,
-                        shippingWeight : true,
-                        quantity       : true,
-                    },
-                },
-            };
-            const draftOrder = (
-                (!orderId && !paymentId)
-                ? null
-                : await prismaTransaction.draftOrder.findUnique({
-                    where  : (
-                        !!orderId
-                        ? {
-                            orderId   : orderId,
-                        }
-                        : {
-                            paymentId : paymentId ?? '',
-                        }
-                    ),
-                    select  : requiredSelect,
-                })
-            );
+            const draftOrder = await findDraftOrder(prismaTransaction, { orderId, paymentId });
             if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
-            
-            
-            
             if (draftOrder.expiresAt <= new Date()) {
                 // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:
                 await revertOrder(prismaTransaction, { draftOrder });
