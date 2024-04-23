@@ -33,6 +33,7 @@ import {
     
     AuthorizedFundData,
     PaidFundData,
+    PaymentDetail,
     
     isAuthorizedFundData,
     isPaidFundData,
@@ -239,13 +240,6 @@ export type MakePaymentData =
     |MakePaymentDataBasic
     |MakePaymentDataWithBillingAddress
     |MakePaymentDataWithCancelation
-export interface PaymentDetail
-    extends
-        Omit<Payment,
-            |'billingAddress'
-        >
-{
-}
 export interface PaymentDeclined {
     error : string
 }

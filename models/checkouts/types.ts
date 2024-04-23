@@ -1,5 +1,6 @@
 // models:
 import type {
+    Payment,
     DraftOrdersOnProducts,
 }                           from '@prisma/client'
 
@@ -45,4 +46,11 @@ export interface PaidFundData {
     paymentSource : any
     paymentAmount : number
     paymentFee    : number
+}
+export interface PaymentDetail
+    extends
+        Omit<Payment,
+            |'billingAddress'
+        >
+{
 }
