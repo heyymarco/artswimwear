@@ -28,9 +28,10 @@ import {
     
     commitOrder,
     revertOrder,
-    
-    sendEmailConfirmation,
 }                           from '../../utilities'
+import {
+    sendEmailConfirmation,
+}                           from '../../emails'
 
 
 

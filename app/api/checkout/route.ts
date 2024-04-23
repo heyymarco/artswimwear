@@ -73,9 +73,10 @@ import {
     createOrder,
     commitOrder,
     revertOrder,
-    
-    sendEmailConfirmation,
 }                           from './utilities'
+import {
+    sendEmailConfirmation,
+}                           from './emails'
 import {
     // types:
     PaypalPaymentToken,

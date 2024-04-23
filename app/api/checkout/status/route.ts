@@ -150,7 +150,7 @@ export async function GET(req: NextRequest, res: Response) {
     });
 }
 
-// export const runtime = 'edge';
-export const config = {
-    runtime: 'edge',
-};
+export const runtime = 'edge';
+// export const config = {
+//     runtime: 'edge',
+// };
