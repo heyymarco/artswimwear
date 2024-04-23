@@ -1,38 +1,120 @@
-export async function GET(req: Request, res: Response) {
+// next-js:
+import {
+    NextRequest,
+    NextResponse,
+}                           from 'next/server'
+
+// models:
+import type {
+    PaymentDetail,
+}                           from '@/models'
+
+// ORMs:
+import {
+    prisma,
+}                           from '@/libs/prisma.server'
+
+// internals:
+import {
+    // utilities:
+    findPayment,
+}                           from '../utilities'
+
+
+
+export async function GET(req: NextRequest, res: Response) {
+    const rawOrderId = req.nextUrl.searchParams.get('path');
+    if (typeof(rawOrderId) !== 'string') {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    };
+    
+    if (!rawOrderId.startsWith('#MIDTRANS_')) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    }
+    
+    const paymentId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
+    if (!paymentId.length) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    const midtransPaymentId = paymentId;
+    
+    
+    
     let responseStream = new TransformStream();
     const writer       = responseStream.writable.getWriter();
     const encoder      = new TextEncoder();
     
     
     
-    const tickHandler = setInterval(async () => {
-        const now = new Date();
-        console.log('server tick!', now);
+    const checkPayment = async (): Promise<PaymentDetail|false|undefined> => {
         try {
-            await writer.write(encoder.encode('data: ' + JSON.stringify({
-                serverTime: now.toString(),
-            }) + '\n\n'));
+            return await prisma.$transaction(async (prismaTransaction): Promise<PaymentDetail|false|undefined> => {
+                const draftOrder = await prisma.draftOrder.findUnique({
+                    where  : {
+                        paymentId : midtransPaymentId,
+                    },
+                    select : {}
+                });
+                if (!!draftOrder) return undefined;        // waiting for payment
+                
+                
+                
+                const paymentDetail = await findPayment(prismaTransaction, { paymentId: midtransPaymentId });
+                if (!!paymentDetail) return paymentDetail; // paid
+                
+                
+                
+                return false;                              // payment canceled or expired
+            });
         }
         catch {
-            clearInterval(tickHandler);
+            // ignore any error
+            return undefined; // waiting for payment
         } // try
-    }, 5 * 1000); // tick every 5 seconds
+    }
+    let rescheduleHandler : ReturnType<typeof setTimeout>;
+    const handleCheckPayment = async (): Promise<void> => {
+        const result = await checkPayment();
+        
+        if (result !== undefined) {
+            if (result) {
+                // payment approved:
+                await writer.write(encoder.encode('data: ' + JSON.stringify(result) + '\n\n'));
+            }
+            else {
+                // payment canceled|expired:
+                await writer.write(encoder.encode('data: ' + JSON.stringify({ canceled: true }) + '\n\n'));
+            } // if
+            
+            
+            
+            await writer.close();
+            return; // payment approved|canceled|expired => no need to pool anymore
+        } // if
+        
+        
+        
+        rescheduleHandler = setTimeout(() => {
+            handleCheckPayment();
+        }, 2 * 1000); // re-check every 2 seconds
+    }
     
-    // DOESN'T WORK:
-    // // @ts-ignore
-    // res.on('close', () => {
-    //     console.log('connection to client is closed');
-    // });
     
-    // WORKS:
+    
     writer.closed
     .then(() => {
         console.log('Connection to client is closed gracefully.');
-        clearInterval(tickHandler);
+        clearTimeout(rescheduleHandler);
     })
     .catch(() => {
         console.log('Connection to client is closed prematurely.');
-        clearInterval(tickHandler);
+        clearTimeout(rescheduleHandler);
     });
     
     
