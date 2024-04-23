@@ -1995,7 +1995,7 @@ Updating the confirmation is not required.`,
                         paymentFee,
                     } = paidFundData;
                     
-                    paymentResponse = ((): Omit<Payment, 'billingAddress'> => {
+                    paymentResponse = ((): PaymentDetail => {
                         const card = paymentSource?.card;
                         if (card) {
                             return {
@@ -2049,7 +2049,7 @@ Updating the confirmation is not required.`,
                         paymentFee,
                     } = paidFundData;
                     
-                    paymentResponse = ((): Omit<Payment, 'billingAddress'> => {
+                    paymentResponse = ((): PaymentDetail => {
                         const card = paymentSource?.card;
                         if (card) {
                             return {
