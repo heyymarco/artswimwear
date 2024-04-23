@@ -3,11 +3,6 @@ import {
     createEntityAdapter
 }                           from '@reduxjs/toolkit'
 
-// redux:
-import type {
-    EntityState
-}                           from '@reduxjs/toolkit'
-
 // next-js:
 import {
     NextRequest,
@@ -47,11 +42,6 @@ import {
 import {
     prisma,
 }                           from '@/libs/prisma.server'
-
-// apis:
-import type {
-    CountryPreview,
-}                           from '@/app/api/countries/route'
 
 // templates:
 import type {
@@ -1336,26 +1326,6 @@ router
         
         // send email confirmation:
         if (paymentDetail && newOrder) {
-            //#region related data
-            const allCountries = await prisma.country.findMany({
-                select : {
-                    name    : true,
-                    
-                    code    : true,
-                },
-                // enabled: true
-            });
-            const countryListAdapter = createEntityAdapter<CountryPreview>({
-                selectId : (countryEntry) => countryEntry.code,
-            });
-            const countryList = countryListAdapter.addMany(
-                countryListAdapter.getInitialState(),
-                allCountries
-            );
-            //#endregion related data
-            
-            
-            
             const isPaid = (paymentSource !== 'manual');
             const paymentConfirmationToken = (
                 isPaid
@@ -1382,8 +1352,6 @@ router
             
             await sendEmailConfirmation({
                 newOrder,
-                
-                countryList,
                 
                 isPaid,
                 paymentConfirmationToken,
@@ -1878,9 +1846,8 @@ Updating the confirmation is not required.`,
     let paymentResponse          : PaymentDetail|PaymentDeclined;
     let paymentConfirmationToken : string|undefined = undefined;
     let newOrder                 : OrderAndData|undefined = undefined;
-    let countryList              : EntityState<CountryPreview>;
     try {
-        ([paymentResponse, paymentConfirmationToken, newOrder, countryList] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, string|undefined, OrderAndData|undefined, EntityState<CountryPreview>]> => {
+        ([paymentResponse, paymentConfirmationToken, newOrder] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, string|undefined, OrderAndData|undefined]> => {
             //#region verify draftOrder_id
             const requiredSelect = {
                 id                     : true,
@@ -1951,26 +1918,6 @@ Updating the confirmation is not required.`,
                 throw 'DRAFT_ORDER_EXPIRED';
             } // if
             //#endregion verify draftOrder_id
-            
-            
-            
-            //#region related data
-            const allCountries = await prismaTransaction.country.findMany({
-                select : {
-                    name    : true,
-                    
-                    code    : true,
-                },
-                // enabled: true
-            });
-            const countryListAdapter = createEntityAdapter<CountryPreview>({
-                selectId : (countryEntry) => countryEntry.code,
-            });
-            const countryList = countryListAdapter.addMany(
-                countryListAdapter.getInitialState(),
-                allCountries
-            );
-            //#endregion related data
             
             
             
@@ -2143,7 +2090,7 @@ Updating the confirmation is not required.`,
             
             
             // report the payment result:
-            return [paymentResponse, paymentConfirmationToken, newOrder, countryList];
+            return [paymentResponse, paymentConfirmationToken, newOrder];
         }));
         
         
@@ -2152,8 +2099,6 @@ Updating the confirmation is not required.`,
         if (newOrder) {
             await sendEmailConfirmation({
                 newOrder,
-                
-                countryList,
                 
                 isPaid : !('error' in paymentResponse) && (paymentResponse.type !== 'MANUAL'),
                 paymentConfirmationToken,

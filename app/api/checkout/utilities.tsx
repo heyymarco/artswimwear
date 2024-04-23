@@ -4,6 +4,9 @@ import type {
 }                           from 'react-dom/server'
 
 // redux:
+import {
+    createEntityAdapter
+}                           from '@reduxjs/toolkit'
 import type {
     EntityState
 }                           from '@reduxjs/toolkit'
@@ -584,10 +587,27 @@ export const revertOrder = async (prismaTransaction: Parameters<Parameters<typeo
 
 
 
+const getCountryList = async (): Promise<EntityState<CountryPreview>> => {
+    const allCountries = await prisma.country.findMany({
+        select : {
+            name    : true,
+            
+            code    : true,
+        },
+        // enabled: true
+    });
+    const countryListAdapter = createEntityAdapter<CountryPreview>({
+        selectId : (countryEntry) => countryEntry.code,
+    });
+    const countryList = countryListAdapter.addMany(
+        countryListAdapter.getInitialState(),
+        allCountries
+    );
+    return countryList;
+}
+
 export interface SendEmailConfirmationOptions {
     newOrder                 : OrderAndData
-    
-    countryList              : EntityState<CountryPreview>
     
     isPaid                   : boolean
     paymentConfirmationToken : string|undefined
@@ -596,8 +616,6 @@ export const sendEmailConfirmation = async (options: SendEmailConfirmationOption
     // options:
     const {
         newOrder,
-        
-        countryList,
         
         isPaid,
         paymentConfirmationToken,
@@ -637,6 +655,10 @@ export const sendEmailConfirmation = async (options: SendEmailConfirmationOption
     
     
     try {
+        const countryList = await getCountryList();
+        
+        
+        
         const {
             business,
             payment,
