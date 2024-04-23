@@ -117,6 +117,11 @@ const IframeDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     
     // handlers:
     const handleLoaded      = useEvent((): void => {
+        // conditions:
+        if (isLoaded === LoadedState.FullyLoaded) return; // already loaded => ignore
+        
+        
+        
         setIsLoaded(LoadedState.PartialLoaded);
     });
     const handleErrored     = useEvent((): void => {
