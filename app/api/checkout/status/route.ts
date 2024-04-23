@@ -23,7 +23,7 @@ import {
 
 
 export async function GET(req: NextRequest, res: Response) {
-    const rawOrderId = req.nextUrl.searchParams.get('path');
+    const rawOrderId = req.nextUrl.searchParams.get('paymentId');
     if (typeof(rawOrderId) !== 'string') {
         return NextResponse.json({
             error: 'Invalid data.',
@@ -143,4 +143,7 @@ export async function GET(req: NextRequest, res: Response) {
     });
 }
 
-export const runtime = 'edge';
+// export const runtime = 'edge';
+export const config = {
+    runtime: 'edge',
+};
