@@ -6,7 +6,7 @@ import type {
 
 
 
-export const isAuthorizedFundData = (data: AuthorizedFundData|PaidFundData|undefined): data is AuthorizedFundData => {
+export const isAuthorizedFundData = (data: AuthorizedFundData|PaidFundData|boolean|null|undefined): data is AuthorizedFundData => {
     return (
         !!data
         &&
@@ -15,7 +15,7 @@ export const isAuthorizedFundData = (data: AuthorizedFundData|PaidFundData|undef
         !('paymentAmount' in data)
     );
 }
-export const isPaidFundData      = (data: AuthorizedFundData|PaidFundData|undefined): data is PaidFundData => {
+export const isPaidFundData      = (data: AuthorizedFundData|PaidFundData|boolean|null|undefined): data is PaidFundData => {
     return (
         !!data
         &&
