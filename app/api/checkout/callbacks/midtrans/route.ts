@@ -1,13 +1,36 @@
-// internals:
-import {
-    midtransTranslateData,
-}                           from '../../paymentProcessors.midtrans'
-
 // models:
+import type {
+    Payment,
+}                           from '@prisma/client'
 import {
     // utilities:
     isAuthorizedFundData,
 }                           from '@/models'
+
+// ORMs:
+import {
+    prisma,
+}                           from '@/libs/prisma.server'
+
+// templates:
+import type {
+    // types:
+    OrderAndData,
+}                           from '@/components/Checkout/templates/orderDataContext'
+
+// internals:
+import {
+    midtransTranslateData,
+}                           from '../../paymentProcessors.midtrans'
+import {
+    // utilities:
+    findDraftOrder,
+    
+    commitOrder,
+    revertOrder,
+    
+    sendEmailConfirmation,
+}                           from '../../utilities'
 
 
 
@@ -70,7 +93,21 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         
         
         case false: {   // Transaction was deleted due to canceled or expired.  
-            // TODO: delete draftOrder from DB
+            const paymentId = midtransPaymentData.transaction_id;
+            if (paymentId) {
+                await prisma.$transaction(async (prismaTransaction): Promise<void> => {
+                    const draftOrder = await findDraftOrder(prismaTransaction, { orderId });
+                    if (!draftOrder) return;
+                    
+                    
+                    
+                    // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:
+                    await revertOrder(prismaTransaction, { draftOrder });
+                });
+            } // if
+            
+            
+            
             break;
         }
         
@@ -85,8 +122,70 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             
-            // PaidFundData : Paid.
-            // TODO: commit draftOrder => order to DB
+            //#region save the database
+            const {
+                paymentSource,
+                paymentAmount,
+                paymentFee,
+            } = result;
+            
+            const paymentDetail = ((): Omit<Payment, 'billingAddress'> => {
+                const card = paymentSource?.card;
+                if (card) {
+                    return {
+                        type       : 'CARD',
+                        brand      : card.brand?.toLowerCase() ?? null,
+                        identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
+                        
+                        amount     : paymentAmount,
+                        fee        : paymentFee,
+                    };
+                } //if
+                
+                return {
+                    type       : 'CUSTOM',
+                    brand      : null,
+                    identifier : null,
+                    
+                    amount     : paymentAmount,
+                    fee        : paymentFee,
+                };
+            })();
+            
+            
+            
+            const newOrder = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
+                const draftOrder = await findDraftOrder(prismaTransaction, { orderId });
+                if (!draftOrder) return null;
+                
+                
+                
+                return await commitOrder(prismaTransaction, {
+                    draftOrder         : draftOrder,
+                    payment            : {
+                        ...paymentDetail,
+                        billingAddress : null,
+                    },
+                    paymentConfirmationToken : undefined,
+                });
+            });
+            //#endregion save the database
+            
+            
+            
+            // send email confirmation:
+            if (newOrder) {
+                await sendEmailConfirmation({
+                    newOrder,
+                    
+                    isPaid : true,
+                    paymentConfirmationToken : undefined,
+                });
+            } // if
+            
+            
+            
+            break;
         }
     } // switch
     
