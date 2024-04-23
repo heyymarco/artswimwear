@@ -14,6 +14,14 @@ import type {
     MutationArgs,
 }                           from '@/libs/types'
 
+// models:
+import type {
+    PaymentDetail,
+}                           from '@/models'
+export type {
+    PaymentDetail,
+}                           from '@/models'
+
 // apis:
 import type {
     CountryPreview,
@@ -44,7 +52,6 @@ import type {
     
     // MakePaymentOptions,
     MakePaymentData,
-    PaymentDetail,
     
     PaymentConfirmationRequest,
     PaymentConfirmationDetail,
@@ -61,7 +68,6 @@ export type {
     
     MakePaymentOptions,
     MakePaymentData,
-    PaymentDetail,
     
     PaymentConfirmationRequest,
     PaymentConfirmationDetail,
