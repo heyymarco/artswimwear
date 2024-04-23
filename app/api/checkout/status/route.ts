@@ -52,6 +52,13 @@ export async function GET(req: NextRequest, res: Response) {
     
     
     
+    // ready signal:
+    Promise.resolve().then(async () => { // wait until the header has sent
+        await writer.write(encoder.encode('data: ' + JSON.stringify({ ready: true }) + '\n\n'));
+    });
+    
+    
+    
     const checkPayment = async (): Promise<PaymentDetail|false|undefined> => {
         try {
             return await prisma.$transaction(async (prismaTransaction): Promise<PaymentDetail|false|undefined> => {
