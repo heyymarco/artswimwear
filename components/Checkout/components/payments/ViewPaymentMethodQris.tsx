@@ -130,6 +130,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                             
                             // resources:
                             data={qrisData}
+                            paymentId={draftOrderDetail.orderId}
                         />
                     );
                     switch (qrisResult) {

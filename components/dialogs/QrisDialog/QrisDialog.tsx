@@ -75,12 +75,13 @@ export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalE
         >
 {
     // accessibilities:
-    title ?: string
+    title    ?: string
     
     
     
     // resources:
-    data   : string
+    data      : string
+    paymentId : string
 }
 const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<undefined> = ModalExpandedChangeEvent<undefined>>(props: QrisDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
@@ -92,6 +93,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
         
         // resources:
         data,
+        paymentId,
         
         
         
@@ -112,15 +114,22 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
         Errored,
         FullyLoaded,
     }
-    const [isLoaded, setIsLoaded] = useState<LoadedState>(LoadedState.Loading); // 0: loading true: loaded, false: errored
+    const [isLoaded           , setIsLoaded             ] = useState<LoadedState>(LoadedState.Loading); // 0: loading true: loaded, false: errored
+    const [isEventSourceLoaded, setIsEventSourceLoaded  ] = useState<LoadedState>(LoadedState.Loading); // 0: loading true: loaded, false: errored
     
+    const [generation         , setGeneration           ] = useState<number>(1);
     
     
     // handlers:
-    const handleLoaded      = useEvent((): void => {
+    const handleLoaded             = useEvent((): void => {
+        // conditions:
+        if (isLoaded === LoadedState.FullyLoaded) return; // already loaded => ignore
+        
+        
+        
         setIsLoaded(LoadedState.FullyLoaded);
     });
-    const handleErrored     = useEvent((): void => {
+    const handleErrored            = useEvent((): void => {
         // conditions:
         if (isLoaded === LoadedState.FullyLoaded) return; // already loaded => no error possible
         
@@ -129,11 +138,32 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
         // actions:
         setIsLoaded(LoadedState.Errored);
     });
-    const handleReload      = useEvent((): void => {
-        setIsLoaded(LoadedState.Loading);
+    
+    
+    const handleEventSourceLoaded  = useEvent((): void => {
+        // conditions:
+        if (isEventSourceLoaded === LoadedState.FullyLoaded) return; // already loaded => ignore
+        
+        
+        
+        setIsEventSourceLoaded(LoadedState.FullyLoaded);
+    });
+    const handleEventSourceErrored = useEvent((): void => {
+        // conditions:
+        if (isEventSourceLoaded === LoadedState.FullyLoaded) return; // already loaded => no error possible
+        
+        
+        
+        // actions:
+        setIsEventSourceLoaded(LoadedState.Errored);
     });
     
-    const handleCloseDialog = useEvent((): void => {
+    const handleReload             = useEvent((): void => {
+        setIsLoaded(LoadedState.Loading);
+        setGeneration((current) => (current + 1));
+    });
+    
+    const handleCloseDialog        = useEvent((): void => {
         // actions:
         props.onExpandedChange?.({
             expanded   : false,
@@ -185,7 +215,33 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
             setSvgString(str);
             handleLoaded();
         });
-    }, [data]);
+    }, [data, generation]);
+    
+    
+    
+    // effects:
+    useEffect(() => {
+        // setups:
+        const eventSource = new EventSource(`/api/checkout/status?paymentId=${encodeURIComponent(paymentId)}`, {});
+        
+        
+        
+        // handlers:
+        eventSource.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log(data);
+            handleEventSourceLoaded();
+        };
+        eventSource.onopen  = handleEventSourceLoaded;
+        eventSource.onerror = handleEventSourceErrored;
+        
+        
+        
+        // cleanups:
+        return () => {
+            eventSource.close();
+        }
+    }, [generation]);
     
     
     
@@ -200,6 +256,9 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
     
     
     // jsx:
+    const isErrored = (isLoaded === LoadedState.Errored) || (isEventSourceLoaded === LoadedState.Errored);
+    const isLoading = !isErrored && ((isLoaded === LoadedState.Loading    ) || (isEventSourceLoaded === LoadedState.Loading    ));
+    const isReady   = !isErrored && !isLoading && ((isLoaded === LoadedState.FullyLoaded) && (isEventSourceLoaded === LoadedState.FullyLoaded));
     return (
         <ModalCard
             // other props:
@@ -217,7 +276,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheet.cardBody}>
-                <div
+                {isReady && <div
                     // classes:
                     className={styleSheet.qris}
                     
@@ -227,9 +286,9 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
                     dangerouslySetInnerHTML={{
                         __html: svgString ?? '',
                     }}
-                />
+                />}
                 
-                {(isLoaded === LoadedState.Errored) && <ErrorBlankSection className={styleSheet.error} onRetry={handleReload} />}
+                {isErrored && <ErrorBlankSection className={styleSheet.error} onRetry={handleReload} />}
                 
                 <Busy
                     // classes:
@@ -244,7 +303,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
                     
                     
                     // states:
-                    expanded={(isLoaded === LoadedState.Loading)}
+                    expanded={isLoading}
                 />
             </CardBody>
             <CardFooter>

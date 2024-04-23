@@ -55,11 +55,13 @@ export const usesCardBodyLayout  = () => {
             ...ifScreenWidthAtLeast('md', {
                 inlineSize    : `calc(${breakpoints.sm}px / 2)`,
             }),
+            aspectRatio       : 1,
             // blockSize         : `calc(100svh - (${containers.paddingBlock} * 2))`,
             // ...ifScreenWidthAtLeast('md', {
             //     blockSize     : `calc(${breakpoints.sm}px / 2)`,
             // }),
             // blockSize         : `calc(${breakpoints.sm}px / 2)`,
+            overflow          : 'visible', // important to force remove scrollbar
             
             
             
