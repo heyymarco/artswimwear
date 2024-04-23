@@ -566,7 +566,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
 }
 
 export interface FindOrderData {
-    paymentId ?: string|null
+    paymentId : string
 }
 export const findPayment = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findOrderData: FindOrderData): Promise<PaymentDetail|null> => {
     // data:
