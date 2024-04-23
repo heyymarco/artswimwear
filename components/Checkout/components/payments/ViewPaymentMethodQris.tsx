@@ -30,6 +30,9 @@ import {
 
 // internal components:
 import {
+    ButtonWithBusy,
+}                           from '../ButtonWithBusy'
+import {
     QrisDialog,
 }                           from '@/components/dialogs/QrisDialog'
 
@@ -198,43 +201,53 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
             </p>
             
             <div className='actionButtons'>
-                <ButtonIcon
-                    // appearances:
-                    icon='qr_code_scanner'
-                    
-                    
-                    
-                    // variants:
-                    gradient={true}
-                    
-                    
-                    
-                    // handlers:
-                    onClick={() => handlePayWithQris('gopay')}
-                >
-                    <span className='text'>
-                        QRIS with GoPay
-                    </span>
-                </ButtonIcon>
+                <ButtonWithBusy
+                    // components:
+                    buttonComponent={
+                        <ButtonIcon
+                            // appearances:
+                            icon='qr_code_scanner'
+                            
+                            
+                            
+                            // variants:
+                            gradient={true}
+                            
+                            
+                            
+                            // handlers:
+                            onClick={() => handlePayWithQris('gopay')}
+                        >
+                            <span className='text'>
+                                QRIS with GoPay
+                            </span>
+                        </ButtonIcon>
+                    }
+                />
                 
-                <ButtonIcon
-                    // appearances:
-                    icon='qr_code_scanner'
-                    
-                    
-                    
-                    // variants:
-                    gradient={true}
-                    
-                    
-                    
-                    // handlers:
-                    onClick={() => handlePayWithQris('airpay shopee')}
-                >
-                    <span className='text'>
-                        QRIS with Airpay Shopee
-                    </span>
-                </ButtonIcon>
+                <ButtonWithBusy
+                    // components:
+                    buttonComponent={
+                        <ButtonIcon
+                            // appearances:
+                            icon='qr_code_scanner'
+                            
+                            
+                            
+                            // variants:
+                            gradient={true}
+                            
+                            
+                            
+                            // handlers:
+                            onClick={() => handlePayWithQris('airpay shopee')}
+                        >
+                            <span className='text'>
+                                QRIS with Airpay Shopee
+                            </span>
+                        </ButtonIcon>
+                    }
+                />
             </div>
         </>
     );
