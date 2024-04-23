@@ -432,9 +432,6 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 },
             },
         },
-        // select : {
-        //     id : true,
-        // },
         include : {
             items : {
                 select : {
@@ -513,6 +510,151 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             },
         },
     });
+    const shippingAddressData  = newOrder.shippingAddress;
+    const shippingProviderData = newOrder.shippingProvider;
+    return {
+        ...newOrder,
+        items: newOrder.items.map((item) => ({
+            ...item,
+            product : !!item.product ? {
+                name          : item.product.name,
+                image         : item.product.images?.[0] ?? null,
+                imageBase64   : undefined,
+                imageId       : undefined,
+                
+                // relations:
+                variantGroups : item.product.variantGroups.map(({variants}) => variants),
+            } : null,
+        })),
+        shippingProvider : (
+            (shippingAddressData && shippingProviderData)
+            ? getMatchingShipping(shippingProviderData, { city: shippingAddressData.city, zone: shippingAddressData.zone, country: shippingAddressData.country })
+            : null
+        ),
+        customerOrGuest : (
+            !!customer
+            ? (() => {
+                const {customerPreference: preference, ...customerData} = customer;
+                return {
+                    ...customerData,
+                    preference,
+                };
+            })()
+            : (
+                !!guest
+                ? (() => {
+                    const {guestPreference: preference, ...guestData} = guest;
+                    return {
+                        ...guestData,
+                        preference,
+                    };
+                })()
+                : null
+            )
+        ),
+    } satisfies OrderAndData;
+}
+
+export interface FindOrderData {
+    orderId   ?: string|null
+    paymentId ?: string|null
+}
+export const findOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findOrderData: FindOrderData): Promise<OrderAndData|null> => {
+    // data:
+    const {
+        orderId   : orderIdRaw,
+        paymentId : paymentIdRaw,
+    } = findOrderData;
+    const orderId   = orderIdRaw   || undefined;
+    const paymentId = paymentIdRaw || undefined;
+    if (!orderId && !paymentId) return null;
+    
+    
+    const existingOrder = await prismaTransaction.order.findUnique({
+        where  : {
+            orderId   : orderId,
+            // paymentId : paymentId,
+        },
+        include : {
+            items : {
+                select : {
+                    // data:
+                    price          : true,
+                    shippingWeight : true,
+                    quantity       : true,
+                    
+                    // relations:
+                    product        : {
+                        select : {
+                            name   : true,
+                            images : true,
+                            
+                            // relations:
+                            variantGroups : {
+                                select : {
+                                    variants : {
+                                        // always allow to access DRAFT variants when the customer is already ordered:
+                                        // where    : {
+                                        //     visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                        // },
+                                        select : {
+                                            id   : true,
+                                            
+                                            name : true,
+                                        },
+                                        orderBy : {
+                                            sort : 'asc',
+                                        },
+                                    },
+                                },
+                                orderBy : {
+                                    sort : 'asc',
+                                },
+                            },
+                        },
+                    },
+                    variantIds     : true,
+                },
+            },
+            shippingProvider : {
+                select : {
+                    name            : true, // optional for displaying email report
+                    
+                    weightStep      : true, // required for calculating `getMatchingShipping()`
+                    
+                    estimate        : true, // optional for displaying email report
+                    shippingRates   : true, // required for calculating `getMatchingShipping()`
+                    
+                    useSpecificArea : true, // required for calculating `getMatchingShipping()`
+                    countries       : true, // required for calculating `getMatchingShipping()`
+                },
+            },
+            customer : {
+                select : {
+                    name  : true,
+                    email : true,
+                    customerPreference : {
+                        select : {
+                            marketingOpt : true,
+                        },
+                    },
+                },
+            },
+            guest    : {
+                select : {
+                    name  : true,
+                    email : true,
+                    guestPreference : {
+                        select : {
+                            marketingOpt : true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+    if (!existingOrder) return null;
+    const {customer, guest, ...newOrder} = existingOrder;
     const shippingAddressData  = newOrder.shippingAddress;
     const shippingProviderData = newOrder.shippingProvider;
     return {
