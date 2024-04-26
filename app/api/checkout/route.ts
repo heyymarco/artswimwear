@@ -1957,7 +1957,7 @@ Updating the confirmation is not required.`,
                             return {
                                 type       : 'CARD',
                                 brand      : card.brand?.toLowerCase() ?? null,
-                                identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
+                                identifier : card.identifier,
                                 
                                 amount     : paymentAmount,
                                 fee        : paymentFee,
