@@ -1194,6 +1194,7 @@ router
             const paymentDetail : PaymentDetail|null = (
                 isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
                 ? ((): PaymentDetail => {
+                    /* PAY WITH CARD */
                     const card = authorizedOrPaidFundData.paymentSource?.card;
                     if (card) {
                         return {
@@ -1206,6 +1207,9 @@ router
                         };
                     } // if
                     
+                    
+                    
+                    /* PAY WITH MANUAL */
                     const manual = authorizedOrPaidFundData.paymentSource?.manual;
                     if (manual) {
                         return {
@@ -1218,6 +1222,9 @@ router
                         };
                     } // if
                     
+                    
+                    
+                    /* PAY WITH OTHER */
                     return {
                         type       : 'CUSTOM',
                         brand      : null,
@@ -1883,6 +1890,7 @@ Updating the confirmation is not required.`,
                     } = paidFundData;
                     
                     paymentResponse = ((): PaymentDetail => {
+                        /* PAY WITH CARD */
                         const card = paymentSource?.card;
                         if (card) {
                             return {
@@ -1893,8 +1901,11 @@ Updating the confirmation is not required.`,
                                 amount     : paymentAmount,
                                 fee        : paymentFee,
                             };
-                        } //if
+                        } // if
                         
+                        
+                        
+                        /* PAY WITH PAYPAL */
                         const paypal = paymentSource?.paypal;
                         if (paypal) {
                             return {
@@ -1905,8 +1916,11 @@ Updating the confirmation is not required.`,
                                 amount     : paymentAmount,
                                 fee        : paymentFee,
                             };
-                        } //if
+                        } // if
                         
+                        
+                        
+                        /* PAY WITH OTHER */
                         return {
                             type       : 'CUSTOM',
                             brand      : null,
@@ -1937,6 +1951,7 @@ Updating the confirmation is not required.`,
                     } = paidFundData;
                     
                     paymentResponse = ((): PaymentDetail => {
+                        /* PAY WITH CARD */
                         const card = paymentSource?.card;
                         if (card) {
                             return {
@@ -1947,8 +1962,11 @@ Updating the confirmation is not required.`,
                                 amount     : paymentAmount,
                                 fee        : paymentFee,
                             };
-                        } //if
+                        } // if
                         
+                        
+                        
+                        /* PAY WITH OTHER */
                         return {
                             type       : 'CUSTOM',
                             brand      : null,

@@ -184,6 +184,7 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                     return {
                         paymentSource : ((): object => {
                             switch (midtransPaymentData.payment_type) {
+                                /* PAY WITH CARD */
                                 case 'credit_card': return {
                                     card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
                                         type       : 'CARD',
@@ -194,18 +195,20 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                 
                                 
                                 
+                                /* PAY WITH EWALLET */
                                 case 'gopay'    :
                                 case 'shopeepay':
                                 case 'qris'     : return {
                                     ewallet : {
                                         type       : 'EWALLET',
-                                        brand      : midtransPaymentData.payment_type?.toLowerCase() ?? null,
+                                        brand      : midtransPaymentData.acquirer ?? midtransPaymentData.payment_type?.toLowerCase() ?? null,
                                         identifier : midtransPaymentData.merchant_id ?? null,
                                     },
                                 };
                                 
                                 
                                 
+                                /* PAY WITH UNKNOWN */
                                 default : {
                                     console.log('unexpected response: ', midtransPaymentData);
                                     throw Error('unexpected API response');
