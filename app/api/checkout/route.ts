@@ -1770,7 +1770,7 @@ Updating the confirmation is not required.`,
     //#region cancel the payment
     if (cancelOrder) {
         const orderDeletedFromDatabase = await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
-            // draftOrder DELETED => restore the `Product` stock and delete the `draftOrder`:
+            // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
             return await cancelDraftOrder(prismaTransaction, { orderId, paymentId });
         });
         

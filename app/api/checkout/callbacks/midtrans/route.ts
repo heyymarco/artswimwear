@@ -24,10 +24,10 @@ import {
 }                           from '../../paymentProcessors.midtrans'
 import {
     // utilities:
+    cancelDraftOrder,
     findDraftOrder,
     
     commitOrder,
-    revertOrder,
 }                           from '../../utilities'
 import {
     sendEmailConfirmation,
@@ -96,14 +96,9 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         case false: {   // Transaction was deleted due to canceled or expired.  
             const paymentId = midtransPaymentData.transaction_id;
             if (paymentId) {
-                await prisma.$transaction(async (prismaTransaction): Promise<void> => {
-                    const draftOrder = await findDraftOrder(prismaTransaction, { orderId });
-                    if (!draftOrder) return;
-                    
-                    
-                    
-                    // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:
-                    await revertOrder(prismaTransaction, { draftOrder });
+                await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
+                    // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
+                    return await cancelDraftOrder(prismaTransaction, { orderId, paymentId });
                 });
             } // if
             
