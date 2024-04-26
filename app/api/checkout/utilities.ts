@@ -172,7 +172,7 @@ export const cancelDraftOrder = async (prismaTransaction: Parameters<Parameters<
         },
         select : requiredSelect,
     });
-    if (!draftOrder) return false;
+    if (!draftOrder) return false; // the draftOrder is not found -or- the order is already APPROVED
     
     
     

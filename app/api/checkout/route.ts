@@ -1793,7 +1793,7 @@ Updating the confirmation is not required.`,
         
         
         return NextResponse.json({
-            canceled: true,
+            canceled: orderDeletedFromDatabase, // false => canceled -or- true => too late, the order already APPROVED
         });
     };
     //#endregion cancel the payment
