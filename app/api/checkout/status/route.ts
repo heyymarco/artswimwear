@@ -77,7 +77,7 @@ export async function GET(req: NextRequest, res: Response) {
         } // try
     }
     let rescheduleHandler : ReturnType<typeof setTimeout>;
-    const handleCheckPayment = async (): Promise<void> => {
+    const scheduleCheckPayment = async (): Promise<void> => {
         const result = await checkPayment();
         
         if (result !== null) {
@@ -99,9 +99,10 @@ export async function GET(req: NextRequest, res: Response) {
         
         
         rescheduleHandler = setTimeout(() => {
-            handleCheckPayment();
+            scheduleCheckPayment(); // the subsequent schedule
         }, 2 * 1000); // re-check every 2 seconds
     }
+    scheduleCheckPayment(); // the first schedule
     
     
     

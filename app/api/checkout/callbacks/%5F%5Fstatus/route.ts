@@ -52,7 +52,7 @@ export async function GET(req: NextRequest, res: Response) {
     } // if
     const dateTime = new Date(numDateTime);
     const diffDateTime = dateTime.valueOf() - Date.now();
-    if ((diffDateTime < (10 * 1000)) || (diffDateTime > (10 * 1000))) { // the dateTime precision must below 10 seconds
+    if ((diffDateTime < (-10 * 1000)) || (diffDateTime > (10 * 1000))) { // the dateTime precision must below 10 seconds
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -76,7 +76,9 @@ export async function GET(req: NextRequest, res: Response) {
                     where  : {
                         paymentId : paymentId,
                     },
-                    select : {}
+                    select : {
+                        id : true,
+                    },
                 });
                 if (!!draftOrder) return null;             // waiting for payment
                 
