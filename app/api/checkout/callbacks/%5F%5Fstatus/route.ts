@@ -89,7 +89,7 @@ export async function GET(req: NextRequest, res: Response) {
                 
                 
                 
-                return false;                              // payment canceled or expired
+                return false;                              // payment canceled or expired or failed
             });
         }
         catch {

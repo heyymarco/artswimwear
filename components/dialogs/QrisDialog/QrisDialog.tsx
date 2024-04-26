@@ -9,9 +9,7 @@ import {
     
     // hooks:
     useState,
-    useRef,
     useEffect,
-    useMemo,
 }                           from 'react'
 
 // reusable-ui core:
@@ -58,6 +56,11 @@ import {
     useQrisDialogStyleSheet,
 }                           from './styles/loader'
 
+// models:
+import type {
+    PaymentDetail,
+}                           from '@/models'
+
 // others:
 import {
     default as QrCode,
@@ -66,7 +69,7 @@ import {
 
 
 // react components:
-export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<boolean> = ModalExpandedChangeEvent<boolean>>
+export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false> = ModalExpandedChangeEvent<PaymentDetail|false>>
     extends
         // bases:
         Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
@@ -83,7 +86,7 @@ export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalE
     data      : string
     paymentId : string
 }
-const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<boolean> = ModalExpandedChangeEvent<boolean>>(props: QrisDialogProps<TElement, TModalExpandedChangeEvent>) => {
+const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false> = ModalExpandedChangeEvent<PaymentDetail|false>>(props: QrisDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
     const {
         // accessibilities:
@@ -230,19 +233,17 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
         eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
             handleEventSourceLoaded();
-            switch (data?.status ?? 0) {
-                case 0: // ready -or- noop
+            
+            
+            
+            const paymentDetail = data?.paymentDetail;
+            switch (paymentDetail) {
+                case undefined: // ready -or- noop
                     break;
                 
                 
                 
-                case 201: // payment canceled or expired
-                    handleCloseDialog();
-                    break;
-                
-                
-                
-                case 202: // payment failed
+                case false: // payment canceled or expired or failed
                     props.onExpandedChange?.({
                         expanded   : false,
                         actionType : 'ui',
@@ -252,11 +253,13 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
                 
                 
                 
-                case 200: // paid
+                default: // PaymentDetail
+                    if (!('amount' in paymentDetail)) break; // ignore unexpected ata
+                    
                     props.onExpandedChange?.({
                         expanded   : false,
                         actionType : 'ui',
-                        data       : true,
+                        data       : paymentDetail as PaymentDetail,
                     } as TModalExpandedChangeEvent);
                     break;
             } // switch

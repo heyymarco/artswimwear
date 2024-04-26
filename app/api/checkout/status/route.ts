@@ -48,7 +48,7 @@ export async function GET(req: NextRequest, res: Response) {
     
     // ready signal:
     Promise.resolve().then(async () => { // wait until the header has sent
-        await writer.write(encoder.encode('data: ' + JSON.stringify({ status: 0 }) + '\n\n'));
+        await writer.write(encoder.encode('data: ' + JSON.stringify({ /* empty data */ }) + '\n\n'));
     });
     
     
@@ -81,19 +81,17 @@ export async function GET(req: NextRequest, res: Response) {
         const result = await checkPayment();
         
         if (result !== null) {
-            if (result) {
-                // payment approved:
-                await writer.write(encoder.encode('data: ' + JSON.stringify(result) + '\n\n'));
+            if (result) { // PaymentDetail => payment approved:
+                await writer.write(encoder.encode('data: ' + JSON.stringify({ paymentDetail: result }) + '\n\n'));
             }
-            else {
-                // payment canceled|expired:
-                await writer.write(encoder.encode('data: ' + JSON.stringify({ canceled: true }) + '\n\n'));
+            else {        // false         => payment canceled or expired or failed:
+                await writer.write(encoder.encode('data: ' + JSON.stringify({ paymentDetail: false  }) + '\n\n'));
             } // if
             
             
             
             await writer.close();
-            return; // payment approved|canceled|expired => no need to pool anymore
+            return; // payment approved or canceled or expired or failed => no need to pool anymore
         } // if
         
         

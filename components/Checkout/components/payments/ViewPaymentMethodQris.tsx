@@ -38,9 +38,13 @@ import {
 
 // internals:
 import {
-    PaymentDetail,
     useCheckoutState,
 }                           from '../../states/checkoutState'
+
+// models:
+import type {
+    PaymentDetail,
+}                           from '@/models'
 
 
 
