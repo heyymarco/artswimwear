@@ -154,7 +154,7 @@ const axiosBaseQuery = (
 export const apiSlice = createApi({
     reducerPath : 'api',
     baseQuery : axiosBaseQuery({
-        baseUrl: `${process.env.WEBSITE_URL ?? ''}/api`
+        baseUrl: `${process.env.APP_URL ?? ''}/api`
     }),
     endpoints : (builder) => ({
         getProductList          : builder.query<EntityState<ProductPreview>, void>({

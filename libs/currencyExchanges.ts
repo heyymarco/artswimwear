@@ -36,7 +36,7 @@ export const getCurrencyRate = async (targetCurrency: string): Promise<number> =
             
             
             
-            const exchangeRateResponse = await fetch(`${process.env.WEBSITE_URL ?? ''}/api/currency-exchange`);
+            const exchangeRateResponse = await fetch(`${process.env.APP_URL ?? ''}/api/currency-exchange`);
             if (exchangeRateResponse.status !== 200) throw Error('api error');
             const apiRates = await exchangeRateResponse.json();
             if (typeof(apiRates) !== 'object') throw Error('api error');
