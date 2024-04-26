@@ -48,7 +48,7 @@ export async function GET(req: NextRequest, res: Response) {
     
     // ready signal:
     Promise.resolve().then(async () => { // wait until the header has sent
-        await writer.write(encoder.encode('data: ' + JSON.stringify({ ready: true }) + '\n\n'));
+        await writer.write(encoder.encode('data: ' + JSON.stringify({ status: 0 }) + '\n\n'));
     });
     
     

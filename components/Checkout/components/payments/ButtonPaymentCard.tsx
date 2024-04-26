@@ -276,25 +276,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                         });
                     });
                     switch (isVerified) {
-                        case null  :   // payment pending => assumes as payment failed
-                        case false : { // payment failed
-                            showMessageError({
-                                error: <>
-                                    <p>
-                                        The credit card <strong>verification failed</strong>.
-                                    </p>
-                                    <p>
-                                        <strong>No funds</strong> have been deducted.
-                                    </p>
-                                    <p>
-                                        Please try using another card.
-                                    </p>
-                                </>
-                            });
-                            return;
-                        }
-                        
-                        case undefined: {
+                        case undefined: { // payment canceled or expired
                             // notify cancel transaction, so the authorized payment will be released:
                             (doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true }))
                             .catch(() => {
@@ -310,6 +292,26 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                                     </p>
                                     <p>
                                         <strong>No funds</strong> have been deducted.
+                                    </p>
+                                </>
+                            });
+                            return;
+                        }
+                        
+                        
+                        
+                        case null  :   // payment pending => assumes as payment failed
+                        case false : { // payment failed
+                            showMessageError({
+                                error: <>
+                                    <p>
+                                        The credit card <strong>verification failed</strong>.
+                                    </p>
+                                    <p>
+                                        <strong>No funds</strong> have been deducted.
+                                    </p>
+                                    <p>
+                                        Please try using another card.
                                     </p>
                                 </>
                             });

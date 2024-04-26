@@ -124,7 +124,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                 
                 const qrisData = draftOrderDetail.redirectData;
                 if (qrisData) { // not undefined && not empty_string
-                    const qrisResult = await showDialog<boolean|null>(
+                    const qrisResult = await showDialog<boolean>(
                         <QrisDialog
                             // accessibilities:
                             title='Pay With QRIS'
@@ -137,25 +137,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                         />
                     );
                     switch (qrisResult) {
-                        case null  :   // payment pending => assumes as payment failed
-                        case false : { // payment failed
-                            showMessageError({
-                                error: <>
-                                    <p>
-                                        The credit card <strong>verification failed</strong>.
-                                    </p>
-                                    <p>
-                                        <strong>No funds</strong> have been deducted.
-                                    </p>
-                                    <p>
-                                        Please try using another card.
-                                    </p>
-                                </>
-                            });
-                            return;
-                        }
-                        
-                        case undefined: {
+                        case undefined: { // payment canceled or expired
                             // notify cancel transaction, so the authorized payment will be released:
                             (doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true }))
                             .catch(() => {
@@ -171,6 +153,25 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                                     </p>
                                     <p>
                                         <strong>No funds</strong> have been deducted.
+                                    </p>
+                                </>
+                            });
+                            return;
+                        }
+                        
+                        
+                        
+                        case false : { // payment failed
+                            showMessageError({
+                                error: <>
+                                    <p>
+                                        The transaction has been <strong>denied</strong> by the payment system.
+                                    </p>
+                                    <p>
+                                        <strong>No funds</strong> have been deducted.
+                                    </p>
+                                    <p>
+                                        Please try using another e-wallet.
                                     </p>
                                 </>
                             });

@@ -66,7 +66,7 @@ import {
 
 
 // react components:
-export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<undefined> = ModalExpandedChangeEvent<undefined>>
+export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<boolean> = ModalExpandedChangeEvent<boolean>>
     extends
         // bases:
         Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
@@ -83,7 +83,7 @@ export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalE
     data      : string
     paymentId : string
 }
-const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<undefined> = ModalExpandedChangeEvent<undefined>>(props: QrisDialogProps<TElement, TModalExpandedChangeEvent>) => {
+const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<boolean> = ModalExpandedChangeEvent<boolean>>(props: QrisDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
     const {
         // accessibilities:
@@ -229,8 +229,37 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
         // handlers:
         eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            console.log(data);
             handleEventSourceLoaded();
+            switch (data?.status ?? 0) {
+                case 0: // ready -or- noop
+                    break;
+                
+                
+                
+                case 201: // payment canceled or expired
+                    handleCloseDialog();
+                    break;
+                
+                
+                
+                case 202: // payment failed
+                    props.onExpandedChange?.({
+                        expanded   : false,
+                        actionType : 'ui',
+                        data       : false,
+                    } as TModalExpandedChangeEvent);
+                    break;
+                
+                
+                
+                case 200: // paid
+                    props.onExpandedChange?.({
+                        expanded   : false,
+                        actionType : 'ui',
+                        data       : true,
+                    } as TModalExpandedChangeEvent);
+                    break;
+            } // switch
         };
         eventSource.onopen  = handleEventSourceLoaded;
         eventSource.onerror = handleEventSourceErrored;
