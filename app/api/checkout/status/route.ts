@@ -9,22 +9,16 @@ import type {
     PaymentDetail,
 }                           from '@/models'
 
-// ORMs:
+// utilities:
 import {
-    prisma,
-}                           from '@/libs/prisma.server'
-
-// internals:
-import {
-    // utilities:
-    findPayment,
-}                           from '../utilities'
+    sha512,
+}                           from '@/libs/crypto'
 
 
 
 export async function GET(req: NextRequest, res: Response) {
     const rawOrderId = req.nextUrl.searchParams.get('paymentId');
-    if (typeof(rawOrderId) !== 'string') {
+    if ((typeof(rawOrderId) !== 'string') || !rawOrderId) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -59,37 +53,34 @@ export async function GET(req: NextRequest, res: Response) {
     
     
     
-    const checkPayment = async (): Promise<PaymentDetail|false|undefined> => {
+    const checkPayment = async (): Promise<PaymentDetail|false|null> => {
         try {
-            return await prisma.$transaction(async (prismaTransaction): Promise<PaymentDetail|false|undefined> => {
-                const draftOrder = await prisma.draftOrder.findUnique({
-                    where  : {
-                        paymentId : midtransPaymentId,
-                    },
-                    select : {}
-                });
-                if (!!draftOrder) return undefined;        // waiting for payment
-                
-                
-                
-                const paymentDetail = await findPayment(prismaTransaction, { paymentId: midtransPaymentId });
-                if (!!paymentDetail) return paymentDetail; // paid
-                
-                
-                
-                return false;                              // payment canceled or expired
+            const dateTime = new Date();
+            const response = await fetch(`${process.env.APP_URL ?? ''}/api/checkout/callbacks/__status?paymentId=${encodeURIComponent(midtransPaymentId)}`, {
+                headers : {
+                    'X-DATETIME'     : dateTime.toISOString(),
+                    'X-SIGNATUREKEY' : (await sha512(`${paymentId}${dateTime.valueOf()}${process.env.APP_SECRET ?? ''}`)),
+                },
             });
+            if (!response.ok) return null;
+            const data = await response.json();
+            return data?.paymentDetail ?? null;
+            /*
+                null          : waiting for payment.  
+                false         : payment canceled or expired.  
+                PaymentDetail : paid.  
+            */
         }
         catch {
             // ignore any error
-            return undefined; // waiting for payment
+            return null; // an error occured during check for payment status => assumes as waiting for payment
         } // try
     }
     let rescheduleHandler : ReturnType<typeof setTimeout>;
     const handleCheckPayment = async (): Promise<void> => {
         const result = await checkPayment();
         
-        if (result !== undefined) {
+        if (result !== null) {
             if (result) {
                 // payment approved:
                 await writer.write(encoder.encode('data: ' + JSON.stringify(result) + '\n\n'));
@@ -150,6 +141,10 @@ export async function GET(req: NextRequest, res: Response) {
     });
 }
 
+
+
+// configs:
+export const fetchCache = 'force-no-store';
 export const runtime = 'edge';
 // export const config = {
 //     runtime: 'edge',
