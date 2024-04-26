@@ -232,6 +232,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
         // handlers:
         eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
+            console.log(data);
             handleEventSourceLoaded();
             
             
