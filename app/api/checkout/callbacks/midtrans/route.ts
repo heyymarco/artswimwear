@@ -33,12 +33,12 @@ import {
     sendEmailConfirmation,
 }                           from '../../emails'
 
+// utilities:
+import {
+    sha512,
+}                           from '@/libs/crypto'
 
 
-const sha512test = async (str: string) => {
-    const buffer = await crypto.subtle.digest('SHA-512', new TextEncoder().encode(str));
-    return Array.prototype.map.call(new Uint8Array(buffer), x=>(('00'+x.toString(16)).slice(-2))).join('');
-}
 
 export async function POST(req: Request, res: Response): Promise<Response> {
     const midtransPaymentData = await req.json();
@@ -73,7 +73,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         ||
         (typeof(signatureKey) !== 'string') || !signatureKey
         ||
-        (signatureKey !== (await sha512test(`${orderId}${statusCode}${paymentAmountRaw}${process.env.MIDTRANS_ID ?? ''}`)))
+        (signatureKey !== (await sha512(`${orderId}${statusCode}${paymentAmountRaw}${process.env.MIDTRANS_ID ?? ''}`)))
     ) {
         return Response.json({
             error: 'Invalid data.',
