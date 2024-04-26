@@ -38,6 +38,7 @@ import {
 
 // internals:
 import {
+    PaymentDetail,
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -93,6 +94,8 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
         
         
         // actions:
+        gotoFinished,
+        
         doTransaction,
         doPlaceOrder,
         doMakePayment,
@@ -124,7 +127,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                 
                 const qrisData = draftOrderDetail.redirectData;
                 if (qrisData) { // not undefined && not empty_string
-                    const qrisResult = await showDialog<boolean>(
+                    const qrisResult = await showDialog<PaymentDetail|false>(
                         <QrisDialog
                             // accessibilities:
                             title='Pay With QRIS'
@@ -178,12 +181,11 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                             return;
                         }
                     } // switch
+                    
+                    
+                    
+                    gotoFinished(qrisResult, /*paid:*/true);
                 } // if
-                
-                
-                
-                // then forward the authentication to backend_API to receive the fund:
-                await doMakePayment(draftOrderDetail.orderId, /*paid:*/true);
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });

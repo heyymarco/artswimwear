@@ -383,6 +383,7 @@ export interface CheckoutStateBase {
     gotoStepInformation         : (focusTo?: 'contactInfo'|'shippingAddress') => void
     gotoStepShipping            : () => Promise<boolean>
     gotoPayment                 : () => Promise<boolean>
+    gotoFinished                : (paymentDetail: PaymentDetail, paid: boolean) => void
     
     doTransaction               : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                : (options?: PlaceOrderOptions) => Promise<DraftOrderDetail|undefined>
@@ -588,6 +589,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     gotoStepInformation         : noopCallback,
     gotoStepShipping            : noopCallback as any,
     gotoPayment                 : noopCallback as any,
+    gotoFinished                : noopCallback as any,
     
     doTransaction               : noopCallback as any,
     doPlaceOrder                : noopCallback as any,
@@ -1730,6 +1732,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         gotoStepInformation,          // stable ref
         gotoStepShipping,             // stable ref
         gotoPayment,                  // stable ref
+        gotoFinished,                 // stable ref
         
         doTransaction,                // stable ref
         doPlaceOrder,                 // stable ref
@@ -1888,6 +1891,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // gotoStepInformation,       // stable ref
         // gotoStepShipping,          // stable ref
         // gotoPayment,               // stable ref
+        // gotoFinished,              // stable ref
         
         // doTransaction,             // stable ref
         // doPlaceOrder,              // stable ref
