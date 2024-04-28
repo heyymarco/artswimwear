@@ -87,12 +87,10 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         case undefined: // Transaction not found.
             // ignore non_existing_transaction
             break;
+            
+            
+            
         case null:      // Transaction creation was denied.
-            // ignore failure_create_transaction
-            break;
-        
-        
-        
         case false: {   // Transaction was deleted due to canceled or expired.  
             const paymentId = midtransPaymentData.transaction_id;
             if (paymentId) {
