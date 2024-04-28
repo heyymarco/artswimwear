@@ -61,7 +61,20 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
             
             
             
-            return null;
+            switch (midtransPaymentData.transaction_status) {
+                /* handle inconsistent status_code <==> transaction_status */
+                case 'cancel':
+                case 'expire': {
+                    // Transaction was deleted due to canceled or expired:
+                    return false;
+                }
+                
+                
+                
+                default:
+                    // Transaction creation was denied
+                    return null;
+            } // switch
         }
         
         
