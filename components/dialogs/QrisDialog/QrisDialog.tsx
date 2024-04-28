@@ -230,50 +230,40 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
         
         
         // handlers:
-        eventSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            console.log(data);
-            handleEventSourceLoaded();
+        
+        // system events:
+        eventSource.addEventListener('open' , handleEventSourceLoaded);
+        eventSource.addEventListener('error', handleEventSourceErrored);
+        
+        // custom events:
+        eventSource.addEventListener('ready', handleEventSourceLoaded); // server said: i'm ready
+        eventSource.addEventListener('canceled', () => { // payment canceled or expired or failed
+            console.log('payment was canceled');
+            eventSource.close(); // close the connection
             
+            props.onExpandedChange?.({
+                expanded   : false,
+                actionType : 'ui',
+                data       : false,
+            } as TModalExpandedChangeEvent);
+        });
+        eventSource.addEventListener('paid', ({data}) => {
+            console.log('paid', data);
+            eventSource.close(); // close the connection
             
-            
-            const paymentDetail = data?.paymentDetail;
-            switch (paymentDetail) {
-                case undefined: // ready -or- noop
-                    break;
-                
-                
-                
-                case false: // payment canceled or expired or failed
-                    props.onExpandedChange?.({
-                        expanded   : false,
-                        actionType : 'ui',
-                        data       : false,
-                    } as TModalExpandedChangeEvent);
-                    break;
-                
-                
-                
-                default: // PaymentDetail
-                    if (!('amount' in paymentDetail)) break; // ignore unexpected ata
-                    
-                    props.onExpandedChange?.({
-                        expanded   : false,
-                        actionType : 'ui',
-                        data       : paymentDetail as PaymentDetail,
-                    } as TModalExpandedChangeEvent);
-                    break;
-            } // switch
-        };
-        eventSource.onopen  = handleEventSourceLoaded;
-        eventSource.onerror = handleEventSourceErrored;
+            props.onExpandedChange?.({
+                expanded   : false,
+                actionType : 'ui',
+                data       : JSON.parse(data) as PaymentDetail,
+            } as TModalExpandedChangeEvent);
+        });
         
         
         
         // cleanups:
         return () => {
-            eventSource.close();
-        }
+            eventSource.close(); // close the connection
+        };
     }, [generation]);
     
     

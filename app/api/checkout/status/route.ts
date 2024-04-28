@@ -48,7 +48,10 @@ export async function GET(req: NextRequest, res: Response) {
     
     // ready signal:
     Promise.resolve().then(async () => { // wait until the header has sent
-        await writer.write(encoder.encode('data: ' + JSON.stringify({ /* empty data */ }) + '\n\n'));
+        try {
+            await writer.write(encoder.encode(`event: ready\ndata: \n\n`));
+        }
+        catch {} // ignore any errors
     });
     
     
@@ -81,12 +84,15 @@ export async function GET(req: NextRequest, res: Response) {
         const result = await checkPayment();
         
         if (result !== null) {
-            if (result) { // PaymentDetail => payment approved:
-                await writer.write(encoder.encode('data: ' + JSON.stringify({ paymentDetail: result }) + '\n\n'));
+            try {
+                if (result) { // PaymentDetail => payment approved:
+                    await writer.write(encoder.encode(`event: paid\ndata: ${JSON.stringify(result)}\n\n`));
+                }
+                else {        // false         => payment canceled or expired or failed:
+                    await writer.write(encoder.encode(`event: canceled\ndata: \n\n`));
+                } // if
             }
-            else {        // false         => payment canceled or expired or failed:
-                await writer.write(encoder.encode('data: ' + JSON.stringify({ paymentDetail: false  }) + '\n\n'));
-            } // if
+            catch {} // ignore any errors
             
             
             
