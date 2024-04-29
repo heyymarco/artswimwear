@@ -130,6 +130,9 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                 
                 const qrisData = draftOrderDetail.redirectData;
                 if (qrisData) { // not undefined && not empty_string
+                    let expiresRaw = draftOrderDetail.expires;
+                    if (typeof(expiresRaw) === 'string') expiresRaw = new Date(Date.parse(expiresRaw));
+                    
                     const qrisResult = await showDialog<PaymentDetail|false>(
                         <QrisDialog
                             // accessibilities:
@@ -139,6 +142,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                             
                             // resources:
                             data={qrisData}
+                            expires={expiresRaw}
                             paymentId={draftOrderDetail.orderId}
                         />
                     );

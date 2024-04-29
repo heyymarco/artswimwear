@@ -50,6 +50,9 @@ import {
 import {
     ErrorBlankSection,
 }                           from '@/components/BlankSection'
+import {
+    CountDown,
+}                           from './CountDown'
 
 // internals:
 import {
@@ -78,13 +81,14 @@ export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalE
         >
 {
     // accessibilities:
-    title    ?: string
+    title     ?: string
     
     
     
     // resources:
-    data      : string
-    paymentId : string
+    data       : string
+    expires   ?: Date
+    paymentId  : string
 }
 const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false> = ModalExpandedChangeEvent<PaymentDetail|false>>(props: QrisDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
@@ -96,6 +100,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
         
         // resources:
         data,
+        expires,
         paymentId,
         
         
@@ -238,7 +243,6 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
         // custom events:
         eventSource.addEventListener('ready', handleEventSourceLoaded); // server said: i'm ready
         eventSource.addEventListener('canceled', () => { // payment canceled or expired or failed
-            console.log('payment was canceled');
             eventSource.close(); // close the connection
             
             props.onExpandedChange?.({
@@ -248,7 +252,6 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
             } as TModalExpandedChangeEvent);
         });
         eventSource.addEventListener('paid', ({data}) => {
-            console.log('paid', data);
             eventSource.close(); // close the connection
             
             props.onExpandedChange?.({
@@ -299,17 +302,20 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheet.cardBody}>
-                {isReady && <div
-                    // classes:
-                    className={styleSheet.qris}
-                    
-                    
-                    
-                    // resources:
-                    dangerouslySetInnerHTML={{
-                        __html: svgString ?? '',
-                    }}
-                />}
+                {isReady && <>
+                    {!!expires && <CountDown expires={expires} className={styleSheet.countDown} />}
+                    <div
+                        // classes:
+                        className={styleSheet.qris}
+                        
+                        
+                        
+                        // resources:
+                        dangerouslySetInnerHTML={{
+                            __html: svgString ?? '',
+                        }}
+                    />
+                </>}
                 
                 {isErrored && <ErrorBlankSection className={styleSheet.error} onRetry={handleReload} />}
                 

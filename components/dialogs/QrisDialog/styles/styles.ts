@@ -7,6 +7,11 @@ import {
 }                           from '@cssfn/core'                  // writes css in javascript
 
 import {
+    // a spacer (gap) management system:
+    spacers,
+    
+    
+    
     // a responsive management system:
     breakpoints,
     ifScreenWidthAtLeast,
@@ -65,6 +70,11 @@ export const usesCardBodyLayout  = () => {
             
             
             
+            // backgrounds:
+            backgroundColor   : '#ffffff',
+            
+            
+            
             // spacings:
             [paddingVars.paddingInline] : '0px',
             [paddingVars.paddingBlock ] : '0px',
@@ -90,7 +100,7 @@ export const usesLoadingLayout   = () => {
         fontSize: '3rem',
     });
 };
-export const usesErrorLayout   = () => {
+export const usesErrorLayout     = () => {
     // dependencies:
     
     // capabilities:
@@ -117,6 +127,13 @@ export const usesErrorLayout   = () => {
         marginBlock  : `calc(0px - ${groupableVars.paddingBlock })`,
     });
 };
+export const usesCountDownLayout = () => {
+    return style({
+        gridArea: '-2 / 1 / -2 / -1',
+        marginBlockStart: spacers.sm,
+        lineHeight: 1,
+    });
+}
 export const usesQrisLayout   = () => {
     return style({
         // layouts:
@@ -141,6 +158,9 @@ export default () => [
     scope('error', {
         ...usesErrorLayout(),
     }, {specificityWeight: 2}),
+    scope('countDown', {
+        ...usesCountDownLayout(),
+    }, {specificityWeight: 4}),
     scope('qris', {
         ...usesQrisLayout(),
     }),

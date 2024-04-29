@@ -209,9 +209,13 @@ export type PlaceOrderData =
     |PlaceOrderDataWithBillingAddress
     |(PlaceOrderDataWithShippingAddress & PlaceOrderDataWithBillingAddress)
 export interface DraftOrderDetail
+    extends
+        Pick<AuthorizedFundData,
+            |'redirectData'
+            |'expires'
+        >
 {
-    orderId      : string
-    redirectData : string|undefined
+    orderId : string
 }
 
 export interface MakePaymentOptions {
@@ -1398,7 +1402,20 @@ router
                 return `${prefix}${authorizedOrPaymentDetail.paymentId}`;
             })()
         ),
-        redirectData : isAuthorizedFundData(authorizedOrPaymentDetail) ? authorizedOrPaymentDetail.redirectData : undefined,
+        ...((): Pick<DraftOrderDetail, 'redirectData'|'expires'>|undefined => {
+            if (!isAuthorizedFundData(authorizedOrPaymentDetail)) return undefined;
+            
+            
+            
+            const {
+                redirectData,
+                expires,
+            } = authorizedOrPaymentDetail;
+            return {
+                redirectData,
+                expires,
+            };
+        })(),
     };
     return NextResponse.json(draftOrderDetail); // handled with success
 })
