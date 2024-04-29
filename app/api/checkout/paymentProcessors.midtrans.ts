@@ -104,11 +104,21 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                             } // if
                             console.log('QR url: ', midtransPaymentData.actions?.[0]?.url);
                             
+                            let expiresStr = midtransPaymentData.expiry_time;
+                            if (expiresStr && (typeof(expiresStr) === 'string')) {
+                                if (!(/Z|[T+-]\d{2}:\d{2}/i).test(expiresStr)) { // no timezone defined => assumes as 
+                                    expiresStr += '+07:00';
+                                } // if
+                            } // if
+                            const expiresNum = !expiresStr ? NaN : Date.parse(expiresStr);
+                            const expires = isNaN(expiresNum) ? undefined : new Date(expiresNum);
+                            
                             
                             
                             return {
                                 paymentId,
                                 redirectData, // redirectData for 3DS verification (credit_card) // undefined for gopay, shopeepay
+                                expires,
                             } satisfies AuthorizedFundData;
                         }
                         

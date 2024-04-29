@@ -41,6 +41,7 @@ export interface CreateOrderOptions {
 export interface AuthorizedFundData {
     paymentId     : string
     redirectData ?: string
+    expires      ?: Date
 }
 export interface PaymentDetail
     extends
