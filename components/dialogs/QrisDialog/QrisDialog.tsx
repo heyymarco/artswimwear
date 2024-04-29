@@ -72,7 +72,7 @@ import {
 
 
 // react components:
-export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false> = ModalExpandedChangeEvent<PaymentDetail|false>>
+export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false|0> = ModalExpandedChangeEvent<PaymentDetail|false|0>>
     extends
         // bases:
         Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
@@ -90,7 +90,7 @@ export interface QrisDialogProps<TElement extends Element = HTMLElement, TModalE
     expires   ?: Date
     paymentId  : string
 }
-const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false> = ModalExpandedChangeEvent<PaymentDetail|false>>(props: QrisDialogProps<TElement, TModalExpandedChangeEvent>) => {
+const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<PaymentDetail|false|0> = ModalExpandedChangeEvent<PaymentDetail|false|0>>(props: QrisDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
     const {
         // accessibilities:
@@ -177,6 +177,14 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
             expanded   : false,
             actionType : 'ui',
             data       : undefined,
+        } as TModalExpandedChangeEvent);
+    });
+    const handleTimeOut            = useEvent((): void => {
+        // actions:
+        props.onExpandedChange?.({
+            expanded   : false,
+            actionType : 'ui',
+            data       : 0,
         } as TModalExpandedChangeEvent);
     });
     
@@ -303,14 +311,27 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
             </CardHeader>
             <CardBody className={styleSheet.cardBody}>
                 {isReady && <>
-                    {!!expires && <CountDown expires={expires} className={styleSheet.countDown} />}
+                    {!!expires && <CountDown
+                        // classes:
+                        className={styleSheet.countDown}
+                        
+                        
+                        
+                        // resources:
+                        expires={expires}
+                        
+                        
+                        
+                        // handlers:
+                        onTimeOut={handleTimeOut}
+                    />}
                     <div
                         // classes:
                         className={styleSheet.qris}
                         
                         
                         
-                        // resources:
+                        // children:
                         dangerouslySetInnerHTML={{
                             __html: svgString ?? '',
                         }}

@@ -133,7 +133,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                     let expiresRaw = draftOrderDetail.expires;
                     if (typeof(expiresRaw) === 'string') expiresRaw = new Date(Date.parse(expiresRaw));
                     
-                    const qrisResult = await showDialog<PaymentDetail|false>(
+                    const qrisResult = await showDialog<PaymentDetail|false|0>(
                         <QrisDialog
                             // accessibilities:
                             title='Pay With QRIS'
@@ -147,6 +147,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                         />
                     );
                     switch (qrisResult) {
+                        case 0:
                         case undefined: { // payment canceled or expired
                             // notify cancel transaction, so the authorized payment will be released:
                             (doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true }))
@@ -159,7 +160,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                             showMessageError({
                                 error: <>
                                     <p>
-                                        The transaction has been <strong>canceled</strong> by the user.
+                                        The transaction has been <strong>canceled</strong> {(qrisResult === 0) ? <>due to timeout.</> : <>by the user</>}.
                                     </p>
                                     <p>
                                         <strong>No funds</strong> have been deducted.

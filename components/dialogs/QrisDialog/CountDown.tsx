@@ -32,13 +32,23 @@ export interface CountDownProps
         BasicProps
 {
     // resources:
-    expires : Date
+    expires   : Date
+    
+    
+    
+    // handlers:
+    onTimeOut : () => void
 }
 const CountDown = (props: CountDownProps) => {
     // props:
     const {
         // resources:
         expires,
+        
+        
+        
+        // handlers:
+        onTimeOut,
         
         
         
@@ -61,6 +71,7 @@ const CountDown = (props: CountDownProps) => {
             const timeLeft = expires.valueOf() - Date.now();
             if (timeLeft <= 0) {
                 setTimeLeft(0);
+                onTimeOut();
             }
             else {
                 setTimeLeft(timeLeft);
