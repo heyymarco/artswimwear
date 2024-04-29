@@ -160,7 +160,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                             showMessageError({
                                 error: <>
                                     <p>
-                                        The transaction has been <strong>canceled</strong> {(qrisResult === 0) ? <>due to timeout.</> : <>by the user</>}.
+                                        The transaction has been <strong>canceled</strong> {(qrisResult === 0) ? <>due to timeout</> : <>by the user</>}.
                                     </p>
                                     <p>
                                         <strong>No funds</strong> have been deducted.
