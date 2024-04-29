@@ -85,7 +85,7 @@ const CountDown = (props: CountDownProps) => {
     const {
         // variants:
         size     = 'sm',
-        theme    = 'primary',
+        theme    = (timeLeft >= (30 * 1000)) ? 'primary' : 'danger',
         outlined = true,
         nude     = true,
     } = restCountDownProps;
@@ -104,7 +104,7 @@ const CountDown = (props: CountDownProps) => {
             size     = {size}
             theme    = {theme}
             outlined = {outlined}
-            nude     = {true}
+            nude     = {nude}
         >
             {utc(timeLeft).format('HH:mm:ss')}
         </Basic>
