@@ -106,7 +106,7 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                             
                             let expiresStr = midtransPaymentData.expiry_time;
                             if (expiresStr && (typeof(expiresStr) === 'string')) {
-                                if (!(/Z|[T+-]\d{2}:\d{2}/i).test(expiresStr)) { // no timezone defined => assumes as 
+                                if (!(/Z|[T+-]\d{2}:\d{2}/i).test(expiresStr)) { // no timezone defined => assumes as GMT+7
                                     expiresStr += '+07:00';
                                 } // if
                             } // if
