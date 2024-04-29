@@ -275,8 +275,8 @@ export default () => {
             // children:
             ...children('.paymentProvider', {
                 // sizes:
-                width          : '42px',
-                height         : 'auto',
+                width          : 'auto',
+                height         : '26px',
                 
                 
                 
@@ -284,6 +284,11 @@ export default () => {
                 border         : borderVars.border,
                 borderWidth    : borders.defaultWidth,
                 borderRadius   : borderRadiuses.sm,
+                
+                
+                
+                // spacings:
+                padding        : spacers.xs,
             }),
             ...children(['.customerName', '.shippingEstimate', '.paymentIdentifier'], {
                 // typos:

@@ -215,7 +215,8 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                     ewallet : {
                                         type       : 'EWALLET',
                                         brand      : midtransPaymentData.issuer ?? midtransPaymentData.acquirer ?? midtransPaymentData.payment_type?.toLowerCase() ?? null,
-                                        identifier : midtransPaymentData.merchant_id ?? null,
+                                        // identifier : midtransPaymentData.merchant_id ?? null,
+                                        identifier : null,
                                     },
                                 };
                                 
