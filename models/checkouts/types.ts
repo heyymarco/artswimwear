@@ -42,11 +42,6 @@ export interface AuthorizedFundData {
     paymentId     : string
     redirectData ?: string
 }
-export interface PaidFundData {
-    paymentSource : any
-    paymentAmount : number
-    paymentFee    : number
-}
 export interface PaymentDetail
     extends
         Omit<Payment,

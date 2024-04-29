@@ -119,53 +119,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             //#region save the database
-            const {
-                paymentSource,
-                paymentAmount,
-                paymentFee,
-            } = result;
-            
-            const paymentDetail = ((): Omit<Payment, 'billingAddress'> => {
-                /* PAY WITH CARD */
-                const card = paymentSource?.card;
-                if (card) {
-                    return {
-                        type       : 'CARD',
-                        brand      : card.brand?.toLowerCase() ?? null,
-                        identifier : card.identifier,
-                        
-                        amount     : paymentAmount,
-                        fee        : paymentFee,
-                    };
-                } // if
-                
-                
-                
-                /* PAY WITH EWALLET */
-                const ewallet = paymentSource?.ewallet;
-                if (ewallet) {
-                    return {
-                        type       : 'EWALLET',
-                        brand      : ewallet.brand ?? null,
-                        identifier : ewallet.identifier,
-                        
-                        amount     : paymentAmount,
-                        fee        : paymentFee,
-                    };
-                } // if
-                
-                
-                
-                /* PAY WITH OTHER */
-                return {
-                    type       : 'CUSTOM',
-                    brand      : null,
-                    identifier : null,
-                    
-                    amount     : paymentAmount,
-                    fee        : paymentFee,
-                };
-            })();
+            const paymentDetail = result;
             
             
             

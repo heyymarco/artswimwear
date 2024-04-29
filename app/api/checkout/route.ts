@@ -32,11 +32,10 @@ import {
     DetailedItem,
     
     AuthorizedFundData,
-    PaidFundData,
     PaymentDetail,
     
     isAuthorizedFundData,
-    isPaidFundData,
+    isPaymentDetail,
 }                           from '@/models'
 
 // ORMs:
@@ -624,12 +623,12 @@ router
     
     
     
-    let orderId                  : string|undefined;
-    let authorizedOrPaidFundData : AuthorizedFundData|PaidFundData|undefined;
-    let paymentDetail            : PaymentDetail|undefined;
-    let newOrder                 : OrderAndData|undefined = undefined;
+    let orderId                   : string|undefined;
+    let authorizedOrPaymentDetail : AuthorizedFundData|PaymentDetail|undefined;
+    let paymentDetail             : PaymentDetail|undefined;
+    let newOrder                  : OrderAndData|undefined = undefined;
     try {
-        ({orderId, authorizedOrPaidFundData, paymentDetail, newOrder} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, authorizedOrPaidFundData: AuthorizedFundData|PaidFundData|undefined, paymentDetail: PaymentDetail|undefined, newOrder : OrderAndData|undefined }> => {
+        ({orderId, authorizedOrPaymentDetail, paymentDetail, newOrder} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, authorizedOrPaymentDetail: AuthorizedFundData|PaymentDetail|undefined, paymentDetail: PaymentDetail|undefined, newOrder : OrderAndData|undefined }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
@@ -965,10 +964,10 @@ router
                 } // for
                 if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
                 if (simulateOrder) return {
-                    orderId                  : '', // empty string => simulateOrder
-                    authorizedOrPaidFundData : undefined,
-                    paymentDetail            : undefined,
-                    newOrder                 : undefined,
+                    orderId                   : '', // empty string => simulateOrder
+                    authorizedOrPaymentDetail : undefined,
+                    paymentDetail             : undefined,
+                    newOrder                  : undefined,
                 };
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
@@ -1015,9 +1014,9 @@ router
             
             
             //#region fetch payment gateway API
-            let authorizedOrPaidFundData : AuthorizedFundData|PaidFundData|undefined = undefined;
+            let authorizedOrPaymentDetail : AuthorizedFundData|PaymentDetail|undefined = undefined;
             if (usePaypalGateway) {
-                authorizedOrPaidFundData = await paypalCreateOrder({
+                authorizedOrPaymentDetail = await paypalCreateOrder({
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -1037,7 +1036,7 @@ router
                 });
             }
             else if (cardToken) {
-                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrderWithCard(cardToken, orderId, {
+                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithCard(cardToken, orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -1066,22 +1065,22 @@ router
                     detailedItems,
                 });
                 
-                if (authorizedOrPaidFundDataOrDeclined === null) {
+                if (authorizedOrPaymentDetailOrDeclined === null) {
                     // payment DECLINED:
                     
                     return {
-                        orderId                  : undefined, // undefined => declined
-                        authorizedOrPaidFundData : undefined,
-                        paymentDetail            : undefined,
-                        newOrder                 : undefined,
+                        orderId                   : undefined, // undefined => declined
+                        authorizedOrPaymentDetail : undefined,
+                        paymentDetail             : undefined,
+                        newOrder                  : undefined,
                     };
                 }
                 else {
-                    authorizedOrPaidFundData = authorizedOrPaidFundDataOrDeclined;
+                    authorizedOrPaymentDetail = authorizedOrPaymentDetailOrDeclined;
                 } // if
             }
             else if (paymentSource === 'midtransQris') {
-                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrderWithQris(orderId, {
+                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithQris(orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -1110,28 +1109,29 @@ router
                     detailedItems,
                 });
                 
-                if (authorizedOrPaidFundDataOrDeclined === null) {
+                if (authorizedOrPaymentDetailOrDeclined === null) {
                     // payment DECLINED:
                     
                     return {
-                        orderId                  : undefined, // undefined => declined
-                        authorizedOrPaidFundData : undefined,
-                        paymentDetail            : undefined,
-                        newOrder                 : undefined,
+                        orderId                   : undefined, // undefined => declined
+                        authorizedOrPaymentDetail : undefined,
+                        paymentDetail             : undefined,
+                        newOrder                  : undefined,
                     };
                 }
                 else {
-                    authorizedOrPaidFundData = authorizedOrPaidFundDataOrDeclined;
+                    authorizedOrPaymentDetail = authorizedOrPaymentDetailOrDeclined;
                 } // if
             }
             else if (paymentSource === 'manual') {
-                authorizedOrPaidFundData = {
-                    paymentSource : {
-                        manual : {},
-                    },
-                    paymentAmount : 0,
-                    paymentFee    : 0,
-                } satisfies PaidFundData;
+                authorizedOrPaymentDetail = {
+                    type       : 'MANUAL',
+                    brand      : null,
+                    identifier : null,
+                    
+                    amount     : 0,
+                    fee        : 0,
+                } satisfies PaymentDetail;
             } // if
             //#endregion fetch payment gateway API
             
@@ -1180,48 +1180,8 @@ router
             );
             
             const paymentDetail : PaymentDetail|null = (
-                isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
-                ? ((): PaymentDetail => {
-                    /* PAY WITH CARD */
-                    const card = authorizedOrPaidFundData.paymentSource?.card;
-                    if (card) {
-                        return {
-                            type       : 'CARD',
-                            brand      : card.brand?.toLowerCase() ?? null,
-                            identifier : card.identifier,
-                            
-                            amount     : authorizedOrPaidFundData.paymentAmount,
-                            fee        : authorizedOrPaidFundData.paymentFee,
-                        };
-                    } // if
-                    
-                    
-                    
-                    /* PAY WITH MANUAL */
-                    const manual = authorizedOrPaidFundData.paymentSource?.manual;
-                    if (manual) {
-                        return {
-                            type       : 'MANUAL',
-                            brand      : null,
-                            identifier : null,
-                            
-                            amount     : 0,
-                            fee        : 0,
-                        };
-                    } // if
-                    
-                    
-                    
-                    /* PAY WITH OTHER */
-                    return {
-                        type       : 'CUSTOM',
-                        brand      : null,
-                        identifier : null,
-                        
-                        amount     : authorizedOrPaidFundData.paymentAmount,
-                        fee        : authorizedOrPaidFundData.paymentFee,
-                    };
-                })()
+                isPaymentDetail(authorizedOrPaymentDetail)  // is PaymentDetail
+                ? authorizedOrPaymentDetail
                 : null
             );
             const customerOrGuest : CustomerOrGuestData = {
@@ -1251,12 +1211,12 @@ router
             
             
             const createNewDraftOrderPromise = (
-                isAuthorizedFundData(authorizedOrPaidFundData) // is AuthorizedFundData
+                isAuthorizedFundData(authorizedOrPaymentDetail) // is AuthorizedFundData
                 // pending_paid => create new (draft)Order:
                 ? createDraftOrder(prismaTransaction, {
                     // temporary data:
                     expiresAt                : new Date(Date.now() + (1 * 60 * 1000)),
-                    paymentId                : authorizedOrPaidFundData.paymentId,
+                    paymentId                : authorizedOrPaymentDetail.paymentId,
                     
                     // primary data:
                     orderId                  : orderId,
@@ -1272,7 +1232,7 @@ router
                 : null
             );
             const createNewOrderPromise = (
-                isPaidFundData(authorizedOrPaidFundData)  // is PaidFundData
+                isPaymentDetail(authorizedOrPaymentDetail)  // is PaymentDetail
                 // paid_immediately => crate new (real)Order:
                 ? createOrder(prismaTransaction, {
                     // primary data:
@@ -1309,9 +1269,9 @@ router
             // report the createOrder result:
             return {
                 orderId,
-                authorizedOrPaidFundData,
-                paymentDetail : paymentDetail ?? undefined,
-                newOrder : (await createNewOrderPromise) ?? undefined,
+                authorizedOrPaymentDetail : authorizedOrPaymentDetail,
+                paymentDetail             : paymentDetail ?? undefined,
+                newOrder                  : (await createNewOrderPromise) ?? undefined,
             };
         }));
         
@@ -1418,7 +1378,7 @@ router
         });
     } // if
     
-    if (paymentDetail) {  // is PaidFundData
+    if (paymentDetail) {  // is PaymentDetail
         // payment approved:
         return NextResponse.json(paymentDetail, {
             status : 200 // payment APPROVED
@@ -1427,7 +1387,7 @@ router
     
     const draftOrderDetail : DraftOrderDetail = {
         orderId      : (
-            !isAuthorizedFundData(authorizedOrPaidFundData)
+            !isAuthorizedFundData(authorizedOrPaymentDetail)
             ? orderId
             : (() => {
                 let prefix = '';
@@ -1435,10 +1395,10 @@ router
                 if      (usePaypalGateway  ) prefix = '#PAYPAL_';
                 else if (useMidtransGateway) prefix = '#MIDTRANS_';
                 
-                return `${prefix}${authorizedOrPaidFundData.paymentId}`;
+                return `${prefix}${authorizedOrPaymentDetail.paymentId}`;
             })()
         ),
-        redirectData : isAuthorizedFundData(authorizedOrPaidFundData) ? authorizedOrPaidFundData.redirectData : undefined,
+        redirectData : isAuthorizedFundData(authorizedOrPaymentDetail) ? authorizedOrPaymentDetail.redirectData : undefined,
     };
     return NextResponse.json(draftOrderDetail); // handled with success
 })
@@ -1860,8 +1820,8 @@ Updating the confirmation is not required.`,
             let paymentResponse : PaymentDetail|PaymentDeclined;
             let paymentConfirmationToken : string|undefined = undefined;
             if (paypalPaymentId) {
-                const paidFundData = await paypalCaptureFund(paypalPaymentId);
-                if (paidFundData === null) {
+                const paymentDetail = await paypalCaptureFund(paypalPaymentId);
+                if (paymentDetail === null) {
                     // payment DECLINED:
                     
                     paymentResponse = {
@@ -1871,58 +1831,12 @@ Updating the confirmation is not required.`,
                 else {
                     // payment APPROVED:
                     
-                    const {
-                        paymentSource,
-                        paymentAmount,
-                        paymentFee,
-                    } = paidFundData;
-                    
-                    paymentResponse = ((): PaymentDetail => {
-                        /* PAY WITH CARD */
-                        const card = paymentSource?.card;
-                        if (card) {
-                            return {
-                                type       : 'CARD',
-                                brand      : card.brand?.toLowerCase() ?? null,
-                                identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
-                                
-                                amount     : paymentAmount,
-                                fee        : paymentFee,
-                            };
-                        } // if
-                        
-                        
-                        
-                        /* PAY WITH PAYPAL */
-                        const paypal = paymentSource?.paypal;
-                        if (paypal) {
-                            return {
-                                type       : 'PAYPAL',
-                                brand      : 'paypal',
-                                identifier : paypal.email_address || null,
-                                
-                                amount     : paymentAmount,
-                                fee        : paymentFee,
-                            };
-                        } // if
-                        
-                        
-                        
-                        /* PAY WITH OTHER */
-                        return {
-                            type       : 'CUSTOM',
-                            brand      : null,
-                            identifier : null,
-                            
-                            amount     : paymentAmount,
-                            fee        : paymentFee,
-                        };
-                    })();
+                    paymentResponse = paymentDetail;
                 } // if
             }
             else if (midtransPaymentId) {
-                const paidFundData = await midtransCaptureFund(midtransPaymentId);
-                if (!paidFundData) {
+                const paymentDetail = await midtransCaptureFund(midtransPaymentId);
+                if (!paymentDetail) {
                     // payment DECLINED:
                     
                     paymentResponse = {
@@ -1932,38 +1846,7 @@ Updating the confirmation is not required.`,
                 else {
                     // payment APPROVED:
                     
-                    const {
-                        paymentSource,
-                        paymentAmount,
-                        paymentFee,
-                    } = paidFundData;
-                    
-                    paymentResponse = ((): PaymentDetail => {
-                        /* PAY WITH CARD */
-                        const card = paymentSource?.card;
-                        if (card) {
-                            return {
-                                type       : 'CARD',
-                                brand      : card.brand?.toLowerCase() ?? null,
-                                identifier : card.identifier,
-                                
-                                amount     : paymentAmount,
-                                fee        : paymentFee,
-                            };
-                        } // if
-                        
-                        
-                        
-                        /* PAY WITH OTHER */
-                        return {
-                            type       : 'CUSTOM',
-                            brand      : null,
-                            identifier : null,
-                            
-                            amount     : paymentAmount,
-                            fee        : paymentFee,
-                        };
-                    })();
+                    paymentResponse = paymentDetail;
                 } // if
             }
             else {
@@ -1975,7 +1858,7 @@ Updating the confirmation is not required.`,
                     
                     amount     : 0,
                     fee        : 0,
-                };
+                } satisfies PaymentDetail;
                 
                 
                 

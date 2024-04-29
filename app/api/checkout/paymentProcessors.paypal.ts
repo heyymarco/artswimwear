@@ -2,7 +2,7 @@
 import type {
     CreateOrderOptions,
     AuthorizedFundData,
-    PaidFundData,
+    PaymentDetail,
 }                           from '@/models'
 
 // configs:
@@ -391,7 +391,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
     };
 }
 
-export const paypalCaptureFund = async (paymentId: string): Promise<PaidFundData|null> => {
+export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetail|null> => {
     const response = await fetch(`${paypalUrl}/v2/checkout/orders/${paymentId}/capture`, {
         method  : 'POST',
         headers : {
@@ -604,7 +604,7 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaidFundData
         }
     */
     console.log('capture: paypalPaymentData: ', paypalPaymentData);
-    const captureData = paypalPaymentData?.purchase_units?.[0]?.payments?.captures?.[0];
+    const captureData = paypalPaymentData.purchase_units?.[0]?.payments?.captures?.[0];
     console.log('captureData : ', captureData);
     console.log('captureData.status : ', captureData?.status);
     
@@ -618,15 +618,51 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaidFundData
         case 'COMPLETED' : {
             const paymentBreakdown = captureData?.seller_receivable_breakdown;
             // const paymentAmountCurrency : string = paymentBreakdown?.gross_amount?.currency_code || '';
-            const paymentAmount    = Number.parseFloat(paymentBreakdown?.gross_amount?.value);
+            const amount    = Number.parseFloat(paymentBreakdown?.gross_amount?.value);
             // const paymentFeeCurrency    : string = paymentBreakdown?.paypal_fee?.currency_code || '';
-            const paymentFee       = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
+            const fee       = Number.parseFloat(paymentBreakdown?.paypal_fee?.value);
             
             return {
-                paymentSource : paypalPaymentData?.payment_source,
-                paymentAmount,
-                paymentFee,
-            };
+                ...((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+                    const paymentSource = paypalPaymentData.payment_source;
+                    
+                    
+                    
+                    /* PAY WITH CARD */
+                    const card = paymentSource?.card;
+                    if (card) {
+                        return {
+                            type       : 'CARD',
+                            brand      : card.brand?.toLowerCase() ?? null,
+                            identifier : card.last_digits ? `ending with ${card.last_digits}` : null,
+                        };
+                    } // if
+                    
+                    
+                    
+                    /* PAY WITH PAYPAL */
+                    const paypal = paymentSource?.paypal;
+                    if (paypal) {
+                        return {
+                            type       : 'PAYPAL',
+                            brand      : 'paypal',
+                            identifier : paypal.email_address || null,
+                        };
+                    } // if
+                    
+                    
+                    
+                    /* PAY WITH OTHER */
+                    return {
+                        type       : 'CUSTOM',
+                        brand      : null,
+                        identifier : null,
+                    };
+                })(),
+                
+                amount,
+                fee,
+            } satisfies PaymentDetail;
         }
         
         case 'DECLINED'  : {

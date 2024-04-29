@@ -8,7 +8,7 @@ import {
     // types:
     type CreateOrderOptions,
     type AuthorizedFundData,
-    type PaidFundData,
+    type PaymentDetail,
     
     
     
@@ -41,10 +41,10 @@ const midtransHandleResponse = async (response: Response) => {
  * undefined          : Transaction not found.  
  * null               : Transaction creation was denied.  
  * AuthorizedFundData : Authorized for payment.  
- * PaidFundData       : Paid.  
+ * PaymentDetail      : Paid.  
  * false              : Transaction was deleted due to canceled or expired.  
  */
-export const midtransTranslateData = (midtransPaymentData: any): undefined|null|AuthorizedFundData|PaidFundData|false => {
+export const midtransTranslateData = (midtransPaymentData: any): undefined|null|AuthorizedFundData|PaymentDetail|false => {
     switch (`${midtransPaymentData.status_code}` /* stringify */) {
         case '404' : {
             // Transaction not found
@@ -188,22 +188,20 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                 
                 case 'capture'   :
                 case 'settlement': {
-                    let paymentAmountRaw = midtransPaymentData.gross_amount;
-                    const paymentAmount  = decimalify(
-                        (typeof(paymentAmountRaw) === 'number')
-                        ? paymentAmountRaw
-                        : Number.parseFloat(paymentAmountRaw)
+                    let amountRaw = midtransPaymentData.gross_amount;
+                    const amount  = decimalify(
+                        (typeof(amountRaw) === 'number')
+                        ? amountRaw
+                        : Number.parseFloat(amountRaw)
                     );
                     return {
-                        paymentSource : ((): object => {
+                        ...((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
                             switch (midtransPaymentData.payment_type) {
                                 /* PAY WITH CARD */
                                 case 'credit_card': return {
-                                    card : (midtransPaymentData.payment_type !== 'credit_card') ? undefined : {
-                                        type       : 'CARD',
-                                        brand      : midtransPaymentData.bank?.toLowerCase() ?? null,
-                                        identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
-                                    },
+                                    type       : 'CARD',
+                                    brand      : midtransPaymentData.bank ?? null,
+                                    identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
                                 };
                                 
                                 
@@ -212,26 +210,26 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                 case 'gopay'    :
                                 case 'shopeepay':
                                 case 'qris'     : return {
-                                    ewallet : {
-                                        type       : 'EWALLET',
-                                        brand      : midtransPaymentData.issuer ?? midtransPaymentData.acquirer ?? midtransPaymentData.payment_type?.toLowerCase() ?? null,
-                                        // identifier : midtransPaymentData.merchant_id ?? null,
-                                        identifier : null,
-                                    },
+                                    type       : 'EWALLET',
+                                    brand      : midtransPaymentData.issuer ?? midtransPaymentData.acquirer ?? midtransPaymentData.payment_type ?? null,
+                                    // identifier : midtransPaymentData.merchant_id ?? null,
+                                    identifier : null,
                                 };
                                 
                                 
                                 
-                                /* PAY WITH UNKNOWN */
-                                default : {
-                                    console.log('unexpected response: ', midtransPaymentData);
-                                    throw Error('unexpected API response');
-                                }
+                                /* PAY WITH OTHER */
+                                default : return {
+                                    type       : 'CUSTOM',
+                                    brand      : null,
+                                    identifier : null,
+                                };
                             } // switch
                         })(),
-                        paymentAmount : paymentAmount,
-                        paymentFee    : 0,
-                    } satisfies PaidFundData;
+                        
+                        amount : amount,
+                        fee    : 0,
+                    } satisfies PaymentDetail;
                 }
                 
                 
@@ -269,7 +267,7 @@ type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
         [payment in TPayment] : object;
     }
-export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
+export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -370,11 +368,11 @@ export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPayme
         default:
             // null               : Transaction creation was denied.
             // AuthorizedFundData : Authorized for payment.
-            // PaidFundData       : Paid.
+            // PaymentDetail      : Paid.
             return result;
     } // switch
 }
-export const midtransCreateOrderWithCard = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
+export const midtransCreateOrderWithCard = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     return midtransCreateOrderGeneric<'credit_card'>({
         payment_type         : 'credit_card',
         credit_card          : {
@@ -387,7 +385,7 @@ export const midtransCreateOrderWithCard = async (cardToken: string, orderId: st
         },
     }, orderId, options);
 }
-export const midtransCreateOrderWithQris = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
+export const midtransCreateOrderWithQris = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     return midtransCreateOrderGeneric<'qris'>({
         payment_type         : 'qris',
         qris                 : {
@@ -418,7 +416,7 @@ export const midtransCreateOrderWithQris = async (orderId: string, options: Crea
     }
     */
 }
-export const midtransCaptureFund         = async (paymentId: string): Promise<PaidFundData|undefined> => {
+export const midtransCaptureFund         = async (paymentId: string): Promise<PaymentDetail|undefined> => {
     // const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status`, {
     //     method  : 'GET',
     //     headers : {
@@ -460,8 +458,8 @@ export const midtransCaptureFund         = async (paymentId: string): Promise<Pa
             
             
             
-            // undefined    : Transaction not found.
-            // PaidFundData : Paid.
+            // undefined     : Transaction not found.
+            // PaymentDetail : Paid.
             return result;
     } // switch
 }
