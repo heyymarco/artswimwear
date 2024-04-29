@@ -214,7 +214,7 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                 case 'qris'     : return {
                                     ewallet : {
                                         type       : 'EWALLET',
-                                        brand      : midtransPaymentData.acquirer ?? midtransPaymentData.payment_type?.toLowerCase() ?? null,
+                                        brand      : midtransPaymentData.issuer ?? midtransPaymentData.acquirer ?? midtransPaymentData.payment_type?.toLowerCase() ?? null,
                                         identifier : midtransPaymentData.merchant_id ?? null,
                                     },
                                 };
@@ -386,11 +386,11 @@ export const midtransCreateOrderWithCard = async (cardToken: string, orderId: st
         },
     }, orderId, options);
 }
-export const midtransCreateOrderWithQris = async (acquirer: 'gopay'|'airpay shopee', orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
+export const midtransCreateOrderWithQris = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaidFundData|null> => {
     return midtransCreateOrderGeneric<'qris'>({
         payment_type         : 'qris',
         qris                 : {
-            acquirer         : acquirer,
+            // acquirer         : acquirer,
         },
     }, orderId, options);
     /*

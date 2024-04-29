@@ -117,13 +117,12 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
     
     
     // handlers:
-    const handlePayWithQris = useEvent(async (acquirer: string) => {
+    const handlePayWithQris = useEvent(async (): Promise<void> => {
         doTransaction(async () => {
             try {
                 // createOrder:
                 const draftOrderDetail = await doPlaceOrder({
                     paymentSource : 'midtransQris',
-                    acquirer      : acquirer,
                 });
                 if (!draftOrderDetail) return; // paid => no need redirection
                 
@@ -204,7 +203,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
     return (
         <>
             <p>
-                Click the appropriate QRIS button below. You will be shown a QRIS code to scan the payment.
+                Click the QRIS button below. You will be shown a QRIS code to scan the payment.
             </p>
             
             <div className='actionButtons'>
@@ -223,34 +222,10 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                             
                             
                             // handlers:
-                            onClick={() => handlePayWithQris('gopay')}
+                            onClick={() => handlePayWithQris()}
                         >
                             <span className='text'>
-                                QRIS with GoPay
-                            </span>
-                        </ButtonIcon>
-                    }
-                />
-                
-                <ButtonWithBusy
-                    // components:
-                    buttonComponent={
-                        <ButtonIcon
-                            // appearances:
-                            icon='qr_code_scanner'
-                            
-                            
-                            
-                            // variants:
-                            gradient={true}
-                            
-                            
-                            
-                            // handlers:
-                            onClick={() => handlePayWithQris('airpay shopee')}
-                        >
-                            <span className='text'>
-                                QRIS with Airpay Shopee
+                                Show QRIS
                             </span>
                         </ButtonIcon>
                     }

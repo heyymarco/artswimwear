@@ -175,7 +175,6 @@ export interface BillingData {
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
     paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'|'midtransQris'
     cardToken     ?: string
-    acquirer      ?: string
     simulateOrder ?: boolean
     captcha       ?: string
 }
@@ -381,11 +380,9 @@ router
         }, { status: 400 }); // handled with error
     } // if
     let cardToken : string|null = null;
-    let acquirer  : string|null = null;
     if (useMidtransGateway) {
         const {
             cardToken: cardTokenRaw,
-            acquirer : acquirerRaw,
         } = placeOrderData;
         
         if (paymentSource === 'midtransCard') {
@@ -395,15 +392,6 @@ router
                 }, { status: 400 }); // handled with error
             } // if
             cardToken = cardTokenRaw;
-        } // if
-        
-        if (paymentSource === 'midtransQris') {
-            if ((typeof(acquirerRaw) !== 'string') || !acquirerRaw) {
-                return NextResponse.json({
-                    error: 'Invalid data.',
-                }, { status: 400 }); // handled with error
-            } // if
-            acquirer = acquirerRaw;
         } // if
     } // if
     //#endregion validate options
@@ -1092,8 +1080,8 @@ router
                     authorizedOrPaidFundData = authorizedOrPaidFundDataOrDeclined;
                 } // if
             }
-            else if (acquirer) {
-                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrderWithQris(acquirer as any, orderId, {
+            else if (paymentSource === 'midtransQris') {
+                const authorizedOrPaidFundDataOrDeclined = await midtransCreateOrderWithQris(orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
