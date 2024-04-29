@@ -542,25 +542,6 @@ export default () => {
                 ...children('p', {
                     margin: 0,
                 }),
-                ...children('.actionButtons', {
-                    display: 'grid',
-                    gridTemplateColumns:
-                        '1fr max-content max-content 1fr',
-                    gridAutoFlow: 'row',
-                    gap: spacers.default,
-                    ...children('button', {
-                        gridColumn: '1 / -1',
-                        display: 'grid',
-                        gridTemplateColumns: 'subgrid',
-                        ...children('[role=img]', {
-                            gridColumn : 2,
-                        }),
-                        ...children('.text', {
-                            gridColumn : 3,
-                            textAlign: 'start',
-                        }),
-                    }),
-                }),
             }),
         }, {specificityWeight: 2}),
         scope('paymentEntryManual', {
