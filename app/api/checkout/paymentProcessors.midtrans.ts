@@ -498,6 +498,7 @@ export const midtransCreateOrderWithShopeepay = async (orderId: string, options:
     return midtransCreateOrderGeneric<'shopeepay'>({
         payment_type         : 'shopeepay',
         shopeepay            : {
+            // TODO: update callback
             callback_url : 'http://localhost:3000/checkout?callback=shopeepay',
         },
     }, orderId, options);
