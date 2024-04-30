@@ -1548,9 +1548,21 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const gotoFinished         = useEvent((paymentDetail: PaymentDetail, paid: boolean): void => {
         // save the finished order states:
         // setCheckoutStep(paid ? 'paid' : 'pending'); // not needed this code, already handled by `setFinishedOrderState` below:
-        setFinishedOrderState({ // backup the cart & checkout states in redux
+        const soldProductIds = new Set<string|number>(
+            cartItems
+            .map(({productId}) => productId)
+        );
+        const finishedOrderState : FinishedOrderState = {
             cartItems,
-            productList,
+            productList : {
+                // the minimal version of `productList`, only contains the sold items:
+                
+                ids      : productList?.ids.filter((id) => soldProductIds.has(id)) ?? [],
+                entities : Object.fromEntries(
+                    Object.entries(productList?.entities ?? {})
+                    .filter(([key]) => soldProductIds.has(key))
+                ),
+            },
             
             checkoutState : {
                 ...localCheckoutState,
@@ -1558,7 +1570,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             },
             totalShippingCost,
             paymentDetail,
-        });
+        };
+        setFinishedOrderState(finishedOrderState); // backup the cart & checkout states from redux to react state
         
         
         
