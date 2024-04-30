@@ -27,16 +27,6 @@ const midtransUrl = midtransBaseUrl.development; // TODO: auto switch developmen
 
 
 
-const midtransHandleResponse = async (response: Response) => {
-    if (response.status === 200 || response.status === 201) {
-        return response.json();
-    } // if
-    
-    
-    
-    const errorMessage = await response.text();
-    throw new Error(errorMessage);
-}
 /**
  * undefined          : Transaction not found.  
  * null               : Transaction creation was denied.  
@@ -263,10 +253,25 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
     } // switch
 }
 
+
+
 const midtransCreateAuthToken = () => {
     const auth = Buffer.from(`${process.env.MIDTRANS_ID}:`).toString('base64');
     return auth;
 }
+const midtransHandleResponse  = async (response: Response) => {
+    if (response.status === 200 || response.status === 201) {
+        return response.json();
+    } // if
+    
+    
+    
+    const errorMessage = await response.text();
+    throw new Error(errorMessage);
+}
+
+
+
 type MidtransPaymentOption =
     |'credit_card'
     |'qris'
@@ -277,7 +282,7 @@ type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
         [payment in TPayment] : object;
     }
-export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderGeneric   = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -382,7 +387,7 @@ export const midtransCreateOrderGeneric  = async <TPayment extends MidtransPayme
             return result;
     } // switch
 }
-export const midtransCreateOrderWithCard = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithCard  = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     return midtransCreateOrderGeneric<'credit_card'>({
         payment_type         : 'credit_card',
         credit_card          : {
@@ -395,7 +400,7 @@ export const midtransCreateOrderWithCard = async (cardToken: string, orderId: st
         },
     }, orderId, options);
 }
-export const midtransCreateOrderWithQris = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithQris  = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     return midtransCreateOrderGeneric<'qris'>({
         payment_type         : 'qris',
         qris                 : {
@@ -426,7 +431,10 @@ export const midtransCreateOrderWithQris = async (orderId: string, options: Crea
     }
     */
 }
-export const midtransCaptureFund         = async (paymentId: string): Promise<PaymentDetail|undefined> => {
+
+
+
+export const midtransCaptureFund          = async (paymentId: string): Promise<PaymentDetail|undefined> => {
     // const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(orderId)}/status`, {
     //     method  : 'GET',
     //     headers : {
@@ -473,7 +481,10 @@ export const midtransCaptureFund         = async (paymentId: string): Promise<Pa
             return result;
     } // switch
 }
-export const midtransCancelOrder         = async (paymentId: string): Promise<boolean> => {
+
+
+
+export const midtransCancelOrder          = async (paymentId: string): Promise<boolean> => {
     const response = await fetch(`${midtransUrl}/v2/${encodeURIComponent(paymentId)}/cancel`, {
         method  : 'POST',
         headers : {
