@@ -102,6 +102,7 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                     );
                                 })()
                             );
+                            console.log('QR code: ', midtransPaymentData.actions?.[0]?.url);
                             if ((redirectData !== undefined) && ((typeof(redirectData) !== 'string') || !redirectData)) {
                                 console.log('unexpected response: ', midtransPaymentData);
                                 throw Error('unexpected API response');
