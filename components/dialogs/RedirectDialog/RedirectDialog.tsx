@@ -253,7 +253,7 @@ const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
                         </small>
                     </p>
                     <p>
-                        We are waiting for you to complete the payment...<br />
+                        <strong>We are waiting for you to complete the payment...</strong><br />
                         When you have completed the payment, this window will automatically close.
                     </p>
                     <Icon icon='timer' size='xl' />
