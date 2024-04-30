@@ -291,7 +291,7 @@ const QrisDialog = <TElement extends Element = HTMLElement, TModalExpandedChange
     
     // jsx:
     const isErrored = (isLoaded === LoadedState.Errored) || (isEventSourceLoaded === LoadedState.Errored);
-    const isLoading = !isErrored && ((isLoaded === LoadedState.Loading    ) || (isEventSourceLoaded === LoadedState.Loading    ));
+    const isLoading = !isErrored &&               ((isLoaded === LoadedState.Loading    ) || (isEventSourceLoaded === LoadedState.Loading    ));
     const isReady   = !isErrored && !isLoading && ((isLoaded === LoadedState.FullyLoaded) && (isEventSourceLoaded === LoadedState.FullyLoaded));
     return (
         <ModalCard
