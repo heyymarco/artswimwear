@@ -122,7 +122,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     
     // payment method options:
-    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'qris', 'manual'];
+    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'qris', 'gopay', 'manual'];
     
     
     
