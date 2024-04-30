@@ -122,7 +122,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     
     // payment method options:
-    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'qris', 'gopay', 'manual'];
+    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'qris', 'gopay', 'shopeepay', 'manual'];
     
     
     
@@ -290,7 +290,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
-                            Gopay
+                            GoPay
                         </>}
                         
                         
@@ -316,7 +316,41 @@ const EditPaymentMethod = (): JSX.Element|null => {
                     >
                         <ViewPaymentMethodRedirect
                             paymentSource='gopay'
-                            appName='Gopay'
+                            appName='GoPay'
+                        />
+                    </AccordionItem>
+                    
+                    <AccordionItem
+                        // accessibilities:
+                        label={<>
+                            <RadioDecorator />
+                            ShopeePay
+                        </>}
+                        
+                        
+                        
+                        // behaviors:
+                        lazy={true}
+                        
+                        
+                        
+                        // components:
+                        listItemComponent={
+                            <ListItem
+                                // classes:
+                                className={styleSheet.optionEntryHeader}
+                            />
+                        }
+                        bodyComponent={
+                            <Section
+                                // classes:
+                                className={styleSheet.paymentEntryPaymentButton}
+                            />
+                        }
+                    >
+                        <ViewPaymentMethodRedirect
+                            paymentSource='shopeepay'
+                            appName='ShopeePay'
                         />
                     </AccordionItem>
                     

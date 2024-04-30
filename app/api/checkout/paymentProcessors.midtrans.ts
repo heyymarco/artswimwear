@@ -291,6 +291,7 @@ type MidtransPaymentOption =
     |'credit_card'
     |'qris'
     |'gopay'
+    |'shopeepay'
 type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
         payment_type          : TPayment;
@@ -298,7 +299,7 @@ type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
         [payment in TPayment] : object;
     }
-export const midtransCreateOrderGeneric   = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderGeneric       = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     const {
         preferredCurrency,
         totalCostConverted,
@@ -403,7 +404,7 @@ export const midtransCreateOrderGeneric   = async <TPayment extends MidtransPaym
             return result;
     } // switch
 }
-export const midtransCreateOrderWithCard  = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithCard      = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     return midtransCreateOrderGeneric<'credit_card'>({
         payment_type         : 'credit_card',
         credit_card          : {
@@ -416,7 +417,7 @@ export const midtransCreateOrderWithCard  = async (cardToken: string, orderId: s
         },
     }, orderId, options);
 }
-export const midtransCreateOrderWithQris  = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithQris      = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     return midtransCreateOrderGeneric<'qris'>({
         payment_type         : 'qris',
         qris                 : {
@@ -447,12 +448,11 @@ export const midtransCreateOrderWithQris  = async (orderId: string, options: Cre
     }
     */
 }
-export const midtransCreateOrderWithGopay = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithGopay     = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     return midtransCreateOrderGeneric<'gopay'>({
         payment_type         : 'gopay',
         gopay                : {
             enable_callback  : false,
-            // callback_url     : redirectUrl,
         },
     }, orderId, options);
     /*
@@ -491,6 +491,38 @@ export const midtransCreateOrderWithGopay = async (orderId: string, options: Cre
         channel_response_code: '200',
         channel_response_message: 'Success',
         currency: 'IDR'
+    }
+    */
+}
+export const midtransCreateOrderWithShopeepay = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+    return midtransCreateOrderGeneric<'shopeepay'>({
+        payment_type         : 'shopeepay',
+        shopeepay            : {
+            callback_url : 'http://localhost:3000/checkout?callback=shopeepay',
+        },
+    }, orderId, options);
+    /*
+    {
+        status_code: '201',
+        status_message: 'ShopeePay transaction is created',
+        channel_response_code: '0',
+        channel_response_message: 'success',
+        transaction_id: 'bb379c3a-218b-47c7-9b0b-25f71f0f1231',
+        order_id: 'test-order-shopeepay-001',
+        merchant_id: 'YON001',
+        gross_amount: '25000.00',
+        currency: 'IDR',
+        payment_type: 'shopeepay',
+        transaction_time: '2020-09-29 11:16:23',
+        transaction_status: 'pending',
+        fraud_status: 'accept',
+        actions: [
+            {
+                name: 'deeplink-redirect',
+                method: 'GET',
+                url: 'https://wsa.uat.wallet.airpay.co.id/universal-link/wallet/pay?deep_and_deferred=1&token=dFhkbmR1bTBIamhW5n7WPz2OrczCvb8_XiHliB9nROFMVByjtwKMAl6G0Ax0cMr79M4hwjs'
+            }
+        ]
     }
     */
 }

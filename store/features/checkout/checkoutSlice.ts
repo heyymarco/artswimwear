@@ -41,6 +41,7 @@ export type PaymentMethod =
     |'paypal'
     |'qris'
     |'gopay'
+    |'shopeepay'
     |'manual'
 export interface CheckoutState
     extends
