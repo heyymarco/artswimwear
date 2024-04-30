@@ -50,6 +50,9 @@ import {
     ViewPaymentMethodQris,
 }                           from '../payments/ViewPaymentMethodQris'
 import {
+    ViewPaymentMethodRedirect,
+}                           from '../payments/ViewPaymentMethodRedirect'
+import {
     ViewPaymentMethodManual,
 }                           from '../payments/ViewPaymentMethodManual'
 
@@ -281,6 +284,40 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         }
                     >
                         <ViewPaymentMethodQris />
+                    </AccordionItem>
+                    
+                    <AccordionItem
+                        // accessibilities:
+                        label={<>
+                            <RadioDecorator />
+                            Gopay
+                        </>}
+                        
+                        
+                        
+                        // behaviors:
+                        lazy={true}
+                        
+                        
+                        
+                        // components:
+                        listItemComponent={
+                            <ListItem
+                                // classes:
+                                className={styleSheet.optionEntryHeader}
+                            />
+                        }
+                        bodyComponent={
+                            <Section
+                                // classes:
+                                className={styleSheet.paymentEntryPaymentButton}
+                            />
+                        }
+                    >
+                        <ViewPaymentMethodRedirect
+                            paymentSource='gopay'
+                            appName='Gopay'
+                        />
                     </AccordionItem>
                     
                     <AccordionItem

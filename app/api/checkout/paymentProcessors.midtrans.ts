@@ -87,12 +87,26 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                 throw Error('unexpected API response');
                             } // if
                             
-                            const redirectData = midtransPaymentData.qr_string ?? midtransPaymentData.redirect_url;
+                            const redirectData = (
+                                midtransPaymentData.qr_string
+                                ??
+                                midtransPaymentData.redirect_url
+                                ??
+                                ((): string|undefined => {
+                                    const actions = midtransPaymentData.actions;
+                                    if (!Array.isArray(actions)) return undefined;
+                                    return (
+                                        actions
+                                        .find((action) => (action.name === 'deeplink-redirect'))
+                                        ?.url
+                                    );
+                                })()
+                            );
                             if ((redirectData !== undefined) && ((typeof(redirectData) !== 'string') || !redirectData)) {
                                 console.log('unexpected response: ', midtransPaymentData);
                                 throw Error('unexpected API response');
                             } // if
-                            console.log('QR url: ', midtransPaymentData.actions?.[0]?.url);
+                            console.log('redirectData: ', redirectData);
                             
                             let expiresStr = midtransPaymentData.expiry_time;
                             if (expiresStr && (typeof(expiresStr) === 'string')) {
@@ -275,6 +289,7 @@ const midtransHandleResponse  = async (response: Response) => {
 type MidtransPaymentOption =
     |'credit_card'
     |'qris'
+    |'gopay'
 type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
         payment_type          : TPayment;
@@ -428,6 +443,53 @@ export const midtransCreateOrderWithQris  = async (orderId: string, options: Cre
         qr_string: '00020101021226620014COM.GO-JEK.WWW011993600914355131346650210G5513134660303UKE51440014ID.CO.QRIS.WWW0215AID4019422100900303UKE5204318553033605802ID5911Artswimwear6011TANAH BUMBU6105722755409421000.006247503661b2d76c-2e99-4d66-9228-9216b2920e530703A0163048BC5',
         acquirer: 'gopay',
         expiry_time: '2024-04-20 13:46:49'
+    }
+    */
+}
+export const midtransCreateOrderWithGopay = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+    return midtransCreateOrderGeneric<'gopay'>({
+        payment_type         : 'gopay',
+        gopay                : {
+            enable_callback  : false,
+            // callback_url     : redirectUrl,
+        },
+    }, orderId, options);
+    /*
+    {
+        status_code: '201',
+        status_message: 'GO-PAY billing created',
+        transaction_id: 'e48447d1-cfa9-4b02-b163-2e915d4417ac',
+        order_id: 'SAMPLE-ORDER-ID-01',
+        gross_amount: '10000.00',
+        payment_type: 'gopay',
+        transaction_time: '2017-10-04 12:00:00',
+        transaction_status: 'pending',
+        actions: [
+            {
+                name: 'generate-qr-code',
+                method: 'GET',
+                url: 'https://api.midtrans.com/v2/gopay/e48447d1-cfa9-4b02-b163-2e915d4417ac/qr-code'
+            },
+            {
+                name: 'deeplink-redirect',
+                method: 'GET',
+                url: 'gojek://gopay/merchanttransfer?tref=1509110800474199656LMVO&amount=10000&activity=GP:RR&callback_url=someapps://callback?order_id=SAMPLE-ORDER-ID-01'
+            },
+            {
+                name: 'get-status',
+                method: 'GET',
+                url: 'https://api.midtrans.com/v2/e48447d1-cfa9-4b02-b163-2e915d4417ac/status'
+            },
+            {
+                name: 'cancel',
+                method: 'POST',
+                url: 'https://api.midtrans.com/v2/e48447d1-cfa9-4b02-b163-2e915d4417ac/cancel',
+                fields: []
+            }
+        ],
+        channel_response_code: '200',
+        channel_response_message: 'Success',
+        currency: 'IDR'
     }
     */
 }

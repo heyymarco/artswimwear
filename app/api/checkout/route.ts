@@ -90,6 +90,7 @@ import {
 import {
     midtransCreateOrderWithCard,
     midtransCreateOrderWithQris,
+    midtransCreateOrderWithGopay,
     midtransCaptureFund,
     midtransCancelOrder,
 }                           from './paymentProcessors.midtrans'
@@ -172,7 +173,7 @@ export interface BillingData {
 }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'|'midtransQris'
+    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'|'midtransQris'|'gopay'
     cardToken     ?: string
     simulateOrder ?: boolean
     captcha       ?: string
@@ -368,8 +369,8 @@ router
         }, { status: 400 }); // handled with error
     } // if
     
-    const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard', 'midtransQris'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
-    const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris'].includes(paymentSource);
+    const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard', 'midtransQris', 'gopay'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
+    const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay'].includes(paymentSource);
     
     if (usePaypalGateway && !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(preferredCurrency)) {
         return NextResponse.json({
@@ -1085,6 +1086,50 @@ router
             }
             else if (paymentSource === 'midtransQris') {
                 const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithQris(orderId, {
+                    preferredCurrency,
+                    totalCostConverted,
+                    totalProductPriceConverted,
+                    totalShippingCostConverted,
+                    
+                    hasShippingAddress,
+                    shippingFirstName,
+                    shippingLastName,
+                    shippingPhone,
+                    shippingAddress,
+                    shippingCity,
+                    shippingZone,
+                    shippingZip,
+                    shippingCountry,
+                    
+                    hasBillingAddress,
+                    billingFirstName,
+                    billingLastName,
+                    billingPhone,
+                    billingAddress,
+                    billingCity,
+                    billingZone,
+                    billingZip,
+                    billingCountry,
+                    
+                    detailedItems,
+                });
+                
+                if (authorizedOrPaymentDetailOrDeclined === null) {
+                    // payment DECLINED:
+                    
+                    return {
+                        orderId                   : undefined, // undefined => declined
+                        authorizedOrPaymentDetail : undefined,
+                        paymentDetail             : undefined,
+                        newOrder                  : undefined,
+                    };
+                }
+                else {
+                    authorizedOrPaymentDetail = authorizedOrPaymentDetailOrDeclined;
+                } // if
+            }
+            else if (paymentSource === 'gopay') {
+                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithGopay(orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
