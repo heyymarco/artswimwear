@@ -388,7 +388,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
     return {
         paymentId,
         redirectData : undefined, // no redirectData required but require a `paypalCaptureFund()` to capture the fund
-    };
+    } satisfies AuthorizedFundData;
 }
 
 export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetail|null> => {
