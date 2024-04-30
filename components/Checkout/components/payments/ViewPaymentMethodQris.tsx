@@ -207,7 +207,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
     return (
         <>
             <p>
-                Click the QRIS button below. You will be shown a QRIS code to scan the payment.
+                Click the button below. You will be shown a <strong>QRIS code</strong> to scan the payment.
             </p>
             
             <ButtonWithBusy
@@ -227,9 +227,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                         // handlers:
                         onClick={handlePayWithQris}
                     >
-                        <span className='text'>
-                            Show QRIS
-                        </span>
+                        Pay with QRIS
                     </ButtonIcon>
                 }
             />
