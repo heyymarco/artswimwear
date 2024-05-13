@@ -73,3 +73,10 @@ export interface FinishedOrderState {
     totalShippingCost : number|null|undefined
     paymentDetail     : PaymentDetail
 }
+
+
+
+export type BusyState =
+    | false // idle
+    | 'checkShipping'
+    | 'transaction'

@@ -21,13 +21,13 @@ import {
     ButtonIconProps,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// models:
+import type {
+    BusyState,
+}                           from '@/models'
+
 // internals:
 import {
-    // types:
-    BusyState,
-    
-    
-    
     // states:
     useCheckoutState,
 }                           from '../states/checkoutState'

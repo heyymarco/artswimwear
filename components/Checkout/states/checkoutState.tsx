@@ -56,6 +56,7 @@ import {
 // models:
 import type {
     FinishedOrderState,
+    BusyState,
 }                           from '@/models'
 // stores:
 import {
@@ -206,11 +207,6 @@ export type {
     
     MatchingShipping,
 }
-
-export type BusyState =
-    | false // idle
-    | 'checkShipping'
-    | 'transaction'
 
 
 
