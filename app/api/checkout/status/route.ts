@@ -17,20 +17,20 @@ import {
 
 
 export async function GET(req: NextRequest, res: Response) {
-    const rawOrderId = req.nextUrl.searchParams.get('paymentId');
-    if ((typeof(rawOrderId) !== 'string') || !rawOrderId) {
+    const rawPaymentId = req.nextUrl.searchParams.get('paymentId');
+    if ((typeof(rawPaymentId) !== 'string') || !rawPaymentId) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     };
     
-    if (!rawOrderId.startsWith('#MIDTRANS_')) {
+    if (!rawPaymentId.startsWith('#MIDTRANS_')) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     }
     
-    const paymentId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
+    const paymentId = rawPaymentId.slice(10); // remove prefix #MIDTRANS_
     if (!paymentId.length) {
         return NextResponse.json({
             error: 'Invalid data.',
