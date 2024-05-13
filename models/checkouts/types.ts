@@ -4,6 +4,18 @@ import type {
     DraftOrdersOnProducts,
 }                           from '@prisma/client'
 
+// contexts:
+import type {
+    // types:
+    CartState,
+}                           from '@/components/Cart'
+
+// stores:
+import type {
+    // types:
+    CheckoutState as ReduxCheckoutState,
+}                           from '@/store/features/checkout/checkoutSlice'
+
 
 
 export type DetailedItem =
@@ -49,4 +61,15 @@ export interface PaymentDetail
             |'billingAddress'
         >
 {
+}
+
+
+
+export interface FinishedOrderState {
+    cartItems         : CartState['cartItems'  ]
+    productList       : CartState['productList']
+    
+    checkoutState     : ReduxCheckoutState
+    totalShippingCost : number|null|undefined
+    paymentDetail     : PaymentDetail
 }

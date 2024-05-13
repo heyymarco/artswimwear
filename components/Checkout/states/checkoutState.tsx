@@ -53,6 +53,10 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// models:
+import type {
+    FinishedOrderState,
+}                           from '@/models'
 // stores:
 import {
     // types:
@@ -207,15 +211,6 @@ export type BusyState =
     | false // idle
     | 'checkShipping'
     | 'transaction'
-
-interface FinishedOrderState {
-    cartItems         : CartState['cartItems'  ]
-    productList       : CartState['productList']
-    
-    checkoutState     : ReduxCheckoutState
-    totalShippingCost : number|null|undefined
-    paymentDetail     : PaymentDetail
-}
 
 
 

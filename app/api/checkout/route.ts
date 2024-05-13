@@ -2086,4 +2086,12 @@ Updating the confirmation is not required.`,
             : 200 // payment APPROVED
         ),
     });
-});
+})
+
+
+/**
+ * display the previously purchased order
+ */
+.put(async (req) => {
+
+})
