@@ -799,7 +799,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
         return calculateShippingCost(totalProductWeight, selectedShipping);
     }, [totalProductWeight, shippingList, shippingProvider]);
-    const totalShippingCost              = finishedOrderState ? finishedOrderState.totalShippingCost : realTotalShippingCost;
+    const totalShippingCost              = finishedOrderState?.totalShippingCost ?? realTotalShippingCost;
     
     const customerValidation             = reduxCustomerValidation;
     
@@ -1049,19 +1049,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // reset:
         dispatch(reduxSetBillingValidation(false));
     }, [isBillingAddressRequired, billingAsShipping, reduxBillingValidation]);
-    
-    // auto clear finished checkout states in redux:
-    useIsomorphicLayoutEffect(() => {
-        // conditions:
-        if ((checkoutStep !== 'pending') && (checkoutStep !== 'paid')) return; // auto clear when state is 'pending' or 'paid'
-        
-        
-        
-        // actions:
-        // clear the cart & checkout states in redux:
-        if (globalCartItems    ) clearProductsFromCart();
-        if (globalCheckoutState) dispatch(reduxResetCheckoutData());
-    }, [checkoutStep, globalCartItems, globalCheckoutState]);
     
     // pooling for available stocks:
     useIsomorphicLayoutEffect((): (() => void)|undefined => {
