@@ -18,6 +18,22 @@ import type {
 
 
 
+export type CheckoutStep =
+    |'info'
+    |'shipping'
+    |'payment'
+    |'pending'
+    |'paid'
+export type PaymentMethod =
+    |'card'
+    |'paypal'
+    |'qris'
+    |'gopay'
+    |'shopeepay'
+    |'manual'
+
+
+
 export type DetailedItem =
     &Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'|'price'>
     &{ productName: string, variantNames: string[], priceConverted: DraftOrdersOnProducts['price'] }

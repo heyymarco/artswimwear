@@ -10,6 +10,12 @@ import type {
     RootState,
 }                           from '../../store'
 
+// models:
+import type {
+    CheckoutStep,
+    PaymentMethod,
+}                           from '@/models'
+
 // apis:
 import type {
     PaymentToken,
@@ -30,19 +36,6 @@ export type {
 
 
 
-export type CheckoutStep =
-    |'info'
-    |'shipping'
-    |'payment'
-    |'pending'
-    |'paid'
-export type PaymentMethod =
-    |'card'
-    |'paypal'
-    |'qris'
-    |'gopay'
-    |'shopeepay'
-    |'manual'
 export interface CheckoutState
     extends
         ExtraData,

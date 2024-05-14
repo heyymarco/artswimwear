@@ -1,8 +1,7 @@
 // models:
 import {
+    type CheckoutStep,
     type PaymentDetail,
-}                           from '@/models'
-import {
     type AuthorizedFundData,
 }                           from './types'
 
@@ -25,4 +24,7 @@ export const isPaymentDetail      = (data: AuthorizedFundData|PaymentDetail|bool
         &&
         ('amount' in data)
     );
+}
+export const calculateCheckoutProgress = (checkoutStep: CheckoutStep): number => {
+    return ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
 }

@@ -54,15 +54,18 @@ import {
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // models:
-import type {
-    FinishedOrderState,
-    BusyState,
+import {
+    type CheckoutStep,
+    type PaymentMethod,
+    
+    type FinishedOrderState,
+    type BusyState,
+    
+    calculateCheckoutProgress,
 }                           from '@/models'
 // stores:
 import {
     // types:
-    CheckoutStep,
-    PaymentMethod,
     PaymentToken,
     CheckoutState         as ReduxCheckoutState,
     
@@ -705,7 +708,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         );
     }, [preferredCurrency]);
     
-    const checkoutProgress            = ['info', 'shipping', 'payment', 'pending', 'paid'].findIndex((progress) => progress === checkoutStep);
+    const checkoutProgress            = calculateCheckoutProgress(checkoutStep);
     const isPaymentTokenValid         = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
     
     const {

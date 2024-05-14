@@ -70,6 +70,11 @@ import {
     MidtransScriptProvider,
 }                           from './MidtransScriptProvider'
 
+// models:
+import type {
+    PaymentMethod,
+}                           from '@/models'
+
 // internals:
 import {
     useCheckoutStyleSheet,
@@ -79,11 +84,6 @@ import {
     useCartState,
 }                           from '@/components/Cart'
 import {
-    // types:
-    PaymentMethod,
-    
-    
-    
     // states:
     useCheckoutState,
 }                           from '../../states/checkoutState'

@@ -29,14 +29,19 @@ import type {
     ShippingTrackingLog,
 }                           from '@prisma/client'
 import {
-    DetailedItem,
+    type DetailedItem,
     
-    AuthorizedFundData,
-    PaymentDetail,
+    type AuthorizedFundData,
+    type PaymentDetail,
+    
+    type FinishedOrderState,
     
     isAuthorizedFundData,
     isPaymentDetail,
 }                           from '@/models'
+import type {
+    ProductPreview,
+}                           from '@/store/features/api/apiSlice'
 
 // ORMs:
 import {
@@ -2093,5 +2098,275 @@ Updating the confirmation is not required.`,
  * display the previously purchased order
  */
 .put(async (req) => {
-
+    const rawOrderId = req.nextUrl.searchParams.get('orderId');
+    if ((typeof(rawOrderId) !== 'string') || !rawOrderId) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    };
+    
+    const orderId = rawOrderId;
+    if (!orderId.length) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    
+    
+    
+    const order = await prisma.order.findFirst({
+        where  : {
+            orderId   : orderId,
+            updatedAt : { gt: new Date(Date.now() - (1 * 60 * 60 * 1000)) } // prevents for searching order older than 1 hour ago
+        },
+        select : {
+            items : {
+                select : {
+                    // for CartEntry[]:
+                    productId  : true,
+                    variantIds : true,
+                    quantity   : true,
+                    
+                    
+                    
+                    product : {
+                        select : {
+                            // for EntityState<ProductPreview>:
+                            id             : true,
+                            
+                            name           : true,
+                            
+                            price          : true,
+                            shippingWeight : true,
+                            
+                            path           : true,
+                            images         : true,
+                            
+                            variantGroups : {
+                                select : {
+                                    variants : {
+                                        where    : {
+                                            visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                        },
+                                        select : {
+                                            id             : true,
+                                            
+                                            name           : true,
+                                            
+                                            price          : true,
+                                            shippingWeight : true,
+                                            
+                                            images         : true,
+                                        },
+                                        orderBy : {
+                                            sort : 'asc',
+                                        },
+                                    },
+                                },
+                                orderBy : {
+                                    sort : 'asc',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            
+            
+            
+            customer : {
+                select : {
+                    // for CustomerData:
+                    name  : true,
+                    email : true,
+                    
+                    
+                    
+                    customerPreference : {
+                        select : {
+                            // for ExtraData:
+                            marketingOpt : true,
+                        },
+                    },
+                },
+            },
+            guest    : {
+                select : {
+                    // for CustomerData:
+                    name  : true,
+                    email : true,
+                    
+                    
+                    
+                    guestPreference : {
+                        select : {
+                            // for ExtraData:
+                            marketingOpt : true,
+                        },
+                    },
+                },
+            },
+            
+            
+            
+            // for ShippingData:
+            shippingAddress    : true,
+            shippingProviderId : true,
+            
+            // for totalShippingCost:
+            shippingCost       : true,
+            
+            
+            
+            payment : {
+                select : {
+                    // for PaymentDetail:
+                    type           : true,
+                    brand          : true,
+                    identifier     : true,
+                    amount         : true,
+                    fee            : true,
+                    
+                    
+                    
+                    // for BillingData:
+                    billingAddress : true,
+                },
+            },
+        },
+    });
+    if (!order) {
+        return NextResponse.json({
+            error: 'Order not found.',
+        }, { status: 404 }); // handled with error
+    } // if
+    
+    
+    
+    const {
+        items,
+        
+        customer,
+        guest,
+        
+        shippingAddress,
+        shippingProviderId,
+        shippingCost,
+        
+        payment : {
+            billingAddress,
+            ...paymentDetail
+        },
+    } = order;
+    
+    const isPaid       = (paymentDetail.type !== 'MANUAL');
+    const checkoutStep = isPaid ? 'paid' : 'pending';
+    
+    const productListAdapter = createEntityAdapter<ProductPreview>({
+        selectId : (productPreview) => productPreview.id,
+    });
+    
+    const finishedOrderState : FinishedOrderState = {
+        cartItems         : items.map(({productId, variantIds, quantity}) => ({productId : productId ?? '', variantIds, quantity})),
+        productList       : productListAdapter.addMany(
+            productListAdapter.getInitialState(),
+            items.map(({product}) => product).filter((product): product is Exclude<typeof product, null> => (product !== null))
+            .map((product) => {
+                const {
+                    images,        // take
+                    variantGroups, // take
+                ...restProduct} = product;
+                return {
+                    ...restProduct,
+                    image         : images?.[0],
+                    variantGroups : (
+                        variantGroups
+                        .map(({variants}) =>
+                            variants
+                            .map(({images, ...restVariantPreview}) => ({
+                                ...restVariantPreview,
+                                image : images?.[0],
+                            }))
+                        )
+                    ),
+                };
+            })
+        ),
+        checkoutState     : {
+            // extra data:
+            marketingOpt       : customer?.customerPreference?.marketingOpt ?? guest?.guestPreference?.marketingOpt ?? true,
+            
+            
+            
+            // customer data:
+            customerName       : customer?.name  ?? guest?.name  ?? '',
+            customerEmail      : customer?.email ?? guest?.email ?? '',
+            
+            
+            
+            // shipping data:
+            shippingFirstName  : shippingAddress?.firstName ?? '',
+            shippingLastName   : shippingAddress?.lastName  ?? '',
+            
+            shippingPhone      : shippingAddress?.phone     ?? '',
+            
+            shippingAddress    : shippingAddress?.address   ?? '',
+            shippingCity       : shippingAddress?.city      ?? '',
+            shippingZone       : shippingAddress?.zone      ?? '',
+            shippingZip        : shippingAddress?.zip       ?? '',
+            shippingCountry    : shippingAddress?.country   ?? '',
+            
+            shippingProvider   : shippingProviderId ?? undefined,
+            
+            
+            
+            // billing data:
+            billingFirstName   : billingAddress?.firstName ?? '',
+            billingLastName    : billingAddress?.lastName  ?? '',
+            
+            billingPhone       : billingAddress?.phone     ?? '',
+            
+            billingAddress     : billingAddress?.address   ?? '',
+            billingCity        : billingAddress?.city      ?? '',
+            billingZone        : billingAddress?.zone      ?? '',
+            billingZip         : billingAddress?.zip       ?? '',
+            billingCountry     : billingAddress?.country   ?? '',
+            
+            
+            
+            // version control:
+            version : 2,
+            
+            
+            
+            // states:
+            checkoutStep,
+            
+            
+            
+            // customer data:
+            customerValidation : true,
+            
+            
+            
+            // shipping data:
+            shippingValidation : !!shippingAddress,
+            
+            
+            
+            // billing data:
+            billingValidation  : !!billingAddress,
+            billingAsShipping  : false,
+            
+            
+            
+            // payment data:
+            paymentValidation  : true,
+            paymentMethod      : '' as any,
+            paymentToken       : '' as any,
+        },
+        totalShippingCost      : shippingCost,
+        paymentDetail          : paymentDetail,
+    };
+    return NextResponse.json(finishedOrderState); // handled with success
 })
