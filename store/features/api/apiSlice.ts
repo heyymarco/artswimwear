@@ -17,6 +17,7 @@ import type {
 // models:
 import type {
     PaymentDetail,
+    FinishedOrderState,
 }                           from '@/models'
 export type {
     PaymentDetail,
@@ -58,6 +59,8 @@ import type {
     
     ShippingTrackingRequest,
     ShippingTrackingDetail,
+    
+    ShowOrderRequest,
 }                               from '@/app/api/checkout/route'
 export type {
     PaymentToken,
@@ -74,6 +77,8 @@ export type {
     
     ShippingTrackingRequest,
     ShippingTrackingDetail,
+    
+    ShowOrderRequest,
     
     LimitedStockItem,
 }                               from '@/app/api/checkout/route'
@@ -234,6 +239,12 @@ export const apiSlice = createApi({
                 body   : shippingTrackingRequest,
             }),
         }),
+        showPrevOrder           : builder.mutation<FinishedOrderState, ShowOrderRequest>({
+            query : ({orderId}) => ({
+                url    : `checkout?orderId=${encodeURIComponent(orderId)}`,
+                method : 'PUT',
+            }),
+        }),
         
         
         
@@ -305,6 +316,7 @@ export const {
     useMakePaymentMutation             : useMakePayment,
     usePaymentConfirmationMutation     : usePaymentConfirmation,
     useShippingTrackingMutation        : useShippingTracking,
+    useShowPrevOrderMutation           : useShowPrevOrder,
     
     useUpdateCustomerMutation          : useUpdateCustomer,
     useAvailableUsernameMutation       : useAvailableUsername,

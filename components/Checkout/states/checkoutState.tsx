@@ -35,6 +35,11 @@ import {
     
     
     
+    // a set of client-side functions.:
+    isClientSide,
+    
+    
+    
     // react helper hooks:
     useIsomorphicLayoutEffect,
     useEvent,
@@ -151,6 +156,7 @@ import {
     useGeneratePaymentToken,
     usePlaceOrder,
     useMakePayment,
+    useShowPrevOrder,
 }                           from '@/store/features/api/apiSlice'
 
 // contexts:
@@ -614,6 +620,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // states:
     const [isBusy            , setIsBusyInternal    ] = useState<BusyState>(false);
     const [finishedOrderState, setFinishedOrderState] = useState<FinishedOrderState|undefined>(undefined);
+    const [prevOrderId]                               = useState<string|undefined>(() => {
+        // conditions:
+        if (!isClientSide) return undefined;
+        
+        
+        
+        // actions:
+        const searchParams = new URLSearchParams(window.location.search);
+        return searchParams.get('orderId') || undefined;
+    });
     
     
     
@@ -763,10 +779,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const                        {data: countryList, isFetching: isCountryLoading, isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
-    const [generatePaymentToken, {                   isLoading : isTokenLoading  , isError: isTokenError  }] = useGeneratePaymentToken();
+    const [showPrevOrder       , {data: prevOrderData, isLoading : isPrevOrderLoading, isError: isPrevOrderError}] = useShowPrevOrder();
+    const                        {data: countryList  , isFetching: isCountryLoading  , isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
+    const [generatePaymentToken, {                     isLoading : isTokenLoading    , isError: isTokenError  }] = useGeneratePaymentToken();
     
-    const [getShippingByAddress, {data: shippingList   , isUninitialized: isShippingUninitialized, isError: isShippingError, isSuccess: isShippingSuccess}]  = useGetMatchingShippingList();
+    const [getShippingByAddress, {data: shippingList , isUninitialized: isShippingUninitialized, isError: isShippingError, isSuccess: isShippingSuccess}]  = useGetMatchingShippingList();
     
     
     
@@ -799,10 +816,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
-    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */) || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
+    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isPrevOrderLoading || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */) || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
     const isLastCheckoutStep             = (checkoutStep === 'pending') || (checkoutStep === 'paid');
     const hasData                        = (!!productList      && !!countryList    && (isLastCheckoutStep || isPaymentTokenValid));
-    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isCountryError   || (!isLastCheckoutStep && isTokenError && !isPaymentTokenValid /* silently token error   if still have old_valid_token */))) || !hasData /* considered as error if no data */;
+    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isPrevOrderError || isCountryError   || (!isLastCheckoutStep && isTokenError && !isPaymentTokenValid /* silently token error   if still have old_valid_token */))) || !hasData /* considered as error if no data */;
     const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
     const isCheckoutFinished             = isCheckoutReady && isLastCheckoutStep;
     
@@ -821,8 +838,29 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
-    // dom effects:
+    // effects:
     
+    // show the prev completed order if `?orderId=foo` param specified:
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (!prevOrderId) return;
+        
+        
+        
+        // actions:
+        showPrevOrder({orderId: prevOrderId});
+    }, [prevOrderId]);
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (!prevOrderData) return;
+        
+        
+        
+        // actions:
+        setFinishedOrderState(prevOrderData); // restore the cart & checkout states from fetch to react state
+    }, [prevOrderData]);
+    
+    // auto reset reduct state if was invalid:
     useIsomorphicLayoutEffect(() => {
         dispatch(reduxResetIfInvalid());
     }, []);
@@ -1083,7 +1121,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const [placeOrder]  = usePlaceOrder();
+    const [placeOrder ] = usePlaceOrder();
     const [makePayment] = useMakePayment();
     
     
@@ -1582,6 +1620,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const refetchCheckout      = useEvent((): void => {
         refetchCart();
         countryRefetch();
+        if (prevOrderId) showPrevOrder({orderId: prevOrderId});
     });
     
     
