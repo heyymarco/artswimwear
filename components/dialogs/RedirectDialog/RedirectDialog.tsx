@@ -10,6 +10,7 @@ import {
     // hooks:
     useState,
     useEffect,
+    useRef,
 }                           from 'react'
 
 // reusable-ui core:
@@ -118,6 +119,10 @@ const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
     
     const [generation         , setGeneration           ] = useState<number>(1);
     
+    const isErrored = (isEventSourceLoaded === LoadedState.Errored);
+    const isLoading = !isErrored &&               ((isEventSourceLoaded === LoadedState.Loading    ));
+    const isReady   = !isErrored && !isLoading && ((isEventSourceLoaded === LoadedState.FullyLoaded));
+    
     
     // handlers:
     const handleEventSourceLoaded  = useEvent((): void => {
@@ -171,6 +176,11 @@ const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
         eventSource.addEventListener('canceled', () => { // payment canceled or expired or failed
             eventSource.close(); // close the connection
             
+            if (openedRedirectWindowRef.current) { // close the opened new redirect window (if any)
+                openedRedirectWindowRef.current?.close();
+                openedRedirectWindowRef.current = null;
+            } // if
+            
             props.onExpandedChange?.({
                 expanded   : false,
                 actionType : 'ui',
@@ -179,6 +189,11 @@ const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
         });
         eventSource.addEventListener('paid', ({data}) => {
             eventSource.close(); // close the connection
+            
+            if (openedRedirectWindowRef.current) { // close the opened new redirect window (if any)
+                openedRedirectWindowRef.current?.close();
+                openedRedirectWindowRef.current = null;
+            } // if
             
             props.onExpandedChange?.({
                 expanded   : false,
@@ -192,8 +207,30 @@ const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
         // cleanups:
         return () => {
             eventSource.close(); // close the connection
+            
+            if (openedRedirectWindowRef.current) { // close the opened new redirect window (if any)
+                openedRedirectWindowRef.current?.close();
+                openedRedirectWindowRef.current = null;
+            } // if
         };
     }, [generation]);
+    
+    const openedRedirectWindowRef = useRef<Window|null|undefined>(undefined);
+    useEffect(() => {
+        // conditions:
+        if (!isReady) return;
+        if (openedRedirectWindowRef.current !== undefined) return; // already been redirected (regradless of succeed of failed)
+        
+        
+        
+        // actions:
+        // first attempt: open in new window (may cause popup blocker):
+        const openedRedirectWindow = window.open(redirectUrl, '_blank');
+        openedRedirectWindowRef.current = openedRedirectWindow;
+        
+        // second attempt: open in current window (and clear browsing history):
+        if (!openedRedirectWindow) window.location.replace(redirectUrl);
+    }, [redirectUrl, isReady]);
     
     
     
@@ -208,9 +245,6 @@ const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
     
     
     // jsx:
-    const isErrored = (isEventSourceLoaded === LoadedState.Errored);
-    const isLoading = !isErrored &&               ((isEventSourceLoaded === LoadedState.Loading    ));
-    const isReady   = !isErrored && !isLoading && ((isEventSourceLoaded === LoadedState.FullyLoaded));
     return (
         <ModalCard
             // other props:

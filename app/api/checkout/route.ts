@@ -2122,7 +2122,7 @@ Updating the confirmation is not required.`,
     const order = await prisma.order.findFirst({
         where  : {
             orderId   : orderId,
-            updatedAt : { gt: new Date(Date.now() - (1 * 60 * 60 * 1000)) } // prevents for searching order older than 1 hour ago
+            // updatedAt : { gt: new Date(Date.now() - (1 * 60 * 60 * 1000)) } // prevents for searching order older than 1 hour ago
         },
         select : {
             items : {
