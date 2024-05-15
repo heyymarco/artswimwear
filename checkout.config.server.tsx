@@ -67,16 +67,18 @@ import {
 
 // configs:
 import type {
-    CheckoutConfig,
+    CheckoutConfigServer,
 }                           from '@/components/Checkout/types'
 
+// internals:
+import {
+    checkoutConfigShared,
+}                               from './checkout.config.shared'
 
 
-export const checkoutConfig : CheckoutConfig = {
-    business            : {
-        name            : process.env.BUSINESS_NAME ?? '',
-        url             : process.env.BUSINESS_URL  ?? '',
-    },
+
+export const checkoutConfigServer : CheckoutConfigServer = {
+    business            : checkoutConfigShared.business,
     payment             : {
         bank            : <article>
             <table style={{...styles.tableReset, ...styles.selfCenterHorz}}><tbody><tr><td>

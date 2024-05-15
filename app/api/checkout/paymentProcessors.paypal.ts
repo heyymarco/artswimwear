@@ -7,7 +7,7 @@ import type {
 
 // configs:
 import {
-    checkoutConfig,
+    checkoutConfigServer,
 }                           from '@/checkout.config.server'
 
 
@@ -335,7 +335,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
             
             // works:
             application_context : {
-                brand_name          : checkoutConfig?.business?.name || undefined,
+                brand_name          : checkoutConfigServer.business.name || undefined,
                 shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
             },
         }),

@@ -28,8 +28,7 @@ export interface EmailConfig {
     subject              : React.ReactNode
     message              : React.ReactNode
 }
-export interface CheckoutConfig {
-    business             : BusinessConfig
+export interface CheckoutConfigServer extends CheckoutConfigShared {
     payment              : PaymentConfig
     shipping             : ShippingConfig
     emails               : {
@@ -38,4 +37,9 @@ export interface CheckoutConfig {
         completed        : EmailConfig
         rejected         : EmailConfig
     }
+}
+export interface CheckoutConfigClient extends CheckoutConfigShared {
+}
+export interface CheckoutConfigShared {
+    business             : BusinessConfig
 }

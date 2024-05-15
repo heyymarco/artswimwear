@@ -63,7 +63,7 @@ import {
 
 // configs:
 import {
-    checkoutConfig,
+    checkoutConfigServer,
 }                           from '@/checkout.config.server'
 
 
@@ -147,7 +147,7 @@ export const sendEmailConfirmation = async (options: SendEmailConfirmationOption
             emails : {
                 checkout : checkoutEmail,
             },
-        } = checkoutConfig;
+        } = checkoutConfigServer;
         
         
         
