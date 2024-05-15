@@ -1438,7 +1438,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             if (!('orderId' in draftOrderDetailOrPaymentDetail)) {
-                gotoFinished(draftOrderDetailOrPaymentDetail, /*paid:*/true);
+                gotoFinished(draftOrderDetailOrPaymentDetail, /*paid:*/(draftOrderDetailOrPaymentDetail.type !== 'MANUAL')); // buggy
                 return undefined;
             }
             else {
