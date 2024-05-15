@@ -1342,7 +1342,7 @@ router
                 ? createOrder(prismaTransaction, {
                     // primary data:
                     orderId                  : orderId,
-                    paymentId                : null,
+                    paymentId                : undefined, // will be random_auto_generated
                     items                    : orderItemsData,
                     preferredCurrency        : preferredCurrencyData,
                     shippingAddress          : shippingAddressData,

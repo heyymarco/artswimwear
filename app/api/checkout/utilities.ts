@@ -54,7 +54,7 @@ export interface CreateDraftOrderData
 {
     // temporary data:
     expiresAt       : Date
-    paymentId       : string
+    paymentId       : string // redefined paymentId as non_undefined
     
     // extended data:
     customerOrGuest : CustomerOrGuestData
@@ -250,7 +250,7 @@ export const findDraftOrder = async (prismaTransaction: Parameters<Parameters<ty
 export interface CreateOrderDataBasic {
     // primary data:
     orderId                  : string
-    paymentId                : string|null
+    paymentId                : string|undefined // will be random_auto_generated if undefined
     items                    : Omit<OrdersOnProducts,
         // records:
         |'id'
@@ -574,7 +574,7 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
     const [orderAndData] = await Promise.all([
         createOrder(prismaTransaction, {
             orderId                  : draftOrder.orderId,
-            paymentId                : draftOrder.paymentId,
+            paymentId                : draftOrder.paymentId ?? undefined, // will be random_auto_generated if null => undefined
             items                    : draftOrder.items,
             customerId               : draftOrder.customerId,
             guestId                  : draftOrder.guestId,
