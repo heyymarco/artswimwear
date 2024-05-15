@@ -148,7 +148,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                     newOrder,
                     
                     isPaid : true,
-                    paymentConfirmationToken : undefined,
+                    paymentConfirmationToken : null,
                 });
             } // if
             

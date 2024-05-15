@@ -645,6 +645,30 @@ router
     let paymentDetail             : PaymentDetail|undefined;
     let newOrder                  : OrderAndData|undefined = undefined;
     try {
+        const isPaid = (paymentSource !== 'manual');
+        const paymentConfirmationToken = (
+            isPaid
+            ? null // no need for `paymentConfirmation`, because the order is paid_immediately
+            : await (async (): Promise<string> => {
+                const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
+                let tempToken = await nanoid();
+                
+                for (let attempts = 10; attempts > 0; attempts--) {
+                    const foundDuplicate = await prisma.paymentConfirmation.count({
+                        where : {
+                            token : tempToken,
+                        },
+                        take : 1,
+                    });
+                    if (!foundDuplicate) return tempToken;
+                } // for
+                console.log('INTERNAL ERROR AT GENERATE UNIQUE TOKEN');
+                throw 'INTERNAL_ERROR';
+            })()
+        );
+        
+        
+        
         ({orderId, authorizedOrPaymentDetail, paymentDetail, newOrder} = await prisma.$transaction(async (prismaTransaction): Promise<{ orderId: string|undefined, authorizedOrPaymentDetail: AuthorizedFundData|PaymentDetail|undefined, paymentDetail: PaymentDetail|undefined, newOrder : OrderAndData|undefined }> => {
             //#region batch queries
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
@@ -1284,11 +1308,6 @@ router
                 : totalShippingCostConverted
             );
             
-            const paymentDetail : PaymentDetail|null = (
-                isPaymentDetail(authorizedOrPaymentDetail)  // is PaymentDetail
-                ? authorizedOrPaymentDetail
-                : null
-            );
             const customerOrGuest : CustomerOrGuestData = {
                 name                 : customerName,
                 email                : customerEmail,
@@ -1352,10 +1371,10 @@ router
                     // extended data:
                     customerOrGuest          : customerOrGuest,
                     payment                  : {
-                        ...paymentDetail!,
+                        ...authorizedOrPaymentDetail /* as PaymentDetail */,
                         billingAddress       : billingAddressData,
                     } satisfies Payment,
-                    paymentConfirmationToken : null, // no need for `paymentConfirmation`, because the order is paid_immediately
+                    paymentConfirmationToken : paymentConfirmationToken,
                 })
                 : null
             );
@@ -1375,7 +1394,7 @@ router
             return {
                 orderId,
                 authorizedOrPaymentDetail : authorizedOrPaymentDetail,
-                paymentDetail             : paymentDetail ?? undefined,
+                paymentDetail             : isPaymentDetail(authorizedOrPaymentDetail) ? authorizedOrPaymentDetail : undefined,
                 newOrder                  : (await createNewOrderPromise) ?? undefined,
             };
         }));
@@ -1383,31 +1402,7 @@ router
         
         
         // send email confirmation:
-        if (paymentDetail && newOrder) {
-            const isPaid = (paymentSource !== 'manual');
-            const paymentConfirmationToken = (
-                isPaid
-                ? undefined
-                : await (async (): Promise<string> => {
-                    const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
-                    let tempToken = await nanoid();
-                    
-                    for (let attempts = 10; attempts > 0; attempts--) {
-                        const foundDuplicate = await prisma.paymentConfirmation.count({
-                            where : {
-                                token : tempToken,
-                            },
-                            take : 1,
-                        });
-                        if (!foundDuplicate) return tempToken;
-                    } // for
-                    console.log('INTERNAL ERROR AT GENERATE UNIQUE TOKEN');
-                    throw 'INTERNAL_ERROR';
-                })()
-            );
-            
-            
-            
+        if (paymentDetail /* not a pending (redirect) payment */ && newOrder /* a RealOrder is created */) {
             await sendEmailConfirmation({
                 newOrder,
                 
@@ -1914,11 +1909,10 @@ Updating the confirmation is not required.`,
     
     
     
-    let paymentResponse          : PaymentDetail|PaymentDeclined;
-    let paymentConfirmationToken : string|undefined = undefined;
-    let newOrder                 : OrderAndData|undefined = undefined;
+    let paymentResponse : PaymentDetail|PaymentDeclined;
+    let newOrder        : OrderAndData|undefined = undefined;
     try {
-        ([paymentResponse, paymentConfirmationToken, newOrder] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, string|undefined, OrderAndData|undefined]> => {
+        ([paymentResponse, newOrder] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, OrderAndData|undefined]> => {
             //#region verify draftOrder_id
             const draftOrder = await findDraftOrder(prismaTransaction, { orderId, paymentId });
             if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
@@ -1936,7 +1930,6 @@ Updating the confirmation is not required.`,
             
             //#region process the payment
             let paymentResponse : PaymentDetail|PaymentDeclined;
-            let paymentConfirmationToken : string|undefined = undefined;
             if (paypalPaymentId) {
                 const paymentDetail = await paypalCaptureFund(paypalPaymentId);
                 if (paymentDetail === null) {
@@ -1968,34 +1961,8 @@ Updating the confirmation is not required.`,
                 } // if
             }
             else {
-                // paylater APPROVED (we waiting for your payment confirmation within xx days):
-                paymentResponse = {
-                    type       : 'MANUAL',
-                    brand      : null,
-                    identifier : null,
-                    
-                    amount     : 0,
-                    fee        : 0,
-                } satisfies PaymentDetail;
-                
-                
-                
-                paymentConfirmationToken = await (async (): Promise<string> => {
-                    const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 16);
-                    let tempToken = await nanoid();
-                    
-                    for (let attempts = 10; attempts > 0; attempts--) {
-                        const foundDuplicate = await prismaTransaction.paymentConfirmation.count({
-                            where : {
-                                token : tempToken,
-                            },
-                            take : 1,
-                        });
-                        if (!foundDuplicate) return tempToken;
-                    } // for
-                    console.log('INTERNAL ERROR AT GENERATE UNIQUE TOKEN');
-                    throw 'INTERNAL_ERROR';
-                })();
+                console.log('unimplemented payment gateway');
+                throw Error('unimplemented payment gateway');
             } // if
             //#endregion process the payment
             
@@ -2025,7 +1992,7 @@ Updating the confirmation is not required.`,
                             country    : billingCountry,
                         } : null,
                     },
-                    paymentConfirmationToken,
+                    paymentConfirmationToken : undefined,
                 });
             }
             else {
@@ -2037,7 +2004,7 @@ Updating the confirmation is not required.`,
             
             
             // report the payment result:
-            return [paymentResponse, paymentConfirmationToken, newOrder];
+            return [paymentResponse, newOrder];
         }));
         
         
@@ -2047,8 +2014,8 @@ Updating the confirmation is not required.`,
             await sendEmailConfirmation({
                 newOrder,
                 
-                isPaid : !('error' in paymentResponse) && (paymentResponse.type !== 'MANUAL'),
-                paymentConfirmationToken,
+                isPaid : !('error' in paymentResponse),
+                paymentConfirmationToken: null,
             });
         } // if
     }
@@ -2068,6 +2035,7 @@ Updating the confirmation is not required.`,
             * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_ID` and/or invalid `PAYPAL_SECRET`).
             * Invalid API_request headers (programming bug).
             * unexpected API response (programming bug).
+            * unimplemented payment gateway.
         */
         switch (error) {
             case 'DRAFT_ORDER_NOT_FOUND' :

@@ -91,7 +91,7 @@ export interface SendEmailConfirmationOptions {
     newOrder                 : OrderAndData
     
     isPaid                   : boolean
-    paymentConfirmationToken : string|undefined
+    paymentConfirmationToken : string|null
 }
 export const sendEmailConfirmation = async (options: SendEmailConfirmationOptions): Promise<boolean> => {
     // options:
