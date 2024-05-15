@@ -1406,8 +1406,8 @@ router
             await sendEmailConfirmation({
                 newOrder,
                 
-                isPaid,
-                paymentConfirmationToken,
+                isPaid, // waiting for manual_payment -or- paid
+                paymentConfirmationToken, // a paymentConfirmationToken (random string) if waiting for manual_payment -or- null
             });
         } // if
     }
@@ -2014,7 +2014,7 @@ Updating the confirmation is not required.`,
             await sendEmailConfirmation({
                 newOrder,
                 
-                isPaid : !('error' in paymentResponse),
+                isPaid : true,
                 paymentConfirmationToken: null,
             });
         } // if
