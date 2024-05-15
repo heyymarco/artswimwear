@@ -144,6 +144,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             // send email confirmation:
             if (newOrder) {
+                // notify that the payment has been received:
                 await sendEmailConfirmation({
                     newOrder,
                     

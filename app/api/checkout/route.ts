@@ -1403,6 +1403,9 @@ router
         
         // send email confirmation:
         if (paymentDetail /* not a pending (redirect) payment */ && newOrder /* a RealOrder is created */) {
+            // notify for waiting for payment (manual_payment):
+            // -or-
+            // notify that the payment has been received:
             await sendEmailConfirmation({
                 newOrder,
                 
@@ -2011,6 +2014,7 @@ Updating the confirmation is not required.`,
         
         // send email confirmation:
         if (newOrder) {
+            // notify that the payment has been received:
             await sendEmailConfirmation({
                 newOrder,
                 
