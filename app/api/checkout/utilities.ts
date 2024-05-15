@@ -557,16 +557,14 @@ export type CommitDraftOrder = Omit<DraftOrder,
     >[]
 }
 export interface CommitOrderData {
-    draftOrder               : CommitDraftOrder
-    payment                  : Payment
-    paymentConfirmationToken : string|undefined
+    draftOrder : CommitDraftOrder
+    payment    : Payment
 }
 export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], commitOrderData : CommitOrderData): Promise<OrderAndData> => {
     // data:
     const {
         draftOrder,
         payment,
-        paymentConfirmationToken,
     } = commitOrderData;
     
     
@@ -583,7 +581,7 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
             shippingCost             : draftOrder.shippingCost,
             shippingProviderId       : draftOrder.shippingProviderId,
             payment                  : payment,
-            paymentConfirmationToken : paymentConfirmationToken ?? null,
+            paymentConfirmationToken : null,
         }),
         prismaTransaction.draftOrder.delete({
             where  : {

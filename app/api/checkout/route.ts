@@ -1995,7 +1995,6 @@ Updating the confirmation is not required.`,
                             country    : billingCountry,
                         } : null,
                     },
-                    paymentConfirmationToken : undefined,
                 });
             }
             else {

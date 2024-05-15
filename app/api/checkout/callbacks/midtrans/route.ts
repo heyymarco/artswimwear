@@ -135,7 +135,6 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                         ...paymentDetail,
                         billingAddress : null,
                     },
-                    paymentConfirmationToken : undefined,
                 });
             });
             //#endregion save the database
