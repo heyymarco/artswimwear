@@ -129,6 +129,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                 
                 
                 
+                // payment APPROVED => move the `draftOrder` to `order`:
                 return await commitOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
                     payment            : {

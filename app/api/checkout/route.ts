@@ -1975,8 +1975,6 @@ Updating the confirmation is not required.`,
             let newOrder : OrderAndData|undefined = undefined;
             const paymentDetail = !('error' in paymentResponse) ? paymentResponse : undefined;
             if (paymentDetail) {
-                // const isBillingAddressRequired = (paymentDetail.type === 'CARD');
-                
                 // payment APPROVED => move the `draftOrder` to `order`:
                 newOrder = await commitOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
