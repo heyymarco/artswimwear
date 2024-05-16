@@ -336,6 +336,8 @@ model PaymentConfirmation {
 }
 enum OrderStatus {
     NEW_ORDER
+    CANCELED
+    EXPIRED
     PROCESSED
     ON_THE_WAY
     IN_TROUBLE
