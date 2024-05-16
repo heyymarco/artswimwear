@@ -74,6 +74,7 @@ export interface AuthorizedFundData {
 export interface PaymentDetail
     extends
         Omit<Payment,
+            |'expiresAt'
             |'billingAddress'
         >
 {

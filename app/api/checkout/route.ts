@@ -1372,6 +1372,7 @@ router
                     customerOrGuest          : customerOrGuest,
                     payment                  : {
                         ...authorizedOrPaymentDetail /* as PaymentDetail */,
+                        expiresAt            : null, // TODO set the expires date for payment with indomaret|alfamart
                         billingAddress       : billingAddressData,
                     } satisfies Payment,
                     paymentConfirmationToken : paymentConfirmationToken,
@@ -1980,6 +1981,7 @@ Updating the confirmation is not required.`,
                     draftOrder         : draftOrder,
                     payment            : {
                         ...paymentDetail,
+                        expiresAt      : null, // paid, no more payment expiry date
                         billingAddress : hasBillingAddress ? {
                             firstName  : billingFirstName,
                             lastName   : billingLastName,

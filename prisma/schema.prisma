@@ -304,6 +304,7 @@ type Payment {
     type                    PaymentType
     brand                   String?
     identifier              String?
+    expiresAt               DateTime?
     
     amount                  Float                   // min: 0
     fee                     Float                   // min: 0

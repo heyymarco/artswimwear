@@ -134,6 +134,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                     draftOrder         : draftOrder,
                     payment            : {
                         ...paymentDetail,
+                        expiresAt      : null, // paid, no more payment expiry date
                         billingAddress : null,
                     },
                 });
