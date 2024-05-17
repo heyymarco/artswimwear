@@ -10,6 +10,26 @@ import {
     spacerValues,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// types:
+import type {
+    // types:
+    WysiwygEditorState,
+}                           from '@/components/editors/WysiwygEditor/types'
+
+// lexical functions:
+import {
+    createHeadlessEditor,
+}                           from '@lexical/headless'
+import {
+    $generateHtmlFromNodes,
+}                           from '@lexical/html'
+
+// nodes:
+import {
+    // defined supported nodes.
+    defaultNodes,
+}                           from '@/components/editors/WysiwygEditor/defaultNodes'
+
 // internals:
 import * as styles          from './styles'
 import {
@@ -508,18 +528,67 @@ const OrderItems = (props: OrderItemsProps): React.ReactNode => {
     );
 };
 
+export const OrderCancelationReason = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            cancelationReason,
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    const editor = createHeadlessEditor({
+        namespace   : 'WysiwygEditor', 
+        editable    : false,
+        
+        editorState : (cancelationReason ?? undefined) as WysiwygEditorState|undefined,
+        
+        // theme       : defaultTheme(), // no need className(s) because email doesn't support styling
+        nodes       : defaultNodes(),
+    });
+    
+    
+    
+    // jsx:
+    if (!cancelationReason) return null;
+    return (
+        // $generateHtmlFromNodes(editor) ?? null
+        JSON.stringify(cancelationReason)
+    );
+};
+export const OrderHasCancelationReason = (props: React.PropsWithChildren<{}>): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            cancelationReason,
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    if (!cancelationReason) return null;
+    return props.children;
+};
+
 export const Order = {
-    Id            : OrderId,
-    CreatedAt     : OrderCreatedAt,
+    Id                   : OrderId,
+    CreatedAt            : OrderCreatedAt,
     
-    SubtotalValue : OrderSubtotalValue,
-    Subtotal      : OrderSubtotal,
+    SubtotalValue        : OrderSubtotalValue,
+    Subtotal             : OrderSubtotal,
     
-    ShippingValue : OrderShippingValue,
-    Shipping      : OrderShipping,
+    ShippingValue        : OrderShippingValue,
+    Shipping             : OrderShipping,
     
-    TotalValue    : OrderTotalValue,
-    Total         : OrderTotal,
+    TotalValue           : OrderTotalValue,
+    Total                : OrderTotal,
     
-    Items         : OrderItems,
+    Items                : OrderItems,
+    
+    CancelationReason    : OrderCancelationReason,
+    HasCancelationReason : OrderHasCancelationReason,
 };

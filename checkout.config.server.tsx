@@ -890,11 +890,13 @@ export const checkoutConfigServer : CheckoutConfigServer = {
                         But don&apos;t worry, you can <strong>resend</strong> it again. We will check your payment confirmation again.
                     </p>
                     
-                    <p style={styles.paragraph}>
-                        Reason:
-                        <br />
-                        <Payment.ConfirmationRejection />
-                    </p>
+                    <Payment.HasConfirmationRejection>
+                        <p style={styles.paragraph}>
+                            Rejection reason:
+                            <br />
+                            <Payment.ConfirmationRejection />
+                        </p>
+                    </Payment.HasConfirmationRejection>
                     
                     <p style={styles.paragraphLast}>
                         Retry:
@@ -996,6 +998,358 @@ export const checkoutConfigServer : CheckoutConfigServer = {
                         After you make payment, please confirm your payment via this link:
                         <br />
                         <Payment.ConfirmationLink />
+                    </p>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Care Support
+                    </h2>
+                    
+                    <p style={styles.paragraphLast}>
+                        Need help? Please reply this email.
+                    </p>
+                </section>
+            </article>,
+        },
+        canceled        : {
+            host        : process.env.EMAIL_CANCELED_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAIL_CANCELED_PORT ?? '465'),
+            secure      : (process.env.EMAIL_CANCELED_SECURE === 'true'),
+            username    : process.env.EMAIL_CANCELED_USERNAME ?? '',
+            password    : process.env.EMAIL_CANCELED_PASSWORD ?? '',
+            
+            from        : process.env.EMAIL_CANCELED_FROM ?? '',
+            subject     : <>
+                Your Order Has Been Canceled at <Business.Name />
+            </>,
+            message     : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        Your Order Has Been Canceled
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Customer.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraph}>
+                        Your order has been <strong>canceled</strong> by our system.
+                        <br />
+                        But don&apos;t worry, you can <strong>order again</strong> at <Business.Link />.
+                    </p>
+                    
+                    <Order.HasCancelationReason>
+                        <p style={styles.paragraphLast}>
+                            Cancelation reason:
+                            <br />
+                            <Order.CancelationReason />
+                        </p>
+                    </Order.HasCancelationReason>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Care Support
+                    </h2>
+                    
+                    <p style={styles.paragraphLast}>
+                        Need help? Please reply this email.
+                    </p>
+                </section>
+            </article>,
+        },
+        expired         : {
+            host        : process.env.EMAIL_EXPIRED_HOST     ?? '',
+            port        : Number.parseInt(process.env.EMAIL_EXPIRED_PORT ?? '465'),
+            secure      : (process.env.EMAIL_EXPIRED_SECURE === 'true'),
+            username    : process.env.EMAIL_EXPIRED_USERNAME ?? '',
+            password    : process.env.EMAIL_EXPIRED_PASSWORD ?? '',
+            
+            from        : process.env.EMAIL_EXPIRED_FROM ?? '',
+            subject     : <>
+                Your Order Has Been Canceled at <Business.Name />
+            </>,
+            message     : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        Your Order Has Been Canceled
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Customer.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraphLast}>
+                        Your order has been <strong>canceled</strong> because we have not received the payment by the final payment date.
+                        <br />
+                        But don&apos;t worry, you can <strong>order again</strong> at <Business.Link />.
                     </p>
                 </section>
                 

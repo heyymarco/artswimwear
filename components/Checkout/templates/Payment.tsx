@@ -18,12 +18,6 @@ import type {
     WysiwygEditorState,
 }                           from '@/components/editors/WysiwygEditor/types'
 
-// // theme:
-// import {
-//     // defined classes to match Reusable-UI's styles & components.
-//     defaultTheme,
-// }                           from '@/components/editors/WysiwygEditor/defaultTheme'
-
 // nodes:
 import {
     // defined supported nodes.
@@ -136,7 +130,7 @@ const PaymentMethod = (): React.ReactNode => {
                 }}
             >
                 {
-                    (paymentBrand?.toUpperCase() || paymentType)
+                    (paymentBrand || paymentType)
                 }
                 
                 {!!paymentIdentifier && <span style={styles.textSmall}>
@@ -384,16 +378,30 @@ export const PaymentConfirmationRejection = (): React.ReactNode => {
         JSON.stringify(rejectionReason)
     );
 };
-
+export const PaymentHasConfirmationRejection = (props: React.PropsWithChildren<{}>): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        paymentConfirmation,
+    } = useOrderDataContext();
+    const rejectionReason = paymentConfirmation?.rejectionReason;
+    
+    
+    
+    // jsx:
+    if (!rejectionReason) return null;
+    return props.children;
+};
 
 export const Payment = {
-    BillingAddress        : BillingAddress,
-    Method                : PaymentMethod,
-    Amount                : PaymentAmount,
-    Info                  : PaymentInfo,
+    BillingAddress           : BillingAddress,
+    Method                   : PaymentMethod,
+    Amount                   : PaymentAmount,
+    Info                     : PaymentInfo,
     
-    Bank                  : PaymentBank,
-    ConfirmationUrl       : PaymentConfirmationUrl,
-    ConfirmationLink      : PaymentConfirmationLink,
-    ConfirmationRejection : PaymentConfirmationRejection,
+    Bank                     : PaymentBank,
+    ConfirmationUrl          : PaymentConfirmationUrl,
+    ConfirmationLink         : PaymentConfirmationLink,
+    ConfirmationRejection    : PaymentConfirmationRejection,
+    HasConfirmationRejection : PaymentHasConfirmationRejection,
 };

@@ -360,6 +360,7 @@ model Order {
     
     orderStatus             OrderStatus             @default(NEW_ORDER)
     orderTrouble            Json?
+    cancelationReason       Json?
     
     preferredCurrency       PreferredCurrency?
     
