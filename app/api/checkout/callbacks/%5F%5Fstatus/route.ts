@@ -17,7 +17,7 @@ import {
 // internals:
 import {
     // utilities:
-    findPayment,
+    findPaymentById,
 }                           from '../../utilities'
 
 // utilities:
@@ -84,7 +84,7 @@ export async function GET(req: NextRequest, res: Response) {
                 
                 
                 
-                const paymentDetail = await findPayment(prismaTransaction, { paymentId: paymentId });
+                const paymentDetail = await findPaymentById(prismaTransaction, { paymentId: paymentId });
                 if (!!paymentDetail) return paymentDetail; // paid
                 
                 
