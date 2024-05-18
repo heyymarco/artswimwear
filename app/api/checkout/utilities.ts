@@ -556,11 +556,11 @@ export type CommitDraftOrder = Omit<DraftOrder,
         |'draftOrderId'
     >[]
 }
-export interface CommitOrderData {
+export interface CommitDraftOrderData {
     draftOrder : CommitDraftOrder
     payment    : Payment
 }
-export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], commitOrderData : CommitOrderData): Promise<OrderAndData> => {
+export const commitDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], commitOrderData : CommitDraftOrderData): Promise<OrderAndData> => {
     // data:
     const {
         draftOrder,
