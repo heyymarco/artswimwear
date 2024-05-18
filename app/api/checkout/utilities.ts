@@ -18,7 +18,7 @@ import {
 }                           from '@/libs/prisma.server'
 
 // templates:
-import {
+import type {
     // types:
     CustomerOrGuestData,
     OrderAndData,
