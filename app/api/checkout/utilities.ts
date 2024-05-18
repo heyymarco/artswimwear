@@ -671,12 +671,14 @@ type CancelOrder = Pick<Order,
 }
 export interface CancelOrderData {
     order        : CancelOrder
+    isExpired   ?: boolean
     deleteOrder ?: boolean
 }
 export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderData : CancelOrderData) => {
     // data:
     const {
         order,
+        isExpired   = false,
         deleteOrder = false,
     } = cancelOrderData;
     
@@ -684,7 +686,7 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
     
     await Promise.all([
         ...(
-            !['CANCELED', 'EXPIRED'].includes(order.orderStatus) // if NOT already marked 'CANCELED'|'EXPIRED'
+            !['CANCELED', 'EXPIRED'].includes(order.orderStatus) // if NOT already marked 'CANCELED'|'EXPIRED' => restore the `Product` stocks
             ? (order.items.map(({productId, variantIds, quantity}) =>
                 !productId
                 ? undefined
@@ -711,6 +713,16 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 id : true,
             },
         })
-        : undefined,
+        : prismaTransaction.order.update({
+            where  : {
+                id : order.id,
+            },
+            data   : {
+                orderStatus : (isExpired ? 'EXPIRED' : 'CANCELED'),
+            },
+            select : {
+                id : true,
+            },
+        }),
     ]);
 }
