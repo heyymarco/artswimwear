@@ -3,6 +3,7 @@ import type {
     Address,
     Payment,
     PreferredCurrency,
+    Order,
     OrdersOnProducts,
     DraftOrder,
     DraftOrdersOnProducts,
@@ -650,4 +651,66 @@ export const revertDraftOrderById = async (prismaTransaction: Parameters<Paramet
     // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
     await revertDraftOrder(prismaTransaction, { draftOrder });
     return true;
+}
+
+
+
+type CancelOrder = Pick<Order,
+    |'id'
+    
+    |'orderId'
+    
+    |'orderStatus'
+> & {
+    items : Pick<OrdersOnProducts,
+        |'productId'
+        |'variantIds'
+        
+        |'quantity'
+    >[]
+}
+export interface CancelOrderData {
+    order        : CancelOrder
+    deleteOrder ?: boolean
+}
+export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderData : CancelOrderData) => {
+    // data:
+    const {
+        order,
+        deleteOrder = false,
+    } = cancelOrderData;
+    
+    
+    
+    await Promise.all([
+        ...(
+            !['CANCELED', 'EXPIRED'].includes(order.orderStatus) // if NOT already marked 'CANCELED'|'EXPIRED'
+            ? (order.items.map(({productId, variantIds, quantity}) =>
+                !productId
+                ? undefined
+                : prismaTransaction.stock.updateMany({
+                    where  : {
+                        productId  : productId,
+                        value      : { not      : null       },
+                        variantIds : { hasEvery : variantIds },
+                    },
+                    data   : {
+                        value : { increment : quantity }
+                    },
+                })
+            ))
+            : []
+        ),
+        
+        deleteOrder
+        ? prismaTransaction.order.delete({
+            where  : {
+                id : order.id,
+            },
+            select : {
+                id : true,
+            },
+        })
+        : undefined,
+    ]);
 }
