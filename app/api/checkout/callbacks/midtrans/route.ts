@@ -24,10 +24,10 @@ import {
 }                           from '../../paymentProcessors.midtrans'
 import {
     // utilities:
-    cancelDraftOrder,
     findDraftOrder,
     
     commitDraftOrder,
+    revertDraftOrderById,
 }                           from '../../utilities'
 import {
     sendEmailConfirmation,
@@ -98,7 +98,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             if (paymentId) {
                 await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
                     // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
-                    return await cancelDraftOrder(prismaTransaction, { orderId, paymentId });
+                    return await revertDraftOrderById(prismaTransaction, { orderId, paymentId });
                 });
             } // if
             

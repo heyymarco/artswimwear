@@ -135,52 +135,6 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
     return newDraftOrder.id;
 }
 
-export interface CancelDraftOrderData {
-    orderId   ?: string|null
-    paymentId ?: string|null
-}
-export const cancelDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelDraftOrderData: CancelDraftOrderData): Promise<boolean> => {
-    // data:
-    const {
-        orderId   : orderIdRaw,
-        paymentId : paymentIdRaw,
-    } = cancelDraftOrderData;
-    const orderId   = orderIdRaw   || undefined;
-    const paymentId = paymentIdRaw || undefined;
-    if (!orderId && !paymentId) return false;
-    
-    
-    
-    const requiredSelect = {
-        id                     : true,
-        
-        orderId                : true,
-        
-        items : {
-            select : {
-                productId      : true,
-                variantIds     : true,
-                
-                quantity       : true,
-            },
-        },
-    };
-    const draftOrder = await prismaTransaction.draftOrder.findUnique({
-        where  : {
-            orderId   : orderId,
-            paymentId : paymentId,
-        },
-        select : requiredSelect,
-    });
-    if (!draftOrder) return false; // the draftOrder is not found -or- the order is already APPROVED
-    
-    
-    
-    // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
-    await revertDraftOrder(prismaTransaction, { draftOrder });
-    return true;
-}
-
 export interface FindDraftOrderData {
     orderId   ?: string|null
     paymentId ?: string|null
@@ -610,11 +564,11 @@ type RevertDraftOrder = Pick<DraftOrder,
 export interface RevertDraftOrderData {
     draftOrder: RevertDraftOrder
 }
-export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], revertOrderData : RevertDraftOrderData) => {
+export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], revertDraftOrderData : RevertDraftOrderData) => {
     // data:
     const {
         draftOrder,
-    } = revertOrderData;
+    } = revertDraftOrderData;
     
     
     
@@ -642,4 +596,50 @@ export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<
             },
         }),
     ]);
+}
+
+export interface RevertDraftOrderByIdData {
+    orderId   ?: string|null
+    paymentId ?: string|null
+}
+export const revertDraftOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cevertDraftOrderByIdData: RevertDraftOrderByIdData): Promise<boolean> => {
+    // data:
+    const {
+        orderId   : orderIdRaw,
+        paymentId : paymentIdRaw,
+    } = cevertDraftOrderByIdData;
+    const orderId   = orderIdRaw   || undefined;
+    const paymentId = paymentIdRaw || undefined;
+    if (!orderId && !paymentId) return false;
+    
+    
+    
+    const requiredSelect = {
+        id                     : true,
+        
+        orderId                : true,
+        
+        items : {
+            select : {
+                productId      : true,
+                variantIds     : true,
+                
+                quantity       : true,
+            },
+        },
+    };
+    const draftOrder = await prismaTransaction.draftOrder.findUnique({
+        where  : {
+            orderId   : orderId,
+            paymentId : paymentId,
+        },
+        select : requiredSelect,
+    });
+    if (!draftOrder) return false; // the draftOrder is not found -or- the order is already APPROVED
+    
+    
+    
+    // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
+    await revertDraftOrder(prismaTransaction, { draftOrder });
+    return true;
 }

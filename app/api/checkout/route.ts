@@ -71,12 +71,12 @@ import {
     sumReducer,
     
     createDraftOrder,
-    cancelDraftOrder,
     findDraftOrder,
     
     createOrder,
     commitDraftOrder,
     revertDraftOrder,
+    revertDraftOrderById,
 }                           from './utilities'
 import {
     sendEmailConfirmation,
@@ -1836,7 +1836,7 @@ Updating the confirmation is not required.`,
     if (cancelOrder) {
         const orderDeletedFromDatabase = await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
             // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
-            return await cancelDraftOrder(prismaTransaction, { orderId, paymentId });
+            return await revertDraftOrderById(prismaTransaction, { orderId, paymentId });
         });
         
         
