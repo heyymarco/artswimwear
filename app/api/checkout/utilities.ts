@@ -177,7 +177,7 @@ export const cancelDraftOrder = async (prismaTransaction: Parameters<Parameters<
     
     
     // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
-    await revertOrder(prismaTransaction, { draftOrder });
+    await revertDraftOrder(prismaTransaction, { draftOrder });
     return true;
 }
 
@@ -607,10 +607,10 @@ type RevertDraftOrder = Pick<DraftOrder,
         |'quantity'
     >[]
 }
-export interface RevertOrderData {
+export interface RevertDraftOrderData {
     draftOrder: RevertDraftOrder
 }
-export const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], revertOrderData : RevertOrderData) => {
+export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], revertOrderData : RevertDraftOrderData) => {
     // data:
     const {
         draftOrder,
