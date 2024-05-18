@@ -607,7 +607,17 @@ type RevertDraftOrder = Pick<DraftOrder,
         |'quantity'
     >[]
 }
-export const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], { draftOrder } : { draftOrder: RevertDraftOrder }) => {
+export interface RevertOrderData {
+    draftOrder: RevertDraftOrder
+}
+export const revertOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], revertOrderData : RevertOrderData) => {
+    // data:
+    const {
+        draftOrder,
+    } = revertOrderData;
+    
+    
+    
     await Promise.all([
         ...(draftOrder.items.map(({productId, variantIds, quantity}) =>
             !productId
