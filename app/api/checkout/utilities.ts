@@ -611,12 +611,12 @@ export interface RevertDraftOrderByIdData {
     orderId   ?: string|null
     paymentId ?: string|null
 }
-export const revertDraftOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cevertDraftOrderByIdData: RevertDraftOrderByIdData): Promise<boolean> => {
+export const revertDraftOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], revertDraftOrderByIdData: RevertDraftOrderByIdData): Promise<boolean> => {
     // data:
     const {
         orderId   : orderIdRaw,
         paymentId : paymentIdRaw,
-    } = cevertDraftOrderByIdData;
+    } = revertDraftOrderByIdData;
     const orderId   = orderIdRaw   || undefined;
     const paymentId = paymentIdRaw || undefined;
     if (!orderId && !paymentId) return false;
@@ -725,4 +725,56 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
             },
         }),
     ]);
+}
+
+export interface CancelOrderByIdData {
+    orderId   ?: string|null
+    paymentId ?: string|null
+    isExpired   ?: boolean
+    deleteOrder ?: boolean
+}
+export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderByIdData: CancelOrderByIdData): Promise<boolean> => {
+    // data:
+    const {
+        orderId   : orderIdRaw,
+        paymentId : paymentIdRaw,
+        isExpired,
+        deleteOrder,
+    } = cancelOrderByIdData;
+    const orderId   = orderIdRaw   || undefined;
+    const paymentId = paymentIdRaw || undefined;
+    if (!orderId && !paymentId) return false;
+    
+    
+    
+    const requiredSelect = {
+        id                     : true,
+        
+        orderId                : true,
+        
+        orderStatus            : true,
+        
+        items : {
+            select : {
+                productId      : true,
+                variantIds     : true,
+                
+                quantity       : true,
+            },
+        },
+    };
+    const order = await prismaTransaction.order.findUnique({
+        where  : {
+            orderId   : orderId,
+            paymentId : paymentId,
+        },
+        select : requiredSelect,
+    });
+    if (!order) return false; // the order is not found -or- the order is already DELETED
+    
+    
+    
+    // order CANCELED => restore the `Product` stock and (optionally) delete the `order`:
+    await cancelOrder(prismaTransaction, { order, isExpired, deleteOrder });
+    return true;
 }
