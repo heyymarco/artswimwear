@@ -75,7 +75,7 @@ import {
     findDraftOrder,
     
     createOrder,
-    commitOrder,
+    commitDraftOrder,
     revertOrder,
 }                           from './utilities'
 import {
@@ -1977,7 +1977,7 @@ Updating the confirmation is not required.`,
             const paymentDetail = !('error' in paymentResponse) ? paymentResponse : undefined;
             if (paymentDetail) {
                 // payment APPROVED => move the `draftOrder` to `order`:
-                newOrder = await commitOrder(prismaTransaction, {
+                newOrder = await commitDraftOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
                     payment            : {
                         ...paymentDetail,

@@ -27,7 +27,7 @@ import {
     cancelDraftOrder,
     findDraftOrder,
     
-    commitOrder,
+    commitDraftOrder,
 }                           from '../../utilities'
 import {
     sendEmailConfirmation,
@@ -130,7 +130,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                 
                 
                 // payment APPROVED => move the `draftOrder` to `order`:
-                return await commitOrder(prismaTransaction, {
+                return await commitDraftOrder(prismaTransaction, {
                     draftOrder         : draftOrder,
                     payment            : {
                         ...paymentDetail,
