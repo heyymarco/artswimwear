@@ -71,7 +71,7 @@ import {
     sumReducer,
     
     createDraftOrder,
-    findDraftOrder,
+    findDraftOrderById,
     
     createOrder,
     commitDraftOrder,
@@ -1918,7 +1918,7 @@ Updating the confirmation is not required.`,
     try {
         ([paymentResponse, newOrder] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, OrderAndData|undefined]> => {
             //#region verify draftOrder_id
-            const draftOrder = await findDraftOrder(prismaTransaction, { orderId, paymentId });
+            const draftOrder = await findDraftOrderById(prismaTransaction, { orderId, paymentId });
             if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
             if (draftOrder.expiresAt <= new Date()) {
                 // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:

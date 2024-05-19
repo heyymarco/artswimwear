@@ -138,16 +138,16 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
 
 
 
-export interface FindDraftOrderData {
+export interface FindDraftOrderByIdData {
     orderId   ?: string|null
     paymentId ?: string|null
 }
-export const findDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findDraftOrderData: FindDraftOrderData): Promise<(CommitDraftOrder & RevertDraftOrder)|null> => {
+export const findDraftOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findDraftOrderByIdData: FindDraftOrderByIdData): Promise<(CommitDraftOrder & RevertDraftOrder)|null> => {
     // data:
     const {
         orderId   : orderIdRaw,
         paymentId : paymentIdRaw,
-    } = findDraftOrderData;
+    } = findDraftOrderByIdData;
     const orderId   = orderIdRaw   || undefined;
     const paymentId = paymentIdRaw || undefined;
     if (!orderId && !paymentId) return null;

@@ -24,7 +24,7 @@ import {
 }                           from '../../paymentProcessors.midtrans'
 import {
     // utilities:
-    findDraftOrder,
+    findDraftOrderById,
     
     commitDraftOrder,
     revertDraftOrderById,
@@ -124,7 +124,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             const newOrder = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
-                const draftOrder = await findDraftOrder(prismaTransaction, { orderId });
+                const draftOrder = await findDraftOrderById(prismaTransaction, { orderId });
                 if (!draftOrder) return null;
                 
                 
