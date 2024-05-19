@@ -662,6 +662,10 @@ type CancelOrder = Pick<Order,
     
     |'orderStatus'
 > & {
+    payment : Pick<Payment,
+        |'type'
+        |'brand'
+    >
     items : Pick<OrdersOnProducts,
         |'productId'
         |'variantIds'
@@ -686,7 +690,17 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
     
     await Promise.all([
         ...(
-            !['CANCELED', 'EXPIRED'].includes(order.orderStatus) // if NOT already marked 'CANCELED'|'EXPIRED' => restore the `Product` stocks
+            (
+                // Restore the `Product` stocks IF:
+                
+                // NOT already marked 'CANCELED'|'EXPIRED':
+                !['CANCELED', 'EXPIRED'].includes(order.orderStatus)
+                
+                &&
+                
+                // only manual payment with existing brand is cancelable:
+                ((order.payment.type === 'MANUAL') && !!order.payment.brand)
+            )
             ? (order.items.map(({productId, variantIds, quantity}) =>
                 !productId
                 ? undefined
@@ -754,6 +768,13 @@ export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<t
         
         orderStatus            : true,
         
+        payment : {
+            select : {
+                type           : true,
+                brand          : true,
+            },
+        },
+        
         items : {
             select : {
                 productId      : true,
@@ -767,6 +788,23 @@ export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<t
         where  : {
             orderId   : orderId,
             paymentId : paymentId,
+            
+            // NOT already marked 'CANCELED'|'EXPIRED':
+            AND : [
+                { orderStatus : { not: 'CANCELED' } },
+                { orderStatus : { not: 'EXPIRED'  } },
+            ],
+            
+            // only manual payment with existing brand is cancelable:
+            payment : {
+                is : {
+                    type : 'MANUAL',
+                    AND  : [
+                        { brand : { not: null } },
+                        { brand : { not: ''   } },
+                    ],
+                },
+            },
         },
         select : requiredSelect,
     });
