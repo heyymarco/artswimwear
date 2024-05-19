@@ -741,11 +741,9 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
     ]);
 }
 
-export interface CancelOrderByIdData {
+export interface CancelOrderByIdData extends Omit<CancelOrderData, 'order'> {
     orderId   ?: string|null
     paymentId ?: string|null
-    isExpired   ?: boolean
-    deleteOrder ?: boolean
 }
 export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderByIdData: CancelOrderByIdData): Promise<boolean> => {
     // data:
