@@ -99,6 +99,11 @@ const CountDown = (props: CountDownProps) => {
         theme    = (timeLeft >= (30 * 1000)) ? 'primary' : 'danger',
         outlined = true,
         nude     = true,
+        
+        
+        
+        // other props:
+        ...restBasicProps
     } = restCountDownProps;
     
     
@@ -107,7 +112,7 @@ const CountDown = (props: CountDownProps) => {
     return (
         <Basic
             // other props:
-            {...restCountDownProps}
+            {...restBasicProps}
             
             
             
