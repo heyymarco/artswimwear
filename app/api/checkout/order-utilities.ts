@@ -667,7 +667,6 @@ type CancelOrder = Pick<Order,
 > & {
     payment : Pick<Payment,
         |'type'
-        |'brand'
     >
     items : Pick<OrdersOnProducts,
         |'productId'
@@ -724,8 +723,8 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 
                 &&
                 
-                // only manual payment with existing brand is cancelable:
-                ((order.payment.type === 'MANUAL') && !!order.payment.brand)
+                // only manual payment is cancelable:
+                (order.payment.type === 'MANUAL')
             )
             ? (order.items.map(({productId, variantIds, quantity}) =>
                 !productId
@@ -777,7 +776,6 @@ export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<t
         payment : {
             select : {
                 type           : true,
-                brand          : true,
             },
         },
         
@@ -802,14 +800,10 @@ export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<t
                 { orderStatus : { not: 'EXPIRED'  } },
             ],
             
-            // only manual payment with existing brand is cancelable:
+            // only manual payment is cancelable:
             payment : {
                 is : {
                     type : 'MANUAL',
-                    AND  : [
-                        { brand : { not: null } },
-                        { brand : { not: ''   } },
-                    ],
                 },
             },
         },
