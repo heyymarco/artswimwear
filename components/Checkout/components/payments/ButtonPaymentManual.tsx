@@ -70,7 +70,10 @@ const ButtonPaymentManual = (): JSX.Element|null => {
         doTransaction(async () => {
             try {
                 // createOrder:
-                await doPlaceOrder({paymentSource: 'manual', captcha});
+                await doPlaceOrder({
+                    paymentSource : 'manual',
+                    captcha       : captcha,
+                });
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
