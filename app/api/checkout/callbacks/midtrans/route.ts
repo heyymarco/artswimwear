@@ -31,7 +31,7 @@ import {
 }                           from '../../order-utilities'
 import {
     sendEmailConfirmation,
-}                           from '../../emails'
+}                           from '../../email-utilities'
 
 // utilities:
 import {

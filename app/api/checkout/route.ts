@@ -80,7 +80,7 @@ import {
 }                           from './order-utilities'
 import {
     sendEmailConfirmation,
-}                           from './emails'
+}                           from './email-utilities'
 import {
     // types:
     PaypalPaymentToken,
