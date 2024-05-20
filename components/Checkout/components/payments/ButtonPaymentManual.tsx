@@ -45,7 +45,6 @@ const ButtonPaymentManual = (): JSX.Element|null => {
         // actions:
         doTransaction,
         doPlaceOrder,
-        doMakePayment,
     } = useCheckoutState();
     
     
