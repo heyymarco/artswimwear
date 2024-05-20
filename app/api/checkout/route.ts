@@ -79,7 +79,7 @@ import {
     revertDraftOrderById,
 }                           from './order-utilities'
 import {
-    sendEmailConfirmation,
+    sendConfirmationEmail,
 }                           from './email-utilities'
 import {
     // types:
@@ -1407,7 +1407,7 @@ router
             // notify for waiting for payment (manual_payment):
             // -or-
             // notify that the payment has been received:
-            await sendEmailConfirmation({
+            await sendConfirmationEmail({
                 newOrder,
                 
                 isPaid, // waiting for manual_payment -or- paid
@@ -2014,7 +2014,7 @@ Updating the confirmation is not required.`,
         // send email confirmation:
         if (newOrder) {
             // notify that the payment has been received:
-            await sendEmailConfirmation({
+            await sendConfirmationEmail({
                 newOrder,
                 
                 isPaid : true,

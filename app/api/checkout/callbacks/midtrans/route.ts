@@ -30,7 +30,7 @@ import {
     revertDraftOrderById,
 }                           from '../../order-utilities'
 import {
-    sendEmailConfirmation,
+    sendConfirmationEmail,
 }                           from '../../email-utilities'
 
 // utilities:
@@ -146,7 +146,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             // send email confirmation:
             if (newOrder) {
                 // notify that the payment has been received:
-                await sendEmailConfirmation({
+                await sendConfirmationEmail({
                     newOrder,
                     
                     isPaid : true,
