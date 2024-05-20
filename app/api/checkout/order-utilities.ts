@@ -674,7 +674,7 @@ export interface CancelOrderData {
     order        : CancelOrder
     isExpired   ?: boolean
     deleteOrder ?: boolean
-    selectOrder ?: Prisma.OrderSelect
+    orderSelect ?: Prisma.OrderSelect
 }
 export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderData : CancelOrderData) => {
     // data:
@@ -682,7 +682,7 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
         order,
         isExpired   = false,
         deleteOrder = false,
-        selectOrder = {
+        orderSelect = {
             id : true,
         },
     } = cancelOrderData;
@@ -724,7 +724,7 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
             where  : {
                 id : order.id,
             },
-            select : selectOrder,
+            select : orderSelect,
         })
         : prismaTransaction.order.update({
             where  : {
@@ -733,26 +733,29 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
             data   : {
                 orderStatus : (isExpired ? 'EXPIRED' : 'CANCELED'),
             },
-            select : selectOrder,
+            select : orderSelect,
         }),
     ]);
     return updatedOrder;
 }
 
 export interface CancelOrderByIdData extends Omit<CancelOrderData, 'order'> {
+    id        ?: string|null
     orderId   ?: string|null
     paymentId ?: string|null
 }
 export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderByIdData: CancelOrderByIdData) => {
     // data:
     const {
+        id        : idRaw,
         orderId   : orderIdRaw,
         paymentId : paymentIdRaw,
         ...restCancelOrderData
     } = cancelOrderByIdData;
+    const id        = idRaw        || undefined;
     const orderId   = orderIdRaw   || undefined;
     const paymentId = paymentIdRaw || undefined;
-    if (!orderId && !paymentId) return false;
+    if (!id && !orderId && !paymentId) return false;
     
     
     
@@ -781,6 +784,7 @@ export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<t
     };
     const order = await prismaTransaction.order.findUnique({
         where  : {
+            id        : id,
             orderId   : orderId,
             paymentId : paymentId,
             
