@@ -28,7 +28,7 @@ import {
     
     commitDraftOrder,
     revertDraftOrderById,
-}                           from '../../utilities'
+}                           from '../../order-utilities'
 import {
     sendEmailConfirmation,
 }                           from '../../emails'

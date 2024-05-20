@@ -18,7 +18,7 @@ import {
 import {
     // utilities:
     findPaymentById,
-}                           from '../../utilities'
+}                           from '../../order-utilities'
 
 // utilities:
 import {
