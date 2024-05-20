@@ -12,6 +12,11 @@ import type {
     PaymentDetail,
 }                           from '@/models'
 
+// models:
+import type {
+    Prisma,
+}                           from '@prisma/client'
+
 // ORMs:
 import {
     prisma,
@@ -677,6 +682,7 @@ export interface CancelOrderData {
     order        : CancelOrder
     isExpired   ?: boolean
     deleteOrder ?: boolean
+    selectOrder ?: Prisma.OrderSelect
 }
 export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderData : CancelOrderData) => {
     // data:
@@ -684,11 +690,14 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
         order,
         isExpired   = false,
         deleteOrder = false,
+        selectOrder = {
+            id : true,
+        },
     } = cancelOrderData;
     
     
     
-    await Promise.all([
+    const [, updatedOrder] = await Promise.all([
         ...(
             (
                 // Restore the `Product` stocks IF:
@@ -723,9 +732,7 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
             where  : {
                 id : order.id,
             },
-            select : {
-                id : true,
-            },
+            select : selectOrder,
         })
         : prismaTransaction.order.update({
             where  : {
@@ -734,24 +741,22 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
             data   : {
                 orderStatus : (isExpired ? 'EXPIRED' : 'CANCELED'),
             },
-            select : {
-                id : true,
-            },
+            select : selectOrder,
         }),
     ]);
+    return updatedOrder;
 }
 
 export interface CancelOrderByIdData extends Omit<CancelOrderData, 'order'> {
     orderId   ?: string|null
     paymentId ?: string|null
 }
-export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderByIdData: CancelOrderByIdData): Promise<boolean> => {
+export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderByIdData: CancelOrderByIdData) => {
     // data:
     const {
         orderId   : orderIdRaw,
         paymentId : paymentIdRaw,
-        isExpired,
-        deleteOrder,
+        ...restCancelOrderData
     } = cancelOrderByIdData;
     const orderId   = orderIdRaw   || undefined;
     const paymentId = paymentIdRaw || undefined;
@@ -811,6 +816,5 @@ export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<t
     
     
     // order CANCELED => restore the `Product` stock and (optionally) delete the `order`:
-    await cancelOrder(prismaTransaction, { order, isExpired, deleteOrder });
-    return true;
+    return cancelOrder(prismaTransaction, { order, ...restCancelOrderData });
 }
