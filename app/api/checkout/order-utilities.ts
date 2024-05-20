@@ -528,6 +528,7 @@ export const commitDraftOrder = async (prismaTransaction: Parameters<Parameters<
     
     
     const [orderAndData] = await Promise.all([
+        // copy DraftOrder => (Real)Order:
         createOrder(prismaTransaction, {
             orderId                  : draftOrder.orderId,
             paymentId                : draftOrder.paymentId ?? undefined, // will be random_auto_generated if null => undefined
@@ -541,6 +542,8 @@ export const commitDraftOrder = async (prismaTransaction: Parameters<Parameters<
             payment                  : payment,
             paymentConfirmationToken : null,
         }),
+        
+        // delete DraftOrder:
         prismaTransaction.draftOrder.delete({
             where  : {
                 id : draftOrder.id,
@@ -579,6 +582,7 @@ export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<
     
     
     await Promise.all([
+        // revert Stock(s):
         ...(draftOrder.items.map(({productId, variantIds, quantity}) =>
             !productId
             ? undefined
@@ -593,6 +597,8 @@ export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<
                 },
             })
         )),
+        
+        // delete DraftOrder:
         prismaTransaction.draftOrder.delete({
             where  : {
                 id : draftOrder.id,
@@ -689,7 +695,26 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
     
     
     
-    const [, updatedOrder] = await Promise.all([
+    const [updatedOrder] = await Promise.all([
+        // update/delete (Real)Order:
+        deleteOrder
+        ? prismaTransaction.order.delete({
+            where  : {
+                id : order.id,
+            },
+            select : orderSelect,
+        })
+        : prismaTransaction.order.update({
+            where  : {
+                id : order.id,
+            },
+            data   : {
+                orderStatus : (isExpired ? 'EXPIRED' : 'CANCELED'),
+            },
+            select : orderSelect,
+        }),
+        
+        // revert Stock(s):
         ...(
             (
                 // Restore the `Product` stocks IF:
@@ -718,23 +743,6 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
             ))
             : []
         ),
-        
-        deleteOrder
-        ? prismaTransaction.order.delete({
-            where  : {
-                id : order.id,
-            },
-            select : orderSelect,
-        })
-        : prismaTransaction.order.update({
-            where  : {
-                id : order.id,
-            },
-            data   : {
-                orderStatus : (isExpired ? 'EXPIRED' : 'CANCELED'),
-            },
-            select : orderSelect,
-        }),
     ]);
     return updatedOrder;
 }
