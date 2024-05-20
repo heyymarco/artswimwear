@@ -4,29 +4,18 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useState,
 }                           from 'react'
 
 // reusable-ui core:
 import {
     // react helper hooks:
     useEvent,
-    EventHandler,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
     // simple-components:
     ButtonIcon,
-    
-    
-    
-    // dialog-components:
-    ModalExpandedChangeEvent,
     
     
     
@@ -82,13 +71,7 @@ const ButtonPaymentManual = (): JSX.Element|null => {
         doTransaction(async () => {
             try {
                 // createOrder:
-                const draftOrderDetail = await doPlaceOrder({paymentSource: 'manual', captcha});
-                if (!draftOrderDetail) return; // paid => no need redirection
-                
-                
-                
-                // then forward the authentication to backend_API to book the order (but not paid yet):
-                await doMakePayment(draftOrderDetail.orderId, /*paid:*/false);
+                await doPlaceOrder({paymentSource: 'manual', captcha});
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
