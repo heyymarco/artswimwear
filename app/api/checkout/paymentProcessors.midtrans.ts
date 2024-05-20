@@ -87,6 +87,8 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                 throw Error('unexpected API response');
                             } // if
                             
+                            const paymentCode  = midtransPaymentData.payment_code;
+                            
                             const redirectData = (
                                 midtransPaymentData.qr_string
                                 ??
@@ -122,6 +124,7 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                             
                             return {
                                 paymentId,
+                                paymentCode,
                                 redirectData, // redirectData for 3DS verification (credit_card) // undefined for gopay, shopeepay
                                 expires,
                             } satisfies AuthorizedFundData;
@@ -292,6 +295,7 @@ type MidtransPaymentOption =
     |'qris'
     |'gopay'
     |'shopeepay'
+    |'cstore'
 type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     &{
         payment_type          : TPayment;
@@ -524,6 +528,53 @@ export const midtransCreateOrderWithShopeepay = async (orderId: string, options:
                 url: 'https://wsa.uat.wallet.airpay.co.id/universal-link/wallet/pay?deep_and_deferred=1&token=dFhkbmR1bTBIamhW5n7WPz2OrczCvb8_XiHliB9nROFMVByjtwKMAl6G0Ax0cMr79M4hwjs'
             }
         ]
+    }
+    */
+}
+export const midtransCreateOrderWithIndomaret = async (orderLabel: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+    return midtransCreateOrderGeneric<'cstore'>({
+        payment_type         : 'cstore',
+        cstore               : {
+            store            : 'indomaret',
+            message          : orderLabel,
+        },
+    }, orderId, options);
+    /*
+    {
+        status_code: '201',
+        status_message: 'Success, cstore transaction is successful',
+        transaction_id: 'e3f0b1b5-1941-4ffb-9083-4ee5a96d878a',
+        order_id: 'order04',
+        gross_amount: '162500.00',
+        payment_type: 'cstore',
+        transaction_time: '2016-06-19 17:18:07',
+        transaction_status: 'pending',
+        payment_code: '25709650945026',
+        expiry_time: '2017-01-09 09:56:44'
+    }
+    */
+}
+export const midtransCreateOrderWithAlfamart  = async (orderLabel: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+    return midtransCreateOrderGeneric<'cstore'>({
+        payment_type             : 'cstore',
+        cstore                   : {
+            store                : 'alfamart',
+            alfamart_free_text_1 : orderLabel,
+        },
+    }, orderId, options);
+    /*
+    {
+        status_code: '201',
+        status_message: 'Success, cstore transaction is successful',
+        transaction_id: 'f1d381f8-7519-4139-b28f-81c6b3dc38ea',
+        order_id: 'order05',
+        gross_amount: '10500.00',
+        payment_type: 'cstore',
+        transaction_time: '2016-06-28 16:22:49',
+        transaction_status: 'pending',
+        fraud_status: 'accept',
+        payment_code: '010811223344',
+        store: 'alfamart'
     }
     */
 }

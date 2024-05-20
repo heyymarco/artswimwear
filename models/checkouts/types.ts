@@ -30,6 +30,8 @@ export type PaymentMethod =
     |'qris'
     |'gopay'
     |'shopeepay'
+    |'indomaret'
+    |'alfamart'
     |'manual'
 
 
@@ -68,6 +70,7 @@ export interface CreateOrderOptions {
 }
 export interface AuthorizedFundData {
     paymentId     : string
+    paymentCode  ?: string
     redirectData ?: string
     expires      ?: Date
 }
@@ -78,6 +81,8 @@ export interface PaymentDetail
             |'billingAddress'
         >
 {
+    paymentId ?: string
+    expiresAt ?: Payment['expiresAt']
 }
 
 

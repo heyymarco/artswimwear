@@ -53,6 +53,9 @@ import {
     ViewPaymentMethodRedirect,
 }                           from '../payments/ViewPaymentMethodRedirect'
 import {
+    ViewPaymentMethodOtc,
+}                           from '../payments/ViewPaymentMethodOtc'
+import {
     ViewPaymentMethodManual,
 }                           from '../payments/ViewPaymentMethodManual'
 
@@ -351,6 +354,74 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         <ViewPaymentMethodRedirect
                             paymentSource='shopeepay'
                             appName='ShopeePay'
+                        />
+                    </AccordionItem>
+                    
+                    <AccordionItem
+                        // accessibilities:
+                        label={<>
+                            <RadioDecorator />
+                            Pay at Indomaret Store
+                        </>}
+                        
+                        
+                        
+                        // behaviors:
+                        lazy={true}
+                        
+                        
+                        
+                        // components:
+                        listItemComponent={
+                            <ListItem
+                                // classes:
+                                className={styleSheet.optionEntryHeader}
+                            />
+                        }
+                        bodyComponent={
+                            <Section
+                                // classes:
+                                className={styleSheet.paymentEntryPaymentButton}
+                            />
+                        }
+                    >
+                        <ViewPaymentMethodOtc
+                            paymentSource='indomaret'
+                            storeName='Indomaret'
+                        />
+                    </AccordionItem>
+                    
+                    <AccordionItem
+                        // accessibilities:
+                        label={<>
+                            <RadioDecorator />
+                            Pay at Alfamart Store
+                        </>}
+                        
+                        
+                        
+                        // behaviors:
+                        lazy={true}
+                        
+                        
+                        
+                        // components:
+                        listItemComponent={
+                            <ListItem
+                                // classes:
+                                className={styleSheet.optionEntryHeader}
+                            />
+                        }
+                        bodyComponent={
+                            <Section
+                                // classes:
+                                className={styleSheet.paymentEntryPaymentButton}
+                            />
+                        }
+                    >
+                        <ViewPaymentMethodOtc
+                            paymentSource='alfamart'
+                            storeName='Alfamart'
                         />
                     </AccordionItem>
                     

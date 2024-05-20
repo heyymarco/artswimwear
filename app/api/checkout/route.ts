@@ -99,6 +99,8 @@ import {
     midtransCreateOrderWithQris,
     midtransCreateOrderWithGopay,
     midtransCreateOrderWithShopeepay,
+    midtransCreateOrderWithIndomaret,
+    midtransCreateOrderWithAlfamart,
     
     midtransCaptureFund,
     midtransCancelOrder,
@@ -182,7 +184,7 @@ export interface BillingData {
 }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'|'midtransQris'|'gopay'|'shopeepay'
+    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'|'midtransQris'|'gopay'|'shopeepay'|'indomaret'|'alfamart'
     cardToken     ?: string
     simulateOrder ?: boolean
     captcha       ?: string
@@ -383,8 +385,8 @@ router
         }, { status: 400 }); // handled with error
     } // if
     
-    const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
-    const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay', 'shopeepay'].includes(paymentSource);
+    const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
+    const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
     
     if (usePaypalGateway && !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(preferredCurrency)) {
         return NextResponse.json({
@@ -444,7 +446,7 @@ router
     
     
     //#region validate captcha for manual payment
-    if (paymentSource === 'manual') {
+    if (['manual', 'indomaret', 'alfamart'].includes(paymentSource)) {
         const captcha = placeOrderData.captcha;
         if (!captcha || (typeof(captcha) !== 'string') || !captcha) {
             return NextResponse.json({
@@ -1254,6 +1256,134 @@ router
                     authorizedOrPaymentDetail = authorizedOrPaymentDetailOrDeclined;
                 } // if
             }
+            else if (paymentSource === 'indomaret') {
+                const orderLabel : string = `${shippingFirstName} ${shippingLastName}`.slice(0, 20);
+                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithIndomaret(orderLabel, orderId, {
+                    preferredCurrency,
+                    totalCostConverted,
+                    totalProductPriceConverted,
+                    totalShippingCostConverted,
+                    
+                    hasShippingAddress,
+                    shippingFirstName,
+                    shippingLastName,
+                    shippingPhone,
+                    shippingAddress,
+                    shippingCity,
+                    shippingZone,
+                    shippingZip,
+                    shippingCountry,
+                    
+                    hasBillingAddress,
+                    billingFirstName,
+                    billingLastName,
+                    billingPhone,
+                    billingAddress,
+                    billingCity,
+                    billingZone,
+                    billingZip,
+                    billingCountry,
+                    
+                    detailedItems,
+                });
+                
+                if (authorizedOrPaymentDetailOrDeclined === null) {
+                    // payment DECLINED:
+                    
+                    return {
+                        orderId                   : undefined, // undefined => declined
+                        authorizedOrPaymentDetail : undefined,
+                        paymentDetail             : undefined,
+                        newOrder                  : undefined,
+                    };
+                }
+                else if (isAuthorizedFundData(authorizedOrPaymentDetailOrDeclined)) {
+                    const {
+                        paymentId,
+                        paymentCode,
+                        expires,
+                    } = authorizedOrPaymentDetailOrDeclined;
+                    
+                    authorizedOrPaymentDetail = {
+                        type       : 'MANUAL',
+                        brand      : 'indomaret',
+                        identifier : paymentCode ?? '',
+                        paymentId  : paymentId,
+                        expiresAt  : expires,
+                        
+                        amount     : 0,
+                        fee        : 0,
+                    } satisfies PaymentDetail;
+                }
+                else {
+                    console.log('unexpected response: ', authorizedOrPaymentDetail);
+                    throw Error('unexpected API response');
+                } // if
+            }
+            else if (paymentSource === 'alfamart') {
+                const orderLabel : string = `${shippingFirstName} ${shippingLastName}`.slice(0, 20);
+                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithAlfamart(orderLabel, orderId, {
+                    preferredCurrency,
+                    totalCostConverted,
+                    totalProductPriceConverted,
+                    totalShippingCostConverted,
+                    
+                    hasShippingAddress,
+                    shippingFirstName,
+                    shippingLastName,
+                    shippingPhone,
+                    shippingAddress,
+                    shippingCity,
+                    shippingZone,
+                    shippingZip,
+                    shippingCountry,
+                    
+                    hasBillingAddress,
+                    billingFirstName,
+                    billingLastName,
+                    billingPhone,
+                    billingAddress,
+                    billingCity,
+                    billingZone,
+                    billingZip,
+                    billingCountry,
+                    
+                    detailedItems,
+                });
+                
+                if (authorizedOrPaymentDetailOrDeclined === null) {
+                    // payment DECLINED:
+                    
+                    return {
+                        orderId                   : undefined, // undefined => declined
+                        authorizedOrPaymentDetail : undefined,
+                        paymentDetail             : undefined,
+                        newOrder                  : undefined,
+                    };
+                }
+                else if (isAuthorizedFundData(authorizedOrPaymentDetailOrDeclined)) {
+                    const {
+                        paymentId,
+                        paymentCode,
+                        expires,
+                    } = authorizedOrPaymentDetailOrDeclined;
+                    
+                    authorizedOrPaymentDetail = {
+                        type       : 'MANUAL',
+                        brand      : 'alfamart',
+                        identifier : paymentCode ?? '',
+                        paymentId  : paymentId,
+                        expiresAt  : expires,
+                        
+                        amount     : 0,
+                        fee        : 0,
+                    } satisfies PaymentDetail;
+                }
+                else {
+                    console.log('unexpected response: ', authorizedOrPaymentDetail);
+                    throw Error('unexpected API response');
+                } // if
+            }
             else if (paymentSource === 'manual') {
                 authorizedOrPaymentDetail = {
                     type       : 'MANUAL',
@@ -1363,7 +1493,7 @@ router
                 ? createOrder(prismaTransaction, {
                     // primary data:
                     orderId                  : orderId,
-                    paymentId                : undefined, // will be random_auto_generated
+                    paymentId                : authorizedOrPaymentDetail.paymentId ?? undefined, // will be random_auto_generated if null|undefined
                     items                    : orderItemsData,
                     preferredCurrency        : preferredCurrencyData,
                     shippingAddress          : shippingAddressData,
@@ -1373,7 +1503,13 @@ router
                     // extended data:
                     customerOrGuest          : customerOrGuest,
                     payment                  : {
-                        ...authorizedOrPaymentDetail /* as PaymentDetail */,
+                        ...((): PaymentDetail => {
+                            const {
+                                paymentId : _paymentId, // remove
+                                ...restAuthorizedOrPaymentDetail
+                            } = authorizedOrPaymentDetail;
+                            return restAuthorizedOrPaymentDetail /* as PaymentDetail */;
+                        })(),
                         expiresAt            : null, // TODO set the expires date for payment with indomaret|alfamart
                         billingAddress       : billingAddressData,
                     } satisfies Payment,
