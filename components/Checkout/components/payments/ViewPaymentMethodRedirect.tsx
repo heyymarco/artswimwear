@@ -65,51 +65,6 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     
     // states:
     const {
-        // shipping data:
-        shippingFirstName : _shippingFirstName, // not implemented yet, because billingFirstName is not implemented
-        shippingLastName  : _shippingLastName,  // not implemented yet, because billingLastName  is not implemented
-        
-        shippingPhone     : _shippingPhone,     // not implemented yet, because billingPhone     is not implemented
-        
-        shippingAddress,
-        shippingCity,
-        shippingZone,
-        shippingZip,
-        shippingCountry,
-        
-        
-        
-        // billing data:
-        billingAsShipping,
-        
-        billingFirstName  : _billingFirstName,  // not implemented, already to use cardholderName
-        billingLastName   : _billingLastName,   // not implemented, already to use cardholderName
-        
-        billingPhone      : _billingPhone,      // not implemented yet
-        
-        billingAddress,
-        billingCity,
-        billingZone,
-        billingZip,
-        billingCountry,
-        
-        
-        
-        // payment data:
-        appropriatePaymentProcessor,
-        
-        
-        
-        // sections:
-        paymentCardSectionRef,
-        
-        
-        
-        // fields:
-        cardholderInputRef,
-        
-        
-        
         // actions:
         gotoFinished,
         
