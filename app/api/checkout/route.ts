@@ -649,7 +649,7 @@ router
     let paymentDetail             : PaymentDetail|undefined;
     let newOrder                  : OrderAndData|undefined = undefined;
     try {
-        const isPaid = (paymentSource !== 'manual');
+        const isPaid = !['manual', 'indomaret', 'alfamart'].includes(paymentSource);
         const paymentConfirmationToken = (
             isPaid
             ? null // no need for `paymentConfirmation`, because the order is paid_immediately
