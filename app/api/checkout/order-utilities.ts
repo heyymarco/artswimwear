@@ -169,6 +169,110 @@ export const findDraftOrderById = async <TSelect extends Prisma.DraftOrderSelect
 
 
 
+const orderAndDataSelect = {
+    // records:
+    id                : true,
+    createdAt         : true,
+    updatedAt         : true,
+    
+    // data:
+    orderId           : true,
+    paymentId         : true,
+    
+    orderStatus       : true,
+    orderTrouble      : true,
+    cancelationReason : true,
+    
+    preferredCurrency : true,
+    
+    shippingAddress   : true,
+    shippingCost      : true,
+    
+    payment           : true,
+    
+    // relations:
+    items : {
+        select : {
+            // data:
+            price          : true,
+            shippingWeight : true,
+            quantity       : true,
+            
+            // relations:
+            product        : {
+                select : {
+                    name   : true,
+                    images : true,
+                    
+                    // relations:
+                    variantGroups : {
+                        select : {
+                            variants : {
+                                // always allow to access DRAFT variants when the customer is already ordered:
+                                // where    : {
+                                //     visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                // },
+                                select : {
+                                    id   : true,
+                                    
+                                    name : true,
+                                },
+                                orderBy : {
+                                    sort : 'asc',
+                                },
+                            },
+                        },
+                        orderBy : {
+                            sort : 'asc',
+                        },
+                    },
+                },
+            },
+            variantIds     : true,
+        },
+    },
+    
+    customerId         : true,
+    customer           : {
+        select : {
+            name  : true,
+            email : true,
+            customerPreference : {
+                select : {
+                    marketingOpt : true,
+                },
+            },
+        },
+    },
+    
+    guestId            : true,
+    guest              : {
+        select : {
+            name  : true,
+            email : true,
+            guestPreference : {
+                select : {
+                    marketingOpt : true,
+                },
+            },
+        },
+    },
+    
+    shippingProviderId : true,
+    shippingProvider   : {
+        select : {
+            name            : true, // optional for displaying email report
+            
+            weightStep      : true, // required for calculating `getMatchingShipping()`
+            
+            estimate        : true, // optional for displaying email report
+            shippingRates   : true, // required for calculating `getMatchingShipping()`
+            
+            useSpecificArea : true, // required for calculating `getMatchingShipping()`
+            countries       : true, // required for calculating `getMatchingShipping()`
+        },
+    },
+} satisfies Prisma.OrderSelect;
 export interface CreateOrderDataBasic {
     // primary data:
     orderId                  : string
@@ -309,83 +413,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 },
             },
         },
-        include : {
-            items : {
-                select : {
-                    // data:
-                    price          : true,
-                    shippingWeight : true,
-                    quantity       : true,
-                    
-                    // relations:
-                    product        : {
-                        select : {
-                            name   : true,
-                            images : true,
-                            
-                            // relations:
-                            variantGroups : {
-                                select : {
-                                    variants : {
-                                        // always allow to access DRAFT variants when the customer is already ordered:
-                                        // where    : {
-                                        //     visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                                        // },
-                                        select : {
-                                            id   : true,
-                                            
-                                            name : true,
-                                        },
-                                        orderBy : {
-                                            sort : 'asc',
-                                        },
-                                    },
-                                },
-                                orderBy : {
-                                    sort : 'asc',
-                                },
-                            },
-                        },
-                    },
-                    variantIds     : true,
-                },
-            },
-            shippingProvider : {
-                select : {
-                    name            : true, // optional for displaying email report
-                    
-                    weightStep      : true, // required for calculating `getMatchingShipping()`
-                    
-                    estimate        : true, // optional for displaying email report
-                    shippingRates   : true, // required for calculating `getMatchingShipping()`
-                    
-                    useSpecificArea : true, // required for calculating `getMatchingShipping()`
-                    countries       : true, // required for calculating `getMatchingShipping()`
-                },
-            },
-            customer : {
-                select : {
-                    name  : true,
-                    email : true,
-                    customerPreference : {
-                        select : {
-                            marketingOpt : true,
-                        },
-                    },
-                },
-            },
-            guest    : {
-                select : {
-                    name  : true,
-                    email : true,
-                    guestPreference : {
-                        select : {
-                            marketingOpt : true,
-                        },
-                    },
-                },
-            },
-        },
+        select : orderAndDataSelect,
     });
     const shippingAddressData  = newOrder.shippingAddress;
     const shippingProviderData = newOrder.shippingProvider;
@@ -795,4 +823,85 @@ export const cancelOrder = async <TSelect extends Prisma.OrderSelect>(prismaTran
         ),
     ]);
     return updatedOrder;
+}
+
+
+
+export const commitOrderSelect = {
+    // records:
+    id : true,
+} satisfies Prisma.OrderSelect;
+export type CommitOrder = Pick<Order,
+    // records:
+    |'id'
+>
+export interface CommitOrderData {
+    order   : CommitOrder
+    payment : Pick<Payment, 'amount'|'fee'> & Partial<Omit<Payment, 'amount'|'fee'>>
+}
+export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], commitOrderData : CommitOrderData): Promise<OrderAndData> => {
+    // data:
+    const {
+        order,
+        payment,
+    } = commitOrderData;
+    
+    
+    const {customer, guest, ...newOrder} = await prismaTransaction.order.update({
+        where  : {
+            id : order.id,
+        },
+        data   : {
+            payment : {
+                update : {
+                    type : 'MANUAL_PAID',
+                    ...payment,
+                },
+            },
+        },
+        select : orderAndDataSelect,
+    });
+    const shippingAddressData  = newOrder.shippingAddress;
+    const shippingProviderData = newOrder.shippingProvider;
+    return {
+        ...newOrder,
+        items: newOrder.items.map((item) => ({
+            ...item,
+            product : !!item.product ? {
+                name          : item.product.name,
+                image         : item.product.images?.[0] ?? null,
+                imageBase64   : undefined,
+                imageId       : undefined,
+                
+                // relations:
+                variantGroups : item.product.variantGroups.map(({variants}) => variants),
+            } : null,
+        })),
+        shippingProvider : (
+            (shippingAddressData && shippingProviderData)
+            ? getMatchingShipping(shippingProviderData, { city: shippingAddressData.city, zone: shippingAddressData.zone, country: shippingAddressData.country })
+            : null
+        ),
+        customerOrGuest : (
+            !!customer
+            ? (() => {
+                const {customerPreference: preference, ...customerData} = customer;
+                return {
+                    ...customerData,
+                    preference,
+                };
+            })()
+            : (
+                !!guest
+                ? (() => {
+                    const {guestPreference: preference, ...guestData} = guest;
+                    return {
+                        ...guestData,
+                        preference,
+                    };
+                })()
+                : null
+            )
+        ),
+    } satisfies OrderAndData;
 }
