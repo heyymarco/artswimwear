@@ -106,48 +106,58 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         case false: {   // Transaction was deleted due to canceled or expired.  
             const paymentId = midtransPaymentData.transaction_id;
             if (paymentId) {
-                await prisma.$transaction(async (prismaTransaction): Promise<void> => {
-                    const draftOrderReverted : boolean = await (async () : Promise<boolean> => {
-                        const draftOrder = await findDraftOrderById(prismaTransaction, {
-                            orderId     : orderId,
-                            paymentId   : paymentId,
+                await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
+                    return (
+                        // 1st step: search on DraftOrder(s):
+                        await (async () : Promise<boolean> => {
+                            const draftOrder = await findDraftOrderById(prismaTransaction, {
+                                orderId     : orderId,
+                                paymentId   : paymentId,
+                                
+                                orderSelect : revertDraftOrderSelect,
+                            });
+                            if (!draftOrder) return false; // the draftOrder is not found => ignore
                             
-                            orderSelect : revertDraftOrderSelect,
-                        });
-                        if (!draftOrder) return false; // the draftOrder is not found => ignore
-                        
-                        
-                        
-                        // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
-                        await revertDraftOrder(prismaTransaction, {
-                            draftOrder : draftOrder,
-                        });
-                        return true;
-                    })();
-                    
-                    
-                    
-                    if (!draftOrderReverted) {
-                        const order = await findOrderById(prismaTransaction, {
-                            orderId     : orderId,
-                            paymentId   : paymentId,
                             
-                            orderSelect : cancelOrderSelect,
-                        });
-                        if (!order) return; // the order is not found => ignore
-                        if (['CANCELED', 'EXPIRED'].includes(order.orderStatus)) return; // already 'CANCELED'|'EXPIRED' => ignore
-                        if (order.payment.type !== 'MANUAL') return; // not 'MANUAL' payment => ignore
-                        
-                        
-                        
-                        // (pending)Order EXPIRED => restore the `Product` stock and mark Order as 'EXPIRED':
-                        await cancelOrder(prismaTransaction, {
-                            order             : order,
-                            isExpired         : true, // mark Order as 'EXPIRED'
                             
-                            orderSelect       : { id: true },
-                        });
-                    } // if
+                            // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
+                            await revertDraftOrder(prismaTransaction, {
+                                draftOrder : draftOrder,
+                            });
+                            return true;
+                        })()
+                        
+                        ||
+                        
+                        // 2nd step: search on Order(s):
+                        await (async () : Promise<boolean> => {
+                            const order = await findOrderById(prismaTransaction, {
+                                orderId     : orderId,
+                                paymentId   : paymentId,
+                                
+                                orderSelect : cancelOrderSelect,
+                            });
+                            if (!order) return false; // the order is not found => ignore
+                            if (['CANCELED', 'EXPIRED'].includes(order.orderStatus)) return false; // already 'CANCELED'|'EXPIRED' => ignore
+                            if (order.payment.type !== 'MANUAL') return false; // not 'MANUAL' payment => ignore
+                            
+                            
+                            
+                            // (pending)Order EXPIRED => restore the `Product` stock and mark Order as 'EXPIRED':
+                            await cancelOrder(prismaTransaction, {
+                                order             : order,
+                                isExpired         : true, // mark Order as 'EXPIRED'
+                                
+                                orderSelect       : { id: true },
+                            });
+                            return true;
+                        })()
+                        
+                        ||
+                        
+                        // 3rd step: not found
+                        false
+                    );
                 });
             } // if
             
@@ -173,47 +183,54 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             const newOrder : OrderAndData|null = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
-                const draftOrder_OrderAndData : OrderAndData|null = await (async (): Promise<OrderAndData|null> => {
-                    const draftOrder = await findDraftOrderById(prismaTransaction, {
-                        orderId     : orderId,
+                return (
+                    // 1st step: search on DraftOrder(s):
+                    await (async (): Promise<OrderAndData|null> => {
+                        const draftOrder = await findDraftOrderById(prismaTransaction, {
+                            orderId     : orderId,
+                            
+                            orderSelect : commitDraftOrderSelect,
+                        });
+                        if (!draftOrder) return null;
                         
-                        orderSelect : commitDraftOrderSelect,
-                    });
-                    if (!draftOrder) return null;
-                    
-                    
-                    
-                    // payment APPROVED => move the `draftOrder` to `order`:
-                    return await commitDraftOrder(prismaTransaction, {
-                        draftOrder         : draftOrder,
-                        payment            : {
-                            ...paymentDetail,
-                            expiresAt      : null, // paid, no more payment expiry date
-                            billingAddress : null,
-                        },
-                    });
-                })();
-                if (draftOrder_OrderAndData) return draftOrder_OrderAndData;
-                
-                
-                
-                const order_OrderAndData : OrderAndData|null = await (async (): Promise<OrderAndData|null> => {
-                    const order = await findOrderById(prismaTransaction, {
-                        orderId     : orderId,
                         
-                        orderSelect : commitOrderSelect,
-                    });
-                    if (!order) return null;
+                        
+                        // payment APPROVED => move the `draftOrder` to `order`:
+                        return await commitDraftOrder(prismaTransaction, {
+                            draftOrder         : draftOrder,
+                            payment            : {
+                                ...paymentDetail,
+                                expiresAt      : null, // paid, no more payment expiry date
+                                billingAddress : null,
+                            },
+                        });
+                    })()
                     
+                    ??
                     
+                    // 2nd step: search on Order(s):
+                    await (async (): Promise<OrderAndData|null> => {
+                        const order = await findOrderById(prismaTransaction, {
+                            orderId     : orderId,
+                            
+                            orderSelect : commitOrderSelect,
+                        });
+                        if (!order) return null;
+                        
+                        
+                        
+                        // payment APPROVED => mark the `order` as 'MANUAL_PAID':
+                        return await commitOrder(prismaTransaction, {
+                            order   : order,
+                            payment : paymentDetail,
+                        });
+                    })()
                     
-                    // payment APPROVED => mark the `order` as 'MANUAL_PAID':
-                    return await commitOrder(prismaTransaction, {
-                        order   : order,
-                        payment : paymentDetail,
-                    });
-                })();
-                return order_OrderAndData;
+                    ??
+                    
+                    // 3rd step: not found
+                    null
+                );
             });
             //#endregion save the database
             
