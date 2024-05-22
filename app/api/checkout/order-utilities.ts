@@ -661,6 +661,63 @@ export const revertDraftOrderById = async (prismaTransaction: Parameters<Paramet
 
 
 
+export interface FindOrderByIdData<TSelect extends Prisma.OrderSelect> {
+    id          ?: string|null
+    orderId     ?: string|null
+    paymentId   ?: string|null
+    
+    orderSelect  : TSelect
+}
+export const findOrderById = async <TSelect extends Prisma.OrderSelect>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findOrderByIdData: FindOrderByIdData<TSelect>) => {
+    // data:
+    const {
+        id        : idRaw,
+        orderId   : orderIdRaw,
+        paymentId : paymentIdRaw,
+        
+        orderSelect,
+    } = findOrderByIdData;
+    const id        = idRaw        || undefined;
+    const orderId   = orderIdRaw   || undefined;
+    const paymentId = paymentIdRaw || undefined;
+    if (!id && !orderId && !paymentId) return null;
+    
+    
+    
+    return await prismaTransaction.order.findUnique({
+        where  : {
+            id        : id,
+            orderId   : orderId,
+            paymentId : paymentId,
+        },
+        select : orderSelect,
+    });
+}
+
+
+
+export const cancelOrderSelect = {
+    id                     : true,
+    
+    orderId                : true,
+    
+    orderStatus            : true,
+    
+    payment : {
+        select : {
+            type           : true,
+        },
+    },
+    
+    items : {
+        select : {
+            productId      : true,
+            variantIds     : true,
+            
+            quantity       : true,
+        },
+    },
+} satisfies Prisma.OrderSelect;
 type CancelOrder = Pick<Order,
     |'id'
     
@@ -678,23 +735,23 @@ type CancelOrder = Pick<Order,
         |'quantity'
     >[]
 }
-export interface CancelOrderData {
+export interface CancelOrderData<TSelect extends Prisma.OrderSelect> {
     order              : CancelOrder
     isExpired         ?: boolean
     deleteOrder       ?: boolean
-    orderSelect       ?: Prisma.OrderSelect
     cancelationReason ?: WysiwygEditorState|null
+    
+    orderSelect        : TSelect
 }
-export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderData : CancelOrderData) => {
+export const cancelOrder = async <TSelect extends Prisma.OrderSelect>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderData : CancelOrderData<TSelect>) => {
     // data:
     const {
         order,
         isExpired   = false,
         deleteOrder = false,
-        orderSelect = {
-            id : true,
-        },
         cancelationReason,
+        
+        orderSelect,
     } = cancelOrderData;
     
     
@@ -750,75 +807,4 @@ export const cancelOrder = async (prismaTransaction: Parameters<Parameters<typeo
         ),
     ]);
     return updatedOrder;
-}
-
-export interface CancelOrderByIdData extends Omit<CancelOrderData, 'order'> {
-    id        ?: string|null
-    orderId   ?: string|null
-    paymentId ?: string|null
-}
-export const cancelOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderByIdData: CancelOrderByIdData) => {
-    // data:
-    const {
-        id        : idRaw,
-        orderId   : orderIdRaw,
-        paymentId : paymentIdRaw,
-        ...restCancelOrderData
-    } = cancelOrderByIdData;
-    const id        = idRaw        || undefined;
-    const orderId   = orderIdRaw   || undefined;
-    const paymentId = paymentIdRaw || undefined;
-    if (!id && !orderId && !paymentId) return false;
-    
-    
-    
-    const requiredSelect = {
-        id                     : true,
-        
-        orderId                : true,
-        
-        orderStatus            : true,
-        
-        payment : {
-            select : {
-                type           : true,
-            },
-        },
-        
-        items : {
-            select : {
-                productId      : true,
-                variantIds     : true,
-                
-                quantity       : true,
-            },
-        },
-    };
-    const order = await prismaTransaction.order.findUnique({
-        where  : {
-            id        : id,
-            orderId   : orderId,
-            paymentId : paymentId,
-            
-            // NOT already marked 'CANCELED'|'EXPIRED':
-            AND : [
-                { orderStatus : { not: 'CANCELED' } },
-                { orderStatus : { not: 'EXPIRED'  } },
-            ],
-            
-            // only manual payment is cancelable:
-            payment : {
-                is : {
-                    type : 'MANUAL',
-                },
-            },
-        },
-        select : requiredSelect,
-    });
-    if (!order) return false; // the order is not found -or- the order is already DELETED
-    
-    
-    
-    // order CANCELED => restore the `Product` stock and (optionally) delete the `order`:
-    return cancelOrder(prismaTransaction, { order, ...restCancelOrderData });
 }
