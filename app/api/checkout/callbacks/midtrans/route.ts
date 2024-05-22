@@ -171,7 +171,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             const newOrder = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
-                const draftOrder_OrderAndData = (async (): Promise<OrderAndData|null> => {
+                const draftOrder_OrderAndData = await (async (): Promise<OrderAndData|null> => {
                     const draftOrder = await findDraftOrderById(prismaTransaction, {
                         orderId     : orderId,
                         
@@ -195,7 +195,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                 
                 
                 
-                const order_OrderAndData = (async (): Promise<OrderAndData|null> => {
+                const order_OrderAndData = await (async (): Promise<OrderAndData|null> => {
                     const order = await findOrderById(prismaTransaction, {
                         orderId     : orderId,
                         
