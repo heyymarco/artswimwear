@@ -30,6 +30,11 @@ import {
     commitDraftOrder,
     revertDraftOrderSelect,
     revertDraftOrder,
+    
+    findOrderById,
+    
+    cancelOrderSelect,
+    cancelOrder,
 }                           from '../../order-utilities'
 import {
     sendConfirmationEmail,
@@ -98,7 +103,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         case false: {   // Transaction was deleted due to canceled or expired.  
             const paymentId = midtransPaymentData.transaction_id;
             if (paymentId) {
-                await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
+                const draftOrderReverted = await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
                     const draftOrder = await findDraftOrderById(prismaTransaction, {
                         orderId     : orderId,
                         paymentId   : paymentId,
@@ -113,6 +118,32 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                     await revertDraftOrder(prismaTransaction, { draftOrder });
                     return true;
                 });
+                
+                
+                
+                if (!draftOrderReverted) {
+                    await prisma.$transaction(async (prismaTransaction): Promise<{ id: string }|null> => {
+                        const order = await findOrderById(prismaTransaction, {
+                            orderId     : orderId,
+                            paymentId   : paymentId,
+                            
+                            orderSelect : cancelOrderSelect,
+                        });
+                        if (!order) return null; // the order is not found => ignore
+                        if (['CANCELED', 'EXPIRED'].includes(order.orderStatus)) return null; // already 'CANCELED'|'EXPIRED' => ignore
+                        if (order.payment.type !== 'MANUAL') return null; // not 'MANUAL' payment => ignore
+                        
+                        
+                        
+                        // (pending)Order EXPIRED => restore the `Product` stock and mark Order as 'EXPIRED':
+                        return await cancelOrder(prismaTransaction, {
+                            order             : order,
+                            isExpired         : true, // mark Order as 'EXPIRED'
+                            
+                            orderSelect       : { id: true },
+                        });
+                    });
+                } // if
             } // if
             
             
