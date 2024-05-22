@@ -236,6 +236,15 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                 
                                 
                                 
+                                /* PAY WITH CSTORE */
+                                case 'cstore': return {
+                                    type       : 'MANUAL_PAID',
+                                    brand      : midtransPaymentData.store,
+                                    identifier : midtransPaymentData.payment_code,
+                                };
+                                
+                                
+                                
                                 /* PAY WITH OTHER */
                                 default : return {
                                     type       : 'CUSTOM',

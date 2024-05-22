@@ -35,6 +35,9 @@ import {
     
     cancelOrderSelect,
     cancelOrder,
+    
+    commitOrderSelect,
+    commitOrder,
 }                           from '../../order-utilities'
 import {
     sendConfirmationEmail,
@@ -168,24 +171,47 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             const newOrder = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
-                const draftOrder = await findDraftOrderById(prismaTransaction, {
-                    orderId     : orderId,
+                const draftOrder_OrderAndData = (async (): Promise<OrderAndData|null> => {
+                    const draftOrder = await findDraftOrderById(prismaTransaction, {
+                        orderId     : orderId,
+                        
+                        orderSelect : commitDraftOrderSelect,
+                    });
+                    if (!draftOrder) return null;
                     
-                    orderSelect : commitDraftOrderSelect,
-                });
-                if (!draftOrder) return null;
+                    
+                    
+                    // payment APPROVED => move the `draftOrder` to `order`:
+                    return await commitDraftOrder(prismaTransaction, {
+                        draftOrder         : draftOrder,
+                        payment            : {
+                            ...paymentDetail,
+                            expiresAt      : null, // paid, no more payment expiry date
+                            billingAddress : null,
+                        },
+                    });
+                })();
+                if (draftOrder_OrderAndData) return draftOrder_OrderAndData;
                 
                 
                 
-                // payment APPROVED => move the `draftOrder` to `order`:
-                return await commitDraftOrder(prismaTransaction, {
-                    draftOrder         : draftOrder,
-                    payment            : {
-                        ...paymentDetail,
-                        expiresAt      : null, // paid, no more payment expiry date
-                        billingAddress : null,
-                    },
-                });
+                const order_OrderAndData = (async (): Promise<OrderAndData|null> => {
+                    const order = await findOrderById(prismaTransaction, {
+                        orderId     : orderId,
+                        
+                        orderSelect : commitOrderSelect,
+                    });
+                    if (!order) return null;
+                    
+                    
+                    
+                    // payment APPROVED => mark the `order` as 'MANUAL_PAID':
+                    return await commitOrder(prismaTransaction, {
+                        order   : order,
+                        payment : paymentDetail,
+                    });
+                })();
+                return order_OrderAndData;
             });
             //#endregion save the database
             

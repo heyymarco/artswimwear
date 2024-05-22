@@ -854,7 +854,8 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
         data   : {
             payment : {
                 update : {
-                    type : 'MANUAL_PAID',
+                    type      : 'MANUAL_PAID',
+                    expiresAt : null, // paid, no more payment expiry date
                     ...payment,
                 },
             },
