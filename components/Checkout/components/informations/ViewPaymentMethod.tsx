@@ -34,7 +34,7 @@ const ViewPaymentMethod = (): JSX.Element|null => {
     return (
         <>
             {
-                (!!paymentBrand && ['amex', 'discover', 'jcb', 'maestro', 'mastercard', 'paypal', 'visa', 'gopay', 'shopeepay', 'dana', 'ovo', 'tcash', 'linkaja'].includes(paymentBrand.toLowerCase()))
+                (!!paymentBrand && ['amex', 'discover', 'jcb', 'maestro', 'mastercard', 'paypal', 'visa', 'gopay', 'shopeepay', 'dana', 'ovo', 'tcash', 'linkaja', 'indomaret', 'alfamart'].includes(paymentBrand.toLowerCase()))
                 ? <img
                     // appearances:
                     alt={paymentBrand}

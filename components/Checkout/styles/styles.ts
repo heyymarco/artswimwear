@@ -275,20 +275,25 @@ export default () => {
             // children:
             ...children('.paymentProvider', {
                 // sizes:
-                width          : 'auto',
-                height         : '26px',
+                width           : 'auto',
+                height          : '26px',
+                
+                
+                
+                // backgrounds:
+                backgroundColor : 'white',
                 
                 
                 
                 // borders:
-                border         : borderVars.border,
-                borderWidth    : borders.defaultWidth,
-                borderRadius   : borderRadiuses.sm,
+                border          : borderVars.border,
+                borderWidth     : borders.defaultWidth,
+                borderRadius    : borderRadiuses.sm,
                 
                 
                 
                 // spacings:
-                padding        : spacers.xs,
+                padding         : spacers.xs,
             }),
             ...children(['.customerName', '.shippingEstimate', '.paymentIdentifier'], {
                 // typos:
