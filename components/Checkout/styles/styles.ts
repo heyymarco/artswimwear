@@ -257,12 +257,12 @@ export default () => {
             }),
         }),
         scope('tableDataComposite', {
-            alignItems         : 'center', // center the each item vertically
-            justifyItems       : 'center', // center the each item horizontally
-            
-            gridAutoFlow       : 'row',    // stack the items horizontally
+            // layouts:
+            alignItems         : 'center', // center the each item vertically   (desktop mode)
+            justifyItems       : 'center', // center the each item horizontally (mobile mode)
+            gridAutoFlow       : 'row',    // stack the items vertically        (mobile mode)
             ...ifScreenWidthAtLeast('sm', {
-                gridAutoFlow   : 'column', // stack the items vertically
+                gridAutoFlow   : 'column', // stack the items horizontally      (desktop mode)
             }),
             
             
