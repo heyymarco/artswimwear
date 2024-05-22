@@ -107,7 +107,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             const paymentId = midtransPaymentData.transaction_id;
             if (paymentId) {
                 await prisma.$transaction(async (prismaTransaction): Promise<void> => {
-                    const draftOrderReverted = await (async () : Promise<boolean> => {
+                    const draftOrderReverted : boolean = await (async () : Promise<boolean> => {
                         const draftOrder = await findDraftOrderById(prismaTransaction, {
                             orderId     : orderId,
                             paymentId   : paymentId,
@@ -123,7 +123,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                             draftOrder : draftOrder,
                         });
                         return true;
-                    });
+                    })();
                     
                     
                     
@@ -173,7 +173,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             const newOrder = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
-                const draftOrder_OrderAndData = await (async (): Promise<OrderAndData|null> => {
+                const draftOrder_OrderAndData : OrderAndData|null = await (async (): Promise<OrderAndData|null> => {
                     const draftOrder = await findDraftOrderById(prismaTransaction, {
                         orderId     : orderId,
                         
