@@ -1510,7 +1510,7 @@ router
                             } = authorizedOrPaymentDetail;
                             return restAuthorizedOrPaymentDetail /* as PaymentDetail */;
                         })(),
-                        expiresAt            : null, // TODO set the expires date for payment with indomaret|alfamart
+                        expiresAt            : authorizedOrPaymentDetail.expiresAt ?? null,
                         billingAddress       : billingAddressData,
                     } satisfies Payment,
                     paymentConfirmationToken : paymentConfirmationToken,
