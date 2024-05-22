@@ -1985,7 +1985,9 @@ Updating the confirmation is not required.`,
             
             
             // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
-            await revertDraftOrder(prismaTransaction, { draftOrder });
+            await revertDraftOrder(prismaTransaction, {
+                draftOrder : draftOrder,
+            });
             return true;
         });
         
@@ -2077,7 +2079,9 @@ Updating the confirmation is not required.`,
             if (!draftOrder) throw 'DRAFT_ORDER_NOT_FOUND';
             if (draftOrder.expiresAt <= new Date()) {
                 // draftOrder EXPIRED => restore the `Product` stock and delete the `draftOrder`:
-                await revertDraftOrder(prismaTransaction, { draftOrder });
+                await revertDraftOrder(prismaTransaction, {
+                    draftOrder : draftOrder,
+                });
                 
                 
                 
@@ -2154,7 +2158,9 @@ Updating the confirmation is not required.`,
             }
             else {
                 // payment DECLINED => restore the `Product` stock and delete the `draftOrder`:
-                await revertDraftOrder(prismaTransaction, { draftOrder });
+                await revertDraftOrder(prismaTransaction, {
+                    draftOrder : draftOrder,
+                });
             } // if
             //#endregion save the database
             

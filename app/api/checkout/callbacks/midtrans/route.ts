@@ -118,7 +118,9 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                     
                     
                     // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
-                    await revertDraftOrder(prismaTransaction, { draftOrder });
+                    await revertDraftOrder(prismaTransaction, {
+                        draftOrder : draftOrder,
+                    });
                     return true;
                 });
                 
