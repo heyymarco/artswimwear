@@ -138,15 +138,19 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
 
 
 
-export interface FindDraftOrderByIdData {
-    orderId   ?: string|null
-    paymentId ?: string|null
+export interface FindDraftOrderByIdData<TSelect extends Prisma.DraftOrderSelect> {
+    orderId     ?: string|null
+    paymentId   ?: string|null
+    
+    orderSelect  : TSelect
 }
-export const findDraftOrderById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findDraftOrderByIdData: FindDraftOrderByIdData): Promise<(CommitDraftOrder & RevertDraftOrder)|null> => {
+export const findDraftOrderById = async <TSelect extends Prisma.DraftOrderSelect>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findDraftOrderByIdData: FindDraftOrderByIdData<TSelect>) => {
     // data:
     const {
         orderId   : orderIdRaw,
         paymentId : paymentIdRaw,
+        
+        orderSelect,
     } = findDraftOrderByIdData;
     const orderId   = orderIdRaw   || undefined;
     const paymentId = paymentIdRaw || undefined;
@@ -154,53 +158,12 @@ export const findDraftOrderById = async (prismaTransaction: Parameters<Parameter
     
     
     
-    const requiredSelect = {
-        id                     : true,
-        expiresAt              : true,
-        
-        orderId                : true,
-        paymentId              : true,
-        
-        preferredCurrency      : true,
-        
-        shippingAddress        : true,
-        shippingCost           : true,
-        shippingProviderId     : true,
-        
-        customerId             : true,
-        guestId                : true,
-        // customer               : {
-        //     select : {
-        //         // data:
-        //         name  : true,
-        //         email : true,
-        //     },
-        // },
-        // guest                  : {
-        //     select : {
-        //         // data:
-        //         name  : true,
-        //         email : true,
-        //     },
-        // },
-        
-        items : {
-            select : {
-                productId      : true,
-                variantIds     : true,
-                
-                price          : true,
-                shippingWeight : true,
-                quantity       : true,
-            },
-        },
-    };
     return await prismaTransaction.draftOrder.findUnique({
         where  : {
             orderId   : orderId,
             paymentId : paymentId,
         },
-        select : requiredSelect,
+        select : orderSelect,
     });
 }
 
@@ -647,7 +610,7 @@ type RevertDraftOrder = Pick<DraftOrder,
 export interface RevertDraftOrderData {
     draftOrder: RevertDraftOrder
 }
-export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], revertDraftOrderData : RevertDraftOrderData) => {
+export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], revertDraftOrderData : RevertDraftOrderData): Promise<void> => {
     // data:
     const {
         draftOrder,

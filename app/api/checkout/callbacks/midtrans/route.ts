@@ -26,6 +26,7 @@ import {
     // utilities:
     findDraftOrderById,
     
+    commitDraftOrderSelect,
     commitDraftOrder,
     revertDraftOrderById,
 }                           from '../../order-utilities'
@@ -124,7 +125,11 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             const newOrder = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
-                const draftOrder = await findDraftOrderById(prismaTransaction, { orderId });
+                const draftOrder = await findDraftOrderById(prismaTransaction, {
+                    orderId     : orderId,
+                    
+                    orderSelect : commitDraftOrderSelect,
+                });
                 if (!draftOrder) return null;
                 
                 
