@@ -508,12 +508,61 @@ export const findPaymentById = async (prismaTransaction: Parameters<Parameters<t
 
 
 
+export const commitDraftOrderSelect = {
+    // records:
+    id                     : true,
+    expiresAt              : true,
+    
+    // data:
+    orderId                : true,
+    paymentId              : true,
+    
+    preferredCurrency      : true,
+    
+    shippingAddress        : true,
+    shippingCost           : true,
+    shippingProviderId     : true,
+    
+    // relations:
+    customerId             : true,
+    guestId                : true,
+    // customer               : {
+    //     select : {
+    //         // data:
+    //         name  : true,
+    //         email : true,
+    //     },
+    // },
+    // guest                  : {
+    //     select : {
+    //         // data:
+    //         name  : true,
+    //         email : true,
+    //     },
+    // },
+    
+    items : {
+        select : {
+            // data:
+            price          : true,
+            shippingWeight : true,
+            quantity       : true,
+            
+            // relations:
+            productId      : true,
+            variantIds     : true,
+        },
+    },
+} satisfies Prisma.DraftOrderSelect;
 export type CommitDraftOrder = Omit<DraftOrder,
+    // records:
     |'createdAt'
 > & {
     items : Omit<DraftOrdersOnProducts,
+        // records:
         |'id'
         
+        // relations:
         |'draftOrderId'
     >[]
 }
@@ -561,16 +610,38 @@ export const commitDraftOrder = async (prismaTransaction: Parameters<Parameters<
 
 
 
+export const revertDraftOrderSelect = {
+    // records:
+    id                     : true,
+    
+    // data:
+    orderId                : true,
+    
+    items : {
+        select : {
+            // data:
+            quantity       : true,
+            
+            // relations:
+            productId      : true,
+            variantIds     : true,
+        },
+    },
+} satisfies Prisma.DraftOrderSelect;
 type RevertDraftOrder = Pick<DraftOrder,
+    // records:
     |'id'
     
+    // data:
     |'orderId'
 > & {
     items : Pick<DraftOrdersOnProducts,
+        // data:
+        |'quantity'
+        
+        // relations:
         |'productId'
         |'variantIds'
-        
-        |'quantity'
     >[]
 }
 export interface RevertDraftOrderData {
