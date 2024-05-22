@@ -28,7 +28,8 @@ import {
     
     commitDraftOrderSelect,
     commitDraftOrder,
-    revertDraftOrderById,
+    revertDraftOrderSelect,
+    revertDraftOrder,
 }                           from '../../order-utilities'
 import {
     sendConfirmationEmail,
@@ -98,8 +99,19 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             const paymentId = midtransPaymentData.transaction_id;
             if (paymentId) {
                 await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
+                    const draftOrder = await findDraftOrderById(prismaTransaction, {
+                        orderId     : orderId,
+                        paymentId   : paymentId,
+                        
+                        orderSelect : revertDraftOrderSelect,
+                    });
+                    if (!draftOrder) return false; // the draftOrder is not found => ignore
+                    
+                    
+                    
                     // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
-                    return await revertDraftOrderById(prismaTransaction, { orderId, paymentId });
+                    await revertDraftOrder(prismaTransaction, { draftOrder });
+                    return true;
                 });
             } // if
             

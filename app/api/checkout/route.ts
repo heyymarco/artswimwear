@@ -78,8 +78,8 @@ import {
     createOrder,
     commitDraftOrderSelect,
     commitDraftOrder,
+    revertDraftOrderSelect,
     revertDraftOrder,
-    revertDraftOrderById,
 }                           from './order-utilities'
 import {
     sendConfirmationEmail,
@@ -1974,8 +1974,19 @@ Updating the confirmation is not required.`,
     //#region cancel the payment
     if (cancelOrder) {
         const orderDeletedFromDatabase = await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
+            const draftOrder = await findDraftOrderById(prismaTransaction, {
+                orderId     : orderId,
+                paymentId   : paymentId,
+                
+                orderSelect : revertDraftOrderSelect,
+            });
+            if (!draftOrder) return false; // the draftOrder is not found => ignore
+            
+            
+            
             // draftOrder CANCELED => restore the `Product` stock and delete the `draftOrder`:
-            return await revertDraftOrderById(prismaTransaction, { orderId, paymentId });
+            await revertDraftOrder(prismaTransaction, { draftOrder });
+            return true;
         });
         
         
