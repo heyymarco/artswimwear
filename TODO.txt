@@ -1,3 +1,9 @@
+[high prior] set expirity indomaret|alfamart|manual to 2 days
+[high prior] set payment code for email confirmation of indomaret|alfamart
+[high prior] no portal for credit_card|manual
+[high prior] icons for all payment mode
+[high prior] fix badge top most
+
 [high prior] verify breaking change <UpdateStatePlugin> .__first
 TODO: fix table layout to use subgrid
 move checkoutState to local if guess mode
