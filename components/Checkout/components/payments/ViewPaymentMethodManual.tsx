@@ -110,7 +110,7 @@ const ViewPaymentMethodManual = (): JSX.Element|null => {
                         // handlers:
                         onClick={handlePayWithManual}
                     >
-                        Pay with Bank Transfer
+                        Pay via Bank Transfer
                     </ButtonIcon>
                 }
             />
