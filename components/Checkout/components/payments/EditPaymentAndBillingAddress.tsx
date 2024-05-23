@@ -58,13 +58,6 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            <Section
-                // accessibilities:
-                title='Payment Method'
-            >
-                <EditPaymentMethod />
-            </Section>
-            
             <Collapse
                 // classes:
                 className='collapse'
@@ -95,6 +88,13 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                     <EditBillingAddress />
                 </Section>
             </Collapse>
+            
+            <Section
+                // accessibilities:
+                title='Payment Method'
+            >
+                <EditPaymentMethod />
+            </Section>
         </>
     );
 };
