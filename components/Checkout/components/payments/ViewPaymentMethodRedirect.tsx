@@ -179,7 +179,7 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
                 buttonComponent={
                     <ButtonIcon
                         // appearances:
-                        icon='shopping_cart'
+                        icon='shopping_bag'
                         
                         
                         
