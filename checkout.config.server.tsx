@@ -240,9 +240,16 @@ export const checkoutConfigServer : CheckoutConfigServer = {
                             Payment Instruction
                         </h2>
                         
-                        <p style={styles.paragraph}>
-                            Please immediately make payment for your order to <strong>one of</strong> our accounts below:
-                        </p>
+                        <Payment.IsManualTransfer>
+                            <p style={styles.paragraph}>
+                                Please immediately make payment for your order to <strong>one of</strong> our accounts below:
+                            </p>
+                        </Payment.IsManualTransfer>
+                        <Payment.IsManualOtc>
+                            <p style={styles.paragraph}>
+                                Please immediately make payment for your order via <strong><Payment.OtcBrand /></strong> Store:
+                            </p>
+                        </Payment.IsManualOtc>
                         
                         <p
                             // styles:
@@ -289,46 +296,101 @@ export const checkoutConfigServer : CheckoutConfigServer = {
                             <Order.TotalValue />
                         </p>
                         
-                        <Payment.Bank />
-                        
-                        <p
-                            // styles:
-                            style={{
-                                // layouts:
-                                ...styles.paragraphLast,
-                                
-                                
-                                
-                                // positions:
-                                // needs to overwrite the paragraph's layout
-                                ...styles.selfCenterHorz, // center self horizontally
-                                
-                                
-                                
-                                // sizes:
-                                width     : 'fit-content',
-                                
-                                
-                                
-                                // backgrounds & foregrounds:
-                                ...styles.theme('primary'),
-                                
-                                
-                                
-                                // borders:
-                                border       : styles.borderStroke('primary'),
-                                borderRadius : `${borderRadiusValues.xxl}`,
-                                
-                                
-                                
-                                // spacings:
-                                padding      : `calc(${spacerValues.md} * 1.5)`,
-                            }}
-                        >
-                            After you make payment, please confirm your payment via this link:
-                            <br />
-                            <Payment.ConfirmationLink />
-                        </p>
+                        <Payment.IsManualTransfer>
+                            <Payment.Bank />
+                            
+                            <p
+                                // styles:
+                                style={{
+                                    // layouts:
+                                    ...styles.paragraphLast,
+                                    
+                                    
+                                    
+                                    // positions:
+                                    // needs to overwrite the paragraph's layout
+                                    ...styles.selfCenterHorz, // center self horizontally
+                                    
+                                    
+                                    
+                                    // sizes:
+                                    width     : 'fit-content',
+                                    
+                                    
+                                    
+                                    // backgrounds & foregrounds:
+                                    ...styles.theme('primary'),
+                                    
+                                    
+                                    
+                                    // borders:
+                                    border       : styles.borderStroke('primary'),
+                                    borderRadius : `${borderRadiusValues.xxl}`,
+                                    
+                                    
+                                    
+                                    // spacings:
+                                    padding      : `calc(${spacerValues.md} * 1.5)`,
+                                }}
+                            >
+                                After you make payment, please confirm your payment via this link:
+                                <br />
+                                <Payment.ConfirmationLink />
+                            </p>
+                        </Payment.IsManualTransfer>
+                        <Payment.IsManualOtc>
+                            <div
+                                // styles:
+                                style={{
+                                    // layouts:
+                                    ...styles.paragraphLast,
+                                    
+                                    
+                                    
+                                    // positions:
+                                    // needs to overwrite the paragraph's layout
+                                    ...styles.selfCenterHorz, // center self horizontally
+                                    
+                                    
+                                    
+                                    // sizes:
+                                    width     : 'fit-content',
+                                    
+                                    
+                                    
+                                    // backgrounds & foregrounds:
+                                    ...styles.theme('primary'),
+                                    
+                                    
+                                    
+                                    // borders:
+                                    border       : styles.borderStroke('primary'),
+                                    borderRadius : `${borderRadiusValues.xxl}`,
+                                    
+                                    
+                                    
+                                    // spacings:
+                                    padding      : `calc(${spacerValues.md} * 1.5)`,
+                                }}
+                            >
+                                <p style={styles.paragraph}>
+                                    Show this payment code to the <Payment.OtcBrand /> cashier:
+                                    <br />
+                                    <strong style={styles.textBigger}>
+                                        <Payment.OtcCode />
+                                    </strong>
+                                </p>
+                                <br />
+                                <div style={styles.textSmall}>
+                                    <p style={styles.paragraph}>
+                                        After receiving proof of payment, the payment will <strong>automatically be verified</strong> by <Business.Name />.
+                                    </p>
+                                    <p style={styles.paragraphLast}>
+                                        Save proof of payment which is needed at any time if there are transaction problems.
+                                    </p>
+                                </div>
+                            </div>
+                        </Payment.IsManualOtc>
                     </section>
                 </IfNotPaid>
                 

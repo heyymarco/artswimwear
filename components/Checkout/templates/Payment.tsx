@@ -4,6 +4,12 @@ import {
     default as React,
 }                           from 'react'
 
+// cssfn:
+import {
+    // writes css in javascript:
+    startsCapitalized,
+}                           from '@cssfn/core'                  // writes css in javascript
+
 // lexical functions:
 import {
     createHeadlessEditor,
@@ -42,11 +48,6 @@ import {
     // react components:
     CurrencyDisplay,
 }                           from './CurrencyDisplay'
-
-// utilities:
-import {
-    formatCurrency,
-}                           from '@/libs/formatters'
 
 
 
@@ -392,6 +393,90 @@ export const PaymentHasConfirmationRejection = (props: React.PropsWithChildren<{
     if (!rejectionReason) return null;
     return props.children;
 };
+export const PaymentIsManualTransfer = (props: React.PropsWithChildren<{}>): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            payment : {
+                type       : paymentType,
+                identifier : paymentIndentifier,
+                brand      : paymentBrand,
+            }
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    if (paymentType !== 'MANUAL') return null;
+    if (paymentIndentifier      ) return null;
+    if (paymentBrand            ) return null;
+    return props.children;
+};
+export const PaymentIsManualOtc = (props: React.PropsWithChildren<{}>): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            payment : {
+                type       : paymentType,
+                identifier : paymentIndentifier,
+                brand      : paymentBrand,
+            }
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    if (paymentType !== 'MANUAL') return null;
+    if (!paymentIndentifier     ) return null;
+    if (!paymentBrand           ) return null;
+    return props.children;
+};
+export const PaymentOtcBrand = (props: React.PropsWithChildren<{}>): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            payment : {
+                type       : paymentType,
+                identifier : paymentIndentifier,
+                brand      : paymentBrand,
+            }
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    if (paymentType !== 'MANUAL') return null;
+    if (!paymentIndentifier     ) return null;
+    if (!paymentBrand           ) return null;
+    return startsCapitalized(paymentBrand);
+};
+export const PaymentOtcCode = (props: React.PropsWithChildren<{}>): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            payment : {
+                type       : paymentType,
+                identifier : paymentIndentifier,
+                brand      : paymentBrand,
+            }
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    if (paymentType !== 'MANUAL') return null;
+    if (!paymentIndentifier     ) return null;
+    if (!paymentBrand           ) return null;
+    return paymentIndentifier;
+};
 
 export const Payment = {
     BillingAddress           : BillingAddress,
@@ -404,4 +489,9 @@ export const Payment = {
     ConfirmationLink         : PaymentConfirmationLink,
     ConfirmationRejection    : PaymentConfirmationRejection,
     HasConfirmationRejection : PaymentHasConfirmationRejection,
+    
+    IsManualTransfer         : PaymentIsManualTransfer,
+    IsManualOtc              : PaymentIsManualOtc,
+    OtcBrand                 : PaymentOtcBrand,
+    OtcCode                  : PaymentOtcCode,
 };

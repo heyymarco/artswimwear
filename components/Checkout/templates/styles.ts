@@ -105,6 +105,10 @@ export const textBig                     : React.CSSProperties = {
     // typos:
     fontSize        : `calc(1.25 * ${typoValues.fontSizeMd})`,
 };
+export const textBigger                  : React.CSSProperties = {
+    // typos:
+    fontSize        : `calc(1.75 * ${typoValues.fontSizeMd})`,
+};
 
 
 
