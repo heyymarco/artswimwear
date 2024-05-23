@@ -554,14 +554,6 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scope('paymentEntryManual', {
-            [paddingVars.paddingInline] : '1rem',
-            [paddingVars.paddingBlock ] : '1rem',
-            ...children('article', {
-                [paddingVars.paddingInline] : '0px',
-                [paddingVars.paddingBlock ] : '0px',
-            }),
-        }, {specificityWeight: 2}),
         scope('paymentFinish', {
             display: 'flex',
             flexDirection: 'column',

@@ -6,13 +6,30 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // simple-components:
+    ButtonIcon,
+    
+    
+    
+    // utility-components:
+    useDialogMessage,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
 // internal components:
 import {
-    PortalToNavCheckoutSection,
-}                           from '../navigations/PortalToNavCheckoutSection'
+    ButtonWithBusy,
+}                           from '../ButtonWithBusy'
 import {
-    ButtonPaymentManual,
-}                           from '../payments/ButtonPaymentManual'
+    CaptchaDialog,
+}                           from './CaptchaDialog'
 
 // internals:
 import {
@@ -25,9 +42,44 @@ import {
 const ViewPaymentMethodManual = (): JSX.Element|null => {
     // states:
     const {
-        // payment data:
-        paymentMethod,
+        // actions:
+        doTransaction,
+        doPlaceOrder,
     } = useCheckoutState();
+    
+    
+    
+    // dialogs:
+    const {
+        showDialog,
+        showMessageFetchError,
+    } = useDialogMessage();
+    
+    
+    
+    // handlers:
+    const handlePayWithManual = useEvent(async (): Promise<void> => {
+        // conditions:
+        const captcha = await showDialog<string>(
+            <CaptchaDialog />
+        );
+        if (!captcha) return;
+        
+        
+        
+        doTransaction(async () => {
+            try {
+                // createOrder:
+                await doPlaceOrder({
+                    paymentSource : 'manual',
+                    captcha       : captcha,
+                });
+            }
+            catch (fetchError: any) {
+                if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
+            } // try
+        });
+    });
     
     
     
@@ -38,12 +90,30 @@ const ViewPaymentMethodManual = (): JSX.Element|null => {
                 Pay manually via <strong>bank transfer</strong>.
             </p>
             <p>
-                We&apos;ll send <em>payment instructions</em> to your (billing) email after you&apos;ve <em>finished the order</em>.
+                Click the button below. We will send <em>payment instructions</em> to your (billing) email.
             </p>
             
-            {(paymentMethod === 'manual') && <PortalToNavCheckoutSection>
-                <ButtonPaymentManual />
-            </PortalToNavCheckoutSection>}
+            <ButtonWithBusy
+                // components:
+                buttonComponent={
+                    <ButtonIcon
+                        // appearances:
+                        icon='shopping_bag'
+                        
+                        
+                        
+                        // variants:
+                        gradient={true}
+                        
+                        
+                        
+                        // handlers:
+                        onClick={handlePayWithManual}
+                    >
+                        Pay with Bank Transfer
+                    </ButtonIcon>
+                }
+            />
         </>
     );
 };

@@ -449,7 +449,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         bodyComponent={
                             <Section
                                 // classes:
-                                className={styleSheet.paymentEntryManual}
+                                className={styleSheet.paymentEntryPaymentButton}
                             />
                         }
                     >
