@@ -139,7 +139,6 @@ const CheckoutInternal = (): JSX.Element|null => {
         // sections:
         regularCheckoutSectionRef,
         currentStepSectionRef,
-        navCheckoutSectionElm,
         
         
         
@@ -397,16 +396,6 @@ const CheckoutInternal = (): JSX.Element|null => {
                 
                 // classes:
                 className={styleSheet.navCheckout}
-                
-                
-                
-                // components:
-                articleComponent={
-                    <Article
-                        // refs:
-                        elmRef={navCheckoutSectionElm}
-                    />
-                }
             >
                 <NavCheckout />
             </Section>

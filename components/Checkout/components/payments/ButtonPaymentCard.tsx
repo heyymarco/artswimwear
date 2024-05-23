@@ -341,18 +341,17 @@ const ButtonPaymentCard = (): JSX.Element|null => {
             buttonComponent={
                 <ButtonIcon
                     // appearances:
-                    icon='monetization_on'
+                    icon='shopping_bag'
                     
                     
                     
                     // variants:
-                    size='lg'
                     gradient={true}
                     
                     
                     
                     // classes:
-                    className='next payNow'
+                    className='payButton'
                     
                     
                     

@@ -468,27 +468,32 @@ export default () => {
             ...children('article>*', { // added * because <PayPalHostedFieldsProvider> render as <div>
                 display: 'grid',
                 gridTemplate: [[
-                    '"number" auto',
-                    '"name  " auto',
-                    '"expiry" auto',
-                    '"csc   " auto',
+                    '"instruct " auto',
+                    '"number   " auto',
+                    '"name     " auto',
+                    '"expiry   " auto',
+                    '"csc      " auto',
+                    '"payButton" auto',
                     // '"horz  " auto',
-                    // '"payNow" auto',
                     '/',
                     '1fr'
                 ]],
                 ...ifScreenWidthAtLeast('md', {
                     gridTemplate: [[
-                        '"number number" auto',
-                        '"name     name" auto',
-                        '"expiry    csc" auto',
+                        '"instruct   instruct" auto',
+                        '"number       number" auto',
+                        '"name           name" auto',
+                        '"expiry          csc" auto',
+                        '"payButton payButton" auto',
                         // '"horz      horz" auto',
-                        // '"payNow  payNow" auto',
                         '/',
                         '1fr 1fr'
                     ]],
                 }),
                 gap: '1rem',
+                ...children('.instructions', {
+                    gridArea: 'instruct',
+                }),
                 ...children('.number', {
                     gridArea: 'number',
                 }),
@@ -501,14 +506,9 @@ export default () => {
                 ...children('.csc', {
                     gridArea: 'csc',
                 }),
-                // ...children('.horz', {
-                //     gridArea: 'horz',
-                    
-                //     margin: 0,
-                // }),
-                // ...children('.payNow', {
-                //     gridArea: 'payNow',
-                // }),
+                ...children('.payButton', {
+                    gridArea: 'payButton',
+                }),
                 ...descendants('.hostedField', {
                     // layouts:
                     display        : 'flex',

@@ -368,7 +368,6 @@ export interface CheckoutStateBase {
     billingAddressSectionRef    : React.MutableRefObject<HTMLElement|null>      | undefined
     paymentCardSectionRef       : React.MutableRefObject<HTMLFormElement|null>  | undefined
     currentStepSectionRef       : React.MutableRefObject<HTMLElement|null>      | undefined
-    navCheckoutSectionElm       : React.MutableRefObject<HTMLElement|null>      | undefined
     
     
     
@@ -574,7 +573,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     billingAddressSectionRef    : undefined,
     paymentCardSectionRef       : undefined,
     currentStepSectionRef       : undefined,
-    navCheckoutSectionElm       : undefined,
     
     
     
@@ -1099,7 +1097,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
     const paymentCardSectionRef     = useRef<HTMLFormElement|null>(null);
     const currentStepSectionRef     = useRef<HTMLElement|null>(null);
-    const navCheckoutSectionElm     = useRef<HTMLElement|null>(null);
     
     const contactEmailInputRef      = useRef<HTMLInputElement|null>(null);
     const shippingAddressInputRef   = useRef<HTMLInputElement|null>(null);
@@ -1750,7 +1747,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         billingAddressSectionRef,     // stable ref
         paymentCardSectionRef,        // stable ref
         currentStepSectionRef,        // stable ref
-        navCheckoutSectionElm,        // stable ref
         
         
         
@@ -1909,7 +1905,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // billingAddressSectionRef,  // stable ref
         // paymentCardSectionRef,     // stable ref
         // currentStepSectionRef,     // stable ref
-        // navCheckoutSectionElm,     // stable ref
         
         
         

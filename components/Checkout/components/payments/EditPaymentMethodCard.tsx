@@ -56,9 +56,6 @@ import {
     CreditCardCvvEditor,
 }                           from '@/components/editors/CreditCardCvvEditor'
 import {
-    PortalToNavCheckoutSection,
-}                           from '../navigations/PortalToNavCheckoutSection'
-import {
     // styles:
     hostedFieldsStyle,
     
@@ -108,17 +105,10 @@ const cardCvvOptions     : PayPalHostedFieldExtendedProps['options'] = {
 
 // react components:
 const EditPaymentMethodCard = (): JSX.Element|null => {
-    // states:
-    const {
-        // accessibilities:
-        preferredCurrency,
-    } = useCartState();
-    
     const {
         // payment data:
         appropriatePaymentProcessor,
         paymentValidation,
-        paymentMethod,
         
         
         
@@ -174,6 +164,12 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
             // validations:
             enableValidation={paymentValidation}
         >
+            <div className='instructions'>
+                <p>
+                    Fill in your credit card information below and then click the <em>Pay Now</em> button:
+                </p>
+            </div>
+            
             <InputWithLabel
                 // appearances:
                 icon='credit_card'
@@ -521,9 +517,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 }
             />
             
-            {((paymentMethod ?? 'card') === 'card') && <PortalToNavCheckoutSection>
-                <ButtonPaymentCard />
-            </PortalToNavCheckoutSection>}
+            <ButtonPaymentCard />
         </ValidationProvider>
     );
     if (isPayUsingPaypal) return (
