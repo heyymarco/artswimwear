@@ -1,4 +1,4 @@
-[high prior] set expirity indomaret|alfamart|manual to 2 days
+[high prior] display expirity date for payment with manual|indomaret|alfamart
 [high prior] icons for all payment mode
 [high prior] fix badge top most
 
