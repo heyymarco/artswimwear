@@ -87,7 +87,7 @@ const ViewPaymentMethodManual = (): JSX.Element|null => {
     return (
         <>
             <p>
-                Pay manually via <strong>bank transfer</strong>.
+                Pay via <strong>bank transfer</strong>.
             </p>
             <p>
                 Click the button below. We will send <em>payment instructions</em> to your (billing) email.
