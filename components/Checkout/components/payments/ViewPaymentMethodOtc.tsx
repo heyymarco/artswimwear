@@ -100,7 +100,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     return (
         <>
             <p>
-                Pay at <strong>{storeName}</strong> store.
+                Pay at <strong>{storeName} Store</strong>.
             </p>
             <p>
                 Click the button below. We will send <em>payment instructions</em> to your (billing) email.
