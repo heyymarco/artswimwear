@@ -111,7 +111,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                 buttonComponent={
                     <ButtonIcon
                         // appearances:
-                        icon='shopping_cart'
+                        icon='shopping_bag'
                         
                         
                         
