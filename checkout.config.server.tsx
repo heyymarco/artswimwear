@@ -247,7 +247,7 @@ export const checkoutConfigServer : CheckoutConfigServer = {
                         </Payment.IsManualTransfer>
                         <Payment.IsManualOtc>
                             <p style={styles.paragraph}>
-                                Please immediately make payment for your order via <strong><Payment.OtcBrand /></strong> Store:
+                                Please immediately make payment for your order via <strong><Payment.OtcBrand /> Store</strong>:
                             </p>
                         </Payment.IsManualOtc>
                         
