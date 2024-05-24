@@ -11,6 +11,10 @@ import {
     useMemo,
 }                           from 'react'
 
+import {
+    default as NextImage,
+}                           from 'next/image'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -171,8 +175,8 @@ const EditPaymentMethod = (): JSX.Element|null => {
                 </p>
                 
                 <ExclusiveAccordion
-                    // variants:
-                    listStyle='content'
+                    // classes:
+                    className={styleSheet.selectPayments}
                     
                     
                     
@@ -190,7 +194,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
-                            Credit Card
+                            <span className='label'>
+                                Credit Card
+                            </span>
+                            <NextImage alt='Credit Card' src='/brands/creditcard.svg' width={39} height={30} />
                         </>}
                         
                         
@@ -231,7 +238,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
-                            PayPal
+                            <span className='label'>
+                                PayPal
+                            </span>
+                            <NextImage alt='PayPal' src='/brands/paypal.svg' width={60} height={15.5} />
                         </>}
                         
                         
@@ -262,7 +272,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
-                            QRIS
+                            <span className='label'>
+                                QRIS
+                            </span>
+                            <NextImage alt='QRIS' src='/brands/qris.svg' width={60} height={22.75} />
                         </>}
                         
                         
@@ -293,7 +306,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
-                            GoPay
+                            <span className='label'>
+                                GoPay
+                            </span>
+                            <NextImage alt='GoPay' src='/brands/gopay.svg' width={60} height={12.25} />
                         </>}
                         
                         
@@ -327,7 +343,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
-                            ShopeePay
+                            <span className='label'>
+                                ShopeePay
+                            </span>
+                            <NextImage alt='ShopeePay' src='/brands/shopeepay.svg' width={60} height={19.2} />
                         </>}
                         
                         
@@ -361,7 +380,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
-                            Pay at Indomaret Store
+                            <span className='label'>
+                                Pay at Indomaret Store
+                            </span>
+                            <NextImage alt='Indomaret' src='/brands/indomaret.svg' width={60} height={19.25} />
                         </>}
                         
                         
@@ -395,7 +417,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
-                            Pay at Alfamart Store
+                            <span className='label'>
+                                Pay at Alfamart Store
+                            </span>
+                            <NextImage alt='Alfamart' src='/brands/alfamart.svg' width={60} height={19.2} />
                         </>}
                         
                         
@@ -429,7 +454,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
-                            Bank Transfer
+                            <span className='label'>
+                                Bank Transfer
+                            </span>
+                            <NextImage alt='Bank Transfer' src='/brands/banktransfer.svg' width={60} height={30} />
                         </>}
                         
                         

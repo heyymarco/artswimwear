@@ -423,6 +423,51 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
+        scope('selectPayments', {
+            // layouts:
+            display: 'grid',
+            // gridTemplateColumns: '[decor-start] max-content [decor-end label-start] max-content [label-end icon-start] max-content [icon-end] 1fr',
+            gridTemplateColumns: '[decor-start] max-content [decor-end label-start] max-content [label-end] 1fr [icon-start] max-content [icon-end]',
+            
+            
+            
+            // children:
+            ...children('li', {
+                // children:
+                ...children(['&', ':first-child', ':not(:first-child)'], { // <li>, <AccordionHeader>, <AccordionBody>
+                    // positions:
+                    gridColumn: '1 / -1',
+                }),
+                ...children(['&', ':first-child'], { // <li> & <AccordionHeader>
+                    // layouts:
+                    display: 'grid',
+                    gridTemplateColumns: 'subgrid',
+                }),
+                ...children(':first-child', { // <AccordionHeader>
+                    alignItems: 'center', // center vertically
+                    ...children('[role="radio"]', {
+                        // positions:
+                        gridColumn: 'decor-start / decor-end',
+                    }),
+                    ...children('.label', {
+                        // positions:
+                        gridColumn: 'label-start / label-end',
+                    }),
+                    ...children('img', {
+                        // positions:
+                        gridColumn  : 'icon-start / icon-end',
+                        justifySelf : 'center',
+                        
+                        
+                        
+                        // sizes:
+                        inlineSize : '60px',
+                        blockSize  : '30px',
+                        objectFit  : 'contain',
+                    }),
+                }),
+            }),
+        }, {specificityWeight: 2}),
         scope('optionEntryHeader', {
             display: 'flex',
             flexDirection: 'row',
