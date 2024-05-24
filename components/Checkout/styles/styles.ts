@@ -11,10 +11,20 @@ import {
     
     // strongly typed of css variables:
     switchOf,
+    
+    
+    
+    // reads/writes css variables configuration:
+    usesCssProps,
 }                           from '@cssfn/core'                  // writes css in javascript
 
 // reusable-ui core:
 import {
+    // configs:
+    secondaries,
+    
+    
+    
     // a border (stroke) management system:
     borders,
     borderRadiuses,
@@ -403,6 +413,71 @@ export default () => {
                 }),
             }),
         }),
+        scope('selectShippings', {
+            // layouts:
+            display                         : 'grid',
+            gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end estimate-start] max-content [estimate-end] 1fr [currency-start] max-content [currency-end amount-start] max-content [amount-end]',
+            
+            
+            
+            // children:
+            ...children('li', {
+                // children:
+                ...children(['&', ':first-child'], { // <li>, <ListItem>
+                    // positions:
+                    gridColumn              : '1 / -1',
+                }),
+                ...children([':first-child'], { // <ListItem>
+                    // spacings:
+                    gap                     : spacers.md,
+                    padding                 : spacers.md,
+                }),
+                ...children(['&', ':first-child'], { // <li> & <ListItem>
+                    // layouts:
+                    display                 : 'grid',
+                    gridTemplateColumns     : 'subgrid',
+                }),
+                ...children(':first-child', { // <ListItem>
+                    // layouts:
+                    alignItems              : 'center', // center vertically
+                    
+                    
+                    
+                    // children:
+                    ...children('[role="radio"]', {
+                        // positions:
+                        gridColumn          : 'decor-start / decor-end',
+                    }),
+                    ...children('.label', {
+                        // positions:
+                        gridColumn          : 'label-start / label-end',
+                    }),
+                    ...children('.estimate', {
+                        // positions:
+                        gridColumn          : 'estimate-start / estimate-end',
+                    }),
+                    ...children('.cost', {
+                        // positions:
+                        gridColumn          : 'currency-start / amount-end',
+                        
+                        
+                        
+                        // layouts:
+                        display             : 'grid',
+                        gridTemplateColumns : 'subgrid',
+                        ...children('.currencySign', {
+                            // positions:
+                            gridColumn      : 'currency-start / currency-end',
+                            
+                            
+                            
+                            // customize:
+                            ...usesCssProps(secondaries),
+                        }),
+                    }),
+                }),
+            }),
+        }, {specificityWeight: 2}),
         scope('payment', {
             display: 'flex',
             flexDirection: 'column',

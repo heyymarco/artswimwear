@@ -1,11 +1,17 @@
+// react:
+import {
+    // react:
+    default as React,
+}                           from 'react'
+
 import {
     commerceConfig,
 } from '../commerce.config'
 
 
 
-export const formatCurrency = (value: number|null|undefined, currency: string = commerceConfig.defaultCurrency): string => {
-    if ((value === null) || (value === undefined) || isNaN(value)) return '-';
+export const formatCurrency = (value: number|null|undefined, currency: string = commerceConfig.defaultCurrency): JSX.Element|null => {
+    if ((value === null) || (value === undefined) || isNaN(value)) return <>-</>;
     
     
     
@@ -19,16 +25,22 @@ export const formatCurrency = (value: number|null|undefined, currency: string = 
         minimumFractionDigits : commerceConfig.currencies[currency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
         maximumFractionDigits : commerceConfig.currencies[currency].fractionMax, // (causes 2500.99 to be printed as $2,501)
     });
-    return (
-        currencyFormatter.formatToParts(value)
-        .flatMap((part, index, parts) => {
-            if (part.type === 'currency') part.value = currencySign;
-            if ((part.type === 'currency') && (parts[index + 1]?.type !== 'literal')) return [part, { type: 'literal', value: ' ' }];
-            if ((part.type === 'literal') && (parts[index - 1]?.type === 'currency') && (part.value !== ' ')) return [{ type: 'literal', value: ' ' }];
-            return [part];
-        })
-        .map(({value}) => value)
-    ).join('');
+    return (<>
+        {
+            currencyFormatter.formatToParts(value)
+            .flatMap((part, index, parts) => {
+                if (part.type === 'currency') part.value = currencySign;
+                if ((part.type === 'currency') && (parts[index + 1]?.type !== 'literal')) return [part, { type: 'literal', value: ' ' }];
+                if ((part.type === 'literal') && (parts[index - 1]?.type === 'currency') && (part.value !== ' ')) return [{ type: 'literal', value: ' ' }];
+                return [part];
+            })
+            .map(({type, value}, index) =>
+                (type === 'currency')
+                ? <span key={index} className='currencySign'>{value}</span>
+                : <React.Fragment key={index}>{value}</React.Fragment>
+            )
+        }
+    </>);
 };
 export const getCurrencySign = (currency: string = commerceConfig.defaultCurrency): string => {
     const currencySignFromConfig = commerceConfig.currencies[currency]?.sign;

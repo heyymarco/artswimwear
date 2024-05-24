@@ -77,6 +77,11 @@ const EditShippingMethod = (): JSX.Element|null => {
     return (
         <>
             {!!filteredShippingList && <List
+                // classes:
+                className={styleSheet.selectShippings}
+                
+                
+                
                 // behaviors:
                 actionCtrl={true}
             >
@@ -120,17 +125,17 @@ const EditShippingMethod = (): JSX.Element|null => {
                             >
                                 <RadioDecorator />
                                 
-                                <p className='name'>
+                                <span className='label'>
                                     {shippingEntry.name}
-                                </p>
+                                </span>
                                 
-                                {!!shippingEntry.estimate && <p className='estimate txt-sec'>
+                                {!!shippingEntry.estimate && <span className='estimate txt-sec'>
                                     (estimate: {shippingEntry.estimate})
-                                </p>}
+                                </span>}
                                 
-                                <p className='cost'>
+                                <span className='cost'>
                                     <CurrencyDisplay amount={totalShippingCost} />
-                                </p>
+                                </span>
                             </ListItem>
                         );
                     })
