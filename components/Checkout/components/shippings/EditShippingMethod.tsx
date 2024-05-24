@@ -110,11 +110,6 @@ const EditShippingMethod = (): JSX.Element|null => {
                                 
                                 
                                 
-                                // classes:
-                                className={styleSheet.optionEntryHeader}
-                                
-                                
-                                
                                 // states:
                                 active={isActive}
                                 
