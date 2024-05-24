@@ -65,7 +65,7 @@ const EditPaymentAndBillingAddress = (): JSX.Element|null => {
                 
                 
                 // behaviors:
-                lazy={true}
+                // lazy={true} // causes collapsing animation error
                 
                 
                 
