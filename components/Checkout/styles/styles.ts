@@ -474,6 +474,11 @@ export default () => {
                             // customize:
                             ...usesCssProps(secondaries),
                         }),
+                        
+                        
+                        
+                        // typos:
+                        textAlign           : 'end',
                     }),
                 }),
             }),
