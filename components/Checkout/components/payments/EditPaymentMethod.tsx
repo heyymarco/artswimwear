@@ -208,12 +208,6 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         
                         
                         // components:
-                        listItemComponent={
-                            <ListItem
-                                // classes:
-                                className={styleSheet.optionEntryHeader}
-                            />
-                        }
                         bodyComponent={
                             <Section
                                 // refs:
@@ -252,12 +246,6 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         
                         
                         // components:
-                        listItemComponent={
-                            <ListItem
-                                // classes:
-                                className={styleSheet.optionEntryHeader}
-                            />
-                        }
                         bodyComponent={
                             <Section
                                 // classes:
@@ -281,17 +269,11 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         
                         
                         // behaviors:
-                        lazy={true}
+                        // lazy={true} // causes collapsing animation error
                         
                         
                         
                         // components:
-                        listItemComponent={
-                            <ListItem
-                                // classes:
-                                className={styleSheet.optionEntryHeader}
-                            />
-                        }
                         bodyComponent={
                             <Section
                                 // classes:
@@ -315,17 +297,11 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         
                         
                         // behaviors:
-                        lazy={true}
+                        // lazy={true} // causes collapsing animation error
                         
                         
                         
                         // components:
-                        listItemComponent={
-                            <ListItem
-                                // classes:
-                                className={styleSheet.optionEntryHeader}
-                            />
-                        }
                         bodyComponent={
                             <Section
                                 // classes:
@@ -352,17 +328,11 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         
                         
                         // behaviors:
-                        lazy={true}
+                        // lazy={true} // causes collapsing animation error
                         
                         
                         
                         // components:
-                        listItemComponent={
-                            <ListItem
-                                // classes:
-                                className={styleSheet.optionEntryHeader}
-                            />
-                        }
                         bodyComponent={
                             <Section
                                 // classes:
@@ -389,17 +359,11 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         
                         
                         // behaviors:
-                        lazy={true}
+                        // lazy={true} // causes collapsing animation error
                         
                         
                         
                         // components:
-                        listItemComponent={
-                            <ListItem
-                                // classes:
-                                className={styleSheet.optionEntryHeader}
-                            />
-                        }
                         bodyComponent={
                             <Section
                                 // classes:
@@ -426,17 +390,11 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         
                         
                         // behaviors:
-                        lazy={true}
+                        // lazy={true} // causes collapsing animation error
                         
                         
                         
                         // components:
-                        listItemComponent={
-                            <ListItem
-                                // classes:
-                                className={styleSheet.optionEntryHeader}
-                            />
-                        }
                         bodyComponent={
                             <Section
                                 // classes:
@@ -463,17 +421,11 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         
                         
                         // behaviors:
-                        lazy={true}
+                        // lazy={true} // causes collapsing animation error
                         
                         
                         
                         // components:
-                        listItemComponent={
-                            <ListItem
-                                // classes:
-                                className={styleSheet.optionEntryHeader}
-                            />
-                        }
                         bodyComponent={
                             <Section
                                 // classes:
