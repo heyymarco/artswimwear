@@ -503,6 +503,48 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
+        scope('selectBilling', {
+            // layouts:
+            display                         : 'grid',
+            gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end] 1fr',
+            
+            
+            
+            // children:
+            ...children('li', {
+                // children:
+                ...children(['&', ':first-child', ':not(:first-child)'], { // <li>, <AccordionHeader>, <AccordionBody>
+                    // positions:
+                    gridColumn          : '1 / -1',
+                }),
+                ...children([':first-child', ':not(:first-child)'], { // <AccordionHeader>, <AccordionBody>
+                    // spacings:
+                    gap                 : spacers.md,
+                    padding             : spacers.md,
+                }),
+                ...children(['&', ':first-child'], { // <li> & <AccordionHeader>
+                    // layouts:
+                    display             : 'grid',
+                    gridTemplateColumns : 'subgrid',
+                }),
+                ...children(':first-child', { // <AccordionHeader>
+                    // layouts:
+                    alignItems          : 'center', // center vertically
+                    
+                    
+                    
+                    // children:
+                    ...children('[role="radio"]', {
+                        // positions:
+                        gridColumn      : 'decor-start / decor-end',
+                    }),
+                    ...children('.label', {
+                        // positions:
+                        gridColumn      : 'label-start / label-end',
+                    }),
+                }),
+            }),
+        }, {specificityWeight: 2}),
         scope('selectPayments', {
             // layouts:
             display                     : 'grid',
@@ -555,33 +597,6 @@ export default () => {
                         objectFit       : 'contain',
                     }),
                 }),
-            }),
-        }, {specificityWeight: 2}),
-        scope('optionEntryHeader', {
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            gap: '1rem',
-            padding: '1rem',
-            ...children(['.name', '.estimate', '.cost', '.icon'], {
-                flex: '0 0 auto',
-                margin: 0,
-            }),
-            ...children('.name', {
-                textAlign  : 'start',
-                fontSize   : typos.fontSizeMd,
-                fontWeight : typos.fontWeightSemibold,
-            }),
-            ...children(['.estimate'], {
-                // typos:
-                fontSize   : typos.fontSizeSm,
-                fontWeight : typos.fontWeightNormal,
-            }),
-            ...children(['.cost', '.icon'], {
-                textAlign: 'end',
-            }),
-            ...children(['.cost'], {
-                flex: '1 1 auto',
             }),
         }, {specificityWeight: 2}),
         scope('billingEntry', {

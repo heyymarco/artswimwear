@@ -111,6 +111,11 @@ const EditBillingAddress = (): JSX.Element|null => {
                 
                 
                 
+                // classes:
+                className={styleSheet.selectBilling}
+                
+                
+                
                 // states:
                 expandedListIndex={billingAsShipping ? 0 : 1}
                 
@@ -124,7 +129,9 @@ const EditBillingAddress = (): JSX.Element|null => {
                     label={
                         <>
                             <RadioDecorator />
-                            Same as shipping address
+                            <span className='label'>
+                                Same as shipping address
+                            </span>
                         </>
                     }
                     
@@ -136,12 +143,6 @@ const EditBillingAddress = (): JSX.Element|null => {
                     
                     
                     // components:
-                    listItemComponent={
-                        <ListItem
-                            // classes:
-                            className={styleSheet.optionEntryHeader}
-                        />
-                    }
                     bodyComponent={
                         <Section
                             // classes:
@@ -156,7 +157,9 @@ const EditBillingAddress = (): JSX.Element|null => {
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
-                        Use a different billing address
+                        <span className='label'>
+                            Use a different billing address
+                        </span>
                     </>}
                     
                     
@@ -167,12 +170,6 @@ const EditBillingAddress = (): JSX.Element|null => {
                     
                     
                     // components:
-                    listItemComponent={
-                        <ListItem
-                            // classes:
-                            className={styleSheet.optionEntryHeader}
-                        />
-                    }
                     bodyComponent={
                         <Section
                             // classes:
