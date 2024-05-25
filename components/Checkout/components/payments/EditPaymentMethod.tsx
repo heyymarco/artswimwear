@@ -176,7 +176,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                 
                 <ExclusiveAccordion
                     // classes:
-                    className={styleSheet.selectPayments}
+                    className={styleSheet.selectPayment}
                     
                     
                     

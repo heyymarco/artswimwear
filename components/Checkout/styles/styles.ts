@@ -545,7 +545,7 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scope('selectPayments', {
+        scope('selectPayment', {
             // layouts:
             display                     : 'grid',
             gridTemplateColumns         : '[decor-start] max-content [decor-end label-start] max-content [label-end] 1fr [icon-start] max-content [icon-end]',
