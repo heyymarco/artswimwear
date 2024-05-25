@@ -78,7 +78,7 @@ const EditShippingMethod = (): JSX.Element|null => {
         <>
             {!!filteredShippingList && <List
                 // classes:
-                className={styleSheet.selectShippings}
+                className={styleSheet.selectShipping}
                 
                 
                 

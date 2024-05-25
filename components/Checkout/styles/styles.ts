@@ -413,7 +413,7 @@ export default () => {
                 }),
             }),
         }),
-        scope('selectShippings', {
+        scope('selectShipping', {
             // layouts:
             display                         : 'grid',
             gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end estimate-start] max-content [estimate-end] 1fr [currency-start] max-content [currency-end amount-start] max-content [amount-end]',
