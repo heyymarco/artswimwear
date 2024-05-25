@@ -106,11 +106,6 @@ const EditBillingAddress = (): JSX.Element|null => {
     return (
         <>
             <ExclusiveAccordion
-                // variants:
-                listStyle='content'
-                
-                
-                
                 // classes:
                 className={styleSheet.selectBilling}
                 
@@ -138,7 +133,7 @@ const EditBillingAddress = (): JSX.Element|null => {
                     
                     
                     // behaviors:
-                    lazy={true}
+                    // lazy={true} // causes collapsing animation error
                     
                     
                     
@@ -165,7 +160,7 @@ const EditBillingAddress = (): JSX.Element|null => {
                     
                     
                     // behaviors:
-                    lazy={true}
+                    // lazy={true} // causes collapsing animation error
                     
                     
                     
