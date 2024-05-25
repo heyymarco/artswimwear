@@ -65,8 +65,8 @@ import {
     EditShippingMethod,
 }                           from './components/shippings/EditShippingMethod'
 import {
-    EditPaymentAndBillingAddress,
-}                           from './components/payments/EditPaymentAndBillingAddress'
+    EditPaymentMethod,
+}                           from './components/payments/EditPaymentMethod'
 import {
     ViewOrderFinished,
 }                           from './components/orders/ViewOrderFinished'
@@ -356,15 +356,10 @@ const CheckoutInternal = (): JSX.Element|null => {
                     
                     
                     
-                    // classes:
-                    className={styleSheet.payment}
-                    
-                    
-                    
                     // accessibilities:
-                    title='Payment'
+                    title='Payment Method'
                 >
-                    <EditPaymentAndBillingAddress />
+                    <EditPaymentMethod />
                 </Section>}
                 
                 {((checkoutStep === 'pending') || (checkoutStep === 'paid')) && <Section

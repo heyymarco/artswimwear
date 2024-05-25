@@ -171,7 +171,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                 options={midtransOptions}
             >
                 <p>
-                    All transactions are secure and encrypted.
+                    Choose the payment method you are most familiar with:
                 </p>
                 
                 <ExclusiveAccordion

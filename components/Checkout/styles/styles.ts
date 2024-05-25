@@ -483,26 +483,6 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scope('payment', {
-            display: 'flex',
-            flexDirection: 'column',
-            
-            // decrease indent on sub section(s):
-            ...children('article', {
-                display: 'flex',
-                flexDirection: 'column',
-                gapBlock: containers.paddingBlockMd,
-                
-                ...children(['&', '.collapse'], {
-                    ...children('section', {
-                        ...children(['&', 'article'], {
-                            [paddingVars.paddingInline] : '0px',
-                            [paddingVars.paddingBlock ] : '0px',
-                        }),
-                    }),
-                }),
-            }),
-        }, {specificityWeight: 2}),
         scope('selectBilling', {
             // layouts:
             display                         : 'grid',
@@ -622,8 +602,9 @@ export default () => {
                     '"name     " auto',
                     '"expiry   " auto',
                     '"csc      " auto',
+                    '"horz1    " auto',
+                    '"billing  " auto',
                     '"payButton" auto',
-                    // '"horz  " auto',
                     '/',
                     '1fr'
                 ]],
@@ -633,14 +614,15 @@ export default () => {
                         '"number       number" auto',
                         '"name           name" auto',
                         '"expiry          csc" auto',
+                        '"horz1         horz1" auto',
+                        '"billing     billing" auto',
                         '"payButton payButton" auto',
-                        // '"horz      horz" auto',
                         '/',
                         '1fr 1fr'
                     ]],
                 }),
                 gap: '1rem',
-                ...children('.instructions', {
+                ...children('.instruct', {
                     gridArea: 'instruct',
                 }),
                 ...children('.number', {
@@ -654,6 +636,17 @@ export default () => {
                 }),
                 ...children('.csc', {
                     gridArea: 'csc',
+                }),
+                ...children('.horz1', {
+                    gridArea: 'horz1',
+                    marginBlock: 0,
+                }),
+                ...children('.billing', {
+                    gridArea: 'billing',
+                    ...children('.horz2', {
+                        marginBlockStart: '1rem',
+                        marginBlockEnd  : 0,
+                    }),
                 }),
                 ...children('.payButton', {
                     gridArea: 'payButton',

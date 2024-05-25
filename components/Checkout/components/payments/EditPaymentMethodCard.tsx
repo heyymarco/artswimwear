@@ -35,6 +35,11 @@ import {
     
     
     
+    // menu-components:
+    Collapse,
+    
+    
+    
     // utility-components:
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
@@ -66,14 +71,11 @@ import {
     PayPalHostedFieldExtended,
 }                           from '../payments/PayPalHostedFieldExtended'
 import {
+    EditBillingAddress,
+}                           from './EditBillingAddress'
+import {
     ButtonPaymentCard,
 }                           from '../payments/ButtonPaymentCard'
-
-// contexts:
-import {
-    // hooks:
-    useCartState,
-}                           from '@/components/Cart'
 
 // paypal:
 import {
@@ -106,9 +108,19 @@ const cardCvvOptions     : PayPalHostedFieldExtendedProps['options'] = {
 // react components:
 const EditPaymentMethodCard = (): JSX.Element|null => {
     const {
+        // billing data:
+        isBillingAddressRequired,
+        
+        
+        
         // payment data:
         appropriatePaymentProcessor,
         paymentValidation,
+        
+        
+        
+        // sections:
+        billingAddressSectionRef,
         
         
         
@@ -164,7 +176,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
             // validations:
             enableValidation={paymentValidation}
         >
-            <div className='instructions'>
+            <div className='instruct'>
                 <p>
                     Fill in your credit card information below and then click the <em>Pay Now</em> button:
                 </p>
@@ -516,6 +528,40 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     </Label>
                 }
             />
+            
+            <hr className='horz1' />
+            
+            <Collapse
+                // refs:
+                elmRef={billingAddressSectionRef}
+                
+                
+                
+                // semantics:
+                tag='section'
+                
+                
+                
+                // classes:
+                className='billing'
+                
+                
+                
+                // behaviors:
+                // lazy={true} // causes collapsing animation error
+                
+                
+                
+                // states:
+                expanded={isBillingAddressRequired}
+            >
+                <p>
+                    Enter the address that matches your card&apos;s billing address.
+                </p>
+                <EditBillingAddress />
+                
+                <hr className='horz2' />
+            </Collapse>
             
             <ButtonPaymentCard />
         </ValidationProvider>
