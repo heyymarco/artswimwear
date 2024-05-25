@@ -499,8 +499,9 @@ export default () => {
                 }),
                 ...children([':first-child', ':not(:first-child)'], { // <AccordionHeader>, <AccordionBody>
                     // spacings:
-                    gap                 : spacers.md,
-                    padding             : spacers.md,
+                    gap                 : spacers.sm,
+                    paddingInline       : spacers.md,
+                    paddingBlock        : `calc((${spacers.sm} + ${spacers.md}) / 2)`,
                 }),
                 ...children(['&', ':first-child'], { // <li> & <AccordionHeader>
                     // layouts:
