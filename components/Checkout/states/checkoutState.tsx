@@ -374,7 +374,6 @@ export interface CheckoutStateBase {
     // fields:
     contactEmailInputRef         : React.MutableRefObject<HTMLInputElement|null> | undefined
     shippingAddressInputRef      : React.MutableRefObject<HTMLInputElement|null> | undefined
-    cardholderInputRef           : React.MutableRefObject<HTMLInputElement|null> | undefined
     
     
     
@@ -579,7 +578,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     // fields:
     contactEmailInputRef         : undefined,
     shippingAddressInputRef      : undefined,
-    cardholderInputRef           : undefined,
     
     
     
@@ -1100,7 +1098,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const contactEmailInputRef      = useRef<HTMLInputElement|null>(null);
     const shippingAddressInputRef   = useRef<HTMLInputElement|null>(null);
-    const cardholderInputRef        = useRef<HTMLInputElement|null>(null);
     
     
     
@@ -1753,7 +1750,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // fields:
         contactEmailInputRef,         // stable ref
         shippingAddressInputRef,      // stable ref
-        cardholderInputRef,           // stable ref
         
         
         
@@ -1911,7 +1907,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // fields:
         // contactEmailInputRef,      // stable ref
         // shippingAddressInputRef,   // stable ref
-        // cardholderInputRef,        // stable ref
         
         
         

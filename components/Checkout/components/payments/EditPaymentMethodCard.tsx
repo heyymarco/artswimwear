@@ -124,11 +124,6 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
         
         
         
-        // fields:
-        cardholderInputRef,
-        
-        
-        
         // actions:
         doPlaceOrder,
     } = useCheckoutState();
@@ -441,11 +436,6 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     // components:
                     inputComponent={
                         <CreditCardNameEditor
-                            // refs:
-                            elmRef={cardholderInputRef}
-                            
-                            
-                            
                             // forms:
                             name='cardHolder'
                         />

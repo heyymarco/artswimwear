@@ -104,11 +104,6 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         
         
         
-        // fields:
-        cardholderInputRef,
-        
-        
-        
         // actions:
         doTransaction,
         doPlaceOrder,
@@ -139,15 +134,16 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         const proxyDoPlaceOrder : (() => Promise<DraftOrderDetail|undefined>)|undefined = (
             isPayUsingPaypal
             ? (
-                (typeof(paypalDoPlaceOrder) !== 'function') // validate that `submit()` exists before invoke it
+                (!paymentCardSectionElm || (typeof(paypalDoPlaceOrder) !== 'function')) // validate that `submit()` exists before invoke it
                 ? undefined
                 : async (): Promise<DraftOrderDetail> => {
                     // submit card data to PayPal_API to get authentication:
+                    const formData = new FormData(paymentCardSectionElm);
                     const paypalAuthentication = await paypalDoPlaceOrder({
                         // trigger 3D Secure authentication:
                         contingencies  : ['SCA_WHEN_REQUIRED'],
                         
-                        cardholderName        : cardholderInputRef?.current?.value, // cardholder's first and last name
+                        cardholderName        : formData.get('cardHolder')?.toString()?.trim(), // cardholder's first and last name
                         billingAddress : {
                             streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
                          // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
@@ -187,10 +183,10 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                     const cardToken = await new Promise<string>((resolve, reject) => {
                         const formData = new FormData(paymentCardSectionElm);
                         const card = {
-                            card_number         : formData.get('cardNumber' )?.toString()?.replaceAll(' ', '')?.trim(),
-                            card_exp_month      : formData.get('cardExpires')?.toString()?.split('/')?.[0] || undefined,
-                            card_exp_year       : formData.get('cardExpires')?.toString()?.split('/')?.[1] || undefined,
-                            card_cvv            : formData.get('cardCvv'    )?.toString(),
+                            card_number         : formData.get('cardNumber' )?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
+                            card_exp_month      : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[0] || undefined,
+                            card_exp_year       : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[1] || undefined,
+                            card_cvv            : formData.get('cardCvv'    )?.toString()?.trim(),
                             // bank_one_time_token : "12345678"
                         };
                         MidtransNew3ds.getCardToken(card, {
