@@ -390,6 +390,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             
                             
                             
+                            // validations:
+                            enableValidation={isPayUsingPaypal ? undefined : false}
+                            
+                            
+                            
                             // formats:
                             hostedFieldType='number'
                             
@@ -481,6 +486,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             
                             
                             
+                            // validations:
+                            enableValidation={isPayUsingPaypal ? undefined : false}
+                            
+                            
+                            
                             // formats:
                             hostedFieldType='expirationDate'
                             
@@ -544,6 +554,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             
                             // classes:
                             className='hostedField'
+                            
+                            
+                            
+                            // validations:
+                            enableValidation={isPayUsingPaypal ? undefined : false}
                             
                             
                             

@@ -193,7 +193,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                     
                     // states:
                     expandedListIndex={
-                        Math.max(0, paymentMethodList.findIndex((option) => (option === paymentMethod)))
+                        Math.max(-1, paymentMethodList.findIndex((option) => (option === paymentMethod)))
                     }
                     
                     

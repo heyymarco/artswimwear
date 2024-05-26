@@ -549,7 +549,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     paymentValidation            : false,
     
-    paymentMethod                : 'card',
+    paymentMethod                : '',
     setPaymentMethod             : noopCallback,
     
     paymentToken                 : undefined,
@@ -697,7 +697,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // payment data:
         paymentValidation,
         
-        paymentMethod = 'card',
+        paymentMethod = '',
     } = localCheckoutState;
     
     const {

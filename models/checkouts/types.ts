@@ -25,6 +25,7 @@ export type CheckoutStep =
     |'pending'
     |'paid'
 export type PaymentMethod =
+    |''
     |'card'
     |'paypal'
     |'qris'
