@@ -25,7 +25,7 @@
     "@heymarco/section": "^6.5.0",
     "@lexical/headless": "^0.12.4",
     "@lexical/react": "^0.12.4",
-    "@paypal/react-paypal-js": "^7.8.2",
+    "@paypal/react-paypal-js": "^7.8.3",
     "@prisma/client": "^5.0.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@reusable-ui/components": "^6.11.0",
@@ -61,7 +61,7 @@
     "use-immer": "^0.9.0"
   },
   "devDependencies": {
-    "@paypal/paypal-js": "^5.1.4",
+    "@paypal/paypal-js": "^5.1.6",
     "@types/mime-types": "^2.1.4",
     "@types/qrcode": "^1.5.5",
     "@types/react-google-recaptcha": "^2.1.8",
