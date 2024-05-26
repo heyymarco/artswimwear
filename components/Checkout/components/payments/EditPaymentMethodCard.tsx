@@ -150,7 +150,16 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
         try {
             const draftOrderDetail = await doPlaceOrder();
             if (!draftOrderDetail) throw Error('Oops, an error occured!');
-            return draftOrderDetail.orderId;
+            
+            
+            
+            const rawOrderId = draftOrderDetail.orderId;
+            const orderId = (
+                rawOrderId.startsWith('#PAYPAL_')
+                ? rawOrderId.slice(8) // remove prefix #PAYPAL_
+                : rawOrderId
+            );
+            return orderId;
         }
         catch (fetchError: any) {
             if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });

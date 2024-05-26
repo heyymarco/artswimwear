@@ -169,8 +169,14 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                             orderId: "1N785713SG267310M"
                         }
                     */
+                    const rawOrderId = paypalAuthentication.orderId;
+                    const orderId = (
+                        rawOrderId.startsWith('#PAYPAL_')
+                        ? rawOrderId              // already prefixed => no need to modify
+                        : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+                    );
                     return {
-                        orderId      : paypalAuthentication.orderId,
+                        orderId      : orderId,
                         redirectData : undefined,
                     };
                 }
