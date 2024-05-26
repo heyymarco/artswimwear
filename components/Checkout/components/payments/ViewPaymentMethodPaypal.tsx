@@ -83,6 +83,7 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
         signalOrderFinishedRef.current?.();
         signalOrderFinishedRef.current = undefined;
     });
+    
     const handleCreateOrder      = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
         handleBeginTransaction();
         
@@ -227,9 +228,7 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
                 onApprove={handleFundApproved}
                 onShippingChange={handleShippingChange}
                 onError={handleError}
-            >
-                test
-            </PayPalButtons>
+            />
         </>
     );
 };
