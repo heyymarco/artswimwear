@@ -67,18 +67,24 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     
     // handlers:
     const signalOrderFinishedRef = useRef<(() => void)|undefined>(undefined);
-    const handleCreateOrder    = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
+    const handleBeginTransaction = useEvent(() => {
+        if (signalOrderFinishedRef.current) return; // already began => ignore
+        
+        
+        
         doTransaction((): Promise<void> => {
-            signalOrderFinishedRef.current?.();
-            signalOrderFinishedRef.current = undefined;
-            
-            
-            
             const promiseOrderFinished = new Promise<void>((resolved) => {
                 signalOrderFinishedRef.current = resolved;
             });
             return promiseOrderFinished;
         });
+    });
+    const handleEndTransaction   = useEvent(() => {
+        signalOrderFinishedRef.current?.();
+        signalOrderFinishedRef.current = undefined;
+    });
+    const handleCreateOrder      = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
+        handleBeginTransaction();
         
         
         
@@ -97,8 +103,7 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             return orderId;
         }
         catch (fetchError: any) {
-            signalOrderFinishedRef.current?.();
-            signalOrderFinishedRef.current = undefined;
+            handleEndTransaction();
             
             
             
@@ -106,7 +111,7 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             throw fetchError;
         } // try
     });
-    const handleCancelOrder = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
+    const handleCancelOrder      = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
         try {
             // notify cancel transaction, so the authorized payment will be released:
             const rawOrderId = data.orderID as string;
@@ -134,11 +139,10 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             });
         }
         finally {
-            signalOrderFinishedRef.current?.();
-            signalOrderFinishedRef.current = undefined;
+            handleEndTransaction();
         } // try
     });
-    const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
+    const handleFundApproved     = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
             const rawOrderId = paypalAuthentication.orderID;
             const orderId = (
@@ -153,11 +157,10 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             showMessageFetchError({ fetchError, context: 'payment' });
         }
         finally {
-            signalOrderFinishedRef.current?.();
-            signalOrderFinishedRef.current = undefined;
+            handleEndTransaction();
         } // try
     });
-    const handleShippingChange = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
+    const handleShippingChange   = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
         // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
         const shipping_address = data.shipping_address;
         if (shipping_address) {
@@ -199,7 +202,11 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             return actions.resolve();
         } // if
     });
-    const handleError          = useEvent((err: Record<string, unknown>): void => {
+    const handleError            = useEvent((err: Record<string, unknown>): void => {
+        handleEndTransaction();
+        
+        
+        
         // already handled by `handleCreateOrder()` & `handleFundApproved()`
         console.log('paypal button error', err);
     });
