@@ -53,6 +53,7 @@ export const paymentConfig : PaymentConfig = {
     },
     preferredPaymentProcessors  : [
         'paypal',
+        'midtrans',
     ],
     
     currencyConversionRounding  : 'FLOOR',

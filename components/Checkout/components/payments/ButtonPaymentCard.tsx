@@ -95,7 +95,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         
         
         // payment data:
-        appropriatePaymentProcessor,
+        appropriatePaymentProcessors,
         
         
         
@@ -127,7 +127,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     
     
-    const isPayUsingPaypal = (appropriatePaymentProcessor === 'paypal');
+    const isPayUsingPaypal = (appropriatePaymentProcessors.includes('paypal'));
     
     
     

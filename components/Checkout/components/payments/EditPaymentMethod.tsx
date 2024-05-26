@@ -114,8 +114,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
         // accessibilities:
         preferredCurrency,
     } = useCartState();
+    
     const {
         // payment data:
+        appropriatePaymentProcessors,
         paymentMethod,
         setPaymentMethod,
         paymentToken,
@@ -128,8 +130,17 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     
     
+    const isPayUsingPaypal   = (appropriatePaymentProcessors.includes('paypal'));
+    const isPayUsingMidtrans = (appropriatePaymentProcessors.includes('midtrans'));
+    
+    
+    
     // payment method options:
-    const paymentMethodList : PaymentMethod[] = ['card', 'paypal', 'qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart', 'manual'];
+    const paymentMethodList : PaymentMethod[] = Array.from(new Set([
+        ...(isPayUsingPaypal   ? (['card' /* card must be the first index */, 'paypal'] satisfies PaymentMethod[]) : []),
+        ...(isPayUsingMidtrans ? (['card' /* card must be the first index */, 'qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
+        'manual',
+    ]));
     
     
     
@@ -190,7 +201,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                     // handlers:
                     onExpandedChange={handlePaymentMethodExpandedChange}
                 >
-                    <AccordionItem
+                    {(isPayUsingPaypal || isPayUsingMidtrans) && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
@@ -226,9 +237,9 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         }
                     >
                         <EditPaymentMethodCard />
-                    </AccordionItem>
+                    </AccordionItem>}
                     
-                    <AccordionItem
+                    {isPayUsingPaypal && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
@@ -254,9 +265,9 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         }
                     >
                         <ViewPaymentMethodPaypal />
-                    </AccordionItem>
+                    </AccordionItem>}
                     
-                    <AccordionItem
+                    {isPayUsingMidtrans && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
@@ -282,9 +293,9 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         }
                     >
                         <ViewPaymentMethodQris />
-                    </AccordionItem>
+                    </AccordionItem>}
                     
-                    <AccordionItem
+                    {isPayUsingMidtrans && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
@@ -313,9 +324,9 @@ const EditPaymentMethod = (): JSX.Element|null => {
                             paymentSource='gopay'
                             appName='GoPay'
                         />
-                    </AccordionItem>
+                    </AccordionItem>}
                     
-                    <AccordionItem
+                    {isPayUsingMidtrans && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
@@ -344,9 +355,9 @@ const EditPaymentMethod = (): JSX.Element|null => {
                             paymentSource='shopeepay'
                             appName='ShopeePay'
                         />
-                    </AccordionItem>
+                    </AccordionItem>}
                     
-                    <AccordionItem
+                    {isPayUsingMidtrans && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
@@ -375,9 +386,9 @@ const EditPaymentMethod = (): JSX.Element|null => {
                             paymentSource='indomaret'
                             storeName='Indomaret'
                         />
-                    </AccordionItem>
+                    </AccordionItem>}
                     
-                    <AccordionItem
+                    {isPayUsingMidtrans && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
@@ -406,7 +417,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                             paymentSource='alfamart'
                             storeName='Alfamart'
                         />
-                    </AccordionItem>
+                    </AccordionItem>}
                     
                     <AccordionItem
                         // accessibilities:

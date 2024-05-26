@@ -114,7 +114,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
         
         
         // payment data:
-        appropriatePaymentProcessor,
+        appropriatePaymentProcessors,
         paymentValidation,
         
         
@@ -151,7 +151,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     
     // handlers:
-    const handleCreateOrder    = useEvent(async (): Promise<string> => {
+    const handleCreateOrder = useEvent(async (): Promise<string> => {
         try {
             const draftOrderDetail = await doPlaceOrder();
             if (!draftOrderDetail) throw Error('Oops, an error occured!');
@@ -165,8 +165,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     
     
-    const isPayUsingPaypal   = (appropriatePaymentProcessor === 'paypal');
-    const isPayUsingMidtrans = (appropriatePaymentProcessor === 'midtrans');
+    const isPayUsingPaypal = (appropriatePaymentProcessors.includes('paypal'));
     
     
     
