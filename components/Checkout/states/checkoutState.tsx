@@ -1476,6 +1476,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             
+            if (!cartItems.length) return true; // if cart is empty => always success
             try {
                 await placeOrder({
                     // currency options:
