@@ -721,7 +721,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             .map(([name, value]) => name)
         );
     }, [preferredCurrency]);
-    console.log({preferredCurrency, appropriatePaymentProcessors});
     
     const checkoutProgress            = calculateCheckoutProgress(checkoutStep);
     const isPaymentTokenValid         = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());

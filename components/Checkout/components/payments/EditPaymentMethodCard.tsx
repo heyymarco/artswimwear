@@ -92,15 +92,15 @@ import {
 // utilities:
 const cardNumberOptions  : PayPalHostedFieldExtendedProps['options'] = {
     selector    : '#cardNumber',
-    placeholder : 'Card Number',
+    placeholder : '1111-2222-3333-4444',
 };
 const cardExpiresOptions : PayPalHostedFieldExtendedProps['options'] = {
     selector    : '#cardExpires',
-    placeholder : 'MM / YY',
+    placeholder : '11/2020',
 };
 const cardCvvOptions     : PayPalHostedFieldExtendedProps['options'] = {
     selector    : '#cardCvv',
-    placeholder : 'Security Code',
+    placeholder : '123',
 };
 
 
@@ -170,402 +170,178 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     
     // jsx:
-    const creditCardFields = (
-        <ValidationProvider
-            // validations:
-            enableValidation={paymentValidation}
+    const labelCardNumber = (
+        <Label
+            // refs:
+            elmRef={safeSignRef}
+            
+            
+            
+            // variants:
+            theme='success'
+            mild={true}
+            
+            
+            
+            // classes:
+            className='solid'
         >
-            <div className='instruct'>
-                <p>
-                    Fill in your credit card information below and then click the <em>Pay Now</em> button:
-                </p>
-            </div>
-            
-            <InputWithLabel
+            <Icon
                 // appearances:
-                icon='credit_card'
-                
-                
-                
-                // classes:
-                className='number'
-                
-                
-                
-                // components:
-                inputComponent={
-                    (() => {
-                        if (isPayUsingPaypal) return (
-                            <PayPalHostedFieldExtended
-                                // identifiers:
-                                id='cardNumber'
-                                
-                                
-                                
-                                // classes:
-                                className='hostedField'
-                                
-                                
-                                
-                                // formats:
-                                hostedFieldType='number'
-                                
-                                
-                                
-                                // options:
-                                options={cardNumberOptions}
-                            />
-                        );
-                        return (
-                            <CreditCardNumberEditor
-                                // forms:
-                                name='cardNumber'
-                            />
-                        );
-                    })()
-                }
-                
-                
-                
-                // children:
-                childrenAfter={
-                    <Label
-                        // refs:
-                        elmRef={safeSignRef}
-                        
-                        
-                        
-                        // variants:
-                        theme='success'
-                        mild={true}
-                        
-                        
-                        
-                        // classes:
-                        className='solid'
-                    >
-                        <Icon
-                            // appearances:
-                            icon='lock'
-                        />
-                        
-                        <Tooltip
-                            // variants:
-                            theme='warning'
-                            
-                            
-                            
-                            // classes:
-                            className='tooltip'
-                            
-                            
-                            
-                            // floatable:
-                            floatingOn={safeSignRef}
-                        >
-                            <p>
-                                All transactions are secure and encrypted.
-                            </p>
-                            <p>
-                                Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
-                            </p>
-                            <p>
-                                The card data will be forwarded to our payment gateway (PayPal).<br />
-                                We won&apos;t store your card data into our database.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                }
+                icon='lock'
             />
             
-            <InputWithLabel
-                // appearances:
-                icon='person'
+            <Tooltip
+                // variants:
+                theme='warning'
                 
                 
                 
                 // classes:
-                className='name'
+                className='tooltip'
                 
                 
                 
-                // components:
-                inputComponent={
-                    <CreditCardNameEditor
-                        // refs:
-                        elmRef={cardholderInputRef}
-                        
-                        
-                        
-                        // forms:
-                        name='cardHolder'
-                    />
-                }
-                
-                
-                
-                // children:
-                childrenAfter={
-                    <Label
-                        // refs:
-                        elmRef={nameSignRef}
-                        
-                        
-                        
-                        // variants:
-                        theme='success'
-                        mild={true}
-                        
-                        
-                        
-                        // classes:
-                        className='solid'
-                    >
-                        <Icon
-                            // appearances:
-                            icon='help'
-                        />
-                        <Tooltip
-                            // variants:
-                            theme='warning'
-                            
-                            
-                            
-                            // classes:
-                            className='tooltip'
-                            
-                            
-                            
-                            // floatable:
-                            floatingOn={nameSignRef}
-                        >
-                            <p>
-                                The owner name as printed on front card.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                }
-            />
-            
-            <InputWithLabel
-                // appearances:
-                icon='date_range'
-                
-                
-                
-                // classes:
-                className='expiry'
-                
-                
-                
-                // components:
-                inputComponent={
-                    (() => {
-                        if (isPayUsingPaypal) return (
-                            <PayPalHostedFieldExtended
-                                // identifiers:
-                                id='cardExpires'
-                                
-                                
-                                
-                                // classes:
-                                className='hostedField'
-                                
-                                
-                                
-                                // formats:
-                                hostedFieldType='expirationDate'
-                                
-                                
-                                
-                                // options:
-                                options={cardExpiresOptions}
-                            />
-                        );
-                        return (
-                            <CreditCardExpiresEditor
-                                // forms:
-                                name='cardExpires'
-                            />
-                        );
-                    })()
-                }
-                
-                
-                
-                // children:
-                childrenAfter={
-                    <Label
-                        // refs:
-                        elmRef={dateSignRef}
-                        
-                        
-                        
-                        // variants:
-                        theme='success'
-                        mild={true}
-                        
-                        
-                        
-                        // classes:
-                        className='solid'
-                    >
-                        <Icon
-                            // appearances:
-                            icon='help'
-                        />
-                        <Tooltip
-                            // variants:
-                            theme='warning'
-                            
-                            
-                            
-                            // classes:
-                            className='tooltip'
-                            
-                            
-                            
-                            // floatable:
-                            floatingOn={dateSignRef}
-                        >
-                            <p>
-                                The expiration date as printed on front card.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                }
-            />
-            
-            <InputWithLabel
-                // appearances:
-                icon='edit'
-                
-                
-                
-                // classes:
-                className='csc'
-                
-                
-                
-                // components:
-                inputComponent={
-                    (() => {
-                        if (isPayUsingPaypal) return (
-                            <PayPalHostedFieldExtended
-                                // identifiers:
-                                id='cardCvv'
-                                
-                                
-                                
-                                // classes:
-                                className='hostedField'
-                                
-                                
-                                
-                                // formats:
-                                hostedFieldType='cvv'
-                                
-                                
-                                
-                                // options:
-                                options={cardCvvOptions}
-                            />
-                        );
-                        return (
-                            <CreditCardCvvEditor
-                                // forms:
-                                name='cardCvv'
-                            />
-                        );
-                    })()
-                }
-                
-                
-                
-                // children:
-                childrenAfter={
-                    <Label
-                        // refs:
-                        elmRef={cscSignRef}
-                        
-                        
-                        
-                        // variants:
-                        theme='success'
-                        mild={true}
-                        
-                        
-                        
-                        // classes:
-                        className='solid'
-                    >
-                        <Icon
-                            // appearances:
-                            icon='help'
-                        />
-                        <Tooltip
-                            // variants:
-                            theme='warning'
-                            
-                            
-                            
-                            // classes:
-                            className='tooltip'
-                            
-                            
-                            
-                            // floatable:
-                            floatingOn={cscSignRef}
-                        >
-                            <p>
-                                3-digit security code usually found on the back of your card.
-                            </p>
-                            <p>
-                                American Express cards have a 4-digit code located on the front.
-                            </p>
-                        </Tooltip>
-                    </Label>
-                }
-            />
-            
-            <hr className='horz1' />
-            
-            <Collapse
-                // refs:
-                elmRef={billingAddressSectionRef}
-                
-                
-                
-                // semantics:
-                tag='section'
-                
-                
-                
-                // classes:
-                className='billing'
-                
-                
-                
-                // behaviors:
-                // lazy={true} // causes collapsing animation error
-                
-                
-                
-                // states:
-                expanded={isBillingAddressRequired}
+                // floatable:
+                floatingOn={safeSignRef}
             >
                 <p>
-                    Enter the address that matches your card&apos;s billing address.
+                    All transactions are secure and encrypted.
                 </p>
-                <EditBillingAddress />
-                
-                <hr className='horz2' />
-            </Collapse>
-            
-            <ButtonPaymentCard />
-        </ValidationProvider>
+                <p>
+                    Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
+                </p>
+                <p>
+                    The card data will be forwarded to our payment gateway (PayPal).<br />
+                    We won&apos;t store your card data into our database.
+                </p>
+            </Tooltip>
+        </Label>
     );
-    if (isPayUsingPaypal) return (
+    const labelCardName   = (
+        <Label
+            // refs:
+            elmRef={nameSignRef}
+            
+            
+            
+            // variants:
+            theme='success'
+            mild={true}
+            
+            
+            
+            // classes:
+            className='solid'
+        >
+            <Icon
+                // appearances:
+                icon='help'
+            />
+            <Tooltip
+                // variants:
+                theme='warning'
+                
+                
+                
+                // classes:
+                className='tooltip'
+                
+                
+                
+                // floatable:
+                floatingOn={nameSignRef}
+            >
+                <p>
+                    The owner name as printed on front card.
+                </p>
+            </Tooltip>
+        </Label>
+    );
+    const labelCardExpiry = (
+        <Label
+            // refs:
+            elmRef={dateSignRef}
+            
+            
+            
+            // variants:
+            theme='success'
+            mild={true}
+            
+            
+            
+            // classes:
+            className='solid'
+        >
+            <Icon
+                // appearances:
+                icon='help'
+            />
+            <Tooltip
+                // variants:
+                theme='warning'
+                
+                
+                
+                // classes:
+                className='tooltip'
+                
+                
+                
+                // floatable:
+                floatingOn={dateSignRef}
+            >
+                <p>
+                    The expiration date as printed on front card.
+                </p>
+            </Tooltip>
+        </Label>
+    );
+    const labelCardCvv    = (
+        <Label
+            // refs:
+            elmRef={cscSignRef}
+            
+            
+            
+            // variants:
+            theme='success'
+            mild={true}
+            
+            
+            
+            // classes:
+            className='solid'
+        >
+            <Icon
+                // appearances:
+                icon='help'
+            />
+            <Tooltip
+                // variants:
+                theme='warning'
+                
+                
+                
+                // classes:
+                className='tooltip'
+                
+                
+                
+                // floatable:
+                floatingOn={cscSignRef}
+            >
+                <p>
+                    3-digit security code usually found on the back of your card.
+                </p>
+                <p>
+                    American Express cards have a 4-digit code located on the front.
+                </p>
+            </Tooltip>
+        </Label>
+    );
+    return (
         <PayPalHostedFieldsProvider
             // styles:
             styles={hostedFieldsStyle}
@@ -575,13 +351,281 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
             // handlers:
             createOrder={handleCreateOrder}
         >
-            {creditCardFields}
+            <ValidationProvider
+                // validations:
+                enableValidation={paymentValidation}
+            >
+                <div className='instruct'>
+                    <p>
+                        Fill in your credit card information below and then click the <em>Pay Now</em> button:
+                    </p>
+                </div>
+                
+                {/* conditional visibility via css */}
+                <InputWithLabel
+                    // appearances:
+                    icon='credit_card'
+                    
+                    
+                    
+                    // classes:
+                    className={'number' + (isPayUsingPaypal ? '' : ' hidden')}
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <PayPalHostedFieldExtended
+                            // identifiers:
+                            id='cardNumber'
+                            
+                            
+                            
+                            // classes:
+                            className='hostedField'
+                            
+                            
+                            
+                            // formats:
+                            hostedFieldType='number'
+                            
+                            
+                            
+                            // options:
+                            options={cardNumberOptions}
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardNumber}
+                />
+                {/* conditional re-render */}
+                {!isPayUsingPaypal && <InputWithLabel
+                    // appearances:
+                    icon='credit_card'
+                    
+                    
+                    
+                    // classes:
+                    className='number'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <CreditCardNumberEditor
+                            // forms:
+                            name='cardNumber'
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardNumber}
+                />}
+                
+                <InputWithLabel
+                    // appearances:
+                    icon='person'
+                    
+                    
+                    
+                    // classes:
+                    className='name'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <CreditCardNameEditor
+                            // refs:
+                            elmRef={cardholderInputRef}
+                            
+                            
+                            
+                            // forms:
+                            name='cardHolder'
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardName}
+                />
+                
+                {/* conditional visibility via css */}
+                <InputWithLabel
+                    // appearances:
+                    icon='date_range'
+                    
+                    
+                    
+                    // classes:
+                    className={'expiry' + (isPayUsingPaypal ? '' : ' hidden')}
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <PayPalHostedFieldExtended
+                            // identifiers:
+                            id='cardExpires'
+                            
+                            
+                            
+                            // classes:
+                            className='hostedField'
+                            
+                            
+                            
+                            // formats:
+                            hostedFieldType='expirationDate'
+                            
+                            
+                            
+                            // options:
+                            options={cardExpiresOptions}
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardExpiry}
+                />
+                {/* conditional re-render */}
+                {!isPayUsingPaypal && <InputWithLabel
+                    // appearances:
+                    icon='date_range'
+                    
+                    
+                    
+                    // classes:
+                    className='expiry'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <CreditCardExpiresEditor
+                            // forms:
+                            name='cardExpires'
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardExpiry}
+                />}
+                
+                {/* conditional visibility via css */}
+                <InputWithLabel
+                    // appearances:
+                    icon='edit'
+                    
+                    
+                    
+                    // classes:
+                    className={'csc' + (isPayUsingPaypal ? '' : ' hidden')}
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <PayPalHostedFieldExtended
+                            // identifiers:
+                            id='cardCvv'
+                            
+                            
+                            
+                            // classes:
+                            className='hostedField'
+                            
+                            
+                            
+                            // formats:
+                            hostedFieldType='cvv'
+                            
+                            
+                            
+                            // options:
+                            options={cardCvvOptions}
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardCvv}
+                />
+                {/* conditional re-render */}
+                {!isPayUsingPaypal && <InputWithLabel
+                    // appearances:
+                    icon='edit'
+                    
+                    
+                    
+                    // classes:
+                    className='csc'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <CreditCardCvvEditor
+                            // forms:
+                            name='cardCvv'
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardCvv}
+                />}
+                
+                <hr className='horz1' />
+                
+                <Collapse
+                    // refs:
+                    elmRef={billingAddressSectionRef}
+                    
+                    
+                    
+                    // semantics:
+                    tag='section'
+                    
+                    
+                    
+                    // classes:
+                    className='billing'
+                    
+                    
+                    
+                    // behaviors:
+                    // lazy={true} // causes collapsing animation error
+                    
+                    
+                    
+                    // states:
+                    expanded={isBillingAddressRequired}
+                >
+                    <p>
+                        Enter the address that matches your card&apos;s billing address.
+                    </p>
+                    <EditBillingAddress />
+                    
+                    <hr className='horz2' />
+                </Collapse>
+                
+                <ButtonPaymentCard />
+            </ValidationProvider>
         </PayPalHostedFieldsProvider>
-    );
-    return (
-        <div>
-            {creditCardFields}
-        </div>
     );
 };
 export {
