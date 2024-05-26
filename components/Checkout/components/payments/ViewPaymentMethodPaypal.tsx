@@ -22,6 +22,7 @@ import {
 import type {
     CreateOrderData,
     CreateOrderActions,
+    OnCancelledActions,
     OnApproveActions,
     OnApproveData,
     OnShippingChangeActions,
@@ -53,6 +54,7 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     
     // dialogs:
     const {
+        showMessageError,
         showMessageFetchError,
     } = useDialogMessage();
     
@@ -78,6 +80,32 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
             throw fetchError;
         } // try
+    });
+    const handleCancelOrder = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
+        // notify cancel transaction, so the authorized payment will be released:
+        const rawOrderId = data.orderID as string;
+        const orderId = (
+            rawOrderId.startsWith('#PAYPAL_')
+            ? rawOrderId              // already prefixed => no need to modify
+            : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+        );
+        (doMakePayment(orderId, /*paid:*/false, { cancelOrder: true }))
+        .catch(() => {
+            // ignore any error
+        });
+        
+        
+        
+        showMessageError({
+            error: <>
+                <p>
+                    The transaction has been <strong>canceled</strong> by the user.
+                </p>
+                <p>
+                    <strong>No funds</strong> have been deducted.
+                </p>
+            </>
+        });
     });
     const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         doTransaction(async () => {
@@ -140,6 +168,7 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     });
     const handleError          = useEvent((err: Record<string, unknown>): void => {
         // already handled by `handleCreateOrder()` & `handleFundApproved()`
+        console.log('paypal button error', err);
     });
     
     
@@ -154,10 +183,13 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             <PayPalButtons
                 // handlers:
                 createOrder={handleCreateOrder}
+                onCancel={handleCancelOrder}
                 onApprove={handleFundApproved}
                 onShippingChange={handleShippingChange}
                 onError={handleError}
-            />
+            >
+                test
+            </PayPalButtons>
         </>
     );
 };
