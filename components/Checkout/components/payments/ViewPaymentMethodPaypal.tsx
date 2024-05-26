@@ -63,7 +63,16 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
         try {
             const draftOrderDetail = await doPlaceOrder(data);
             if (!draftOrderDetail) throw Error('Oops, an error occured!');
-            return draftOrderDetail.orderId;
+            
+            
+            
+            const rawOrderId = draftOrderDetail.orderId;
+            const orderId = (
+                rawOrderId.startsWith('#PAYPAL_')
+                ? rawOrderId.slice(8) // remove prefix #PAYPAL_
+                : rawOrderId
+            );
+            return orderId;
         }
         catch (fetchError: any) {
             if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
@@ -73,8 +82,14 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         doTransaction(async () => {
             try {
+                const rawOrderId = paypalAuthentication.orderID;
+                const orderId = (
+                    rawOrderId.startsWith('#PAYPAL_')
+                    ? rawOrderId              // already prefixed => no need to modify
+                    : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+                );
                 // forward the authentication to backend_API to receive the fund agreement:
-                await doMakePayment(paypalAuthentication.orderID, /*paid:*/true);
+                await doMakePayment(orderId, /*paid:*/true);
             }
             catch (fetchError: any) {
                 showMessageFetchError({ fetchError, context: 'payment' });
