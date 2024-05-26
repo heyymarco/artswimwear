@@ -4,6 +4,11 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useRef,
 }                           from 'react'
 
 // reusable-ui core:
@@ -61,7 +66,22 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     
     
     // handlers:
+    const signalOrderFinishedRef = useRef<(() => void)|undefined>(undefined);
     const handleCreateOrder    = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
+        doTransaction((): Promise<void> => {
+            signalOrderFinishedRef.current?.();
+            signalOrderFinishedRef.current = undefined;
+            
+            
+            
+            const promiseOrderFinished = new Promise<void>((resolved) => {
+                signalOrderFinishedRef.current = resolved;
+            });
+            return promiseOrderFinished;
+        });
+        
+        
+        
         try {
             const draftOrderDetail = await doPlaceOrder(data);
             if (!draftOrderDetail) throw Error('Oops, an error occured!');
@@ -77,52 +97,65 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             return orderId;
         }
         catch (fetchError: any) {
+            signalOrderFinishedRef.current?.();
+            signalOrderFinishedRef.current = undefined;
+            
+            
+            
             if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
             throw fetchError;
         } // try
     });
     const handleCancelOrder = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
-        // notify cancel transaction, so the authorized payment will be released:
-        const rawOrderId = data.orderID as string;
-        const orderId = (
-            rawOrderId.startsWith('#PAYPAL_')
-            ? rawOrderId              // already prefixed => no need to modify
-            : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
-        );
-        (doMakePayment(orderId, /*paid:*/false, { cancelOrder: true }))
-        .catch(() => {
-            // ignore any error
-        });
-        
-        
-        
-        showMessageError({
-            error: <>
-                <p>
-                    The transaction has been <strong>canceled</strong> by the user.
-                </p>
-                <p>
-                    <strong>No funds</strong> have been deducted.
-                </p>
-            </>
-        });
+        try {
+            // notify cancel transaction, so the authorized payment will be released:
+            const rawOrderId = data.orderID as string;
+            const orderId = (
+                rawOrderId.startsWith('#PAYPAL_')
+                ? rawOrderId              // already prefixed => no need to modify
+                : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+            );
+            (doMakePayment(orderId, /*paid:*/false, { cancelOrder: true }))
+            .catch(() => {
+                // ignore any error
+            });
+            
+            
+            
+            showMessageError({
+                error: <>
+                    <p>
+                        The transaction has been <strong>canceled</strong> by the user.
+                    </p>
+                    <p>
+                        <strong>No funds</strong> have been deducted.
+                    </p>
+                </>
+            });
+        }
+        finally {
+            signalOrderFinishedRef.current?.();
+            signalOrderFinishedRef.current = undefined;
+        } // try
     });
     const handleFundApproved   = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
-        doTransaction(async () => {
-            try {
-                const rawOrderId = paypalAuthentication.orderID;
-                const orderId = (
-                    rawOrderId.startsWith('#PAYPAL_')
-                    ? rawOrderId              // already prefixed => no need to modify
-                    : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
-                );
-                // forward the authentication to backend_API to receive the fund agreement:
-                await doMakePayment(orderId, /*paid:*/true);
-            }
-            catch (fetchError: any) {
-                showMessageFetchError({ fetchError, context: 'payment' });
-            } // try
-        });
+        try {
+            const rawOrderId = paypalAuthentication.orderID;
+            const orderId = (
+                rawOrderId.startsWith('#PAYPAL_')
+                ? rawOrderId              // already prefixed => no need to modify
+                : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+            );
+            // forward the authentication to backend_API to receive the fund agreement:
+            await doMakePayment(orderId, /*paid:*/true);
+        }
+        catch (fetchError: any) {
+            showMessageFetchError({ fetchError, context: 'payment' });
+        }
+        finally {
+            signalOrderFinishedRef.current?.();
+            signalOrderFinishedRef.current = undefined;
+        } // try
     });
     const handleShippingChange = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
         // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
