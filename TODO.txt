@@ -1,5 +1,4 @@
 [high prior] display expirity date for payment with manual|indomaret|alfamart
-[high prior] fix badge top most
 
 [high prior] verify breaking change <UpdateStatePlugin> .__first
 TODO: fix table layout to use subgrid

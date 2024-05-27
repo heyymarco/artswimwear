@@ -122,15 +122,7 @@ const SiteNavbarMenu = ({
                 
                 // handlers:
                 onClick={showCart}
-            >
-                <CartStatus
-                    // floatable:
-                    floatingOn={cartTogglerRef}
-                    floatingPlacement='right-start'
-                    floatingOffset={-16}
-                    floatingShift={3}
-                />
-            </ButtonIcon>}
+            />}
             
             {!navbarExpanded && <HamburgerMenuButton
                 // variants:
@@ -207,18 +199,19 @@ const SiteNavbarMenu = ({
                         onClick={showCart}
                     >
                         <Icon icon='shopping_cart' size='lg' />
-                        <CartStatus
-                            // floatable:
-                            floatingOn={cartTogglerRef}
-                            floatingPlacement='right-start'
-                            floatingOffset={-24}
-                            floatingShift={10}
-                        />
                     </ListItem>}
                     
                     <SignInMenu />
                 </Nav>
             </Collapse>
+            
+            {!isCartEmpty && <CartStatus
+                // floatable:
+                floatingOn={cartTogglerRef}
+                floatingPlacement='right-start'
+                floatingOffset={navbarExpanded ? -24 : -16}
+                floatingShift={navbarExpanded ? 10 : 3}
+            />}
         </>
     );
 };
