@@ -142,6 +142,10 @@ export const checkoutConfigServer : CheckoutConfigServer = {
             </td></tr></tbody></table>
         </article>,
         confirmationUrl : '/checkout/payment-confirmation',
+        expires : {
+            manual      : 2 /* days */,
+            cstore      : 2 /* days */,
+        },
     },
     shipping            : {
         trackingUrl     : '/checkout/shipping-tracking',

@@ -13,6 +13,10 @@ export interface BusinessConfig {
 export interface PaymentConfig {
     bank                ?: React.ReactNode
     confirmationUrl      : string
+    expires : {
+        manual           : number /* days */
+        cstore           : number /* days */
+    },
 }
 export interface ShippingConfig {
     trackingUrl          : string
