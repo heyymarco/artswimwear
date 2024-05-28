@@ -126,6 +126,9 @@ import {
 
 // configs:
 import {
+    checkoutConfigServer,
+}                           from '@/checkout.config.server'
+import {
     commerceConfig,
 }                           from '@/commerce.config'
 import {
@@ -1388,6 +1391,7 @@ router
                     type       : 'MANUAL',
                     brand      : null,
                     identifier : null,
+                    expiresAt  : new Date(Date.now() + (checkoutConfigServer.payment.expires.manual * 24 * 60 * 60 * 1000)),
                     
                     amount     : 0,
                     fee        : 0,
