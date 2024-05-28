@@ -5,13 +5,31 @@ import type {
 
 
 
-export const checkoutConfigShared : CheckoutConfigShared = {
-    business            : {
-        name            : process.env.NEXT_PUBLIC_BUSINESS_NAME ?? '',
-        url             : process.env.NEXT_PUBLIC_BUSINESS_URL  ?? '',
+export const checkoutConfigShared  : CheckoutConfigShared = {
+    business                       : {
+        name                       : process.env.NEXT_PUBLIC_BUSINESS_NAME ?? '',
+        url                        : process.env.NEXT_PUBLIC_BUSINESS_URL  ?? '',
     },
-    intl                : {
-        locale          : process.env.NEXT_PUBLIC_INTL_LOCALE || 'id-ID',
-        defaultTimeZone : Number.parseFloat(process.env.NEXT_PUBLIC_INTL_DEFAULT_TIMEZONE ?? '0') || 0, // GMT+0
+    intl                           : {
+        locale                     : process.env.NEXT_PUBLIC_INTL_LOCALE || 'id-ID',
+        defaultTimeZone            : Number.parseFloat(process.env.NEXT_PUBLIC_INTL_DEFAULT_TIMEZONE ?? '0') || 0, // GMT+0
+        currencies                 : {
+            IDR: {
+                locale             : 'id-ID',
+                sign               : 'Rp',
+                fractionMin        : 2,
+                fractionMax        : 2,
+                fractionUnit       : 100,
+            },
+            USD: {
+                locale             : 'en-US',
+                sign               : '$',
+                fractionMin        : 2,
+                fractionMax        : 2,
+                fractionUnit       : 0.01,
+            },
+        },
+        defaultCurrency            : 'IDR',
+        currencyConversionRounding : 'ROUND',
     },
 };

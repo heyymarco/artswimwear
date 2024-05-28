@@ -10,7 +10,7 @@ import {
 
 
 
-export const checkoutConfigClient : CheckoutConfigClient = {
-    business            : checkoutConfigShared.business,
-    intl                : checkoutConfigShared.intl,
+export const checkoutConfigClient  : CheckoutConfigClient = {
+    business                       : checkoutConfigShared.business,
+    intl                           : checkoutConfigShared.intl,
 };
