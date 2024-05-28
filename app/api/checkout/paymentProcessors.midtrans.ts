@@ -16,6 +16,11 @@ import {
     isAuthorizedFundData,
 }                           from '@/models'
 
+// configs:
+import {
+    checkoutConfigServer,
+}                           from '@/checkout.config.server'
+
 
 
 // utilities:
@@ -546,6 +551,11 @@ export const midtransCreateOrderWithIndomaret = async (orderId: string, options:
         cstore               : {
             store            : 'indomaret',
         },
+        // @ts-ignore
+        custom_expiry        : {
+            unit             : 'day',
+            expiry_duration  : checkoutConfigServer.payment.expires.cstore,
+        },
     }, orderId, options);
     /*
     {
@@ -567,6 +577,11 @@ export const midtransCreateOrderWithAlfamart  = async (orderId: string, options:
         payment_type         : 'cstore',
         cstore               : {
             store            : 'alfamart',
+        },
+        // @ts-ignore
+        custom_expiry        : {
+            unit             : 'day',
+            expiry_duration  : checkoutConfigServer.payment.expires.cstore,
         },
     }, orderId, options);
     /*
