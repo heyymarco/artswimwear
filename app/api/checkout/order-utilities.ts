@@ -240,6 +240,7 @@ const orderAndDataSelect = {
             customerPreference : {
                 select : {
                     marketingOpt : true,
+                    timezone     : true,
                 },
             },
         },
@@ -253,6 +254,7 @@ const orderAndDataSelect = {
             guestPreference : {
                 select : {
                     marketingOpt : true,
+                    timezone     : true,
                 },
             },
         },

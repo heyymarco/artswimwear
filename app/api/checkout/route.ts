@@ -1445,6 +1445,7 @@ router
                 email                : customerEmail,
                 preference           : {
                     marketingOpt     : marketingOpt,
+                    timezone         : null, // TODO: add customer's|guest's timezone
                 },
             };
             const billingAddressData = (
