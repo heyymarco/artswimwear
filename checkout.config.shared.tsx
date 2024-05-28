@@ -12,7 +12,7 @@ export const checkoutConfigShared  : CheckoutConfigShared = {
     },
     intl                           : {
         locale                     : process.env.NEXT_PUBLIC_INTL_LOCALE || 'en-US',
-        defaultTimeZone            : Number.parseFloat(process.env.NEXT_PUBLIC_INTL_DEFAULT_TIMEZONE ?? '0') || 0, // GMT+0
+        defaultTimezone            : Number.parseFloat(process.env.NEXT_PUBLIC_INTL_DEFAULT_TIMEZONE ?? '0') || 0, // GMT+0
         currencies                 : {
             IDR: {
                 locale             : 'id-ID',

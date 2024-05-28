@@ -24,7 +24,7 @@ export interface CurrenciesConfig {
 export type CurrencyConversionRounding = 'ROUND'|'FLOOR'|'CEIL'
 export interface IntlConfig {
     locale                      : string
-    defaultTimeZone             : number
+    defaultTimezone             : number
     
     currencies                  : CurrenciesConfig
     defaultCurrency             : CurrencyCode
