@@ -16,6 +16,8 @@ import {
 
 // models:
 import type {
+    Prisma,
+    
     Product,
     Variant,
     VariantGroup,
@@ -1747,7 +1749,7 @@ router
         
         
         
-        const select = {
+        const paymentConfirmationDetailSelect = {
             reportedAt        : true,
             reviewedAt        : true,
             
@@ -1767,14 +1769,14 @@ router
                     preferredCurrency : true
                 },
             },
-        };
+        } satisfies Prisma.PaymentConfirmationSelect;
         const paymentConfirmationDetailRaw = (
             (amount === undefined)
             ? await prisma.paymentConfirmation.findUnique({
                 where  : {
                     token : paymentConfirmationToken,
                 },
-                select : select,
+                select : paymentConfirmationDetailSelect,
             })
             : await (async() => {
                 try {
@@ -1805,7 +1807,7 @@ router
                             
                             rejectionReason : null, // reset for next review
                         },
-                        select : select,
+                        select : paymentConfirmationDetailSelect,
                     });
                 }
                 catch (error: any) {
@@ -1875,7 +1877,7 @@ Updating the confirmation is not required.`,
         
         
         
-        const select = {
+        const shippingTrackingDetailSelect = {
             shippingCarrier    : true,
             shippingNumber     : true,
             preferredTimezone  : true,
@@ -1885,14 +1887,14 @@ Updating the confirmation is not required.`,
                     log        : true,
                 },
             },
-        };
+        } satisfies Prisma.ShippingTrackingSelect;
         const shippingTrackingDetail : ShippingTrackingDetail|null = (
             (preferredTimezone === undefined)
             ? await prisma.shippingTracking.findUnique({
                 where  : {
                     token : shippingTrackingToken,
                 },
-                select : select,
+                select : shippingTrackingDetailSelect,
             })
             : await prisma.shippingTracking.update({
                 where  : {
@@ -1901,7 +1903,7 @@ Updating the confirmation is not required.`,
                 data   : {
                     preferredTimezone,
                 },
-                select : select,
+                select : shippingTrackingDetailSelect,
             })
         );
         if (!shippingTrackingDetail) {
