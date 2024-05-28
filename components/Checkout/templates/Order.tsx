@@ -49,8 +49,8 @@ import {
 
 // configs:
 import {
-    commerceConfig,
-}                           from '@/commerce.config'
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
 
 
 
@@ -241,7 +241,7 @@ const OrderTotalValue = (props: OrderTotalProps): React.ReactNode => {
             }}
         >
             <CurrencyDisplay amount={[...getProductPriceParts(items), shippingCost]} />
-            <span>{preferredCurrency ? preferredCurrency.currency : commerceConfig.defaultCurrency}</span>
+            <span>{preferredCurrency ? preferredCurrency.currency : checkoutConfigShared.intl.defaultCurrency}</span>
         </span>
     );
 };
