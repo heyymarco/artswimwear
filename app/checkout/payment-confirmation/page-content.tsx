@@ -115,8 +115,8 @@ import {
 
 // configs:
 import {
-    commerceConfig,
-}                           from '@/commerce.config'
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
 
 
 
@@ -175,8 +175,8 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const [originatingBank  , setOriginatingBank  ] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
     const [destinationBank  , setDestinationBank  ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     
-    const currency       = paymentConfirmationData?.currency || commerceConfig.defaultCurrency;
-    const currencyConfig = commerceConfig.currencies[currency] ?? commerceConfig.currencies[commerceConfig.defaultCurrency];
+    const currency       = paymentConfirmationData?.currency || checkoutConfigShared.intl.defaultCurrency;
+    const currencyConfig = checkoutConfigShared.intl.currencies[currency] ?? checkoutConfigShared.intl.currencies[checkoutConfigShared.intl.defaultCurrency];
     
     const [rejectionReason  , setRejectionReason  ] = useState<WysiwygEditorState|null>(null);
     const isReviewed    = !!reviewedAt;
