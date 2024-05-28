@@ -10,6 +10,10 @@ export interface BusinessConfig {
     name                 : string
     url                  : string
 }
+export interface IntlConfig {
+    locale               : string
+    defaultTimeZone      : number
+}
 export interface PaymentConfig {
     bank                ?: React.ReactNode
     confirmationUrl      : string
@@ -48,4 +52,5 @@ export interface CheckoutConfigClient extends CheckoutConfigShared {
 }
 export interface CheckoutConfigShared {
     business             : BusinessConfig
+    intl                 : IntlConfig
 }
