@@ -12,8 +12,8 @@ import {
 
 // configs:
 import {
-    commerceConfig,
-}                           from '@/commerce.config'
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
 
 
 
@@ -28,7 +28,7 @@ const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(prop
     // default props:
     const {
         // values:
-        valueOptions = Object.keys(commerceConfig.currencies), // defaults to currencies in config
+        valueOptions = Object.keys(checkoutConfigShared.intl.currencies), // defaults to currencies in config
         
         
         
