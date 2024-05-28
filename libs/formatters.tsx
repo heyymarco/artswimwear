@@ -4,26 +4,27 @@ import {
     default as React,
 }                           from 'react'
 
+// configs:
 import {
-    commerceConfig,
-} from '../commerce.config'
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
 
 
 
-export const formatCurrency = (value: number|null|undefined, currency: string = commerceConfig.defaultCurrency): JSX.Element|null => {
+export const formatCurrency = (value: number|null|undefined, currency: string = checkoutConfigShared.intl.defaultCurrency): JSX.Element|null => {
     if ((value === null) || (value === undefined) || isNaN(value)) return <>-</>;
     
     
     
     const currencySign = getCurrencySign(currency);
-    const currencyFormatter = new Intl.NumberFormat(commerceConfig.currencies[currency]?.locale ?? commerceConfig.locale, {
+    const currencyFormatter = new Intl.NumberFormat(checkoutConfigShared.intl.currencies[currency]?.locale ?? checkoutConfigShared.intl.locale, {
         style                 : 'currency',
         currency              : currency,
         currencyDisplay       : 'narrowSymbol',
         
         // These options are needed to round to whole numbers if that's what you want.
-        minimumFractionDigits : commerceConfig.currencies[currency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-        maximumFractionDigits : commerceConfig.currencies[currency].fractionMax, // (causes 2500.99 to be printed as $2,501)
+        minimumFractionDigits : checkoutConfigShared.intl.currencies[currency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+        maximumFractionDigits : checkoutConfigShared.intl.currencies[currency].fractionMax, // (causes 2500.99 to be printed as $2,501)
     });
     return (<>
         {
@@ -42,20 +43,20 @@ export const formatCurrency = (value: number|null|undefined, currency: string = 
         }
     </>);
 };
-export const getCurrencySign = (currency: string = commerceConfig.defaultCurrency): string => {
-    const currencySignFromConfig = commerceConfig.currencies[currency]?.sign;
+export const getCurrencySign = (currency: string = checkoutConfigShared.intl.defaultCurrency): string => {
+    const currencySignFromConfig = checkoutConfigShared.intl.currencies[currency]?.sign;
     if (!!currencySignFromConfig) return currencySignFromConfig;
     
     
     
-    const currencyFormatter = new Intl.NumberFormat(commerceConfig.currencies[currency]?.locale ?? commerceConfig.locale, {
+    const currencyFormatter = new Intl.NumberFormat(checkoutConfigShared.intl.currencies[currency]?.locale ?? checkoutConfigShared.intl.locale, {
         style                 : 'currency',
         currency              : currency,
         currencyDisplay       : 'narrowSymbol',
         
         // These options are needed to round to whole numbers if that's what you want.
-        minimumFractionDigits : commerceConfig.currencies[currency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-        maximumFractionDigits : commerceConfig.currencies[currency].fractionMax, // (causes 2500.99 to be printed as $2,501)
+        minimumFractionDigits : checkoutConfigShared.intl.currencies[currency].fractionMin, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
+        maximumFractionDigits : checkoutConfigShared.intl.currencies[currency].fractionMax, // (causes 2500.99 to be printed as $2,501)
     });
     return currencyFormatter.formatToParts(/* test value to render: */1).find(({type}) => (type === 'currency'))?.value ?? '';
 }
