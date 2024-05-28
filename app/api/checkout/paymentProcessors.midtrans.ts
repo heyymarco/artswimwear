@@ -540,12 +540,11 @@ export const midtransCreateOrderWithShopeepay = async (orderId: string, options:
     }
     */
 }
-export const midtransCreateOrderWithIndomaret = async (orderLabel: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithIndomaret = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     return midtransCreateOrderGeneric<'cstore'>({
         payment_type         : 'cstore',
         cstore               : {
             store            : 'indomaret',
-            message          : orderLabel,
         },
     }, orderId, options);
     /*
@@ -563,12 +562,11 @@ export const midtransCreateOrderWithIndomaret = async (orderLabel: string, order
     }
     */
 }
-export const midtransCreateOrderWithAlfamart  = async (orderLabel: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const midtransCreateOrderWithAlfamart  = async (orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     return midtransCreateOrderGeneric<'cstore'>({
-        payment_type             : 'cstore',
-        cstore                   : {
-            store                : 'alfamart',
-            alfamart_free_text_1 : orderLabel,
+        payment_type         : 'cstore',
+        cstore               : {
+            store            : 'alfamart',
         },
     }, orderId, options);
     /*

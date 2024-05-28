@@ -1258,8 +1258,7 @@ router
                 } // if
             }
             else if (paymentSource === 'indomaret') {
-                const orderLabel : string = `${shippingFirstName} ${shippingLastName}`.slice(0, 20);
-                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithIndomaret(orderLabel, orderId, {
+                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithIndomaret(orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
@@ -1322,8 +1321,7 @@ router
                 } // if
             }
             else if (paymentSource === 'alfamart') {
-                const orderLabel : string = `${shippingFirstName} ${shippingLastName}`.slice(0, 20);
-                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithAlfamart(orderLabel, orderId, {
+                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithAlfamart(orderId, {
                     preferredCurrency,
                     totalCostConverted,
                     totalProductPriceConverted,
