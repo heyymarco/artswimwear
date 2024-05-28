@@ -10,8 +10,8 @@ import type {
 
 // configs:
 import {
-    commerceConfig,
-}                           from '@/commerce.config'
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
 import {
     paymentConfig,
 }                           from '@/payment.config'
@@ -67,7 +67,7 @@ export const getCurrencyRate = async (targetCurrency: string): Promise<number> =
 const getCurrencyConverter   = async (targetCurrency: string): Promise<{rate: number, fractionUnit: number}> => {
     return {
         rate         : await getCurrencyRate(targetCurrency),
-        fractionUnit : commerceConfig.currencies[targetCurrency].fractionUnit,
+        fractionUnit : checkoutConfigShared.intl.currencies[targetCurrency].fractionUnit,
     };
 }
 
@@ -82,7 +82,7 @@ const getCurrencyConverter   = async (targetCurrency: string): Promise<{rate: nu
 export const convertCustomerCurrencyIfRequired = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string|PreferredCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
-    if (customerCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
+    if (customerCurrency === checkoutConfigShared.intl.defaultCurrency) return fromAmount; // the same currency => nothing to convert
     
     
     
@@ -91,7 +91,7 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
         ? await getCurrencyConverter(customerCurrency)
         : {
             rate         : customerCurrency.rate,
-            fractionUnit : commerceConfig.currencies[customerCurrency.currency].fractionUnit
+            fractionUnit : checkoutConfigShared.intl.currencies[customerCurrency.currency].fractionUnit
         }
     );
     const rawConverted         = fromAmount * rate;
@@ -99,7 +99,7 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
         ROUND : Math.round,
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
-    }[commerceConfig.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
+    }[checkoutConfigShared.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
@@ -118,7 +118,7 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
 export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|null|undefined>(fromAmount: TNumber, sourceCurrency: string, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;                   // null|undefined    => nothing to convert
-    if (paypalCurrency === commerceConfig.defaultCurrency) return fromAmount; // the same currency => nothing to convert
+    if (paypalCurrency === checkoutConfigShared.intl.defaultCurrency) return fromAmount; // the same currency => nothing to convert
     
     
     
