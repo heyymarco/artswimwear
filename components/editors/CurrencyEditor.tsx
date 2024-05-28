@@ -20,8 +20,8 @@ import {
 
 // configs:
 import {
-    commerceConfig,
-}                           from '@/commerce.config'
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
 
 
 
@@ -56,12 +56,12 @@ const CurrencyEditor = <TElement extends Element = HTMLDivElement>(props: Curren
         
         currencySign     = (
             !!currency
-            ? (commerceConfig.currencies[currency] ?? commerceConfig.currencies[commerceConfig.defaultCurrency]).sign
+            ? (checkoutConfigShared.intl.currencies[currency] ?? checkoutConfigShared.intl.currencies[checkoutConfigShared.intl.defaultCurrency]).sign
             : undefined
         ),
         currencyFraction = (
             !!currency
-            ? (commerceConfig.currencies[currency] ?? commerceConfig.currencies[commerceConfig.defaultCurrency]).fractionMax
+            ? (checkoutConfigShared.intl.currencies[currency] ?? checkoutConfigShared.intl.currencies[checkoutConfigShared.intl.defaultCurrency]).fractionMax
             : undefined
         ),
         
