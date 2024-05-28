@@ -84,6 +84,11 @@ import {
     useShippingTracking,
 }                           from '@/store/features/api/apiSlice'
 
+// configs:
+import {
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
+
 
 
 // styles:
@@ -126,7 +131,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
     // states:
     const [shippingCarrier     , setShippingCarrier     ] = useState<string|null>(shippingTrackingData?.shippingCarrier || null);
     const [shippingNumber      , setShippingNumber      ] = useState<string|null>(shippingTrackingData?.shippingNumber || null);
-    const [preferredTimezone   , setPreferredTimezone   ] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
+    const [preferredTimezone   , setPreferredTimezone   ] = useState<number>(checkoutConfigShared.intl.defaultTimezone);
     const [shippingTrackingLogs, setShippingTrackingLogs] = useState<ShippingTrackingDetail['shippingTrackingLogs']>([]);
     
     
