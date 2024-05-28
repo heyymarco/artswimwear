@@ -129,9 +129,6 @@ import {
     checkoutConfigServer,
 }                           from '@/checkout.config.server'
 import {
-    commerceConfig,
-}                           from '@/commerce.config'
-import {
     paymentConfig,
 }                           from '@/payment.config'
 
@@ -958,7 +955,7 @@ router
                             
                             // const unitPricePartAsPaypalCurrency = (
                             //     !!usePaypalGateway
-                            //     ? await convertPaypalCurrencyIfRequired(unitPricePartAsCustomerCurrency, preferredCurrency ?? commerceConfig.defaultCurrency)
+                            //     ? await convertPaypalCurrencyIfRequired(unitPricePartAsCustomerCurrency, preferredCurrency ?? checkoutConfigServer.intl.defaultCurrency)
                             //     : unitPricePartAsCustomerCurrency
                             // );
                             
@@ -1028,7 +1025,7 @@ router
                 
                 // const totalShippingCostAsPaypalCurrency = (
                 //     !!usePaypalGateway
-                //     ? await convertPaypalCurrencyIfRequired(totalShippingCostAsCustomerCurrency, preferredCurrency ?? commerceConfig.defaultCurrency)
+                //     ? await convertPaypalCurrencyIfRequired(totalShippingCostAsCustomerCurrency, preferredCurrency ?? checkoutConfigServer.intl.defaultCurrency)
                 //     : totalShippingCostAsCustomerCurrency
                 // );
                 
@@ -1402,7 +1399,7 @@ router
             
             
             //#region create a new(Draft|Real)Order
-            let savingCurrency   = preferredCurrency || commerceConfig.defaultCurrency;
+            let savingCurrency   = preferredCurrency || checkoutConfigServer.intl.defaultCurrency;
             const orderItemsData = detailedItems.map((detailedItem) => {
                 return {
                     productId      : detailedItem.productId,
@@ -1414,7 +1411,7 @@ router
                 };
             });
             const preferredCurrencyData = (
-                (savingCurrency === commerceConfig.defaultCurrency)
+                (savingCurrency === checkoutConfigServer.intl.defaultCurrency)
                 ? null
                 : {
                     currency       : savingCurrency,
@@ -1844,7 +1841,7 @@ Updating the confirmation is not required.`,
         } = paymentConfirmationDetailRaw;
         return NextResponse.json({
             ...restPaymentConfirmationDetail,
-            currency : order.preferredCurrency?.currency ?? commerceConfig.defaultCurrency,
+            currency : order.preferredCurrency?.currency ?? checkoutConfigServer.intl.defaultCurrency,
         } satisfies PaymentConfirmationDetail); // handled with success
     } // if
     
