@@ -79,6 +79,7 @@ import {
 
 export const checkoutConfigServer : CheckoutConfigServer = {
     business            : checkoutConfigShared.business,
+    intl                : checkoutConfigShared.intl,
     payment             : {
         bank            : <article>
             <table style={{...styles.tableReset, ...styles.selfCenterHorz}}><tbody><tr><td>
