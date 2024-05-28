@@ -171,7 +171,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     const [amount           , setAmount           ] = useState<number|null>(paymentConfirmationData?.amount ?? null);
     const [payerName        , setPayerName        ] = useState<string|null>(paymentConfirmationData?.payerName || null);
     const [paymentDate      , setPaymentDate      ] = useState<Date|null>(paymentConfirmationData?.paymentDate || null);
-    const [preferredTimezone, setPreferredTimezone] = useState<number>(() => (0 - (new Date()).getTimezoneOffset()));
+    const [preferredTimezone, setPreferredTimezone] = useState<number>(checkoutConfigShared.intl.defaultTimezone);
     const [originatingBank  , setOriginatingBank  ] = useState<string|null>(paymentConfirmationData?.originatingBank || null);
     const [destinationBank  , setDestinationBank  ] = useState<string|null>(paymentConfirmationData?.destinationBank || null);
     
