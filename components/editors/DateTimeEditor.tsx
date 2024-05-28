@@ -46,6 +46,11 @@ export {
     convertTimezoneToReadableClock,
 }                           from '@/components/editors/TimezoneEditor'
 
+// configs:
+import {
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
+
 
 
 // react components:
@@ -118,7 +123,7 @@ const DateTimeEditor = <TElement extends Element = HTMLDivElement>(props: DateTi
         value : controlledValue,
         onChange,
         
-        defaultTimezone = (0 - (new Date()).getTimezoneOffset()),
+        defaultTimezone = checkoutConfigShared.intl.defaultTimezone,
         timezone : controlledTimezone,
         onTimezoneChange,
         
