@@ -1,7 +1,7 @@
 import type {
     CurrencyCode,
     CurrencyConversionRounding,
-}   from './commerce.config'
+}                           from '@/components/Checkout/types'
 
 
 
