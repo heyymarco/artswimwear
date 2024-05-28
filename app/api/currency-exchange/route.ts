@@ -11,8 +11,8 @@ import {
 
 // configs:
 import {
-    commerceConfig,
-}                           from '@/commerce.config'
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
 
 
 
@@ -60,7 +60,7 @@ router
         
         
         // fetch https://www.exchangerate-api.com :
-        const exchangeRateResponse = await fetch(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGERATEAPI_KEY}/latest/${commerceConfig.defaultCurrency}`);
+        const exchangeRateResponse = await fetch(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGERATEAPI_KEY}/latest/${checkoutConfigShared.intl.defaultCurrency}`);
         if (exchangeRateResponse.status !== 200) throw Error('api error');
         const data = await exchangeRateResponse.json();
         const apiRates = data?.conversion_rates;
