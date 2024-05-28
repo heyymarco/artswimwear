@@ -11,7 +11,7 @@ export const checkoutConfigShared  : CheckoutConfigShared = {
         url                        : process.env.NEXT_PUBLIC_BUSINESS_URL  ?? '',
     },
     intl                           : {
-        locale                     : process.env.NEXT_PUBLIC_INTL_LOCALE || 'id-ID',
+        locale                     : process.env.NEXT_PUBLIC_INTL_LOCALE || 'en-US',
         defaultTimeZone            : Number.parseFloat(process.env.NEXT_PUBLIC_INTL_DEFAULT_TIMEZONE ?? '0') || 0, // GMT+0
         currencies                 : {
             IDR: {
@@ -29,7 +29,7 @@ export const checkoutConfigShared  : CheckoutConfigShared = {
                 fractionUnit       : 0.01,
             },
         },
-        defaultCurrency            : 'IDR',
+        defaultCurrency            : process.env.NEXT_PUBLIC_INTL_DEFAULT_CURRENCY ?? 'USD',
         currencyConversionRounding : 'ROUND',
     },
 };
