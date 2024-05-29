@@ -1446,7 +1446,7 @@ router
                 email                : customerEmail,
                 preference           : {
                     marketingOpt     : marketingOpt,
-                    timezone         : null, // TODO: add customer's|guest's timezone
+                    timezone         : checkoutConfigServer.intl.defaultTimezone, // TODO: detect customer's|guest's timezone based on browser detection `(0 - (new Date()).getTimezoneOffset())`
                 },
             };
             const billingAddressData = (
