@@ -338,7 +338,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                                         
                                         // accessibilities:
                                         label={
-                                            !!reportedAt && <input type='datetime-local' className={styleSheet.outputDate} readOnly={true} value={(new Date(new Date(reportedAt).valueOf() + (preferredTimezone * 60 * 1000))).toISOString().slice(0, 16)} />
+                                            !!reportedAt && <input type='datetime-local' className={styleSheet.outputDate} readOnly={true} value={(new Date(new Date(reportedAt).valueOf() + (preferredTimezone * 60 * 60 * 1000 /* hours to milliseconds */))).toISOString().slice(0, 16)} />
                                         }
                                         
                                         

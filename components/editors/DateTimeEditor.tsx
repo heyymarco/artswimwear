@@ -178,7 +178,7 @@ const DateTimeEditor = <TElement extends Element = HTMLDivElement>(props: DateTi
         
         
         // converts:
-        const isoAslocalDate = new Date(date.valueOf() + (timezone * 60 * 1000));
+        const isoAslocalDate = new Date(date.valueOf() + (timezone * 60 * 60 * 1000 /* hours to milliseconds */));
         const local = isoAslocalDate.toISOString().slice(0, 16); // remove seconds and timezone // 2023-11-30T11:25:17.664Z => 2023-11-30T11:25
         return local;
     };
