@@ -276,7 +276,6 @@ export interface PaymentConfirmationDetail
             |'amount'
             |'payerName'
             |'paymentDate'
-            |'preferredTimezone'
             
             |'originatingBank'
             |'destinationBank'
@@ -284,7 +283,8 @@ export interface PaymentConfirmationDetail
             |'rejectionReason'
         >
 {
-    currency : string
+    preferredTimezone : number
+    currency          : string
 }
 
 export interface ShippingTrackingRequest {
@@ -297,10 +297,9 @@ export interface ShippingTrackingDetail
         Pick<ShippingTracking,
             |'shippingCarrier'
             |'shippingNumber'
-            
-            |'preferredTimezone'
         >
 {
+    preferredTimezone    : number
     shippingTrackingLogs : Omit<ShippingTrackingLog, 'id'|'shippingTrackingId'>[]
 }
 
@@ -1750,23 +1749,41 @@ router
         
         
         const paymentConfirmationDetailSelect = {
-            reportedAt        : true,
-            reviewedAt        : true,
+            reportedAt      : true,
+            reviewedAt      : true,
             
-            amount            : true,
-            payerName         : true,
-            paymentDate       : true,
-            preferredTimezone : true,
+            amount          : true,
+            payerName       : true,
+            paymentDate     : true,
             
-            originatingBank   : true,
-            destinationBank   : true,
+            originatingBank : true,
+            destinationBank : true,
             
-            rejectionReason   : true,
+            rejectionReason : true,
             
             // relations:
             order : {
                 select : {
-                    preferredCurrency : true
+                    preferredCurrency : true,
+                    
+                    customer : {
+                        select : {
+                            customerPreference : {
+                                select : {
+                                    timezone : true,
+                                },
+                            },
+                        },
+                    },
+                    guest : {
+                        select : {
+                            guestPreference : {
+                                select : {
+                                    timezone : true,
+                                },
+                            },
+                        },
+                    },
                 },
             },
         } satisfies Prisma.PaymentConfirmationSelect;
@@ -1780,35 +1797,114 @@ router
             })
             : await (async() => {
                 try {
-                    return await prisma.paymentConfirmation.update({
-                        where  : {
-                            token : paymentConfirmationToken,
-                            
-                            OR : [
-                                { reviewedAt      : { equals : null  } }, // never approved or rejected
-                                { reviewedAt      : { isSet  : false } }, // never approved or rejected
+                    const paymentConfirmationDetailData = await prisma.$transaction(async (prismaTransaction) => {
+                        const paymentConfirmationData = await prismaTransaction.paymentConfirmation.findUnique({
+                            where  : {
+                                token : paymentConfirmationToken,
                                 
-                                /* -or- */
+                                OR : [
+                                    { reviewedAt      : { equals : null  } }, // never approved or rejected
+                                    { reviewedAt      : { isSet  : false } }, // never approved or rejected
+                                    
+                                    /* -or- */
+                                    
+                                    { rejectionReason : { not    : null  } }, // has reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
+                                ],
+                            },
+                            select : {
+                                // records:
+                                id               : true,
                                 
-                                { rejectionReason : { not    : null  } }, // has reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
-                            ],
-                        },
-                        data   : {
-                            reportedAt : new Date(), // set the confirmation date
-                            reviewedAt : null, // reset for next review
-                            
-                            amount,
-                            payerName,
-                            paymentDate      : paymentDateAsDate ?? new Date(paymentDate),
-                            preferredTimezone,
-                            
-                            originatingBank,
-                            destinationBank,
-                            
-                            rejectionReason : null, // reset for next review
-                        },
-                        select : paymentConfirmationDetailSelect,
+                                // relations:
+                                order : {
+                                    select : {
+                                        customer : {
+                                            select : {
+                                                customerPreference : {
+                                                    select : {
+                                                        id : true,
+                                                    },
+                                                },
+                                            },
+                                        },
+                                        guest    : {
+                                            select : {
+                                                guestPreference : {
+                                                    select : {
+                                                        id : true,
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        });
+                        if (!paymentConfirmationData) return null;
+                        
+                        
+                        
+                        const {
+                            id    : paymentConfirmationId,
+                            order : orderData,
+                        } = paymentConfirmationData;
+                        const customerPreferenceId = orderData.customer?.customerPreference?.id;
+                        const guestPreferenceId    = orderData.guest?.guestPreference?.id;
+                        return await prismaTransaction.paymentConfirmation.update({
+                            where  : {
+                                id : paymentConfirmationId,
+                            },
+                            data   : {
+                                reportedAt : new Date(), // set the confirmation date
+                                reviewedAt : null, // reset for next review
+                                
+                                amount,
+                                payerName,
+                                paymentDate      : paymentDateAsDate ?? new Date(paymentDate),
+                                
+                                originatingBank,
+                                destinationBank,
+                                
+                                rejectionReason : null, // reset for next review
+                                
+                                order : (
+                                    (!customerPreferenceId && !guestPreferenceId)
+                                    ? undefined
+                                    : (
+                                        customerPreferenceId
+                                        ? {
+                                            update : {
+                                                customer : {
+                                                    update : {
+                                                        customerPreference : {
+                                                            update : {
+                                                                timezone : preferredTimezone,
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        }
+                                        : {
+                                            update : {
+                                                guest : {
+                                                    update : {
+                                                        guestPreference : {
+                                                            update : {
+                                                                timezone : preferredTimezone,
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                            },
+                                        }
+                                    )
+                                ),
+                            },
+                            select : paymentConfirmationDetailSelect,
+                        });
                     });
+                    return paymentConfirmationDetailData;
                 }
                 catch (error: any) {
                     console.log('ERROR: ', error, {amount, paymentConfirmationToken});
@@ -1835,7 +1931,7 @@ Updating the confirmation is not required.`,
         
         const {
             // relations:
-            order,
+            order : orderData,
             
             
             
@@ -1844,7 +1940,8 @@ Updating the confirmation is not required.`,
         } = paymentConfirmationDetailRaw;
         return NextResponse.json({
             ...restPaymentConfirmationDetail,
-            currency : order.preferredCurrency?.currency ?? checkoutConfigServer.intl.defaultCurrency,
+            currency : orderData.preferredCurrency?.currency ?? checkoutConfigServer.intl.defaultCurrency,
+            preferredTimezone : orderData.customer?.customerPreference?.timezone ?? orderData.guest?.guestPreference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
         } satisfies PaymentConfirmationDetail); // handled with success
     } // if
     
@@ -1878,17 +1975,42 @@ Updating the confirmation is not required.`,
         
         
         const shippingTrackingDetailSelect = {
-            shippingCarrier    : true,
-            shippingNumber     : true,
-            preferredTimezone  : true,
+            shippingCarrier      : true,
+            shippingNumber       : true,
             shippingTrackingLogs : {
                 select : {
                     reportedAt : true,
                     log        : true,
                 },
             },
+            
+            // relations:
+            order : {
+                select : {
+                    preferredCurrency : true,
+                    
+                    customer : {
+                        select : {
+                            customerPreference : {
+                                select : {
+                                    timezone : true,
+                                },
+                            },
+                        },
+                    },
+                    guest : {
+                        select : {
+                            guestPreference : {
+                                select : {
+                                    timezone : true,
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         } satisfies Prisma.ShippingTrackingSelect;
-        const shippingTrackingDetail : ShippingTrackingDetail|null = (
+        const shippingTrackingDetailData = (
             (preferredTimezone === undefined)
             ? await prisma.shippingTracking.findUnique({
                 where  : {
@@ -1896,23 +2018,113 @@ Updating the confirmation is not required.`,
                 },
                 select : shippingTrackingDetailSelect,
             })
-            : await prisma.shippingTracking.update({
-                where  : {
-                    token : shippingTrackingToken,
-                },
-                data   : {
-                    preferredTimezone,
-                },
-                select : shippingTrackingDetailSelect,
+            : await prisma.$transaction(async (prismaTransaction) => {
+                const shippingTrackingData = await prismaTransaction.shippingTracking.findUnique({
+                    where  : {
+                        token : shippingTrackingToken,
+                    },
+                    select : {
+                        // records:
+                        id               : true,
+                        
+                        // relations:
+                        order : {
+                            select : {
+                                customer : {
+                                    select : {
+                                        customerPreference : {
+                                            select : {
+                                                id : true,
+                                            },
+                                        },
+                                    },
+                                },
+                                guest    : {
+                                    select : {
+                                        guestPreference : {
+                                            select : {
+                                                id : true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                });
+                if (!shippingTrackingData) return null;
+                
+                
+                
+                const {
+                    id    : shippingTrackingId,
+                    order : orderData,
+                } = shippingTrackingData;
+                const customerPreferenceId = orderData.customer?.customerPreference?.id;
+                const guestPreferenceId    = orderData.guest?.guestPreference?.id;
+                return await prismaTransaction.shippingTracking.update({
+                    where  : {
+                        id : shippingTrackingId,
+                    },
+                    data   : {
+                        order : (
+                            (!customerPreferenceId && !guestPreferenceId)
+                            ? undefined
+                            : (
+                                customerPreferenceId
+                                ? {
+                                    update : {
+                                        customer : {
+                                            update : {
+                                                customerPreference : {
+                                                    update : {
+                                                        timezone : preferredTimezone,
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                }
+                                : {
+                                    update : {
+                                        guest : {
+                                            update : {
+                                                guestPreference : {
+                                                    update : {
+                                                        timezone : preferredTimezone,
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                }
+                            )
+                        ),
+                    },
+                    select : shippingTrackingDetailSelect,
+                });
             })
         );
-        if (!shippingTrackingDetail) {
+        if (!shippingTrackingDetailData) {
             return NextResponse.json({
                 error: 'Invalid shipping tracking token.',
             }, { status: 400 }); // handled with error
         } // if
         
         // sort the log by reported date:
+        const {
+            // relations:
+            order : orderData,
+            
+            
+            
+            // data:
+            ...restshippingTrackingDetail
+        } = shippingTrackingDetailData;
+        const shippingTrackingDetail : ShippingTrackingDetail = {
+            ...restshippingTrackingDetail,
+            preferredTimezone : orderData.customer?.customerPreference?.timezone ?? orderData.guest?.guestPreference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
+        };
         shippingTrackingDetail.shippingTrackingLogs.sort(({reportedAt: a}, {reportedAt: b}) => {
             if ((a === null) || (b === null)) return 0;
             return a.valueOf() - b.valueOf();

@@ -325,7 +325,6 @@ model PaymentConfirmation {
     amount                  Float?                  // min: 0
     payerName               String?                 // minLength: 2, maxLength: 50
     paymentDate             DateTime?
-    preferredTimezone       Int?
     
     originatingBank         String?                 // minLength: 2, maxLength: 50
     destinationBank         String?                 // minLength: 2, maxLength: 50
@@ -461,8 +460,6 @@ model ShippingTracking {
     
     shippingCarrier         String?                 // minLength: 1, maxLength: 50
     shippingNumber          String?                 // minLength: 1, maxLength: 50
-    
-    preferredTimezone       Int?
     
     // relations:
     orderId                 String                  @unique
