@@ -109,19 +109,23 @@ export const formatDateTime = (value: Date|null|undefined, options?: FormatDateT
     const timezoneSeparator = (timezoneIndex <=  0) ? undefined : (timezoneParts[timezoneIndex - 1].type !== 'literal') ? undefined : timezoneParts[timezoneIndex - 1];
     return (<>
         {
-            [
-                ...dateTimeFormatter.formatToParts(value),
-                ...[
-                    timezoneSeparator,
-                    timezonePart,
-                ].filter((part): part is Exclude<typeof part, undefined> => (part !== undefined)),
-            ]
+            dateTimeFormatter.formatToParts(value)
             .map(({type, value}, index) =>
-                (type === 'timeZoneName')
-                ? (showTimezone && <span key={index} className='timeZone'>{value}</span>)
-                : <React.Fragment key={index}>{value}</React.Fragment>
+                <React.Fragment key={index}>{value}</React.Fragment>
             )
         }
+        {showTimezone && <span className='timeZone'>
+            {
+                [
+                    timezoneSeparator,
+                    timezonePart,
+                ]
+                .filter((part): part is Exclude<typeof part, undefined> => (part !== undefined))
+                .map(({value}, index) =>
+                    <React.Fragment key={index}>{value}</React.Fragment>
+                )
+            }
+        </span>}
     </>);
 }
 
