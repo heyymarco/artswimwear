@@ -98,28 +98,36 @@ export const formatDateTime = (value: Date|null|undefined, options?: FormatDateT
     const dateTimeFormatter = new Intl.DateTimeFormat(checkoutConfigShared.intl.locale, {
         dateStyle           : 'full',  // shows day of week + day of month + month + year
         timeStyle           : 'short', // shows hours and minutes, hides timezone
-        timeZone            : readableTimezone,
+        // timeZone            : readableTimezone, // NOT nodejs compatible
+        timeZone            : 'UTC',   // force as GMT+0
     });
-    const timezoneParts     = new Intl.DateTimeFormat(checkoutConfigShared.intl.locale, {
-        timeZone            : readableTimezone,
-        timeZoneName        : 'longGeneric',
-    }).formatToParts(value);
-    const timezoneIndex     = timezoneParts.findIndex(({type}) => (type === 'timeZoneName'));
-    const timezonePart      = (timezoneIndex <= -1) ? undefined : timezoneParts[timezoneIndex];
-    const timezoneSeparator = (timezoneIndex <=  0) ? undefined : (timezoneParts[timezoneIndex - 1].type !== 'literal') ? undefined : timezoneParts[timezoneIndex - 1];
+    // const timezoneParts     = new Intl.DateTimeFormat(checkoutConfigShared.intl.locale, {
+    //     timeZone            : readableTimezone,
+    //     timeZoneName        : 'longGeneric',
+    // }).formatToParts(value);
+    // const timezoneIndex     = timezoneParts.findIndex(({type}) => (type === 'timeZoneName'));
+    // const timezonePart      = (timezoneIndex <= -1) ? undefined : timezoneParts[timezoneIndex];
+    // const timezoneSeparator = (timezoneIndex <=  0) ? undefined : (timezoneParts[timezoneIndex - 1].type !== 'literal') ? undefined : timezoneParts[timezoneIndex - 1];
+    
+    // a hack for nodejs compatible:
+    const isoAslocalDate = new Date(value.valueOf() + (timezone * 60 * 60 * 1000 /* hours to milliseconds */));
+    
     return (<>
         {
-            dateTimeFormatter.formatToParts(value)
+            // dateTimeFormatter.formatToParts(value)       // NOT nodejs compatible
+            dateTimeFormatter.formatToParts(isoAslocalDate) // a hack for nodejs compatible
             .map(({type, value}, index) =>
                 <React.Fragment key={index}>{value}</React.Fragment>
             )
         }
         {showTimezone && <span className='timeZone'>
             {
-                [
-                    timezoneSeparator,
-                    timezonePart,
-                ]
+                ([
+                    { type: 'literal'     , value: ', ' },
+                    { type: 'timeZoneName', value: `GMT${readableTimezone}` },
+                    // timezoneSeparator,
+                    // timezonePart,
+                ] satisfies Intl.DateTimeFormatPart[])
                 .filter((part): part is Exclude<typeof part, undefined> => (part !== undefined))
                 .map(({value}, index) =>
                     <React.Fragment key={index}>{value}</React.Fragment>
