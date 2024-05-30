@@ -16,14 +16,15 @@ import {
 
 // react components:
 export interface DateTimeDisplayProps extends FormatDateTimeOptions {
-    dateTime : Date
+    dateTime : Date|null|undefined
 }
 const DateTimeDisplay = (props: DateTimeDisplayProps): JSX.Element|null => {
     // props:
     const {
-        dateTime,
+        dateTime : dateTimeRaw,
         ...restFormatDateTimeOptions
     } = props;
+    const dateTime : Date|null|undefined = (typeof(dateTimeRaw) === 'string') ? new Date(Date.parse(dateTimeRaw)) : dateTimeRaw;
     
     
     
