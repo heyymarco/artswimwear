@@ -76,6 +76,9 @@ import {
 import {
     TimezoneEditor,
 }                           from '@/components/editors/TimezoneEditor'
+import {
+    DateTimeDisplay,
+}                           from '@/components/DateTimeDisplay'
 
 // stores:
 import {
@@ -338,7 +341,9 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                                         
                                         // accessibilities:
                                         label={
-                                            !!reportedAt && <input type='datetime-local' className={styleSheet.outputDate} readOnly={true} value={(new Date(new Date(reportedAt).valueOf() + (preferredTimezone * 60 * 60 * 1000 /* hours to milliseconds */))).toISOString().slice(0, 16)} />
+                                            !!reportedAt && <span className={styleSheet.dateTime}>
+                                                <DateTimeDisplay dateTime={reportedAt} timezone={preferredTimezone} showTimezone={false} />
+                                            </span>
                                         }
                                         
                                         

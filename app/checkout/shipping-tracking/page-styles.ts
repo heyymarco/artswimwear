@@ -152,15 +152,9 @@ const usesEditTimezoneLayout = () => {
         justifyContent: 'stretch', // full width the editor
     });
 };
-const usesOutputDateLayout = () => {
+const usesDateTimeLayout = () => {
     return style({
-        ...stripoutTextbox(),
-        ...style({
-            textAlign     : 'center',
-            ...ifScreenWidthAtLeast('sm', {
-                textAlign : 'end',
-            }),
-        }),
+        alignSelf: 'center',
     });
 };
 
@@ -205,7 +199,7 @@ export default () => [
     scope('editTimezone', {
         ...usesEditTimezoneLayout(),
     }, { specificityWeight: 2 }),
-    scope('outputDate', {
-        ...usesOutputDateLayout(),
-    }, { specificityWeight: 2 }),
+    scope('dateTime', {
+        ...usesDateTimeLayout(),
+    }),
 ];
