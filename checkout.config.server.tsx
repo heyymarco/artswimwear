@@ -261,7 +261,6 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                             style={{
                                 // layouts:
                                 ...styles.paragraph,
-                                display   : 'flex',
                                 
                                 
                                 
@@ -289,28 +288,39 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                 
                                 // spacings:
                                 padding      : `calc(${spacerValues.md} * 1.5)`,
-                                columnGap    : '0.5em',
-                                
-                                
-                                
-                                // typos:
-                                ...styles.textBig,
                             }}
                         >
-                            <p style={styles.paragraph}>
+                            <p
+                                // styles:
+                                style={{
+                                    // layouts:
+                                    ...styles.paragraphFirst,
+                                    
+                                    
+                                    
+                                    // spacings:
+                                    columnGap    : '0.5em',
+                                    
+                                    
+                                    
+                                    // typos:
+                                    ...styles.textBig,
+                                }}
+                            >
                                 <span>Amount:</span>
+                                <br />
                                 <Order.TotalValue />
                             </p>
                             <Payment.HasExpires>
                                 <p style={styles.paragraphLast}>
                                     Please make payment before:
                                     <br />
-                                    <strong>
+                                    <strong style={styles.textSemibold}>
                                         <Payment.Expires />
                                     </strong>
                                     <br />
                                     <small style={styles.textSmall}>
-                                        Your order will be <strong>automatically canceled</strong> after the above date passes.
+                                        Your order will be automatically canceled after the above date passes.
                                     </small>
                                 </p>
                             </Payment.HasExpires>
@@ -393,27 +403,13 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                     padding      : `calc(${spacerValues.md} * 1.5)`,
                                 }}
                             >
-                                <p style={styles.paragraph}>
-                                    Show this payment code to the <Payment.OtcBrand /> cashier:
+                                <p style={styles.paragraphFirst}>
+                                    Show this <strong>payment code</strong> to the <strong><Payment.OtcBrand /></strong> cashier:
                                     <br />
                                     <strong style={styles.textBigger}>
                                         <Payment.OtcCode />
                                     </strong>
                                 </p>
-                                <Payment.HasExpires>
-                                    <p style={styles.paragraph}>
-                                        Please make payment before:
-                                        <br />
-                                        <strong>
-                                            <Payment.Expires />
-                                        </strong>
-                                        <br />
-                                        <small style={styles.textSmall}>
-                                            Your order will be <strong>automatically canceled</strong> after the above date passes.
-                                        </small>
-                                    </p>
-                                </Payment.HasExpires>
-                                <br />
                                 <div style={styles.textSmall}>
                                     <p style={styles.paragraph}>
                                         After receiving proof of payment, the payment will <strong>automatically be verified</strong> by <Business.Name />.
@@ -1009,58 +1005,11 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                         Please immediately make payment for your order to <strong>one of</strong> our accounts below:
                     </p>
                     
-                    <p
+                    <div
                         // styles:
                         style={{
                             // layouts:
                             ...styles.paragraph,
-                            display   : 'flex',
-                            
-                            
-                            
-                            // positions:
-                            // needs to overwrite the paragraph's layout
-                            ...styles.selfCenterHorz, // center self horizontally
-                            
-                            
-                            
-                            // sizes:
-                            width     : 'fit-content',
-                            
-                            
-                            
-                            // backgrounds & foregrounds:
-                            ...styles.theme('primary'),
-                            
-                            
-                            
-                            // borders:
-                            border       : styles.borderStroke('primary'),
-                            borderRadius : `${borderRadiusValues.xxl}`,
-                            
-                            
-                            
-                            // spacings:
-                            padding      : `calc(${spacerValues.md} * 1.5)`,
-                            columnGap    : '0.5em',
-                            
-                            
-                            
-                            // typos:
-                            ...styles.textBig,
-                        }}
-                    >
-                        <span>Amount:</span>
-                        <Order.TotalValue />
-                    </p>
-                    
-                    <Payment.Bank />
-                    
-                    <p
-                        // styles:
-                        style={{
-                            // layouts:
-                            ...styles.paragraphLast,
                             
                             
                             
@@ -1090,10 +1039,71 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                             padding      : `calc(${spacerValues.md} * 1.5)`,
                         }}
                     >
-                        After you make payment, please confirm your payment via this link:
-                        <br />
-                        <Payment.ConfirmationLink />
-                    </p>
+                        <p
+                            // styles:
+                            style={{
+                                // layouts:
+                                ...styles.paragraphFirst,
+                                
+                                
+                                
+                                // spacings:
+                                columnGap    : '0.5em',
+                                
+                                
+                                
+                                // typos:
+                                ...styles.textBig,
+                            }}
+                        >
+                            <span>Amount:</span>
+                            <br />
+                            <Order.TotalValue />
+                        </p>
+                    </div>
+                    
+                    <Payment.IsManualTransfer>
+                        <Payment.Bank />
+                        
+                        <p
+                            // styles:
+                            style={{
+                                // layouts:
+                                ...styles.paragraphLast,
+                                
+                                
+                                
+                                // positions:
+                                // needs to overwrite the paragraph's layout
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // sizes:
+                                width     : 'fit-content',
+                                
+                                
+                                
+                                // backgrounds & foregrounds:
+                                ...styles.theme('primary'),
+                                
+                                
+                                
+                                // borders:
+                                border       : styles.borderStroke('primary'),
+                                borderRadius : `${borderRadiusValues.xxl}`,
+                                
+                                
+                                
+                                // spacings:
+                                padding      : `calc(${spacerValues.md} * 1.5)`,
+                            }}
+                        >
+                            After you make payment, please confirm your payment via this link:
+                            <br />
+                            <Payment.ConfirmationLink />
+                        </p>
+                    </Payment.IsManualTransfer>
                 </section>
                 
                 <section style={styles.section}>

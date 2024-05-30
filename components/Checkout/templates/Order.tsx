@@ -238,6 +238,13 @@ const OrderTotalValue = (props: OrderTotalProps): React.ReactNode => {
                 // typos:
                 ...styles.textBold,
                 ...styles.numberCurrency,
+                
+                
+                
+                // overwrites `styles.numberCurrency`:
+                width       : 'max-content', // center horizontally
+                marginLeft  : 'auto',        // center horizontally
+                marginRight : 'auto',        // center horizontally
             }}
         >
             <CurrencyDisplay amount={[...getProductPriceParts(items), shippingCost]} />

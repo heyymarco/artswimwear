@@ -97,6 +97,10 @@ export const textNormal                  : React.CSSProperties = {
     fontSize        : `calc(1 * ${typoValues.fontSizeMd})`,
     fontWeight      : `${typoValues.fontWeightNormal}`,
 };
+export const textSemibold                : React.CSSProperties = {
+    // typos:
+    fontWeight      : `${typoValues.fontWeightSemibold}`,
+};
 export const textBold                    : React.CSSProperties = {
     // typos:
     fontWeight      : `${typoValues.fontWeightBold}`,
