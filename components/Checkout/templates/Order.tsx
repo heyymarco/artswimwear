@@ -16,6 +16,11 @@ import type {
     WysiwygEditorState,
 }                           from '@/components/editors/WysiwygEditor/types'
 
+// internal components:
+import {
+    DateTimeDisplay,
+}                           from '@/components/DateTimeDisplay'
+
 // lexical functions:
 import {
     createHeadlessEditor,
@@ -91,12 +96,18 @@ const OrderCreatedAt = (): React.ReactNode => {
         order : {
             createdAt,
         },
+        customerOrGuest,
     } = useOrderDataContext();
+    const {
+        timezone,
+    } = customerOrGuest?.preference ?? {};
     
     
     
     // jsx:
-    return createdAt.toISOString();
+    return (
+        <DateTimeDisplay dateTime={createdAt} timezone={timezone ?? undefined} showTimezone={true} />
+    );
 };
 
 

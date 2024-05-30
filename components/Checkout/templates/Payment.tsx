@@ -24,6 +24,11 @@ import type {
     WysiwygEditorState,
 }                           from '@/components/editors/WysiwygEditor/types'
 
+// internal components:
+import {
+    DateTimeDisplay,
+}                           from '@/components/DateTimeDisplay'
+
 // nodes:
 import {
     // defined supported nodes.
@@ -48,11 +53,6 @@ import {
     // react components:
     CurrencyDisplay,
 }                           from './CurrencyDisplay'
-
-// utilities:
-import {
-    formatDateTime,
-}                           from '@/libs/formatters'
 
 
 
@@ -522,10 +522,9 @@ export const PaymentExpires    = (): React.ReactNode => {
     // jsx:
     if (paymentType !== 'MANUAL') return null;
     if (!paymentExpiresAt       ) return null;
-    return formatDateTime(paymentExpiresAt, {
-        timezone     : timezone ?? undefined,
-        showTimezone : true,
-    });
+    return (
+        <DateTimeDisplay dateTime={paymentExpiresAt} timezone={timezone ?? undefined} showTimezone={true} />
+    );
 };
 
 export const Payment = {
