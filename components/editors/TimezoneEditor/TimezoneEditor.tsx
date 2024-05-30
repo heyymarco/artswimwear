@@ -132,7 +132,7 @@ const TimezoneEditor = <TElement extends Element = HTMLButtonElement>(props: Tim
             // children:
             buttonChildren={
                 <>
-                    UTC{convertTimezoneToReadableClock(value)}
+                    GMT{convertTimezoneToReadableClock(value)}
                 </>
             }
         >
@@ -149,7 +149,7 @@ const TimezoneEditor = <TElement extends Element = HTMLButtonElement>(props: Tim
                         triggerValueChange(timezoneOption, { triggerAt: 'immediately' });
                     }}
                 >
-                    UTC{convertTimezoneToReadableClock(timezoneOption)}
+                    GMT{convertTimezoneToReadableClock(timezoneOption)}
                 </ListItem>
             )}
         </DropdownListButton>
