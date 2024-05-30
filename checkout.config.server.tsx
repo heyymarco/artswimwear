@@ -256,7 +256,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                             </p>
                         </Payment.IsManualOtc>
                         
-                        <p
+                        <div
                             // styles:
                             style={{
                                 // layouts:
@@ -297,9 +297,24 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                 ...styles.textBig,
                             }}
                         >
-                            <span>Amount:</span>
-                            <Order.TotalValue />
-                        </p>
+                            <p style={styles.paragraph}>
+                                <span>Amount:</span>
+                                <Order.TotalValue />
+                            </p>
+                            <Payment.HasExpires>
+                                <p style={styles.paragraphLast}>
+                                    Please make payment before:
+                                    <br />
+                                    <strong>
+                                        <Payment.Expires />
+                                    </strong>
+                                    <br />
+                                    <small style={styles.textSmall}>
+                                        Your order will be <strong>automatically canceled</strong> after the above date passes.
+                                    </small>
+                                </p>
+                            </Payment.HasExpires>
+                        </div>
                         
                         <Payment.IsManualTransfer>
                             <Payment.Bank />
@@ -385,6 +400,19 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                         <Payment.OtcCode />
                                     </strong>
                                 </p>
+                                <Payment.HasExpires>
+                                    <p style={styles.paragraph}>
+                                        Please make payment before:
+                                        <br />
+                                        <strong>
+                                            <Payment.Expires />
+                                        </strong>
+                                        <br />
+                                        <small style={styles.textSmall}>
+                                            Your order will be <strong>automatically canceled</strong> after the above date passes.
+                                        </small>
+                                    </p>
+                                </Payment.HasExpires>
                                 <br />
                                 <div style={styles.textSmall}>
                                     <p style={styles.paragraph}>

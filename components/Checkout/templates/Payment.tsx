@@ -49,6 +49,11 @@ import {
     CurrencyDisplay,
 }                           from './CurrencyDisplay'
 
+// utilities:
+import {
+    formatDateTime,
+}                           from '@/libs/formatters'
+
 
 
 // react components:
@@ -477,6 +482,51 @@ export const PaymentOtcCode = (props: React.PropsWithChildren<{}>): React.ReactN
     if (!paymentBrand           ) return null;
     return paymentIndentifier;
 };
+export const PaymentHasExpires = (props: React.PropsWithChildren<{}>): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            payment : {
+                type       : paymentType,
+                expiresAt  : paymentExpiresAt,
+            }
+        },
+    } = useOrderDataContext();
+    
+    
+    
+    // jsx:
+    if (paymentType !== 'MANUAL') return null;
+    if (!paymentExpiresAt       ) return null;
+    return props.children;
+};
+export const PaymentExpires    = (): React.ReactNode => {
+    // contexts:
+    const {
+        // data:
+        order : {
+            payment : {
+                type       : paymentType,
+                expiresAt  : paymentExpiresAt,
+            }
+        },
+        customerOrGuest,
+    } = useOrderDataContext();
+    const {
+        timezone,
+    } = customerOrGuest?.preference ?? {};
+    
+    
+    
+    // jsx:
+    if (paymentType !== 'MANUAL') return null;
+    if (!paymentExpiresAt       ) return null;
+    return formatDateTime(paymentExpiresAt, {
+        timezone     : timezone ?? undefined,
+        showTimezone : true,
+    });
+};
 
 export const Payment = {
     BillingAddress           : BillingAddress,
@@ -494,4 +544,7 @@ export const Payment = {
     IsManualOtc              : PaymentIsManualOtc,
     OtcBrand                 : PaymentOtcBrand,
     OtcCode                  : PaymentOtcCode,
+    
+    HasExpires               : PaymentHasExpires,
+    Expires                  : PaymentExpires,
 };
