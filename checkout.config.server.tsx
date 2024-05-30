@@ -313,7 +313,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                             </p>
                             <Payment.HasExpires>
                                 <p style={styles.paragraphLast}>
-                                    Please make payment before:
+                                    Please make payment <strong>before</strong>:
                                     <br />
                                     <strong style={styles.textSemibold}>
                                         <Payment.Expires />
