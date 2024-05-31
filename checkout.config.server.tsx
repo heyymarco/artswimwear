@@ -259,19 +259,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                         <div
                             // styles:
                             style={{
-                                // layouts:
-                                ...styles.paragraph,
-                                
-                                
-                                
                                 // positions:
-                                // needs to overwrite the paragraph's layout
                                 ...styles.selfCenterHorz, // center self horizontally
                                 
                                 
                                 
+                                // layouts:
+                                display      : 'block',
+                                
+                                
+                                
                                 // sizes:
-                                width     : 'fit-content',
+                                width        : 'fit-content', // center self horizontally
                                 
                                 
                                 
@@ -287,6 +286,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                 
                                 
                                 // spacings:
+                                margin       : `${spacerValues.md}`,
                                 padding      : `calc(${spacerValues.md} * 1.5)`,
                             }}
                         >
@@ -372,19 +372,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                             <div
                                 // styles:
                                 style={{
+                                    // positions:
+                                    ...styles.selfCenterHorz, // center self horizontally
+                                    
+                                    
+                                    
                                     // layouts:
                                     ...styles.paragraphLast,
                                     
                                     
                                     
-                                    // positions:
-                                    // needs to overwrite the paragraph's layout
-                                    ...styles.selfCenterHorz, // center self horizontally
-                                    
-                                    
-                                    
                                     // sizes:
-                                    width     : 'fit-content',
+                                    width     : 'fit-content', // center self horizontally
                                     
                                     
                                     
@@ -1008,19 +1007,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     <div
                         // styles:
                         style={{
-                            // layouts:
-                            ...styles.paragraph,
-                            
-                            
-                            
                             // positions:
-                            // needs to overwrite the paragraph's layout
                             ...styles.selfCenterHorz, // center self horizontally
                             
                             
                             
+                            // layouts:
+                            display      : 'block',
+                            
+                            
+                            
                             // sizes:
-                            width     : 'fit-content',
+                            width        : 'fit-content', // center self horizontally
                             
                             
                             
@@ -1036,6 +1034,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                             
                             
                             // spacings:
+                            margin       : `${spacerValues.md}`,
                             padding      : `calc(${spacerValues.md} * 1.5)`,
                         }}
                     >
