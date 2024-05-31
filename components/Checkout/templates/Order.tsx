@@ -87,7 +87,7 @@ const OrderId = (): React.ReactNode => {
     
     
     // jsx:
-    return orderId;
+    return `#ORDER_${orderId}`;
 };
 const OrderCreatedAt = (): React.ReactNode => {
     // contexts:
