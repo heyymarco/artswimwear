@@ -381,12 +381,12 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                     
                                     
                                     // layouts:
-                                    ...styles.paragraphLast,
+                                    display      : 'block',
                                     
                                     
                                     
                                     // sizes:
-                                    width     : 'fit-content', // center self horizontally
+                                    width        : 'fit-content', // center self horizontally
                                     
                                     
                                     
@@ -402,6 +402,10 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                     
                                     
                                     // spacings:
+                                    marginTop    : `${spacerValues.md}`,
+                                    marginBottom : `${spacerValues.md}`,
+                                    marginLeft   : 'auto',
+                                    marginRight  : 'auto',
                                     padding      : `calc(${spacerValues.md} * 1.5)`,
                                 }}
                             >
