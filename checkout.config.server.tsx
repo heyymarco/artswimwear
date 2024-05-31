@@ -293,6 +293,34 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                 padding      : `calc(${spacerValues.md} * 1.5)`,
                             }}
                         >
+                            <Payment.IsManualOtc>
+                                <p style={styles.paragraphFirst}>
+                                    Show this <strong>payment code</strong> to the <strong><Payment.OtcBrand /></strong> cashier:
+                                    <br />
+                                    <strong style={styles.textBigger}>
+                                        <Payment.OtcCode />
+                                    </strong>
+                                </p>
+                                <div
+                                    style={{
+                                        // spacings:
+                                        marginBottom : `calc(${spacerValues.md} * 2)`,
+                                        
+                                        
+                                        
+                                        // typos:
+                                        ...styles.textSmall,
+                                    }}
+                                >
+                                    <p style={styles.paragraph}>
+                                        After receiving proof of payment, the payment will <strong>automatically be verified</strong> by <Business.Name />.
+                                    </p>
+                                    <p style={styles.paragraphLast}>
+                                        Save proof of payment which is needed at any time if there are transaction problems.
+                                    </p>
+                                </div>
+                            </Payment.IsManualOtc>
+                            
                             <p
                                 // styles:
                                 style={{
@@ -371,61 +399,6 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                 <Payment.ConfirmationLink />
                             </p>
                         </Payment.IsManualTransfer>
-                        <Payment.IsManualOtc>
-                            <div
-                                // styles:
-                                style={{
-                                    // positions:
-                                    ...styles.selfCenterHorz, // center self horizontally
-                                    
-                                    
-                                    
-                                    // layouts:
-                                    display      : 'block',
-                                    
-                                    
-                                    
-                                    // sizes:
-                                    width        : 'fit-content', // center self horizontally
-                                    
-                                    
-                                    
-                                    // backgrounds & foregrounds:
-                                    ...styles.theme('primary'),
-                                    
-                                    
-                                    
-                                    // borders:
-                                    border       : styles.borderStroke('primary'),
-                                    borderRadius : `${borderRadiusValues.xxl}`,
-                                    
-                                    
-                                    
-                                    // spacings:
-                                    marginTop    : `${spacerValues.md}`,
-                                    marginBottom : `${spacerValues.md}`,
-                                    marginLeft   : 'auto',
-                                    marginRight  : 'auto',
-                                    padding      : `calc(${spacerValues.md} * 1.5)`,
-                                }}
-                            >
-                                <p style={styles.paragraphFirst}>
-                                    Show this <strong>payment code</strong> to the <strong><Payment.OtcBrand /></strong> cashier:
-                                    <br />
-                                    <strong style={styles.textBigger}>
-                                        <Payment.OtcCode />
-                                    </strong>
-                                </p>
-                                <div style={styles.textSmall}>
-                                    <p style={styles.paragraph}>
-                                        After receiving proof of payment, the payment will <strong>automatically be verified</strong> by <Business.Name />.
-                                    </p>
-                                    <p style={styles.paragraphLast}>
-                                        Save proof of payment which is needed at any time if there are transaction problems.
-                                    </p>
-                                </div>
-                            </div>
-                        </Payment.IsManualOtc>
                     </section>
                 </IfNotPaid>
                 
