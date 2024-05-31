@@ -1,4 +1,4 @@
-[high prior] fix @heymarco/image
+[high prior] fix @heymarco/image (no error detected again in new Chrome)
 [high prior] fix email dark mode in phone
 
 [high prior] verify breaking change <UpdateStatePlugin> .__first
