@@ -301,17 +301,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                         <Payment.OtcCode />
                                     </strong>
                                 </p>
-                                <div
-                                    style={{
-                                        // spacings:
-                                        marginBottom : `calc(${spacerValues.md} * 2)`,
-                                        
-                                        
-                                        
-                                        // typos:
-                                        ...styles.textSmall,
-                                    }}
-                                >
+                                <div style={styles.textSmall}>
                                     <p style={styles.paragraph}>
                                         After receiving proof of payment, the payment will <strong>automatically be verified</strong> by <Business.Name />.
                                     </p>
@@ -319,6 +309,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                         Save proof of payment which is needed at any time if there are transaction problems.
                                     </p>
                                 </div>
+                                <br />
                             </Payment.IsManualOtc>
                             
                             <p
