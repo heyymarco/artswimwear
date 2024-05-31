@@ -286,7 +286,10 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                 
                                 
                                 // spacings:
-                                margin       : `${spacerValues.md}`,
+                                marginTop    : `${spacerValues.md}`,
+                                marginBottom : `${spacerValues.md}`,
+                                marginLeft   : 'auto',
+                                marginRight  : 'auto',
                                 padding      : `calc(${spacerValues.md} * 1.5)`,
                             }}
                         >
@@ -1034,7 +1037,10 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                             
                             
                             // spacings:
-                            margin       : `${spacerValues.md}`,
+                            marginTop    : `${spacerValues.md}`,
+                            marginBottom : `${spacerValues.md}`,
+                            marginLeft   : 'auto',
+                            marginRight  : 'auto',
                             padding      : `calc(${spacerValues.md} * 1.5)`,
                         }}
                     >
