@@ -16,6 +16,15 @@ import {
 
 
 
+// configs:
+export const fetchCache = 'force-no-store';
+export const runtime = 'edge';
+// export const config = {
+//     runtime: 'edge',
+// };
+
+
+
 export async function GET(req: NextRequest, res: Response) {
     const rawPaymentId = req.nextUrl.searchParams.get('paymentId');
     if ((typeof(rawPaymentId) !== 'string') || !rawPaymentId) {
@@ -145,12 +154,3 @@ export async function GET(req: NextRequest, res: Response) {
         },
     });
 }
-
-
-
-// configs:
-export const fetchCache = 'force-no-store';
-export const runtime = 'edge';
-// export const config = {
-//     runtime: 'edge',
-// };

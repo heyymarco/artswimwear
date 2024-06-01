@@ -27,6 +27,11 @@ import {
 
 
 
+// configs:
+export const fetchCache = 'force-no-store';
+
+
+
 export async function GET(req: NextRequest, res: Response) {
     const rawPaymentId = req.nextUrl.searchParams.get('paymentId');
     if ((typeof(rawPaymentId) !== 'string') || !rawPaymentId) {
@@ -105,8 +110,3 @@ export async function GET(req: NextRequest, res: Response) {
         paymentDetail: paymentDetail,
     });
 }
-
-
-
-// configs:
-export const fetchCache = 'force-no-store';
