@@ -296,7 +296,7 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                             }[checkoutConfigServer.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
                             const fractions       = rounding(totalFeeRaw / fractionUnit);
                             const totalFeeStepped = fractions * fractionUnit;
-                            return trimNumber(totalFeeStepped);
+                            return trimNumber(totalFeeStepped); // decimalize summed numbers to avoid producing ugly_fractional_decimal
                         })(),
                     } satisfies PaymentDetail;
                 }
