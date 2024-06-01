@@ -11,12 +11,12 @@ import type {
 
 // models:
 import type {
+    CustomerOrGuest,
+    CustomerOrGuestPreferenceData,
+}                           from '@/models'
+import type {
     Product,
     Variant,
-    Customer,
-    CustomerPreference,
-    Guest,
-    GuestPreference,
     PaymentConfirmation,
     Order,
     OrdersOnProducts,
@@ -58,12 +58,6 @@ export type ProductData = Pick<Product, 'name'> & {
 export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'|'variantIds'> & {
     product : ProductData|null
 }
-export type CustomerOrGuest =
-    &Pick<Customer, keyof Customer & keyof Guest>
-    &Pick<Guest   , keyof Customer & keyof Guest>
-export type CustomerOrGuestPreference =
-    &Pick<CustomerPreference, keyof CustomerPreference & keyof GuestPreference>
-    &Pick<GuestPreference   , keyof CustomerPreference & keyof GuestPreference>
 export type CustomerOrGuestData = Omit<CustomerOrGuest,
     // records:
     |'id'
@@ -72,14 +66,6 @@ export type CustomerOrGuestData = Omit<CustomerOrGuest,
 > & {
     preference : CustomerOrGuestPreferenceData|null
 }
-export type CustomerOrGuestPreferenceData = Omit<CustomerOrGuestPreference,
-    // records:
-    |'id'
-    
-    // relations:
-    |'customerId'
-    |'guestId'
->
 export type OrderAndData = Order & {
     items                : OrderItemsAndData[]
     shippingProvider     : MatchingShipping|null
