@@ -21,6 +21,11 @@ import {
 
 
 
+// configs:
+export const fetchCache = 'force-no-store';
+
+
+
 // types:
 export interface CountryPreview
     extends

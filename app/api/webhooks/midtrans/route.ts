@@ -51,6 +51,12 @@ import {
 
 
 
+// configs:
+export const fetchCache = 'force-no-store';
+export const maxDuration = 20; // This function can run for a maximum of 20 seconds
+
+
+
 export async function POST(req: Request, res: Response): Promise<Response> {
     const midtransPaymentData = await req.json();
     const {

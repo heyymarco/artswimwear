@@ -16,6 +16,11 @@ import {
 
 
 
+// configs:
+export const fetchCache = 'force-no-store';
+
+
+
 // utilities:
 const currencyExchange = {
     expires : new Date(),
