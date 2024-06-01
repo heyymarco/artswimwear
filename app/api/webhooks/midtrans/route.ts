@@ -1,7 +1,4 @@
 // models:
-import type {
-    Payment,
-}                           from '@prisma/client'
 import {
     // utilities:
     isAuthorizedFundData,
@@ -21,7 +18,7 @@ import type {
 // internals:
 import {
     midtransTranslateData,
-}                           from '../../paymentProcessors.midtrans'
+}                           from '../../checkout/paymentProcessors.midtrans'
 import {
     // utilities:
     findDraftOrderById,
@@ -38,10 +35,10 @@ import {
     
     commitOrderSelect,
     commitOrder,
-}                           from '../../order-utilities'
+}                           from '../../checkout/order-utilities'
 import {
     sendConfirmationEmail,
-}                           from '../../email-utilities'
+}                           from '../../checkout/email-utilities'
 
 // utilities:
 import {
