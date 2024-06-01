@@ -217,50 +217,82 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                         ? amountRaw
                         : Number.parseFloat(amountRaw)
                     );
+                    
+                    
+                    
+                    const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+                        switch (midtransPaymentData.payment_type) {
+                            /* PAY WITH CARD */
+                            case 'credit_card': return {
+                                type       : 'CARD',
+                                brand      : midtransPaymentData.bank ?? null,
+                                identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
+                            };
+                            
+                            
+                            
+                            /* PAY WITH EWALLET */
+                            case 'gopay'    :
+                            case 'shopeepay':
+                            case 'qris'     : return {
+                                type       : 'EWALLET',
+                                brand      : midtransPaymentData.issuer ?? midtransPaymentData.acquirer ?? midtransPaymentData.payment_type ?? null,
+                                // identifier : midtransPaymentData.merchant_id ?? null,
+                                identifier : null,
+                            };
+                            
+                            
+                            
+                            /* PAY WITH CSTORE */
+                            case 'cstore': return {
+                                type       : 'MANUAL_PAID',
+                                brand      : midtransPaymentData.store,
+                                identifier : midtransPaymentData.payment_code,
+                            };
+                            
+                            
+                            
+                            /* PAY WITH OTHER */
+                            default : return {
+                                type       : 'CUSTOM',
+                                brand      : null,
+                                identifier : null,
+                            };
+                        } // switch
+                    })();
                     return {
-                        ...((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
-                            switch (midtransPaymentData.payment_type) {
-                                /* PAY WITH CARD */
-                                case 'credit_card': return {
-                                    type       : 'CARD',
-                                    brand      : midtransPaymentData.bank ?? null,
-                                    identifier : midtransPaymentData.masked_card ? `ending with ${midtransPaymentData.masked_card.slice(-4)}` : null,
-                                };
-                                
-                                
-                                
-                                /* PAY WITH EWALLET */
-                                case 'gopay'    :
-                                case 'shopeepay':
-                                case 'qris'     : return {
-                                    type       : 'EWALLET',
-                                    brand      : midtransPaymentData.issuer ?? midtransPaymentData.acquirer ?? midtransPaymentData.payment_type ?? null,
-                                    // identifier : midtransPaymentData.merchant_id ?? null,
-                                    identifier : null,
-                                };
-                                
-                                
-                                
-                                /* PAY WITH CSTORE */
-                                case 'cstore': return {
-                                    type       : 'MANUAL_PAID',
-                                    brand      : midtransPaymentData.store,
-                                    identifier : midtransPaymentData.payment_code,
-                                };
-                                
-                                
-                                
-                                /* PAY WITH OTHER */
-                                default : return {
-                                    type       : 'CUSTOM',
-                                    brand      : null,
-                                    identifier : null,
-                                };
-                            } // switch
-                        })(),
+                        ...paymentDetailPartial,
                         
                         amount : amount,
-                        fee    : 0,
+                        fee    : ((): number => {
+                            const vat = (amount * (11 / 100)); // VAT is 11%
+                            
+                            
+                            
+                            let mdrFee = 0;
+                            switch (paymentDetailPartial.type) {
+                                case 'CARD':
+                                    mdrFee = (amount * (2.9 / 100)) + 2000; // 2.9% + Rp2000
+                                    break;
+                                
+                                case 'EWALLET':
+                                    mdrFee = (amount * (0.7 / 100)); // 0.7% + Rp2000
+                                    break;
+                            } // switch
+                            
+                            
+                            
+                            const totalFeeRaw  = (vat + mdrFee);
+                            const fractionUnit = checkoutConfigServer.intl.currencies.IDR.fractionUnit
+                            const rounding     = {
+                                ROUND : Math.round,
+                                CEIL  : Math.ceil,
+                                FLOOR : Math.floor,
+                            }[checkoutConfigServer.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
+                            const fractions       = rounding(totalFeeRaw / fractionUnit);
+                            const totalFeeStepped = fractions * fractionUnit;
+                            return totalFeeStepped;
+                        })(),
                     } satisfies PaymentDetail;
                 }
                 
