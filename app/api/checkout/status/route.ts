@@ -9,19 +9,57 @@ import type {
     PaymentDetail,
 }                           from '@/models'
 
-// utilities:
+// ORMs:
 import {
-    sha512,
-}                           from '@/libs/crypto'
+    prisma,
+}                           from '@/libs/prisma.server'
+
+// internals:
+import {
+    // utilities:
+    findPaymentById,
+}                           from '../order-utilities'
 
 
 
 // configs:
 export const fetchCache = 'force-no-store';
-export const runtime = 'edge';
+// export const runtime = 'edge';
 // export const config = {
 //     runtime: 'edge',
 // };
+
+
+
+// utilities:
+const checkPayment = async (paymentId: string): Promise<PaymentDetail|false|null> => {
+    try {
+        return await prisma.$transaction(async (prismaTransaction): Promise<PaymentDetail|false|null> => {
+            const draftOrder = await prisma.draftOrder.findUnique({
+                where  : {
+                    paymentId : paymentId,
+                },
+                select : {
+                    id : true,
+                },
+            });
+            if (!!draftOrder) return null;             // waiting for payment
+            
+            
+            
+            const paymentDetail = await findPaymentById(prismaTransaction, { paymentId: paymentId });
+            if (!!paymentDetail) return paymentDetail; // paid
+            
+            
+            
+            return false;                              // payment canceled or expired or failed
+        });
+    }
+    catch {
+        // ignore any error
+        return null;                                   // an error occured during check for payment status => assumes as waiting for payment
+    } // try
+};
 
 
 
@@ -65,32 +103,9 @@ export async function GET(req: NextRequest, res: Response) {
     
     
     
-    const checkPayment = async (): Promise<PaymentDetail|false|null> => {
-        try {
-            const dateTime = new Date();
-            const response = await fetch(`${process.env.APP_URL ?? ''}/api/checkout/callbacks/__status?paymentId=${encodeURIComponent(midtransPaymentId)}`, {
-                headers : {
-                    'X-DATETIME'     : dateTime.toISOString(),
-                    'X-SIGNATUREKEY' : (await sha512(`${paymentId}${dateTime.valueOf()}${process.env.APP_SECRET ?? ''}`)),
-                },
-            });
-            if (!response.ok) return null;
-            const data = await response.json();
-            return data?.paymentDetail ?? null;
-            /*
-                null          : waiting for payment.  
-                false         : payment canceled or expired.  
-                PaymentDetail : paid.  
-            */
-        }
-        catch {
-            // ignore any error
-            return null; // an error occured during check for payment status => assumes as waiting for payment
-        } // try
-    }
     let rescheduleHandler : ReturnType<typeof setTimeout>;
     const scheduleCheckPayment = async (): Promise<void> => {
-        const result = await checkPayment();
+        const result = await checkPayment(midtransPaymentId);
         
         if (result !== null) {
             try {
