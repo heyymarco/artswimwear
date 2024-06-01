@@ -16,6 +16,11 @@ import {
     isAuthorizedFundData,
 }                           from '@/models'
 
+// utilities:
+import {
+    trimNumber,
+}                           from '@/libs/formatters'
+
 // configs:
 import {
     checkoutConfigServer,
@@ -291,7 +296,7 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                             }[checkoutConfigServer.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
                             const fractions       = rounding(totalFeeRaw / fractionUnit);
                             const totalFeeStepped = fractions * fractionUnit;
-                            return totalFeeStepped;
+                            return trimNumber(totalFeeStepped);
                         })(),
                     } satisfies PaymentDetail;
                 }
