@@ -93,7 +93,7 @@ export interface SendEmailConfirmationOptions {
     isPaid                   : boolean
     paymentConfirmationToken : string|null
 }
-export const sendConfirmationEmail = async (options: SendEmailConfirmationOptions): Promise<boolean> => {
+export const sendConfirmationEmail = async (options: SendEmailConfirmationOptions): Promise<boolean|null> => {
     // options:
     const {
         newOrder,
@@ -102,7 +102,7 @@ export const sendConfirmationEmail = async (options: SendEmailConfirmationOption
         paymentConfirmationToken,
     } = options;
     const customerEmail = newOrder.customerOrGuest?.email;
-    if (!customerEmail) return false;
+    if (!customerEmail) return null;
     
     
     
@@ -241,15 +241,21 @@ export const sendConfirmationEmail = async (options: SendEmailConfirmationOption
                 ),
             });
             console.log('email sent.');
-            return true;
         }
         finally {
             transporter.close();
         } // try
+        
+        
+        
+        return true; // succeeded
     }
     catch (error: any) {
         console.log('ERROR: ', error);
         // ignore send email error
-        return false;
+        
+        
+        
+        return false; // failed
     } // try
 }
