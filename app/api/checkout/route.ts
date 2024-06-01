@@ -16,8 +16,6 @@ import {
 
 // models:
 import type {
-    Prisma,
-    
     Product,
     Variant,
     VariantGroup,
@@ -37,6 +35,11 @@ import {
     type PaymentDetail,
     
     type FinishedOrderState,
+    
+    paymentConfirmationDetailSelect,
+    shippingTrackingDetailSelect,
+    commitDraftOrderSelect,
+    revertDraftOrderSelect,
     
     isAuthorizedFundData,
     isPaymentDetail,
@@ -78,9 +81,7 @@ import {
     findDraftOrderById,
     
     createOrder,
-    commitDraftOrderSelect,
     commitDraftOrder,
-    revertDraftOrderSelect,
     revertDraftOrder,
 }                           from './order-utilities'
 import {
@@ -1748,45 +1749,6 @@ router
         
         
         
-        const paymentConfirmationDetailSelect = {
-            reportedAt      : true,
-            reviewedAt      : true,
-            
-            amount          : true,
-            payerName       : true,
-            paymentDate     : true,
-            
-            originatingBank : true,
-            destinationBank : true,
-            
-            rejectionReason : true,
-            
-            // relations:
-            order : {
-                select : {
-                    preferredCurrency : true,
-                    
-                    customer : {
-                        select : {
-                            customerPreference : {
-                                select : {
-                                    timezone : true,
-                                },
-                            },
-                        },
-                    },
-                    guest : {
-                        select : {
-                            guestPreference : {
-                                select : {
-                                    timezone : true,
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        } satisfies Prisma.PaymentConfirmationSelect;
         const paymentConfirmationDetailRaw = (
             (amount === undefined)
             ? await prisma.paymentConfirmation.findUnique({
@@ -1974,42 +1936,6 @@ Updating the confirmation is not required.`,
         
         
         
-        const shippingTrackingDetailSelect = {
-            shippingCarrier      : true,
-            shippingNumber       : true,
-            shippingTrackingLogs : {
-                select : {
-                    reportedAt : true,
-                    log        : true,
-                },
-            },
-            
-            // relations:
-            order : {
-                select : {
-                    preferredCurrency : true,
-                    
-                    customer : {
-                        select : {
-                            customerPreference : {
-                                select : {
-                                    timezone : true,
-                                },
-                            },
-                        },
-                    },
-                    guest : {
-                        select : {
-                            guestPreference : {
-                                select : {
-                                    timezone : true,
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        } satisfies Prisma.ShippingTrackingSelect;
         const shippingTrackingDetailData = (
             (preferredTimezone === undefined)
             ? await prisma.shippingTracking.findUnique({

@@ -1,24 +1,24 @@
-// types:
-import type {
-    // types:
-    WysiwygEditorState,
-}                           from '@/components/editors/WysiwygEditor/types'
-
 // models:
+import {
+    type PaymentDetail,
+    
+    type CreateDraftOrderData,
+    type FindDraftOrderByIdData,
+    type CreateOrderData,
+    type FindPaymentByIdData,
+    type CommitDraftOrderData,
+    type RevertDraftOrderData,
+    type FindOrderByIdData,
+    type CancelOrderData,
+    type CommitOrderData,
+    
+    
+    orderAndDataSelect,
+    convertOrderDataToOrderAndData,
+}                           from '@/models'
 import type {
     Prisma,
-    
-    Address,
-    Payment,
-    PreferredCurrency,
-    Order,
-    OrdersOnProducts,
-    DraftOrder,
-    DraftOrdersOnProducts,
 }                           from '@prisma/client'
-import type {
-    PaymentDetail,
-}                           from '@/models'
 
 // ORMs:
 import {
@@ -28,7 +28,6 @@ import {
 // templates:
 import type {
     // types:
-    CustomerOrGuestData,
     OrderAndData,
 }                           from '@/components/Checkout/templates/orderDataContext'
 
@@ -37,29 +36,8 @@ import {
     customAlphabet,
 }                           from 'nanoid/async'
 
-// utilities:
-import {
-    getMatchingShipping,
-}                           from '@/libs/shippings'
 
 
-
-export interface CreateDraftOrderData
-    extends
-        // bases:
-        Omit<CreateOrderDataBasic,
-            // extended data:
-            |'payment'
-            |'paymentConfirmationToken'
-        >
-{
-    // temporary data:
-    expiresAt       : Date
-    paymentId       : string // redefined paymentId as non_undefined
-    
-    // extended data:
-    customerOrGuest : CustomerOrGuestData
-}
 export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createDraftOrderData: CreateDraftOrderData): Promise<string> => {
     // data:
     const {
@@ -138,12 +116,6 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
 
 
 
-export interface FindDraftOrderByIdData<TSelect extends Prisma.DraftOrderSelect> {
-    orderId     ?: string|null
-    paymentId   ?: string|null
-    
-    orderSelect  : TSelect
-}
 export const findDraftOrderById = async <TSelect extends Prisma.DraftOrderSelect>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findDraftOrderByIdData: FindDraftOrderByIdData<TSelect>) => {
     // data:
     const {
@@ -169,145 +141,6 @@ export const findDraftOrderById = async <TSelect extends Prisma.DraftOrderSelect
 
 
 
-const orderAndDataSelect = {
-    // records:
-    id                : true,
-    createdAt         : true,
-    updatedAt         : true,
-    
-    // data:
-    orderId           : true,
-    paymentId         : true,
-    
-    orderStatus       : true,
-    orderTrouble      : true,
-    cancelationReason : true,
-    
-    preferredCurrency : true,
-    
-    shippingAddress   : true,
-    shippingCost      : true,
-    
-    payment           : true,
-    
-    // relations:
-    items : {
-        select : {
-            // data:
-            price          : true,
-            shippingWeight : true,
-            quantity       : true,
-            
-            // relations:
-            product        : {
-                select : {
-                    name   : true,
-                    images : true,
-                    
-                    // relations:
-                    variantGroups : {
-                        select : {
-                            variants : {
-                                // always allow to access DRAFT variants when the customer is already ordered:
-                                // where    : {
-                                //     visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                                // },
-                                select : {
-                                    id   : true,
-                                    
-                                    name : true,
-                                },
-                                orderBy : {
-                                    sort : 'asc',
-                                },
-                            },
-                        },
-                        orderBy : {
-                            sort : 'asc',
-                        },
-                    },
-                },
-            },
-            variantIds     : true,
-        },
-    },
-    
-    customerId         : true,
-    customer           : {
-        select : {
-            name  : true,
-            email : true,
-            customerPreference : {
-                select : {
-                    marketingOpt : true,
-                    timezone     : true,
-                },
-            },
-        },
-    },
-    
-    guestId            : true,
-    guest              : {
-        select : {
-            name  : true,
-            email : true,
-            guestPreference : {
-                select : {
-                    marketingOpt : true,
-                    timezone     : true,
-                },
-            },
-        },
-    },
-    
-    shippingProviderId : true,
-    shippingProvider   : {
-        select : {
-            name            : true, // optional for displaying email report
-            
-            weightStep      : true, // required for calculating `getMatchingShipping()`
-            
-            estimate        : true, // optional for displaying email report
-            shippingRates   : true, // required for calculating `getMatchingShipping()`
-            
-            useSpecificArea : true, // required for calculating `getMatchingShipping()`
-            countries       : true, // required for calculating `getMatchingShipping()`
-        },
-    },
-} satisfies Prisma.OrderSelect;
-export interface CreateOrderDataBasic {
-    // primary data:
-    orderId                  : string
-    paymentId                : string|undefined // will be random_auto_generated if undefined
-    items                    : Omit<OrdersOnProducts,
-        // records:
-        |'id'
-        
-        // relations:
-        |'orderId'
-    >[]
-    preferredCurrency        : PreferredCurrency|null
-    shippingAddress          : Address|null
-    shippingCost             : number|null
-    shippingProviderId       : string|null
-    
-    // extended data:
-    payment                  : Payment
-    paymentConfirmationToken : string|null
-}
-export type CreateOrderData =
-    &CreateOrderDataBasic
-    &(
-        |{
-            // extended data:
-            customerOrGuest  : CustomerOrGuestData
-        }
-        |{
-            // extended data:
-            customerId       : string|null
-            guestId          : string|null
-        }
-    )
 export const createOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], createOrderData: CreateOrderData): Promise<OrderAndData> => {
     // data:
     const {
@@ -330,7 +163,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
     
     
     
-    const {customer, guest, ...newOrder} = await prismaTransaction.order.create({
+    const orderData = await prismaTransaction.order.create({
         data   : {
             // primary data:
             
@@ -417,56 +250,11 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
         },
         select : orderAndDataSelect,
     });
-    const shippingAddressData  = newOrder.shippingAddress;
-    const shippingProviderData = newOrder.shippingProvider;
-    return {
-        ...newOrder,
-        items: newOrder.items.map((item) => ({
-            ...item,
-            product : !!item.product ? {
-                name          : item.product.name,
-                image         : item.product.images?.[0] ?? null,
-                imageBase64   : undefined,
-                imageId       : undefined,
-                
-                // relations:
-                variantGroups : item.product.variantGroups.map(({variants}) => variants),
-            } : null,
-        })),
-        shippingProvider : (
-            (shippingAddressData && shippingProviderData)
-            ? getMatchingShipping(shippingProviderData, { city: shippingAddressData.city, zone: shippingAddressData.zone, country: shippingAddressData.country })
-            : null
-        ),
-        customerOrGuest : (
-            !!customer
-            ? (() => {
-                const {customerPreference: preference, ...customerData} = customer;
-                return {
-                    ...customerData,
-                    preference,
-                };
-            })()
-            : (
-                !!guest
-                ? (() => {
-                    const {guestPreference: preference, ...guestData} = guest;
-                    return {
-                        ...guestData,
-                        preference,
-                    };
-                })()
-                : null
-            )
-        ),
-    } satisfies OrderAndData;
+    return convertOrderDataToOrderAndData(orderData);
 }
 
 
 
-export interface FindPaymentByIdData {
-    paymentId : string
-}
 export const findPaymentById = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findPaymentByIdData: FindPaymentByIdData): Promise<PaymentDetail|null> => {
     // data:
     const {
@@ -501,68 +289,6 @@ export const findPaymentById = async (prismaTransaction: Parameters<Parameters<t
 
 
 
-export const commitDraftOrderSelect = {
-    // records:
-    id                     : true,
-    expiresAt              : true,
-    
-    // data:
-    orderId                : true,
-    paymentId              : true,
-    
-    preferredCurrency      : true,
-    
-    shippingAddress        : true,
-    shippingCost           : true,
-    shippingProviderId     : true,
-    
-    // relations:
-    customerId             : true,
-    guestId                : true,
-    // customer               : {
-    //     select : {
-    //         // data:
-    //         name  : true,
-    //         email : true,
-    //     },
-    // },
-    // guest                  : {
-    //     select : {
-    //         // data:
-    //         name  : true,
-    //         email : true,
-    //     },
-    // },
-    
-    items : {
-        select : {
-            // data:
-            price          : true,
-            shippingWeight : true,
-            quantity       : true,
-            
-            // relations:
-            productId      : true,
-            variantIds     : true,
-        },
-    },
-} satisfies Prisma.DraftOrderSelect;
-export type CommitDraftOrder = Omit<DraftOrder,
-    // records:
-    |'createdAt'
-> & {
-    items : Omit<DraftOrdersOnProducts,
-        // records:
-        |'id'
-        
-        // relations:
-        |'draftOrderId'
-    >[]
-}
-export interface CommitDraftOrderData {
-    draftOrder : CommitDraftOrder
-    payment    : Payment
-}
 export const commitDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], commitOrderData : CommitDraftOrderData): Promise<OrderAndData> => {
     // data:
     const {
@@ -603,43 +329,6 @@ export const commitDraftOrder = async (prismaTransaction: Parameters<Parameters<
 
 
 
-export const revertDraftOrderSelect = {
-    // records:
-    id                     : true,
-    
-    // data:
-    orderId                : true,
-    
-    items : {
-        select : {
-            // data:
-            quantity       : true,
-            
-            // relations:
-            productId      : true,
-            variantIds     : true,
-        },
-    },
-} satisfies Prisma.DraftOrderSelect;
-type RevertDraftOrder = Pick<DraftOrder,
-    // records:
-    |'id'
-    
-    // data:
-    |'orderId'
-> & {
-    items : Pick<DraftOrdersOnProducts,
-        // data:
-        |'quantity'
-        
-        // relations:
-        |'productId'
-        |'variantIds'
-    >[]
-}
-export interface RevertDraftOrderData {
-    draftOrder: RevertDraftOrder
-}
 export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], revertDraftOrderData : RevertDraftOrderData): Promise<void> => {
     // data:
     const {
@@ -679,13 +368,6 @@ export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<
 
 
 
-export interface FindOrderByIdData<TSelect extends Prisma.OrderSelect> {
-    id          ?: string|null
-    orderId     ?: string|null
-    paymentId   ?: string|null
-    
-    orderSelect  : TSelect
-}
 export const findOrderById = async <TSelect extends Prisma.OrderSelect>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], findOrderByIdData: FindOrderByIdData<TSelect>) => {
     // data:
     const {
@@ -714,53 +396,6 @@ export const findOrderById = async <TSelect extends Prisma.OrderSelect>(prismaTr
 
 
 
-export const cancelOrderSelect = {
-    id                     : true,
-    
-    orderId                : true,
-    
-    orderStatus            : true,
-    
-    payment : {
-        select : {
-            type           : true,
-        },
-    },
-    
-    items : {
-        select : {
-            productId      : true,
-            variantIds     : true,
-            
-            quantity       : true,
-        },
-    },
-} satisfies Prisma.OrderSelect;
-type CancelOrder = Pick<Order,
-    |'id'
-    
-    |'orderId'
-    
-    |'orderStatus'
-> & {
-    payment : Pick<Payment,
-        |'type'
-    >
-    items : Pick<OrdersOnProducts,
-        |'productId'
-        |'variantIds'
-        
-        |'quantity'
-    >[]
-}
-export interface CancelOrderData<TSelect extends Prisma.OrderSelect> {
-    order              : CancelOrder
-    isExpired         ?: boolean
-    deleteOrder       ?: boolean
-    cancelationReason ?: WysiwygEditorState|null
-    
-    orderSelect        : TSelect
-}
 export const cancelOrder = async <TSelect extends Prisma.OrderSelect>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], cancelOrderData : CancelOrderData<TSelect>) => {
     // data:
     const {
@@ -829,18 +464,6 @@ export const cancelOrder = async <TSelect extends Prisma.OrderSelect>(prismaTran
 
 
 
-export const commitOrderSelect = {
-    // records:
-    id : true,
-} satisfies Prisma.OrderSelect;
-export type CommitOrder = Pick<Order,
-    // records:
-    |'id'
->
-export interface CommitOrderData {
-    order   : CommitOrder
-    payment : Pick<Payment, 'amount'|'fee'> & Partial<Omit<Payment, 'amount'|'fee'>>
-}
 export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], commitOrderData : CommitOrderData): Promise<OrderAndData> => {
     // data:
     const {
@@ -849,7 +472,7 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
     } = commitOrderData;
     
     
-    const {customer, guest, ...newOrder} = await prismaTransaction.order.update({
+    const orderData = await prismaTransaction.order.update({
         where  : {
             id : order.id,
         },
@@ -864,47 +487,5 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
         },
         select : orderAndDataSelect,
     });
-    const shippingAddressData  = newOrder.shippingAddress;
-    const shippingProviderData = newOrder.shippingProvider;
-    return {
-        ...newOrder,
-        items: newOrder.items.map((item) => ({
-            ...item,
-            product : !!item.product ? {
-                name          : item.product.name,
-                image         : item.product.images?.[0] ?? null,
-                imageBase64   : undefined,
-                imageId       : undefined,
-                
-                // relations:
-                variantGroups : item.product.variantGroups.map(({variants}) => variants),
-            } : null,
-        })),
-        shippingProvider : (
-            (shippingAddressData && shippingProviderData)
-            ? getMatchingShipping(shippingProviderData, { city: shippingAddressData.city, zone: shippingAddressData.zone, country: shippingAddressData.country })
-            : null
-        ),
-        customerOrGuest : (
-            !!customer
-            ? (() => {
-                const {customerPreference: preference, ...customerData} = customer;
-                return {
-                    ...customerData,
-                    preference,
-                };
-            })()
-            : (
-                !!guest
-                ? (() => {
-                    const {guestPreference: preference, ...guestData} = guest;
-                    return {
-                        ...guestData,
-                        preference,
-                    };
-                })()
-                : null
-            )
-        ),
-    } satisfies OrderAndData;
+    return convertOrderDataToOrderAndData(orderData);
 }
