@@ -23,7 +23,10 @@ export async function POST(req: Request, res: Response) {
     const encoder        = new TextEncoder();
     
     (async () => {
-        await writer.write(encoder.encode('test'));
+        await writer.write(encoder.encode(JSON.stringify({
+            status: 'okay',
+            time : new Date(),
+        })));
         await writer.close();
         await sendEmailPromise;
         console.log('task done!');
@@ -38,6 +41,12 @@ export async function POST(req: Request, res: Response) {
     });
     
     return new Response(responseStream.readable);
+}
+export async function PATCH(req: Request, res: Response) {
+    return Response.json({
+        status: 'okay',
+        time : new Date(),
+    });
 }
 
 const sendEmail = async () => {
