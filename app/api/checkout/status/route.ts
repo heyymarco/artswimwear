@@ -88,9 +88,9 @@ export async function GET(req: NextRequest, res: Response) {
     
     
     
-    let responseStream = new TransformStream();
-    const writer       = responseStream.writable.getWriter();
-    const encoder      = new TextEncoder();
+    const responseStream = new TransformStream();
+    const writer         = responseStream.writable.getWriter();
+    const encoder        = new TextEncoder();
     
     
     
