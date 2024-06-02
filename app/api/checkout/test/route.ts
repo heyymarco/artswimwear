@@ -1,3 +1,13 @@
+// configs:
+export const fetchCache = 'force-no-store';
+// export const runtime = 'edge';
+// export const config = {
+//     runtime: 'edge',
+// };
+export const maxDuration = 60; // This function can run for a maximum of 60 seconds
+
+
+
 export async function POST(req: Request, res: Response) {
     const sendEmailPromise : Promise<void> = sendEmail();
     
