@@ -53,7 +53,7 @@ import {
 
 // configs:
 export const fetchCache = 'force-no-store';
-export const maxDuration = 20; // This function can run for a maximum of 20 seconds
+export const maxDuration = 20; // this function can run for a maximum of 20 seconds for complex transactions
 
 
 

@@ -8,3 +8,4 @@ move checkoutState to local if guess mode
 [high prior] create a random value of @unique nullable data of DraftOrder::paymentId & Credentials::username
 [low  prior] make the Order sorting order matches to shopping cart sorting order
 [low  prior] update DateTimeEditor to have polyfill dropdown calendar
+[low  prior] prefer to use Request|Response instead of NextRequest|NextResponse

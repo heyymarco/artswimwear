@@ -28,7 +28,7 @@ export const fetchCache = 'force-no-store';
 // export const config = {
 //     runtime: 'edge',
 // };
-export const maxDuration = 60; // This function can run for a maximum of 60 seconds
+export const maxDuration = 60; // this function can run for a maximum of 60 seconds for long_lived connection stream
 
 
 

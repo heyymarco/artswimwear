@@ -11,10 +11,10 @@ import type {
     EntityState
 }                           from '@reduxjs/toolkit'
 
-// webs:
+// models:
 import {
-    default as nodemailer,
-}                           from 'nodemailer'
+    type SendEmailData,
+}                           from '@/models'
 
 // ORMs:
 import {
@@ -195,18 +195,12 @@ export const sendConfirmationEmail = async (options: SendEmailConfirmationOption
         
         
         
-        const transporter = nodemailer.createTransport({
-            host     : checkoutEmail.host,
-            port     : checkoutEmail.port,
-            secure   : checkoutEmail.secure,
-            auth     : {
-                user : checkoutEmail.username,
-                pass : checkoutEmail.password,
+        await fetch(`${process.env.APP_URL ?? ''}/api/send-email`, {
+            method  : 'POST',
+            headers : {
+                'X-Secret' : process.env.APP_SECRET ?? '',
             },
-        });
-        try {
-            console.log('sending email...');
-            await transporter.sendMail({
+            body    : JSON.stringify({
                 from        : checkoutEmail.from,
                 to          : customerEmail,
                 subject     : (await renderToStaticMarkupAsync(
@@ -239,12 +233,8 @@ export const sendConfirmationEmail = async (options: SendEmailConfirmationOption
                         cid  : product?.imageId,
                     }))
                 ),
-            });
-            console.log('email sent.');
-        }
-        finally {
-            transporter.close();
-        } // try
+            } satisfies SendEmailData),
+        });
         
         
         

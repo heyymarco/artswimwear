@@ -124,9 +124,6 @@ import {
     calculateShippingCost,
 }                           from '@/libs/shippings'
 import {
-    streamResponse,
-}                           from '@/libs/http-responses'
-import {
     possibleTimezoneValues,
 }                           from '@/components/editors/TimezoneEditor/types'
 
@@ -142,7 +139,7 @@ import {
 
 // configs:
 export const fetchCache = 'force-no-store';
-export const maxDuration = 20; // This function can run for a maximum of 20 seconds
+export const maxDuration = 20; // this function can run for a maximum of 20 seconds for complex transactions
 
 
 
@@ -660,7 +657,6 @@ router
     let authorizedOrPaymentDetail : AuthorizedFundData|PaymentDetail|undefined;
     let paymentDetail             : PaymentDetail|undefined;
     let newOrder                  : OrderAndData|undefined = undefined;
-    let sendEmailPromise          : Promise<boolean|null>|undefined = undefined;
     try {
         const isPaid = !['manual', 'indomaret', 'alfamart'].includes(paymentSource);
         const paymentConfirmationToken = (
@@ -1558,7 +1554,7 @@ router
             // notify for waiting for payment (manual_payment):
             // -or-
             // notify that the payment has been received:
-            sendEmailPromise = sendConfirmationEmail({
+            await sendConfirmationEmail({
                 newOrder,
                 
                 isPaid, // waiting for manual_payment -or- paid
@@ -1620,9 +1616,8 @@ router
             orderId      : '',
             redirectData : undefined,
         };
-        return streamResponse(draftOrderDetail, {
-            backgroundTask : sendEmailPromise,
-            status         : 200, // handled with success
+        return Response.json(draftOrderDetail, {
+            status : 200, // handled with success
         });
     } // if
     
@@ -1631,17 +1626,15 @@ router
         const paymentDeclined : PaymentDeclined = {
             error  : 'payment declined',
         };
-        return streamResponse(paymentDeclined, {
-            backgroundTask : sendEmailPromise,
-            status         : 402 // payment DECLINED
+        return Response.json(paymentDeclined, {
+            status : 402 // payment DECLINED
         });
     } // if
     
     if (paymentDetail) {  // is PaymentDetail
         // payment approved:
-        return streamResponse(paymentDetail, {
-            backgroundTask : sendEmailPromise,
-            status         : 200 // payment APPROVED
+        return Response.json(paymentDetail, {
+            status : 200 // payment APPROVED
         });
     } // if
     
@@ -1673,9 +1666,8 @@ router
             };
         })(),
     };
-    return streamResponse(draftOrderDetail, {
-        backgroundTask : sendEmailPromise,
-        status         : 200, // handled with success
+    return Response.json(draftOrderDetail, {
+        status : 200, // handled with success
     });
 })
 
@@ -2223,9 +2215,8 @@ Updating the confirmation is not required.`,
     
     
     
-    let paymentResponse  : PaymentDetail|PaymentDeclined;
-    let newOrder         : OrderAndData|undefined = undefined;
-    let sendEmailPromise : Promise<boolean|null>|undefined = undefined;
+    let paymentResponse : PaymentDetail|PaymentDeclined;
+    let newOrder        : OrderAndData|undefined = undefined;
     try {
         ([paymentResponse, newOrder] = await prisma.$transaction(async (prismaTransaction): Promise<readonly [PaymentDetail|PaymentDeclined, OrderAndData|undefined]> => {
             //#region verify draftOrder_id
@@ -2334,7 +2325,7 @@ Updating the confirmation is not required.`,
         // send email confirmation:
         if (newOrder) {
             // notify that the payment has been received:
-            sendEmailPromise = sendConfirmationEmail({
+            await sendConfirmationEmail({
                 newOrder,
                 
                 isPaid : true,
@@ -2380,19 +2371,8 @@ Updating the confirmation is not required.`,
     
     
     // payment approved -or- rejected:
-    
-    // return NextResponse.json(paymentResponse, {
-    //     status : (
-    //         ('error' in paymentResponse)
-    //         ? 402 // payment DECLINED
-    //         : 200 // payment APPROVED
-    //     ),
-    // });
-    
-    // http response in streaming way while awaiting for `sendEmailPromise`:
-    return streamResponse(paymentResponse, {
-        backgroundTask : sendEmailPromise,
-        status         : (
+    return Response.json(paymentResponse, {
+        status : (
             ('error' in paymentResponse)
             ? 402 // payment DECLINED
             : 200 // payment APPROVED
