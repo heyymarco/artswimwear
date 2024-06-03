@@ -45,6 +45,14 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         ||
         ((attachments !== undefined) && (!Array.isArray(attachments) || !attachments.every((attachment): attachment is object => (typeof(attachment) === 'object'))))
     ) {
+        console.log('invalid data: ', {
+            from,
+            to,
+            
+            subject,
+            html,
+            attachments,
+        });
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
