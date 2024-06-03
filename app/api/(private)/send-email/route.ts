@@ -84,8 +84,8 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             attachments : attachments,
         });
     }
-    catch {
-        console.log('Email not sent.');
+    catch (error: any) {
+        console.log('Email not sent.', error);
         return Response.json({
             error: 'Email not sent.',
         }, { status: 500 }); // handled with error
