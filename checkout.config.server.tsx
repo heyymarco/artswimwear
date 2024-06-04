@@ -536,6 +536,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
+        
         canceled                   : {
             host                   : process.env.EMAIL_CANCELED_HOST     ?? '',
             port                   : Number.parseInt(process.env.EMAIL_CANCELED_PORT ?? '465'),
