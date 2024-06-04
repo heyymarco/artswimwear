@@ -144,7 +144,7 @@ export const sendConfirmationEmail = async (options: SendEmailConfirmationOption
             business,
             payment,
             shipping,
-            emails : {
+            customerEmails : {
                 checkout : checkoutEmail,
             },
         } = checkoutConfigServer;

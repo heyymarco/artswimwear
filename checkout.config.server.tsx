@@ -151,7 +151,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
     shipping                       : {
         trackingUrl                : '/checkout/shipping-tracking',
     },
-    emails                         : {
+    customerEmails                 : {
         checkout                   : {
             host                   : process.env.EMAIL_CHECKOUT_HOST     ?? '',
             port                   : Number.parseInt(process.env.EMAIL_CHECKOUT_PORT ?? '465'),

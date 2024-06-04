@@ -53,7 +53,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     
     
     const {
-        emails : {
+        customerEmails : {
             checkout : checkoutEmail,
         },
     } = checkoutConfigServer;

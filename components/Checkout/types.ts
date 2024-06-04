@@ -55,7 +55,7 @@ export interface EmailConfig {
 export interface CheckoutConfigServer extends CheckoutConfigShared {
     payment                     : PaymentConfig
     shipping                    : ShippingConfig
-    emails                      : {
+    customerEmails              : {
         checkout                : EmailConfig
         shipping                : EmailConfig
         completed               : EmailConfig
