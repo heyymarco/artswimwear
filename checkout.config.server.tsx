@@ -536,17 +536,16 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        
-        shipping                   : {
-            host                   : process.env.EMAIL_SHIPPING_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_SHIPPING_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_SHIPPING_SECURE === 'true'),
-            username               : process.env.EMAIL_SHIPPING_USERNAME ?? '',
-            password               : process.env.EMAIL_SHIPPING_PASSWORD ?? '',
+        canceled                   : {
+            host                   : process.env.EMAIL_CANCELED_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_CANCELED_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_CANCELED_SECURE === 'true'),
+            username               : process.env.EMAIL_CANCELED_USERNAME ?? '',
+            password               : process.env.EMAIL_CANCELED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_SHIPPING_FROM ?? '',
+            from                   : process.env.EMAIL_CANCELED_FROM ?? '',
             subject                : <>
-                A Shipping Confirmation of Your Order at <Business.Name />
+                Your Order Has Been Canceled at <Business.Name />
             </>,
             message                : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
@@ -576,7 +575,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     }}
                 >
                     <h1 style={styles.heading1}>
-                        Your Order Is on the Way!
+                        Your Order Has Been Canceled
                     </h1>
                     
                     <p style={styles.paragraph}>
@@ -584,23 +583,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </p>
                     
                     <p style={styles.paragraph}>
-                        Thank you for placing an order at <strong><Business.Name /></strong>.
+                        Your order has been <strong>canceled</strong> by our system.
                         <br />
-                        We are pleased to confirm that your order is <strong>on its way</strong>.
+                        But don&apos;t worry, you can <strong>order again</strong> at <Business.Link />.
                     </p>
-                    <p style={styles.paragraphLast}>
-                        Please use the link below to track shipping status:
-                        <br />
-                        <Shipping.TrackingLink />
-                    </p>
-                </section>
-                
-                <section style={styles.section}>
-                    <h2 style={styles.heading2}>
-                        Shipping Info
-                    </h2>
                     
-                    <Shipping.Info style={styles.selfCenterHorz} />
+                    <Order.HasCancelationReason>
+                        <p style={styles.paragraphLast}>
+                            Cancelation reason:
+                            <br />
+                            <Order.CancelationReason />
+                        </p>
+                    </Order.HasCancelationReason>
                 </section>
                 
                 <section style={styles.section}>
@@ -693,6 +687,16 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </div>
                 </section>
                 
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
                 <section style={styles.section}>
                     <h2 style={styles.heading2}>
                         Customer Info
@@ -712,17 +716,16 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        
-        completed                  : {
-            host                   : process.env.EMAIL_COMPLETED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_COMPLETED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_COMPLETED_SECURE === 'true'),
-            username               : process.env.EMAIL_COMPLETED_USERNAME ?? '',
-            password               : process.env.EMAIL_COMPLETED_PASSWORD ?? '',
+        expired                    : {
+            host                   : process.env.EMAIL_EXPIRED_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_EXPIRED_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_EXPIRED_SECURE === 'true'),
+            username               : process.env.EMAIL_EXPIRED_USERNAME ?? '',
+            password               : process.env.EMAIL_EXPIRED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_COMPLETED_FROM ?? '',
+            from                   : process.env.EMAIL_EXPIRED_FROM ?? '',
             subject                : <>
-                Your Order Status Is Now Complete
+                Your Order Has Been Canceled at <Business.Name />
             </>,
             message                : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
@@ -752,12 +755,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     }}
                 >
                     <h1 style={styles.heading1}>
-                        <IfPhysicalProduct>
-                            Your Order Has Arrived!
-                        </IfPhysicalProduct>
-                        <IfNotPhysicalProduct>
-                            Your Order Has Been Processed!
-                        </IfNotPhysicalProduct>
+                        Your Order Has Been Canceled
                     </h1>
                     
                     <p style={styles.paragraph}>
@@ -765,17 +763,9 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </p>
                     
                     <p style={styles.paragraphLast}>
-                        <IfPhysicalProduct>
-                            It looks like you have received your order package.
-                        </IfPhysicalProduct>
-                        <IfNotPhysicalProduct>
-                            Your order has been fully processed.
-                        </IfNotPhysicalProduct>
+                        Your order has been <strong>canceled</strong> because we have not received the payment by the final payment date.
                         <br />
-                        Now your order status is marked as <strong>complete</strong>.
-                    </p>
-                    <p>
-                        If you need help, please contact us by replying to this email.
+                        But don&apos;t worry, you can <strong>order again</strong> at <Business.Link />.
                     </p>
                 </section>
                 
@@ -898,7 +888,6 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        
         rejected                   : {
             host                   : process.env.EMAIL_REJECTED_HOST     ?? '',
             port                   : Number.parseInt(process.env.EMAIL_REJECTED_PORT ?? '465'),
@@ -1198,16 +1187,17 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        canceled                   : {
-            host                   : process.env.EMAIL_CANCELED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_CANCELED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_CANCELED_SECURE === 'true'),
-            username               : process.env.EMAIL_CANCELED_USERNAME ?? '',
-            password               : process.env.EMAIL_CANCELED_PASSWORD ?? '',
+        
+        shipping                   : {
+            host                   : process.env.EMAIL_SHIPPING_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_SHIPPING_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_SHIPPING_SECURE === 'true'),
+            username               : process.env.EMAIL_SHIPPING_USERNAME ?? '',
+            password               : process.env.EMAIL_SHIPPING_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_CANCELED_FROM ?? '',
+            from                   : process.env.EMAIL_SHIPPING_FROM ?? '',
             subject                : <>
-                Your Order Has Been Canceled at <Business.Name />
+                A Shipping Confirmation of Your Order at <Business.Name />
             </>,
             message                : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
@@ -1237,7 +1227,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     }}
                 >
                     <h1 style={styles.heading1}>
-                        Your Order Has Been Canceled
+                        Your Order Is on the Way!
                     </h1>
                     
                     <p style={styles.paragraph}>
@@ -1245,18 +1235,23 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </p>
                     
                     <p style={styles.paragraph}>
-                        Your order has been <strong>canceled</strong> by our system.
+                        Thank you for placing an order at <strong><Business.Name /></strong>.
                         <br />
-                        But don&apos;t worry, you can <strong>order again</strong> at <Business.Link />.
+                        We are pleased to confirm that your order is <strong>on its way</strong>.
                     </p>
+                    <p style={styles.paragraphLast}>
+                        Please use the link below to track shipping status:
+                        <br />
+                        <Shipping.TrackingLink />
+                    </p>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Shipping Info
+                    </h2>
                     
-                    <Order.HasCancelationReason>
-                        <p style={styles.paragraphLast}>
-                            Cancelation reason:
-                            <br />
-                            <Order.CancelationReason />
-                        </p>
-                    </Order.HasCancelationReason>
+                    <Shipping.Info style={styles.selfCenterHorz} />
                 </section>
                 
                 <section style={styles.section}>
@@ -1349,16 +1344,6 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </div>
                 </section>
                 
-                <IfPhysicalProduct>
-                    <section style={styles.section}>
-                        <h2 style={styles.heading2}>
-                            Shipping Info
-                        </h2>
-                        
-                        <Shipping.Info style={styles.selfCenterHorz} />
-                    </section>
-                </IfPhysicalProduct>
-                
                 <section style={styles.section}>
                     <h2 style={styles.heading2}>
                         Customer Info
@@ -1378,16 +1363,16 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        expired                    : {
-            host                   : process.env.EMAIL_EXPIRED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_EXPIRED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_EXPIRED_SECURE === 'true'),
-            username               : process.env.EMAIL_EXPIRED_USERNAME ?? '',
-            password               : process.env.EMAIL_EXPIRED_PASSWORD ?? '',
+        completed                  : {
+            host                   : process.env.EMAIL_COMPLETED_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_COMPLETED_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_COMPLETED_SECURE === 'true'),
+            username               : process.env.EMAIL_COMPLETED_USERNAME ?? '',
+            password               : process.env.EMAIL_COMPLETED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_EXPIRED_FROM ?? '',
+            from                   : process.env.EMAIL_COMPLETED_FROM ?? '',
             subject                : <>
-                Your Order Has Been Canceled at <Business.Name />
+                Your Order Status Is Now Complete
             </>,
             message                : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
@@ -1417,7 +1402,12 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     }}
                 >
                     <h1 style={styles.heading1}>
-                        Your Order Has Been Canceled
+                        <IfPhysicalProduct>
+                            Your Order Has Arrived!
+                        </IfPhysicalProduct>
+                        <IfNotPhysicalProduct>
+                            Your Order Has Been Processed!
+                        </IfNotPhysicalProduct>
                     </h1>
                     
                     <p style={styles.paragraph}>
@@ -1425,9 +1415,17 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </p>
                     
                     <p style={styles.paragraphLast}>
-                        Your order has been <strong>canceled</strong> because we have not received the payment by the final payment date.
+                        <IfPhysicalProduct>
+                            It looks like you have received your order package.
+                        </IfPhysicalProduct>
+                        <IfNotPhysicalProduct>
+                            Your order has been fully processed.
+                        </IfNotPhysicalProduct>
                         <br />
-                        But don&apos;t worry, you can <strong>order again</strong> at <Business.Link />.
+                        Now your order status is marked as <strong>complete</strong>.
+                    </p>
+                    <p>
+                        If you need help, please contact us by replying to this email.
                     </p>
                 </section>
                 
