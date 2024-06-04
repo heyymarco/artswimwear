@@ -65,6 +65,16 @@ export interface CheckoutConfigServer extends CheckoutConfigShared {
         shipping                : EmailConfig
         completed               : EmailConfig
     }
+    adminEmails                 : {
+        checkout                : EmailConfig
+        
+        canceled                : EmailConfig
+        expired                 : EmailConfig
+        rejected                : EmailConfig
+        
+        shipping                : EmailConfig
+        completed               : EmailConfig
+    }
 }
 export interface CheckoutConfigClient extends CheckoutConfigShared {
 }

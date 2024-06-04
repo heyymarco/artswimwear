@@ -30,6 +30,10 @@ import {
 }                           from '@/components/Checkout/templates/Customer'
 import {
     // react components:
+    Admin,
+}                           from '@/components/Checkout/templates/Admin'
+import {
+    // react components:
     Shipping,
 }                           from '@/components/Checkout/templates/Shipping'
 import {
@@ -584,7 +588,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </p>
                     
                     <p style={styles.paragraph}>
-                        Your order has been <strong>canceled</strong> by our system.
+                        Your order has been <strong>canceled</strong>.
                         <br />
                         But don&apos;t worry, you can <strong>order again</strong> at <Business.Link />.
                     </p>
@@ -1373,7 +1377,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             
             from                   : process.env.EMAIL_COMPLETED_FROM ?? '',
             subject                : <>
-                Your Order Status Is Now Complete
+                Your Order Is Now Complete
             </>,
             message                : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
@@ -1546,6 +1550,1249 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     <p style={styles.paragraphLast}>
                         Need help? Please reply this email.
                     </p>
+                </section>
+            </article>,
+        },
+    },
+    adminEmails                    : {
+        checkout                   : {
+            host                   : process.env.EMAIL_ADMIN_CHECKOUT_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_ADMIN_CHECKOUT_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_ADMIN_CHECKOUT_SECURE === 'true'),
+            username               : process.env.EMAIL_ADMIN_CHECKOUT_USERNAME ?? '',
+            password               : process.env.EMAIL_ADMIN_CHECKOUT_PASSWORD ?? '',
+            
+            from                   : process.env.EMAIL_ADMIN_CHECKOUT_FROM ?? '',
+            subject                : <>
+                <IfNotPaid>
+                    Pending Order at <Business.Name />
+                </IfNotPaid>
+                
+                <IfPaidManual>
+                    New Order at <Business.Name />
+                </IfPaidManual>
+                
+                <IfPaidAuto>
+                    New Order at <Business.Name />
+                </IfPaidAuto>
+            </>,
+            message                : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        <IfNotPaid>
+                            New Pending Order!
+                        </IfNotPaid>
+                        
+                        <IfPaidManual>
+                            New Order!
+                        </IfPaidManual>
+                        
+                        <IfPaidAuto>
+                            New Order!
+                        </IfPaidAuto>
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Admin.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraphLast}>
+                        <IfNotPaid>
+                            New order from <Customer.Name /> but <strong>not yet paid</strong> for.
+                            <br />
+                            If necessary, please guide him/her to <strong>complete the payment</strong> so that you will not lose the order.
+                        </IfNotPaid>
+                        
+                        <IfPaidManual>
+                            New order from <Customer.Name />!
+                            <br />
+                            Please <strong>process the order immediately</strong>, so that he/she is satisfied with the fast service.
+                        </IfPaidManual>
+                        
+                        <IfPaidAuto>
+                            New order from <Customer.Name />!
+                            <br />
+                            Please <strong>process the order immediately</strong>, so that he/she is satisfied with the fast service.
+                        </IfPaidAuto>
+                    </p>
+                </section>
+                
+                <IfNotPaid>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Payment Method
+                        </h2>
+                        
+                        <Payment.IsManualTransfer>
+                            <p style={styles.paragraph}>
+                                He/she chose to pay manually via <strong>bank transfer</strong>.
+                            </p>
+                        </Payment.IsManualTransfer>
+                        <Payment.IsManualOtc>
+                            <p style={styles.paragraph}>
+                                He/she chose to pay via <strong><Payment.OtcBrand /> Store</strong>:
+                            </p>
+                        </Payment.IsManualOtc>
+                        
+                        <div
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                display      : 'block',
+                                
+                                
+                                
+                                // sizes:
+                                width        : 'fit-content', // center self horizontally
+                                
+                                
+                                
+                                // backgrounds & foregrounds:
+                                ...styles.theme('primary'),
+                                
+                                
+                                
+                                // borders:
+                                border       : styles.borderStroke('primary'),
+                                borderRadius : `${borderRadiusValues.xxl}`,
+                                
+                                
+                                
+                                // spacings:
+                                marginTop    : `${spacerValues.md}`,
+                                marginBottom : `${spacerValues.md}`,
+                                marginLeft   : 'auto',
+                                marginRight  : 'auto',
+                                padding      : `calc(${spacerValues.md} * 1.5)`,
+                            }}
+                        >
+                            <Payment.IsManualOtc>
+                                <p style={styles.paragraphFirst}>
+                                    <Payment.OtcBrand /> <strong>payment code</strong>:
+                                    <br />
+                                    <strong style={styles.textBigger}>
+                                        <Payment.OtcCode />
+                                    </strong>
+                                </p>
+                                <div style={styles.textSmall}>
+                                    <p style={styles.paragraph}>
+                                        After <Customer.Name /> completes the payment,
+                                        <br />
+                                        the system will automatically send <strong>an email notification of the new order</strong>.
+                                    </p>
+                                </div>
+                                <br />
+                            </Payment.IsManualOtc>
+                            
+                            <p
+                                // styles:
+                                style={{
+                                    // layouts:
+                                    ...styles.paragraphFirst,
+                                    
+                                    
+                                    
+                                    // spacings:
+                                    columnGap    : '0.5em',
+                                    
+                                    
+                                    
+                                    // typos:
+                                    ...styles.textBig,
+                                }}
+                            >
+                                <span>Amount:</span>
+                                <br />
+                                <Order.TotalValue />
+                            </p>
+                            <Payment.HasExpires>
+                                <p style={styles.paragraphLast}>
+                                    The order will be <strong>automatically canceled</strong> after:
+                                    <br />
+                                    <strong style={styles.textSemibold}>
+                                        <Payment.Expires />
+                                    </strong>
+                                </p>
+                            </Payment.HasExpires>
+                        </div>
+                        
+                        <Payment.IsManualTransfer>
+                            <Payment.Bank />
+                        </Payment.IsManualTransfer>
+                    </section>
+                </IfNotPaid>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                        
+                        <IfPhysicalProduct>
+                            <IfPaid>
+                                <hr style={styles.horzRule} />
+                            </IfPaid>
+                        </IfPhysicalProduct>
+                    </div>
+                    
+                    <IfPhysicalProduct>
+                        <IfPaid>
+                            <p style={styles.paragraphLast}>
+                                We will send you another shipping confirmation email as soon as your order has been dispatched from our warehouse.
+                            </p>
+                        </IfPaid>
+                    </IfPhysicalProduct>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <IfPaid>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Payment Info
+                        </h2>
+                        
+                        <Payment.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPaid>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+            </article>,
+        },
+        
+        canceled                   : {
+            host                   : process.env.EMAIL_ADMIN_CANCELED_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_ADMIN_CANCELED_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_ADMIN_CANCELED_SECURE === 'true'),
+            username               : process.env.EMAIL_ADMIN_CANCELED_USERNAME ?? '',
+            password               : process.env.EMAIL_ADMIN_CANCELED_PASSWORD ?? '',
+            
+            from                   : process.env.EMAIL_ADMIN_CANCELED_FROM ?? '',
+            subject                : <>
+                An Order Has Been Canceled at <Business.Name />
+            </>,
+            message                : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        An Order Has Been Canceled
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Admin.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraph}>
+                        An order from <Customer.Name /> has been <strong>canceled</strong>.
+                        <br />
+                        If necessary, please guide him/her to <strong>re-create a new order</strong> if he/she wants to resume the order.
+                    </p>
+                    
+                    <Order.HasCancelationReason>
+                        <p style={styles.paragraphLast}>
+                            Cancelation reason:
+                            <br />
+                            <Order.CancelationReason />
+                        </p>
+                    </Order.HasCancelationReason>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+            </article>,
+        },
+        expired                    : {
+            host                   : process.env.EMAIL_ADMIN_EXPIRED_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_ADMIN_EXPIRED_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_ADMIN_EXPIRED_SECURE === 'true'),
+            username               : process.env.EMAIL_ADMIN_EXPIRED_USERNAME ?? '',
+            password               : process.env.EMAIL_ADMIN_EXPIRED_PASSWORD ?? '',
+            
+            from                   : process.env.EMAIL_ADMIN_EXPIRED_FROM ?? '',
+            subject                : <>
+                An Order Has Been Canceled at <Business.Name />
+            </>,
+            message                : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        An Order Has Been Canceled
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Admin.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraphLast}>
+                        An order from <Customer.Name /> has been <strong>canceled</strong> because we have not received the payment by the final payment date.
+                        <br />
+                        If necessary, please guide him/her to <strong>re-create a new order</strong> if he/she wants to resume the order.
+                    </p>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+            </article>,
+        },
+        rejected                   : {
+            host                   : process.env.EMAIL_ADMIN_REJECTED_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_ADMIN_REJECTED_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_ADMIN_REJECTED_SECURE === 'true'),
+            username               : process.env.EMAIL_ADMIN_REJECTED_USERNAME ?? '',
+            password               : process.env.EMAIL_ADMIN_REJECTED_PASSWORD ?? '',
+            
+            from                   : process.env.EMAIL_ADMIN_REJECTED_FROM ?? '',
+            subject                : <>
+                A Payment Confirmation Has Been Rejected at <Business.Name />
+            </>,
+            message                : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        A Payment Confirmation Has Been Rejected
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Admin.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraph}>
+                        A payment confirmation was <strong>rejected</strong> because the information he/she submitted was invalid.
+                    </p>
+                    
+                    <Payment.HasConfirmationRejection>
+                        <p style={styles.paragraph}>
+                            Rejection reason:
+                            <br />
+                            <Payment.ConfirmationRejection />
+                        </p>
+                    </Payment.HasConfirmationRejection>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Payment Method
+                    </h2>
+                    
+                    <p style={styles.paragraph}>
+                        He/she chose to pay manually via <strong>bank transfer</strong>.
+                    </p>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display      : 'block',
+                            
+                            
+                            
+                            // sizes:
+                            width        : 'fit-content', // center self horizontally
+                            
+                            
+                            
+                            // backgrounds & foregrounds:
+                            ...styles.theme('primary'),
+                            
+                            
+                            
+                            // borders:
+                            border       : styles.borderStroke('primary'),
+                            borderRadius : `${borderRadiusValues.xxl}`,
+                            
+                            
+                            
+                            // spacings:
+                            marginTop    : `${spacerValues.md}`,
+                            marginBottom : `${spacerValues.md}`,
+                            marginLeft   : 'auto',
+                            marginRight  : 'auto',
+                            padding      : `calc(${spacerValues.md} * 1.5)`,
+                        }}
+                    >
+                        <p
+                            // styles:
+                            style={{
+                                // layouts:
+                                ...styles.paragraphFirst,
+                                
+                                
+                                
+                                // spacings:
+                                columnGap    : '0.5em',
+                                
+                                
+                                
+                                // typos:
+                                ...styles.textBig,
+                            }}
+                        >
+                            <span>Amount:</span>
+                            <br />
+                            <Order.TotalValue />
+                        </p>
+                    </div>
+                    
+                    <Payment.IsManualTransfer>
+                        <Payment.Bank />
+                    </Payment.IsManualTransfer>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+            </article>,
+        },
+        
+        shipping                   : {
+            host                   : process.env.EMAIL_ADMIN_SHIPPING_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_ADMIN_SHIPPING_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_ADMIN_SHIPPING_SECURE === 'true'),
+            username               : process.env.EMAIL_ADMIN_SHIPPING_USERNAME ?? '',
+            password               : process.env.EMAIL_ADMIN_SHIPPING_PASSWORD ?? '',
+            
+            from                   : process.env.EMAIL_ADMIN_SHIPPING_FROM ?? '',
+            subject                : <>
+                A Shipping Confirmation at <Business.Name />
+            </>,
+            message                : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        An Order Is Being Shipped!
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Admin.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraph}>
+                        An order of <Customer.Name /> is <strong>being shipped</strong>.
+                    </p>
+                    <p style={styles.paragraphLast}>
+                        Please use the link below to track shipping status:
+                        <br />
+                        <Shipping.TrackingLink />
+                    </p>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Shipping Info
+                    </h2>
+                    
+                    <Shipping.Info style={styles.selfCenterHorz} />
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+            </article>,
+        },
+        completed                  : {
+            host                   : process.env.EMAIL_ADMIN_COMPLETED_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_ADMIN_COMPLETED_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_ADMIN_COMPLETED_SECURE === 'true'),
+            username               : process.env.EMAIL_ADMIN_COMPLETED_USERNAME ?? '',
+            password               : process.env.EMAIL_ADMIN_COMPLETED_PASSWORD ?? '',
+            
+            from                   : process.env.EMAIL_ADMIN_COMPLETED_FROM ?? '',
+            subject                : <>
+                An Order Is Now Complete
+            </>,
+            message                : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        <IfPhysicalProduct>
+                            An Order Has Arrived!
+                        </IfPhysicalProduct>
+                        <IfNotPhysicalProduct>
+                            An Order Has Been Processed!
+                        </IfNotPhysicalProduct>
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Admin.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraphLast}>
+                        <IfPhysicalProduct>
+                            <Customer.Name /> has received the order package.
+                        </IfPhysicalProduct>
+                        <IfNotPhysicalProduct>
+                            An order of <Customer.Name /> has been fully processed.
+                        </IfNotPhysicalProduct>
+                        <br />
+                        Now his/her order status is marked as <strong>complete</strong>.
+                    </p>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
                 </section>
             </article>,
         },
