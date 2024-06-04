@@ -532,17 +532,18 @@ model CustomerSession {
 //     updatedAt               DateTime                @updatedAt
 //     
 //     // data:
-//     name                    String
-//     email                   String                  @unique
+//     name                    String                          // minLength: 2, maxLength: 30
+//     email                   String                  @unique // minLength: 5, maxLength: 50
+//     
 //     emailVerified           DateTime?
 //     image                   String?
 //     
 //     // relations:
-//     customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                       // one  to many
-//     customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                       // one  to many
-//     customerCredentials             CustomerCredentials?            // a Customer may have one  related CustomerCredentials                      // one  to one
-//     customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken               // one  to one
-//     customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken           // one  to one
+//     customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                                  // one  to many
+//     customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                                  // one  to many
+//     customerCredentials             CustomerCredentials?            // a Customer may have one  related CustomerCredentials                                 // one  to one
+//     customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken                          // one  to one
+//     customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken                      // one  to one
 //     
 //     // customerRoleId                  String?
 //     // customerRole                    CustomerRole?                   @relation(fields: [customerRoleId], references: [id], onDelete: SetNull) // preserve the related Customer(s) if the CustomerRole deleted
