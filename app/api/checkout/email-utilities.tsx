@@ -201,6 +201,12 @@ export const sendConfirmationEmail = async (options: SendEmailConfirmationOption
                 'X-Secret' : process.env.APP_SECRET ?? '',
             },
             body    : JSON.stringify({
+                host        : checkoutEmail.host,
+                port        : checkoutEmail.port,
+                secure      : checkoutEmail.secure,
+                user        : checkoutEmail.username,
+                pass        : checkoutEmail.password,
+                
                 from        : checkoutEmail.from,
                 to          : customerEmail,
                 subject     : (await renderToStaticMarkupAsync(

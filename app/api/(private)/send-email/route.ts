@@ -3,11 +3,6 @@ import {
     default as nodemailer,
 }                           from 'nodemailer'
 
-// configs:
-import {
-    checkoutConfigServer,
-}                           from '@/checkout.config.server'
-
 
 
 // configs:
@@ -27,6 +22,12 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     
     
     const {
+        host,
+        port,
+        secure,
+        user,
+        pass,
+        
         from,
         to,
         
@@ -35,13 +36,25 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         attachments,
     } = await req.json();
     if (
-        (!from    || (typeof(from)    !== 'string'))
+        (!host    || (typeof(host)    !== 'string' ))
         ||
-        (!to      || ((typeof(to)     !== 'string') && (!Array.isArray(to) || !to.every((t): t is string => !!t && (typeof(t) === 'string')))))
+        (!port    || (typeof(port)    !== 'number' ))
         ||
-        (!subject || (typeof(subject) !== 'string'))
+        (!secure  || (typeof(secure)  !== 'boolean'))
         ||
-        (!html    || (typeof(html)    !== 'string'))
+        (!user    || (typeof(user)    !== 'string' ))
+        ||
+        (!pass    || (typeof(pass)    !== 'string' ))
+        
+        ||
+        
+        (!from    || (typeof(from)    !== 'string' ))
+        ||
+        (!to      || ((typeof(to)     !== 'string' ) && (!Array.isArray(to) || !to.every((t): t is string => !!t && (typeof(t) === 'string')))))
+        ||
+        (!subject || (typeof(subject) !== 'string' ))
+        ||
+        (!html    || (typeof(html)    !== 'string' ))
         ||
         ((attachments !== undefined) && (!Array.isArray(attachments) || !attachments.every((attachment): attachment is object => (typeof(attachment) === 'object'))))
     ) {
@@ -52,18 +65,13 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     
     
     
-    const {
-        customerEmails : {
-            checkout : checkoutEmail,
-        },
-    } = checkoutConfigServer;
     const transporter = nodemailer.createTransport({
-        host     : checkoutEmail.host,
-        port     : checkoutEmail.port,
-        secure   : checkoutEmail.secure,
+        host     : host,
+        port     : port,
+        secure   : secure,
         auth     : {
-            user : checkoutEmail.username,
-            pass : checkoutEmail.password,
+            user : user,
+            pass : pass,
         },
     });
     try {
