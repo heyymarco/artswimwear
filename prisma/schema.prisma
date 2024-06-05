@@ -18,51 +18,51 @@ enum ProductVisibility {
 }
 model Product {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    visibility              ProductVisibility
+    visibility                      ProductVisibility
     
-    name                    String
+    name                            String
     
-    price                   Float                   // min: 0
-    shippingWeight          Float?                  // min: 0
+    price                           Float                           // min: 0
+    shippingWeight                  Float?                          // min: 0
     
-    stock                   Int?                    // min: 0
+    stock                           Int?                            // min: 0
     
-    path                    String                  @unique
+    path                            String                          @unique
     
-    excerpt                 String?
-    description             Json?
+    excerpt                         String?
+    description                     Json?
     
-    images                  String[]
+    images                          String[]
     
     // relations:
-    orders                  OrdersOnProducts[]      // some Product(s) may have some related Order(s)      // many to many
-    draftOrders             DraftOrdersOnProducts[] // some Product(s) may have some related DraftOrder(s) // many to many
+    orders                          OrdersOnProducts[]              // some Product(s) may have some related Order(s)      // many to many
+    draftOrders                     DraftOrdersOnProducts[]         // some Product(s) may have some related DraftOrder(s) // many to many
     
-    variantGroups           VariantGroup[]          // a Product may have some related VariantGroup(s)     // one  to many
-    stocks                  Stock[]                 // a Product may have some related Stock(s)            // one  to many
+    variantGroups                   VariantGroup[]                  // a Product may have some related VariantGroup(s)     // one  to many
+    stocks                          Stock[]                         // a Product may have some related Stock(s)            // one  to many
 }
 model VariantGroup {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    sort                    Int
+    sort                            Int
     
-    name                    String
-    hasDedicatedStocks      Boolean
+    name                            String
+    hasDedicatedStocks              Boolean
     
     // relations:
-    variants                Variant[]               // a VariantGroup may have some related Variant(s) // one  to many
+    variants                        Variant[]                       // a VariantGroup may have some related Variant(s) // one  to many
     
-    productId               String
-    product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related VariantGroup(s) if the Product deleted
+    productId                       String
+    product                         Product                         @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related VariantGroup(s) if the Product deleted
 }
 enum VariantVisibility {
     PUBLISHED
@@ -70,144 +70,144 @@ enum VariantVisibility {
 }
 model Variant {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    visibility              VariantVisibility
-    sort                    Int
+    visibility                      VariantVisibility
+    sort                            Int
     
-    name                    String
+    name                            String
     
-    price                   Float?                  // min: 0
-    shippingWeight          Float?                  // min: 0
+    price                           Float?                          // min: 0
+    shippingWeight                  Float?                          // min: 0
     
-    images                  String[]
+    images                          String[]
     
     // relations:
-    variantGroupId          String
-    variantGroup            VariantGroup            @relation(fields: [variantGroupId], references: [id], onDelete: Cascade) // delete the related Variant(s) if the VariantGroup deleted
+    variantGroupId                  String
+    variantGroup                    VariantGroup                    @relation(fields: [variantGroupId], references: [id], onDelete: Cascade) // delete the related Variant(s) if the VariantGroup deleted
 }
 model TemplateVariantGroup {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    name                    String
-    hasDedicatedStocks      Boolean
+    name                            String
+    hasDedicatedStocks              Boolean
     
     // relations:
-    templateVariants        TemplateVariant[]       // a TemplateVariantGroup may have some related TemplateVariant(s) // one  to many
+    templateVariants                TemplateVariant[]               // a TemplateVariantGroup may have some related TemplateVariant(s) // one  to many
 }
 model TemplateVariant {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    visibility              VariantVisibility
-    sort                    Int
+    visibility                      VariantVisibility
+    sort                            Int
     
-    name                    String
+    name                            String
     
-    price                   Float?                  // min: 0
-    shippingWeight          Float?                  // min: 0
+    price                           Float?                          // min: 0
+    shippingWeight                  Float?                          // min: 0
     
-    images                  String[]
+    images                          String[]
     
     // relations:
-    templateVariantGroupId  String
-    templateVariantGroup    TemplateVariantGroup    @relation(fields: [templateVariantGroupId], references: [id], onDelete: Cascade) // delete the related TemplateVariant(s) if the TemplateVariantGroup deleted
+    templateVariantGroupId          String
+    templateVariantGroup            TemplateVariantGroup            @relation(fields: [templateVariantGroupId], references: [id], onDelete: Cascade) // delete the related TemplateVariant(s) if the TemplateVariantGroup deleted
 }
 model Stock {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
-    value                   Int?                    // min: 0
+    value                           Int?                            // min: 0
     
     // relations:
-    productId               String
-    product                 Product                 @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related Stock(s) if the Product deleted
+    productId                       String
+    product                         Product                         @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related Stock(s) if the Product deleted
     
-    variantIds              String[]                // manual relation foreign key(s)
+    variantIds                      String[]                        // manual relation foreign key(s)
 }
 
 
 
 type ShippingRate {
     // data:
-    startingWeight          Float                   // min: 0, max: 1000     
-    rate                    Float                   // min: 0, max: 999999999
+    startingWeight                  Float                           // min: 0, max: 1000     
+    rate                            Float                           // min: 0, max: 999999999
 }
 type CoverageCity {
     // data:
-    city                    String                  // minLength: 3, maxLength: 50
+    city                            String                          // minLength: 3, maxLength: 50
     
-    estimate                String?                 // minLength: 2, maxLength: 50
-    shippingRates           ShippingRate[]
+    estimate                        String?                         // minLength: 2, maxLength: 50
+    shippingRates                   ShippingRate[]
 }
 type CoverageZone {
     // data:
-    zone                    String                  // minLength: 3, maxLength: 50
+    zone                            String                          // minLength: 3, maxLength: 50
     
-    estimate                String?                 // minLength: 2, maxLength: 50
-    shippingRates           ShippingRate[]
+    estimate                        String?                         // minLength: 2, maxLength: 50
+    shippingRates                   ShippingRate[]
     
-    useSpecificArea         Boolean?
-    cities                  CoverageCity[]
+    useSpecificArea                 Boolean?
+    cities                          CoverageCity[]
 }
 type CoverageCountry {
     // data:
-    country                 String                  // minLength: 2, maxLength: 3
+    country                         String                          // minLength: 2, maxLength: 3
     
-    estimate                String?                 // minLength: 2, maxLength: 50
-    shippingRates           ShippingRate[]
+    estimate                        String?                         // minLength: 2, maxLength: 50
+    shippingRates                   ShippingRate[]
     
-    useSpecificArea         Boolean?
-    zones                   CoverageZone[]
+    useSpecificArea                 Boolean?
+    zones                           CoverageZone[]
 }
 model ShippingProvider {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    enabled                 Boolean
-    name                    String                  // minLength: 2, maxLength: 50
+    enabled                         Boolean
+    name                            String                          // minLength: 2, maxLength: 50
     
-    weightStep              Float                   // min: 0, max: 1000
+    weightStep                      Float                           // min: 0, max: 1000
     
-    estimate                String?                 // minLength: 2, maxLength: 50
-    shippingRates           ShippingRate[]
+    estimate                        String?                         // minLength: 2, maxLength: 50
+    shippingRates                   ShippingRate[]
     
-    useSpecificArea         Boolean?
-    countries               CoverageCountry[]
+    useSpecificArea                 Boolean?
+    countries                       CoverageCountry[]
     
     // relations:
-    orders                  Order[]                 @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many
-    draftOrders             DraftOrder[]            @relation("DraftOrdersOnShipping") // one ShippingProvider may have some related DraftOrder(s)  // one  to many
+    orders                          Order[]                         @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many
+    draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnShipping") // one ShippingProvider may have some related DraftOrder(s)  // one  to many
 }
 
 
 
 model Customer {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    name                    String                          // minLength: 2, maxLength: 30
-    email                   String                  @unique // minLength: 5, maxLength: 50
+    name                            String                                  // minLength: 2, maxLength: 30
+    email                           String                          @unique // minLength: 5, maxLength: 50
     
-    emailVerified           DateTime?
-    image                   String?
+    emailVerified                   DateTime?
+    image                           String?
     
     // relations:
     orders                          Order[]                         @relation("OrdersOnCustomer")      // one Customer may have some related Order(s)       // one  to many
@@ -219,79 +219,76 @@ model Customer {
     customerCredentials             CustomerCredentials?            // a Customer may have one  related CustomerCredentials                                 // one  to one
     customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken                          // one  to one
     customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken                      // one  to one
-    
-    // customerRoleId                  String?
-    // customerRole                    CustomerRole?                   @relation(fields: [customerRoleId], references: [id], onDelete: SetNull) // preserve the related Customer(s) if the CustomerRole deleted
 }
 model CustomerPreference {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
-    marketingOpt            Boolean?
-    timezone                Float?
+    marketingOpt                    Boolean?
+    timezone                        Float?
     
     // relations:
-    customerId              String                  @unique
-    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPreference if the Customer deleted
+    customerId                      String                          @unique
+    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPreference if the Customer deleted
 }
 
 model Guest {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    name                    String                          // minLength: 2, maxLength: 30
-    email                   String                          // minLength: 5, maxLength: 50
+    name                            String                          // minLength: 2, maxLength: 30
+    email                           String                          // minLength: 5, maxLength: 50
     
     // relations:
-    orders                  Order[]                 @relation("OrdersOnGuest")      // one Guest may have some related Order(s)       // one  to many
-    draftOrders             DraftOrder[]            @relation("DraftOrdersOnGuest") // one Guest may have some related DraftOrder(s)  // one  to many
-    guestPreference         GuestPreference?        // a Guest may have one related GuestPreference                                   // one  to one
+    orders                          Order[]                         @relation("OrdersOnGuest")      // one Guest may have some related Order(s)        // one  to many
+    draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnGuest") // one Guest may have some related DraftOrder(s)   // one  to many
+    guestPreference                 GuestPreference?                                                // one Guest may have one  related GuestPreference // one  to one
 }
 model GuestPreference {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
-    marketingOpt            Boolean?
-    timezone                Float?
+    marketingOpt                    Boolean?
+    timezone                        Float?
     
     // relations:
-    guestId                 String                  @unique
-    guest                   Guest                   @relation(fields: [guestId], references: [id], onDelete: Cascade) // delete the related GuestPreference if the Guest deleted
+    guestId                         String                          @unique
+    guest                           Guest                           @relation(fields: [guestId], references: [id], onDelete: Cascade) // delete the related GuestPreference if the Guest deleted
 }
 
 
 
 model Country {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
-    enabled                 Boolean
-    name                    String
+    enabled                         Boolean
+    name                            String
     
-    code                    String                  // minLength: 2 , maxLength:  3
-    dialCode                String
+    code                            String                          // minLength: 2 , maxLength:  3
+    dialCode                        String
 }
 
 
 
 type Address {
     // data:
-    firstName               String                  // minLength: 2 , maxLength: 30
-    lastName                String                  // minLength: 1 , maxLength: 30
+    firstName                       String                          // minLength: 2 , maxLength: 30
+    lastName                        String                          // minLength: 1 , maxLength: 30
     
-    phone                   String                  // minLength: 5 , maxLength: 15
+    phone                           String                          // minLength: 5 , maxLength: 15
     
-    address                 String                  // minLength: 5 , maxLength: 90
-    city                    String                  // minLength: 3 , maxLength: 50
-    zone                    String                  // minLength: 3 , maxLength: 50
-    zip                     String?                 // minLength: 2 , maxLength: 11
-    country                 String                  // minLength: 2 , maxLength:  3
+    address                         String                          // minLength: 5 , maxLength: 90
+    city                            String                          // minLength: 3 , maxLength: 50
+    zone                            String                          // minLength: 3 , maxLength: 50
+    zip                             String?                         // minLength: 2 , maxLength: 11
+    country                         String                          // minLength: 2 , maxLength:  3
 }
 enum PaymentType {
     CARD
@@ -303,37 +300,37 @@ enum PaymentType {
 }
 type Payment {
     // data:
-    type                    PaymentType
-    brand                   String?
-    identifier              String?
-    expiresAt               DateTime?
+    type                            PaymentType
+    brand                           String?
+    identifier                      String?
+    expiresAt                       DateTime?
     
-    amount                  Float                   // min: 0
-    fee                     Float                   // min: 0
+    amount                          Float                           // min: 0
+    fee                             Float                           // min: 0
     
-    billingAddress          Address?
+    billingAddress                  Address?
 }
 model PaymentConfirmation {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    reportedAt              DateTime?               // manually set
-    reviewedAt              DateTime?               // manually set
+    id                              String                          @id @default(cuid()) @map("_id")
+    reportedAt                      DateTime?                       // manually set
+    reviewedAt                      DateTime?                       // manually set
     
     // data:
-    token                   String                  @unique
+    token                           String                          @unique
     
-    amount                  Float?                  // min: 0
-    payerName               String?                 // minLength: 2, maxLength: 50
-    paymentDate             DateTime?
+    amount                          Float?                          // min: 0
+    payerName                       String?                         // minLength: 2, maxLength: 50
+    paymentDate                     DateTime?
     
-    originatingBank         String?                 // minLength: 2, maxLength: 50
-    destinationBank         String?                 // minLength: 2, maxLength: 50
+    originatingBank                 String?                         // minLength: 2, maxLength: 50
+    destinationBank                 String?                         // minLength: 2, maxLength: 50
     
-    rejectionReason         Json?
+    rejectionReason                 Json?
     
     // relations:
-    orderId                 String                  @unique
-    order                   Order                   @relation(fields: [orderId], references: [id], onDelete: Cascade) // delete the related PaymentConfirmation if the Order deleted
+    orderId                         String                          @unique
+    order                           Order                           @relation(fields: [orderId], references: [id], onDelete: Cascade) // delete the related PaymentConfirmation if the Order deleted
 }
 enum OrderStatus {
     NEW_ORDER
@@ -346,138 +343,138 @@ enum OrderStatus {
 }
 type PreferredCurrency {
     // data:
-    currency                String                  // minLength: 3, maxLength: 3
-    rate                    Float                   // min: 0
+    currency                        String                          // minLength: 3, maxLength: 3
+    rate                            Float                           // min: 0
 }
 model Order {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    updatedAt               DateTime                @updatedAt
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    orderId                 String                  @unique // a secondary id for public identifier
-    paymentId               String?                 @unique // a secondary id for public identifier
+    orderId                         String                          @unique // a secondary id for public identifier
+    paymentId                       String?                         @unique // a secondary id for public identifier
     
-    orderStatus             OrderStatus             @default(NEW_ORDER)
-    orderTrouble            Json?
-    cancelationReason       Json?
+    orderStatus                     OrderStatus                     @default(NEW_ORDER)
+    orderTrouble                    Json?
+    cancelationReason               Json?
     
-    preferredCurrency       PreferredCurrency?
+    preferredCurrency               PreferredCurrency?
     
-    shippingAddress         Address?
-    shippingCost            Float?                  // min: 0
+    shippingAddress                 Address?
+    shippingCost                    Float?                          // min: 0
     
-    payment                 Payment
+    payment                         Payment
     
     // relations:
-    items                   OrdersOnProducts[]      // some Product(s) may have some related Order(s)  // many to many
+    items                           OrdersOnProducts[]              // some Product(s) may have some related Order(s)  // many to many
     
-    customerId              String?
-    customer                Customer?               @relation(fields: [customerId]         , references: [id], "OrdersOnCustomer", onDelete: SetNull) // preserve the related Order(s) if the Customer deleted
+    customerId                      String?
+    customer                        Customer?                       @relation(fields: [customerId]         , references: [id], "OrdersOnCustomer", onDelete: SetNull) // preserve the related Order(s) if the Customer deleted
     
-    guestId                 String?
-    guest                   Guest?                  @relation(fields: [guestId]            , references: [id], "OrdersOnGuest"   , onDelete: SetNull) // preserve the related Order(s) if the Guest deleted
+    guestId                         String?
+    guest                           Guest?                          @relation(fields: [guestId]            , references: [id], "OrdersOnGuest"   , onDelete: SetNull) // preserve the related Order(s) if the Guest deleted
     
-    shippingProviderId      String?
-    shippingProvider        ShippingProvider?       @relation(fields: [shippingProviderId] , references: [id], "OrdersOnShipping", onDelete: SetNull) // preserve the related Order(s) if the ShippingProvider deleted
+    shippingProviderId              String?
+    shippingProvider                ShippingProvider?               @relation(fields: [shippingProviderId] , references: [id], "OrdersOnShipping", onDelete: SetNull) // preserve the related Order(s) if the ShippingProvider deleted
     
-    paymentConfirmation     PaymentConfirmation?    // an Order may have one related PaymentConfirmation // one to one
+    paymentConfirmation             PaymentConfirmation?            // an Order may have one related PaymentConfirmation // one to one
     
-    shippingTracking        ShippingTracking?       // an Order may have one related ShippingTracking // one to one
+    shippingTracking                ShippingTracking?               // an Order may have one related ShippingTracking // one to one
 }
 model OrdersOnProducts {
     // records:
     // @@id([productId, orderId])
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
-    price                   Float                   // min: 0
-    shippingWeight          Float?                  // min: 0
-    quantity                Int                     // min: 1
+    price                           Float                           // min: 0
+    shippingWeight                  Float?                          // min: 0
+    quantity                        Int                             // min: 1
     
     // relations:
-    orderId                 String
-    order                   Order                   @relation(fields: [orderId]     , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
+    orderId                         String
+    order                           Order                           @relation(fields: [orderId]     , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
     
-    productId               String?
-    product                 Product?                @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
+    productId                       String?
+    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
     
-    variantIds              String[]                // manual relation foreign key(s)
+    variantIds                      String[]                        // manual relation foreign key(s)
 }
 model DraftOrder {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    createdAt               DateTime                @default(now())
-    expiresAt               DateTime
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    expiresAt                       DateTime
     
     // data:
-    orderId                 String                  @unique // a secondary id for public identifier
-    paymentId               String?                 @unique // a secondary id for public identifier
+    orderId                         String                          @unique // a secondary id for public identifier
+    paymentId                       String?                         @unique // a secondary id for public identifier
     
-    preferredCurrency       PreferredCurrency?
+    preferredCurrency               PreferredCurrency?
     
-    shippingAddress         Address?
-    shippingCost            Float?                  // min: 0
+    shippingAddress                 Address?
+    shippingCost                    Float?                          // min: 0
     
     // relations:
-    items                   DraftOrdersOnProducts[] // some Product(s) may have some related DraftOrder(s)  // many to many
+    items                           DraftOrdersOnProducts[]         // some Product(s) may have some related DraftOrder(s)  // many to many
     
-    customerId              String?
-    customer                Customer?               @relation(fields: [customerId]         , references: [id], "DraftOrdersOnCustomer", onDelete: SetNull) // preserve the related DraftOrder(s) if the Customer deleted
+    customerId                      String?
+    customer                        Customer?                       @relation(fields: [customerId]         , references: [id], "DraftOrdersOnCustomer", onDelete: SetNull) // preserve the related DraftOrder(s) if the Customer deleted
     
-    guestId                 String?
-    guest                   Guest?                  @relation(fields: [guestId]            , references: [id], "DraftOrdersOnGuest"   , onDelete: SetNull) // preserve the related DraftOrder(s) if the Guest deleted
+    guestId                         String?
+    guest                           Guest?                          @relation(fields: [guestId]            , references: [id], "DraftOrdersOnGuest"   , onDelete: SetNull) // preserve the related DraftOrder(s) if the Guest deleted
     
-    shippingProviderId      String?
-    shippingProvider        ShippingProvider?       @relation(fields: [shippingProviderId] , references: [id], "DraftOrdersOnShipping", onDelete: SetNull) // preserve the related DraftOrder(s) if the ShippingProvider deleted
+    shippingProviderId              String?
+    shippingProvider                ShippingProvider?               @relation(fields: [shippingProviderId] , references: [id], "DraftOrdersOnShipping", onDelete: SetNull) // preserve the related DraftOrder(s) if the ShippingProvider deleted
 }
 model DraftOrdersOnProducts {
     // records:
     // @@id([productId, draftOrderId])
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
-    price                   Float                   // min: 0
-    shippingWeight          Float?                  // min: 0
-    quantity                Int                     // min: 1
+    price                           Float                           // min: 0
+    shippingWeight                  Float?                          // min: 0
+    quantity                        Int                             // min: 1
     
     // relations:
-    draftOrderId            String
-    draftOrder              DraftOrder              @relation(fields: [draftOrderId], references: [id], onDelete: Cascade) // delete the related DraftOrdersOnProducts(s) if the DraftOrder deleted
+    draftOrderId                    String
+    draftOrder                      DraftOrder                      @relation(fields: [draftOrderId], references: [id], onDelete: Cascade) // delete the related DraftOrdersOnProducts(s) if the DraftOrder deleted
     
-    productId               String?
-    product                 Product?                @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
+    productId                       String?
+    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
     
-    variantIds              String[]                // manual relation foreign key(s)
+    variantIds                      String[]                        // manual relation foreign key(s)
 }
 model ShippingTracking {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
-    token                   String                  @unique
+    token                           String                          @unique
     
-    shippingCarrier         String?                 // minLength: 1, maxLength: 50
-    shippingNumber          String?                 // minLength: 1, maxLength: 50
+    shippingCarrier                 String?                         // minLength: 1, maxLength: 50
+    shippingNumber                  String?                         // minLength: 1, maxLength: 50
     
     // relations:
-    orderId                 String                  @unique
-    order                   Order                   @relation(fields: [orderId], references: [id], onDelete: Cascade)  // delete the related ShippingTracking if the Order deleted
+    orderId                         String                          @unique
+    order                           Order                           @relation(fields: [orderId], references: [id], onDelete: Cascade)  // delete the related ShippingTracking if the Order deleted
     
-    shippingTrackingLogs    ShippingTrackingLog[]   // a ShippingTracking may have some related ShippingTrackingLog(s) // one  to many
+    shippingTrackingLogs            ShippingTrackingLog[]           // a ShippingTracking may have some related ShippingTrackingLog(s) // one  to many
 }
 model ShippingTrackingLog {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    reportedAt              DateTime?               // manually set
+    id                              String                          @id @default(cuid()) @map("_id")
+    reportedAt                      DateTime?                       // manually set
     
     // data:
-    log                     String
+    log                             String
     
     // relations:
-    shippingTrackingId      String
-    shippingTracking        ShippingTracking        @relation(fields: [shippingTrackingId], references: [id], onDelete: Cascade) // delete the related ShippingTrackingLog(s) if the ShippingTracking deleted
+    shippingTrackingId              String
+    shippingTracking                ShippingTracking                @relation(fields: [shippingTrackingId], references: [id], onDelete: Cascade) // delete the related ShippingTrackingLog(s) if the ShippingTracking deleted
 }
 
 
@@ -488,119 +485,80 @@ model ShippingTrackingLog {
 
 model CustomerAccount {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // provider types:
-    type                    String
-    provider                String
-    providerAccountId       String
+    type                            String
+    provider                        String
+    providerAccountId               String
     @@unique([provider, providerAccountId])
     
     // jwt sessions:
-    refresh_token           String?
-    access_token            String?
-    expires_at              Int?
+    refresh_token                   String?
+    access_token                    String?
+    expires_at                      Int?
     
     // jwt meta:
-    token_type              String?
-    scope                   String?
-    id_token                String?
-    session_state           String?
+    token_type                      String?
+    scope                           String?
+    id_token                        String?
+    session_state                   String?
     
     // relations:
-    customerId              String
-    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerAccount(s) if the Customer deleted
+    customerId                      String
+    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerAccount(s) if the Customer deleted
 }
 
 model CustomerSession {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    expires                 DateTime
+    id                              String                          @id @default(cuid()) @map("_id")
+    expires                         DateTime
     
     // data:
-    sessionToken            String                  @unique
+    sessionToken                    String                          @unique
     
     // relations:
-    customerId              String
-    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerSession(s) if the Customer deleted
+    customerId                      String
+    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerSession(s) if the Customer deleted
 }
-
-// model Customer {
-//     // records:
-//     id                      String                  @id @default(cuid()) @map("_id")
-//     createdAt               DateTime                @default(now())
-//     updatedAt               DateTime                @updatedAt
-//     
-//     // data:
-//     name                    String                          // minLength: 2, maxLength: 30
-//     email                   String                  @unique // minLength: 5, maxLength: 50
-//     
-//     emailVerified           DateTime?
-//     image                   String?
-//     
-//     // relations:
-//     customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                                  // one  to many
-//     customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                                  // one  to many
-//     customerCredentials             CustomerCredentials?            // a Customer may have one  related CustomerCredentials                                 // one  to one
-//     customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken                          // one  to one
-//     customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken                      // one  to one
-//     
-//     // customerRoleId                  String?
-//     // customerRole                    CustomerRole?                   @relation(fields: [customerRoleId], references: [id], onDelete: SetNull) // preserve the related Customer(s) if the CustomerRole deleted
-// }
 
 model CustomerCredentials {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
-    failureAttempts         Int?
-    lockedAt                DateTime?
-    username                String?                 @unique
-    password                String?
+    failureAttempts                 Int?
+    lockedAt                        DateTime?
+    username                        String?                         @unique
+    password                        String?
     
     // relations:
-    customerId              String                  @unique
-    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerCredentials if the Customer deleted
+    customerId                      String                          @unique
+    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerCredentials if the Customer deleted
 }
 
 model CustomerPasswordResetToken {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
-    updatedAt               DateTime                @updatedAt
-    expiresAt               DateTime
+    id                              String                          @id @default(cuid()) @map("_id")
+    updatedAt                       DateTime                        @updatedAt
+    expiresAt                       DateTime
     
     // data:
-    token                   String                  @unique
+    token                           String                          @unique
     
     // relations:
-    customerId              String                  @unique
-    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPasswordResetToken if the Customer deleted
+    customerId                      String                          @unique
+    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPasswordResetToken if the Customer deleted
 }
 
 model CustomerEmailConfirmationToken {
     // records:
-    id                      String                  @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
-    token                   String                  @unique
+    token                           String                          @unique
     
     // relations:
-    customerId              String                  @unique
-    customer                Customer                @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerEmailConfirmationToken if the Customer deleted
+    customerId                      String                          @unique
+    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerEmailConfirmationToken if the Customer deleted
 }
-
-// model CustomerRole {
-//     // records:
-//     id                      String                  @id @default(cuid()) @map("_id")
-//     
-//     // data:
-//     name                    String                  @unique
-//     product_read            Boolean
-//     product_create          Boolean
-//     product_update          Boolean
-//     product_delete          Boolean
-//     
-//     // relations:
-//     customers               Customer[]              // a CustomerRole may have some related Customer(s)  // one  to many
-// }
