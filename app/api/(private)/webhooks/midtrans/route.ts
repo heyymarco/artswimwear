@@ -150,7 +150,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                             
                             
                             
-                            // (pending)Order EXPIRED => restore the `Product` stock and mark Order as 'EXPIRED':
+                            // (Real)Order EXPIRED => restore the `Product` stock and mark Order as 'EXPIRED':
                             await cancelOrder(prismaTransaction, {
                                 order             : order,
                                 isExpired         : true, // mark Order as 'EXPIRED'
