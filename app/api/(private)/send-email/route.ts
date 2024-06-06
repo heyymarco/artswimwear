@@ -36,32 +36,46 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         attachments,
     } = await req.json();
     if (
-        (!host    || (typeof(host)    !== 'string' ))
+        ((host    === undefined) || (typeof(host)    !== 'string' ) || !host)
         ||
-        (!port    || (typeof(port)    !== 'number' ))
+        ((port    === undefined) || (typeof(port)    !== 'number' ))
         ||
-        (!secure  || (typeof(secure)  !== 'boolean'))
+        ((secure  === undefined) || (typeof(secure)  !== 'boolean'))
         ||
-        (!user    || (typeof(user)    !== 'string' ))
+        ((user    === undefined) || (typeof(user)    !== 'string' ) || !user)
         ||
-        (!pass    || (typeof(pass)    !== 'string' ))
+        ((pass    === undefined) || (typeof(pass)    !== 'string' ) || !pass)
         
         ||
         
-        (!from    || (typeof(from)    !== 'string' ))
+        ((from    === undefined) || (typeof(from)    !== 'string' ) || !from)
         ||
-        (!to      || ((typeof(to)     !== 'string' ) && (!Array.isArray(to) || !to.every((t): t is string => !!t && (typeof(t) === 'string')))))
+        ((to      === undefined) || ((typeof(to)     !== 'string' ) && (!Array.isArray(to) || !to.every((t): t is string => (typeof(t) === 'string') && !!t))) || !to)
         ||
-        (!subject || (typeof(subject) !== 'string' ))
+        ((subject === undefined) || (typeof(subject) !== 'string' ) || !subject)
         ||
-        (!html    || (typeof(html)    !== 'string' ))
+        ((html    === undefined) || (typeof(html)    !== 'string' ) || !html)
         ||
         ((attachments !== undefined) && (!Array.isArray(attachments) || !attachments.every((attachment): attachment is object => (typeof(attachment) === 'object'))))
     ) {
+        console.log('invalid data: ', {
+            host,
+            port,
+            secure,
+            user,
+            pass,
+            
+            from,
+            to,
+            
+            subject,
+            html : typeof(html),
+            attachments,
+        });
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
-    }
+    } // if
     
     
     
