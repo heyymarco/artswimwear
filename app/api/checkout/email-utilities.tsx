@@ -88,7 +88,7 @@ const getCountryList = async (): Promise<EntityState<CountryPreview>> => {
 }
 
 export interface SendEmailConfirmationOptions {
-    newOrder                 : OrderAndData
+    order                    : OrderAndData
     
     isPaid                   : boolean
     paymentConfirmationToken : string|null
@@ -96,18 +96,18 @@ export interface SendEmailConfirmationOptions {
 export const sendConfirmationEmail = async (options: SendEmailConfirmationOptions): Promise<boolean|null> => {
     // options:
     const {
-        newOrder,
+        order,
         
         isPaid,
         paymentConfirmationToken,
     } = options;
-    const customerEmail = newOrder.customerOrGuest?.email;
+    const customerEmail = order.customerOrGuest?.email;
     if (!customerEmail) return null;
     
     
     
     //#region download image url to base64
-    const newOrderItems = newOrder.items;
+    const newOrderItems = order.items;
     const imageUrls     = newOrderItems.map((item) => item.product?.image);
     const imageBase64s  = await Promise.all(
         imageUrls.map(async (imageUrl): Promise<string|undefined> => {
@@ -170,8 +170,8 @@ export const sendConfirmationEmail = async (options: SendEmailConfirmationOption
         };
         const orderDataContextProviderProps : OrderDataContextProviderProps = {
             // data:
-            order                : newOrder,
-            customerOrGuest      : newOrder.customerOrGuest,
+            order                : order,
+            customerOrGuest      : order.customerOrGuest,
             paymentConfirmation  : {
                 token            : paymentConfirmationToken ?? '',
                 rejectionReason  : null,

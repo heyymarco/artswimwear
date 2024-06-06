@@ -247,9 +247,9 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             if (newOrder) {
                 // notify that the payment has been received:
                 await sendConfirmationEmail({
-                    newOrder,
+                    order                    : newOrder,
                     
-                    isPaid : true,
+                    isPaid                   : true,
                     paymentConfirmationToken : null,
                 });
             } // if

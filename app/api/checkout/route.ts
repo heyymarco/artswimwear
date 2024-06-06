@@ -1555,7 +1555,7 @@ router
             // -or-
             // notify that the payment has been received:
             await sendConfirmationEmail({
-                newOrder,
+                order : newOrder,
                 
                 isPaid, // waiting for manual_payment -or- paid
                 paymentConfirmationToken, // a paymentConfirmationToken (random string) if waiting for manual_payment -or- null
@@ -2326,10 +2326,10 @@ Updating the confirmation is not required.`,
         if (newOrder) {
             // notify that the payment has been received:
             await sendConfirmationEmail({
-                newOrder,
+                order                    : newOrder,
                 
-                isPaid : true,
-                paymentConfirmationToken: null,
+                isPaid                   : true,
+                paymentConfirmationToken : null,
             });
         } // if
     }
