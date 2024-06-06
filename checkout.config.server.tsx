@@ -893,6 +893,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
+        
         rejected                   : {
             host                   : process.env.EMAIL_REJECTED_HOST     ?? '',
             port                   : Number.parseInt(process.env.EMAIL_REJECTED_PORT ?? '465'),
@@ -2218,6 +2219,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
+        
         rejected                   : {
             host                   : process.env.EMAIL_ADMIN_REJECTED_HOST     ?? '',
             port                   : Number.parseInt(process.env.EMAIL_ADMIN_REJECTED_PORT ?? '465'),
@@ -2349,6 +2351,167 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     <Payment.IsManualTransfer>
                         <Payment.Bank />
                     </Payment.IsManualTransfer>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+            </article>,
+        },
+        
+        processing                 : {
+            host                   : process.env.EMAIL_ADMIN_PROCESSING_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_ADMIN_PROCESSING_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_ADMIN_PROCESSING_SECURE === 'true'),
+            username               : process.env.EMAIL_ADMIN_PROCESSING_USERNAME ?? '',
+            password               : process.env.EMAIL_ADMIN_PROCESSING_PASSWORD ?? '',
+            
+            from                   : process.env.EMAIL_ADMIN_PROCESSING_FROM ?? '',
+            subject                : <>
+                An Order Is Being Processed at <Business.Name />
+            </>,
+            message                : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        An Order Is Being Processed!
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Admin.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraph}>
+                        An order of <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> is <strong>being processed</strong> by our team.
+                    </p>
                 </section>
                 
                 <section style={styles.section}>
@@ -2633,7 +2796,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             
             from                   : process.env.EMAIL_ADMIN_COMPLETED_FROM ?? '',
             subject                : <>
-                An Order Is Now Complete
+                An Order Is Now Complete at <Business.Name />
             </>,
             message                : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
