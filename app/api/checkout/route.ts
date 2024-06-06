@@ -1832,7 +1832,7 @@ router
                                 
                                 amount,
                                 payerName,
-                                paymentDate      : paymentDateAsDate ?? new Date(paymentDate),
+                                paymentDate      : paymentDateAsDate,
                                 
                                 originatingBank,
                                 destinationBank,
