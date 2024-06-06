@@ -1623,19 +1623,19 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     
                     <p style={styles.paragraphLast}>
                         <IfNotPaid>
-                            New order from <Customer.Name /> but <strong>not yet paid</strong> for.
+                            New order from <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> but <strong>not yet paid</strong> for.
                             <br />
                             If necessary, please guide him/her to <strong>complete the payment</strong> so that you will not lose the order.
                         </IfNotPaid>
                         
                         <IfPaidManual>
-                            New order from <Customer.Name />!
+                            New order from <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span>!
                             <br />
                             Please <strong>process the order immediately</strong>, so that he/she is satisfied with the fast service.
                         </IfPaidManual>
                         
                         <IfPaidAuto>
-                            New order from <Customer.Name />!
+                            New order from <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span>!
                             <br />
                             Please <strong>process the order immediately</strong>, so that he/she is satisfied with the fast service.
                         </IfPaidAuto>
@@ -1706,7 +1706,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                                 </p>
                                 <div style={styles.textSmall}>
                                     <p style={styles.paragraph}>
-                                        After <Customer.Name /> completes the payment,
+                                        After <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> completes the payment,
                                         <br />
                                         the system will automatically send <strong>an email notification of the new order</strong>.
                                     </p>
@@ -1933,7 +1933,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </p>
                     
                     <p style={styles.paragraph}>
-                        An order from <Customer.Name /> has been <strong>canceled</strong>.
+                        An order from <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> has been <strong>canceled</strong>.
                         <br />
                         If necessary, please guide him/her to <strong>re-create a new order</strong> if he/she wants to resume the order.
                     </p>
@@ -2103,7 +2103,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </p>
                     
                     <p style={styles.paragraphLast}>
-                        An order from <Customer.Name /> has been <strong>canceled</strong> because we have not received the payment by the final payment date.
+                        An order from <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> has been <strong>canceled</strong> because we have not received the payment by the final payment date.
                         <br />
                         If necessary, please guide him/her to <strong>re-create a new order</strong> if he/she wants to resume the order.
                     </p>
@@ -2508,7 +2508,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     </p>
                     
                     <p style={styles.paragraph}>
-                        An order of <Customer.Name /> is <strong>being shipped</strong>.
+                        An order of <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> is <strong>being shipped</strong>.
                     </p>
                     <p style={styles.paragraphLast}>
                         Please use the link below to track shipping status:
@@ -2677,10 +2677,10 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     
                     <p style={styles.paragraphLast}>
                         <IfPhysicalProduct>
-                            <Customer.Name /> has received the order package.
+                            <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> has received the order package.
                         </IfPhysicalProduct>
                         <IfNotPhysicalProduct>
-                            An order of <Customer.Name /> has been fully processed.
+                            An order of <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> has been fully processed.
                         </IfNotPhysicalProduct>
                         <br />
                         Now his/her order status is marked as <strong>complete</strong>.
