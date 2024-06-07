@@ -139,7 +139,7 @@ import {
 
 // configs:
 export const fetchCache = 'force-no-store';
-export const maxDuration = 20; // this function can run for a maximum of 20 seconds for complex transactions
+export const maxDuration = 60; // this function can run for a maximum of 60 seconds for many & complex transactions
 
 
 
@@ -2154,7 +2154,7 @@ Updating the confirmation is not required.`,
                 draftOrder : draftOrder,
             });
             return true;
-        });
+        }, { timeout: 50000 }); // give a longer timeout for `revertDraftOrder`
         
         
         
@@ -2333,7 +2333,7 @@ Updating the confirmation is not required.`,
             
             // report the payment result:
             return [paymentResponse, newOrder];
-        }));
+        }, { timeout: 50000 })); // give a longer timeout for `revertDraftOrder`
         
         
         

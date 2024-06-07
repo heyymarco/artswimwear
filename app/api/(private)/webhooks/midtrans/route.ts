@@ -168,7 +168,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                         // 3rd step: not found
                         false
                     );
-                }, { timeout: 50000 }); // give a longer timeout for `cancelOrder`(s)
+                }, { timeout: 50000 }); // give a longer timeout for `revertDraftOrder`|`cancelOrder`
                 
                 
                 
