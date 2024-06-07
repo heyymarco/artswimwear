@@ -113,7 +113,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         case false: {   // Transaction was deleted due to canceled or expired.  
             const paymentId = midtransPaymentData.transaction_id;
             if (paymentId) {
-                await prisma.$transaction(async (prismaTransaction): Promise<boolean> => {
+                const result = await prisma.$transaction(async (prismaTransaction): Promise<string|boolean> => {
                     return (
                         // 1st step: search on DraftOrder(s):
                         await (async () : Promise<boolean> => {
@@ -137,7 +137,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                         ||
                         
                         // 2nd step: search on Order(s):
-                        await (async () : Promise<boolean> => {
+                        await (async () : Promise<string|boolean> => {
                             const order = await findOrderById(prismaTransaction, {
                                 orderId     : orderId,
                                 paymentId   : paymentId,
@@ -160,20 +160,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                             
                             
                             
-                            // notify a payment confirmation has been expired to adminApp via webhook:
-                            await fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/expired`, {
-                                method  : 'POST',
-                                headers : {
-                                    'X-Secret' : process.env.APP_SECRET ?? '',
-                                },
-                                body    : JSON.stringify({
-                                    orderId : order.orderId,
-                                }),
-                            });
-                            
-                            
-                            
-                            return true;
+                            return order.orderId; // the expired RealOrder.orderId
                         })()
                         
                         ||
@@ -182,6 +169,21 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                         false
                     );
                 });
+                
+                
+                
+                if (typeof(result) === 'string') {
+                    // notify a payment confirmation has been expired to adminApp via webhook:
+                    await fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/expired`, {
+                        method  : 'POST',
+                        headers : {
+                            'X-Secret' : process.env.APP_SECRET ?? '',
+                        },
+                        body    : JSON.stringify({
+                            orderId : result,
+                        }),
+                    });
+                } // if
             } // if
             
             
