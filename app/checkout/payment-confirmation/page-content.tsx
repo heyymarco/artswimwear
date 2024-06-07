@@ -16,6 +16,7 @@ import {
 import {
     // navigations:
     useSearchParams,
+    useRouter,
 }                           from 'next/navigation'
 
 // cssfn:
@@ -142,6 +143,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     
     // navigations:
     const searchParams = useSearchParams();
+    const router       = useRouter()
     
     
     
@@ -321,7 +323,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
         setIsSent(true);
     });
     const handleGotoHome              = useEvent(() => {
-        setIsSent(false); // TODO: replace with actual goto home after development finished
+        router.replace('/');
     });
     
     
