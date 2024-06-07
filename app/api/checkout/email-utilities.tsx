@@ -173,8 +173,21 @@ export const sendConfirmationEmail = async (options: SendEmailConfirmationOption
             order                : order,
             customerOrGuest      : order.customerOrGuest,
             paymentConfirmation  : {
+                // records:
+                reportedAt       : null, // not yet set
+                reviewedAt       : null, // not yet set
+                
+                // data:
                 token            : paymentConfirmationToken ?? '',
-                rejectionReason  : null,
+                
+                amount           : null, // not yet set
+                payerName        : null, // not yet set
+                paymentDate      : null, // not yet set
+                
+                originatingBank  : null, // not yet set
+                destinationBank  : null, // not yet set
+                
+                rejectionReason  : null, // not yet set
             },
             isPaid               : isPaid,
             shippingTracking     : null,
