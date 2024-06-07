@@ -44,7 +44,7 @@ const checkPayment = async (paymentId: string): Promise<PaymentDetail|false|null
                     id : true,
                 },
             });
-            if (!!draftOrder) return null;             // waiting for payment
+            if (!!draftOrder) return null;             // still in DraftOrder (not moved to RealOrder) => waiting for payment
             
             
             
