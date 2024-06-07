@@ -36,7 +36,7 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 const checkPayment = async (paymentId: string): Promise<PaymentDetail|false|null> => {
     try {
         return await prisma.$transaction(async (prismaTransaction): Promise<PaymentDetail|false|null> => {
-            const draftOrder = await prisma.draftOrder.findUnique({
+            const draftOrder = await prismaTransaction.draftOrder.findUnique({
                 where  : {
                     paymentId : paymentId,
                 },
