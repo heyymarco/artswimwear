@@ -1,6 +1,8 @@
-[high prior] fix @heymarco/image (no error detected again in new Chrome)
-[high prior] fix email dark mode in phone
-[high prior] auto cleanup expired CustomerSession
+[high prior] protect payment confirmation page using captcha
+
+[med  prior] fix @heymarco/image (no error detected again in new Chrome)
+[med  prior] fix email dark mode in phone
+[med  prior] auto cleanup expired CustomerSession
 
 [high prior] verify breaking change <UpdateStatePlugin> .__first
 TODO: fix table layout to use subgrid
