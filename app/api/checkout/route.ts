@@ -1551,15 +1551,32 @@ router
         
         // send email confirmation:
         if (paymentDetail /* not a pending (redirect) payment */ && newOrder /* a RealOrder is created */) {
-            // notify for waiting for payment (manual_payment):
-            // -or-
-            // notify that the payment has been received:
-            await sendConfirmationEmail({
-                order : newOrder,
+            await Promise.all([
+                // notify for waiting for payment (manual_payment):
+                // -or-
+                // notify that the payment has been received:
+                sendConfirmationEmail({
+                    order : newOrder,
+                    
+                    isPaid, // waiting for manual_payment -or- paid
+                    paymentConfirmationToken, // a paymentConfirmationToken (random string) if waiting for manual_payment -or- null
+                }),
                 
-                isPaid, // waiting for manual_payment -or- paid
-                paymentConfirmationToken, // a paymentConfirmationToken (random string) if waiting for manual_payment -or- null
-            });
+                
+                
+                // notify for waiting for payment (manual_payment) to adminApp via webhook:
+                // -or-
+                // notify that the payment has been received to adminApp via webhook:
+                fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
+                    method  : 'POST',
+                    headers : {
+                        'X-Secret' : process.env.APP_SECRET ?? '',
+                    },
+                    body    : JSON.stringify({
+                        orderId : newOrder.orderId,
+                    }),
+                }),
+            ]);
         } // if
     }
     catch (error: any) {
@@ -2339,13 +2356,28 @@ Updating the confirmation is not required.`,
         
         // send email confirmation:
         if (newOrder) {
-            // notify that the payment has been received:
-            await sendConfirmationEmail({
-                order                    : newOrder,
+            await Promise.all([
+                // notify that the payment has been received:
+                sendConfirmationEmail({
+                    order                    : newOrder,
+                    
+                    isPaid                   : true,
+                    paymentConfirmationToken : null,
+                }),
                 
-                isPaid                   : true,
-                paymentConfirmationToken : null,
-            });
+                
+                
+                // notify that the payment has been received to adminApp via webhook:
+                fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
+                    method  : 'POST',
+                    headers : {
+                        'X-Secret' : process.env.APP_SECRET ?? '',
+                    },
+                    body    : JSON.stringify({
+                        orderId : newOrder.orderId,
+                    }),
+                }),
+            ]);
         } // if
     }
     catch (error: any) {
