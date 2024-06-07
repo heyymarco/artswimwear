@@ -1,3 +1,4 @@
+[high prior] fix double payment confirmation when pay using midtrans_card
 [high prior] protect payment confirmation page using captcha
 
 [med  prior] fix @heymarco/image (no error detected again in new Chrome)
