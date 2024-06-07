@@ -945,11 +945,19 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                         <br />
                         We will immediately <strong>check your payment</strong> and will <strong>notify you</strong> in the next email.
                     </p>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Payment Confirmation Details
+                    </h2>
+                    
+                    <Payment.ConfirmationDetails style={styles.selfCenterHorz} />
                     
                     <p style={styles.paragraph}>
                         If there is a <strong>data mistake</strong> in your payment confirmation,
                         <br />
-                        Don&apos;t worry, you can <strong>re-confirm</strong> it again. We will check your payment confirmation again.
+                        don&apos;t worry, you can <strong>re-confirm</strong> it again. We will check your payment confirmation again.
                     </p>
                     
                     <p style={styles.paragraphLast}>
@@ -2594,6 +2602,14 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                         <br />
                         Please <strong>review the payment confirmation immediately</strong>, so that he/she is satisfied with the fast response.
                     </p>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Payment Confirmation Details
+                    </h2>
+                    
+                    <Payment.ConfirmationDetails style={styles.selfCenterHorz} />
                 </section>
                 
                 <section style={styles.section}>

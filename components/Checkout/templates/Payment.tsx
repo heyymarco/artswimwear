@@ -182,13 +182,12 @@ const PaymentAmount = (): React.ReactNode => {
 
 export interface PaymentInfoProps {
     // styles:
-    style    ?: React.CSSProperties
+    style ?: React.CSSProperties
     
     
     
     // accessibilities:
-    title    ?: React.ReactNode
-    readOnly ?: boolean
+    title ?: React.ReactNode
 }
 const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
     // rest props:
@@ -398,6 +397,7 @@ export const PaymentHasConfirmationRejection = (props: React.PropsWithChildren<{
     if (!rejectionReason) return null;
     return props.children;
 };
+
 export const PaymentIsManualTransfer = (props: React.PropsWithChildren<{}>): React.ReactNode => {
     // contexts:
     const {
@@ -482,6 +482,7 @@ export const PaymentOtcCode = (props: React.PropsWithChildren<{}>): React.ReactN
     if (!paymentBrand           ) return null;
     return paymentIndentifier;
 };
+
 export const PaymentHasExpires = (props: React.PropsWithChildren<{}>): React.ReactNode => {
     // contexts:
     const {
@@ -501,7 +502,7 @@ export const PaymentHasExpires = (props: React.PropsWithChildren<{}>): React.Rea
     if (!paymentExpiresAt       ) return null;
     return props.children;
 };
-export const PaymentExpires    = (): React.ReactNode => {
+export const PaymentExpires = (): React.ReactNode => {
     // contexts:
     const {
         // data:
@@ -527,6 +528,144 @@ export const PaymentExpires    = (): React.ReactNode => {
     );
 };
 
+export interface PaymentConfirmationDetailsProps {
+    // styles:
+    style ?: React.CSSProperties
+    
+    
+    
+    // accessibilities:
+    title ?: React.ReactNode
+}
+export const  PaymentConfirmationDetails = (props: PaymentConfirmationDetailsProps): React.ReactNode => {
+    // rest props:
+    const {
+        // styles:
+        style,
+        
+        
+        
+        // accessibilities:
+        title,
+    } = props;
+    
+    
+    
+    // contexts:
+    const {
+        // data:
+        paymentConfirmation,
+        customerOrGuest,
+    } = useOrderDataContext();
+    const {
+        timezone,
+    } = customerOrGuest?.preference ?? {};
+    
+    
+    
+    // jsx:
+    if (!paymentConfirmation) return null;
+    const {
+        reportedAt,
+        
+        amount,
+        payerName,
+        paymentDate,
+        
+        originatingBank,
+        destinationBank,
+    } = paymentConfirmation;
+    return (
+        <table
+            // styles:
+            style={{
+                ...styles.tableInfo,
+                ...style,
+            }}
+        >
+            {!!title && <thead>
+                <tr>
+                    <th colSpan={2} style={styles.tableTitleCenter}>
+                        {title}
+                    </th>
+                </tr>
+            </thead>}
+            
+            <tbody>
+                <tr>
+                    <th
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...(title ? null : styles.borderTopSide        ),
+                            ...(title ? null : styles.tableTitleSideFirst  ),
+                            ...styles.tableTitleSide,
+                        }}
+                    >
+                        Reported At
+                    </th>
+                    <td
+                        // styles:
+                        style={{
+                            // layouts:
+                            ...(title ? null : styles.borderTopSide        ),
+                            ...(title ? null : styles.tableContentSideFirst),
+                            ...styles.tableContentSide,
+                        }}
+                    >
+                        <DateTimeDisplay dateTime={reportedAt} timezone={timezone ?? undefined} showTimezone={true} />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th style={styles.tableTitleSide}>
+                        Amount
+                    </th>
+                    <td style={styles.tableContentSide}>
+                        <CurrencyDisplay amount={amount} />
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th style={styles.tableTitleSide}>
+                        Payer Name
+                    </th>
+                    <td style={styles.tableContentSide}>
+                        {payerName || '-'}
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th style={styles.tableTitleSide}>
+                        Transfered Date
+                    </th>
+                    <td style={styles.tableContentSide}>
+                        {paymentDate ? <DateTimeDisplay dateTime={paymentDate} timezone={timezone ?? undefined} showTimezone={true} /> : '-'}
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th style={styles.tableTitleSide}>
+                        Originating Bank
+                    </th>
+                    <td style={styles.tableContentSide}>
+                        {originatingBank || '-'}
+                    </td>
+                </tr>
+                
+                <tr>
+                    <th style={styles.tableTitleSideLast}>
+                        Destination Bank
+                    </th>
+                    <td style={styles.tableContentSideLast}>
+                        {destinationBank || '-'}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    );
+};
+
 export const Payment = {
     BillingAddress           : BillingAddress,
     Method                   : PaymentMethod,
@@ -546,4 +685,6 @@ export const Payment = {
     
     HasExpires               : PaymentHasExpires,
     Expires                  : PaymentExpires,
+    
+    ConfirmationDetails      : PaymentConfirmationDetails,
 };

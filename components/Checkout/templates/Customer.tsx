@@ -49,13 +49,12 @@ const CustomerEmail = (): React.ReactNode => {
 
 export interface CustomerInfoProps {
     // styles:
-    style    ?: React.CSSProperties
+    style ?: React.CSSProperties
     
     
     
     // accessibilities:
-    title    ?: React.ReactNode
-    readOnly ?: boolean
+    title ?: React.ReactNode
 }
 const CustomerInfo = (props: CustomerInfoProps): React.ReactNode => {
     // rest props:

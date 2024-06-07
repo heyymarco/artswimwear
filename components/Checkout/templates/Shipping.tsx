@@ -172,13 +172,12 @@ const ShippingTrackingLink = (): React.ReactNode => {
 
 export interface ShippingInfoProps {
     // styles:
-    style    ?: React.CSSProperties
+    style ?: React.CSSProperties
     
     
     
     // accessibilities:
-    title    ?: React.ReactNode
-    readOnly ?: boolean
+    title ?: React.ReactNode
 }
 const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
     // rest props:

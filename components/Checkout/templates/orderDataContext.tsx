@@ -12,7 +12,7 @@ import type {
 // models:
 import type {
     CustomerOrGuest,
-    CustomerOrGuestPreferenceData,
+    CustomerOrGuestPreference,
 }                           from '@/models'
 import type {
     Product,
@@ -66,6 +66,14 @@ export type CustomerOrGuestData = Omit<CustomerOrGuest,
 > & {
     preference : CustomerOrGuestPreferenceData|null
 }
+export type CustomerOrGuestPreferenceData = Omit<CustomerOrGuestPreference,
+    // records:
+    |'id'
+    
+    // relations:
+    |'customerId'
+    |'guestId'
+>
 export type OrderAndData = Order & {
     items                : OrderItemsAndData[]
     shippingProvider     : MatchingShipping|null
@@ -75,7 +83,7 @@ export interface OrderDataApi {
     // data:
     order                : OrderAndData
     customerOrGuest      : CustomerOrGuestData|null
-    paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
+    paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'orderId'>|null
     isPaid               : boolean
     shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null
     
@@ -111,7 +119,7 @@ export interface OrderDataContextProviderProps {
     // data:
     order                : OrderAndData
     customerOrGuest      : CustomerOrGuestData|null
-    paymentConfirmation  : Pick<PaymentConfirmation, 'token'|'rejectionReason'>|null
+    paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'orderId'>|null
     isPaid               : boolean
     shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null
     
