@@ -894,6 +894,316 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
         
+        confirmed                  : {
+            host                   : process.env.EMAIL_CONFIRMED_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_CONFIRMED_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_CONFIRMED_SECURE === 'true'),
+            username               : process.env.EMAIL_CONFIRMED_USERNAME ?? '',
+            password               : process.env.EMAIL_CONFIRMED_PASSWORD ?? '',
+            
+            from                   : process.env.EMAIL_CONFIRMED_FROM ?? '',
+            subject                : <>
+                We Have Received Your Payment Confirmation at <Business.Name />
+            </>,
+            message                : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        Thanks for Your Payment Confirmation!
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Customer.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraph}>
+                        We have received your payment confirmation.
+                        <br />
+                        We will immediately <strong>check your payment</strong> and will <strong>notify you</strong> in the next email.
+                    </p>
+                    
+                    <p style={styles.paragraph}>
+                        If there is a <strong>data mistake</strong> in your payment confirmation,
+                        <br />
+                        Don&apos;t worry, you can <strong>re-confirm</strong> it again. We will check your payment confirmation again.
+                    </p>
+                    
+                    <p style={styles.paragraphLast}>
+                        Re-confirm:
+                        <br />
+                        <Payment.ConfirmationLink />
+                    </p>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Payment Instruction
+                    </h2>
+                    
+                    <p style={styles.paragraph}>
+                        Please immediately make payment for your order to <strong>one of</strong> our accounts below:
+                    </p>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display      : 'block',
+                            
+                            
+                            
+                            // sizes:
+                            width        : 'fit-content', // center self horizontally
+                            
+                            
+                            
+                            // backgrounds & foregrounds:
+                            ...styles.theme('primary'),
+                            
+                            
+                            
+                            // borders:
+                            border       : styles.borderStroke('primary'),
+                            borderRadius : `${borderRadiusValues.xxl}`,
+                            
+                            
+                            
+                            // spacings:
+                            marginTop    : `${spacerValues.md}`,
+                            marginBottom : `${spacerValues.md}`,
+                            marginLeft   : 'auto',
+                            marginRight  : 'auto',
+                            padding      : `calc(${spacerValues.md} * 1.5)`,
+                        }}
+                    >
+                        <p
+                            // styles:
+                            style={{
+                                // layouts:
+                                ...styles.paragraphFirst,
+                                
+                                
+                                
+                                // spacings:
+                                columnGap    : '0.5em',
+                                
+                                
+                                
+                                // typos:
+                                ...styles.textBig,
+                            }}
+                        >
+                            <span>Amount:</span>
+                            <br />
+                            <Order.TotalValue />
+                        </p>
+                        <Payment.HasExpires>
+                            <p style={styles.paragraphLast}>
+                                Please make payment <strong>before</strong>:
+                                <br />
+                                <strong style={styles.textSemibold}>
+                                    <Payment.Expires />
+                                </strong>
+                                <br />
+                                <small style={styles.textSmall}>
+                                    Your order will be automatically canceled after the above date passes.
+                                </small>
+                            </p>
+                        </Payment.HasExpires>
+                    </div>
+                    
+                    <Payment.IsManualTransfer>
+                        <Payment.Bank />
+                        
+                        <p
+                            // styles:
+                            style={{
+                                // layouts:
+                                ...styles.paragraphLast,
+                                
+                                
+                                
+                                // positions:
+                                // needs to overwrite the paragraph's layout
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // sizes:
+                                width     : 'fit-content',
+                                
+                                
+                                
+                                // backgrounds & foregrounds:
+                                ...styles.theme('primary'),
+                                
+                                
+                                
+                                // borders:
+                                border       : styles.borderStroke('primary'),
+                                borderRadius : `${borderRadiusValues.xxl}`,
+                                
+                                
+                                
+                                // spacings:
+                                padding      : `calc(${spacerValues.md} * 1.5)`,
+                            }}
+                        >
+                            After you make payment, please confirm your payment via this link:
+                            <br />
+                            <Payment.ConfirmationLink />
+                        </p>
+                    </Payment.IsManualTransfer>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Care Support
+                    </h2>
+                    
+                    <p style={styles.paragraphLast}>
+                        Need help? Please reply this email.
+                    </p>
+                </section>
+            </article>,
+        },
         rejected                   : {
             host                   : process.env.EMAIL_REJECTED_HOST     ?? '',
             port                   : Number.parseInt(process.env.EMAIL_REJECTED_PORT ?? '465'),
@@ -1028,6 +1338,19 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                             <br />
                             <Order.TotalValue />
                         </p>
+                        <Payment.HasExpires>
+                            <p style={styles.paragraphLast}>
+                                Please make payment <strong>before</strong>:
+                                <br />
+                                <strong style={styles.textSemibold}>
+                                    <Payment.Expires />
+                                </strong>
+                                <br />
+                                <small style={styles.textSmall}>
+                                    Your order will be automatically canceled after the above date passes.
+                                </small>
+                            </p>
+                        </Payment.HasExpires>
                     </div>
                     
                     <Payment.IsManualTransfer>
@@ -2220,6 +2543,251 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
         
+        confirmed                  : {
+            host                   : process.env.EMAIL_ADMIN_CONFIRMED_HOST     ?? '',
+            port                   : Number.parseInt(process.env.EMAIL_ADMIN_CONFIRMED_PORT ?? '465'),
+            secure                 : (process.env.EMAIL_ADMIN_CONFIRMED_SECURE === 'true'),
+            username               : process.env.EMAIL_ADMIN_CONFIRMED_USERNAME ?? '',
+            password               : process.env.EMAIL_ADMIN_CONFIRMED_PASSWORD ?? '',
+            
+            from                   : process.env.EMAIL_ADMIN_CONFIRMED_FROM ?? '',
+            subject                : <>
+                A Payment Confirmation Has Been Received at <Business.Name />
+            </>,
+            message                : <article style={styles.article}>
+                <div style={styles.sectionDummy}></div>
+                
+                <section
+                    // styles:
+                    style={{
+                        // layouts:
+                        ...styles.sectionBase,
+                        
+                        
+                        
+                        // backgrounds & foregrounds:
+                        ...styles.theme('primary'),
+                        
+                        
+                        
+                        // borders:
+                        border       : styles.borderStroke('primary'),
+                        borderRadius : `${borderRadiusValues.xxl}`,
+                        
+                        
+                        
+                        // spacings:
+                        margin       : `${spacerValues.md}`,
+                        padding      : `calc(${spacerValues.md} * 1.5)`,
+                    }}
+                >
+                    <h1 style={styles.heading1}>
+                        A Payment Confirmation Has Been Received
+                    </h1>
+                    
+                    <p style={styles.paragraph}>
+                        Dear <Admin.Name />,
+                    </p>
+                    
+                    <p style={styles.paragraph}>
+                        A <strong>payment confirmation</strong> from <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span>!
+                        <br />
+                        Please <strong>review the payment confirmation immediately</strong>, so that he/she is satisfied with the fast response.
+                    </p>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Payment Method
+                    </h2>
+                    
+                    <p style={styles.paragraph}>
+                        He/she chose to pay manually via <strong>bank transfer</strong>.
+                    </p>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display      : 'block',
+                            
+                            
+                            
+                            // sizes:
+                            width        : 'fit-content', // center self horizontally
+                            
+                            
+                            
+                            // backgrounds & foregrounds:
+                            ...styles.theme('primary'),
+                            
+                            
+                            
+                            // borders:
+                            border       : styles.borderStroke('primary'),
+                            borderRadius : `${borderRadiusValues.xxl}`,
+                            
+                            
+                            
+                            // spacings:
+                            marginTop    : `${spacerValues.md}`,
+                            marginBottom : `${spacerValues.md}`,
+                            marginLeft   : 'auto',
+                            marginRight  : 'auto',
+                            padding      : `calc(${spacerValues.md} * 1.5)`,
+                        }}
+                    >
+                        <p
+                            // styles:
+                            style={{
+                                // layouts:
+                                ...styles.paragraphFirst,
+                                
+                                
+                                
+                                // spacings:
+                                columnGap    : '0.5em',
+                                
+                                
+                                
+                                // typos:
+                                ...styles.textBig,
+                            }}
+                        >
+                            <span>Amount:</span>
+                            <br />
+                            <Order.TotalValue />
+                        </p>
+                        <Payment.HasExpires>
+                            <p style={styles.paragraphLast}>
+                                The order will be <strong>automatically canceled</strong> after:
+                                <br />
+                                <strong style={styles.textSemibold}>
+                                    <Payment.Expires />
+                                </strong>
+                            </p>
+                        </Payment.HasExpires>
+                    </div>
+                    
+                    <Payment.IsManualTransfer>
+                        <Payment.Bank />
+                    </Payment.IsManualTransfer>
+                </section>
+                
+                <section style={styles.section}>
+                    <h2 style={styles.heading2}>
+                        Order Summary
+                    </h2>
+                    
+                    <div
+                        // styles:
+                        style={{
+                            // positions:
+                            ...styles.selfCenterHorz, // center self horizontally
+                            
+                            
+                            
+                            // layouts:
+                            display : 'grid',
+                            
+                            
+                            
+                            // sizes:
+                            width   : 'fit-content',
+                        }}
+                    >
+                        <table
+                            // styles:
+                            style={{
+                                // positions:
+                                ...styles.selfCenterHorz, // center self horizontally
+                                
+                                
+                                
+                                // layouts:
+                                ...styles.tableReset,
+                                
+                                
+                                
+                                // spacings:
+                                marginBottom : '0.5rem',
+                            }}
+                        >
+                            <tbody>
+                                <tr>
+                                    {/* label */}
+                                    <td style={styles.tableLabelSide}>
+                                        Order Number
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td style={styles.textBold}>
+                                        <Order.Id />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    {/* label */}
+                                    <td  style={styles.tableLabelSide}>
+                                        Order Date
+                                    </td>
+                                    
+                                    {/* colon */}
+                                    <td style={styles.tableColonSeparator}>
+                                        :
+                                    </td>
+                                    
+                                    {/* value */}
+                                    <td>
+                                        <Order.CreatedAt />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Items />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Subtotal />
+                        <Order.Shipping />
+                        
+                        <hr style={styles.horzRule} />
+                        
+                        <Order.Total />
+                    </div>
+                </section>
+                
+                <IfPhysicalProduct>
+                    <section style={styles.section}>
+                        <h2 style={styles.heading2}>
+                            Shipping Info
+                        </h2>
+                        
+                        <Shipping.Info style={styles.selfCenterHorz} />
+                    </section>
+                </IfPhysicalProduct>
+                
+                <section style={styles.sectionLast}>
+                    <h2 style={styles.heading2}>
+                        Customer Info
+                    </h2>
+                    
+                    <Customer.Info style={styles.selfCenterHorz} />
+                </section>
+            </article>,
+        },
         rejected                   : {
             host                   : process.env.EMAIL_ADMIN_REJECTED_HOST     ?? '',
             port                   : Number.parseInt(process.env.EMAIL_ADMIN_REJECTED_PORT ?? '465'),
@@ -2346,6 +2914,15 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                             <br />
                             <Order.TotalValue />
                         </p>
+                        <Payment.HasExpires>
+                            <p style={styles.paragraphLast}>
+                                The order will be <strong>automatically canceled</strong> after:
+                                <br />
+                                <strong style={styles.textSemibold}>
+                                    <Payment.Expires />
+                                </strong>
+                            </p>
+                        </Payment.HasExpires>
                     </div>
                     
                     <Payment.IsManualTransfer>
