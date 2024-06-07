@@ -1902,6 +1902,7 @@ Updating the confirmation is not required.`,
         
         
         // notify a payment confirmation has been received to adminApp via webhook:
+        console.log('sending webhook: payment confirmation.');
         await fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/confirmed`, {
             method  : 'POST',
             headers : {
@@ -1911,6 +1912,7 @@ Updating the confirmation is not required.`,
                 token : paymentConfirmationToken,
             }),
         });
+        console.log('sent webhook: payment confirmation.');
         
         
         
