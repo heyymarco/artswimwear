@@ -263,13 +263,28 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             // send email confirmation:
             if (newOrder) {
-                // notify that the payment has been received:
-                await sendConfirmationEmail({
-                    order                    : newOrder,
+                await Promise.all([
+                    // notify that the payment has been received:
+                    await sendConfirmationEmail({
+                        order                    : newOrder,
+                        
+                        isPaid                   : true,
+                        paymentConfirmationToken : null,
+                    }),
                     
-                    isPaid                   : true,
-                    paymentConfirmationToken : null,
-                });
+                    
+                    
+                    // notify that the payment has been received to adminApp via webhook:
+                    fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
+                        method  : 'POST',
+                        headers : {
+                            'X-Secret' : process.env.APP_SECRET ?? '',
+                        },
+                        body    : JSON.stringify({
+                            orderId : newOrder.orderId,
+                        }),
+                    }),
+                ]);
             } // if
             
             
