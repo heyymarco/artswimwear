@@ -160,7 +160,16 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                             
                             
                             
-                            // TODO: call admin_store/api/webhooks/orders/expired { orderId }
+                            // notify a payment confirmation has been expired to adminApp via webhook:
+                            await fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/expired`, {
+                                method  : 'POST',
+                                headers : {
+                                    'X-Secret' : process.env.APP_SECRET ?? '',
+                                },
+                                body    : JSON.stringify({
+                                    orderId : order.orderId,
+                                }),
+                            });
                             
                             
                             
