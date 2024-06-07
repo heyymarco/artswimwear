@@ -1902,17 +1902,17 @@ Updating the confirmation is not required.`,
         
         
         // notify a payment confirmation has been received to adminApp via webhook:
-        console.log('sending webhook: payment confirmation.');
-        await fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/confirmed`, {
-            method  : 'POST',
-            headers : {
-                'X-Secret' : process.env.APP_SECRET ?? '',
-            },
-            body    : JSON.stringify({
-                token : paymentConfirmationToken,
-            }),
-        });
-        console.log('sent webhook: payment confirmation.');
+        if (amount !== undefined) { // only for update request, ignore for getter request
+            await fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/confirmed`, {
+                method  : 'POST',
+                headers : {
+                    'X-Secret' : process.env.APP_SECRET ?? '',
+                },
+                body    : JSON.stringify({
+                    token : paymentConfirmationToken,
+                }),
+            });
+        } // if
         
         
         
