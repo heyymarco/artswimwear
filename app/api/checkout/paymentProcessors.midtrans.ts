@@ -590,8 +590,8 @@ export const midtransCreateOrderWithIndomaret = async (orderId: string, options:
         },
         // @ts-ignore
         custom_expiry        : {
-            unit             : 'day',
-            expiry_duration  : checkoutConfigServer.payment.expires.cstore,
+            unit             : 'second',
+            expiry_duration  : Math.round(checkoutConfigServer.payment.expires.cstore * 24 * 60 * 60 /* converts days to seconds */),
         },
     }, orderId, options);
     /*
@@ -617,8 +617,8 @@ export const midtransCreateOrderWithAlfamart  = async (orderId: string, options:
         },
         // @ts-ignore
         custom_expiry        : {
-            unit             : 'day',
-            expiry_duration  : checkoutConfigServer.payment.expires.cstore,
+            unit             : 'second',
+            expiry_duration  : Math.round(checkoutConfigServer.payment.expires.cstore * 24 * 60 * 60 /* converts days to seconds */),
         },
     }, orderId, options);
     /*
