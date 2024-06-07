@@ -53,7 +53,7 @@ import {
 
 // configs:
 export const fetchCache = 'force-no-store';
-export const maxDuration = 20; // this function can run for a maximum of 20 seconds for complex transactions
+export const maxDuration = 60; // this function can run for a maximum of 60 seconds for many & complex transactions
 
 
 
@@ -168,7 +168,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                         // 3rd step: not found
                         false
                     );
-                });
+                }, { timeout: 50000 }); // give a longer timeout for `cancelOrder`(s)
                 
                 
                 
