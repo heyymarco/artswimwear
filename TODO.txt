@@ -1,9 +1,8 @@
-[high prior] fix double payment confirmation when pay using midtrans_card
 [high prior] protect payment confirmation page using captcha
 
-[med  prior] fix @heymarco/image (no error detected again in new Chrome)
-[med  prior] fix email dark mode in phone
-[med  prior] auto cleanup expired CustomerSession
+[low  prior] fix @heymarco/image (no error detected again in new Chrome)
+[low  prior] fix email dark mode in phone
+[low  prior] auto cleanup expired CustomerSession
 
 [high prior] verify breaking change <UpdateStatePlugin> .__first
 TODO: fix table layout to use subgrid
