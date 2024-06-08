@@ -207,7 +207,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             
-            const newOrder : OrderAndData|null = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
+            const order : OrderAndData|null = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
                 return (
                     // 1st step: search on DraftOrder(s):
                     await (async (): Promise<OrderAndData|null> => {
@@ -262,11 +262,15 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             // send email confirmation:
-            if (newOrder) {
+            if (
+                order
+                &&
+                (order.payment.type !== 'CARD') // a payment_card is already notified by `/api/checkout/PATCH`
+            ) {
                 await Promise.all([
                     // notify that the payment has been received:
                     await sendConfirmationEmail({
-                        order                    : newOrder,
+                        order                    : order,
                         
                         isPaid                   : true,
                         paymentConfirmationToken : null,
@@ -281,7 +285,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                             'X-Secret' : process.env.APP_SECRET ?? '',
                         },
                         body    : JSON.stringify({
-                            orderId : newOrder.orderId,
+                            orderId : order.orderId,
                         }),
                     }),
                 ]);
