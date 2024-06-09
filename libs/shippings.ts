@@ -48,11 +48,11 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
         id              : shipping.id,         // optional
         
         enabled         : shipping.enabled,    // optional
+        
         name            : shipping.name,       // optional
+        estimate        : estimate,            // optional
         
         weightStep      : shipping.weightStep, // required
-        
-        estimate        : estimate,            // optional
         shippingRates   : shippingRates,       // required
     };
 };

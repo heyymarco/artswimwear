@@ -107,11 +107,11 @@ router
             id              : true, // required for identifier
             
             enabled         : true, // required for check conditional
+            
             name            : true, // required for labeling
+            estimate        : true, // optional for labeling
             
             weightStep      : true, // required for getMatchingShipping
-            
-            estimate        : true, // optional for labeling
             shippingRates   : true, // required for getMatchingShipping
             
             useSpecificArea : true, // required for getMatchingShipping
@@ -127,11 +127,11 @@ router
         //     id              : shipping.id,
         //     
         //     enabled         : shipping.enabled,
+        //     
         //     name            : shipping.name,
+        //     estimate        : shipping.estimate,
         //     
         //     weightStep      : shipping.weightStep,
-        //     
-        //     estimate        : shipping.estimate,
         //     shippingRates   : shipping.shippingRates,
         //     
         //     useSpecificArea : shipping.useSpecificArea,

@@ -185,10 +185,9 @@ model ShippingProvider {
     enabled                         Boolean
     
     name                            String                          // minLength: 2, maxLength: 50
+    estimate                        String?                         // minLength: 2, maxLength: 50
     
     weightStep                      Float                           // min: 0, max: 1000
-    
-    estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
     
     useSpecificArea                 Boolean

@@ -692,7 +692,6 @@ router
                     },
                     select : {
                         weightStep      : true,
-                        
                         shippingRates   : true,
                         
                         useSpecificArea : true,
