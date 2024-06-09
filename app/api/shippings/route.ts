@@ -10,9 +10,9 @@ import {
 }                           from 'next-connect'
 
 // models:
-import type {
-    ShippingProvider,
-}                           from '@prisma/client'
+import {
+    shippingDetailSelect,
+}                           from '@/models'
 
 // ORMs:
 import {
@@ -30,18 +30,6 @@ import {
     // utilities:
     getMatchingShipping,
 }                           from '@/libs/shippings'
-
-
-
-// types:
-export interface ShippingPreview
-    extends
-        Pick<ShippingProvider,
-            |'id'
-            |'name'
-        >
-{
-}
 
 
 
@@ -103,20 +91,7 @@ router
     
     
     let allShippings = await prisma.shippingProvider.findMany({
-        select : {
-            id              : true, // required for identifier
-            
-            enabled         : true, // required for check conditional
-            
-            name            : true, // required for labeling
-            estimate        : true, // optional for labeling
-            
-            weightStep      : true, // required for getMatchingShipping
-            shippingRates   : true, // required for getMatchingShipping
-            
-            useSpecificArea : true, // required for getMatchingShipping
-            countries       : true, // required for getMatchingShipping
-        },
+        select : shippingDetailSelect,
     }); // get all shippings including the disabled ones
     if (!allShippings.length) { // empty => first app setup => initialize the default shippings
         const defaultShippings = (await import('@/libs/defaultShippings')).default;
@@ -126,7 +101,7 @@ router
         // allShippings = defaultShippings.map((shipping) => ({
         //     id              : shipping.id,
         //     
-        //     enabled         : shipping.enabled,
+        //     visibility      : shipping.visibility,
         //     
         //     name            : shipping.name,
         //     estimate        : shipping.estimate,
@@ -142,7 +117,7 @@ router
     
     
     // filter out disabled shippings:
-    const shippings = allShippings.filter(({enabled}) => enabled);
+    const shippings = allShippings.filter(({visibility}) => (visibility !== 'DRAFT'));
     
     // filter out non_compatible shippings:
     const shippingAddress: MatchingAddress = { city, zone, country };

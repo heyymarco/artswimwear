@@ -1,6 +1,13 @@
+// models:
+import {
+    type Prisma,
+}                           from '@prisma/client'
+
+
+
 export default [
     {
-        enabled         : true,
+        visibility      : 'PUBLISHED',
         
         name            : 'Free Shipping',
         estimate        : undefined,
@@ -13,4 +20,4 @@ export default [
         useSpecificArea : false,
         countries       : [],
     },
-]
+] satisfies Prisma.ShippingProviderUpdateInput[];

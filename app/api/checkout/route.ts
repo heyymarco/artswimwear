@@ -687,8 +687,8 @@ router
             const [selectedShipping, validExistingProducts, foundOrderIdInDraftOrder, foundOrderIdInOrder] = await Promise.all([
                 (!simulateOrder && hasShippingAddress) ? prismaTransaction.shippingProvider.findUnique({
                     where  : {
-                        id      : shippingProviderId,
-                        enabled : true,
+                        id         : shippingProviderId,
+                        visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
                     },
                     select : {
                         weightStep      : true,

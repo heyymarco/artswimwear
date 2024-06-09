@@ -1,7 +1,7 @@
 // models:
-import type {
-    ShippingProvider,
-    Address
+import {
+    type ShippingProvider,
+    type Address,
 }                           from '@prisma/client'
 
 
@@ -13,7 +13,7 @@ export type MatchingAddress  = Pick<Address, 'country'|'zone'|'city'>
 
 
 // utilities:
-export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id'|'enabled'|'name'|'estimate'>> & Omit<ShippingProvider, 'id'|'createdAt'|'updatedAt'|'enabled'|'name'|'estimate'>, shippingAddress: MatchingAddress): MatchingShipping|null => {
+export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id'|'visibility'|'name'|'estimate'>> & Omit<ShippingProvider, 'id'|'createdAt'|'updatedAt'|'visibility'|'name'|'estimate'>, shippingAddress: MatchingAddress): MatchingShipping|null => {
     let estimate          = shipping.estimate;
     let shippingRates     = shipping.shippingRates;
     
@@ -47,7 +47,7 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
     return {
         id              : shipping.id,         // optional
         
-        enabled         : shipping.enabled,    // optional
+        visibility      : shipping.visibility, // optional
         
         name            : shipping.name,       // optional
         estimate        : estimate,            // optional

@@ -175,6 +175,10 @@ type CoverageCountry {
     useSpecificArea                 Boolean
     zones                           CoverageZone[]
 }
+enum ShippingVisibility {
+    PUBLISHED
+    DRAFT
+}
 model ShippingProvider {
     // records:
     id                              String                          @id @default(cuid()) @map("_id")
@@ -182,7 +186,7 @@ model ShippingProvider {
     updatedAt                       DateTime                        @updatedAt
     
     // data:
-    enabled                         Boolean
+    visibility                      ShippingVisibility
     
     name                            String                          // minLength: 2, maxLength: 50
     estimate                        String?                         // minLength: 2, maxLength: 50
