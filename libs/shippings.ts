@@ -19,21 +19,21 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
     
     
     
-    const matchingCountry = (shipping.useSpecificArea ?? false) && shipping.countries?.find((coverageCountry) => (coverageCountry.country.toLowerCase() === shippingAddress.country.toLowerCase()));
+    const matchingCountry = shipping.useSpecificArea && shipping.countries?.find((coverageCountry) => (coverageCountry.country.toLowerCase() === shippingAddress.country.toLowerCase()));
     if (matchingCountry) {
         if (matchingCountry.estimate             )      estimate      = matchingCountry.estimate;
         if (matchingCountry.shippingRates?.length)      shippingRates = matchingCountry.shippingRates;
         
         
         
-        const matchingZone = (matchingCountry.useSpecificArea ?? false) && matchingCountry.zones?.find((coverageZone) => (coverageZone.zone.toLowerCase() === shippingAddress.zone.toLowerCase()));
+        const matchingZone = matchingCountry.useSpecificArea && matchingCountry.zones?.find((coverageZone) => (coverageZone.zone.toLowerCase() === shippingAddress.zone.toLowerCase()));
         if (matchingZone) {
             if (matchingZone.estimate             )     estimate      = matchingZone.estimate;
             if (matchingZone.shippingRates?.length)     shippingRates = matchingZone.shippingRates;
             
             
             
-            const matchingCity = (matchingZone.useSpecificArea ?? false) && matchingZone.cities?.find((coverageCity) => (coverageCity.city.toLowerCase() === shippingAddress.city.toLowerCase()));
+            const matchingCity = matchingZone.useSpecificArea && matchingZone.cities?.find((coverageCity) => (coverageCity.city.toLowerCase() === shippingAddress.city.toLowerCase()));
             if (matchingCity) {
                 if (matchingCity.estimate             ) estimate      = matchingCity.estimate;
                 if (matchingCity.shippingRates?.length) shippingRates = matchingCity.shippingRates;
