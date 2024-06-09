@@ -162,7 +162,7 @@ type CoverageZone {
     estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
     
-    useSpecificArea                 Boolean?
+    useSpecificArea                 Boolean
     cities                          CoverageCity[]
 }
 type CoverageCountry {
@@ -172,7 +172,7 @@ type CoverageCountry {
     estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
     
-    useSpecificArea                 Boolean?
+    useSpecificArea                 Boolean
     zones                           CoverageZone[]
 }
 model ShippingProvider {
@@ -191,7 +191,7 @@ model ShippingProvider {
     estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
     
-    useSpecificArea                 Boolean?
+    useSpecificArea                 Boolean
     countries                       CoverageCountry[]
     
     // relations:
