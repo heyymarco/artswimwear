@@ -104,9 +104,9 @@ router
         //     visibility      : shipping.visibility,
         //     
         //     name            : shipping.name,
-        //     estimate        : shipping.estimate,
         //     
         //     weightStep      : shipping.weightStep,
+        //     estimate        : shipping.estimate,
         //     shippingRates   : shipping.shippingRates,
         //     
         //     useSpecificArea : shipping.useSpecificArea,

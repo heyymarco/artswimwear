@@ -10,9 +10,9 @@ export default [
         visibility      : 'PUBLISHED',
         
         name            : 'Free Shipping',
-        estimate        : undefined,
         
         weightStep      : 1,
+        estimate        : undefined,
         shippingRates   : [
             { startingWeight: 0, rate: 0 }
         ],

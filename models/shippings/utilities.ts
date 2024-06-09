@@ -19,9 +19,9 @@ export const shippingDetailSelect = {
     visibility      : true,
     
     name            : true,
-    estimate        : true,
     
     weightStep      : true,
+    estimate        : true,
     shippingRates   : true,
     
     useSpecificArea : true,
