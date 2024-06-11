@@ -26,7 +26,7 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
         
         
         
-        const matchingZone = matchingCountry.useSpecificArea && matchingCountry.zones?.find((coverageZone) => (coverageZone.name.toLowerCase() === shippingAddress.zone.toLowerCase()));
+        const matchingZone = matchingCountry.useSpecificArea && matchingCountry.zones?.find((coverageState) => (coverageState.name.toLowerCase() === shippingAddress.zone.toLowerCase()));
         if (matchingZone) {
             if (matchingZone.estimate             )     estimate      = matchingZone.estimate;
             if (matchingZone.shippingRates?.length)     shippingRates = matchingZone.shippingRates;

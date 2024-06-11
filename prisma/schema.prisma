@@ -155,7 +155,7 @@ type CoverageCity {
     estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
 }
-type CoverageZone {
+type CoverageState {
     // data:
     name                            String                          // minLength: 3, maxLength: 50
     
@@ -173,7 +173,7 @@ type CoverageCountry {
     shippingRates                   ShippingRate[]
     
     useSpecificArea                 Boolean
-    zones                           CoverageZone[]
+    zones                           CoverageState[]
 }
 enum ShippingVisibility {
     PUBLISHED
