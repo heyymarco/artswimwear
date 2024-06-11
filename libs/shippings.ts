@@ -19,7 +19,7 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
     
     
     
-    const matchingCountry = shipping.useSpecificArea && shipping.countries?.find((coverageCountry) => (coverageCountry.country.toLowerCase() === shippingAddress.country.toLowerCase()));
+    const matchingCountry = shipping.useSpecificArea && shipping.countries?.find((coverageCountry) => (coverageCountry.name.toLowerCase() === shippingAddress.country.toLowerCase()));
     if (matchingCountry) {
         if (matchingCountry.estimate             )      estimate      = matchingCountry.estimate;
         if (matchingCountry.shippingRates?.length)      shippingRates = matchingCountry.shippingRates;

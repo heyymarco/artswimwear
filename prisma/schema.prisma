@@ -167,7 +167,7 @@ type CoverageZone {
 }
 type CoverageCountry {
     // data:
-    country                         String                          // minLength: 2, maxLength: 3
+    name                            String                          // minLength: 2, maxLength: 3
     
     estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
