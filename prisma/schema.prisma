@@ -150,7 +150,7 @@ type ShippingRate {
 }
 type CoverageCity {
     // data:
-    city                            String                          // minLength: 3, maxLength: 50
+    name                            String                          // minLength: 3, maxLength: 50
     
     estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
