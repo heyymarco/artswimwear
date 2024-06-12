@@ -18,6 +18,6 @@ export default [
         ],
         
         useSpecificArea : false,
-        countries       : [],
+        zones           : [],
     },
 ] satisfies Prisma.ShippingProviderUpdateInput[];

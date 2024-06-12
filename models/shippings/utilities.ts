@@ -25,5 +25,5 @@ export const shippingDetailSelect = {
     shippingRates   : true,
     
     useSpecificArea : true,
-    countries       : true,
+    zones           : true,
 } satisfies Prisma.ShippingProviderSelect;

@@ -195,7 +195,7 @@ model ShippingProvider {
     shippingRates                   ShippingRate[]
     
     useSpecificArea                 Boolean
-    countries                       CoverageCountry[]
+    zones                           CoverageCountry[]
     
     // relations:
     orders                          Order[]                         @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many

@@ -695,7 +695,7 @@ router
                         shippingRates   : true,
                         
                         useSpecificArea : true,
-                        countries       : true,
+                        zones           : true,
                     },
                 }) : null,
                 prismaTransaction.product.findMany({
