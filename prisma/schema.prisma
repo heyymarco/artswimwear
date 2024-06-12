@@ -162,7 +162,7 @@ type CoverageState {
     estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
     
-    useSpecificArea                 Boolean
+    useZones                        Boolean
     zones                           CoverageCity[]
 }
 type CoverageCountry {
@@ -172,7 +172,7 @@ type CoverageCountry {
     estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
     
-    useSpecificArea                 Boolean
+    useZones                        Boolean
     zones                           CoverageState[]
 }
 enum ShippingVisibility {
@@ -194,7 +194,7 @@ model ShippingProvider {
     estimate                        String?                         // minLength: 2, maxLength: 50
     shippingRates                   ShippingRate[]
     
-    useSpecificArea                 Boolean
+    useZones                        Boolean
     zones                           CoverageCountry[]
     
     // relations:
