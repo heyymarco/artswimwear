@@ -26,14 +26,14 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
         
         
         
-        const matchingZone = matchingCountry.useSpecificArea && matchingCountry.zones?.find((coverageState) => (coverageState.name.toLowerCase() === shippingAddress.zone.toLowerCase()));
-        if (matchingZone) {
-            if (matchingZone.estimate             )     estimate      = matchingZone.estimate;
-            if (matchingZone.shippingRates?.length)     shippingRates = matchingZone.shippingRates;
+        const matchingState = matchingCountry.useSpecificArea && matchingCountry.zones?.find((coverageState) => (coverageState.name.toLowerCase() === shippingAddress.zone.toLowerCase()));
+        if (matchingState) {
+            if (matchingState.estimate             )    estimate      = matchingState.estimate;
+            if (matchingState.shippingRates?.length)    shippingRates = matchingState.shippingRates;
             
             
             
-            const matchingCity = matchingZone.useSpecificArea && matchingZone.cities?.find((coverageCity) => (coverageCity.name.toLowerCase() === shippingAddress.city.toLowerCase()));
+            const matchingCity = matchingState.useSpecificArea && matchingState.zones?.find((coverageCity) => (coverageCity.name.toLowerCase() === shippingAddress.city.toLowerCase()));
             if (matchingCity) {
                 if (matchingCity.estimate             ) estimate      = matchingCity.estimate;
                 if (matchingCity.shippingRates?.length) shippingRates = matchingCity.shippingRates;

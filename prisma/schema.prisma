@@ -163,7 +163,7 @@ type CoverageState {
     shippingRates                   ShippingRate[]
     
     useSpecificArea                 Boolean
-    cities                          CoverageCity[]
+    zones                           CoverageCity[]
 }
 type CoverageCountry {
     // data:
