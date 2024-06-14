@@ -416,13 +416,22 @@ export default () => {
         scope('selectShipping', {
             // layouts:
             display                         : 'grid',
-            gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end estimate-start] max-content [estimate-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
+            
+            // narrow screen: without estimate:
+            gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
+            ...ifScreenWidthAtLeast('sm', {
+                // wide screen: with estimate:
+                gridTemplateColumns         : '[decor-start] max-content [decor-end label-start] max-content [label-end estimate-start] max-content [estimate-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
+            }),
             
             
             
             // children:
             ...children('li', {
                 // children:
+                ...children('&', {
+                    gridRowEnd              : 'span 2',
+                }),
                 ...children(['&', ':first-child'], { // <li> & <ListItem>
                     // positions:
                     gridColumn              : '1 / -1',
@@ -434,6 +443,11 @@ export default () => {
                     gridTemplateColumns     : 'subgrid',
                 }),
                 ...children([':first-child'], { // <ListItem>
+                    // layouts:
+                    gridTemplateRows        : '[row1-start] 1fr [row1-end row2-start] 1fr [row2-end]',
+                    
+                    
+                    
                     // spacings:
                     columnGap               : spacers.md,
                     rowGap                  : spacers.xxs,
@@ -446,22 +460,31 @@ export default () => {
                     
                     
                     // children:
+                    // ...children('*', {
+                    //     gridRow             : 'row1-start / row2-end',
+                    // }),
                     ...children('[role="radio"]', {
                         // positions:
-                        gridArea            : 'decor',
+                        gridArea            : 'row1-start / decor-start / row2-end / decor-end',
                     }),
                     ...children('.label', {
                         // positions:
-                        gridArea            : 'label',
+                        gridArea            : 'row1-start / label-start / row1-end / label-end',
+                        ...ifScreenWidthAtLeast('sm', {
+                            gridArea        : 'row1-start / label-start / row2-end / label-end',
+                        }),
                     }),
                     ...children('.estimate', {
                         // positions:
-                        gridArea            : 'estimate',
+                        gridArea            : 'row2-start / label-start / row2-end / label-end',
+                        ...ifScreenWidthAtLeast('sm', {
+                            gridArea        : 'row1-start / estimate-start / row2-end / estimate-end',
+                        }),
                     }),
                     ...children('.cost', {
                         // positions:
                         alignSelf: 'center',
-                        gridArea            : 'currency-start / currency-start / amount-end / amount-end',
+                        gridArea            : 'row1-start / currency-start / row2-end / amount-end',
                         
                         
                         
