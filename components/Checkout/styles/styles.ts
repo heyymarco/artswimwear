@@ -416,21 +416,8 @@ export default () => {
         scope('selectShipping', {
             // layouts:
             display                         : 'grid',
-            // gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end estimate-start] max-content [estimate-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
-            gridTemplate : [[
-                '"decor label     ... currency amount" auto',
-                '"decor estimate  ... currency amount" auto',
-                '/',
-                'max-content max-content 1fr max-content max-content'
-            ]],
-            ...ifScreenWidthAtLeast('sm', {
-                gridTemplate : [[
-                    '"decor label estimate ... currency amount" auto',
-                    '"decor label estimate ... currency amount" auto',
-                    '/',
-                    'max-content max-content max-content 1fr max-content max-content'
-                ]],
-            }),
+            gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end estimate-start] max-content [estimate-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
+            
             
             
             // children:
@@ -438,14 +425,13 @@ export default () => {
                 // children:
                 ...children(['&', ':first-child'], { // <li> & <ListItem>
                     // positions:
-                    gridArea                : 'auto / 1 / span 2 / -1 ',
+                    gridColumn              : '1 / -1',
                     
                     
                     
                     // layouts:
                     display                 : 'grid',
                     gridTemplateColumns     : 'subgrid',
-                    // gridTemplateRows        : 'subgrid', // do not subgrid the rows
                 }),
                 ...children([':first-child'], { // <ListItem>
                     // spacings:
@@ -462,46 +448,40 @@ export default () => {
                     // children:
                     ...children('[role="radio"]', {
                         // positions:
-                        gridArea            : 'decor / decor / span 2 / decor',
+                        gridArea            : 'decor',
                     }),
                     ...children('.label', {
                         // positions:
                         gridArea            : 'label',
-                        ...ifScreenWidthAtLeast('sm', {
-                            gridArea        : 'label / label / span 2 / label',
-                        }),
                     }),
                     ...children('.estimate', {
                         // positions:
                         gridArea            : 'estimate',
-                        ...ifScreenWidthAtLeast('sm', {
-                            gridArea        : 'estimate / estimate / span 2 / estimate',
-                        }),
                     }),
                     ...children('.cost', {
                         // positions:
                         alignSelf: 'center',
-                        gridArea            : 'currency / currency / span 2 / amount',
+                        gridArea            : 'currency-start / currency-start / amount-end / amount-end',
                         
                         
                         
                         // layouts:
                         display             : 'grid',
                         gridTemplateColumns : 'subgrid',
-                        // gridTemplateRows    : 'subgrid', // do not subgrid the rows
                         ...children('.currencySign', {
-                            // positions:
-                            gridArea        : 'currency',
-                            
-                            
-                            
                             // customize:
                             ...usesCssProps(secondaries),
                         }),
                         
                         
                         
+                        // spacings:
+                        gap                 : 'inherit',
+                        
+                        
+                        
                         // typos:
+                        whiteSpace          : 'nowrap',
                         textAlign           : 'end',
                     }),
                 }),
