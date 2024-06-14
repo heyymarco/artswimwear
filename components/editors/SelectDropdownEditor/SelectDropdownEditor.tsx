@@ -4,7 +4,22 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useIsomorphicLayoutEffect,
+    useMergeEvents,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
+import {
+    // simple-components:
+    ButtonIcon,
+}                           from '@reusable-ui/button-icon'             // a button component with a nice icon
+import {
+    // simple-components:
+    EditableButton,
+}                           from '@reusable-ui/editable-button'         // a button with validation indicator
 import {
     // layout-components:
     ListItemProps,
@@ -42,6 +57,11 @@ import type {
 import {
     ListItemWithClickHandler,
 }                           from './ListItemWithClickHandler'
+import {
+    // states:
+    CustomValidatorHandler,
+    useRequiredValidator,
+}                           from './states/RequiredValidator'
 
 
 
@@ -55,6 +75,16 @@ export interface SelectDropdownEditorProps<TElement extends Element = HTMLButton
     extends
         // bases:
         Pick<EditorProps<TElement, TValue>,
+            // validations:
+            |'enableValidation'
+            |'isValid'
+            |'inheritValidation'
+            |'onValidation'
+            
+            |'required'
+            
+            
+            
             // values:
             |'value'
             |'onChange'
@@ -66,15 +96,31 @@ export interface SelectDropdownEditorProps<TElement extends Element = HTMLButton
         >,
         ListItemComponentProps<Element>
 {
-    // values:
-    valueOptions  : TValue[]
-    valueToUi    ?: (value: TValue|null) => string
+    // validations:
+    customValidator ?: CustomValidatorHandler
     
-    value         : TValue
+    
+    
+    // values:
+    valueOptions     : TValue[]
+    valueToUi       ?: (value: TValue|null) => string
+    
+    value            : TValue
 }
 const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>(props: SelectDropdownEditorProps<TElement, TValue, TDropdownListExpandedChangeEvent>): JSX.Element|null => {
     // props:
     const {
+        // validations:
+        enableValidation,  // take, to be handled by `<EditableButton>`
+        isValid,           // take, to be handled by `<EditableButton>`
+        inheritValidation, // take, to be handled by `<EditableButton>`
+        onValidation,      // take, to be handled by `<EditableButton>` and `useRequiredValidator`
+        customValidator,   // take, to be handled by                        `useRequiredValidator`
+        
+        required,          // take, to be handled by                        `useRequiredValidator`
+        
+        
+        
         // values:
         valueOptions,
         valueToUi         = defaultValueToUi,
@@ -96,13 +142,49 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
     
     
     // states:
+    const requiredValidator = useRequiredValidator<TValue>({
+        // validations:
+        required,
+        customValidator,
+    });
+    const handleValidation  = useMergeEvents(
+        // preserves the original `onValidation` from `props`:
+        onValidation,
+        
+        
+        
+        // states:
+        requiredValidator.handleValidation,
+    );
+    
+    
+    
+    // states:
+    const handleControllableValueChangeInternal = useMergeEvents(
+        // preserves the original `onChange` from `props`:
+        onControllableValueChange,
+        
+        
+        
+        // states:
+        
+        // validations:
+        requiredValidator.handleChange,
+    );
     const {
         value              : value,
         triggerValueChange : triggerValueChange,
     } = useControllable<TValue>({
         value              : controllableValue,
-        onValueChange      : onControllableValueChange,
+        onValueChange      : handleControllableValueChangeInternal,
     });
+    
+    
+    
+    // effects:
+    useIsomorphicLayoutEffect(() => {
+        requiredValidator.handleInit(value);
+    }, []);
     
     
     
@@ -225,7 +307,33 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
             
             
             
+            
             // components:
+            buttonComponent={
+                <EditableButton
+                    // accessibilities:
+                    assertiveFocusable={true}
+                    
+                    
+                    
+                    // validations:
+                    enableValidation  = {enableValidation}
+                    isValid           = {isValid}
+                    inheritValidation = {inheritValidation}
+                    onValidation      = {handleValidation}
+                    
+                    
+                    
+                    // components:
+                    buttonComponent={
+                        <ButtonIcon
+                            // appearances:
+                            icon='dropdown'
+                            iconPosition='end'
+                        />
+                    }
+                />
+            }
             dropdownComponent={
                 (dropdownListComponent === undefined)
                 ? undefined
