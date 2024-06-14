@@ -45,6 +45,11 @@ import {
 
 
 
+// utilities:
+const defaultValueToUi = <TValue extends any = string>(value: TValue|null): string => `${value ?? ''}`;
+
+
+
 // react components:
 export interface SelectDropdownEditorProps<TElement extends Element = HTMLButtonElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>
     extends
@@ -72,7 +77,7 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
     const {
         // values:
         valueOptions,
-        valueToUi         = (value) => `${value}`,
+        valueToUi         = defaultValueToUi,
         
         value             : controllableValue,
         onChange          : onControllableValueChange,
