@@ -416,26 +416,42 @@ export default () => {
         scope('selectShipping', {
             // layouts:
             display                         : 'grid',
-            gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end estimate-start] max-content [estimate-end] 1fr [currency-start] max-content [currency-end amount-start] max-content [amount-end]',
-            
+            // gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end estimate-start] max-content [estimate-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
+            gridTemplate : [[
+                '"decor label     ... currency amount" auto',
+                '"decor estimate  ... currency amount" auto',
+                '/',
+                'max-content max-content 1fr max-content max-content'
+            ]],
+            ...ifScreenWidthAtLeast('sm', {
+                gridTemplate : [[
+                    '"decor label estimate ... currency amount" auto',
+                    '"decor label estimate ... currency amount" auto',
+                    '/',
+                    'max-content max-content max-content 1fr max-content max-content'
+                ]],
+            }),
             
             
             // children:
             ...children('li', {
                 // children:
-                ...children(['&', ':first-child'], { // <li>, <ListItem>
-                    // positions:
-                    gridColumn              : '1 / -1',
-                }),
-                ...children([':first-child'], { // <ListItem>
-                    // spacings:
-                    gap                     : spacers.md,
-                    padding                 : spacers.md,
-                }),
                 ...children(['&', ':first-child'], { // <li> & <ListItem>
+                    // positions:
+                    gridArea                : 'auto / 1 / span 2 / -1 ',
+                    
+                    
+                    
                     // layouts:
                     display                 : 'grid',
                     gridTemplateColumns     : 'subgrid',
+                    // gridTemplateRows        : 'subgrid', // do not subgrid the rows
+                }),
+                ...children([':first-child'], { // <ListItem>
+                    // spacings:
+                    columnGap               : spacers.md,
+                    rowGap                  : spacers.xxs,
+                    padding                 : spacers.md,
                 }),
                 ...children(':first-child', { // <ListItem>
                     // layouts:
@@ -446,28 +462,36 @@ export default () => {
                     // children:
                     ...children('[role="radio"]', {
                         // positions:
-                        gridColumn          : 'decor-start / decor-end',
+                        gridArea            : 'decor / decor / span 2 / decor',
                     }),
                     ...children('.label', {
                         // positions:
-                        gridColumn          : 'label-start / label-end',
+                        gridArea            : 'label',
+                        ...ifScreenWidthAtLeast('sm', {
+                            gridArea        : 'label / label / span 2 / label',
+                        }),
                     }),
                     ...children('.estimate', {
                         // positions:
-                        gridColumn          : 'estimate-start / estimate-end',
+                        gridArea            : 'estimate',
+                        ...ifScreenWidthAtLeast('sm', {
+                            gridArea        : 'estimate / estimate / span 2 / estimate',
+                        }),
                     }),
                     ...children('.cost', {
                         // positions:
-                        gridColumn          : 'currency-start / amount-end',
+                        alignSelf: 'center',
+                        gridArea            : 'currency / currency / span 2 / amount',
                         
                         
                         
                         // layouts:
                         display             : 'grid',
                         gridTemplateColumns : 'subgrid',
+                        // gridTemplateRows    : 'subgrid', // do not subgrid the rows
                         ...children('.currencySign', {
                             // positions:
-                            gridColumn      : 'currency-start / currency-end',
+                            gridArea        : 'currency',
                             
                             
                             
