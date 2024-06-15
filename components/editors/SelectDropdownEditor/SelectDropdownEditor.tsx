@@ -9,16 +9,29 @@ import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
     useMergeEvents,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+    
+    
+    
+    // a capability of UI to rotate its layout:
+    OrientationName,
+    useOrientationableWithDirection,
+}                           from '@reusable-ui/core'                    // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
+import {
+    // simple-components:
+    type ButtonProps,
+}                           from '@reusable-ui/button'                  // a button component for initiating an action
 import {
     // simple-components:
     ButtonIcon,
 }                           from '@reusable-ui/button-icon'             // a button component with a nice icon
 import {
     // simple-components:
+    type EditableButtonProps,
     EditableButton,
+    
+    type EditableButtonComponentProps,
 }                           from '@reusable-ui/editable-button'         // a button with validation indicator
 import {
     // layout-components:
@@ -36,6 +49,11 @@ import {
     DropdownListExpandedChangeEvent,
     DropdownListButtonProps,
     DropdownListButton,
+    
+    
+    
+    // defaults:
+    defaultOrientationableWithDirectionOptions,
 }                           from '@reusable-ui/dropdown-list-button'    // a button component with a dropdown list UI
 
 // internal components:
@@ -94,7 +112,10 @@ export interface SelectDropdownEditorProps<TElement extends Element = HTMLButton
             |'value'
             |'onChange'
         >,
-        ListItemComponentProps<Element>
+        
+        // components:
+        ListItemComponentProps<Element>,
+        EditableButtonComponentProps
 {
     // validations:
     customValidator ?: CustomValidatorHandler
@@ -108,6 +129,38 @@ export interface SelectDropdownEditorProps<TElement extends Element = HTMLButton
     value            : TValue
 }
 const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>(props: SelectDropdownEditorProps<TElement, TValue, TDropdownListExpandedChangeEvent>): JSX.Element|null => {
+    // variants:
+    const dropdownOrientationableVariant = useOrientationableWithDirection(props, defaultOrientationableWithDirectionOptions);
+    const determineDropdownIcon = () => {
+        // TODO: RTL direction aware
+        switch(dropdownOrientationableVariant.orientation) {
+            case 'inline-start': return 'dropleft';
+            case 'inline-end'  : return 'dropright';
+            case 'block-start' : return 'dropup';
+            default            : return 'dropdown';
+        } // switch
+    };
+    const determineDropdownIconPosition = (buttonOrientation: OrientationName) => {
+        switch(dropdownOrientationableVariant.orientation) {
+            case 'inline-start':
+                if (buttonOrientation === 'inline') return 'start';
+                break;
+            case 'inline-end'  :
+                if (buttonOrientation === 'inline') return 'end';
+                break;
+            case 'block-start' :
+                if (buttonOrientation === 'block') return 'start';
+                break;
+            default            :
+                if (buttonOrientation === 'block') return 'end';
+                break;
+        } // switch
+        
+        return 'end';
+    };
+    
+    
+    
     // props:
     const {
         // validations:
@@ -131,7 +184,10 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         
         
         // components:
-        listItemComponent = (<SelectDropdownEditorItem /> as React.ReactComponentElement<any, ListItemProps<Element>>),
+        listItemComponent       = (<SelectDropdownEditorItem />                                                                                  as React.ReactElement<ListItemProps<Element>>),
+        buttonOrientation       = 'inline',
+        buttonComponent         = (<ButtonIcon iconPosition={determineDropdownIconPosition(buttonOrientation)} icon={determineDropdownIcon()} /> as React.ReactElement<ButtonProps>),
+        editableButtonComponent = (<EditableButton />                                                                                            as React.ReactElement<EditableButtonProps>),
         
         
         
@@ -148,6 +204,11 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         customValidator,
     });
     const handleValidation  = useMergeEvents(
+        // preserves the original `onValidation` from `editableButtonComponent`:
+        editableButtonComponent.props.onValidation,
+        
+        
+        
         // preserves the original `onValidation` from `props`:
         onValidation,
         
@@ -208,6 +269,23 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         // other props:
         ...restDropdownListButtonProps
     } = restSelectDropdownEditorProps;
+    
+    const {
+        // validations:
+        enableValidation   : editableButtonEnableValidation  = enableValidation,
+        isValid            : editableButtonIsValid           = isValid,
+        inheritValidation  : editableButtonInheritValidation = inheritValidation,
+        
+        
+        
+        // components:
+        buttonComponent    : editableButtonButtonComponent   = buttonComponent,
+        
+        
+        
+        // other props:
+        ...restEditableButtonProps
+    } = editableButtonComponent.props;
     
     const defaultChildren : React.ReactElement = <>
         {valueOptions.map((valueOption, index) => {
@@ -310,29 +388,27 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
             
             // components:
             buttonComponent={
-                <EditableButton
-                    // accessibilities:
-                    assertiveFocusable={true}
-                    
-                    
-                    
-                    // validations:
-                    enableValidation  = {enableValidation}
-                    isValid           = {isValid}
-                    inheritValidation = {inheritValidation}
-                    onValidation      = {handleValidation}
-                    
-                    
-                    
-                    // components:
-                    buttonComponent={
-                        <ButtonIcon
-                            // appearances:
-                            icon='dropdown'
-                            iconPosition='end'
-                        />
-                    }
-                />
+                /* <EditableButton> */
+                React.cloneElement<EditableButtonProps>(editableButtonComponent,
+                    // props:
+                    {
+                        // other props:
+                        ...restEditableButtonProps,
+                        
+                        
+                        
+                        // validations:
+                        enableValidation   : editableButtonEnableValidation,
+                        isValid            : editableButtonIsValid,
+                        inheritValidation  : editableButtonInheritValidation,
+                        onValidation       : handleValidation,  // to be handled by `useRequiredValidator()`
+                        
+                        
+                        
+                        // components:
+                        buttonComponent    : editableButtonButtonComponent,
+                    },
+                )
             }
             dropdownComponent={
                 (dropdownListComponent === undefined)
