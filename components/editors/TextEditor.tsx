@@ -4,6 +4,12 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useMergeEvents,
+}                           from '@reusable-ui/core'                    // a set of reusable-ui packages which are responsible for building any component
+
 // internals:
 import {
     // react components:
@@ -25,12 +31,26 @@ const TextEditor = <TElement extends Element = HTMLSpanElement>(props: TextEdito
     const {
         // values:
         onChange,
+        onChangeAsText,
         
         
         
         // other props:
         ...restTextEditorProps
     } = props;
+    
+    
+    
+    // handlers:
+    const handleChangeAsText = useMergeEvents(
+        // preserves the original `onChange` from `props`:
+        onChange,
+        
+        
+        
+        // preserves the original `onChangeAsText` from `props`:
+        onChangeAsText,
+    );
     
     
     
@@ -56,7 +76,7 @@ const TextEditor = <TElement extends Element = HTMLSpanElement>(props: TextEdito
             
             
             // values:
-            onChangeAsText={onChange}
+            onChangeAsText={handleChangeAsText}
             
             
             
