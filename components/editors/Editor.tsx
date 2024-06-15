@@ -43,11 +43,16 @@ const Editor = <TElement extends Element = HTMLSpanElement, TValue extends any =
     // rest props:
     const {
         // values:
-        defaultValue,
-        value,
-        onChange,
-        onChangeAsText,
-    ...restInputProps} = props;
+        defaultValue,         // take  , to be normalized: null => empty string, TValue => toString
+        value,                // take  , to be normalized: null => empty string, TValue => toString
+        onChange : _onChange, // remove, will be defined by SpecificEditor::onChange(TSpecific)
+        onChangeAsText,       // take  , will be handled by `handleValueChange`
+        
+        
+        
+        // other props:
+        ...restEditorProps
+    } = props;
     
     
     
@@ -62,18 +67,18 @@ const Editor = <TElement extends Element = HTMLSpanElement, TValue extends any =
     return (
         <Input<TElement>
             // other props:
-            {...restInputProps}
+            {...restEditorProps}
             
             
             
             // values:
-            defaultValue = {(defaultValue !== undefined) ? ((defaultValue !== null) ? `${defaultValue}` : '') : undefined}
-            value        = {(value        !== undefined) ? ((value        !== null) ? `${value}`        : '') : undefined}
+            defaultValue = {(defaultValue !== undefined) ? ((defaultValue !== null) ? `${defaultValue}` /* any TValue => toString */ : '' /* null => empty string */) : undefined}
+            value        = {(value        !== undefined) ? ((value        !== null) ? `${value}`        /* any TValue => toString */ : '' /* null => empty string */) : undefined}
             onChange     = {handleValueChange}
         />
     );
 };
 export {
-    Editor,
-    Editor as default,
+    Editor,            // named export for readibility
+    Editor as default, // default export to support React.lazy
 }
