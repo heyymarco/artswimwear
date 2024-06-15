@@ -41,13 +41,13 @@ const CurrencyEditor = <TElement extends Element = HTMLDivElement>(props: Curren
     // rest props:
     const {
         // refs:
-        elmRef,
-        outerRef,
+        elmRef,         // take, moved to <NumberEditor>
+        outerRef,       // take, moved to <Group>
         
         
         
         // identifiers:
-        id,
+        id,             // take, moved to <Group>
         
         
         
@@ -68,26 +68,46 @@ const CurrencyEditor = <TElement extends Element = HTMLDivElement>(props: Curren
         
         
         // variants:
-        size,
-        theme,
-        gradient,
-        outlined,
-        mild,
+        size,           // take, moved to <Group>
+        theme,          // take, moved to <Group>
+        gradient,       // take, moved to <Group>
+        outlined,       // take, moved to <Group>
+        mild,           // take, moved to <Group>
         
         
         
         // classes:
-        mainClass,
-        classes,
-        variantClasses,
-        stateClasses,
-        className,
+        mainClass,      // take, moved to <Group>
+        classes,        // take, moved to <Group>
+        variantClasses, // take, moved to <Group>
+        stateClasses,   // take, moved to <Group>
+        className,      // take, moved to <Group>
         
         
         
         // styles:
-        style,
-    ...restNumberEditorProps} = props;
+        style,          // take, moved to <Group>
+        
+        
+        
+        // other props:
+        ...restCurrencyEditorProps
+    } = props;
+    
+    
+    
+    // default props:
+    const {
+        // validations:
+        required = true,
+        min      = 0,
+        step     = currencyFraction ? (1/(10 ** currencyFraction)) : undefined,
+        
+        
+        
+        // other props:
+        ...restNumberEditorProps
+    } = restCurrencyEditorProps;
     
     
     
@@ -148,14 +168,14 @@ const CurrencyEditor = <TElement extends Element = HTMLDivElement>(props: Curren
                 
                 
                 // validations:
-                required={props.required ?? true}
-                min={props.min ?? 0}
-                step={currencyFraction ? (1/(10 ** currencyFraction)) : undefined}
+                required={required}
+                min={min}
+                step={step}
             />
         </Group>
     );
 };
 export {
-    CurrencyEditor,
-    CurrencyEditor as default,
+    CurrencyEditor,            // named export for readibility
+    CurrencyEditor as default, // default export to support React.lazy
 }
