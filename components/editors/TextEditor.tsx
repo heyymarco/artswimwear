@@ -25,7 +25,25 @@ const TextEditor = <TElement extends Element = HTMLSpanElement>(props: TextEdito
     const {
         // values:
         onChange,
-    ...restEditorProps} = props;
+        
+        
+        
+        // other props:
+        ...restTextEditorProps
+    } = props;
+    
+    
+    
+    // default props:
+    const {
+        // formats:
+        type = 'text',
+        
+        
+        
+        // other props:
+        ...restEditorProps
+    } = restTextEditorProps;
     
     
     
@@ -43,11 +61,11 @@ const TextEditor = <TElement extends Element = HTMLSpanElement>(props: TextEdito
             
             
             // formats:
-            type={props.type ?? 'text'}
+            type={type}
         />
     );
 };
 export {
-    TextEditor,
-    TextEditor as default,
+    TextEditor,            // named export for readibility
+    TextEditor as default, // default export to support React.lazy
 }
