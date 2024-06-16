@@ -93,6 +93,12 @@ export interface SelectDropdownEditorProps<TElement extends Element = HTMLButton
     extends
         // bases:
         Pick<EditorProps<TElement, TValue>,
+            // values:
+            |'value'
+            |'onChange'
+            
+            
+            
             // validations:
             |'enableValidation'
             |'isValid'
@@ -100,12 +106,6 @@ export interface SelectDropdownEditorProps<TElement extends Element = HTMLButton
             |'onValidation'
             
             |'required'
-            
-            
-            
-            // values:
-            |'value'
-            |'onChange'
         >,
         Omit<DropdownListButtonProps<TDropdownListExpandedChangeEvent>,
             // values:
@@ -117,16 +117,16 @@ export interface SelectDropdownEditorProps<TElement extends Element = HTMLButton
         ListItemComponentProps<Element>,
         EditableButtonComponentProps
 {
-    // validations:
-    customValidator ?: CustomValidatorHandler
-    
-    
-    
     // values:
     valueOptions     : TValue[]
     valueToUi       ?: (value: TValue|null) => string
     
     value            : TValue
+    
+    
+    
+    // validations:
+    customValidator ?: CustomValidatorHandler
 }
 const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>(props: SelectDropdownEditorProps<TElement, TValue, TDropdownListExpandedChangeEvent>): JSX.Element|null => {
     // variants:
@@ -163,6 +163,15 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
     
     // props:
     const {
+        // values:
+        valueOptions,
+        valueToUi         = defaultValueToUi,
+        
+        value             : controllableValue,
+        onChange          : onControllableValueChange,
+        
+        
+        
         // validations:
         enableValidation,  // take, to be handled by `<EditableButton>`
         isValid,           // take, to be handled by `<EditableButton>`
@@ -171,15 +180,6 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         customValidator,   // take, to be handled by                        `useRequiredValidator`
         
         required,          // take, to be handled by                        `useRequiredValidator`
-        
-        
-        
-        // values:
-        valueOptions,
-        valueToUi         = defaultValueToUi,
-        
-        value             : controllableValue,
-        onChange          : onControllableValueChange,
         
         
         
@@ -226,8 +226,6 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         onControllableValueChange,
         
         
-        
-        // states:
         
         // validations:
         requiredValidator.handleChange,
