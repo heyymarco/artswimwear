@@ -37,35 +37,96 @@ import {
     type EditorChangeEventHandler
 }                           from '@/components/editors/Editor'
 
+// internals:
+import {
+    type ValueOptions,
+}                           from '../types'
+
 
 
 // hooks:
 
 // states:
 
-//#region RequiredValidator
+//#region SelectValidator
 export type CustomValidatorHandler = (isValid: ValResult) => ValResult
 
-const isSelectValid = <TValue extends unknown>(required: boolean, value: TValue): ValResult => {
-    if (required && ((value === undefined) || (value === null) || (value === ''))) return false;  // required & blank value => invalid
+const isSelectValid = async <TValue extends unknown>(props: Omit<SelectValidatorProps<TValue>, 'customValidator'>, value: TValue): Promise<ValResult> => {
+    // props:
+    const {
+        // values:
+        valueOptions,
+        excludedValueOptions,
+        
+        
+        
+        // validations:
+        required      = false,
+        freeTextInput = true,
+    } = props;
+    
+    
+    
+    if ((value === undefined) || (value === null) || (value === '')) { // blank value
+        return !required; // blank value & required => invalid
+    } // if
+    
+    
+    if (freeTextInput) return true; // valid for any value
+    
+    
+    
+    try {
+        const resolvedValueOptions = (
+            ((typeof(valueOptions) === 'object') && ('current' in valueOptions))
+            ? await (valueOptions.current ?? [])
+            : await valueOptions
+        );
+        const resolvedExcludedValueOptions = (
+            ((typeof(excludedValueOptions) === 'object') && ('current' in excludedValueOptions))
+            ? await (excludedValueOptions.current ?? [])
+            : await excludedValueOptions
+        );
+        const finalValueOptions = (
+            !resolvedExcludedValueOptions?.length
+            ? resolvedValueOptions
+            : resolvedValueOptions.filter((item) =>
+                !resolvedExcludedValueOptions.includes(item)
+            )
+        );
+        if (!finalValueOptions.some((finalValueOption) => Object.is(finalValueOption, value))) return false; // match option is not found => invalid
+    }
+    catch {
+        return false; // unknown error
+    } // try
+    
+    
+    
+    // all validation passes:
     return true; // valid
 };
 
-export interface RequiredValidatorProps {
+export interface SelectValidatorProps<TValue> {
+    // values:
+    valueOptions          : ValueOptions<TValue> // required! because it's a <SELECT> component
+    excludedValueOptions ?: ValueOptions<TValue>
+    
+    
+    
     // validations:
-    required        ?: boolean
-    customValidator ?: CustomValidatorHandler
+    required             ?: boolean
+    freeTextInput        ?: boolean
+    customValidator      ?: CustomValidatorHandler
 }
-export interface RequiredValidatorApi<TValue extends unknown> {
+export interface SelectValidatorApi<TValue extends unknown> {
     handleValidation : EventHandler<ValidityChangeEvent>
     handleInit       : EditorChangeEventHandler<TValue>
     handleChange     : EditorChangeEventHandler<TValue>
 }
-export const useRequiredValidator      = <TValue extends unknown>(props: RequiredValidatorProps): RequiredValidatorApi<TValue> => {
+export const useSelectValidator = <TValue extends unknown>(props: SelectValidatorProps<TValue>): SelectValidatorApi<TValue> => {
     // props:
     const {
         // validations:
-        required = false,
         customValidator,
     } = props;
     
@@ -91,9 +152,9 @@ export const useRequiredValidator      = <TValue extends unknown>(props: Require
         };
     }, []); // runs once on startup
     
-    const validate = (value: TValue) => {
+    const validate = async (value: TValue): Promise<void> => {
         // remember the validation result:
-        const currentIsValid = isSelectValid(required, value);
+        const currentIsValid = await isSelectValid(props, value);
         const newIsValid : ValResult = (customValidator ? customValidator(currentIsValid) : currentIsValid);
         if (isValid.current !== newIsValid) {
             isValid.current = newIsValid;
@@ -133,4 +194,4 @@ export const useRequiredValidator      = <TValue extends unknown>(props: Require
         handleChange : handleInitOrChange,
     };
 };
-//#endregion RequiredValidator
+//#endregion SelectValidator

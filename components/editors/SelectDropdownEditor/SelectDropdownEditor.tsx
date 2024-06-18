@@ -78,18 +78,22 @@ import {
 }                           from '@heymarco/events'
 
 // internals:
-import type {
+import {
     // react components:
-    EditorProps,
+    type EditorProps,
 }                           from '@/components/editors/Editor'
+import {
+    type ValueOptions,
+}                           from './types'
 import {
     ListItemWithClickHandler,
 }                           from './ListItemWithClickHandler'
 import {
     // states:
     CustomValidatorHandler,
-    useRequiredValidator,
-}                           from './states/RequiredValidator'
+    SelectValidatorProps,
+    useSelectValidator,
+}                           from './states/SelectValidator'
 
 
 
@@ -130,29 +134,25 @@ export interface SelectDropdownEditorProps<TElement extends Element = HTMLButton
             |'buttonComponent' // we use a more specific button: <ButtonIcon>
         >,
         
+        // validations:
+        SelectValidatorProps<TValue>,
+        
         // components:
         ListItemComponentProps<Element>,
         EditableButtonComponentProps
 {
     // appearances:
-    iconLoading          ?: IconList|null,
+    iconLoading     ?: IconList|null,
     
     
     
     // values:
-    valueOptions          : TValue[]|Promise<TValue[]> | React.RefObject<TValue[]|Promise<TValue[]>>
-    excludedValueOptions ?: TValue[]|Promise<TValue[]> | React.RefObject<TValue[]|Promise<TValue[]>>
-    valueToUi            ?: (value: TValue|null) => string
-    
-    
-    
-    // validations:
-    customValidator      ?: CustomValidatorHandler
+    valueToUi       ?: (value: TValue|null) => string
     
     
     
     // components:
-    buttonComponent      ?: React.ReactElement<ButtonIconProps>
+    buttonComponent ?: React.ReactElement<ButtonIconProps>
 }
 const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>(props: SelectDropdownEditorProps<TElement, TValue, TDropdownListExpandedChangeEvent>): JSX.Element|null => {
     // variants:
@@ -209,10 +209,11 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         enableValidation,  // take, to be handled by `<EditableButton>`
         isValid,           // take, to be handled by `<EditableButton>`
         inheritValidation, // take, to be handled by `<EditableButton>`
-        onValidation,      // take, to be handled by `<EditableButton>` and `useRequiredValidator`
-        customValidator,   // take, to be handled by                        `useRequiredValidator`
+        onValidation,      // take, to be handled by `<EditableButton>` and `useSelectValidator`
+        customValidator,   // take, to be handled by                        `useSelectValidator`
         
-        required,          // take, to be handled by                        `useRequiredValidator`
+        required,          // take, to be handled by                        `useSelectValidator`
+        freeTextInput,     // take, to be handled by                        `useSelectValidator`
         
         
         
@@ -231,12 +232,19 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
     
     
     // states:
-    const requiredValidator = useRequiredValidator<TValue>({
+    const selectValidator  = useSelectValidator<TValue>({
+        // values:
+        valueOptions,
+        excludedValueOptions,
+        
+        
+        
         // validations:
         required,
+        freeTextInput,
         customValidator,
     });
-    const handleValidation  = useMergeEvents(
+    const handleValidation = useMergeEvents(
         // preserves the original `onValidation` from `editableButtonComponent`:
         editableButtonComponent.props.onValidation,
         
@@ -248,7 +256,7 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         
         
         // states:
-        requiredValidator.handleValidation,
+        selectValidator.handleValidation,
     );
     
     
@@ -261,7 +269,7 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         
         
         // validations:
-        requiredValidator.handleChange,
+        selectValidator.handleChange,
     );
     const {
         value              : value,
@@ -283,7 +291,7 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
     const isMounted = useMountedFlag();
     
     useIsomorphicLayoutEffect(() => {
-        requiredValidator.handleInit(value);
+        selectValidator.handleInit(value);
     }, []);
     
     useIsomorphicLayoutEffect(() => {
@@ -472,7 +480,7 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
                         enableValidation   : editableButtonEnableValidation,
                         isValid            : editableButtonIsValid,
                         inheritValidation  : editableButtonInheritValidation,
-                        onValidation       : handleValidation,  // to be handled by `useRequiredValidator()`
+                        onValidation       : handleValidation,  // to be handled by `useSelectValidator()`
                         
                         
                         
