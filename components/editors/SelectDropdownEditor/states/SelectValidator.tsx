@@ -49,7 +49,7 @@ import {
 // states:
 
 //#region SelectValidator
-export type CustomValidatorHandler = (isValid: ValResult) => ValResult
+export type CustomValidatorHandler = (isValid: ValResult) => ValResult|Promise<ValResult>
 
 const isSelectValid = async <TValue extends unknown>(props: Omit<SelectValidatorProps<TValue>, 'customValidator'>, value: TValue): Promise<ValResult> => {
     // props:
@@ -157,7 +157,7 @@ export const useSelectValidator = <TValue extends unknown>(props: SelectValidato
     const validate = async (value: TValue): Promise<void> => {
         // remember the validation result:
         const currentIsValid = await isSelectValid(props, value);
-        const newIsValid : ValResult = (customValidator ? customValidator(currentIsValid) : currentIsValid);
+        const newIsValid : ValResult = (customValidator ? (await customValidator(currentIsValid)) : currentIsValid);
         if (isValid.current !== newIsValid) {
             isValid.current = newIsValid;
             
