@@ -555,3 +555,11 @@ export {
     SelectDropdownEditor,            // named export for readibility
     SelectDropdownEditor as default, // default export to support React.lazy
 }
+
+
+
+export interface SelectDropdownEditorComponentProps<TElement extends Element = HTMLButtonElement, TValue extends any = string, TDropdownListExpandedChangeEvent extends DropdownListExpandedChangeEvent<TValue> = DropdownListExpandedChangeEvent<TValue>>
+{
+    // components:
+    selectDropdownEditorComponent ?: React.ReactElement<SelectDropdownEditorProps<TElement, TValue, TDropdownListExpandedChangeEvent>>
+}
