@@ -83,14 +83,10 @@ import {
     type EditorProps,
 }                           from '@/components/editors/Editor'
 import {
-    type ValueOptions,
-}                           from './types'
-import {
     ListItemWithClickHandler,
 }                           from './ListItemWithClickHandler'
 import {
     // states:
-    CustomValidatorHandler,
     SelectValidatorProps,
     useSelectValidator,
 }                           from './states/SelectValidator'
@@ -206,14 +202,15 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         
         
         // validations:
-        enableValidation,  // take, to be handled by `<EditableButton>`
-        isValid,           // take, to be handled by `<EditableButton>`
-        inheritValidation, // take, to be handled by `<EditableButton>`
-        onValidation,      // take, to be handled by `<EditableButton>` and `useSelectValidator`
-        customValidator,   // take, to be handled by                        `useSelectValidator`
+        enableValidation,        // take, to be handled by `<EditableButton>`
+        isValid,                 // take, to be handled by `<EditableButton>`
+        inheritValidation,       // take, to be handled by `<EditableButton>`
+        onValidation,            // take, to be handled by `<EditableButton>` and `useSelectValidator`
+        equalityValueComparison, // take, to be handled by                        `useSelectValidator`
+        customValidator,         // take, to be handled by                        `useSelectValidator`
         
-        required,          // take, to be handled by                        `useSelectValidator`
-        freeTextInput,     // take, to be handled by                        `useSelectValidator`
+        required,                // take, to be handled by                        `useSelectValidator`
+        freeTextInput,           // take, to be handled by                        `useSelectValidator`
         
         
         
@@ -242,6 +239,7 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         // validations:
         required,
         freeTextInput,
+        equalityValueComparison,
         customValidator,
     });
     const handleValidation = useMergeEvents(

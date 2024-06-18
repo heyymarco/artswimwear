@@ -57,6 +57,7 @@ const isSelectValid = async <TValue extends unknown>(props: Omit<SelectValidator
         // values:
         valueOptions,
         excludedValueOptions,
+        equalityValueComparison = Object.is,
         
         
         
@@ -94,7 +95,7 @@ const isSelectValid = async <TValue extends unknown>(props: Omit<SelectValidator
                 !resolvedExcludedValueOptions.includes(item)
             )
         );
-        if (!finalValueOptions.some((finalValueOption) => Object.is(finalValueOption, value))) return false; // match option is not found => invalid
+        if (!finalValueOptions.some((finalValueOption) => equalityValueComparison(finalValueOption, value))) return false; // match option is not found => invalid
     }
     catch {
         return false; // unknown error
@@ -108,15 +109,16 @@ const isSelectValid = async <TValue extends unknown>(props: Omit<SelectValidator
 
 export interface SelectValidatorProps<TValue> {
     // values:
-    valueOptions          : ValueOptions<TValue> // required! because it's a <SELECT> component
-    excludedValueOptions ?: ValueOptions<TValue>
+    valueOptions             : ValueOptions<TValue> // required! because it's a <SELECT> component
+    excludedValueOptions    ?: ValueOptions<TValue>
     
     
     
     // validations:
-    required             ?: boolean
-    freeTextInput        ?: boolean
-    customValidator      ?: CustomValidatorHandler
+    required                ?: boolean
+    freeTextInput           ?: boolean
+    equalityValueComparison ?: (a: TValue, b: TValue) => boolean
+    customValidator         ?: CustomValidatorHandler
 }
 export interface SelectValidatorApi<TValue extends unknown> {
     handleValidation : EventHandler<ValidityChangeEvent>
