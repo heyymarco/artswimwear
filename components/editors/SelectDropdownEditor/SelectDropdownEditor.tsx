@@ -202,15 +202,14 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         
         
         // validations:
-        enableValidation,        // take, to be handled by `<EditableButton>`
-        isValid,                 // take, to be handled by `<EditableButton>`
-        inheritValidation,       // take, to be handled by `<EditableButton>`
-        onValidation,            // take, to be handled by `<EditableButton>` and `useSelectValidator`
-        equalityValueComparison, // take, to be handled by                        `useSelectValidator`
-        customValidator,         // take, to be handled by                        `useSelectValidator`
+        enableValidation,                    // take, to be handled by `<EditableButton>`
+        isValid,                             // take, to be handled by `<EditableButton>`
+        inheritValidation,                   // take, to be handled by `<EditableButton>`
+        onValidation,                        // take, to be handled by `<EditableButton>` and `useSelectValidator`
+        equalityValueComparison = Object.is, // take, to be handled by                        `useSelectValidator`
         
-        required,                // take, to be handled by                        `useSelectValidator`
-        freeTextInput,           // take, to be handled by                        `useSelectValidator`
+        required,                            // take, to be handled by                        `useSelectValidator`
+        freeTextInput,                       // take, to be handled by                        `useSelectValidator`
         
         
         
@@ -240,7 +239,6 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         required,
         freeTextInput,
         equalityValueComparison,
-        customValidator,
     });
     const handleValidation = useMergeEvents(
         // preserves the original `onValidation` from `editableButtonComponent`:
@@ -297,16 +295,22 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
         setIsLoading(undefined); // loading
         (async (): Promise<void> => {
             try {
-                const resolvedValueOptions = (
-                    ((typeof(valueOptions) === 'object') && ('current' in valueOptions))
-                    ? await (valueOptions.current ?? [])
-                    : await valueOptions
-                );
-                const resolvedExcludedValueOptions = (
-                    ((typeof(excludedValueOptions) === 'object') && ('current' in excludedValueOptions))
-                    ? await (excludedValueOptions.current ?? [])
-                    : await excludedValueOptions
-                );
+                const [resolvedValueOptions, resolvedExcludedValueOptions] = await Promise.all([
+                    (
+                        ((typeof(valueOptions) === 'object') && ('current' in valueOptions))
+                        ? (valueOptions.current ?? [])
+                        : valueOptions
+                    ),
+                    (
+                        ((typeof(excludedValueOptions) === 'object') && ('current' in excludedValueOptions))
+                        ? (excludedValueOptions.current ?? [])
+                        : excludedValueOptions
+                    ),
+                ]);
+                if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+                
+                
+                
                 const finalValueOptions = (
                     !resolvedExcludedValueOptions?.length
                     ? resolvedValueOptions
@@ -314,7 +318,6 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
                         !resolvedExcludedValueOptions.includes(item)
                     )
                 );
-                if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
                 setIsLoading(finalValueOptions); // loaded
             }
             catch {
@@ -369,7 +372,7 @@ const SelectDropdownEditor = <TElement extends Element = HTMLButtonElement, TVal
             // default props:
             const {
                 // states:
-                active   = Object.is(valueOption, value),
+                active   = equalityValueComparison(valueOption, value),
                 
                 
                 
