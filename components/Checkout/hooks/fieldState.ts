@@ -34,8 +34,9 @@ export interface FieldStateOptions<TField extends keyof CheckoutState, TValue ex
         type    : string
     }
 }
+export type FieldSetter<TField extends keyof CheckoutState> = React.Dispatch<React.SetStateAction<CheckoutState[TField]>>
 export type FieldHandlers<TElement extends HTMLInputElement = HTMLInputElement> = Required<Pick<React.InputHTMLAttributes<TElement>, 'onChange'>>
-export const useFieldState = <TField extends keyof CheckoutState, TValue extends CheckoutState[TField], TElement extends HTMLInputElement = HTMLInputElement>(options: FieldStateOptions<TField, TValue>): readonly [TValue, React.Dispatch<React.SetStateAction<TValue>>, FieldHandlers<TElement>] => {
+export const useFieldState = <TField extends keyof CheckoutState, TValue extends CheckoutState[TField], TElement extends HTMLInputElement = HTMLInputElement>(options: FieldStateOptions<TField, TValue>): readonly [TValue, FieldSetter<TField>, FieldHandlers<TElement>] => {
     // stores:
     const value    : TValue = options.state[options.get] as TValue;
     const dispatch = useDispatch();
@@ -43,12 +44,12 @@ export const useFieldState = <TField extends keyof CheckoutState, TValue extends
     
     
     // handlers:
-    const handleSetValue    = useEvent<React.Dispatch<React.SetStateAction<TValue>>>((newValue) => {
+    const handleSetValue    = useEvent<FieldSetter<TField>>((newValue) => {
         dispatch(
             options.set(
                 (typeof(newValue) === 'function')
-                ? (newValue as ((oldValue: TValue) => TValue))(value)
-                : newValue
+                ? (newValue as unknown as ((oldValue: TValue) => TValue))(value) as TValue
+                : newValue as TValue
             )
         );
     })

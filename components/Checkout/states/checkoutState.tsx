@@ -187,6 +187,7 @@ import {
 }                           from '@/libs/shippings'
 import {
     // hooks:
+    FieldSetter,
     FieldHandlers,
     useFieldState,
 }                           from '../hooks/fieldState'
@@ -257,10 +258,10 @@ export interface CheckoutStateBase {
     // customer data:
     customerValidation           : boolean
     customerName                 : string
-    customerNameHandlers         : FieldHandlers<HTMLInputElement>
+    setCustomerName              : FieldSetter<'customerName'>
     
     customerEmail                : string
-    customerEmailHandlers        : FieldHandlers<HTMLInputElement>
+    setCustomerEmail             : FieldSetter<'customerEmail'>
     
     
     
@@ -439,6 +440,7 @@ export type CheckoutState =
     )
 
 const noopHandler  : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
+const noopSetter   : FieldSetter<any> = () => {};
 const noopCallback = () => {};
 const CheckoutStateContext = createContext<CheckoutState>({
     // states:
@@ -466,10 +468,10 @@ const CheckoutStateContext = createContext<CheckoutState>({
     // customer data:
     customerValidation           : false,
     customerName                 : '',
-    customerNameHandlers         : noopHandler,
+    setCustomerName              : noopSetter,
     
     customerEmail                : '',
-    customerEmailHandlers        : noopHandler,
+    setCustomerEmail             : noopSetter,
     
     
     
@@ -743,8 +745,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // customer data:
-    const [customerName      , , customerNameHandlers     ] = useFieldState({ state: localCheckoutState, get: 'customerName'     , set: reduxSetCustomerName      });
-    const [customerEmail     , , customerEmailHandlers    ] = useFieldState({ state: localCheckoutState, get: 'customerEmail'    , set: reduxSetCustomerEmail     });
+    const [customerName      , setCustomerName            ] = useFieldState({ state: localCheckoutState, get: 'customerName'     , set: reduxSetCustomerName      });
+    const [customerEmail     , setCustomerEmail           ] = useFieldState({ state: localCheckoutState, get: 'customerEmail'    , set: reduxSetCustomerEmail     });
     
     
     
@@ -1634,10 +1636,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // customer data:
         customerValidation,
         customerName,
-        customerNameHandlers,         // stable ref
+        setCustomerName,              // stable ref
         
         customerEmail,
-        customerEmailHandlers,        // stable ref
+        setCustomerEmail,             // stable ref
         
         
         
@@ -1791,10 +1793,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // customer data:
         customerValidation,
         customerName,
-        // customerNameHandlers,      // stable ref
+        // setCustomerName,           // stable ref
         
         customerEmail,
-        // customerEmailHandlers,     // stable ref
+        // setCustomerEmail,          // stable ref
         
         
         

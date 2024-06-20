@@ -15,8 +15,6 @@ import {
 // reusable-ui components:
 import {
     // simple-components:
-    TextInput,
-    EmailInput,
     Check,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
@@ -24,6 +22,12 @@ import {
 import {
     InputWithLabel,
 }                           from '@/components/InputWithLabel'
+import {
+    NameEditor,
+}                           from '@/components/editors/NameEditor'
+import {
+    EmailEditor,
+}                           from '@/components/editors/EmailEditor'
 
 // internals:
 import {
@@ -46,10 +50,10 @@ const EditCustomerAccount = (): JSX.Element|null => {
         customerValidation,
         
         customerName,
-        customerNameHandlers,
+        setCustomerName,
         
         customerEmail,
-        customerEmailHandlers,
+        setCustomerEmail,
         
         
         
@@ -78,14 +82,16 @@ const EditCustomerAccount = (): JSX.Element|null => {
                 
                 // components:
                 inputComponent={
-                    <TextInput
+                    <NameEditor
                         // accessibilities:
+                        aria-label='Your Nick Name'
                         placeholder='Your Nick Name'
                         
                         
                         
                         // values:
                         value={customerName}
+                        onChange={setCustomerName}
                         
                         
                         
@@ -99,11 +105,6 @@ const EditCustomerAccount = (): JSX.Element|null => {
                         // formats:
                         autoComplete='nickname'
                         autoCapitalize='words'
-                        
-                        
-                        
-                        // handlers:
-                        {...customerNameHandlers}
                     />
                 }
             />
@@ -120,19 +121,21 @@ const EditCustomerAccount = (): JSX.Element|null => {
                 
                 // components:
                 inputComponent={
-                    <EmailInput
+                    <EmailEditor
                         // refs:
                         elmRef={contactEmailInputRef}
                         
                         
                         
                         // accessibilities:
+                        aria-label='Your Email'
                         placeholder='Your Email'
                         
                         
                         
                         // values:
                         value={customerEmail}
+                        onChange={setCustomerEmail}
                         
                         
                         
@@ -145,11 +148,6 @@ const EditCustomerAccount = (): JSX.Element|null => {
                         
                         // formats:
                         autoComplete='email'
-                        
-                        
-                        
-                        // handlers:
-                        {...customerEmailHandlers}
                     />
                 }
             />
