@@ -26,7 +26,7 @@ import {
 
 
 // react components:
-export interface CurrencyEditorProps<TElement extends Element = HTMLDivElement>
+export interface FundEditorProps<TElement extends Element = HTMLDivElement>
     extends
         // bases:
         NumberEditorProps<TElement>
@@ -37,7 +37,7 @@ export interface CurrencyEditorProps<TElement extends Element = HTMLDivElement>
     currencySign     ?: string
     currencyFraction ?: number
 }
-const CurrencyEditor = <TElement extends Element = HTMLDivElement>(props: CurrencyEditorProps<TElement>): JSX.Element|null => {
+const FundEditor = <TElement extends Element = HTMLDivElement>(props: FundEditorProps<TElement>): JSX.Element|null => {
     // rest props:
     const {
         // refs:
@@ -91,7 +91,7 @@ const CurrencyEditor = <TElement extends Element = HTMLDivElement>(props: Curren
         
         
         // other props:
-        ...restCurrencyEditorProps
+        ...restFundEditorProps
     } = props;
     
     
@@ -107,7 +107,7 @@ const CurrencyEditor = <TElement extends Element = HTMLDivElement>(props: Curren
         
         // other props:
         ...restNumberEditorProps
-    } = restCurrencyEditorProps;
+    } = restFundEditorProps;
     
     
     
@@ -176,6 +176,6 @@ const CurrencyEditor = <TElement extends Element = HTMLDivElement>(props: Curren
     );
 };
 export {
-    CurrencyEditor,            // named export for readibility
-    CurrencyEditor as default, // default export to support React.lazy
+    FundEditor,            // named export for readibility
+    FundEditor as default, // default export to support React.lazy
 }

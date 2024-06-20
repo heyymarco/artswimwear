@@ -95,8 +95,8 @@ import {
     ErrorBlankPage,
 }                           from '@/components/BlankPage'
 import {
-    CurrencyEditor,
-}                           from '@/components/editors/CurrencyEditor'
+    FundEditor,
+}                           from '@/components/editors/FundEditor'
 import {
     NameEditor,
 }                           from '@/components/editors/NameEditor'
@@ -542,7 +542,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     <Label className='solid'>
                                         {currency}
                                     </Label>
-                                    <CurrencyEditor
+                                    <FundEditor
                                         // appearances:
                                         currencySign={currencyConfig.sign}
                                         currencyFraction={currencyConfig.fractionMax}
