@@ -29,7 +29,7 @@
     "@prisma/client": "^5.15.0",
     "@reduxjs/toolkit": "^1.9.3",
     "@reusable-ui/components": "^6.12.0",
-    "@reusable-ui/core": "^6.10.0",
+    "@reusable-ui/core": "^6.11.0",
     "@reusable-ui/editable-control": "^6.7.0",
     "@reusable-ui/input": "^6.5.4",
     "@reusable-ui/invalidable": "^6.6.0",
