@@ -18,6 +18,11 @@ import {
     Check,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// heymarco components:
+import {
+    EmailEditor,
+}                           from '@heymarco/email-editor'
+
 // internal components:
 import {
     InputWithLabel,
@@ -25,9 +30,6 @@ import {
 import {
     NameEditor,
 }                           from '@/components/editors/NameEditor'
-import {
-    EmailEditor,
-}                           from '@/components/editors/EmailEditor'
 
 // internals:
 import {
