@@ -22,14 +22,14 @@ import {
 import {
     EmailEditor,
 }                           from '@heymarco/email-editor'
+import {
+    NameEditor,
+}                           from '@heymarco/name-editor'
 
 // internal components:
 import {
     InputWithLabel,
 }                           from '@/components/InputWithLabel'
-import {
-    NameEditor,
-}                           from '@/components/editors/NameEditor'
 
 // internals:
 import {

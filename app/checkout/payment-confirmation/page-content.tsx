@@ -88,6 +88,9 @@ import {
     Section,
     Main,
 }                           from '@heymarco/section'
+import {
+    NameEditor,
+}                           from '@heymarco/name-editor'
 
 // internal components:
 import {
@@ -97,9 +100,6 @@ import {
 import {
     FundEditor,
 }                           from '@/components/editors/FundEditor'
-import {
-    NameEditor,
-}                           from '@/components/editors/NameEditor'
 import {
     DateTimeEditor,
 }                           from '@/components/editors/DateTimeEditor'

@@ -44,6 +44,9 @@ import {
     Main,
     Section,
 }                           from '@heymarco/section'
+import {
+    NameEditor,
+}                           from '@heymarco/name-editor'
 
 // internal components:
 import {
@@ -55,9 +58,6 @@ import {
 import {
     CompoundWithBadge,
 }                           from '@/components/CompoundWithBadge'
-import {
-    NameEditor,
-}                           from '@/components/editors/NameEditor'
 import {
     UniqueUsernameEditor,
 }                           from '@/components/editors/UniqueUsernameEditor'
@@ -157,7 +157,10 @@ export function ProfilePageContent() {
                 // components:
                 editorComponent={(() => {
                     switch (edit) {
-                        case 'name'     : return <NameEditor />;
+                        case 'name'     : return <NameEditor
+                            // validations:
+                            required={true}
+                        />;
                         case 'username' : return <UniqueUsernameEditor currentValue={customerModel!['username'] ?? ''} />;
                         default         : throw Error('app error');
                     } // switch

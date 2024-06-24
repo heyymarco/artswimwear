@@ -21,6 +21,7 @@
     "@heymarco/events": "^6.5.1",
     "@heymarco/image": "^6.5.0",
     "@heymarco/loading-bar": "^6.5.0",
+    "@heymarco/name-editor": "^6.9.0",
     "@heymarco/next-auth": "^6.8.3",
     "@heymarco/quantity-input": "^6.5.0",
     "@heymarco/section": "^6.5.0",
