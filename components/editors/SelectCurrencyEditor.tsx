@@ -4,11 +4,11 @@ import {
     default as React,
 }                           from 'react'
 
-// internal components:
+// heymarco components:
 import {
     SelectDropdownEditorProps,
     SelectDropdownEditor,
-}                           from '@/components/editors/SelectDropdownEditor'
+}                           from '@heymarco/select-dropdown-editor'
 
 // configs:
 import {
@@ -21,7 +21,7 @@ import {
 export interface SelectCurrencyEditorProps<TElement extends Element = HTMLButtonElement>
     extends
         // bases:
-        SelectDropdownEditorProps<TElement, string>
+        SelectDropdownEditorProps<TElement, React.MouseEvent<Element, MouseEvent>, string>
 {
 }
 const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(props: SelectCurrencyEditorProps<TElement>): JSX.Element|null => {
@@ -40,7 +40,7 @@ const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(prop
     
     // jsx:
     return (
-        <SelectDropdownEditor<TElement, string>
+        <SelectDropdownEditor<TElement, React.MouseEvent<Element, MouseEvent>, string>
             // other props:
             {...restSelectDropdownEditorProps}
             

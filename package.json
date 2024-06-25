@@ -26,6 +26,7 @@
     "@heymarco/number-editor": "^6.9.0",
     "@heymarco/quantity-input": "^6.5.0",
     "@heymarco/section": "^6.5.0",
+    "@heymarco/select-dropdown-editor": "^6.9.0",
     "@heymarco/text-editor": "^6.9.0",
     "@lexical/headless": "^0.12.4",
     "@lexical/react": "^0.12.4",
