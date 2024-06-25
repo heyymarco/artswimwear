@@ -51,17 +51,17 @@ import {
     getValidityIcon,
     isClientError,
 }                           from '@heymarco/next-auth/utilities'
+import {
+    // react components:
+    TextEditorProps,
+    TextEditor,
+}                           from '@heymarco/text-editor'
 
 // internals:
 import type {
     // types:
     EditorChangeEventHandler,
 }                           from '@/components/editors/Editor'
-import {
-    // react components:
-    TextEditorProps,
-    TextEditor,
-}                           from '@/components/editors/TextEditor'
 
 
 

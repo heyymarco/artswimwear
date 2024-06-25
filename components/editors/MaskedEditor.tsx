@@ -17,12 +17,17 @@ import {
     useMergeRefs,
 }                           from '@reusable-ui/core'                    // a set of reusable-ui packages which are responsible for building any component
 
-// internal components:
+// heymarco core:
+import {
+    createSyntheticUIEvent,
+}                           from '@heymarco/events'
+
+// heymarco components:
 import {
     // react components:
     TextEditorProps,
     TextEditor,
-}                           from '@/components/editors/TextEditor'
+}                           from '@heymarco/text-editor'
 
 // others:
 import {
@@ -219,7 +224,7 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
         
         
         // handlers:
-        const handleChange = () => {
+        const handleChange = (event: Event) => {
             // conditions:
             const maskedInput = maskedInputRef.current;
             if (!maskedInput) return;
@@ -232,7 +237,17 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
             const value = maskedInput.getUnformattedValue();
             if (prevValueRef.current === value) return;
             prevValueRef.current = value;
-            onChange(value);
+            
+            // TODO: validate synthetic MouseEvent:
+            const changeEvent : React.ChangeEvent<HTMLInputElement> = {
+                ...createSyntheticUIEvent<HTMLInputElement, UIEvent>({
+                    nativeEvent   : event as UIEvent,
+                    currentTarget : inputRefInternal.current ?? undefined,
+                }),
+                target : event.target as HTMLInputElement,
+            };
+            
+            onChange(value, changeEvent);
         };
         
         
