@@ -11,12 +11,12 @@ import {
     Group,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// internals:
+// heymarco components:
 import {
     // react components:
     NumberEditorProps,
     NumberEditor,
-}                           from '@/components/editors/NumberEditor'
+}                           from '@heymarco/number-editor'
 
 // configs:
 import {

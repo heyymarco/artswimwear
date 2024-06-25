@@ -23,6 +23,7 @@
     "@heymarco/loading-bar": "^6.5.0",
     "@heymarco/name-editor": "^6.9.0",
     "@heymarco/next-auth": "^6.8.3",
+    "@heymarco/number-editor": "^6.9.0",
     "@heymarco/quantity-input": "^6.5.0",
     "@heymarco/section": "^6.5.0",
     "@heymarco/text-editor": "^6.9.0",
