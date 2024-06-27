@@ -20,11 +20,9 @@ import {
     // utilities:
     useControllable,
 }                           from '@heymarco/events'
-
-// internal components:
 import {
     RadioDecorator,
-}                           from '@/components/RadioDecorator'
+}                           from '@heymarco/radio-decorator'
 
 // internals:
 import type {

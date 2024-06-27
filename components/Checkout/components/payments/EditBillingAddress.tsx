@@ -38,11 +38,11 @@ import {
 import {
     AddressFields,
 }                           from '@heymarco/address-fields'
-
-// internal components:
 import {
     RadioDecorator,
-}                           from '@/components/RadioDecorator'
+}                           from '@heymarco/radio-decorator'
+
+// internal components:
 import {
     ViewShippingAddress,
 }                           from '../informations/ViewShippingAddress'

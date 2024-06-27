@@ -18,10 +18,12 @@ import {
     List,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// internal components:
+// heymarco components:
 import {
     RadioDecorator,
-}                           from '@/components/RadioDecorator'
+}                           from '@heymarco/radio-decorator'
+
+// internal components:
 import {
     CurrencyDisplay,
 }                           from '@/components/CurrencyDisplay'

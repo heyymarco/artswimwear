@@ -39,11 +39,11 @@ import {
 import {
     Section,
 }                           from '@heymarco/section'
-
-// internal components:
 import {
     RadioDecorator,
-}                           from '@/components/RadioDecorator'
+}                           from '@heymarco/radio-decorator'
+
+// internal components:
 import {
     EditPaymentMethodCard,
 }                           from '../payments/EditPaymentMethodCard'
