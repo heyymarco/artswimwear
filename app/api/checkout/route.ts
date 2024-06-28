@@ -29,6 +29,8 @@ import type {
     ShippingTrackingLog,
 }                           from '@prisma/client'
 import {
+    type Address,
+    
     type DetailedItem,
     
     type AuthorizedFundData,
@@ -166,29 +168,12 @@ export interface CustomerData {
 }
 export interface ShippingData {
     // shipping data:
-    shippingCountry    : string
-    shippingState      : string
-    shippingCity       : string
-    shippingZip        : string
-    shippingAddress    : string
-    
-    shippingFirstName  : string
-    shippingLastName   : string
-    shippingPhone      : string
-    
+    shippingAddress    : Address|null
     shippingProvider  ?: string
 }
 export interface BillingData {
     // billing data:
-    billingCountry     : string
-    billingState       : string
-    billingCity        : string
-    billingZip         : string
-    billingAddress     : string
-    
-    billingFirstName   : string
-    billingLastName    : string
-    billingPhone       : string
+    billingAddress     : Address|null
 }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
@@ -2625,30 +2610,13 @@ Updating the confirmation is not required.`,
             
             
             // shipping data:
-            shippingCountry    : shippingAddress?.country   ?? '',
-            shippingState      : shippingAddress?.state      ?? '',
-            shippingCity       : shippingAddress?.city      ?? '',
-            shippingZip        : shippingAddress?.zip       ?? '',
-            shippingAddress    : shippingAddress?.address   ?? '',
-            
-            shippingFirstName  : shippingAddress?.firstName ?? '',
-            shippingLastName   : shippingAddress?.lastName  ?? '',
-            shippingPhone      : shippingAddress?.phone     ?? '',
-            
+            shippingAddress    : shippingAddress,
             shippingProvider   : shippingProviderId ?? undefined,
             
             
             
             // billing data:
-            billingCountry     : billingAddress?.country   ?? '',
-            billingState       : billingAddress?.state     ?? '',
-            billingCity        : billingAddress?.city      ?? '',
-            billingZip         : billingAddress?.zip       ?? '',
-            billingAddress     : billingAddress?.address   ?? '',
-            
-            billingFirstName   : billingAddress?.firstName ?? '',
-            billingLastName    : billingAddress?.lastName  ?? '',
-            billingPhone       : billingAddress?.phone     ?? '',
+            billingAddress     : billingAddress,
             
             
             

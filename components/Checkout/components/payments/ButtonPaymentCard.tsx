@@ -54,7 +54,6 @@ import {
 
 // internals:
 import {
-    PaymentDetail,
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -65,15 +64,6 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
-        shippingFirstName : _shippingFirstName, // not implemented yet, because billingFirstName is not implemented
-        shippingLastName  : _shippingLastName,  // not implemented yet, because billingLastName  is not implemented
-        
-        shippingPhone     : _shippingPhone,     // not implemented yet, because billingPhone     is not implemented
-        
-        shippingCountry,
-        shippingState,
-        shippingCity,
-        shippingZip,
         shippingAddress,
         
         
@@ -81,15 +71,6 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         // billing data:
         billingAsShipping,
         
-        billingFirstName  : _billingFirstName,  // not implemented, already to use cardholderName
-        billingLastName   : _billingLastName,   // not implemented, already to use cardholderName
-        
-        billingPhone      : _billingPhone,      // not implemented yet
-        
-        billingCountry,
-        billingState,
-        billingCity,
-        billingZip,
         billingAddress,
         
         
@@ -109,6 +90,8 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         doPlaceOrder,
         doMakePayment,
     } = useCheckoutState();
+    
+    const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
     
     
     
@@ -145,12 +128,12 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                         
                         cardholderName        : formData.get('cardHolder')?.toString()?.trim(), // cardholder's first and last name
                         billingAddress : {
-                            countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
-                            region            : billingAsShipping ? shippingState   : billingState,   // state
-                            locality          : billingAsShipping ? shippingCity    : billingCity,    // city
-                            postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
-                            streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
-                         // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
+                            countryCodeAlpha2 : finalBillingAddress?.country, // country Code
+                            region            : finalBillingAddress?.state,   // state
+                            locality          : finalBillingAddress?.city,    // city
+                            postalCode        : finalBillingAddress?.zip,     // postal Code
+                            streetAddress     : finalBillingAddress?.address, // street address, line 1
+                         // extendedAddress   : undefined,                    // street address, line 2 (Ex: Unit, Apartment, etc.)
                         },
                     });
                     /*

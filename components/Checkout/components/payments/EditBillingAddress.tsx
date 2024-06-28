@@ -4,6 +4,11 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useMemo,
 }                           from 'react'
 
 // reusable-ui core:
@@ -20,11 +25,6 @@ import {
 
 // reusable-ui components:
 import {
-    // layout-components:
-    ListItem,
-    
-    
-    
     // composite-components:
     AccordionItem,
     ExclusiveExpandedChangeEvent,
@@ -36,16 +36,20 @@ import {
     Section,
 }                           from '@heymarco/section'
 import {
-    AddressFields,
-}                           from '@heymarco/address-fields'
-import {
     RadioDecorator,
 }                           from '@heymarco/radio-decorator'
+import {
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
 
 // internal components:
 import {
     ViewShippingAddress,
 }                           from '../informations/ViewShippingAddress'
+import {
+    type Address as EditorAddress,
+    AddressEditor,
+}                           from '@/components/editors/AddressEditor'
 
 // internals:
 import {
@@ -54,6 +58,11 @@ import {
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
+
+// models:
+import {
+    type Address,
+}                           from '@/models'
 
 
 
@@ -98,7 +107,7 @@ const EditBillingAddress = (): JSX.Element|null => {
     if (!isShippingAddressRequired) return (
         <Section
             // classes:
-            className={`${styleSheet.billingEntry} ${styleSheet.address}`}
+            className={styleSheet.billingEntry}
         >
             <EditBillingAddressImpl />
         </Section>
@@ -168,7 +177,7 @@ const EditBillingAddress = (): JSX.Element|null => {
                     bodyComponent={
                         <Section
                             // classes:
-                            className={`${styleSheet.billingEntry} ${styleSheet.address}`}
+                            className={styleSheet.billingEntry}
                         />
                     }
                 >
@@ -191,36 +200,32 @@ const EditBillingAddressImpl = (): JSX.Element|null => {
         // billing data:
         billingValidation,
         
-        
-        billingCountry,
-        billingCountryHandlers,
-        
-        billingState,
-        billingStateHandlers,
-        
-        billingCity,
-        billingCityHandlers,
-        
-        billingZip,
-        billingZipHandlers,
-        
         billingAddress,
-        billingAddressHandlers,
-        
-        billingFirstName,
-        billingFirstNameHandlers,
-        
-        billingLastName,
-        billingLastNameHandlers,
-        
-        billingPhone,
-        billingPhoneHandlers,
-        
-        
-        
-        // relation data:
-        countryList,
+        setBillingAddress,
     } = useCheckoutState();
+    
+    const editorAddress = useMemo((): EditorAddress|null => {
+        if (!billingAddress) return null;
+        return {
+            ...billingAddress,
+            zip: billingAddress.zip ?? '',
+        };
+    }, [billingAddress]);
+    
+    
+    
+    // handlers:
+    const handleChange = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>>((newValue, event) => {
+        const address : Address|null = (
+            !newValue
+            ? null
+            : {
+                ...newValue,
+                zip : newValue.zip.trim() || null,
+            }
+        );
+        setBillingAddress(address);
+    });
     
     
     
@@ -230,36 +235,15 @@ const EditBillingAddressImpl = (): JSX.Element|null => {
             // validations:
             enableValidation={billingValidation}
         >
-            <AddressFields
+            <AddressEditor
                 // types:
                 addressType       = 'billing'
                 
                 
                 
                 // values:
-                countryList       = {countryList}
-                country           = {billingCountry}
-                zone              = {billingState}
-                city              = {billingCity}
-                zip               = {billingZip}
-                address           = {billingAddress}
-                
-                firstName         = {billingFirstName}
-                lastName          = {billingLastName}
-                phone             = {billingPhone}
-                
-                
-                
-                // handlers:
-                onCountryChange   = {billingCountryHandlers.onChange  }
-                onZoneChange      = {billingStateHandlers.onChange    }
-                onCityChange      = {billingCityHandlers.onChange     }
-                onZipChange       = {billingZipHandlers.onChange      }
-                onAddressChange   = {billingAddressHandlers.onChange  }
-                
-                onFirstNameChange = {billingFirstNameHandlers.onChange}
-                onLastNameChange  = {billingLastNameHandlers.onChange }
-                onPhoneChange     = {billingPhoneHandlers.onChange    }
+                value       = {editorAddress}
+                onChange    = {handleChange}
             />
         </ValidationProvider>
     );

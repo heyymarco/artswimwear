@@ -4,23 +4,44 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useMemo,
 }                           from 'react'
 
 // reusable-ui core:
 import {
+    // react helper hooks:
+    useEvent,
+    
+    
+    
     // a validation management system:
     ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // heymarco components:
 import {
-    AddressFields,
-}                           from '@heymarco/address-fields'
+    type EditorChangeEventHandler,
+}                           from '@heymarco/editor'
+
+// internal components:
+import {
+    type Address as EditorAddress,
+    AddressEditor,
+}                           from '@/components/editors/AddressEditor'
 
 // internals:
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
+
+// models:
+import {
+    type Address,
+}                           from '@/models'
 
 
 
@@ -32,41 +53,37 @@ const EditShippingAddress = (): JSX.Element|null => {
         isShippingAddressRequired,
         shippingValidation,
         
-        
-        shippingCountry,
-        shippingCountryHandlers,
-        
-        shippingState,
-        shippingStateHandlers,
-        
-        shippingCity,
-        shippingCityHandlers,
-        
-        shippingZip,
-        shippingZipHandlers,
-        
         shippingAddress,
-        shippingAddressHandlers,
-        
-        shippingFirstName,
-        shippingFirstNameHandlers,
-        
-        shippingLastName,
-        shippingLastNameHandlers,
-        
-        shippingPhone,
-        shippingPhoneHandlers,
-        
-        
-        
-        // relation data:
-        countryList,
+        setShippingAddress,
         
         
         
         // fields:
         shippingAddressInputRef,
     } = useCheckoutState();
+    
+    const editorAddress = useMemo((): EditorAddress|null => {
+        if (!shippingAddress) return null;
+        return {
+            ...shippingAddress,
+            zip: shippingAddress.zip ?? '',
+        };
+    }, [shippingAddress]);
+    
+    
+    
+    // handlers:
+    const handleChange = useEvent<EditorChangeEventHandler<React.ChangeEvent<HTMLInputElement>, EditorAddress|null>>((newValue, event) => {
+        const address : Address|null = (
+            !newValue
+            ? null
+            : {
+                ...newValue,
+                zip : newValue.zip.trim() || null,
+            }
+        );
+        setShippingAddress(address);
+    });
     
     
     
@@ -77,41 +94,20 @@ const EditShippingAddress = (): JSX.Element|null => {
             // validations:
             enableValidation={shippingValidation}
         >
-            <AddressFields
+            <AddressEditor
                 // refs:
-                addressRef        = {shippingAddressInputRef}
+                addressRef  = {shippingAddressInputRef}
                 
                 
                 
                 // types:
-                addressType       = 'shipping'
+                addressType = 'shipping'
                 
                 
                 
                 // values:
-                countryList       = {countryList}
-                country           = {shippingCountry}
-                zone              = {shippingState}
-                city              = {shippingCity}
-                zip               = {shippingZip}
-                address           = {shippingAddress}
-                
-                firstName         = {shippingFirstName}
-                lastName          = {shippingLastName}
-                phone             = {shippingPhone}
-                
-                
-                
-                // handlers:
-                onCountryChange   = {shippingCountryHandlers.onChange  }
-                onZoneChange      = {shippingStateHandlers.onChange    }
-                onCityChange      = {shippingCityHandlers.onChange     }
-                onZipChange       = {shippingZipHandlers.onChange      }
-                onAddressChange   = {shippingAddressHandlers.onChange  }
-                
-                onFirstNameChange = {shippingFirstNameHandlers.onChange}
-                onLastNameChange  = {shippingLastNameHandlers.onChange }
-                onPhoneChange     = {shippingPhoneHandlers.onChange    }
+                value       = {editorAddress}
+                onChange    = {handleChange}
             />
         </ValidationProvider>
     );

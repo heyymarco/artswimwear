@@ -1,9 +1,3 @@
-// next-js:
-import {
-    NextRequest,
-    NextResponse,
-}                           from 'next/server'
-
 // next-connect:
 import {
     createEdgeRouter,
@@ -22,7 +16,7 @@ import {
 
 
 // configs:
-export const fetchCache = 'force-no-store';
+export const fetchCache = 'force-cache';
 
 
 
@@ -44,8 +38,8 @@ interface RequestContext {
         /* no params yet */
     }
 }
-const router  = createEdgeRouter<NextRequest, RequestContext>();
-const handler = async (req: NextRequest, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
+const router  = createEdgeRouter<Request, RequestContext>();
+const handler = async (req: Request, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
 export {
     handler as GET,
     // handler as POST,
@@ -99,5 +93,5 @@ router
             code : country.code,
         }))
     );
-    return NextResponse.json(countryList); // handled with success
+    return Response.json(countryList); // handled with success
 });

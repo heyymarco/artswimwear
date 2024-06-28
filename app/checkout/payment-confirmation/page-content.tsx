@@ -130,7 +130,7 @@ import './page-styles';
 
 
 // utilities:
-const invalidSelector = ':is(.invalidating, .invalidated)';
+const invalidSelector = ':is(.invalidating, .invalidated):not([aria-invalid="false"])';
 
 
 

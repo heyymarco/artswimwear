@@ -28,15 +28,7 @@ const ViewShippingAddress = (): JSX.Element|null => {
         // shipping data:
         isShippingAddressRequired,
         
-        shippingCountry,
-        shippingState,
-        shippingCity,
-        shippingZip,
         shippingAddress,
-        
-        shippingFirstName,
-        shippingLastName,
-        shippingPhone,
         
         
         
@@ -48,13 +40,14 @@ const ViewShippingAddress = (): JSX.Element|null => {
     
     // jsx:
     if (!isShippingAddressRequired) return null;
+    if (!shippingAddress) return null;
     return (
         <>
             <p>
-                <span className={styleSheet.data}>{shippingFirstName} {shippingLastName} ({shippingPhone})</span>
+                <span className={styleSheet.data}>{shippingAddress.firstName} {shippingAddress.lastName} ({shippingAddress.phone})</span>
             </p>
             <p>
-                <span className={styleSheet.data}>{`${shippingAddress}, ${shippingCity}, ${shippingState} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}</span>
+                <span className={styleSheet.data}>{`${shippingAddress.address}, ${shippingAddress.city}, ${shippingAddress.state} (${shippingAddress.zip}), ${countryList?.entities?.[shippingAddress.country]?.name}`}</span>
             </p>
         </>
     );

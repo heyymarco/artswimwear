@@ -26,15 +26,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
-        shippingCountry,
-        shippingState,
-        shippingCity,
-        shippingZip,
         shippingAddress,
-        
-        shippingFirstName,
-        shippingLastName,
-        shippingPhone,
         
         
         
@@ -43,15 +35,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
         
         billingAsShipping,
         
-        billingCountry,
-        billingState,
-        billingCity,
-        billingZip,
         billingAddress,
-        
-        billingFirstName,
-        billingLastName,
-        billingPhone,
         
         
         
@@ -59,27 +43,20 @@ const ViewBillingAddress = (): JSX.Element|null => {
         countryList,
     } = useCheckoutState();
     
-    const finalBillingCountry    = billingAsShipping ? shippingCountry   : billingCountry;
-    const finalBillingState      = billingAsShipping ? shippingState     : billingState;
-    const finalBillingCity       = billingAsShipping ? shippingCity      : billingCity;
-    const finalBillingZip        = billingAsShipping ? shippingZip       : billingZip;
-    const finalBillingAddress    = billingAsShipping ? shippingAddress   : billingAddress;
-    
-    const finalBillingFirstName  = billingAsShipping ? shippingFirstName : billingFirstName;
-    const finalBillingLastName   = billingAsShipping ? shippingLastName  : billingLastName;
-    const finalBillingPhone      = billingAsShipping ? shippingPhone     : billingPhone;
+    const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
     
     
     
     // jsx:
     if (!isBillingAddressRequired) return null;
+    if (!finalBillingAddress) return null;
     return (
         <>
             <p>
-                <span className={styleSheet.data}>{finalBillingFirstName} {finalBillingLastName} ({finalBillingPhone})</span>
+                <span className={styleSheet.data}>{finalBillingAddress.firstName} {finalBillingAddress.lastName} ({finalBillingAddress.phone})</span>
             </p>
             <p>
-                <span className={styleSheet.data}>{`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingState} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}</span>
+                <span className={styleSheet.data}>{`${finalBillingAddress.address}, ${finalBillingAddress.city}, ${finalBillingAddress.state} (${finalBillingAddress.zip}), ${countryList?.entities?.[finalBillingAddress.country]?.name}`}</span>
             </p>
         </>
     );

@@ -189,6 +189,18 @@ export const apiSlice = createApi({
                 return countryListAdapter.addMany(countryListAdapter.getInitialState(), response);
             },
         }),
+        getStateList            : builder.query<string[], { countryCode: string }>({
+            query : ({countryCode}) => ({
+                url    : `shippings/states?countryCode=${encodeURIComponent(countryCode)}`,
+                method : 'GET',
+            }),
+        }),
+        getCityList             : builder.query<string[], { countryCode: string, state: string }>({
+            query : ({countryCode, state}) => ({
+                url    : `shippings/cities?countryCode=${encodeURIComponent(countryCode)}&state=${encodeURIComponent(state)}`,
+                method : 'GET',
+            }),
+        }),
         
         
         
@@ -308,6 +320,8 @@ export const {
     useGetProductDetailQuery           : useGetProductDetail,
     
     useGetCountryListQuery             : useGetCountryList,
+    useLazyGetStateListQuery           : useGetStateList,
+    useLazyGetCityListQuery            : useGetCityList,
     
     useGetMatchingShippingListMutation : useGetMatchingShippingList,
     

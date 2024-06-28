@@ -257,16 +257,16 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         const fieldErrors = (
             // for <Form>:
             (() => {
-                const matches = editorElm?.querySelectorAll?.(':is(.invalidating, .invalidated)');
+                const matches = editorElm?.querySelectorAll?.(':is(.invalidating, .invalidated):not([aria-invalid="false"])');
                 if (!matches?.length) return null;
                 return matches;
             })()
             ??
             // for <input>:
-            (editorElm?.matches?.(':is(.invalidating, .invalidated)') ? [editorElm] : null)
+            (editorElm?.matches?.(':is(.invalidating, .invalidated):not([aria-invalid="false"])') ? [editorElm] : null)
             ??
             // for <Input>:
-            (editorElm?.parentElement?.matches?.(':is(.invalidating, .invalidated)') ? [editorElm.parentElement] : null)
+            (editorElm?.parentElement?.matches?.(':is(.invalidating, .invalidated):not([aria-invalid="false"])') ? [editorElm.parentElement] : null)
         );
         if (fieldErrors?.length) { // there is an/some invalid field
             showMessageFieldError(fieldErrors);

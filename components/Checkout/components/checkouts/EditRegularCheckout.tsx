@@ -58,11 +58,6 @@ const EditRegularCheckout = (): JSX.Element|null => {
             </Section>
             
             {isShippingAddressRequired && <Section
-                // classes:
-                className={styleSheet.address}
-                
-                
-                
                 // accessibilities:
                 title='Shipping Address'
             >

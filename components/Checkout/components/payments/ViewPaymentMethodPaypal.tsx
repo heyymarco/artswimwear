@@ -165,15 +165,15 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
         // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
         const shipping_address = data.shipping_address;
         if (shipping_address) {
-            const shippingFieldMap = new Map<string, keyof typeof checkoutState | undefined>([
-                ['country_code'  , 'shippingCountry'],
-                ['state'         , 'shippingState'  ],
-                ['admin_area_1'  , 'shippingState'  ],
-                ['city'          , 'shippingCity'   ],
-                ['admin_area_2'  , 'shippingCity'   ],
-                ['postal_code'   , 'shippingZip'    ],
-                ['address_line_1', 'shippingAddress'],
-                ['address_line_2', undefined        ],
+            const shippingFieldMap = new Map<string, keyof Exclude<typeof checkoutState.shippingAddress, null> | undefined>([
+                ['country_code'  , 'country'],
+                ['state'         , 'state'  ],
+                ['admin_area_1'  , 'state'  ],
+                ['city'          , 'city'   ],
+                ['admin_area_2'  , 'city'   ],
+                ['postal_code'   , 'zip'    ],
+                ['address_line_1', 'address'],
+                ['address_line_2', undefined],
             ]);
             
             
@@ -191,7 +191,7 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
                 
                 
                 
-                const originShippingValue = checkoutState[mappedShippingField];
+                const originShippingValue = checkoutState.shippingAddress?.[mappedShippingField];
                 if (originShippingValue !== shippingValue) {
                     // console.log(`DIFF: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
                     return actions.reject();

@@ -385,34 +385,6 @@ export default () => {
                 }),
             }),
         }, {specificityWeight: 2}),
-        scope('address', {
-            ...children('article', {
-                display: 'grid',
-                gridTemplateColumns: 'repeat(6, 1fr)',
-                gridAutoRows: 'auto',
-                gridAutoFlow: 'row',
-                gap: '1rem',
-                
-                ...children('*', {
-                    gridColumnEnd: 'span 6',
-                }),
-                ...ifScreenWidthAtLeast('sm', {
-                    ...children(['.firstName', '.lastName'], {
-                        gridColumnEnd: 'span 3',
-                    }),
-                }),
-                ...ifScreenWidthAtLeast('lg', {
-                    ...children(['.zone', '.zip'], {
-                        gridColumnEnd: 'span 3',
-                    }),
-                }),
-                ...ifScreenWidthAtLeast('xl', {
-                    ...children(['.city', '.zone', '.zip'], {
-                        gridColumnEnd: 'span 2',
-                    }),
-                }),
-            }),
-        }),
         scope('selectShipping', {
             // layouts:
             display                         : 'grid',
