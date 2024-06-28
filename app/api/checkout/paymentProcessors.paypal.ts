@@ -115,14 +115,14 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
         detailedItems,
         
         hasShippingAddress,
+        shippingCountry,
+        shippingState,
+        shippingCity,
+        shippingZip,
+        shippingAddress,
         shippingFirstName,
         shippingLastName,
         // shippingPhone,
-        shippingAddress,
-        shippingCity,
-        shippingZone,
-        shippingZip,
-        shippingCountry,
     } = options;
     
     
@@ -270,18 +270,9 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                     // address object|undefined
                     // The address of the person to whom to ship the items.
                     address               : {
-                        // address_line_1 string|undefined
-                        // The first line of the address. For example, number or street. For example, 173 Drury Lane.
-                        // Required for data entry and compliance and risk checks. Must contain the full address.
-                        address_line_1    : shippingAddress,
-                        
-                        // address_line_2 string|undefined
-                        // The second line of the address. For example, suite or apartment number.
-                        address_line_2    : undefined,
-                        
-                        // admin_area_2 string|undefined
-                        // A city, town, or village.
-                        admin_area_2      : shippingCity,
+                        // country_code string required
+                        // The two-character ISO 3166-1 code that identifies the country or region.
+                        country_code      : shippingCountry,
                         
                         // admin_area_1 string|undefined
                         // The highest level sub-division in a country, which is usually a province, state, or ISO-3166-2 subdivision. Format for postal delivery. For example, CA and not California.
@@ -293,15 +284,24 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                             * Japan. A prefecture.
                             * Switzerland. A kanton.
                         */
-                        admin_area_1      : shippingZone,
+                        admin_area_1      : shippingState,
+                        
+                        // admin_area_2 string|undefined
+                        // A city, town, or village.
+                        admin_area_2      : shippingCity,
                         
                         // postal_code string
                         // The postal code, which is the zip code or equivalent. Typically required for countries with a postal code or an equivalent.
                         postal_code       : shippingZip,
                         
-                        // country_code string required
-                        // The two-character ISO 3166-1 code that identifies the country or region.
-                        country_code      : shippingCountry,
+                        // address_line_1 string|undefined
+                        // The first line of the address. For example, number or street. For example, 173 Drury Lane.
+                        // Required for data entry and compliance and risk checks. Must contain the full address.
+                        address_line_1    : shippingAddress,
+                        
+                        // address_line_2 string|undefined
+                        // The second line of the address. For example, suite or apartment number.
+                        address_line_2    : undefined,
                     },
                     
                     // name object|undefined

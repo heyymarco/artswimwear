@@ -26,16 +26,15 @@ const ViewBillingAddress = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
+        shippingCountry,
+        shippingState,
+        shippingCity,
+        shippingZip,
+        shippingAddress,
+        
         shippingFirstName,
         shippingLastName,
-        
         shippingPhone,
-        
-        shippingAddress,
-        shippingCity,
-        shippingZone,
-        shippingZip,
-        shippingCountry,
         
         
         
@@ -44,16 +43,15 @@ const ViewBillingAddress = (): JSX.Element|null => {
         
         billingAsShipping,
         
+        billingCountry,
+        billingState,
+        billingCity,
+        billingZip,
+        billingAddress,
+        
         billingFirstName,
         billingLastName,
-        
         billingPhone,
-        
-        billingAddress,
-        billingCity,
-        billingZone,
-        billingZip,
-        billingCountry,
         
         
         
@@ -61,16 +59,15 @@ const ViewBillingAddress = (): JSX.Element|null => {
         countryList,
     } = useCheckoutState();
     
+    const finalBillingCountry    = billingAsShipping ? shippingCountry   : billingCountry;
+    const finalBillingState      = billingAsShipping ? shippingState     : billingState;
+    const finalBillingCity       = billingAsShipping ? shippingCity      : billingCity;
+    const finalBillingZip        = billingAsShipping ? shippingZip       : billingZip;
+    const finalBillingAddress    = billingAsShipping ? shippingAddress   : billingAddress;
+    
     const finalBillingFirstName  = billingAsShipping ? shippingFirstName : billingFirstName;
     const finalBillingLastName   = billingAsShipping ? shippingLastName  : billingLastName;
-    
     const finalBillingPhone      = billingAsShipping ? shippingPhone     : billingPhone;
-    
-    const finalBillingAddress    = billingAsShipping ? shippingAddress   : billingAddress;
-    const finalBillingCity       = billingAsShipping ? shippingCity      : billingCity;
-    const finalBillingZone       = billingAsShipping ? shippingZone      : billingZone;
-    const finalBillingZip        = billingAsShipping ? shippingZip       : billingZip;
-    const finalBillingCountry    = billingAsShipping ? shippingCountry   : billingCountry;
     
     
     
@@ -82,7 +79,7 @@ const ViewBillingAddress = (): JSX.Element|null => {
                 <span className={styleSheet.data}>{finalBillingFirstName} {finalBillingLastName} ({finalBillingPhone})</span>
             </p>
             <p>
-                <span className={styleSheet.data}>{`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingZone} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}</span>
+                <span className={styleSheet.data}>{`${finalBillingAddress}, ${finalBillingCity}, ${finalBillingState} (${finalBillingZip}), ${countryList?.entities?.[finalBillingCountry ?? '']?.name}`}</span>
             </p>
         </>
     );

@@ -8,7 +8,7 @@ import {
 
 // types:
 export type MatchingShipping = Partial<Omit<ShippingProvider, 'createdAt'|'updatedAt'|'weightStep'|'shippingRates'|'useZones'|'countries'>> & Required<Pick<ShippingProvider, 'weightStep'|'shippingRates'>>
-export type MatchingAddress  = Pick<Address, 'country'|'zone'|'city'>
+export type MatchingAddress  = Pick<Address, 'country'|'state'|'city'>
 
 
 
@@ -26,7 +26,7 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
         
         
         
-        const matchingState = matchingCountry.useZones && matchingCountry.zones?.find((coverageState) => (coverageState.name.trim().toLowerCase() === shippingAddress.zone.trim().toLowerCase()));
+        const matchingState = matchingCountry.useZones && matchingCountry.zones?.find((coverageState) => (coverageState.name.trim().toLowerCase() === shippingAddress.state.trim().toLowerCase()));
         if (matchingState) {
             if (matchingState.estimate             )    estimate      = matchingState.estimate;
             if (matchingState.shippingRates?.length)    shippingRates = matchingState.shippingRates;

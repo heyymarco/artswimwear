@@ -192,31 +192,29 @@ const EditBillingAddressImpl = (): JSX.Element|null => {
         billingValidation,
         
         
+        billingCountry,
+        billingCountryHandlers,
+        
+        billingState,
+        billingStateHandlers,
+        
+        billingCity,
+        billingCityHandlers,
+        
+        billingZip,
+        billingZipHandlers,
+        
+        billingAddress,
+        billingAddressHandlers,
+        
         billingFirstName,
         billingFirstNameHandlers,
         
         billingLastName,
         billingLastNameHandlers,
         
-        
         billingPhone,
         billingPhoneHandlers,
-        
-        
-        billingAddress,
-        billingAddressHandlers,
-        
-        billingCity,
-        billingCityHandlers,
-        
-        billingZone,
-        billingZoneHandlers,
-        
-        billingZip,
-        billingZipHandlers,
-        
-        billingCountry,
-        billingCountryHandlers,
         
         
         
@@ -239,31 +237,29 @@ const EditBillingAddressImpl = (): JSX.Element|null => {
                 
                 
                 // values:
+                countryList       = {countryList}
+                country           = {billingCountry}
+                zone              = {billingState}
+                city              = {billingCity}
+                zip               = {billingZip}
+                address           = {billingAddress}
+                
                 firstName         = {billingFirstName}
                 lastName          = {billingLastName}
-                
                 phone             = {billingPhone}
-                
-                address           = {billingAddress}
-                city              = {billingCity}
-                zone              = {billingZone}
-                zip               = {billingZip}
-                country           = {billingCountry}
-                countryList       = {countryList}
                 
                 
                 
                 // handlers:
+                onCountryChange   = {billingCountryHandlers.onChange  }
+                onZoneChange      = {billingStateHandlers.onChange    }
+                onCityChange      = {billingCityHandlers.onChange     }
+                onZipChange       = {billingZipHandlers.onChange      }
+                onAddressChange   = {billingAddressHandlers.onChange  }
+                
                 onFirstNameChange = {billingFirstNameHandlers.onChange}
                 onLastNameChange  = {billingLastNameHandlers.onChange }
-                
                 onPhoneChange     = {billingPhoneHandlers.onChange    }
-                
-                onAddressChange   = {billingAddressHandlers.onChange  }
-                onCityChange      = {billingCityHandlers.onChange     }
-                onZoneChange      = {billingZoneHandlers.onChange     }
-                onZipChange       = {billingZipHandlers.onChange      }
-                onCountryChange   = {billingCountryHandlers.onChange  }
             />
         </ValidationProvider>
     );

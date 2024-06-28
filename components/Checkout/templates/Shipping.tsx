@@ -43,16 +43,15 @@ const ShippingAddress = (): React.ReactNode => {
     if (!address) return null;
     const {
         // shipping data:
+        country   : shippingCountry,
+        state     : shippingState,
+        city      : shippingCity,
+        zip       : shippingZip,
+        address   : shippingAddress,
+        
         firstName : shippingFirstName,
         lastName  : shippingLastName,
-        
         phone     : shippingPhone,
-        
-        address   : shippingAddress,
-        city      : shippingCity,
-        zone      : shippingZone,
-        zip       : shippingZip,
-        country   : shippingCountry,
     } = address;
     return (
         <>
@@ -61,7 +60,7 @@ const ShippingAddress = (): React.ReactNode => {
             </p>
             
             <p style={styles.paragraphLast}>
-                {`${shippingAddress}, ${shippingCity}, ${shippingZone} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
+                {`${shippingAddress}, ${shippingCity}, ${shippingState} (${shippingZip}), ${countryList?.entities?.[shippingCountry ?? '']?.name}`}
             </p>
         </>
     );

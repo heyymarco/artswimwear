@@ -70,11 +70,11 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         
         shippingPhone     : _shippingPhone,     // not implemented yet, because billingPhone     is not implemented
         
-        shippingAddress,
-        shippingCity,
-        shippingZone,
-        shippingZip,
         shippingCountry,
+        shippingState,
+        shippingCity,
+        shippingZip,
+        shippingAddress,
         
         
         
@@ -86,11 +86,11 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         
         billingPhone      : _billingPhone,      // not implemented yet
         
-        billingAddress,
-        billingCity,
-        billingZone,
-        billingZip,
         billingCountry,
+        billingState,
+        billingCity,
+        billingZip,
+        billingAddress,
         
         
         
@@ -145,12 +145,12 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                         
                         cardholderName        : formData.get('cardHolder')?.toString()?.trim(), // cardholder's first and last name
                         billingAddress : {
+                            countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
+                            region            : billingAsShipping ? shippingState   : billingState,   // state
+                            locality          : billingAsShipping ? shippingCity    : billingCity,    // city
+                            postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
                             streetAddress     : billingAsShipping ? shippingAddress : billingAddress, // street address, line 1
                          // extendedAddress   : undefined,                                            // street address, line 2 (Ex: Unit, Apartment, etc.)
-                            locality          : billingAsShipping ? shippingCity    : billingCity,    // city
-                            region            : billingAsShipping ? shippingZone    : billingZone,    // state
-                            postalCode        : billingAsShipping ? shippingZip     : billingZip,     // postal Code
-                            countryCodeAlpha2 : billingAsShipping ? shippingCountry : billingCountry, // country Code
                         },
                     });
                     /*

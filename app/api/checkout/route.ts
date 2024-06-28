@@ -166,31 +166,29 @@ export interface CustomerData {
 }
 export interface ShippingData {
     // shipping data:
+    shippingCountry    : string
+    shippingState      : string
+    shippingCity       : string
+    shippingZip        : string
+    shippingAddress    : string
+    
     shippingFirstName  : string
     shippingLastName   : string
-    
     shippingPhone      : string
-    
-    shippingAddress    : string
-    shippingCity       : string
-    shippingZone       : string
-    shippingZip        : string
-    shippingCountry    : string
     
     shippingProvider  ?: string
 }
 export interface BillingData {
     // billing data:
+    billingCountry     : string
+    billingState       : string
+    billingCity        : string
+    billingZip         : string
+    billingAddress     : string
+    
     billingFirstName   : string
     billingLastName    : string
-    
     billingPhone       : string
-    
-    billingAddress     : string
-    billingCity        : string
-    billingZone        : string
-    billingZip         : string
-    billingCountry     : string
 }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
@@ -503,45 +501,42 @@ router
     //#region validate shipping address
     const {
         // shippings:
+        shippingCountry,
+        shippingState,
+        shippingCity,
+        shippingZip,
+        shippingAddress,
+        
         shippingFirstName,
         shippingLastName,
-        
         shippingPhone,
-        
-        shippingAddress,
-        shippingCity,
-        shippingZone,
-        shippingZip,
-        shippingCountry,
         
         shippingProvider : shippingProviderId,
     } = placeOrderData;
     const hasShippingAddress = (
+        !!shippingCountry ||
+        !!shippingState ||
+        !!shippingCity ||
+        !!shippingZip ||
+        !!shippingAddress ||
+        
         !!shippingFirstName ||
         !!shippingLastName ||
-        
         !!shippingPhone ||
-        
-        !!shippingAddress ||
-        !!shippingCity ||
-        !!shippingZone ||
-        !!shippingZip ||
-        !!shippingCountry ||
         
         !!shippingProviderId
     );
     if (hasShippingAddress) {
         if (
-               !shippingFirstName || (typeof(shippingFirstName) !== 'string')
-            || !shippingLastName  || (typeof(shippingLastName) !== 'string')
-            
-            || !shippingPhone     || (typeof(shippingPhone) !== 'string')
-            
-            || !shippingAddress   || (typeof(shippingAddress) !== 'string')
+               !shippingCountry   || (typeof(shippingCountry) !== 'string') // todo validate country id
+            || !shippingState     || (typeof(shippingState) !== 'string')
             || !shippingCity      || (typeof(shippingCity) !== 'string')
-            || !shippingZone      || (typeof(shippingZone) !== 'string')
             || !shippingZip       || (typeof(shippingZip) !== 'string')
-            || !shippingCountry   || (typeof(shippingCountry) !== 'string') // todo validate country id
+            || !shippingAddress   || (typeof(shippingAddress) !== 'string')
+            
+            || !shippingFirstName || (typeof(shippingFirstName) !== 'string')
+            || !shippingLastName  || (typeof(shippingLastName) !== 'string')
+            || !shippingPhone     || (typeof(shippingPhone) !== 'string')
             
             || !shippingProviderId  || (typeof(shippingProviderId) !== 'string') // todo validate shipping provider
         ) {
@@ -557,41 +552,39 @@ router
     //#region validate billing address
     const {
         // billings:
+        billingCountry,
+        billingState,
+        billingCity,
+        billingZip,
+        billingAddress,
+        
         billingFirstName,
         billingLastName,
-        
         billingPhone,
-        
-        billingAddress,
-        billingCity,
-        billingZone,
-        billingZip,
-        billingCountry,
     } = placeOrderData;
     const hasBillingAddress = (
+        !!billingCountry ||
+        !!billingState ||
+        !!billingCity ||
+        !!billingZip ||
+        !!billingAddress ||
+        
         !!billingFirstName ||
         !!billingLastName ||
-        
-        !!billingPhone ||
-        
-        !!billingAddress ||
-        !!billingCity ||
-        !!billingZone ||
-        !!billingZip ||
-        !!billingCountry
+        !!billingPhone
     );
     if (hasBillingAddress) {
         if (
-               !billingFirstName || (typeof(billingFirstName) !== 'string')
-            || !billingLastName  || (typeof(billingLastName) !== 'string')
+               !billingCountry   || (typeof(billingCountry) !== 'string') // todo validate country id
+            || !billingState     || (typeof(billingState) !== 'string')
+            || !billingCity      || (typeof(billingCity) !== 'string')
+            || !billingZip       || (typeof(billingZip) !== 'string')
+            || !billingAddress   || (typeof(billingAddress) !== 'string')
             
+            || !billingFirstName || (typeof(billingFirstName) !== 'string')
+            || !billingLastName  || (typeof(billingLastName) !== 'string')
             || !billingPhone     || (typeof(billingPhone) !== 'string')
             
-            || !billingAddress   || (typeof(billingAddress) !== 'string')
-            || !billingCity      || (typeof(billingCity) !== 'string')
-            || !billingZone      || (typeof(billingZone) !== 'string')
-            || !billingZip       || (typeof(billingZip) !== 'string')
-            || !billingCountry   || (typeof(billingCountry) !== 'string') // todo validate country id
         ) {
             return NextResponse.json({
                 error: 'Invalid data.',
@@ -801,7 +794,7 @@ router
             
             const matchingShipping = (
                 (!simulateOrder && hasShippingAddress && !!selectedShipping)
-                ? getMatchingShipping(selectedShipping, { city: shippingCity, zone: shippingZone, country: shippingCountry })
+                ? getMatchingShipping(selectedShipping, { city: shippingCity, state: shippingState, country: shippingCountry })
                 : null
             );
             if (!simulateOrder && hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';
@@ -1076,14 +1069,14 @@ router
                     totalShippingCostConverted,
                     
                     hasShippingAddress,
+                    shippingCountry,
+                    shippingState,
+                    shippingCity,
+                    shippingZip,
+                    shippingAddress,
                     shippingFirstName,
                     shippingLastName,
                     shippingPhone,
-                    shippingAddress,
-                    shippingCity,
-                    shippingZone,
-                    shippingZip,
-                    shippingCountry,
                     
                     detailedItems,
                 });
@@ -1096,24 +1089,24 @@ router
                     totalShippingCostConverted,
                     
                     hasShippingAddress,
+                    shippingCountry,
+                    shippingState,
+                    shippingCity,
+                    shippingZip,
+                    shippingAddress,
                     shippingFirstName,
                     shippingLastName,
                     shippingPhone,
-                    shippingAddress,
-                    shippingCity,
-                    shippingZone,
-                    shippingZip,
-                    shippingCountry,
                     
                     hasBillingAddress,
+                    billingCountry,
+                    billingState,
+                    billingCity,
+                    billingZip,
+                    billingAddress,
                     billingFirstName,
                     billingLastName,
                     billingPhone,
-                    billingAddress,
-                    billingCity,
-                    billingZone,
-                    billingZip,
-                    billingCountry,
                     
                     detailedItems,
                 });
@@ -1140,24 +1133,24 @@ router
                     totalShippingCostConverted,
                     
                     hasShippingAddress,
+                    shippingCountry,
+                    shippingState,
+                    shippingCity,
+                    shippingZip,
+                    shippingAddress,
                     shippingFirstName,
                     shippingLastName,
                     shippingPhone,
-                    shippingAddress,
-                    shippingCity,
-                    shippingZone,
-                    shippingZip,
-                    shippingCountry,
                     
                     hasBillingAddress,
+                    billingCountry,
+                    billingState,
+                    billingCity,
+                    billingZip,
+                    billingAddress,
                     billingFirstName,
                     billingLastName,
                     billingPhone,
-                    billingAddress,
-                    billingCity,
-                    billingZone,
-                    billingZip,
-                    billingCountry,
                     
                     detailedItems,
                 });
@@ -1184,24 +1177,24 @@ router
                     totalShippingCostConverted,
                     
                     hasShippingAddress,
+                    shippingCountry,
+                    shippingState,
+                    shippingCity,
+                    shippingZip,
+                    shippingAddress,
                     shippingFirstName,
                     shippingLastName,
                     shippingPhone,
-                    shippingAddress,
-                    shippingCity,
-                    shippingZone,
-                    shippingZip,
-                    shippingCountry,
                     
                     hasBillingAddress,
+                    billingCountry,
+                    billingState,
+                    billingCity,
+                    billingZip,
+                    billingAddress,
                     billingFirstName,
                     billingLastName,
                     billingPhone,
-                    billingAddress,
-                    billingCity,
-                    billingZone,
-                    billingZip,
-                    billingCountry,
                     
                     detailedItems,
                 });
@@ -1228,24 +1221,24 @@ router
                     totalShippingCostConverted,
                     
                     hasShippingAddress,
+                    shippingCountry,
+                    shippingState,
+                    shippingCity,
+                    shippingZip,
+                    shippingAddress,
                     shippingFirstName,
                     shippingLastName,
                     shippingPhone,
-                    shippingAddress,
-                    shippingCity,
-                    shippingZone,
-                    shippingZip,
-                    shippingCountry,
                     
                     hasBillingAddress,
+                    billingCountry,
+                    billingState,
+                    billingCity,
+                    billingZip,
+                    billingAddress,
                     billingFirstName,
                     billingLastName,
                     billingPhone,
-                    billingAddress,
-                    billingCity,
-                    billingZone,
-                    billingZip,
-                    billingCountry,
                     
                     detailedItems,
                 });
@@ -1272,24 +1265,24 @@ router
                     totalShippingCostConverted,
                     
                     hasShippingAddress,
+                    shippingCountry,
+                    shippingState,
+                    shippingCity,
+                    shippingZip,
+                    shippingAddress,
                     shippingFirstName,
                     shippingLastName,
                     shippingPhone,
-                    shippingAddress,
-                    shippingCity,
-                    shippingZone,
-                    shippingZip,
-                    shippingCountry,
                     
                     hasBillingAddress,
+                    billingCountry,
+                    billingState,
+                    billingCity,
+                    billingZip,
+                    billingAddress,
                     billingFirstName,
                     billingLastName,
                     billingPhone,
-                    billingAddress,
-                    billingCity,
-                    billingZone,
-                    billingZip,
-                    billingCountry,
                     
                     detailedItems,
                 });
@@ -1335,24 +1328,24 @@ router
                     totalShippingCostConverted,
                     
                     hasShippingAddress,
+                    shippingCountry,
+                    shippingState,
+                    shippingCity,
+                    shippingZip,
+                    shippingAddress,
                     shippingFirstName,
                     shippingLastName,
                     shippingPhone,
-                    shippingAddress,
-                    shippingCity,
-                    shippingZone,
-                    shippingZip,
-                    shippingCountry,
                     
                     hasBillingAddress,
+                    billingCountry,
+                    billingState,
+                    billingCity,
+                    billingZip,
+                    billingAddress,
                     billingFirstName,
                     billingLastName,
                     billingPhone,
-                    billingAddress,
-                    billingCity,
-                    billingZone,
-                    billingZip,
-                    billingCountry,
                     
                     detailedItems,
                 });
@@ -1429,16 +1422,15 @@ router
                 !hasShippingAddress
                 ? null
                 : {
+                    country        : shippingCountry.toUpperCase(),
+                    state          : shippingState,
+                    city           : shippingCity,
+                    zip            : shippingZip,
+                    address        : shippingAddress,
+                    
                     firstName      : shippingFirstName,
                     lastName       : shippingLastName,
-                    
                     phone          : shippingPhone,
-                    
-                    address        : shippingAddress,
-                    city           : shippingCity,
-                    zone           : shippingZone,
-                    zip            : shippingZip,
-                    country        : shippingCountry.toUpperCase(),
                 }
             );
             const shippingCostData = (
@@ -1459,16 +1451,15 @@ router
                 !hasBillingAddress
                 ? null
                 : {
+                    country        : billingCountry.toUpperCase(),
+                    state          : billingState,
+                    city           : billingCity,
+                    zip            : billingZip,
+                    address        : billingAddress,
+                    
                     firstName      : billingFirstName,
                     lastName       : billingLastName,
-                    
                     phone          : billingPhone,
-                    
-                    address        : billingAddress,
-                    city           : billingCity,
-                    zone           : billingZone,
-                    zip            : billingZip,
-                    country        : billingCountry.toUpperCase(),
                 }
             );
             
@@ -2201,41 +2192,38 @@ Updating the confirmation is not required.`,
     //#region validate billing address
     const {
         // billings:
+        billingCountry,
+        billingState,
+        billingCity,
+        billingZip,
+        billingAddress,
+        
         billingFirstName,
         billingLastName,
-        
         billingPhone,
-        
-        billingAddress,
-        billingCity,
-        billingZone,
-        billingZip,
-        billingCountry,
     } = paymentData;
     const hasBillingAddress = (
+        !!billingCountry ||
+        !!billingState ||
+        !!billingCity ||
+        !!billingZip ||
+        !!billingAddress ||
+        
         !!billingFirstName ||
         !!billingLastName ||
-        
-        !!billingPhone ||
-        
-        !!billingAddress ||
-        !!billingCity ||
-        !!billingZone ||
-        !!billingZip ||
-        !!billingCountry
+        !!billingPhone
     );
     if (hasBillingAddress) {
         if (
-               !billingFirstName || (typeof(billingFirstName) !== 'string')
-            || !billingLastName  || (typeof(billingLastName) !== 'string')
-            
-            || !billingPhone     || (typeof(billingPhone) !== 'string')
-            
-            || !billingAddress   || (typeof(billingAddress) !== 'string')
+               !billingCountry   || (typeof(billingCountry) !== 'string') // todo validate country id
+            || !billingState     || (typeof(billingState) !== 'string')
             || !billingCity      || (typeof(billingCity) !== 'string')
-            || !billingZone      || (typeof(billingZone) !== 'string')
             || !billingZip       || (typeof(billingZip) !== 'string')
-            || !billingCountry   || (typeof(billingCountry) !== 'string') // todo validate country id
+            || !billingAddress   || (typeof(billingAddress) !== 'string')
+            
+            || !billingFirstName || (typeof(billingFirstName) !== 'string')
+            || !billingLastName  || (typeof(billingLastName) !== 'string')
+            || !billingPhone     || (typeof(billingPhone) !== 'string')
         ) {
             return NextResponse.json({
                 error: 'Invalid data.',
@@ -2323,16 +2311,15 @@ Updating the confirmation is not required.`,
                         ...paymentDetail,
                         expiresAt      : null, // paid, no more payment expiry date
                         billingAddress : hasBillingAddress ? {
+                            country    : billingCountry,
+                            state      : billingState,
+                            city       : billingCity,
+                            zip        : billingZip,
+                            address    : billingAddress,
+                            
                             firstName  : billingFirstName,
                             lastName   : billingLastName,
-                            
                             phone      : billingPhone,
-                            
-                            address    : billingAddress,
-                            city       : billingCity,
-                            zone       : billingZone,
-                            zip        : billingZip,
-                            country    : billingCountry,
                         } : null,
                     },
                 });
@@ -2638,32 +2625,30 @@ Updating the confirmation is not required.`,
             
             
             // shipping data:
+            shippingCountry    : shippingAddress?.country   ?? '',
+            shippingState      : shippingAddress?.state      ?? '',
+            shippingCity       : shippingAddress?.city      ?? '',
+            shippingZip        : shippingAddress?.zip       ?? '',
+            shippingAddress    : shippingAddress?.address   ?? '',
+            
             shippingFirstName  : shippingAddress?.firstName ?? '',
             shippingLastName   : shippingAddress?.lastName  ?? '',
-            
             shippingPhone      : shippingAddress?.phone     ?? '',
-            
-            shippingAddress    : shippingAddress?.address   ?? '',
-            shippingCity       : shippingAddress?.city      ?? '',
-            shippingZone       : shippingAddress?.zone      ?? '',
-            shippingZip        : shippingAddress?.zip       ?? '',
-            shippingCountry    : shippingAddress?.country   ?? '',
             
             shippingProvider   : shippingProviderId ?? undefined,
             
             
             
             // billing data:
+            billingCountry     : billingAddress?.country   ?? '',
+            billingState       : billingAddress?.state     ?? '',
+            billingCity        : billingAddress?.city      ?? '',
+            billingZip         : billingAddress?.zip       ?? '',
+            billingAddress     : billingAddress?.address   ?? '',
+            
             billingFirstName   : billingAddress?.firstName ?? '',
             billingLastName    : billingAddress?.lastName  ?? '',
-            
             billingPhone       : billingAddress?.phone     ?? '',
-            
-            billingAddress     : billingAddress?.address   ?? '',
-            billingCity        : billingAddress?.city      ?? '',
-            billingZone        : billingAddress?.zone      ?? '',
-            billingZip         : billingAddress?.zip       ?? '',
-            billingCountry     : billingAddress?.country   ?? '',
             
             
             

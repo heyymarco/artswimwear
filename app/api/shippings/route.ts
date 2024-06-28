@@ -69,7 +69,7 @@ router
     //#region parsing request
     const {
         city,
-        zone,
+        state,
         country,
     } = await req.json();
     //#endregion parsing request
@@ -79,7 +79,7 @@ router
     //#region validating request
     if (
            !city    || (typeof(city)    !== 'string') || (city.length    < 3) || (city.length    > 50)
-        || !zone    || (typeof(zone)    !== 'string') || (zone.length    < 3) || (zone.length    > 50)
+        || !state   || (typeof(state)   !== 'string') || (state.length   < 3) || (state.length   > 50)
         || !country || (typeof(country) !== 'string') || (country.length < 2) || (country.length >  3)
     ) {
         return NextResponse.json({
@@ -120,7 +120,7 @@ router
     const shippings = allShippings.filter(({visibility}) => (visibility !== 'DRAFT'));
     
     // filter out non_compatible shippings:
-    const shippingAddress: MatchingAddress = { city, zone, country };
+    const shippingAddress: MatchingAddress = { city, state, country };
     const matchingShippings = (
         shippings
         .map((shipping) => getMatchingShipping(shipping, shippingAddress))

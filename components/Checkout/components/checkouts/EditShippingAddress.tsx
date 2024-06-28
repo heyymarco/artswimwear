@@ -33,31 +33,29 @@ const EditShippingAddress = (): JSX.Element|null => {
         shippingValidation,
         
         
+        shippingCountry,
+        shippingCountryHandlers,
+        
+        shippingState,
+        shippingStateHandlers,
+        
+        shippingCity,
+        shippingCityHandlers,
+        
+        shippingZip,
+        shippingZipHandlers,
+        
+        shippingAddress,
+        shippingAddressHandlers,
+        
         shippingFirstName,
         shippingFirstNameHandlers,
         
         shippingLastName,
         shippingLastNameHandlers,
         
-        
         shippingPhone,
         shippingPhoneHandlers,
-        
-        
-        shippingAddress,
-        shippingAddressHandlers,
-        
-        shippingCity,
-        shippingCityHandlers,
-        
-        shippingZone,
-        shippingZoneHandlers,
-        
-        shippingZip,
-        shippingZipHandlers,
-        
-        shippingCountry,
-        shippingCountryHandlers,
         
         
         
@@ -91,31 +89,29 @@ const EditShippingAddress = (): JSX.Element|null => {
                 
                 
                 // values:
+                countryList       = {countryList}
+                country           = {shippingCountry}
+                zone              = {shippingState}
+                city              = {shippingCity}
+                zip               = {shippingZip}
+                address           = {shippingAddress}
+                
                 firstName         = {shippingFirstName}
                 lastName          = {shippingLastName}
-                
                 phone             = {shippingPhone}
-                
-                address           = {shippingAddress}
-                city              = {shippingCity}
-                zone              = {shippingZone}
-                zip               = {shippingZip}
-                country           = {shippingCountry}
-                countryList       = {countryList}
                 
                 
                 
                 // handlers:
+                onCountryChange   = {shippingCountryHandlers.onChange  }
+                onZoneChange      = {shippingStateHandlers.onChange    }
+                onCityChange      = {shippingCityHandlers.onChange     }
+                onZipChange       = {shippingZipHandlers.onChange      }
+                onAddressChange   = {shippingAddressHandlers.onChange  }
+                
                 onFirstNameChange = {shippingFirstNameHandlers.onChange}
                 onLastNameChange  = {shippingLastNameHandlers.onChange }
-                
                 onPhoneChange     = {shippingPhoneHandlers.onChange    }
-                
-                onAddressChange   = {shippingAddressHandlers.onChange  }
-                onCityChange      = {shippingCityHandlers.onChange     }
-                onZoneChange      = {shippingZoneHandlers.onChange     }
-                onZipChange       = {shippingZipHandlers.onChange      }
-                onCountryChange   = {shippingCountryHandlers.onChange  }
             />
         </ValidationProvider>
     );

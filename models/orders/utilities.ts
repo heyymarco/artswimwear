@@ -231,7 +231,7 @@ export const convertOrderDataToOrderAndData = (orderData: Awaited<ReturnType<typ
         })),
         shippingProvider : (
             (shippingAddressData && shippingProviderData)
-            ? getMatchingShipping(shippingProviderData, { city: shippingAddressData.city, zone: shippingAddressData.zone, country: shippingAddressData.country })
+            ? getMatchingShipping(shippingProviderData, { city: shippingAddressData.city, state: shippingAddressData.state, country: shippingAddressData.country })
             : null
         ),
         customerOrGuest : (

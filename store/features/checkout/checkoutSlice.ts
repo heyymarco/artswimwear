@@ -104,16 +104,15 @@ const initialState : CheckoutState = {
     // shipping data:
     shippingValidation : false,
     
+    shippingCountry    : '',
+    shippingState      : '',
+    shippingCity       : '',
+    shippingZip        : '',
+    shippingAddress    : '',
+    
     shippingFirstName  : '',
     shippingLastName   : '',
-    
     shippingPhone      : '',
-    
-    shippingAddress    : '',
-    shippingCity       : '',
-    shippingZone       : '',
-    shippingZip        : '',
-    shippingCountry    : '',
     
     shippingProvider   : undefined,
     
@@ -124,16 +123,15 @@ const initialState : CheckoutState = {
     
     billingAsShipping  : true,
     
+    billingCountry     : '',
+    billingState       : '',
+    billingCity        : '',
+    billingZip         : '',
+    billingAddress     : '',
+    
     billingFirstName   : '',
     billingLastName    : '',
-    
     billingPhone       : '',
-    
-    billingAddress     : '',
-    billingCity        : '',
-    billingZone        : '',
-    billingZip         : '',
-    billingCountry     : '',
     
     
     
@@ -189,31 +187,30 @@ export const checkoutSlice = createSlice({
             state.shippingValidation = value;
         },
         
+        setShippingCountry    : (state, {payload: value}: PayloadAction<string>) => {
+            state.shippingCountry = value;
+        },
+        setShippingState      : (state, {payload: value}: PayloadAction<string>) => {
+            state.shippingState = value;
+        },
+        setShippingCity       : (state, {payload: value}: PayloadAction<string>) => {
+            state.shippingCity = value;
+        },
+        setShippingZip        : (state, {payload: value}: PayloadAction<string>) => {
+            state.shippingZip = value;
+        },
+        setShippingAddress    : (state, {payload: value}: PayloadAction<string>) => {
+            state.shippingAddress = value;
+        },
+        
         setShippingFirstName  : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingFirstName = value;
         },
         setShippingLastName   : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingLastName = value;
         },
-        
         setShippingPhone      : (state, {payload: value}: PayloadAction<string>) => {
             state.shippingPhone = value;
-        },
-        
-        setShippingAddress    : (state, {payload: value}: PayloadAction<string>) => {
-            state.shippingAddress = value;
-        },
-        setShippingCity       : (state, {payload: value}: PayloadAction<string>) => {
-            state.shippingCity = value;
-        },
-        setShippingZone       : (state, {payload: value}: PayloadAction<string>) => {
-            state.shippingZone = value;
-        },
-        setShippingZip        : (state, {payload: value}: PayloadAction<string>) => {
-            state.shippingZip = value;
-        },
-        setShippingCountry    : (state, {payload: value}: PayloadAction<string>) => {
-            state.shippingCountry = value;
         },
         
         setShippingProvider   : (state, {payload: value}: PayloadAction<string>) => {
@@ -231,31 +228,30 @@ export const checkoutSlice = createSlice({
             state.billingAsShipping = value;
         },
         
+        setBillingCountry     : (state, {payload: value}: PayloadAction<string>) => {
+            state.billingCountry = value;
+        },
+        setBillingState       : (state, {payload: value}: PayloadAction<string>) => {
+            state.billingState = value;
+        },
+        setBillingCity        : (state, {payload: value}: PayloadAction<string>) => {
+            state.billingCity = value;
+        },
+        setBillingZip         : (state, {payload: value}: PayloadAction<string>) => {
+            state.billingZip = value;
+        },
+        setBillingAddress     : (state, {payload: value}: PayloadAction<string>) => {
+            state.billingAddress = value;
+        },
+        
         setBillingFirstName   : (state, {payload: value}: PayloadAction<string>) => {
             state.billingFirstName = value;
         },
         setBillingLastName    : (state, {payload: value}: PayloadAction<string>) => {
             state.billingLastName = value;
         },
-        
         setBillingPhone       : (state, {payload: value}: PayloadAction<string>) => {
             state.billingPhone = value;
-        },
-        
-        setBillingAddress     : (state, {payload: value}: PayloadAction<string>) => {
-            state.billingAddress = value;
-        },
-        setBillingCity        : (state, {payload: value}: PayloadAction<string>) => {
-            state.billingCity = value;
-        },
-        setBillingZone        : (state, {payload: value}: PayloadAction<string>) => {
-            state.billingZone = value;
-        },
-        setBillingZip         : (state, {payload: value}: PayloadAction<string>) => {
-            state.billingZip = value;
-        },
-        setBillingCountry     : (state, {payload: value}: PayloadAction<string>) => {
-            state.billingCountry = value;
         },
         
         
@@ -312,16 +308,15 @@ export const {
     // shipping data:
     setShippingValidation,
     
+    setShippingCountry,
+    setShippingState,
+    setShippingCity,
+    setShippingZip,
+    setShippingAddress,
+    
     setShippingFirstName,
     setShippingLastName,
-    
     setShippingPhone,
-    
-    setShippingAddress,
-    setShippingCity,
-    setShippingZone,
-    setShippingZip,
-    setShippingCountry,
     
     setShippingProvider,
     
@@ -332,16 +327,15 @@ export const {
     
     setBillingAsShipping,
     
+    setBillingCountry,
+    setBillingState,
+    setBillingCity,
+    setBillingZip,
+    setBillingAddress,
+    
     setBillingFirstName,
     setBillingLastName,
-    
     setBillingPhone,
-    
-    setBillingAddress,
-    setBillingCity,
-    setBillingZone,
-    setBillingZip,
-    setBillingCountry,
     
     
     

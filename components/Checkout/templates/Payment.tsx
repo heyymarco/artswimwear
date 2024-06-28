@@ -80,16 +80,15 @@ const BillingAddress = (): React.ReactNode => {
     if (!address) return null;
     const {
         // billing data:
+        country   : billingCountry,
+        state     : billingState,
+        city      : billingCity,
+        zip       : billingZip,
+        address   : billingAddress,
+        
         firstName : billingFirstName,
         lastName  : billingLastName,
-        
         phone     : billingPhone,
-        
-        address   : billingAddress,
-        city      : billingCity,
-        zone      : billingZone,
-        zip       : billingZip,
-        country   : billingCountry,
     } = address;
     return (
         <>
@@ -98,7 +97,7 @@ const BillingAddress = (): React.ReactNode => {
             </p>
             
             <p style={styles.paragraphLast}>
-                {`${billingAddress}, ${billingCity}, ${billingZone} (${billingZip}), ${countryList?.entities?.[billingCountry ?? '']?.name}`}
+                {`${billingAddress}, ${billingCity}, ${billingState} (${billingZip}), ${countryList?.entities?.[billingCountry ?? '']?.name}`}
             </p>
         </>
     );

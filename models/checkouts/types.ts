@@ -50,24 +50,24 @@ export interface CreateOrderOptions {
     detailedItems               : DetailedItem[]
     
     hasShippingAddress          : boolean
+    shippingCountry             : string|undefined
+    shippingState               : string|undefined
+    shippingCity                : string|undefined
+    shippingZip                 : string|undefined
+    shippingAddress             : string|undefined
     shippingFirstName           : string|undefined
     shippingLastName            : string|undefined
     shippingPhone               : string|undefined
-    shippingAddress             : string|undefined
-    shippingCity                : string|undefined
-    shippingZone                : string|undefined
-    shippingZip                 : string|undefined
-    shippingCountry             : string|undefined
     
     hasBillingAddress          ?: boolean
+    billingCountry             ?: string|undefined
+    billingState               ?: string|undefined
+    billingCity                ?: string|undefined
+    billingZip                 ?: string|undefined
+    billingAddress             ?: string|undefined
     billingFirstName           ?: string|undefined
     billingLastName            ?: string|undefined
     billingPhone               ?: string|undefined
-    billingAddress             ?: string|undefined
-    billingCity                ?: string|undefined
-    billingZone                ?: string|undefined
-    billingZip                 ?: string|undefined
-    billingCountry             ?: string|undefined
 }
 export interface AuthorizedFundData {
     paymentId     : string

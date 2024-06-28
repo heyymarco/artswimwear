@@ -166,14 +166,14 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
         const shipping_address = data.shipping_address;
         if (shipping_address) {
             const shippingFieldMap = new Map<string, keyof typeof checkoutState | undefined>([
-                ['address_line_1', 'shippingAddress'],
-                ['address_line_2', undefined        ],
+                ['country_code'  , 'shippingCountry'],
+                ['state'         , 'shippingState'  ],
+                ['admin_area_1'  , 'shippingState'  ],
                 ['city'          , 'shippingCity'   ],
                 ['admin_area_2'  , 'shippingCity'   ],
-                ['state'         , 'shippingZone'   ],
-                ['admin_area_1'  , 'shippingZone'   ],
                 ['postal_code'   , 'shippingZip'    ],
-                ['country_code'  , 'shippingCountry'],
+                ['address_line_1', 'shippingAddress'],
+                ['address_line_2', undefined        ],
             ]);
             
             
