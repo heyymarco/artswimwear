@@ -32,6 +32,7 @@
 32 ['Bali/Kabupaten Jembrana', [["OKE",[{"value":23000,"etd":"7-8","note":""}]],["REG",[{"value":26000,"etd":"3-4","note":""}]]]],
 33 ['Bali/Kabupaten Karang Asem', [["OKE",[{"value":25000,"etd":"7-8","note":""}]],["REG",[{"value":29000,"etd":"3-4","note":""}]]]],
 34 ['Bali/Kabupaten Klungkung', [["OKE",[{"value":25000,"etd":"7-8","note":""}]],["REG",[{"value":29000,"etd":"3-4","note":""}]]]],
+35 ['Bali/Kabupaten Tabanan', [["OKE",[{"value":23000,"etd":"7-8","note":""}]],["REG",[{"value":26000,"etd":"3-4","note":""}]]]],
 36 ['Bali/Klungkung', [["OKE",[{"value":25000,"etd":"7-8","note":""}]],["REG",[{"value":29000,"etd":"3-4","note":""}]]]],
 37 ['Bali/Kota Denpasar', [["OKE",[{"value":20000,"etd":"4-5","note":""}]],["REG",[{"value":23000,"etd":"2-3","note":""}]]]],
 38 ['Bali/Tabanan', [["OKE",[{"value":23000,"etd":"7-8","note":""}]],["REG",[{"value":26000,"etd":"3-4","note":""}]]]],
