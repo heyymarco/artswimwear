@@ -171,7 +171,7 @@ const SiteNavbarMenu = ({
                     <NavItem><Link href='/products'>Products</Link></NavItem>
                     <NavItem><Link href='/about'>About</Link></NavItem>
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
-                    <NavItem href='https://www.instagram.com/'><Icon icon='instagram' size='lg' /></NavItem>
+                    <NavItem href='https://www.instagram.com/art_ethnicswim/'><Icon icon='instagram' size='lg' /></NavItem>
                     
                     <CurrencyMenu theme='primary' buttonComponent={<Button />} />
                     {navbarExpanded && !isCartEmpty && <ListItem<HTMLElement>
