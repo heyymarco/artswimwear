@@ -631,11 +631,11 @@ router
                         visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
                     },
                     select : {
-                        weightStep    : true,
-                        shippingRates : true,
+                        weightStep : true,
+                        rates      : true,
                         
-                        useZones      : true,
-                        zones         : true,
+                        useZones   : true,
+                        zones      : true,
                     },
                 }) : null,
                 prismaTransaction.product.findMany({

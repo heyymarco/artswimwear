@@ -196,14 +196,14 @@ export const orderAndDataSelect = {
     shippingProviderId : true,
     shippingProvider   : {
         select : {
-            name          : true, // optional for displaying email report
+            name       : true, // optional for displaying email report
             
-            weightStep    : true, // required for calculating `getMatchingShipping()`
-            eta           : true, // optional for displaying email report
-            shippingRates : true, // required for calculating `getMatchingShipping()`
+            weightStep : true, // required for calculating `getMatchingShipping()`
+            eta        : true, // optional for displaying email report
+            rates      : true, // required for calculating `getMatchingShipping()`
             
-            useZones      : true, // required for calculating `getMatchingShipping()`
-            zones         : true, // required for calculating `getMatchingShipping()`
+            useZones   : true, // required for calculating `getMatchingShipping()`
+            zones      : true, // required for calculating `getMatchingShipping()`
         },
     },
 } satisfies Prisma.OrderSelect;

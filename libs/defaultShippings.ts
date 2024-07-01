@@ -7,17 +7,17 @@ import {
 
 export default [
     {
-        visibility    : 'PUBLISHED',
+        visibility : 'PUBLISHED',
         
-        name          : 'Free Shipping',
+        name       : 'Free Shipping',
         
-        weightStep    : 1,
-        eta           : undefined,
-        shippingRates : [
+        weightStep : 1,
+        eta        : undefined,
+        rates      : [
             { startingWeight: 0, rate: 0 },
         ],
         
-        useZones      : false,
-        zones         : [],
+        useZones   : false,
+        zones      : [],
     },
 ] satisfies Prisma.ShippingProviderUpdateInput[];

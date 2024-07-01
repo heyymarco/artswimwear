@@ -156,7 +156,7 @@ model ShippingProvider {
     
     weightStep                      Float                           // min: 0, max: 1000
     eta                             ShippingEta?
-    shippingRates                   ShippingRate[]
+    rates                           ShippingRate[]
     
     useZones                        Boolean
     zones                           CoverageCountry[]
@@ -170,7 +170,7 @@ type CoverageCountry {
     name                            String                          // minLength: 2, maxLength: 3
     
     eta                             ShippingEta?
-    shippingRates                   ShippingRate[]
+    rates                           ShippingRate[]
     
     useZones                        Boolean
     zones                           CoverageState[]
@@ -180,7 +180,7 @@ type CoverageState {
     name                            String                          // minLength: 3, maxLength: 50
     
     eta                             ShippingEta?
-    shippingRates                   ShippingRate[]
+    rates                           ShippingRate[]
     
     useZones                        Boolean
     zones                           CoverageCity[]
@@ -190,7 +190,7 @@ type CoverageCity {
     name                            String                          // minLength: 3, maxLength: 50
     
     eta                             ShippingEta?
-    shippingRates                   ShippingRate[]
+    rates                           ShippingRate[]
 }
 enum ShippingVisibility {
     PUBLISHED

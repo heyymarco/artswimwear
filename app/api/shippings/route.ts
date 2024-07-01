@@ -99,18 +99,18 @@ router
             data: defaultShippings,
         });
         // allShippings = defaultShippings.map((shipping) => ({
-        //     id            : shipping.id,
+        //     id         : shipping.id,
         //     
-        //     visibility    : shipping.visibility,
+        //     visibility : shipping.visibility,
         //     
-        //     name          : shipping.name,
+        //     name       : shipping.name,
         //     
-        //     weightStep    : shipping.weightStep,
-        //     eta           : shipping.eta,
-        //     shippingRates : shipping.shippingRates,
+        //     weightStep : shipping.weightStep,
+        //     eta        : shipping.eta,
+        //     rates      : shipping.rates,
         //     
-        //     useZones      : shipping.useZones,
-        //     countries     : shipping.countries,
+        //     useZones   : shipping.useZones,
+        //     countries  : shipping.countries,
         // }));
     } // if
     

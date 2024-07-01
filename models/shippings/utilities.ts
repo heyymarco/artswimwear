@@ -6,24 +6,24 @@ import {
 
 
 export const shippingPreviewSelect = {
-    id            : true,
+    id         : true,
     
-    name          : true,
+    name       : true,
 } satisfies Prisma.ShippingProviderSelect;
 
 
 
 export const shippingDetailSelect = {
-    id            : true,
+    id         : true,
     
-    visibility    : true,
+    visibility : true,
     
-    name          : true,
+    name       : true,
     
-    weightStep    : true,
-    eta           : true,
-    shippingRates : true,
+    weightStep : true,
+    eta        : true,
+    rates      : true,
     
-    useZones      : true,
-    zones         : true,
+    useZones   : true,
+    zones      : true,
 } satisfies Prisma.ShippingProviderSelect;
