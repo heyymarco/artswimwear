@@ -7,6 +7,7 @@ import { type ShippingEta, type ShippingRate } from '@/models'
 
 const serviceType = /REG|CTC/;
 const serviceName = 'JNE Reguler';
+const fallbacksToHighestPrice = true;
 const services = (
     data
     .map(([destination, items]) => {
@@ -74,31 +75,39 @@ const states = (
     .map(([state, cities]) => ({
         name          : state,
         
-        eta           : cities.reduce((accum, {eta}) => {
-            if (accum === null) {
-                return eta;
-            }
-            else {
-                return {
-                    min : Math.min(accum.min, eta.min),
-                    max : Math.max(accum.max, eta.max),
-                };
-            } // if
-        }, null as ShippingEta|null),
-        rates         : cities.reduce((accum, {rates}) => {
-            if (accum === null) {
-                return rates;
-            }
-            else {
-                const rate = rates[0];
-                return [
-                    {
-                        start : 0,
-                        rate  : Math.max(accum[0].rate, rate.rate),
-                    }
-                ];
-            } // if
-        }, null as ShippingRate[]|null) ?? [],
+        eta           : (
+            fallbacksToHighestPrice
+            ? cities.reduce((accum, {eta}) => {
+                if (accum === null) {
+                    return eta;
+                }
+                else {
+                    return {
+                        min : Math.min(accum.min, eta.min),
+                        max : Math.max(accum.max, eta.max),
+                    };
+                } // if
+            }, null as ShippingEta|null)
+            : null
+        ),
+        rates         : (
+            fallbacksToHighestPrice
+            ? (cities.reduce((accum, {rates}) => {
+                if (accum === null) {
+                    return rates;
+                }
+                else {
+                    const rate = rates[0];
+                    return [
+                        {
+                            start : 0,
+                            rate  : Math.max(accum[0].rate, rate.rate),
+                        }
+                    ];
+                } // if
+            }, null as ShippingRate[]|null) ?? [])
+            : []
+        ),
         
         useZones      : true,
         zones         : cities,
@@ -108,31 +117,39 @@ const countries = [
     {
         name          : 'ID',
         
-        eta           : states.reduce((accum, {eta}) => {
-            if (accum === null) {
-                return eta;
-            }
-            else {
-                return {
-                    min : Math.min(accum.min, eta.min),
-                    max : Math.max(accum.max, eta.max),
-                };
-            } // if
-        }, null as ShippingEta|null),
-        rates         : states.reduce((accum, {rates}) => {
-            if (accum === null) {
-                return rates;
-            }
-            else {
-                const rate = rates[0];
-                return [
-                    {
-                        start : 0,
-                        rate  : Math.max(accum[0].rate, rate.rate),
-                    }
-                ];
-            } // if
-        }, null as ShippingRate[]|null) ?? [],
+        eta           : (
+            fallbacksToHighestPrice
+            ? states.reduce((accum, {eta}) => {
+                if (accum === null) {
+                    return eta;
+                }
+                else {
+                    return {
+                        min : Math.min(accum.min, eta.min),
+                        max : Math.max(accum.max, eta.max),
+                    };
+                } // if
+            }, null as ShippingEta|null)
+            : null
+        ),
+        rates         : (
+            fallbacksToHighestPrice
+            ? (states.reduce((accum, {rates}) => {
+                if (accum === null) {
+                    return rates;
+                }
+                else {
+                    const rate = rates[0];
+                    return [
+                        {
+                            start : 0,
+                            rate  : Math.max(accum[0].rate, rate.rate),
+                        }
+                    ];
+                } // if
+            }, null as ShippingRate[]|null) ?? [])
+            : []
+        ),
         
         useZones      : true,
         zones         : states,
