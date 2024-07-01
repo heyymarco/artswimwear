@@ -1,6 +1,7 @@
 import { default as data } from './dump-results-jne.js'
 import { appendFile, writeFile } from 'fs/promises'
 import { customAlphabet } from 'nanoid/async'
+import { type ShippingEta, type ShippingRate } from '@/models'
 
 
 
@@ -33,7 +34,7 @@ const services = (
             rate        : value,
             eta         : (etaMin === null) ? null : {
                 min     : etaMin,
-                max     : ((etaMax === null) || (etaMax < etaMin)) ? etaMin : etaMax,
+                max     : ((etaMax === null) || (etaMax === undefined) || (etaMax < etaMin)) ? etaMin : etaMax,
             },
         };
     })
@@ -73,8 +74,31 @@ const states = (
     .map(([state, cities]) => ({
         name          : state,
         
-        eta           : null,
-        rates         : [],
+        eta           : cities.reduce((accum, {eta}) => {
+            if (accum === null) {
+                return eta;
+            }
+            else {
+                return {
+                    min : Math.min(accum.min, eta.min),
+                    max : Math.max(accum.max, eta.max),
+                };
+            } // if
+        }, null as ShippingEta|null),
+        rates         : cities.reduce((accum, {rates}) => {
+            if (accum === null) {
+                return rates;
+            }
+            else {
+                const rate = rates[0];
+                return [
+                    {
+                        start : 0,
+                        rate  : Math.max(accum[0].rate, rate.rate),
+                    }
+                ];
+            } // if
+        }, null as ShippingRate[]|null) ?? [],
         
         useZones      : true,
         zones         : cities,
@@ -84,8 +108,31 @@ const countries = [
     {
         name          : 'ID',
         
-        eta           : null,
-        rates         : [],
+        eta           : states.reduce((accum, {eta}) => {
+            if (accum === null) {
+                return eta;
+            }
+            else {
+                return {
+                    min : Math.min(accum.min, eta.min),
+                    max : Math.max(accum.max, eta.max),
+                };
+            } // if
+        }, null as ShippingEta|null),
+        rates         : states.reduce((accum, {rates}) => {
+            if (accum === null) {
+                return rates;
+            }
+            else {
+                const rate = rates[0];
+                return [
+                    {
+                        start : 0,
+                        rate  : Math.max(accum[0].rate, rate.rate),
+                    }
+                ];
+            } // if
+        }, null as ShippingRate[]|null) ?? [],
         
         useZones      : true,
         zones         : states,

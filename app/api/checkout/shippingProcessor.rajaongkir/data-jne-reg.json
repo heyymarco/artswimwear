@@ -1,10 +1,10 @@
 {
-  "_id": "mt1o19igeh3mnju9tagviro50",
+  "_id": "llyeajlzjnttnj16u5c6mldkn",
   "createdAt": {
-    "$date": "2024-07-01T20:40:39.120Z"
+    "$date": "2024-07-01T21:41:15.161Z"
   },
   "updatedAt": {
-    "$date": "2024-07-01T20:40:39.120Z"
+    "$date": "2024-07-01T21:41:15.161Z"
   },
   "visibility": "PUBLISHED",
   "name": "JNE Reguler",
@@ -15,14 +15,30 @@
   "zones": [
     {
       "name": "ID",
-      "eta": null,
-      "rates": [],
+      "eta": {
+        "min": 1,
+        "max": 10
+      },
+      "rates": [
+        {
+          "start": 0,
+          "rate": 228000
+        }
+      ],
       "useZones": true,
       "zones": [
         {
           "name": "Aceh",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 3,
+            "max": 10
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 87000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -249,7 +265,8 @@
             {
               "name": "Kabupaten Simeulue",
               "eta": {
-                "min": 10
+                "min": 10,
+                "max": 10
               },
               "rates": [
                 {
@@ -366,8 +383,16 @@
         },
         {
           "name": "Bali",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 8
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 29000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -530,8 +555,16 @@
         },
         {
           "name": "Banten",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 4
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 22000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -681,8 +714,16 @@
         },
         {
           "name": "Bengkulu",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 5
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 42000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -832,8 +873,16 @@
         },
         {
           "name": "DI Yogyakarta",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 1,
+            "max": 2
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 10000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -944,8 +993,16 @@
         },
         {
           "name": "DKI Jakarta",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 3
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 16000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -1017,8 +1074,16 @@
         },
         {
           "name": "Gorontalo",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 4,
+            "max": 7
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 108000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -1116,8 +1181,16 @@
         },
         {
           "name": "Jambi",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 5
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 36000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -1280,8 +1353,16 @@
         },
         {
           "name": "Jawa Barat",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 1,
+            "max": 6
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 23000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -1834,8 +1915,16 @@
         },
         {
           "name": "Jawa Tengah",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 1,
+            "max": 5
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 18000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -2531,8 +2620,16 @@
         },
         {
           "name": "Jawa Timur",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 1,
+            "max": 5
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 22000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -3358,8 +3455,16 @@
         },
         {
           "name": "Kalimantan Barat",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 5
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 72000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -3522,8 +3627,16 @@
         },
         {
           "name": "Kalimantan Selatan",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 6
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 62000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -3712,8 +3825,16 @@
         },
         {
           "name": "Kalimantan Tengah",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 6
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 69000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -3889,8 +4010,16 @@
         },
         {
           "name": "Kalimantan Timur",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 6
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 114000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -4053,8 +4182,16 @@
         },
         {
           "name": "Kalimantan Utara",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 6
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 101000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -4126,8 +4263,16 @@
         },
         {
           "name": "Kepulauan Bangka Belitung",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 5
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 75000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -4225,8 +4370,16 @@
         },
         {
           "name": "Kepulauan Riau",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 8
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 88000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -4337,8 +4490,16 @@
         },
         {
           "name": "Lampung",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 8
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 41000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -4540,8 +4701,16 @@
         },
         {
           "name": "Maluku",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 5,
+            "max": 10
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 154000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -4573,7 +4742,8 @@
             {
               "name": "Kabupaten Maluku Barat Daya",
               "eta": {
-                "min": 10
+                "min": 10,
+                "max": 10
               },
               "rates": [
                 {
@@ -4624,7 +4794,8 @@
             {
               "name": "Kabupaten Seram Bagian Barat",
               "eta": {
-                "min": 10
+                "min": 10,
+                "max": 10
               },
               "rates": [
                 {
@@ -4636,7 +4807,8 @@
             {
               "name": "Kabupaten Seram Bagian Timur",
               "eta": {
-                "min": 10
+                "min": 10,
+                "max": 10
               },
               "rates": [
                 {
@@ -4688,8 +4860,16 @@
         },
         {
           "name": "Maluku Utara",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 5,
+            "max": 7
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 147000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -4813,8 +4993,16 @@
         },
         {
           "name": "Nusa Tenggara Barat",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 2,
+            "max": 7
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 60000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -4990,8 +5178,16 @@
         },
         {
           "name": "Nusa Tenggara Timur",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 3,
+            "max": 10
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 160000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -5101,7 +5297,8 @@
             {
               "name": "Kabupaten Sumba Tengah",
               "eta": {
-                "min": 10
+                "min": 10,
+                "max": 10
               },
               "rates": [
                 {
@@ -5179,8 +5376,16 @@
         },
         {
           "name": "Papua",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 5,
+            "max": 10
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 228000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
@@ -5199,7 +5404,8 @@
             {
               "name": "Kabupaten Asmat",
               "eta": {
-                "min": 10
+                "min": 10,
+                "max": 10
               },
               "rates": [
                 {
@@ -5302,7 +5508,8 @@
             {
               "name": "Kabupaten Mamberamo Raya",
               "eta": {
-                "min": 10
+                "min": 10,
+                "max": 10
               },
               "rates": [
                 {
@@ -5406,8 +5613,16 @@
         },
         {
           "name": "Papua Barat",
-          "eta": null,
-          "rates": [],
+          "eta": {
+            "min": 5,
+            "max": 10
+          },
+          "rates": [
+            {
+              "start": 0,
+              "rate": 205000
+            }
+          ],
           "useZones": true,
           "zones": [
             {
