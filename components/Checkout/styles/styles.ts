@@ -305,7 +305,7 @@ export default () => {
                 // spacings:
                 padding         : spacers.xs,
             }),
-            ...children(['.customerName', '.shippingEstimate', '.paymentIdentifier'], {
+            ...children(['.customerName', '.eta', '.paymentIdentifier'], {
                 // typos:
                 fontSize       : typos.fontSizeSm,
                 fontWeight     : typos.fontWeightNormal,
@@ -389,11 +389,11 @@ export default () => {
             // layouts:
             display                         : 'grid',
             
-            // narrow screen: without estimate:
+            // narrow screen: without eta:
             gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
             ...ifScreenWidthAtLeast('sm', {
-                // wide screen: with estimate:
-                gridTemplateColumns         : '[decor-start] max-content [decor-end label-start] max-content [label-end estimate-start] max-content [estimate-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
+                // wide screen: with eta:
+                gridTemplateColumns         : '[decor-start] max-content [decor-end label-start] max-content [label-end eta-start] max-content [eta-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
             }),
             
             
@@ -446,11 +446,11 @@ export default () => {
                             gridArea        : 'row1-start / label-start / row2-end / label-end',
                         }),
                     }),
-                    ...children('.estimate', {
+                    ...children('.eta', {
                         // positions:
                         gridArea            : 'row2-start / label-start / row2-end / label-end',
                         ...ifScreenWidthAtLeast('sm', {
-                            gridArea        : 'row1-start / estimate-start / row2-end / estimate-end',
+                            gridArea        : 'row1-start / eta-start / row2-end / eta-end',
                         }),
                     }),
                     ...children('.cost', {

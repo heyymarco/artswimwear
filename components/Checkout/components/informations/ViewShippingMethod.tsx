@@ -42,11 +42,11 @@ const ViewShippingMethod = (): JSX.Element|null => {
                 {selectedShipping?.name}
             </span>
             
-            {!!selectedShipping?.estimate && <span
+            {!!selectedShipping?.eta && <span
                 // classes:
-                className='shippingEstimate txt-sec'
+                className='eta txt-sec'
             >
-                (estimate: {selectedShipping?.estimate} after dispatched from our warehouse)
+                (estimate: {selectedShipping.eta.min}{(selectedShipping.eta.max > selectedShipping.eta.min) ? <>-{selectedShipping.eta.max}</> : null} day{(selectedShipping.eta.min > 1) ? 's' : ''} after dispatched from our warehouse)
             </span>}
         </>
     );

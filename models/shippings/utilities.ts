@@ -21,7 +21,7 @@ export const shippingDetailSelect = {
     name          : true,
     
     weightStep    : true,
-    estimate      : true,
+    eta           : true,
     shippingRates : true,
     
     useZones      : true,

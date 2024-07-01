@@ -126,8 +126,8 @@ const EditShippingMethod = (): JSX.Element|null => {
                                     {shippingEntry.name}
                                 </span>
                                 
-                                {!!shippingEntry.estimate && <span className='estimate txt-sec'>
-                                    (estimate: {shippingEntry.estimate})
+                                {!!shippingEntry.eta && <span className='eta txt-sec'>
+                                    (estimate: {shippingEntry.eta.min}{(shippingEntry.eta.max > shippingEntry.eta.min) ? <>-{shippingEntry.eta.max}</> : null} day{(shippingEntry.eta.min > 1) ? 's' : ''})
                                 </span>}
                                 
                                 <span className='cost'>

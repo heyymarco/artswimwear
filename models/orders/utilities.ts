@@ -199,7 +199,7 @@ export const orderAndDataSelect = {
             name          : true, // optional for displaying email report
             
             weightStep    : true, // required for calculating `getMatchingShipping()`
-            estimate      : true, // optional for displaying email report
+            eta           : true, // optional for displaying email report
             shippingRates : true, // required for calculating `getMatchingShipping()`
             
             useZones      : true, // required for calculating `getMatchingShipping()`

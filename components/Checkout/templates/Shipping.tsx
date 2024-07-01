@@ -83,8 +83,8 @@ const ShippingMethod = (): React.ReactNode => {
             >
                 {shippingProvider.name}
                 
-                {!!shippingProvider.estimate && <span style={styles.textSmall}>
-                        (estimate: {shippingProvider.estimate} after dispatched from our warehouse)
+                {!!shippingProvider.eta && <span style={styles.textSmall}>
+                    (estimate: {shippingProvider.eta.min}{(shippingProvider.eta.max > shippingProvider.eta.min) ? <>-{shippingProvider.eta.max}</> : null} day{(shippingProvider.eta.min > 1) ? 's' : ''} after dispatched from our warehouse)
                 </span>}
             </p>
         </>

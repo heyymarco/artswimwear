@@ -143,42 +143,6 @@ model Stock {
 
 
 
-type ShippingRate {
-    // data:
-    startingWeight                  Float                           // min: 0, max: 1000     
-    rate                            Float                           // min: 0, max: 999999999
-}
-type CoverageCity {
-    // data:
-    name                            String                          // minLength: 3, maxLength: 50
-    
-    estimate                        String?                         // minLength: 2, maxLength: 50
-    shippingRates                   ShippingRate[]
-}
-type CoverageState {
-    // data:
-    name                            String                          // minLength: 3, maxLength: 50
-    
-    estimate                        String?                         // minLength: 2, maxLength: 50
-    shippingRates                   ShippingRate[]
-    
-    useZones                        Boolean
-    zones                           CoverageCity[]
-}
-type CoverageCountry {
-    // data:
-    name                            String                          // minLength: 2, maxLength: 3
-    
-    estimate                        String?                         // minLength: 2, maxLength: 50
-    shippingRates                   ShippingRate[]
-    
-    useZones                        Boolean
-    zones                           CoverageState[]
-}
-enum ShippingVisibility {
-    PUBLISHED
-    DRAFT
-}
 model ShippingProvider {
     // records:
     id                              String                          @id @default(cuid()) @map("_id")
@@ -191,7 +155,7 @@ model ShippingProvider {
     name                            String                          // minLength: 2, maxLength: 50
     
     weightStep                      Float                           // min: 0, max: 1000
-    estimate                        String?                         // minLength: 2, maxLength: 50
+    eta                             ShippingEta?
     shippingRates                   ShippingRate[]
     
     useZones                        Boolean
@@ -200,6 +164,47 @@ model ShippingProvider {
     // relations:
     orders                          Order[]                         @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnShipping") // one ShippingProvider may have some related DraftOrder(s)  // one  to many
+}
+type CoverageCountry {
+    // data:
+    name                            String                          // minLength: 2, maxLength: 3
+    
+    eta                             ShippingEta?
+    shippingRates                   ShippingRate[]
+    
+    useZones                        Boolean
+    zones                           CoverageState[]
+}
+type CoverageState {
+    // data:
+    name                            String                          // minLength: 3, maxLength: 50
+    
+    eta                             ShippingEta?
+    shippingRates                   ShippingRate[]
+    
+    useZones                        Boolean
+    zones                           CoverageCity[]
+}
+type CoverageCity {
+    // data:
+    name                            String                          // minLength: 3, maxLength: 50
+    
+    eta                             ShippingEta?
+    shippingRates                   ShippingRate[]
+}
+enum ShippingVisibility {
+    PUBLISHED
+    DRAFT
+}
+type ShippingEta {
+    // data:
+    min                             Float                           // min: 0, max: 999
+    max                             Float                           // min: `min`, max: 999
+}
+type ShippingRate {
+    // data:
+    startingWeight                  Float                           // min: 0, max: 1000
+    rate                            Float                           // min: 0, max: 999999999
 }
 
 

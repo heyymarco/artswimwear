@@ -12,7 +12,7 @@ export default [
         name          : 'Free Shipping',
         
         weightStep    : 1,
-        estimate      : undefined,
+        eta           : undefined,
         shippingRates : [
             { startingWeight: 0, rate: 0 },
         ],

@@ -13,29 +13,29 @@ export type MatchingAddress  = Pick<Address, 'country'|'state'|'city'>
 
 
 // utilities:
-export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id'|'visibility'|'name'|'estimate'>> & Omit<ShippingProvider, 'id'|'createdAt'|'updatedAt'|'visibility'|'name'|'estimate'>, shippingAddress: MatchingAddress): MatchingShipping|null => {
-    let estimate          = shipping.estimate;
-    let shippingRates     = shipping.shippingRates;
+export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id'|'visibility'|'name'|'eta'>> & Omit<ShippingProvider, 'id'|'createdAt'|'updatedAt'|'visibility'|'name'|'eta'>, shippingAddress: MatchingAddress): MatchingShipping|null => {
+    let eta           = shipping.eta;
+    let shippingRates = shipping.shippingRates;
     
     
     
     const matchingCountry = shipping.useZones && shipping.zones?.find((coverageCountry) => (coverageCountry.name.trim().toLowerCase() === shippingAddress.country.trim().toLowerCase()));
     if (matchingCountry) {
-        if (matchingCountry.estimate             )      estimate      = matchingCountry.estimate;
+        if (matchingCountry.eta                  )      eta           = matchingCountry.eta;
         if (matchingCountry.shippingRates?.length)      shippingRates = matchingCountry.shippingRates;
         
         
         
         const matchingState = matchingCountry.useZones && matchingCountry.zones?.find((coverageState) => (coverageState.name.trim().toLowerCase() === shippingAddress.state.trim().toLowerCase()));
         if (matchingState) {
-            if (matchingState.estimate             )    estimate      = matchingState.estimate;
+            if (matchingState.eta                  )    eta           = matchingState.eta;
             if (matchingState.shippingRates?.length)    shippingRates = matchingState.shippingRates;
             
             
             
             const matchingCity = matchingState.useZones && matchingState.zones?.find((coverageCity) => (coverageCity.name.trim().toLowerCase() === shippingAddress.city.trim().toLowerCase()));
             if (matchingCity) {
-                if (matchingCity.estimate             ) estimate      = matchingCity.estimate;
+                if (matchingCity.eta                  ) eta           = matchingCity.eta;
                 if (matchingCity.shippingRates?.length) shippingRates = matchingCity.shippingRates;
             } // if
         } // if
@@ -45,15 +45,15 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
     
     if (!shippingRates?.length) return null;
     return {
-        id              : shipping.id,         // optional
+        id            : shipping.id,         // optional
         
-        visibility      : shipping.visibility, // optional
+        visibility    : shipping.visibility, // optional
         
-        name            : shipping.name,       // optional
+        name          : shipping.name,       // optional
         
-        weightStep      : shipping.weightStep, // required
-        estimate        : estimate,            // optional
-        shippingRates   : shippingRates,       // required
+        weightStep    : shipping.weightStep, // required
+        eta           : eta,                 // optional
+        shippingRates : shippingRates,       // required
     };
 };
 export const calculateShippingCost = (totalWeight: number|null, {weightStep, shippingRates}: Pick<MatchingShipping, 'weightStep'|'shippingRates'>): number|null => {

@@ -106,7 +106,7 @@ router
         //     name          : shipping.name,
         //     
         //     weightStep    : shipping.weightStep,
-        //     estimate      : shipping.estimate,
+        //     eta           : shipping.eta,
         //     shippingRates : shipping.shippingRates,
         //     
         //     useZones      : shipping.useZones,
