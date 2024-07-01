@@ -1,1 +1,5574 @@
-{"visibility":"PUBLISHED","name":"JNE Reguler","weightStep":1,"eta":null,"rates":[],"useZones":true,"zones":[{"name":"ID","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Aceh","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Banda Aceh","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":69000}]},{"name":"Bireun","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Barat","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Barat Daya","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Besar","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Jaya","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Selatan","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Singkil","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Tamiang","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Tengah","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Tenggara","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Timur","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Aceh Utara","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Bener Meriah","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Gayo Lues","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Nagan Raya","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Pidie","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Simeulue","eta":{"min":10},"rates":[{"start":0,"rate":87000}]},{"name":"Kota Banda Aceh","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":69000}]},{"name":"Kota Langsa","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kota Lhokseumawe","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kota Sabang","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Kota Subulussalam","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Langsa","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Lhokseumawe","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]},{"name":"Sabang","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":75000}]}]},{"name":"Bali","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Denpasar","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":23000}]},{"name":"Kabupaten Badung","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":26000}]},{"name":"Kabupaten Bangli","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":26000}]},{"name":"Kabupaten Buleleng","eta":{"min":7,"max":8},"rates":[{"start":0,"rate":29000}]},{"name":"Kabupaten Gianyar","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":26000}]},{"name":"Kabupaten Jembrana","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":26000}]},{"name":"Kabupaten Karang Asem","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":29000}]},{"name":"Kabupaten Klungkung","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":29000}]},{"name":"Kabupaten Tabanan","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":26000}]},{"name":"Klungkung","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":29000}]},{"name":"Kota Denpasar","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":23000}]},{"name":"Tabanan","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":26000}]}]},{"name":"Banten","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Lebak","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":22000}]},{"name":"Kabupaten Pandeglang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":22000}]},{"name":"Kabupaten Serang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Tangerang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kota Cilegon","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Kota Serang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Kota Tangerang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kota Tangerang Selatan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Pandeglang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":22000}]},{"name":"Serang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Tangerang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]}]},{"name":"Bengkulu","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Bengkulu","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":30000}]},{"name":"Kabupaten Bengkulu Selatan","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Bengkulu Tengah","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Bengkulu Utara","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Kaur","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Kepahiang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Lebong","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Mukomuko","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Rejang Lebong","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Seluma","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":42000}]},{"name":"Kota Bengkulu","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":30000}]}]},{"name":"DI Yogyakarta","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Bantul","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":7000}]},{"name":"Kabupaten Bantul","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":7000}]},{"name":"Kabupaten Gunung Kidul","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":10000}]},{"name":"Kabupaten Kulon Progo","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":10000}]},{"name":"Kabupaten Sleman","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":7000}]},{"name":"Kota Yogyakarta","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":7000}]},{"name":"Sleman","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":7000}]},{"name":"Yogyakarta","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":7000}]}]},{"name":"DKI Jakarta","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kota Administrasi Jakarta Barat","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":16000}]},{"name":"Kota Administrasi Jakarta Pusat","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":16000}]},{"name":"Kota Administrasi Jakarta Selatan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":16000}]},{"name":"Kota Administrasi Jakarta Timur","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":16000}]},{"name":"Kota Administrasi Jakarta Utara","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":16000}]}]},{"name":"Gorontalo","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Gorontalo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":98000}]},{"name":"Kabupaten Boalemo","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":108000}]},{"name":"Kabupaten Bone Bolango","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":108000}]},{"name":"Kabupaten Gorontalo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":98000}]},{"name":"Kabupaten Gorontalo Utara","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":108000}]},{"name":"Kabupaten Pohuwato","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":108000}]},{"name":"Kota Gorontalo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":98000}]}]},{"name":"Jambi","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Batang Hari","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Bungo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Kerinci","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Merangin","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Muaro Jambi","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Sarolangun","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Tanjung Jabung Barat","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Tanjung Jabung Timur","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Tebo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kota Jambi","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":30000}]},{"name":"Kota Sungai Penuh","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Sungai Penuh","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]}]},{"name":"Jawa Barat","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Bandung","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Banjar","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":23000}]},{"name":"Bekasi","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Bogor","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Ciamis","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":20000}]},{"name":"Cimahi","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Cirebon","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":18000}]},{"name":"Depok","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Indramayu","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":21000}]},{"name":"Kabupaten Bandung","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Bandung Barat","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Bekasi","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Bogor","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Ciamis","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":20000}]},{"name":"Kabupaten Cianjur","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":21000}]},{"name":"Kabupaten Cirebon","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Garut","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":21000}]},{"name":"Kabupaten Indramayu","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":21000}]},{"name":"Kabupaten Karawang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Kuningan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":21000}]},{"name":"Kabupaten Majalengka","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":21000}]},{"name":"Kabupaten Pangandaran","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":23000}]},{"name":"Kabupaten Purwakarta","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Subang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":21000}]},{"name":"Kabupaten Sukabumi","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Sumedang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":21000}]},{"name":"Kabupaten Tasikmalaya","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":20000}]},{"name":"Kota Bandung","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kota Banjar","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":23000}]},{"name":"Kota Bekasi","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kota Bogor","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kota Cimahi","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kota Cirebon","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":18000}]},{"name":"Kota Depok","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":18000}]},{"name":"Kota Sukabumi","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":18000}]},{"name":"Kota Tasikmalaya","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":20000}]},{"name":"Kuningan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":21000}]},{"name":"Majalengka","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":21000}]},{"name":"Purwakarta","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":18000}]},{"name":"Sukabumi","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":18000}]},{"name":"Sumedang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":21000}]},{"name":"Tasikmalaya","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":20000}]}]},{"name":"Jawa Tengah","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Banyumas","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Batang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":18000}]},{"name":"Blora","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":18000}]},{"name":"Boyolali","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":15000}]},{"name":"Demak","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Banjarnegara","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Banyumas","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Batang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Blora","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Boyolali","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Brebes","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Cilacap","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":12000}]},{"name":"Kabupaten Demak","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Grobogan","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Jepara","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Karanganyar","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Kebumen","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Kendal","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Klaten","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Kudus","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Magelang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":12000}]},{"name":"Kabupaten Pati","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Pekalongan","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Pemalang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Purbalingga","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Purworejo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Rembang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":18000}]},{"name":"Kabupaten Semarang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":12000}]},{"name":"Kabupaten Sragen","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Sukoharjo","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Tegal","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":12000}]},{"name":"Kabupaten Temanggung","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Wonogiri","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Wonosobo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Klaten","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":15000}]},{"name":"Kota Magelang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":12000}]},{"name":"Kota Pekalongan","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kota Salatiga","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kota Semarang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":12000}]},{"name":"Kota Surakarta","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":12000}]},{"name":"Kota Tegal","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":12000}]},{"name":"Kudus","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Magelang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":12000}]},{"name":"Pati","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Pekalongan","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Pemalang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Purbalingga","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Salatiga","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Semarang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":12000}]},{"name":"Sragen","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":15000}]},{"name":"Surakarta","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":12000}]},{"name":"Tegal","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":12000}]},{"name":"Wonosobo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]}]},{"name":"Jawa Timur","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Bangkalan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Banyuwangi","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":20000}]},{"name":"Batu","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":20000}]},{"name":"Blitar","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":20000}]},{"name":"Bojonegoro","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Bondowoso","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":20000}]},{"name":"Gresik","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":16000}]},{"name":"Jember","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":17000}]},{"name":"Jombang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Bangkalan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Banyuwangi","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":20000}]},{"name":"Kabupaten Blitar","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":20000}]},{"name":"Kabupaten Bojonegoro","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":15000}]},{"name":"Kabupaten Bondowoso","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":20000}]},{"name":"Kabupaten Jember","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":17000}]},{"name":"Kabupaten Jombang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Kediri","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":16000}]},{"name":"Kabupaten Lamongan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Lumajang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":20000}]},{"name":"Kabupaten Madiun","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":16000}]},{"name":"Kabupaten Magetan","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Malang","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":17000}]},{"name":"Kabupaten Mojokerto","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":16000}]},{"name":"Kabupaten Nganjuk","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Ngawi","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Pacitan","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Pamekasan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Pasuruan","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":16000}]},{"name":"Kabupaten Ponorogo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Probolinggo","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":17000}]},{"name":"Kabupaten Sampang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Sidoarjo","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":17000}]},{"name":"Kabupaten Situbondo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":20000}]},{"name":"Kabupaten Sumenep","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":22000}]},{"name":"Kabupaten Trenggalek","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Kabupaten Tuban","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Kediri","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":16000}]},{"name":"Kota Batu","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":20000}]},{"name":"Kota Blitar","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":20000}]},{"name":"Kota Kediri","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":16000}]},{"name":"Kota Madiun","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":16000}]},{"name":"Kota Malang","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":17000}]},{"name":"Kota Mojokerto","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":16000}]},{"name":"Kota Pasuruan","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":16000}]},{"name":"Kota Probolinggo","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":17000}]},{"name":"Kota Surabaya","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":16000}]},{"name":"Lamongan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Lumajang","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":20000}]},{"name":"Madiun","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":16000}]},{"name":"Malang","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":17000}]},{"name":"Mojokerto","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":16000}]},{"name":"Nganjuk","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":19000}]},{"name":"Pamekasan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Pasuruan","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":16000}]},{"name":"Ponorogo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":19000}]},{"name":"Probolinggo","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":17000}]},{"name":"Sampang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Sidoarjo","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":17000}]},{"name":"Situbondo","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":20000}]},{"name":"Sumenep","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":22000}]},{"name":"Surabaya","eta":{"min":1,"max":2},"rates":[{"start":0,"rate":16000}]},{"name":"Trenggalek","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]},{"name":"Tuban","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":19000}]}]},{"name":"Kalimantan Barat","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Bengkayang","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Kapuas Hulu","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Kayong Utara","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":72000}]},{"name":"Kabupaten Ketapang","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Landak","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Melawi","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Sambas","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Sanggau","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Sekadau","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Sintang","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]},{"name":"Kota Pontianak","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":49000}]},{"name":"Kota Singkawang","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":62000}]}]},{"name":"Kalimantan Selatan","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Banjarmasin","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":49000}]},{"name":"Kabupaten Balangan","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Banjar","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Barito Kuala","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Hulu Sungai Selatan","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Hulu Sungai Tengah","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Hulu Sungai Utara","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Kota Baru","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Tabalong","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Tanah Bumbu","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Tanah Laut","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Tapin","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kota Banjar Baru","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":49000}]},{"name":"Kota Banjarmasin","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":49000}]}]},{"name":"Kalimantan Tengah","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Barito Selatan","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Barito Timur","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Barito Utara","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Gunung Mas","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":69000}]},{"name":"Kabupaten Kapuas","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":69000}]},{"name":"Kabupaten Katingan","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":69000}]},{"name":"Kabupaten Kotawaringin Barat","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":69000}]},{"name":"Kabupaten Kotawaringin Timur","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":69000}]},{"name":"Kabupaten Lamandau","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":69000}]},{"name":"Kabupaten Murung Raya","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Seruyan","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":69000}]},{"name":"Kabupaten Sukamara","eta":{"min":3,"max":5},"rates":[{"start":0,"rate":69000}]},{"name":"Kota Palangka Raya","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":57000}]}]},{"name":"Kalimantan Timur","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Balikpapan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":59000}]},{"name":"Bontang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":69000}]},{"name":"Kabupaten Berau","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Kutai Barat","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Kutai Kartanegara","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":62000}]},{"name":"Kabupaten Kutai Timur","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Paser","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Penajam Paser Utara","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":75000}]},{"name":"Kota Balikpapan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":59000}]},{"name":"Kota Bontang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":69000}]},{"name":"Kota Samarinda","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":49000}]},{"name":"Samarinda","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":49000}]}]},{"name":"Kalimantan Utara","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Bulungan","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":101000}]},{"name":"Kabupaten Malinau","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":101000}]},{"name":"Kabupaten Nunukan","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":101000}]},{"name":"Kabupaten Tana Tidung","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":101000}]},{"name":"Tarakan","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":87000}]}]},{"name":"Kepulauan Bangka Belitung","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Bangka","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Bangka Barat","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Bangka Selatan","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Bangka Tengah","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":36000}]},{"name":"Kabupaten Belitung","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":69000}]},{"name":"Kabupaten Belitung Timur","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":75000}]},{"name":"Kota Pangkal Pinang","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":30000}]}]},{"name":"Kepulauan Riau","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Bintan","eta":{"min":7,"max":8},"rates":[{"start":0,"rate":88000}]},{"name":"Kabupaten Karimun","eta":{"min":7,"max":8},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Kepulauan Anambas","eta":{"min":7,"max":8},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Lingga","eta":{"min":4,"max":5},"rates":[{"start":0,"rate":75000}]},{"name":"Kabupaten Natuna","eta":{"min":7,"max":8},"rates":[{"start":0,"rate":67000}]},{"name":"Kota Batam","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":57000}]},{"name":"Kota Tanjung Pinang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":69000}]},{"name":"Tanjung Pinang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":69000}]}]},{"name":"Lampung","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Bandar Lampung","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":29000}]},{"name":"Kabupaten Lampung Barat","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":41000}]},{"name":"Kabupaten Lampung Selatan","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":35000}]},{"name":"Kabupaten Lampung Tengah","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":35000}]},{"name":"Kabupaten Lampung Timur","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":41000}]},{"name":"Kabupaten Lampung Utara","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":41000}]},{"name":"Kabupaten Mesuji","eta":{"min":7,"max":8},"rates":[{"start":0,"rate":41000}]},{"name":"Kabupaten Pesawaran","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":41000}]},{"name":"Kabupaten Pringsewu","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":35000}]},{"name":"Kabupaten Tanggamus","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":41000}]},{"name":"Kabupaten Tulangbawang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":41000}]},{"name":"Kabupaten Way Kanan","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":41000}]},{"name":"Kota Bandar Lampung","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":29000}]},{"name":"Kota Metro","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":35000}]},{"name":"Metro","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":35000}]}]},{"name":"Maluku","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Ambon","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":111000}]},{"name":"Kabupaten Buru","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":143000}]},{"name":"Kabupaten Maluku Barat Daya","eta":{"min":10},"rates":[{"start":0,"rate":154000}]},{"name":"Kabupaten Maluku Tengah","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":143000}]},{"name":"Kabupaten Maluku Tenggara","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":126000}]},{"name":"Kabupaten Maluku Tenggara Barat","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":126000}]},{"name":"Kabupaten Seram Bagian Barat","eta":{"min":10},"rates":[{"start":0,"rate":154000}]},{"name":"Kabupaten Seram Bagian Timur","eta":{"min":10},"rates":[{"start":0,"rate":154000}]},{"name":"Kota Ambon","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":111000}]},{"name":"Kota Tual","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":126000}]},{"name":"Tual","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":126000}]}]},{"name":"Maluku Utara","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Halmahera Barat","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":147000}]},{"name":"Kabupaten Halmahera Selatan","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":131000}]},{"name":"Kabupaten Halmahera Tengah","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":147000}]},{"name":"Kabupaten Halmahera Utara","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":131000}]},{"name":"Kabupaten Kepulauan Sula","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":147000}]},{"name":"Kabupaten Pulau Morotai","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":147000}]},{"name":"Kota Ternate","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":115000}]},{"name":"Kota Tidore Kepulauan","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":131000}]},{"name":"Ternate","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":115000}]}]},{"name":"Nusa Tenggara Barat","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Bima","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Dompu","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kabupaten Bima","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kabupaten Dompu","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kabupaten Lombok Barat","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kabupaten Lombok Tengah","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kabupaten Lombok Timur","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kabupaten Lombok Utara","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kabupaten Sumbawa","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kabupaten Sumbawa Barat","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kota Bima","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":60000}]},{"name":"Kota Mataram","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":32000}]},{"name":"Mataram","eta":{"min":2,"max":3},"rates":[{"start":0,"rate":32000}]}]},{"name":"Nusa Tenggara Timur","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Alor","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Belu","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Kupang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":102000}]},{"name":"Kabupaten Ngada","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":160000}]},{"name":"Kabupaten Rote Ndao","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Sabu Raijua","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Sumba Barat","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Sumba Barat Daya","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Sumba Tengah","eta":{"min":10},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Sumba Timur","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Timor Tengah Selatan","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":114000}]},{"name":"Kabupaten Timor Tengah Utara","eta":{"min":5,"max":7},"rates":[{"start":0,"rate":114000}]},{"name":"Kota Kupang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":102000}]},{"name":"Kupang","eta":{"min":3,"max":4},"rates":[{"start":0,"rate":102000}]}]},{"name":"Papua","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Jayapura","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":169000}]},{"name":"Kabupaten Asmat","eta":{"min":10},"rates":[{"start":0,"rate":228000}]},{"name":"Kabupaten Biak Numfor","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":187000}]},{"name":"Kabupaten Dogiyai","eta":{"min":7,"max":9},"rates":[{"start":0,"rate":205000}]},{"name":"Kabupaten Jayapura","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":169000}]},{"name":"Kabupaten Jayawijaya","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":187000}]},{"name":"Kabupaten Keerom","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":187000}]},{"name":"Kabupaten Kepulauan Yapen","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":217000}]},{"name":"Kabupaten Lanny Jaya","eta":{"min":7,"max":9},"rates":[{"start":0,"rate":205000}]},{"name":"Kabupaten Mamberamo Raya","eta":{"min":10},"rates":[{"start":0,"rate":217000}]},{"name":"Kabupaten Mamberamo Tengah","eta":{"min":7,"max":9},"rates":[{"start":0,"rate":205000}]},{"name":"Kabupaten Merauke","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":179000}]},{"name":"Kabupaten Mimika","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":187000}]},{"name":"Kabupaten Nabire","eta":{"min":7,"max":9},"rates":[{"start":0,"rate":187000}]},{"name":"Kabupaten Nduga","eta":{"min":7,"max":9},"rates":[{"start":0,"rate":205000}]},{"name":"Kota Jayapura","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":169000}]},{"name":"Nabire","eta":{"min":7,"max":9},"rates":[{"start":0,"rate":187000}]}]},{"name":"Papua Barat","eta":null,"rates":[],"useZones":true,"zones":[{"name":"Kabupaten Fakfak","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":187000}]},{"name":"Kabupaten Kaimana","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":187000}]},{"name":"Kabupaten Manokwari","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":187000}]},{"name":"Kabupaten Maybrat","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":205000}]},{"name":"Kabupaten Raja Ampat","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":205000}]},{"name":"Kabupaten Sorong","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":170000}]},{"name":"Kabupaten Sorong Selatan","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":205000}]},{"name":"Kabupaten Tambrauw","eta":{"min":7,"max":10},"rates":[{"start":0,"rate":205000}]},{"name":"Kabupaten Teluk Bintuni","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":205000}]},{"name":"Kota Sorong","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":170000}]},{"name":"Manokwari","eta":{"min":6,"max":7},"rates":[{"start":0,"rate":187000}]},{"name":"Sorong","eta":{"min":5,"max":6},"rates":[{"start":0,"rate":170000}]}]}]}]}
+{
+  "_id": "mt1o19igeh3mnju9tagviro50",
+  "createdAt": {
+    "$date": "2024-07-01T20:40:39.120Z"
+  },
+  "updatedAt": {
+    "$date": "2024-07-01T20:40:39.120Z"
+  },
+  "visibility": "PUBLISHED",
+  "name": "JNE Reguler",
+  "weightStep": 1,
+  "eta": null,
+  "rates": [],
+  "useZones": true,
+  "zones": [
+    {
+      "name": "ID",
+      "eta": null,
+      "rates": [],
+      "useZones": true,
+      "zones": [
+        {
+          "name": "Aceh",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Banda Aceh",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Bireun",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Barat",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Barat Daya",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Besar",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Jaya",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Selatan",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Singkil",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Tamiang",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Tengah",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Tenggara",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Timur",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Aceh Utara",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bener Meriah",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Gayo Lues",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Nagan Raya",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pidie",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Simeulue",
+              "eta": {
+                "min": 10
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 87000
+                }
+              ]
+            },
+            {
+              "name": "Kota Banda Aceh",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kota Langsa",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kota Lhokseumawe",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kota Sabang",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kota Subulussalam",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Langsa",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Lhokseumawe",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Sabang",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Bali",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Denpasar",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 23000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Badung",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 26000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bangli",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 26000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Buleleng",
+              "eta": {
+                "min": 7,
+                "max": 8
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 29000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Gianyar",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 26000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Jembrana",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 26000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Karang Asem",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 29000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Klungkung",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 29000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tabanan",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 26000
+                }
+              ]
+            },
+            {
+              "name": "Klungkung",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 29000
+                }
+              ]
+            },
+            {
+              "name": "Kota Denpasar",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 23000
+                }
+              ]
+            },
+            {
+              "name": "Tabanan",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 26000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Banten",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Lebak",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 22000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pandeglang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 22000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Serang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tangerang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kota Cilegon",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kota Serang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kota Tangerang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kota Tangerang Selatan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Pandeglang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 22000
+                }
+              ]
+            },
+            {
+              "name": "Serang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Tangerang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Bengkulu",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Bengkulu",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 30000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bengkulu Selatan",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bengkulu Tengah",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bengkulu Utara",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kaur",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kepahiang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lebong",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Mukomuko",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Rejang Lebong",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Seluma",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 42000
+                }
+              ]
+            },
+            {
+              "name": "Kota Bengkulu",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 30000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "DI Yogyakarta",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Bantul",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 7000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bantul",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 7000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Gunung Kidul",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 10000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kulon Progo",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 10000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sleman",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 7000
+                }
+              ]
+            },
+            {
+              "name": "Kota Yogyakarta",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 7000
+                }
+              ]
+            },
+            {
+              "name": "Sleman",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 7000
+                }
+              ]
+            },
+            {
+              "name": "Yogyakarta",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 7000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "DKI Jakarta",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kota Administrasi Jakarta Barat",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kota Administrasi Jakarta Pusat",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kota Administrasi Jakarta Selatan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kota Administrasi Jakarta Timur",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kota Administrasi Jakarta Utara",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Gorontalo",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Gorontalo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 98000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Boalemo",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 108000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bone Bolango",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 108000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Gorontalo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 98000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Gorontalo Utara",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 108000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pohuwato",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 108000
+                }
+              ]
+            },
+            {
+              "name": "Kota Gorontalo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 98000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Jambi",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Batang Hari",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bungo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kerinci",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Merangin",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Muaro Jambi",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sarolangun",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tanjung Jabung Barat",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tanjung Jabung Timur",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tebo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kota Jambi",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 30000
+                }
+              ]
+            },
+            {
+              "name": "Kota Sungai Penuh",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Sungai Penuh",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Jawa Barat",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Bandung",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Banjar",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 23000
+                }
+              ]
+            },
+            {
+              "name": "Bekasi",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Bogor",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Ciamis",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Cimahi",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Cirebon",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Depok",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Indramayu",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bandung",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bandung Barat",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bekasi",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bogor",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Ciamis",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Cianjur",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Cirebon",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Garut",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Indramayu",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Karawang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kuningan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Majalengka",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pangandaran",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 23000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Purwakarta",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Subang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sukabumi",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sumedang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tasikmalaya",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kota Bandung",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kota Banjar",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 23000
+                }
+              ]
+            },
+            {
+              "name": "Kota Bekasi",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kota Bogor",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kota Cimahi",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kota Cirebon",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kota Depok",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kota Sukabumi",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kota Tasikmalaya",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kuningan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Majalengka",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Purwakarta",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Sukabumi",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Sumedang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 21000
+                }
+              ]
+            },
+            {
+              "name": "Tasikmalaya",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Jawa Tengah",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Banyumas",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Batang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Blora",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Boyolali",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Demak",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Banjarnegara",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Banyumas",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Batang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Blora",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Boyolali",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Brebes",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Cilacap",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Demak",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Grobogan",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Jepara",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Karanganyar",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kebumen",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kendal",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Klaten",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kudus",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Magelang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pati",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pekalongan",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pemalang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Purbalingga",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Purworejo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Rembang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 18000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Semarang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sragen",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sukoharjo",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tegal",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Temanggung",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Wonogiri",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Wonosobo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Klaten",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kota Magelang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Kota Pekalongan",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kota Salatiga",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kota Semarang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Kota Surakarta",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Kota Tegal",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Kudus",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Magelang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Pati",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Pekalongan",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Pemalang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Purbalingga",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Salatiga",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Semarang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Sragen",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Surakarta",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Tegal",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 12000
+                }
+              ]
+            },
+            {
+              "name": "Wonosobo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Jawa Timur",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Bangkalan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Banyuwangi",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Batu",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Blitar",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Bojonegoro",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Bondowoso",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Gresik",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Jember",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Jombang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bangkalan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Banyuwangi",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Blitar",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bojonegoro",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 15000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bondowoso",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Jember",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Jombang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kediri",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lamongan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lumajang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Madiun",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Magetan",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Malang",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Mojokerto",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Nganjuk",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Ngawi",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pacitan",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pamekasan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pasuruan",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Ponorogo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Probolinggo",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sampang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sidoarjo",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Situbondo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sumenep",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 22000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Trenggalek",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tuban",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Kediri",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kota Batu",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kota Blitar",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Kota Kediri",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kota Madiun",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kota Malang",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Kota Mojokerto",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kota Pasuruan",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Kota Probolinggo",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Kota Surabaya",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Lamongan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Lumajang",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Madiun",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Malang",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Mojokerto",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Nganjuk",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Pamekasan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Pasuruan",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Ponorogo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Probolinggo",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Sampang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Sidoarjo",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 17000
+                }
+              ]
+            },
+            {
+              "name": "Situbondo",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 20000
+                }
+              ]
+            },
+            {
+              "name": "Sumenep",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 22000
+                }
+              ]
+            },
+            {
+              "name": "Surabaya",
+              "eta": {
+                "min": 1,
+                "max": 2
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 16000
+                }
+              ]
+            },
+            {
+              "name": "Trenggalek",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            },
+            {
+              "name": "Tuban",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 19000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Kalimantan Barat",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Bengkayang",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kapuas Hulu",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kayong Utara",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 72000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Ketapang",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Landak",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Melawi",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sambas",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sanggau",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sekadau",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sintang",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kota Pontianak",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 49000
+                }
+              ]
+            },
+            {
+              "name": "Kota Singkawang",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Kalimantan Selatan",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Banjarmasin",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 49000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Balangan",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Banjar",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Barito Kuala",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Hulu Sungai Selatan",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Hulu Sungai Tengah",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Hulu Sungai Utara",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kota Baru",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tabalong",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tanah Bumbu",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tanah Laut",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tapin",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kota Banjar Baru",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 49000
+                }
+              ]
+            },
+            {
+              "name": "Kota Banjarmasin",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 49000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Kalimantan Tengah",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Barito Selatan",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Barito Timur",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Barito Utara",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Gunung Mas",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kapuas",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Katingan",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kotawaringin Barat",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kotawaringin Timur",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lamandau",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Murung Raya",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Seruyan",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sukamara",
+              "eta": {
+                "min": 3,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kota Palangka Raya",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 57000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Kalimantan Timur",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Balikpapan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 59000
+                }
+              ]
+            },
+            {
+              "name": "Bontang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Berau",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kutai Barat",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kutai Kartanegara",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 62000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kutai Timur",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Paser",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Penajam Paser Utara",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kota Balikpapan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 59000
+                }
+              ]
+            },
+            {
+              "name": "Kota Bontang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kota Samarinda",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 49000
+                }
+              ]
+            },
+            {
+              "name": "Samarinda",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 49000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Kalimantan Utara",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Bulungan",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 101000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Malinau",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 101000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Nunukan",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 101000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tana Tidung",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 101000
+                }
+              ]
+            },
+            {
+              "name": "Tarakan",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 87000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Kepulauan Bangka Belitung",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Bangka",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bangka Barat",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bangka Selatan",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bangka Tengah",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 36000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Belitung",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Belitung Timur",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kota Pangkal Pinang",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 30000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Kepulauan Riau",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Bintan",
+              "eta": {
+                "min": 7,
+                "max": 8
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 88000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Karimun",
+              "eta": {
+                "min": 7,
+                "max": 8
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kepulauan Anambas",
+              "eta": {
+                "min": 7,
+                "max": 8
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lingga",
+              "eta": {
+                "min": 4,
+                "max": 5
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 75000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Natuna",
+              "eta": {
+                "min": 7,
+                "max": 8
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 67000
+                }
+              ]
+            },
+            {
+              "name": "Kota Batam",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 57000
+                }
+              ]
+            },
+            {
+              "name": "Kota Tanjung Pinang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            },
+            {
+              "name": "Tanjung Pinang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 69000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Lampung",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Bandar Lampung",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 29000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lampung Barat",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 41000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lampung Selatan",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 35000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lampung Tengah",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 35000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lampung Timur",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 41000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lampung Utara",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 41000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Mesuji",
+              "eta": {
+                "min": 7,
+                "max": 8
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 41000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pesawaran",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 41000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pringsewu",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 35000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tanggamus",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 41000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tulangbawang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 41000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Way Kanan",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 41000
+                }
+              ]
+            },
+            {
+              "name": "Kota Bandar Lampung",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 29000
+                }
+              ]
+            },
+            {
+              "name": "Kota Metro",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 35000
+                }
+              ]
+            },
+            {
+              "name": "Metro",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 35000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Maluku",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Ambon",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 111000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Buru",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 143000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Maluku Barat Daya",
+              "eta": {
+                "min": 10
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 154000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Maluku Tengah",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 143000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Maluku Tenggara",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 126000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Maluku Tenggara Barat",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 126000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Seram Bagian Barat",
+              "eta": {
+                "min": 10
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 154000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Seram Bagian Timur",
+              "eta": {
+                "min": 10
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 154000
+                }
+              ]
+            },
+            {
+              "name": "Kota Ambon",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 111000
+                }
+              ]
+            },
+            {
+              "name": "Kota Tual",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 126000
+                }
+              ]
+            },
+            {
+              "name": "Tual",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 126000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Maluku Utara",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Halmahera Barat",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 147000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Halmahera Selatan",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 131000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Halmahera Tengah",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 147000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Halmahera Utara",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 131000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kepulauan Sula",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 147000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Pulau Morotai",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 147000
+                }
+              ]
+            },
+            {
+              "name": "Kota Ternate",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 115000
+                }
+              ]
+            },
+            {
+              "name": "Kota Tidore Kepulauan",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 131000
+                }
+              ]
+            },
+            {
+              "name": "Ternate",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 115000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Nusa Tenggara Barat",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Bima",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Dompu",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Bima",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Dompu",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lombok Barat",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lombok Tengah",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lombok Timur",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lombok Utara",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sumbawa",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sumbawa Barat",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kota Bima",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 60000
+                }
+              ]
+            },
+            {
+              "name": "Kota Mataram",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 32000
+                }
+              ]
+            },
+            {
+              "name": "Mataram",
+              "eta": {
+                "min": 2,
+                "max": 3
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 32000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Nusa Tenggara Timur",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Alor",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Belu",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kupang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 102000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Ngada",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 160000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Rote Ndao",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sabu Raijua",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sumba Barat",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sumba Barat Daya",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sumba Tengah",
+              "eta": {
+                "min": 10
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sumba Timur",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Timor Tengah Selatan",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Timor Tengah Utara",
+              "eta": {
+                "min": 5,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 114000
+                }
+              ]
+            },
+            {
+              "name": "Kota Kupang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 102000
+                }
+              ]
+            },
+            {
+              "name": "Kupang",
+              "eta": {
+                "min": 3,
+                "max": 4
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 102000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Papua",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Jayapura",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 169000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Asmat",
+              "eta": {
+                "min": 10
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 228000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Biak Numfor",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Dogiyai",
+              "eta": {
+                "min": 7,
+                "max": 9
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 205000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Jayapura",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 169000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Jayawijaya",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Keerom",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kepulauan Yapen",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 217000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Lanny Jaya",
+              "eta": {
+                "min": 7,
+                "max": 9
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 205000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Mamberamo Raya",
+              "eta": {
+                "min": 10
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 217000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Mamberamo Tengah",
+              "eta": {
+                "min": 7,
+                "max": 9
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 205000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Merauke",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 179000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Mimika",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Nabire",
+              "eta": {
+                "min": 7,
+                "max": 9
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Nduga",
+              "eta": {
+                "min": 7,
+                "max": 9
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 205000
+                }
+              ]
+            },
+            {
+              "name": "Kota Jayapura",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 169000
+                }
+              ]
+            },
+            {
+              "name": "Nabire",
+              "eta": {
+                "min": 7,
+                "max": 9
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Papua Barat",
+          "eta": null,
+          "rates": [],
+          "useZones": true,
+          "zones": [
+            {
+              "name": "Kabupaten Fakfak",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Kaimana",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Manokwari",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Maybrat",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 205000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Raja Ampat",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 205000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sorong",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 170000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Sorong Selatan",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 205000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Tambrauw",
+              "eta": {
+                "min": 7,
+                "max": 10
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 205000
+                }
+              ]
+            },
+            {
+              "name": "Kabupaten Teluk Bintuni",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 205000
+                }
+              ]
+            },
+            {
+              "name": "Kota Sorong",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 170000
+                }
+              ]
+            },
+            {
+              "name": "Manokwari",
+              "eta": {
+                "min": 6,
+                "max": 7
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 187000
+                }
+              ]
+            },
+            {
+              "name": "Sorong",
+              "eta": {
+                "min": 5,
+                "max": 6
+              },
+              "rates": [
+                {
+                  "start": 0,
+                  "rate": 170000
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

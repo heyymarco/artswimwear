@@ -1,5 +1,6 @@
 import { default as data } from './dump-results-jne.js'
 import { appendFile, writeFile } from 'fs/promises'
+import { customAlphabet } from 'nanoid/async'
 
 
 
@@ -90,7 +91,24 @@ const countries = [
         zones         : states,
     }
 ];
+
+const now = new Date();
 const shippingProvider = {
+    // records:
+    _id           : await (async (): Promise<string> => {
+        const nanoid = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz', 25);
+        return await nanoid();
+    })(),
+    createdAt     : {
+        $date     : now.toISOString(),
+    },
+    updatedAt     : {
+        $date     : now.toISOString(),
+    },
+    
+    
+    
+    // data:
     visibility    : 'PUBLISHED',
     
     name          : serviceName,
@@ -103,4 +121,4 @@ const shippingProvider = {
     zones         : countries,
 }
 
-writeFile('./data-jne-reg.json', JSON.stringify(shippingProvider, undefined, undefined));
+writeFile('./data-jne-reg.json', JSON.stringify(shippingProvider, undefined, 2));
