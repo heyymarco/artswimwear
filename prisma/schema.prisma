@@ -203,7 +203,7 @@ type ShippingEta {
 }
 type ShippingRate {
     // data:
-    startingWeight                  Float                           // min: 0, max: 1000
+    start                           Float                           // min: 0, max: 1000
     rate                            Float                           // min: 0, max: 999999999
 }
 

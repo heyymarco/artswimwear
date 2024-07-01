@@ -81,8 +81,8 @@ export const calculateShippingCost = (totalWeight: number|null, {weightStep, rat
         index++
     ) {
         currentRate           = rates[index];
-        currentStartingWeight = currentRate.startingWeight;
-        nextStartingWeight    = rates[index + 1]?.startingWeight;
+        currentStartingWeight = currentRate.start;
+        nextStartingWeight    = rates[index + 1]?.start;
         
         
         

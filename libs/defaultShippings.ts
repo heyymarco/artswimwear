@@ -14,7 +14,7 @@ export default [
         weightStep : 1,
         eta        : undefined,
         rates      : [
-            { startingWeight: 0, rate: 0 },
+            { start: 0, rate: 0 },
         ],
         
         useZones   : false,
