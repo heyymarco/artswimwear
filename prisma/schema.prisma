@@ -186,6 +186,9 @@ type CoverageState {
     zones                           CoverageCity[]
 }
 type CoverageCity {
+    // records:
+    updatedAt                       DateTime?
+    
     // data:
     name                            String                          // minLength: 3, maxLength: 50
     
