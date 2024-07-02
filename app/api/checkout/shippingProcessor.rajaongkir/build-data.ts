@@ -20,9 +20,6 @@ export const buildData = async (options: BuildDataOptions): Promise<void> => {
         fallbacksToHighestPrice,
         outputFile,
     } = options;
-    // const serviceType = /REG|CTC/;
-    // const serviceName = 'JNE Reguler';
-    // const fallbacksToHighestPrice = true;
     
     
     
