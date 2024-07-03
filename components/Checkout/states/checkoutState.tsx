@@ -664,7 +664,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
-        return calculateShippingCost(totalProductWeight, selectedShipping);
+        return calculateShippingCost(selectedShipping, totalProductWeight);
     }, [totalProductWeight, shippingList, shippingProvider]);
     const totalShippingCost              = finishedOrderState?.totalShippingCost ?? realTotalShippingCost;
     
@@ -794,7 +794,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             .filter((shippingEntry): shippingEntry is Exclude<typeof shippingEntry, undefined> => !!shippingEntry)
             ?.map((shippingEntry) => ({
                 id                  : `${shippingEntry.id}`,
-                previewShippingCost : calculateShippingCost(totalProductWeight, shippingEntry) ?? -1, // -1 means: no need to ship (digital products)
+                previewShippingCost : calculateShippingCost(shippingEntry, totalProductWeight) ?? -1, // -1 means: no need to ship (digital products)
             }))
             ?.sort((a, b) => a.previewShippingCost - b.previewShippingCost) // -1 means: no need to ship (digital products)
         );

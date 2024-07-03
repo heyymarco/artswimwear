@@ -90,7 +90,7 @@ const EditShippingMethod = (): JSX.Element|null => {
                 {
                     filteredShippingList
                     .map((shippingEntry) => ({
-                        totalShippingCost : calculateShippingCost(totalProductWeight, shippingEntry),
+                        totalShippingCost : calculateShippingCost(shippingEntry, totalProductWeight),
                         ...shippingEntry,
                     }))
                     .sort(({totalShippingCost: a}, {totalShippingCost: b}): number => (a ?? 0) - (b ?? 0))

@@ -972,7 +972,7 @@ router
                 };
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
-            const totalShippingCost          = matchingShipping ? calculateShippingCost(totalProductWeight, matchingShipping) : null;
+            const totalShippingCost          = matchingShipping ? calculateShippingCost(matchingShipping, totalProductWeight) : null;
             const totalShippingCostConverted = await (async (): Promise<number|null> => {
                 const totalShippingCostAsCustomerCurrency = (
                     await convertCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency)
