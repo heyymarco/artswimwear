@@ -631,6 +631,14 @@ router
                         visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
                     },
                     select : {
+                        // records:
+                        id         : true,
+                        
+                        
+                        
+                        // data:
+                        name       : true,
+                        
                         weightStep : true,
                         rates      : true,
                         

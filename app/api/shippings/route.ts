@@ -9,11 +9,6 @@ import {
     createEdgeRouter,
 }                           from 'next-connect'
 
-// models:
-import {
-    shippingDetailSelect,
-}                           from '@/models'
-
 // ORMs:
 import {
     prisma,
@@ -90,28 +85,36 @@ router
     
     
     
+    // populate:
     let allShippings = await prisma.shippingProvider.findMany({
-        select : shippingDetailSelect,
+        select : {
+            // records:
+            id         : true, // required for identifier
+            
+            
+            
+            // data:
+            visibility : true, // required for auto_init
+            
+            name       : true, // required for identifier
+            
+            weightStep : true, // required for calculate_shipping_cost algorithm
+            eta        : true, // optional for matching_shipping algorithm
+            rates      : true, // required for calculate_shipping_cost algorithm
+            
+            useZones   : true, // required for matching_shipping algorithm
+            zones      : true, // required for matching_shipping algorithm
+        },
     }); // get all shippings including the disabled ones
+    
+    
+    
+    // auto_init:
     if (!allShippings.length) { // empty => first app setup => initialize the default shippings
         const defaultShippings = (await import('@/libs/defaultShippings')).default;
         await prisma.shippingProvider.createMany({
             data: defaultShippings,
         });
-        // allShippings = defaultShippings.map((shipping) => ({
-        //     id         : shipping.id,
-        //     
-        //     visibility : shipping.visibility,
-        //     
-        //     name       : shipping.name,
-        //     
-        //     weightStep : shipping.weightStep,
-        //     eta        : shipping.eta,
-        //     rates      : shipping.rates,
-        //     
-        //     useZones   : shipping.useZones,
-        //     countries  : shipping.countries,
-        // }));
     } // if
     
     
@@ -120,11 +123,12 @@ router
     const shippings = allShippings.filter(({visibility}) => (visibility !== 'DRAFT'));
     
     // filter out non_compatible shippings:
-    const shippingAddress: MatchingAddress = { city, state, country };
-    const matchingShippings = (
+    const shippingAddress   : MatchingAddress    = { city, state, country };
+    const matchingShippings : MatchingShipping[] = (
         shippings
-        .map((shipping) => getMatchingShipping(shipping, shippingAddress))
-        .filter((shipping): shipping is MatchingShipping => !!shipping)
+        .map((shippingProvider) => getMatchingShipping(shippingProvider, shippingAddress))
+        .filter((shippingProvider): shippingProvider is Exclude<typeof shippingProvider, null|undefined> => !!shippingProvider)
+        .map(({visibility: _visibility, ...shippingProvider}) => shippingProvider) // remove excess data
     );
     return NextResponse.json(matchingShippings); // handled with success
 });

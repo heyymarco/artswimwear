@@ -6,20 +6,87 @@ import {
 
 
 
-// types:
-export type MatchingShipping = Partial<Omit<ShippingProvider, 'createdAt'|'updatedAt'|'weightStep'|'rates'|'useZones'|'countries'>> & Required<Pick<ShippingProvider, 'weightStep'|'rates'>>
-export type MatchingAddress  = Pick<Address, 'country'|'state'|'city'>
-
-
-
 // utilities:
-export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id'|'visibility'|'name'|'eta'>> & Omit<ShippingProvider, 'id'|'createdAt'|'updatedAt'|'visibility'|'name'|'eta'>, shippingAddress: MatchingAddress): MatchingShipping|null => {
-    let eta   = shipping.eta;
-    let rates = shipping.rates;
+export interface GetMatchingShippingData
+    extends
+        // required:
+        Pick<ShippingProvider,
+            // records:
+            |'id'       // required for identifier
+            
+            
+            
+            // data:
+            |'name'     // required for identifier
+            
+            |'rates'    // required for matching_shipping algorithm
+            
+            |'useZones' // required for matching_shipping algorithm
+            |'zones'    // required for matching_shipping algorithm
+        >,
+        CalculateShippingCostData, // required for returning result
+        
+        // optional:
+        Partial<Pick<ShippingProvider,
+            // data:
+            |'eta'      // optional for matching_shipping algorithm
+        >>
+{
+}
+
+export interface MatchingAddress
+    extends
+        Pick<Address,
+            // data:
+            |'country'
+            |'state'
+            |'city'
+        >
+{
+}
+
+export interface MatchingShipping
+    extends
+        // required:
+        Pick<ShippingProvider,
+            // records:
+            |'id'       // required for identifier
+            
+            
+            
+            // data:
+            |'name'     // required for identifier
+            
+            |'rates'    // required for matching_shipping algorithm
+        >,
+        CalculateShippingCostData, // required for returning result
+        
+        // optional:
+        Partial<Pick<ShippingProvider,
+            // data:
+            |'eta'      // optional for matching_shipping algorithm
+        >>
+{
+}
+
+export const getMatchingShipping = <TGetMatchingShippingData extends GetMatchingShippingData>(shippingProvider: TGetMatchingShippingData, shippingAddress: MatchingAddress): (MatchingShipping & Omit<TGetMatchingShippingData, 'useZones'|'zones'>)|null => {
+    let {
+        eta,
+        rates,
+        
+        ...restShippingProvider
+    } = shippingProvider;
+    
+    const {
+        useZones,
+        zones,
+        
+        ...restrestShippingProvider
+    } = shippingProvider;
     
     
     
-    const matchingCountry = shipping.useZones && shipping.zones?.find((coverageCountry) => (coverageCountry.name.trim().toLowerCase() === shippingAddress.country.trim().toLowerCase()));
+    const matchingCountry = useZones && zones?.find((coverageCountry) => (coverageCountry.name.trim().toLowerCase() === shippingAddress.country.trim().toLowerCase()));
     if (matchingCountry) {
         if (matchingCountry.eta          )      eta   = matchingCountry.eta;
         if (matchingCountry.rates?.length)      rates = matchingCountry.rates;
@@ -45,24 +112,42 @@ export const getMatchingShipping = (shipping: Partial<Pick<ShippingProvider, 'id
     
     if (!rates?.length) return null;
     return {
-        id         : shipping.id,         // optional
+        ...restrestShippingProvider,
         
-        visibility : shipping.visibility, // optional
-        
-        name       : shipping.name,       // optional
-        
-        weightStep : shipping.weightStep, // required
-        eta        : eta,                 // optional
-        rates      : rates,               // required
-    };
+        eta   : eta,   // optional // overwrite with the most specific place
+        rates : rates, // required // overwrite with the most specific place
+    } satisfies (MatchingShipping & Omit<TGetMatchingShippingData, 'useZones'|'zones'>);
 };
-export const calculateShippingCost = (totalWeight: number|null, {weightStep, rates}: Pick<MatchingShipping, 'weightStep'|'rates'>): number|null => {
+
+
+
+export interface CalculateShippingCostData
+    extends
+        // required:
+        Pick<ShippingProvider,
+            // data:
+            |'weightStep' // required for calculate_shipping_cost algorithm
+            |'rates'      // required for calculate_shipping_cost algorithm
+        >
+{
+}
+export const calculateShippingCost = (totalWeight: number|null, shippingProvider: CalculateShippingCostData): number|null => {
+    // conditions:
     if ((totalWeight === null) || isNaN(totalWeight) || !isFinite(totalWeight)) return null;
     
     
     
-    weightStep = Math.max(0, weightStep);
-    let totalCost = 0;
+    // params:
+    const {
+        // data:
+        weightStep : weightStepRaw,
+        rates,
+    } = shippingProvider;
+    
+    
+    
+    const weightStep = Math.max(0, weightStepRaw);
+    let   totalCost  = 0;
     for (
         let index = 0,
             maxIndex              = rates.length,
