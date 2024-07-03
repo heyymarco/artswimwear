@@ -85,6 +85,10 @@ router
     
     
     
+    // TODO: auto update rajaongkir
+    
+    
+    
     // populate:
     let allShippings = await prisma.shippingProvider.findMany({
         select : {
