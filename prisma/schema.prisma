@@ -152,7 +152,8 @@ model ShippingProvider {
     // data:
     visibility                      ShippingVisibility
     
-    autoUpdate                      Boolean                         @default(true)
+    autoUpdate                      Boolean                         @default(false)
+    origin                          ShippingOrigin?
     
     name                            String                          // minLength: 2, maxLength: 50
     
@@ -200,6 +201,12 @@ type CoverageCity {
 enum ShippingVisibility {
     PUBLISHED
     DRAFT
+}
+type ShippingOrigin {
+    // data:
+    country                         String                          // minLength: 2 , maxLength:  3
+    state                           String                          // minLength: 3 , maxLength: 50
+    city                            String                          // minLength: 3 , maxLength: 50
 }
 type ShippingEta {
     // data:

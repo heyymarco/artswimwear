@@ -21,6 +21,7 @@ export const shippingDetailSelect = {
     visibility : true,
     
     autoUpdate : true,
+    origin     : true,
     
     name       : true,
     
