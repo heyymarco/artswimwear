@@ -152,6 +152,8 @@ model ShippingProvider {
     // data:
     visibility                      ShippingVisibility
     
+    autoUpdate                      Boolean                         @default(true)
+    
     name                            String                          // minLength: 2, maxLength: 50
     
     weightStep                      Float                           // min: 0, max: 1000

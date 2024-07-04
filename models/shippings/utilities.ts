@@ -20,6 +20,8 @@ export const shippingDetailSelect = {
     
     visibility : true,
     
+    autoUpdate : true,
+    
     name       : true,
     
     weightStep : true,
