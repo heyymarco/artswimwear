@@ -15,7 +15,7 @@
     "@cssfn/core": "^3.2.0",
     "@cssfn/cssfn-dom": "^3.2.0",
     "@cssfn/cssfn-react": "^3.2.0",
-    "@heymarco/address-editor": "^6.10.1",
+    "@heymarco/address-editor": "^6.11.0",
     "@heymarco/data-table": "^6.5.1",
     "@heymarco/email-editor": "^6.10.0",
     "@heymarco/events": "^6.7.0",
