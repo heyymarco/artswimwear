@@ -1,5 +1,6 @@
 // models:
 import {
+    type Prisma,
     type ShippingOrigin,
     type ShippingEta,
     type ShippingRate,
@@ -60,8 +61,27 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
             id         : true, // required for updating later
             name       : true, // required for updating later
             origin     : true, // required for rajaOngkir fetching
+            
+            // useZones   : true,
+            // zones      : {
+            //     select : {
+            //         useZones : true,
+            //         zones    : {
+            //             select : {
+            //                 useZones : true,
+            //                 zones    : {
+            //                     select : {
+            //                         // records:
+            //                         updatedAt : true,
+            //                     },
+            //                 },
+            //             },
+            //         },
+            //     },
+            // },
         },
     });
+    if (!shippingProviders.length) return;
     // console.log('prividers: ', shippingProviders);
     
     
@@ -118,7 +138,7 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
                 uniqueShippingProviders
                 .values()
             )
-            .map(({ baseName, origin }) => {
+            .map(({baseName, origin}) => {
                 if (!origin) return null;
                 const {
                     country,
@@ -149,6 +169,64 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
         .flat() // flatten the shippingProvider (Reguler|Oke|Yes)
     );
     console.log('data: ', newShippingData);
+    if (!newShippingData.length) return;
+    
+    
+    // await Promise.all(
+    //     shippingProviders
+    //     .map((shippingProvider) => {
+    //         const shippingDataItem        = newShippingData.find(({name, origin}) =>
+    //             (shippingProvider.name.trim().toLowerCase() === name.trim().toLowerCase())
+    //             &&
+    //             (shippingProvider.origin === origin) // match by reference as passed by `shippingDataWithOrigin()`
+    //         );
+    //         if (!shippingDataItem) return null;
+    //         return {
+    //             id    : shippingProvider.id,
+    //             eta   : shippingDataItem.eta,
+    //             rates : shippingDataItem.rates,
+    //         };
+    //     })
+    //     .filter((item): item is Exclude<typeof item, null> => !!item)
+    //     .map(({id, eta, rates}) => {
+    //         prismaTransaction.shippingProvider.update({
+    //             where  : {
+    //                 id : id,
+    //             },
+    //             data : {
+    //                 zones : {
+    //                     updateMany : {
+    //                         where  : {
+    //                             name : { mode: 'insensitive', equals: country },
+    //                         },
+    //                         data   : {
+    //                             zones : {
+    //                                 updateMany : {
+    //                                     where  : {
+    //                                         name : { mode: 'insensitive', equals: state },
+    //                                     },
+    //                                     data   : {
+    //                                         zones : {
+    //                                             updateMany : {
+    //                                                 where  : {
+    //                                                     name : { mode: 'insensitive', equals: city },
+    //                                                 },
+    //                                                 data   : {
+    //                                                     eta   : eta,
+    //                                                     rates : rates,
+    //                                                 },
+    //                                             },
+    //                                         },
+    //                                     },
+    //                                 },
+    //                             },
+    //                         },
+    //                     },
+    //                 },
+    //             },
+    //         })
+    //     })
+    // );
 }
 
 
@@ -177,7 +255,7 @@ interface ShippingData {
     rates : ShippingRate[]
 }
 const getShippingJne = async (originId: string, destinationId: string): Promise<ShippingData[]> => {
-    console.log('fetching rajaongkir');
+    // console.log('fetching rajaongkir');
     const res = await fetch('https://api.rajaongkir.com/starter/cost', {
         method  : 'POST',
         headers : {
@@ -195,9 +273,9 @@ const getShippingJne = async (originId: string, destinationId: string): Promise<
     
     
     const shippingServices       = await handleRajaongkirResponse(await res.json());
-    const shippingServiceReguler = shippingServices.find(({ type }) => (/REG|CTC/i).test(type));
-    const shippingServiceOke     = shippingServices.find(({ type }) => (/OKE/i).test(type));
-    const shippingServiceYes     = shippingServices.find(({ type }) => (/YES|CTCYES/i).test(type));
+    const shippingServiceReguler = shippingServices.find(({type}) => (/REG|CTC/i).test(type));
+    const shippingServiceOke     = shippingServices.find(({type}) => (/OKE/i).test(type));
+    const shippingServiceYes     = shippingServices.find(({type}) => (/YES|CTCYES/i).test(type));
     return (
         [
             !shippingServiceReguler ? null : {
