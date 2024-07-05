@@ -1,5 +1,6 @@
 // models:
 import {
+    type ShippingOrigin,
     type ShippingEta,
     type ShippingRate,
 }                           from '@/models'
@@ -61,12 +62,17 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
             origin     : true, // required for rajaOngkir fetching
         },
     });
+    // console.log('prividers: ', shippingProviders);
     
     
     
     const shippingProvidersWithUnique = (
         shippingProviders
         .map((shippingProvider) => {
+            if (!shippingProvider.origin) return null;
+            
+            
+            
             let baseName = shippingProvider.name.trim().toLowerCase();
             switch (baseName) {
                 case 'jne reguler':
@@ -79,10 +85,10 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
             
             
             const {
-                country = '',
-                state   = '',
-                city    = '',
-            } = shippingProvider.origin ?? {};
+                country,
+                state,
+                city,
+            } = shippingProvider.origin;
             
             
             
@@ -91,23 +97,28 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
                 unique: `${baseName}/${country.trim().toLowerCase()}/${state.trim().toLowerCase()}/${city.trim().toLowerCase()}`,
                 
                 // value:
+                baseName,
                 ...shippingProvider,
             };
         })
+        .filter((item): item is Exclude<typeof item, null> => !!item)
     );
+    // console.log('all: ', shippingProvidersWithUnique);
+    const uniqueShippingProviders = new Map(
+        shippingProvidersWithUnique
+        .map(({unique, ...value}) => [unique, value])
+    );
+    // console.log('unique: ', uniqueShippingProviders);
     
     
     
     const newShippingData = (
         (await Promise.all(
             Array.from(
-                new Map(
-                    shippingProvidersWithUnique
-                    .map(({unique, ...value}) => [unique, value])
-                )
+                uniqueShippingProviders
                 .values()
             )
-            .map(({ origin }) => {
+            .map(({ baseName, origin }) => {
                 if (!origin) return null;
                 const {
                     country,
@@ -121,15 +132,40 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
                 
                 
                 try {
-                    return getShippingJne(originId, destinationId);
+                    switch (baseName) {
+                        case 'jne':
+                            return shippingDataWithOrigin(getShippingJne(originId, destinationId), origin);
+                        
+                        default:
+                            return null;
+                    } // switch
                 }
                 catch {
                     return null;
                 } // try
             })
         ))
-        .filter((newShippingItem): newShippingItem is Exclude<typeof newShippingItem, null> => !!newShippingItem)
+        .filter((item): item is Exclude<typeof item, null> => !!item)
         .flat() // flatten the shippingProvider (Reguler|Oke|Yes)
+    );
+    console.log('data: ', newShippingData);
+}
+
+
+
+interface ShippingDataWithOrigin
+    extends
+        ShippingData
+{
+    origin : ShippingOrigin
+}
+const shippingDataWithOrigin = async (shippingData: Promise<ShippingData[]>, origin: ShippingOrigin): Promise<ShippingDataWithOrigin[]> => {
+    return (
+        (await shippingData)
+        .map((item) => ({
+            ...item,
+            origin,
+        }))
     );
 }
 
@@ -141,6 +177,7 @@ interface ShippingData {
     rates : ShippingRate[]
 }
 const getShippingJne = async (originId: string, destinationId: string): Promise<ShippingData[]> => {
+    console.log('fetching rajaongkir');
     const res = await fetch('https://api.rajaongkir.com/starter/cost', {
         method  : 'POST',
         headers : {
@@ -196,7 +233,7 @@ const getShippingJne = async (originId: string, destinationId: string): Promise<
                 ],
             } satisfies ShippingData,
         ]
-        .filter((shippingItem): shippingItem is Exclude<typeof shippingItem, null> => !!shippingItem)
+        .filter((item): item is Exclude<typeof item, null> => !!item)
     );
 }
 
