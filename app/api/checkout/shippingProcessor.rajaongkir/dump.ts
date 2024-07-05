@@ -39,7 +39,7 @@ for (const { name: stateRaw, isoCode } of (State.getStatesOfCountry('ID') ?? [])
     const state = stateRaw.trim().toLowerCase();
     for (const { name: cityRaw } of ((stateRaw !== 'Kalimantan Barat') ? (City.getCitiesOfState('ID', isoCode)) : kalimantanBarat)) {
         const city = cityRaw.trim().toLowerCase();
-        const destinationId = stateCityToIdMap.get(`${state}/${city}`.trim().toLowerCase())
+        const destinationId = stateCityToIdMap.get(`${state}/${city}`.trim().toLowerCase());
         if (destinationId === undefined) {
             // console.log(`['${stateRaw}/${cityRaw}', 'ERROR']`);
             continue;
@@ -71,8 +71,8 @@ for (const { name: stateRaw, isoCode } of (State.getStatesOfCountry('ID') ?? [])
                     ],
                 },
             } = json;
-            const costs = costsRaw.map((cost: any) => [cost.service, cost.cost]);
-            console.log((++counter), `['${stateRaw}/${cityRaw}', ${JSON.stringify(costs)}],`);
+            const serviceTypes = costsRaw.map((serviceType: any) => [serviceType.service, serviceType.cost]);
+            console.log((++counter), `['${stateRaw}/${cityRaw}', ${JSON.stringify(serviceTypes)}],`);
         }
         catch (error: any) {
             console.log((++counter), `['${stateRaw}/${cityRaw}', 'ERROR', ${error}]`);

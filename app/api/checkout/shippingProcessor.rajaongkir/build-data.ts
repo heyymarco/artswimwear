@@ -38,7 +38,7 @@ export const buildData = async (options: BuildDataOptions): Promise<void> => {
                     etd : eta,
                 }]
             ] = service;
-            const etas = eta.split('-').map((etaStr: string) => {
+            const etas = (eta as string).split('-').map((etaStr: string) => {
                 if (!etaStr) return null;
                 const eta = Number.parseFloat(etaStr);
                 if (!isFinite(eta)) return null;
@@ -48,7 +48,7 @@ export const buildData = async (options: BuildDataOptions): Promise<void> => {
             return {
                 destination : destination,
                 rate        : value,
-                eta         : (etaMin === null) ? null : {
+                eta         : ((etaMin === null) || (etaMin === undefined)) ? null : {
                     min     : etaMin,
                     max     : ((etaMax === null) || (etaMax === undefined) || (etaMax < etaMin)) ? etaMin : etaMax,
                 },
