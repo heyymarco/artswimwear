@@ -213,14 +213,14 @@ export const orderAndDataSelect = {
         },
     },
 } satisfies Prisma.OrderSelect;
-export const convertOrderDataToOrderAndData = (orderData: Awaited<ReturnType<typeof prisma.order.findFirstOrThrow<{ select: typeof orderAndDataSelect }>>>): OrderAndData => {
+export const convertOrderDataToOrderAndData = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], orderData: Awaited<ReturnType<typeof prisma.order.findFirstOrThrow<{ select: typeof orderAndDataSelect }>>>): Promise<OrderAndData> => {
     const {
         customer,
         guest,
         ...restOrderData
     } = orderData;
-    const shippingAddressData  = restOrderData.shippingAddress;
     const shippingProviderData = restOrderData.shippingProvider;
+    const shippingAddressData  = restOrderData.shippingAddress;
     return {
         ...restOrderData,
         items: restOrderData.items.map((item) => ({
@@ -236,8 +236,8 @@ export const convertOrderDataToOrderAndData = (orderData: Awaited<ReturnType<typ
             } : null,
         })),
         shippingProvider : (
-            (shippingAddressData && shippingProviderData)
-            ? getMatchingShipping(shippingProviderData, shippingAddressData)
+            (shippingProviderData && shippingAddressData)
+            ? await getMatchingShipping(prismaTransaction, shippingProviderData, shippingAddressData)
             : null
         ),
         customerOrGuest : (

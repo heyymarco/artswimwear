@@ -4,6 +4,7 @@ import {
     type CoverageCountry,
     type CoverageState,
     type CoverageCity,
+    type ShippingRate,
 }                           from '@prisma/client'
 
 
@@ -27,40 +28,85 @@ export interface ShippingDetail
             // records:
             |'createdAt'
             |'updatedAt'
-            
-            // data:
-            |'zones' // we redefined the zones with less detail
         >
 {
-    // data:
-    zones : CoverageCountryDetail[] // we redefined the zones with less detail
+    // relations:
+    zones : CoverageCountryDetail[]
 }
 
 export interface CoverageCountryDetail
     extends
         Omit<CoverageCountry,
-            // data:
-            'zones' // we redefined the zones with less detail
+            // relations:
+            |'parentId'
         >
 {
-    // data:
-    zones : CoverageStateDetail[] // we redefined the zones with less detail
+    // relations:
+    zones : CoverageStateDetail[]
 }
 export interface CoverageStateDetail
     extends
         Omit<CoverageState,
-            // data:
-            'zones' // we redefined the zones with less detail
+            // relations:
+            |'parentId'
         >
 {
-    // data:
-    zones : CoverageCityDetail[] // we redefined the zones with less detail
+    // relations:
+    zones : CoverageCityDetail[] 
 }
 export interface CoverageCityDetail
     extends
         Omit<CoverageCity,
             // data:
-            |'updatedAt' // less detailed of `updatedAt` because we don't need it (and won't update it) for the `EditCoverageZoneDialog`
-        >
+            |'updatedAt' // changed to optional for the `EditCoverageZoneDialog`
+            
+            // relations:
+            |'parentId'
+        >,
+        Partial<Pick<CoverageCity,
+            // data:
+            |'updatedAt' // changed to optional for the `EditCoverageZoneDialog`
+        >>
 {
 }
+
+
+
+export interface ShippingRateWithId extends ShippingRate {
+    // records:
+    id : string
+}
+
+
+
+export interface CoverageZone<TSubzone extends CoverageSubzone>
+    extends
+        Omit<CoverageCountryDetail,
+            // data:
+            |'useZones' // generic-ify the sub-zones
+            |'zones'    // generic-ify the sub-zones
+        >,
+        Omit<CoverageStateDetail,
+            // data:
+            |'useZones' // generic-ify the sub-zones
+            |'zones'    // generic-ify the sub-zones
+        >,
+        Omit<CoverageCityDetail,
+            // data:
+            |'useZones' // generic-ify the sub-zones
+            |'zones'    // generic-ify the sub-zones
+        >
+{
+    // data:
+    useZones : TSubzone extends never ? never : boolean    // generic-ify the sub-zones
+    zones    : TSubzone extends never ? never : TSubzone[] // generic-ify the sub-zones
+}
+export interface CoverageZoneWithId<TSubzone extends CoverageSubzone>
+    extends
+        CoverageZone<TSubzone>
+{
+    // records:
+    id       : string
+}
+
+export type CoverageSubzone = CoverageStateDetail|CoverageCityDetail|never

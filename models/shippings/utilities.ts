@@ -16,8 +16,10 @@ export const shippingPreviewSelect = {
 
 
 export const shippingDetailSelect = {
+    // records:
     id         : true,
     
+    // data:
     visibility : true,
     
     autoUpdate : true,
@@ -29,9 +31,13 @@ export const shippingDetailSelect = {
     eta        : true,
     rates      : true,
     
+    // relations:
     useZones   : true,
     zones      : {
         select : {
+            // records:
+            id        : true,
+            
             // data:
             name      : true,
             
@@ -41,6 +47,9 @@ export const shippingDetailSelect = {
             useZones  : true,
             zones     : {
                 select : {
+                    // records:
+                    id        : true,
+                    
                     // data:
                     name      : true,
                     
@@ -51,9 +60,8 @@ export const shippingDetailSelect = {
                     zones     : {
                         select : {
                             // records:
+                            id        : true,
                             updatedAt : false,
-                            
-                            
                             
                             // data:
                             name      : true,

@@ -18,6 +18,5 @@ export default [
         ],
         
         useZones   : false,
-        zones      : [],
     },
 ] satisfies Prisma.ShippingProviderUpdateInput[];

@@ -250,7 +250,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
         },
         select : orderAndDataSelect,
     });
-    return convertOrderDataToOrderAndData(orderData);
+    return convertOrderDataToOrderAndData(prismaTransaction, orderData);
 }
 
 
@@ -487,5 +487,5 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
         },
         select : orderAndDataSelect,
     });
-    return convertOrderDataToOrderAndData(orderData);
+    return convertOrderDataToOrderAndData(prismaTransaction, orderData);
 }

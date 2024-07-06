@@ -161,35 +161,50 @@ model ShippingProvider {
     eta                             ShippingEta?
     rates                           ShippingRate[]
     
-    useZones                        Boolean
-    zones                           CoverageCountry[]
-    
     // relations:
+    useZones                        Boolean
+    zones                           CoverageCountry[]               // a ShippingProvider may have some related CoverageCountry(s)                                  // one  to many
+    
     orders                          Order[]                         @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnShipping") // one ShippingProvider may have some related DraftOrder(s)  // one  to many
 }
-type CoverageCountry {
+model CoverageCountry {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
     // data:
     name                            String                          // minLength: 2, maxLength: 3
     
     eta                             ShippingEta?
     rates                           ShippingRate[]
     
+    // relations:
+    parentId                        String
+    parent                          ShippingProvider                @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CoverageCountry(s) if the ShippingProvider deleted
+    
     useZones                        Boolean
-    zones                           CoverageState[]
+    zones                           CoverageState[]                 // a CoverageCountry may have some related CoverageState(s)                                     // one  to many
 }
-type CoverageState {
+model CoverageState {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
     // data:
     name                            String                          // minLength: 3, maxLength: 50
     
     eta                             ShippingEta?
     rates                           ShippingRate[]
     
+    // relations:
+    parentId                        String
+    parent                          CoverageCountry                 @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CoverageState(s) if the CoverageCountry deleted
+    
     useZones                        Boolean
-    zones                           CoverageCity[]
+    zones                           CoverageCity[]                  // a CoverageState may have some related CoverageCity(s)                                        // one  to many
 }
-type CoverageCity {
+model CoverageCity {
     // records:
+    id                              String                          @id @default(cuid()) @map("_id")
     updatedAt                       DateTime?
     
     // data:
@@ -197,6 +212,10 @@ type CoverageCity {
     
     eta                             ShippingEta?
     rates                           ShippingRate[]
+    
+    // relations:
+    parentId                        String
+    parent                          CoverageState                   @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CoverageCity(s) if the CoverageState deleted
 }
 enum ShippingVisibility {
     PUBLISHED

@@ -4,6 +4,11 @@ import {
     type Address,
 }                           from '@prisma/client'
 
+// ORMs:
+import {
+    type prisma,
+}                           from '@/libs/prisma.server'
+
 
 
 // utilities:
@@ -22,7 +27,6 @@ export interface GetMatchingShippingData
             |'rates'    // required for matching_shipping algorithm
             
             |'useZones' // required for matching_shipping algorithm
-            |'zones'    // required for matching_shipping algorithm
         >,
         CalculateShippingCostData, // required for returning result
         
@@ -69,7 +73,7 @@ export interface MatchingShipping
 {
 }
 
-export const getMatchingShipping = <TGetMatchingShippingData extends GetMatchingShippingData>(shippingProvider: TGetMatchingShippingData, shippingAddress: MatchingAddress): (MatchingShipping & Omit<TGetMatchingShippingData, 'useZones'|'zones'>)|null => {
+export const getMatchingShipping = async <TGetMatchingShippingData extends GetMatchingShippingData>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], shippingProvider: TGetMatchingShippingData, shippingAddress: MatchingAddress): Promise<(MatchingShipping & Omit<TGetMatchingShippingData, 'useZones'>)|null> => {
     let {
         eta,
         rates,
@@ -79,44 +83,93 @@ export const getMatchingShipping = <TGetMatchingShippingData extends GetMatching
     
     const {
         useZones,
-        zones,
         
         ...restrestShippingProvider
     } = shippingProvider;
     
     
     
-    const matchingCountry = useZones && zones?.find((coverageCountry) => (coverageCountry.name.trim().toLowerCase() === shippingAddress.country.trim().toLowerCase()));
-    if (matchingCountry) {
-        if (matchingCountry.eta          )      eta   = matchingCountry.eta;
-        if (matchingCountry.rates?.length)      rates = matchingCountry.rates;
+    if (useZones) {
+        const matchingCountry = await prismaTransaction.coverageCountry.findFirst({
+            where  : {
+                name : { mode: 'insensitive', equals: shippingAddress.country },
+            },
+            take   : 1,
+            select : {
+                // data:
+                eta      : true,
+                rates    : true,
+                
+                // relations:
+                useZones : true,
+                zones : {
+                    where  : {
+                        name : { mode: 'insensitive', equals: shippingAddress.state },
+                    },
+                    take   : 1,
+                    select : {
+                        // data:
+                        eta      : true,
+                        rates    : true,
+                        
+                        // relations:
+                        useZones : true,
+                        zones : {
+                            where  : {
+                                name : { mode: 'insensitive', equals: shippingAddress.city },
+                            },
+                            take   : 1,
+                            select : {
+                                // data:
+                                eta      : true,
+                                rates    : true,
+                                
+                                // relations:
+                                // useZones : true, // no more nested zones
+                            },
+                        },
+                    },
+                },
+            },
+        });
         
         
         
-        const matchingState = matchingCountry.useZones && matchingCountry.zones?.find((coverageState) => (coverageState.name.trim().toLowerCase() === shippingAddress.state.trim().toLowerCase()));
-        if (matchingState) {
-            if (matchingState.eta          )    eta   = matchingState.eta;
-            if (matchingState.rates?.length)    rates = matchingState.rates;
+        if (matchingCountry) {
+            if (matchingCountry.eta         )              eta   = matchingCountry.eta;
+            if (matchingCountry.rates.length)              rates = matchingCountry.rates;
             
             
             
-            const matchingCity = matchingState.useZones && matchingState.zones?.find((coverageCity) => (coverageCity.name.trim().toLowerCase() === shippingAddress.city.trim().toLowerCase()));
-            if (matchingCity) {
-                if (matchingCity.eta          ) eta   = matchingCity.eta;
-                if (matchingCity.rates?.length) rates = matchingCity.rates;
+            if (matchingCountry.useZones) {
+                const matchingState = matchingCountry.zones?.[0];
+                if (matchingState) {
+                    if (matchingState.eta         )        eta   = matchingState.eta;
+                    if (matchingState.rates.length)        rates = matchingState.rates;
+                    
+                    
+                    
+                    if (matchingState.useZones) {
+                        const matchingCity = matchingState.zones?.[0];
+                        if (matchingCity) {
+                            if (matchingCity.eta         ) eta   = matchingCity.eta;
+                            if (matchingCity.rates.length) rates = matchingCity.rates;
+                        } // if
+                    } // if
+                } // if
             } // if
         } // if
     } // if
     
     
     
-    if (!rates?.length) return null;
+    if (!rates.length) return null;
     return {
         ...restrestShippingProvider,
         
         eta   : eta,   // optional // overwrite with the most specific place
         rates : rates, // required // overwrite with the most specific place
-    } satisfies (MatchingShipping & Omit<TGetMatchingShippingData, 'useZones'|'zones'>);
+    } satisfies (MatchingShipping & Omit<TGetMatchingShippingData, 'useZones'>);
 };
 
 

@@ -129,8 +129,12 @@ router
     // filter out non_compatible shippings:
     const shippingAddress   : MatchingAddress    = { city, state, country };
     const matchingShippings : MatchingShipping[] = (
-        shippings
-        .map((shippingProvider) => getMatchingShipping(shippingProvider, shippingAddress))
+        (await prisma.$transaction(async (prismaTransaction) => {
+            return await Promise.all( // await for all promises completed before closing the transaction
+                shippings
+                .map((shippingProvider) => getMatchingShipping(prismaTransaction, shippingProvider, shippingAddress))
+            );
+        }))
         .filter((shippingProvider): shippingProvider is Exclude<typeof shippingProvider, null|undefined> => !!shippingProvider)
         .map(({visibility: _visibility, ...shippingProvider}) => shippingProvider) // remove excess data
     );

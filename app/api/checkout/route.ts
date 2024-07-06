@@ -749,7 +749,7 @@ router
             
             const matchingShipping = (
                 (!simulateOrder && hasShippingAddress && !!selectedShipping)
-                ? getMatchingShipping(selectedShipping, shippingAddress)
+                ? await getMatchingShipping(prismaTransaction, selectedShipping, shippingAddress)
                 : null
             );
             if (!simulateOrder && hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';
