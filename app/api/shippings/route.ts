@@ -136,7 +136,7 @@ router
             );
         }))
         .filter((shippingProvider): shippingProvider is Exclude<typeof shippingProvider, null|undefined> => !!shippingProvider)
-        .map(({visibility: _visibility, ...shippingProvider}) => shippingProvider) // remove excess data
+        .map(({visibility: _visibility, zones: _zones, ...shippingProvider}) => shippingProvider) // remove excess data
     );
     return NextResponse.json(matchingShippings); // handled with success
 });

@@ -77,8 +77,6 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
     let {
         eta,
         rates,
-        
-        ...restShippingProvider
     } = shippingProvider;
     
     const {
