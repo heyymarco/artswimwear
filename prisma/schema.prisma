@@ -173,6 +173,8 @@ model CoverageCountry {
     id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
+    sort                            Int
+    
     name                            String                          // minLength: 2, maxLength: 3
     
     eta                             ShippingEta?
@@ -190,6 +192,8 @@ model CoverageState {
     id                              String                          @id @default(cuid()) @map("_id")
     
     // data:
+    sort                            Int
+    
     name                            String                          // minLength: 3, maxLength: 50
     
     eta                             ShippingEta?
@@ -208,6 +212,8 @@ model CoverageCity {
     updatedAt                       DateTime?
     
     // data:
+    sort                            Int
+    
     name                            String                          // minLength: 3, maxLength: 50
     
     eta                             ShippingEta?

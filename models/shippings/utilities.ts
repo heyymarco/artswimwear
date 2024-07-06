@@ -39,6 +39,8 @@ export const shippingDetailSelect = {
             id        : true,
             
             // data:
+            sort      : true,
+            
             name      : true,
             
             eta       : true,
@@ -51,6 +53,8 @@ export const shippingDetailSelect = {
                     id        : true,
                     
                     // data:
+                    sort      : true,
+                    
                     name      : true,
                     
                     eta       : true,
@@ -64,6 +68,8 @@ export const shippingDetailSelect = {
                             updatedAt : false,
                             
                             // data:
+                            sort      : true,
+                            
                             name      : true,
                             
                             eta       : true,
