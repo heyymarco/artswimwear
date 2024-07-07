@@ -45,7 +45,8 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
     if (destinationId === undefined) return; // the destination id is not known => abort updating
     
     
-    
+    const now        = new Date();
+    const maxExpired = new Date(now.valueOf() - (30 * 24 * 3600 * 1000)); // max 30 days ago
     const shippingProviders = await prismaTransaction.shippingProvider.findMany({
         where  : {
             autoUpdate : true, // autoUpdate is enabled
@@ -62,32 +63,74 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
             name       : true, // required for updating later
             origin     : true, // required for rajaOngkir fetching
             
-            // useZones   : true,
-            // zones      : {
-            //     select : {
-            //         useZones : true,
-            //         zones    : {
-            //             select : {
-            //                 useZones : true,
-            //                 zones    : {
-            //                     select : {
-            //                         // records:
-            //                         updatedAt : true,
-            //                     },
-            //                 },
-            //             },
-            //         },
-            //     },
-            // },
+            useZones   : true,
+            zones      : {
+                where  : {
+                    // data:
+                    name       : { mode: 'insensitive', equals: country },
+                },
+                select : {
+                    // records:
+                    id         : true,
+                    
+                    // data:
+                    // name       : true,
+                    
+                    // relations:
+                    useZones : true,
+                    zones    : {
+                        where  : {
+                            // data:
+                            name       : { mode: 'insensitive', equals: state },
+                        },
+                        select : {
+                            // records:
+                            id         : true,
+                            
+                            // data:
+                            // name       : true,
+                            
+                            // relations:
+                            useZones : true,
+                            zones    : {
+                                where  : {
+                                    // data:
+                                    name       : { mode: 'insensitive', equals: city },
+                                },
+                                select : {
+                                    // records:
+                                    id         : true,
+                                    updatedAt  : true,
+                                    
+                                    // data:
+                                    // name       : true,
+                                },
+                                take   : 1,
+                            },
+                        },
+                        take   : 1,
+                    },
+                },
+                take   : 1,
+            },
         },
     });
-    if (!shippingProviders.length) return;
-    // console.log('prividers: ', shippingProviders);
+    if (!shippingProviders.length) return; // no shippingProvider => abort updating
+    const expiredShippingProviders = (
+        shippingProviders
+        .filter((shippingProvider) => {
+            const updatedAt = shippingProvider.zones?.[0]?.zones?.[0]?.zones?.[0]?.updatedAt;
+            return !updatedAt || (updatedAt < maxExpired);
+        })
+    );
+    if (!expiredShippingProviders.length) return; // no expired shippingProvider => abort updating
+    // console.log('prividers: ', expiredShippingProviders);
+    // return;
     
     
     
     const shippingProvidersWithUnique = (
-        shippingProviders
+        expiredShippingProviders
         .map((shippingProvider) => {
             if (!shippingProvider.origin) return null;
             
@@ -168,65 +211,125 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
         .filter((item): item is Exclude<typeof item, null> => !!item)
         .flat() // flatten the shippingProvider (Reguler|Oke|Yes)
     );
-    console.log('data: ', newShippingData);
+    // console.log('data: ', newShippingData);
     if (!newShippingData.length) return;
     
     
-    // await Promise.all(
-    //     shippingProviders
-    //     .map((shippingProvider) => {
-    //         const shippingDataItem        = newShippingData.find(({name, origin}) =>
-    //             (shippingProvider.name.trim().toLowerCase() === name.trim().toLowerCase())
-    //             &&
-    //             (shippingProvider.origin === origin) // match by reference as passed by `shippingDataWithOrigin()`
-    //         );
-    //         if (!shippingDataItem) return null;
-    //         return {
-    //             id    : shippingProvider.id,
-    //             eta   : shippingDataItem.eta,
-    //             rates : shippingDataItem.rates,
-    //         };
-    //     })
-    //     .filter((item): item is Exclude<typeof item, null> => !!item)
-    //     .map(({id, eta, rates}) => {
-    //         prismaTransaction.shippingProvider.update({
-    //             where  : {
-    //                 id : id,
-    //             },
-    //             data : {
-    //                 zones : {
-    //                     updateMany : {
-    //                         where  : {
-    //                             name : { mode: 'insensitive', equals: country },
-    //                         },
-    //                         data   : {
-    //                             zones : {
-    //                                 updateMany : {
-    //                                     where  : {
-    //                                         name : { mode: 'insensitive', equals: state },
-    //                                     },
-    //                                     data   : {
-    //                                         zones : {
-    //                                             updateMany : {
-    //                                                 where  : {
-    //                                                     name : { mode: 'insensitive', equals: city },
-    //                                                 },
-    //                                                 data   : {
-    //                                                     eta   : eta,
-    //                                                     rates : rates,
-    //                                                 },
-    //                                             },
-    //                                         },
-    //                                     },
-    //                                 },
-    //                             },
-    //                         },
-    //                     },
-    //                 },
-    //             },
-    //         })
-    //     })
-    // );
+    await Promise.all(
+        expiredShippingProviders
+        .map((shippingProvider) => {
+            const shippingDataItem        = newShippingData.find(({name, origin}) =>
+                (shippingProvider.name.trim().toLowerCase() === name.trim().toLowerCase())
+                &&
+                (shippingProvider.origin === origin) // match by reference as passed by `shippingDataWithOrigin()`
+            );
+            if (!shippingDataItem) return null;
+            return {
+                // records:
+                id    : shippingProvider.id,
+                
+                // data:
+                eta   : shippingDataItem.eta,
+                rates : shippingDataItem.rates,
+                
+                // relations:
+                zones : shippingProvider.zones,
+            };
+        })
+        .filter((item): item is Exclude<typeof item, null> => !!item)
+        .map(async ({id, eta, rates, zones}) => {
+            const countryId = zones?.[0]?.id;
+            const stateId   = zones?.[0]?.zones?.[0]?.id;
+            const cityId    = zones?.[0]?.zones?.[0]?.zones?.[0]?.id;
+            // console.log('updating: ', {
+            //     shippingProvider : id,
+            //     countryId,
+            //     stateId,
+            //     cityId,
+            // });
+            await prismaTransaction.shippingProvider.update({
+                where  : {
+                    id : id,
+                },
+                data : {
+                    zones : {
+                        create : !!countryId ? undefined : {
+                            // data:
+                            sort      : 999,
+                            
+                            name      : country,
+                            
+                            eta       : null,
+                            rates     : [],
+                            
+                            // relations:
+                            useZones  : true,
+                        },
+                        update :  !countryId ? undefined : {
+                            where  : {
+                                // records:
+                                id : countryId,
+                            },
+                            data   : {
+                                // relations:
+                                zones : {
+                                    create : !!stateId ? undefined : {
+                                        // data:
+                                        sort      : 999,
+                                        
+                                        name      : state,
+                                        
+                                        eta       : null,
+                                        rates     : [],
+                                        
+                                        // relations:
+                                        useZones  : true,
+                                    },
+                                    update :  !stateId ? undefined : {
+                                        where  : {
+                                            // records:
+                                            id : stateId,
+                                        },
+                                        data   : {
+                                            // relations:
+                                            zones : {
+                                                create : !!cityId ? undefined : {
+                                                    // records:
+                                                    updatedAt : now,
+                                                    
+                                                    // data:
+                                                    sort      : 999,
+                                                    
+                                                    name      : city,
+                                                    
+                                                    eta       : eta,
+                                                    rates     : rates,
+                                                },
+                                                update :  !cityId ? undefined : {
+                                                    where  : {
+                                                        // records:
+                                                        id : cityId,
+                                                    },
+                                                    data   : {
+                                                        // records:
+                                                        updatedAt : now,
+                                                        
+                                                        // data:
+                                                        eta       : eta,
+                                                        rates     : rates,
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        })
+    );
 }
 
 
