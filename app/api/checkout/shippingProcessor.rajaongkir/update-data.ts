@@ -182,8 +182,8 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
     
     
     
-    const newShippingData = (
-        (await Promise.all(
+    const newShippingData : ShippingDataWithOrigin[] = (
+        (await Promise.allSettled(
             Array.from(
                 uniqueShippingProviders
                 .values()
@@ -215,6 +215,8 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
                 } // try
             })
         ))
+        .filter((result): result is Exclude<typeof result, PromiseRejectedResult> => (result.status !== 'rejected'))
+        .map((successResult) => successResult.value)
         .filter((item): item is Exclude<typeof item, null> => !!item)
         .flat() // flatten the shippingProvider (Reguler|Oke|Yes)
     );
