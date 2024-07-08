@@ -225,6 +225,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
     if (!newShippingData.length) return;
     
     
+    
     await Promise.all(
         expiredShippingProviders
         .map((shippingProvider) => {
