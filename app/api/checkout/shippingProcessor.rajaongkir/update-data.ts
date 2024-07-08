@@ -35,6 +35,7 @@ const systemShippings : string[] = [
     'jne yes',
     'jne oke',
 ];
+const isNotNullOrUndefined = <TValue>(value: TValue): value is Exclude<TValue, null|undefined> => (value !== null) && (value !== undefined);
 
 
 
@@ -97,6 +98,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             
                             // data:
                             // name       : true,
+                            eta         : true,
+                            rates       : true,
                             
                             // relations:
                             useZones : true,
@@ -248,15 +251,27 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             };
         })
         .filter((item): item is Exclude<typeof item, null> => !!item)
-        .map(async ({id, eta, rates, zones}) => {
+        .map(async ({id, eta: newCityEta, rates: newCityRates, zones}) => {
             const countryModel      = zones?.[0];
             const countryId         = countryModel?.id;
             
             const stateModel        = countryModel?.zones?.[0];
             const stateId           = stateModel?.id;
+            const oldStateEta       = stateModel?.eta;
+            const oldStateRates     = stateModel?.rates;
             
             const cityModel         = stateModel?.zones?.[0];
             const cityId            = cityModel?.id;
+            
+            
+            
+            let newStateEta : ShippingEta|null = {
+                min : Math.min(...[oldStateEta?.min, newCityEta?.min].filter(isNotNullOrUndefined)),
+                max : Math.max(...[oldStateEta?.max, newCityEta?.max].filter(isNotNullOrUndefined)),
+            };
+            if (!isFinite(newStateEta.min) || !isFinite(newStateEta.max)) newStateEta = null;
+            
+            
             
             const countryUppercased = country.toUpperCase();
             
@@ -274,8 +289,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     name           : getNormalizedCityName(countryUppercased, state, city) ?? city,
                     
-                    eta            : eta,
-                    rates          : rates,
+                    eta            : newCityEta,
+                    rates          : newCityRates,
                 }
             );
             const updateCityData    : Prisma.CoverageCityUpdateArgs|undefined = (
@@ -291,8 +306,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         updatedAt  : now,
                         
                         // data:
-                        eta        : eta,
-                        rates      : rates,
+                        eta        : newCityEta,
+                        rates      : newCityRates,
                     },
                 }
             );
@@ -306,7 +321,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     name           : getNormalizedStateName(countryUppercased, state) ?? state,
                     
-                    eta            : null,
+                    eta            : newStateEta,
                     rates          : [],
                     
                     // relations:
@@ -325,6 +340,9 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         id         : stateId,
                     },
                     data   : {
+                        // data:
+                        eta        : newStateEta,
+                        
                         // relations:
                         zones      : {
                             create : createCityData,
