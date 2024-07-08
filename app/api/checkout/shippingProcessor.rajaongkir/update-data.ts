@@ -41,7 +41,7 @@ const systemShippings : string[] = [
 export interface UpdateShippingProviderData {
 
 }
-export const updateShippingProvider = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], shippingAddress: MatchingAddress): Promise<void> => {
+export const updateShippingProviders = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], shippingAddress: MatchingAddress): Promise<void> => {
     const {
         country,
         state,

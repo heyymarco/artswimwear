@@ -6,13 +6,13 @@ import {
 
 // internals:
 import {
-    updateShippingProvider,
+    updateShippingProviders,
 }                           from './update-data.js'
 
 
 
 await prisma.$transaction(async (prismaTransaction) => {
-    await updateShippingProvider(prismaTransaction, {
+    await updateShippingProviders(prismaTransaction, {
         country : 'ID',
         state   : 'DKI JaKARta',
         city    : 'KoTa Administrasi JAKARTA PuSAT',
