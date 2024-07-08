@@ -254,17 +254,17 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
         })
         .filter(isNotNullOrUndefined)
         .map(async ({id, eta: newCityEta, rates: newCityRates, zones}) => {
-            const countryModel      = zones?.[0];
+            const countryModel      = zones?.at(0);
             const countryId         = countryModel?.id;
             const oldCountryEta     = countryModel?.eta;
             const oldCountryRates   = countryModel?.rates;
             
-            const stateModel        = countryModel?.zones?.[0];
+            const stateModel        = countryModel?.zones?.at(0);
             const stateId           = stateModel?.id;
             const oldStateEta       = stateModel?.eta;
             const oldStateRates     = stateModel?.rates;
             
-            const cityModel         = stateModel?.zones?.[0];
+            const cityModel         = stateModel?.zones?.at(0);
             const cityId            = cityModel?.id;
             
             
@@ -276,8 +276,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             if (!isFinite(newStateEta.min) || !isFinite(newStateEta.max)) newStateEta = null; // no min|max data => empty
             
             let newStateRates : ShippingRate[]|undefined = (
-                ((oldStateRates.length !== 1) || !newCityRates || (newCityRates.length !== 1) || (oldStateRates[0].start !== newCityRates[0].start))
-                ? undefined // confusing to update => keeps unchanged
+                (!oldStateRates || (oldStateRates.length !== 1) || !newCityRates || (newCityRates.length !== 1) || (oldStateRates[0].start !== newCityRates[0].start))
+                ? undefined // blank old_data -or- no new_data -or- confusing to update => keeps unchanged
                 : [
                     {
                         start : newCityRates[0].start,
@@ -295,8 +295,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             if (!isFinite(newCountryEta.min) || !isFinite(newCountryEta.max)) newCountryEta = null; // no min|max data => empty
             
             let newCountryRates : ShippingRate[]|undefined = (
-                ((oldCountryRates.length !== 1) || !newStateRates || (newStateRates.length !== 1) || (oldCountryRates[0].start !== newStateRates[0].start))
-                ? undefined // confusing to update => keeps unchanged
+                (!oldCountryRates || (oldCountryRates.length !== 1) || !newStateRates || (newStateRates.length !== 1) || (oldCountryRates[0].start !== newStateRates[0].start))
+                ? undefined // blank old_data -or- no new_data -or- confusing to update => keeps unchanged
                 : [
                     {
                         start : newStateRates[0].start,
