@@ -237,7 +237,23 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             const shippingDataItem        = newShippingData.find(({name, origin}) =>
                 (shippingProvider.name.trim().toLowerCase() === name.trim().toLowerCase())
                 &&
-                (shippingProvider.origin === origin) // match by reference as passed by `shippingDataWithOrigin()`
+                
+                // doesn't work:
+                // (shippingProvider.origin === origin) // match by reference as passed by `shippingDataWithOrigin()`
+                
+                // works:
+                // use compare by values to preserve another shippingProvider(s) having identical origin but not identical by reference
+                (
+                    !!shippingProvider.origin
+                    &&
+                    !!origin
+                    &&
+                    (shippingProvider.origin.country.trim().toLowerCase() === origin.country.trim().toLowerCase())
+                    &&
+                    (shippingProvider.origin.state.trim().toLowerCase()   === origin.state.trim().toLowerCase()  )
+                    &&
+                    (shippingProvider.origin.city.trim().toLowerCase()    === origin.city.trim().toLowerCase()   )
+                )
             );
             if (!shippingDataItem) return null;
             return {

@@ -14,7 +14,7 @@ import {
 await prisma.$transaction(async (prismaTransaction) => {
     await updateShippingProviders(prismaTransaction, {
         country : 'ID',
-        state   : 'DKI JaKARta',
-        city    : 'KoTa Administrasi JAKARTA PuSAT',
+        state   : 'Jawa Timur',
+        city    : 'Surabaya',
     });
 })
