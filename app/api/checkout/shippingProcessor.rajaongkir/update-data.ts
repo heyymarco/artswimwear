@@ -177,7 +177,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                 ...shippingProvider,
             };
         })
-        .filter((item): item is Exclude<typeof item, null> => !!item)
+        .filter(isNotNullOrUndefined)
     );
     // console.log('all: ', shippingProvidersWithUnique);
     const uniqueShippingProviders = new Map(
@@ -223,7 +223,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
         ))
         .filter((result): result is Exclude<typeof result, PromiseRejectedResult> => (result.status !== 'rejected'))
         .map((successResult) => successResult.value)
-        .filter((item): item is Exclude<typeof item, null> => !!item)
+        .filter(isNotNullOrUndefined)
         .flat() // flatten the shippingProvider (Reguler|Oke|Yes)
     );
     // console.log('data: ', newShippingData);
@@ -252,7 +252,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                 zones : shippingProvider.zones,
             };
         })
-        .filter((item): item is Exclude<typeof item, null> => !!item)
+        .filter(isNotNullOrUndefined)
         .map(async ({id, eta: newCityEta, rates: newCityRates, zones}) => {
             const countryModel      = zones?.[0];
             const countryId         = countryModel?.id;
@@ -527,7 +527,7 @@ const getShippingJne = async (originId: string, destinationId: string): Promise<
                 ],
             } satisfies ShippingData,
         ]
-        .filter((item): item is Exclude<typeof item, null> => !!item)
+        .filter(isNotNullOrUndefined)
     );
 }
 
