@@ -52,6 +52,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
     if (destinationId === undefined) return; // the destination id is not known => abort updating
     
     
+    
     const now        = new Date();
     const maxExpired = new Date(now.valueOf() - (30 * 24 * 3600 * 1000)); // max 30 days ago
     const shippingProviders = await prismaTransaction.shippingProvider.findMany({
