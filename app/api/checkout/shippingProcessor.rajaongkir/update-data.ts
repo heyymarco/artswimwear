@@ -266,10 +266,21 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             
             
             let newStateEta : ShippingEta|null = {
-                min : Math.min(...[oldStateEta?.min, newCityEta?.min].filter(isNotNullOrUndefined)),
-                max : Math.max(...[oldStateEta?.max, newCityEta?.max].filter(isNotNullOrUndefined)),
+                min : Math.min(...[oldStateEta?.min, newCityEta?.min].filter(isNotNullOrUndefined)), // the minimum duration of city's eta::min(s)
+                max : Math.max(...[oldStateEta?.max, newCityEta?.max].filter(isNotNullOrUndefined)), // the maximum duration of city's eta::max(s)
             };
-            if (!isFinite(newStateEta.min) || !isFinite(newStateEta.max)) newStateEta = null;
+            if (!isFinite(newStateEta.min) || !isFinite(newStateEta.max)) newStateEta = null; // no min|max data => empty
+            
+            let newStateRates : ShippingRate[]|undefined = (
+                ((oldStateRates.length !== 1) || (newCityRates.length !== 1) || (oldStateRates[0].start !== newCityRates[0].start))
+                ? undefined // confusing to update => keeps unchanged
+                : [
+                    {
+                        start : newCityRates[0].start,
+                        rate  : Math.max(oldStateRates[0].rate, newCityRates[0].rate), // the maximum price of city's price(s)
+                    },
+                ]
+            );
             
             
             
@@ -322,7 +333,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     name           : getNormalizedStateName(countryUppercased, state) ?? state,
                     
                     eta            : newStateEta,
-                    rates          : [],
+                    rates          : newStateRates,
                     
                     // relations:
                     useZones       : true,
@@ -342,6 +353,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     data   : {
                         // data:
                         eta        : newStateEta,
+                        rates      : newStateRates,
                         
                         // relations:
                         zones      : {
