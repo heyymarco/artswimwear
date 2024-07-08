@@ -90,7 +90,8 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
     if (useZones) {
         const matchingCountry = await prismaTransaction.coverageCountry.findFirst({
             where  : {
-                name : { mode: 'insensitive', equals: shippingAddress.country },
+                parentId : shippingProvider.id,
+                name     : { mode: 'insensitive', equals: shippingAddress.country },
             },
             take   : 1,
             select : {
