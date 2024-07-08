@@ -36,7 +36,12 @@ export const getCurrencyRate = async (targetCurrency: string): Promise<number> =
             
             
             
-            const exchangeRateResponse = await fetch(`${process.env.APP_URL ?? ''}/api/currency-exchange`);
+            const exchangeRateResponse = await fetch(`${process.env.APP_URL ?? ''}/api/currency-exchange`, {
+                cache : 'force-cache',
+                next  : {
+                    revalidate : 1 * 24 * 3600, // set the cache lifetime of a resource (in seconds).
+                },
+            });
             if (exchangeRateResponse.status !== 200) throw Error('api error');
             const apiRates = await exchangeRateResponse.json();
             if (typeof(apiRates) !== 'object') throw Error('api error');
@@ -46,7 +51,7 @@ export const getCurrencyRate = async (targetCurrency: string): Promise<number> =
             
             
             
-            currencyExchange.expires = new Date(Date.now() + (1 * 3600 * 1000));
+            currencyExchange.expires = new Date(Date.now() + (1 * 24 * 3600 * 1000));
         })();
         await currencyExchangeUpdatedPromise;
         currencyExchangeUpdatedPromise = undefined;
@@ -132,6 +137,30 @@ export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|n
     }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding (usually FLOOR, to avoid customer complain)
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
+    
+    
+    
+    return trimNumber(stepped) as TNumber;
+}
+
+
+
+export const convertForeignToSystemCurrencyIfRequired = async <TNumber extends number|null|undefined>(fromAmount: TNumber, foreignCurrency: string): Promise<TNumber> => {
+    // conditions:
+    if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
+    if (foreignCurrency === checkoutConfigShared.intl.defaultCurrency) return fromAmount; // the same currency => nothing to convert
+    
+    
+    
+    const {rate, fractionUnit} = await getCurrencyConverter(foreignCurrency);
+    const rawConverted = fromAmount / rate;
+    const rounding     = {
+        ROUND : Math.round,
+        CEIL  : Math.ceil,
+        FLOOR : Math.floor,
+    }[checkoutConfigShared.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
+    const fractions    = rounding(rawConverted / fractionUnit);
+    const stepped      = fractions * fractionUnit;
     
     
     

@@ -19,6 +19,9 @@ import {
 import {
     stateCityToIdMap,
 }                           from './stateCityToIdMap'
+import {
+    convertForeignToSystemCurrencyIfRequired,
+}                           from '@/libs/currencyExchanges'
 
 
 
@@ -387,7 +390,7 @@ const getShippingJne = async (originId: string, destinationId: string): Promise<
                 rates : [
                     {
                         start : 0,
-                        rate  : shippingServiceReguler.costIDR,
+                        rate  : shippingServiceReguler.cost,
                     }
                 ],
             } satisfies ShippingData,
@@ -398,7 +401,7 @@ const getShippingJne = async (originId: string, destinationId: string): Promise<
                 rates : [
                     {
                         start : 0,
-                        rate  : shippingServiceOke.costIDR,
+                        rate  : shippingServiceOke.cost,
                     }
                 ],
             } satisfies ShippingData,
@@ -409,7 +412,7 @@ const getShippingJne = async (originId: string, destinationId: string): Promise<
                 rates : [
                     {
                         start : 0,
-                        rate  : shippingServiceYes.costIDR,
+                        rate  : shippingServiceYes.cost,
                     }
                 ],
             } satisfies ShippingData,
@@ -421,11 +424,12 @@ const getShippingJne = async (originId: string, destinationId: string): Promise<
 
 
 interface ShippingService {
-    type    : string
-    eta     : ShippingEta|null
-    costIDR : number
+    type : string
+    eta  : ShippingEta|null
+    cost : number
 }
 const handleRajaongkirResponse = async (json: any): Promise<ShippingService[]> => {
+    if (typeof(json) !== 'object') throw Error('unexpected response');
     const {
         rajaongkir : {
             results : [
@@ -435,13 +439,28 @@ const handleRajaongkirResponse = async (json: any): Promise<ShippingService[]> =
             ],
         },
     } = json;
-    const serviceTypes : ShippingService[] = costsRaw.map((serviceType: any): ShippingService => {
-        const type = serviceType.service;
-        const cost = serviceType.cost[0];
+    if (!Array.isArray(costsRaw)) throw Error('unexpected response');
+    
+    
+    
+    const serviceTypes : ShippingService[] = await Promise.all(costsRaw.map(async (serviceType: any): Promise<ShippingService> => {
+        if ((typeof(serviceType) !== 'object') || !serviceType) throw Error('unexpected response');
+        const {
+            service : type,
+            cost    : [
+                { etd, value: costIDR },
+            ],
+        } = serviceType;
+        if ((typeof(type)    !== 'string') || !type        ) throw Error('unexpected response');
+        if ((typeof(etd )    !== 'string') || !etd         ) throw Error('unexpected response');
+        if ((typeof(costIDR) !== 'number') || (costIDR < 0)) throw Error('unexpected response');
+        
+        
+        
         const etas = (
-            (cost.etd as string)
+            etd
             .split('-')
-            .map((etaStr: string) => {
+            .map((etaStr) => {
                 if (!etaStr) return null;
                 const eta = Number.parseFloat(etaStr);
                 if (!isFinite(eta)) return null;
@@ -455,8 +474,8 @@ const handleRajaongkirResponse = async (json: any): Promise<ShippingService[]> =
                 min : etaMin,
                 max : ((etaMax === null) || (etaMax === undefined) || (etaMax < etaMin)) ? etaMin : etaMax,
             } satisfies ShippingEta,
-            costIDR : cost.value,
+            cost    : await convertForeignToSystemCurrencyIfRequired(costIDR, 'IDR'),
         };
-    });
+    }));
     return serviceTypes;
 }

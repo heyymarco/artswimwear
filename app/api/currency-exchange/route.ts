@@ -77,7 +77,7 @@ router
         
         
         
-        currencyExchange.expires = new Date(Date.now() + (1 * 3600 * 1000));
+        currencyExchange.expires = new Date(Date.now() + (1 * 24 * 3600 * 1000));
     } // if
     
     
