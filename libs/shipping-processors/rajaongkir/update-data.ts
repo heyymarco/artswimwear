@@ -34,6 +34,9 @@ const systemShippings : string[] = [
     'jne reguler',
     'jne yes',
     'jne oke',
+    
+    'pos reguler',
+    'pos nextday',
 ];
 const isNotNullOrUndefined = <TValue>(value: TValue): value is Exclude<TValue, null|undefined> => (value !== null) && (value !== undefined);
 
@@ -156,6 +159,12 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                 case 'jne yes':
                     baseName = 'jne';
                     break;
+                
+                case 'pos reguler':
+                case 'pos sameday':
+                case 'pos nextday':
+                    baseName = 'pos';
+                    break;
             } // switch
             
             
@@ -211,6 +220,9 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     switch (baseName) {
                         case 'jne':
                             return shippingDataWithOrigin(getShippingJne(originId, destinationId), origin);
+                        
+                        case 'pos':
+                            return shippingDataWithOrigin(getShippingPos(originId, destinationId), origin);
                         
                         default:
                             return null;
@@ -539,6 +551,54 @@ const getShippingJne = async (originId: string, destinationId: string): Promise<
                     {
                         start : 0,
                         rate  : shippingServiceYes.cost,
+                    }
+                ],
+            } satisfies ShippingData,
+        ]
+        .filter(isNotNullOrUndefined)
+    );
+}
+const getShippingPos = async (originId: string, destinationId: string): Promise<ShippingData[]> => {
+    // console.log('fetching rajaongkir');
+    const res = await fetch('https://api.rajaongkir.com/starter/cost', {
+        method  : 'POST',
+        headers : {
+            'key': 'd1ed66bcc966b31be08289752c1b1bbf',
+            'Content-Type': 'application/json',
+        },
+        body    : JSON.stringify({
+            origin      : originId,
+            destination : destinationId,
+            weight      : 1000 /* gram */,
+            courier     : 'pos',
+        }),
+    });
+    
+    
+    
+    const shippingServices       = await handleRajaongkirResponse(await res.json());
+    const shippingServiceReguler = shippingServices.find(({type}) => (/Pos Reguler/i).test(type));
+    const shippingServiceNextday = shippingServices.find(({type}) => (/Pos Nextday/i).test(type));
+    return (
+        [
+            !shippingServiceReguler ? null : {
+                name          : 'Pos Reguler',
+                eta           : shippingServiceReguler.eta,
+                rates : [
+                    {
+                        start : 0,
+                        rate  : shippingServiceReguler.cost,
+                    }
+                ],
+            } satisfies ShippingData,
+            
+            !shippingServiceNextday ? null : {
+                name          : 'Pos Nextday',
+                eta           : shippingServiceNextday.eta,
+                rates : [
+                    {
+                        start : 0,
+                        rate  : shippingServiceNextday.cost,
                     }
                 ],
             } satisfies ShippingData,
