@@ -22,6 +22,10 @@ import {
 import {
     convertForeignToSystemCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
+import {
+    getNormalizedStateName,
+    getNormalizedCityName,
+}                           from './utilities'
 
 
 
@@ -241,15 +245,14 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
         })
         .filter((item): item is Exclude<typeof item, null> => !!item)
         .map(async ({id, eta, rates, zones}) => {
-            const countryId = zones?.[0]?.id;
-            const stateId   = zones?.[0]?.zones?.[0]?.id;
-            const cityId    = zones?.[0]?.zones?.[0]?.zones?.[0]?.id;
-            // console.log('updating: ', {
-            //     shippingProvider : id,
-            //     countryId,
-            //     stateId,
-            //     cityId,
-            // });
+            const countryId         = zones?.[0]?.id;
+            const stateId           = zones?.[0]?.zones?.[0]?.id;
+            const cityId            = zones?.[0]?.zones?.[0]?.zones?.[0]?.id;
+            
+            const countryUppercased = country.toUpperCase();
+            
+            
+            
             await prismaTransaction.shippingProvider.update({
                 where  : {
                     id : id,
@@ -260,7 +263,7 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
                             // data:
                             sort      : 999,
                             
-                            name      : country,
+                            name      : countryUppercased,
                             
                             eta       : null,
                             rates     : [],
@@ -280,7 +283,7 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
                                         // data:
                                         sort      : 999,
                                         
-                                        name      : state,
+                                        name      : getNormalizedStateName(countryUppercased, state) ?? state,
                                         
                                         eta       : null,
                                         rates     : [],
@@ -303,7 +306,7 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
                                                     // data:
                                                     sort      : 999,
                                                     
-                                                    name      : city,
+                                                    name      : getNormalizedCityName(countryUppercased, state, city) ?? city,
                                                     
                                                     eta       : eta,
                                                     rates     : rates,
