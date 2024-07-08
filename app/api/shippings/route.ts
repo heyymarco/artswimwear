@@ -25,6 +25,9 @@ import {
     // utilities:
     getMatchingShipping,
 }                           from '@/libs/shippings'
+import {
+    updateShippingProviders,
+}                           from '@/libs/shipping-processors/rajaongkir'
 
 
 
@@ -63,9 +66,9 @@ router
     
     //#region parsing request
     const {
-        city,
-        state,
         country,
+        state,
+        city,
     } = await req.json();
     //#endregion parsing request
     
@@ -73,9 +76,9 @@ router
     
     //#region validating request
     if (
-           !city    || (typeof(city)    !== 'string') || (city.length    < 3) || (city.length    > 50)
+           !country || (typeof(country) !== 'string') || (country.length < 2) || (country.length >  3)
         || !state   || (typeof(state)   !== 'string') || (state.length   < 3) || (state.length   > 50)
-        || !country || (typeof(country) !== 'string') || (country.length < 2) || (country.length >  3)
+        || !city    || (typeof(city)    !== 'string') || (city.length    < 3) || (city.length    > 50)
     ) {
         return NextResponse.json({
             error: 'Invalid parameter(s).',
@@ -85,7 +88,19 @@ router
     
     
     
-    // TODO: auto update rajaongkir
+    // auto update rajaongkir:
+    await prisma.$transaction(async (prismaTransaction) => {
+        try {
+            await updateShippingProviders(prismaTransaction, {
+                country,
+                state,
+                city,
+            });
+        }
+        catch {
+            // ignore any error
+        } // try
+    });
     
     
     
@@ -127,7 +142,11 @@ router
     const shippings = allShippings.filter(({visibility}) => (visibility !== 'DRAFT'));
     
     // filter out non_compatible shippings:
-    const shippingAddress   : MatchingAddress    = { city, state, country };
+    const shippingAddress   : MatchingAddress    = {
+        country,
+        state,
+        city,
+    };
     const matchingShippings : MatchingShipping[] = (
         (await prisma.$transaction(async (prismaTransaction) => {
             return await Promise.all( // await for all promises completed before closing the transaction
