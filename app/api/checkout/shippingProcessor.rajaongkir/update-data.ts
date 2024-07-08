@@ -84,6 +84,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     // data:
                     // name       : true,
+                    eta        : true,
+                    rates      : true,
                     
                     // relations:
                     useZones : true,
@@ -98,8 +100,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             
                             // data:
                             // name       : true,
-                            eta         : true,
-                            rates       : true,
+                            eta        : true,
+                            rates      : true,
                             
                             // relations:
                             useZones : true,
@@ -254,6 +256,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
         .map(async ({id, eta: newCityEta, rates: newCityRates, zones}) => {
             const countryModel      = zones?.[0];
             const countryId         = countryModel?.id;
+            const oldCountryEta     = countryModel?.eta;
+            const oldCountryRates   = countryModel?.rates;
             
             const stateModel        = countryModel?.zones?.[0];
             const stateId           = stateModel?.id;
@@ -272,12 +276,31 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             if (!isFinite(newStateEta.min) || !isFinite(newStateEta.max)) newStateEta = null; // no min|max data => empty
             
             let newStateRates : ShippingRate[]|undefined = (
-                ((oldStateRates.length !== 1) || (newCityRates.length !== 1) || (oldStateRates[0].start !== newCityRates[0].start))
+                ((oldStateRates.length !== 1) || !newCityRates || (newCityRates.length !== 1) || (oldStateRates[0].start !== newCityRates[0].start))
                 ? undefined // confusing to update => keeps unchanged
                 : [
                     {
                         start : newCityRates[0].start,
                         rate  : Math.max(oldStateRates[0].rate, newCityRates[0].rate), // the maximum price of city's price(s)
+                    },
+                ]
+            );
+            
+            
+            
+            let newCountryEta : ShippingEta|null = {
+                min : Math.min(...[oldCountryEta?.min, newStateEta?.min].filter(isNotNullOrUndefined)), // the minimum duration of state's eta::min(s)
+                max : Math.max(...[oldCountryEta?.max, newStateEta?.max].filter(isNotNullOrUndefined)), // the maximum duration of state's eta::max(s)
+            };
+            if (!isFinite(newCountryEta.min) || !isFinite(newCountryEta.max)) newCountryEta = null; // no min|max data => empty
+            
+            let newCountryRates : ShippingRate[]|undefined = (
+                ((oldCountryRates.length !== 1) || !newStateRates || (newStateRates.length !== 1) || (oldCountryRates[0].start !== newStateRates[0].start))
+                ? undefined // confusing to update => keeps unchanged
+                : [
+                    {
+                        start : newStateRates[0].start,
+                        rate  : Math.max(oldCountryRates[0].rate, newStateRates[0].rate), // the maximum price of state's price(s)
                     },
                 ]
             );
@@ -373,8 +396,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     name           : countryUppercased,
                     
-                    eta            : null,
-                    rates          : [],
+                    eta            : newCountryEta,
+                    rates          : newCountryRates,
                     
                     // relations:
                     useZones       : true,
@@ -392,6 +415,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         id         : countryId,
                     },
                     data   : {
+                        // data:
+                        eta        : newCountryEta,
+                        rates      : newCountryRates,
+                        
                         // relations:
                         zones : {
                             create : createStateData,
