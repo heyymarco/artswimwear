@@ -248,9 +248,14 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
         })
         .filter((item): item is Exclude<typeof item, null> => !!item)
         .map(async ({id, eta, rates, zones}) => {
-            const countryId         = zones?.[0]?.id;
-            const stateId           = zones?.[0]?.zones?.[0]?.id;
-            const cityId            = zones?.[0]?.zones?.[0]?.zones?.[0]?.id;
+            const countryModel      = zones?.[0];
+            const countryId         = countryModel?.id;
+            
+            const stateModel        = countryModel?.zones?.[0];
+            const stateId           = stateModel?.id;
+            
+            const cityModel         = stateModel?.zones?.[0];
+            const cityId            = cityModel?.id;
             
             const countryUppercased = country.toUpperCase();
             
