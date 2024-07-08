@@ -318,8 +318,8 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             );
             const updateStateData   : Prisma.CoverageStateUpdateArgs|undefined = (
                 !stateId
-                ?
-                undefined : {
+                ? undefined
+                : {
                     where  : {
                         // records:
                         id         : stateId,
