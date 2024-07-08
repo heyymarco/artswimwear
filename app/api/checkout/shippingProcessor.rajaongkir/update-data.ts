@@ -253,84 +253,125 @@ export const updateShippingProvider = async (prismaTransaction: Parameters<Param
             
             
             
+            const createCityData    : Omit<Prisma.CoverageCityCreateInput, 'parent'>|undefined = (
+                !!cityId
+                ? undefined
+                : {
+                    // records:
+                    updatedAt      : now,
+                    
+                    // data:
+                    sort           : 999,
+                    
+                    name           : getNormalizedCityName(countryUppercased, state, city) ?? city,
+                    
+                    eta            : eta,
+                    rates          : rates,
+                }
+            );
+            const updateCityData    : Prisma.CoverageCityUpdateArgs|undefined = (
+                !cityId
+                ? undefined
+                : {
+                    where  : {
+                        // records:
+                        id         : cityId,
+                    },
+                    data   : {
+                        // records:
+                        updatedAt  : now,
+                        
+                        // data:
+                        eta        : eta,
+                        rates      : rates,
+                    },
+                }
+            );
+            
+            const createStateData   : Omit<Prisma.CoverageStateCreateInput, 'parent'>|undefined = (
+                !!stateId
+                ? undefined
+                : {
+                    // data:
+                    sort           : 999,
+                    
+                    name           : getNormalizedStateName(countryUppercased, state) ?? state,
+                    
+                    eta            : null,
+                    rates          : [],
+                    
+                    // relations:
+                    useZones       : true,
+                    zones          : {
+                        create     : createCityData,
+                    },
+                }
+            );
+            const updateStateData   : Prisma.CoverageStateUpdateArgs|undefined = (
+                !stateId
+                ?
+                undefined : {
+                    where  : {
+                        // records:
+                        id         : stateId,
+                    },
+                    data   : {
+                        // relations:
+                        zones      : {
+                            create : createCityData,
+                            update : updateCityData,
+                        },
+                    },
+                }
+            );
+            
+            const createCountryData : Omit<Prisma.CoverageCountryCreateInput, 'parent'>|undefined = (
+                !!countryId
+                ? undefined
+                : {
+                    // data:
+                    sort           : 999,
+                    
+                    name           : countryUppercased,
+                    
+                    eta            : null,
+                    rates          : [],
+                    
+                    // relations:
+                    useZones       : true,
+                    zones          : {
+                        create     : createStateData,
+                    },
+                }
+            );
+            const updateCountryData : Prisma.CoverageCountryUpdateArgs|undefined = (
+                !countryId
+                ? undefined
+                : {
+                    where  : {
+                        // records:
+                        id         : countryId,
+                    },
+                    data   : {
+                        // relations:
+                        zones : {
+                            create : createStateData,
+                            update : updateStateData,
+                        },
+                    },
+                }
+            );
+            
+            
+            
             await prismaTransaction.shippingProvider.update({
                 where  : {
                     id : id,
                 },
                 data : {
                     zones : {
-                        create : !!countryId ? undefined : {
-                            // data:
-                            sort      : 999,
-                            
-                            name      : countryUppercased,
-                            
-                            eta       : null,
-                            rates     : [],
-                            
-                            // relations:
-                            useZones  : true,
-                        },
-                        update :  !countryId ? undefined : {
-                            where  : {
-                                // records:
-                                id : countryId,
-                            },
-                            data   : {
-                                // relations:
-                                zones : {
-                                    create : !!stateId ? undefined : {
-                                        // data:
-                                        sort      : 999,
-                                        
-                                        name      : getNormalizedStateName(countryUppercased, state) ?? state,
-                                        
-                                        eta       : null,
-                                        rates     : [],
-                                        
-                                        // relations:
-                                        useZones  : true,
-                                    },
-                                    update :  !stateId ? undefined : {
-                                        where  : {
-                                            // records:
-                                            id : stateId,
-                                        },
-                                        data   : {
-                                            // relations:
-                                            zones : {
-                                                create : !!cityId ? undefined : {
-                                                    // records:
-                                                    updatedAt : now,
-                                                    
-                                                    // data:
-                                                    sort      : 999,
-                                                    
-                                                    name      : getNormalizedCityName(countryUppercased, state, city) ?? city,
-                                                    
-                                                    eta       : eta,
-                                                    rates     : rates,
-                                                },
-                                                update :  !cityId ? undefined : {
-                                                    where  : {
-                                                        // records:
-                                                        id : cityId,
-                                                    },
-                                                    data   : {
-                                                        // records:
-                                                        updatedAt : now,
-                                                        
-                                                        // data:
-                                                        eta       : eta,
-                                                        rates     : rates,
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
+                        create : createCountryData,
+                        update : updateCountryData,
                     },
                 },
             });
