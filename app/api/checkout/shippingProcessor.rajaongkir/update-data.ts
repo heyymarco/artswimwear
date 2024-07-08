@@ -277,7 +277,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             
             let newStateRates : ShippingRate[]|undefined = (
                 (!oldStateRates || (oldStateRates.length !== 1) || !newCityRates || (newCityRates.length !== 1) || (oldStateRates[0].start !== newCityRates[0].start))
-                ? undefined // blank old_data -or- no new_data -or- confusing to update => keeps unchanged
+                ? (!oldStateRates ? [] : undefined) // blank old_data => blank_array -OR- no new_data -or- confusing to update => keeps unchanged
                 : [
                     {
                         start : newCityRates[0].start,
@@ -296,7 +296,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             
             let newCountryRates : ShippingRate[]|undefined = (
                 (!oldCountryRates || (oldCountryRates.length !== 1) || !newStateRates || (newStateRates.length !== 1) || (oldCountryRates[0].start !== newStateRates[0].start))
-                ? undefined // blank old_data -or- no new_data -or- confusing to update => keeps unchanged
+                ? (!oldCountryRates ? [] : undefined) // blank old_data => blank_array -OR- no new_data -or- confusing to update => keeps unchanged
                 : [
                     {
                         start : newStateRates[0].start,
