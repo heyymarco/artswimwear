@@ -37,6 +37,10 @@ const systemShippings : string[] = [
     
     'pos reguler',
     'pos nextday',
+    
+    'tiki reguler',
+    'tiki ons',
+    'tiki economy',
 ];
 const isNotNullOrUndefined = <TValue>(value: TValue): value is Exclude<TValue, null|undefined> => (value !== null) && (value !== undefined);
 
@@ -165,6 +169,12 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                 case 'pos nextday':
                     baseName = 'pos';
                     break;
+                
+                case 'tiki reguler':
+                case 'tiki economy':
+                case 'tiki ons':
+                    baseName = 'tiki';
+                    break;
             } // switch
             
             
@@ -223,6 +233,9 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         
                         case 'pos':
                             return shippingDataWithOrigin(getShippingPos(originId, destinationId), origin);
+                        
+                        case 'tiki':
+                            return shippingDataWithOrigin(getShippingTiki(originId, destinationId), origin);
                         
                         default:
                             return null;
@@ -498,7 +511,7 @@ interface ShippingData {
     eta   : ShippingEta|null
     rates : ShippingRate[]
 }
-const getShippingJne = async (originId: string, destinationId: string): Promise<ShippingData[]> => {
+const getShippingJne  = async (originId: string, destinationId: string): Promise<ShippingData[]> => {
     // console.log('fetching rajaongkir');
     const res = await fetch('https://api.rajaongkir.com/starter/cost', {
         method  : 'POST',
@@ -558,7 +571,7 @@ const getShippingJne = async (originId: string, destinationId: string): Promise<
         .filter(isNotNullOrUndefined)
     );
 }
-const getShippingPos = async (originId: string, destinationId: string): Promise<ShippingData[]> => {
+const getShippingPos  = async (originId: string, destinationId: string): Promise<ShippingData[]> => {
     // console.log('fetching rajaongkir');
     const res = await fetch('https://api.rajaongkir.com/starter/cost', {
         method  : 'POST',
@@ -599,6 +612,66 @@ const getShippingPos = async (originId: string, destinationId: string): Promise<
                     {
                         start : 0,
                         rate  : shippingServiceNextday.cost,
+                    }
+                ],
+            } satisfies ShippingData,
+        ]
+        .filter(isNotNullOrUndefined)
+    );
+}
+const getShippingTiki = async (originId: string, destinationId: string): Promise<ShippingData[]> => {
+    // console.log('fetching rajaongkir');
+    const res = await fetch('https://api.rajaongkir.com/starter/cost', {
+        method  : 'POST',
+        headers : {
+            'key': 'd1ed66bcc966b31be08289752c1b1bbf',
+            'Content-Type': 'application/json',
+        },
+        body    : JSON.stringify({
+            origin      : originId,
+            destination : destinationId,
+            weight      : 1000 /* gram */,
+            courier     : 'tiki',
+        }),
+    });
+    
+    
+    
+    const shippingServices       = await handleRajaongkirResponse(await res.json());
+    const shippingServiceReguler = shippingServices.find(({type}) => (/REG/i).test(type));
+    const shippingServiceEconomy = shippingServices.find(({type}) => (/ECO/i).test(type));
+    const shippingServiceOns     = shippingServices.find(({type}) => (/ONS/i).test(type));
+    return (
+        [
+            !shippingServiceReguler ? null : {
+                name          : 'Tiki Reguler',
+                eta           : shippingServiceReguler.eta,
+                rates : [
+                    {
+                        start : 0,
+                        rate  : shippingServiceReguler.cost,
+                    }
+                ],
+            } satisfies ShippingData,
+            
+            !shippingServiceEconomy ? null : {
+                name          : 'Tiki Economy',
+                eta           : shippingServiceEconomy.eta,
+                rates : [
+                    {
+                        start : 0,
+                        rate  : shippingServiceEconomy.cost,
+                    }
+                ],
+            } satisfies ShippingData,
+            
+            !shippingServiceOns ? null : {
+                name          : 'Tiki ONS',
+                eta           : shippingServiceOns.eta,
+                rates : [
+                    {
+                        start : 0,
+                        rate  : shippingServiceOns.cost,
                     }
                 ],
             } satisfies ShippingData,
