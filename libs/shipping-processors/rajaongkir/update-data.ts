@@ -385,7 +385,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     eta            : (newCityEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
                         // moved to createCityData:
-                        // one_stage nested_update for create:
+                        // one_conditional nested_update for create:
                         create : (newCityEta === null) ? undefined /* do NOT update if null */ : newCityEta,
                     },
                     rates          : newCityRates,
@@ -412,10 +412,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             },
                             
                             // moved to createCityData:
-                            // one_stage nested_update for create:
+                            // one_conditional nested_update for create:
                          // create : (newCityEta === null) ? undefined /* do NOT update if null */ : newCityEta,
                             
-                            // two_stage nested_update for update:
+                            // two_conditional nested_update for update:
                             upsert : (newCityEta === null) ? undefined /* do NOT update if null */ : {
                                 update : newCityEta, // prefer   to `update` if already exist
                                 create : newCityEta, // fallback to `create` if not     exist
@@ -437,7 +437,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     eta            : (newStateEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
                         // moved to createStateData:
-                        // one_stage nested_update for create:
+                        // one_conditional nested_update for create:
                         create : (newStateEta === null) ? undefined /* do NOT update if null */ : newStateEta,
                     },
                     rates          : newStateRates,
@@ -467,10 +467,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             },
                             
                             // moved to createStateData:
-                            // one_stage nested_update for create:
+                            // one_conditional nested_update for create:
                          // create : (newStateEta === null) ? undefined /* do NOT update if null */ : newStateEta,
                             
-                            // two_stage nested_update for update:
+                            // two_conditional nested_update for update:
                             upsert : (newStateEta === null) ? undefined /* do NOT update if null */ : {
                                 update : newStateEta, // prefer   to `update` if already exist
                                 create : newStateEta, // fallback to `create` if not     exist
@@ -498,7 +498,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     eta            : (newCountryEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
                         // moved to createCountryData:
-                        // one_stage nested_update for create:
+                        // one_conditional nested_update for create:
                         create : (newCountryEta === null) ? undefined /* do NOT update if null */ : newCountryEta,
                     },
                     rates          : newCountryRates,
@@ -528,10 +528,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             },
                             
                             // moved to createCountryData:
-                            // one_stage nested_update for create:
+                            // one_conditional nested_update for create:
                          // create : (newCountryEta === null) ? undefined /* do NOT update if null */ : newCountryEta,
                             
-                            // two_stage nested_update for update:
+                            // two_conditional nested_update for update:
                             upsert : (newCountryEta === null) ? undefined /* do NOT update if null */ : {
                                 update : newCountryEta, // prefer   to `update` if already exist
                                 create : newCountryEta, // fallback to `create` if not     exist
