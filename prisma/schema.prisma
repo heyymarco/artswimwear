@@ -153,7 +153,6 @@ model ShippingProvider {
     visibility                      ShippingVisibility
     
     autoUpdate                      Boolean                         @default(false)
-    origin                          ShippingOrigin?
     
     name                            String                          // minLength: 2, maxLength: 50
     
@@ -162,6 +161,8 @@ model ShippingProvider {
     rates                           ShippingRate[]
     
     // relations:
+    origin                          ShippingOrigin?
+    
     useZones                        Boolean
     zones                           CoverageCountry[]               // a ShippingProvider may have some related CoverageCountry(s)                                  // one  to many
     
@@ -227,11 +228,18 @@ enum ShippingVisibility {
     PUBLISHED
     DRAFT
 }
-type ShippingOrigin {
+model ShippingOrigin {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
     // data:
     country                         String                          // minLength: 2 , maxLength:  3
     state                           String                          // minLength: 3 , maxLength: 50
     city                            String                          // minLength: 3 , maxLength: 50
+    
+    // relations:
+    shippingProviderId              String                          @unique
+    shippingProvider                ShippingProvider                @relation(fields: [shippingProviderId], references: [id], onDelete: Cascade) // delete the related ShippingOrigin if the ShippingProvider deleted
 }
 type ShippingEta {
     // data:

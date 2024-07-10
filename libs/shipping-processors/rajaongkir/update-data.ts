@@ -1,7 +1,7 @@
 // models:
 import {
     type Prisma,
-    type ShippingOrigin,
+    type ShippingOriginDetail,
     type ShippingEta,
     type ShippingRate,
 }                           from '@/models'
@@ -77,7 +77,14 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
         select : {
             id         : true, // required for updating later
             name       : true, // required for updating later
-            origin     : true, // required for rajaOngkir fetching
+            origin     : { // required for rajaOngkir fetching
+                select : {
+                    // data:
+                    country : true,
+                    state   : true,
+                    city    : true,
+                },
+            },
             
             useZones   : true,
             zones      : {
@@ -492,9 +499,9 @@ interface ShippingDataWithOrigin
     extends
         ShippingData
 {
-    origin : ShippingOrigin
+    origin : ShippingOriginDetail
 }
-const shippingDataWithOrigin = async (shippingData: Promise<ShippingData[]>, origin: ShippingOrigin): Promise<ShippingDataWithOrigin[]> => {
+const shippingDataWithOrigin = async (shippingData: Promise<ShippingData[]>, origin: ShippingOriginDetail): Promise<ShippingDataWithOrigin[]> => {
     return (
         (await shippingData)
         .map((item) => ({

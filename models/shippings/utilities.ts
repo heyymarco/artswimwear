@@ -30,7 +30,6 @@ export const shippingDetailSelect = {
     visibility : true,
     
     autoUpdate : true,
-    origin     : true,
     
     name       : true,
     
@@ -39,6 +38,15 @@ export const shippingDetailSelect = {
     rates      : true,
     
     // relations:
+    origin     : {
+        select : {
+            // data:
+            country : true,
+            state   : true,
+            city    : true,
+        },
+    },
+    
     useZones   : true,
     zones      : {
         select : {

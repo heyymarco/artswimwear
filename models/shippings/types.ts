@@ -4,6 +4,7 @@ import {
     type CoverageCountry,
     type CoverageState,
     type CoverageCity,
+    type ShippingOrigin,
     type ShippingRate,
 }                           from '@prisma/client'
 
@@ -31,8 +32,24 @@ export interface ShippingDetail
         >
 {
     // relations:
-    zones : CoverageCountryDetail[]
+    origin : ShippingOriginDetail|null
+    zones  : CoverageCountryDetail[]
 }
+
+
+
+export interface ShippingOriginDetail
+    extends Omit<ShippingOrigin,
+        // records:
+        |'id'
+        
+        // relations:
+        |'shippingProviderId'
+    >
+{
+}
+
+
 
 export interface CoverageCountryDetail
     extends
