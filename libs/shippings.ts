@@ -1,6 +1,8 @@
 // models:
 import {
-    type ShippingProvider,
+    type ShippingDetail,
+}                           from '@/models'
+import {
     type Address,
 }                           from '@prisma/client'
 
@@ -15,7 +17,7 @@ import {
 export interface GetMatchingShippingData
     extends
         // required:
-        Pick<ShippingProvider,
+        Pick<ShippingDetail,
             // records:
             |'id'       // required for identifier
             
@@ -31,7 +33,7 @@ export interface GetMatchingShippingData
         CalculateShippingCostData, // required for returning result
         
         // optional:
-        Partial<Pick<ShippingProvider,
+        Partial<Pick<ShippingDetail,
             // data:
             |'eta'      // optional for matching_shipping algorithm
         >>
@@ -52,7 +54,7 @@ export interface MatchingAddress
 export interface MatchingShipping
     extends
         // required:
-        Pick<ShippingProvider,
+        Pick<ShippingDetail,
             // records:
             |'id'       // required for identifier
             
@@ -66,7 +68,7 @@ export interface MatchingShipping
         CalculateShippingCostData, // required for returning result
         
         // optional:
-        Partial<Pick<ShippingProvider,
+        Partial<Pick<ShippingDetail,
             // data:
             |'eta'      // optional for matching_shipping algorithm
         >>
@@ -96,7 +98,13 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
             take   : 1,
             select : {
                 // data:
-                eta      : true,
+                eta         : {
+                    select : {
+                        // data:
+                        min : true,
+                        max : true,
+                    },
+                },
                 rates    : true,
                 
                 // relations:
@@ -108,7 +116,13 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
                     take   : 1,
                     select : {
                         // data:
-                        eta      : true,
+                        eta         : {
+                            select : {
+                                // data:
+                                min : true,
+                                max : true,
+                            },
+                        },
                         rates    : true,
                         
                         // relations:
@@ -120,7 +134,13 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
                             take   : 1,
                             select : {
                                 // data:
-                                eta      : true,
+                                eta         : {
+                                    select : {
+                                        // data:
+                                        min : true,
+                                        max : true,
+                                    },
+                                },
                                 rates    : true,
                                 
                                 // relations:
@@ -176,7 +196,7 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
 export interface CalculateShippingCostData
     extends
         // required:
-        Pick<ShippingProvider,
+        Pick<ShippingDetail,
             // data:
             |'weightStep' // required for calculate_shipping_cost algorithm
             |'rates'      // required for calculate_shipping_cost algorithm

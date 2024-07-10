@@ -87,7 +87,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             },
             
             useZones   : true,
-            zones      : {
+            zones      : { // countries
                 where  : {
                     // data:
                     name       : { mode: 'insensitive', equals: country },
@@ -98,12 +98,18 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     // data:
                     // name       : true,
-                    eta        : true,
+                    eta        : {
+                        select : {
+                            // data:
+                            min : true,
+                            max : true,
+                        },
+                    },
                     rates      : true,
                     
                     // relations:
                     useZones : true,
-                    zones    : {
+                    zones    : { // states
                         where  : {
                             // data:
                             name       : { mode: 'insensitive', equals: state },
@@ -114,12 +120,18 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             
                             // data:
                             // name       : true,
-                            eta        : true,
+                            eta        : {
+                                select : {
+                                    // data:
+                                    min : true,
+                                    max : true,
+                                },
+                            },
                             rates      : true,
                             
                             // relations:
                             useZones : true,
-                            zones    : {
+                            zones    : { // cities
                                 where  : {
                                     // data:
                                     name       : { mode: 'insensitive', equals: city },
@@ -371,7 +383,11 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     name           : getNormalizedCityName(countryUppercased, state, city) ?? city,
                     
-                    eta            : newCityEta,
+                    eta            : (newCityEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                        // moved to createCityData:
+                        // one_stage nested_update for create:
+                        create : (newCityEta === null) ? undefined /* do NOT update if null */ : newCityEta, // do nested `create`(always)                    if `create` CoverageCity
+                    },
                     rates          : newCityRates,
                 }
             );
@@ -388,7 +404,23 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         updatedAt  : now,
                         
                         // data:
-                        eta        : newCityEta,
+                        eta        : (newCityEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                            // nested_delete if set to null:
+                            delete : (newCityEta !== null) ? undefined /* do NOT delete if NOT null */ : {
+                                // do DELETE
+                                // no condition needed because one to one relation
+                            },
+                            
+                            // moved to createCityData:
+                            // one_stage nested_update for create:
+                         // create : (newCityEta === null) ? undefined /* do NOT update if null */ : newCityEta, // do nested `create`(always)                    if `create` CoverageCity
+                            
+                            // two_stage nested_update for update:
+                            upsert : (newCityEta === null) ? undefined /* do NOT update if null */ : {           // do nested `update`(prefer)|`create`(fallback) if `update` CoverageCity
+                                update : newCityEta, // prefer   to `update` if already exist
+                                create : newCityEta, // fallback to `create` if not     exist
+                            },
+                        },
                         rates      : newCityRates,
                     },
                 }
@@ -403,7 +435,11 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     name           : getNormalizedStateName(countryUppercased, state) ?? state,
                     
-                    eta            : newStateEta,
+                    eta            : (newStateEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                        // moved to createStateData:
+                        // one_stage nested_update for create:
+                        create : (newStateEta === null) ? undefined /* do NOT update if null */ : newStateEta, // do nested `create`(always)                    if `create` CoverageState
+                    },
                     rates          : newStateRates,
                     
                     // relations:
@@ -423,7 +459,23 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     },
                     data   : {
                         // data:
-                        eta        : newStateEta,
+                        eta        : (newStateEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                            // nested_delete if set to null:
+                            delete : (newStateEta !== null) ? undefined /* do NOT delete if NOT null */ : {
+                                // do DELETE
+                                // no condition needed because one to one relation
+                            },
+                            
+                            // moved to createStateData:
+                            // one_stage nested_update for create:
+                         // create : (newStateEta === null) ? undefined /* do NOT update if null */ : newStateEta, // do nested `create`(always)                    if `create` CoverageState
+                            
+                            // two_stage nested_update for update:
+                            upsert : (newStateEta === null) ? undefined /* do NOT update if null */ : {            // do nested `update`(prefer)|`create`(fallback) if `update` CoverageState
+                                update : newStateEta, // prefer   to `update` if already exist
+                                create : newStateEta, // fallback to `create` if not     exist
+                            },
+                        },
                         rates      : newStateRates,
                         
                         // relations:
@@ -444,7 +496,11 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     name           : countryUppercased,
                     
-                    eta            : newCountryEta,
+                    eta            : (newCountryEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                        // moved to createCountryData:
+                        // one_stage nested_update for create:
+                        create : (newCountryEta === null) ? undefined /* do NOT update if null */ : newCountryEta, // do nested `create`(always)                    if `create` CoverageCountry
+                    },
                     rates          : newCountryRates,
                     
                     // relations:
@@ -464,7 +520,23 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     },
                     data   : {
                         // data:
-                        eta        : newCountryEta,
+                        eta        : (newCountryEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                            // nested_delete if set to null:
+                            delete : (newCountryEta !== null) ? undefined /* do NOT delete if NOT null */ : {
+                                // do DELETE
+                                // no condition needed because one to one relation
+                            },
+                            
+                            // moved to createCountryData:
+                            // one_stage nested_update for create:
+                         // create : (newCountryEta === null) ? undefined /* do NOT update if null */ : newCountryEta, // do nested `create`(always)                    if `create` CoverageCountry
+                            
+                            // two_stage nested_update for update:
+                            upsert : (newCountryEta === null) ? undefined /* do NOT update if null */ : {              // do nested `update`(prefer)|`create`(fallback) if `update` CoverageCountry
+                                update : newCountryEta, // prefer   to `update` if already exist
+                                create : newCountryEta, // fallback to `create` if not     exist
+                            },
+                        },
                         rates      : newCountryRates,
                         
                         // relations:

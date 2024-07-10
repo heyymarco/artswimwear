@@ -118,7 +118,13 @@ router
             name       : true, // required for identifier
             
             weightStep : true, // required for calculate_shipping_cost algorithm
-            eta        : true, // optional for matching_shipping algorithm
+            eta        : {     // optional for matching_shipping algorithm
+                select : {
+                    // data:
+                    min : true,
+                    max : true,
+                },
+            },
             rates      : true, // required for calculate_shipping_cost algorithm
             
             useZones   : true, // required for matching_shipping algorithm

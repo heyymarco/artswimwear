@@ -5,6 +5,10 @@ import {
     type CoverageState,
     type CoverageCity,
     type ShippingOrigin,
+    type ShippingProviderEta,
+    type CoverageCountryEta,
+    type CoverageStateEta,
+    type CoverageCityEta,
     type ShippingRate,
 }                           from '@prisma/client'
 
@@ -34,6 +38,8 @@ export interface ShippingDetail
     // data:
     origin : ShippingOriginDetail|null
     
+    eta    : ShippingEta|null
+    
     
     
     // relations:
@@ -43,13 +49,14 @@ export interface ShippingDetail
 
 
 export interface ShippingOriginDetail
-    extends Omit<ShippingOrigin,
-        // records:
-        |'id'
-        
-        // relations:
-        |'parentId'
-    >
+    extends
+        Omit<ShippingOrigin,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >
 {
 }
 
@@ -62,8 +69,13 @@ export interface CoverageCountryDetail
             |'parentId'
         >
 {
+    // data:
+    eta    : ShippingEta|null
+    
+    
+    
     // relations:
-    zones : CoverageStateDetail[]
+    zones  : CoverageStateDetail[]
 }
 export interface CoverageStateDetail
     extends
@@ -72,8 +84,13 @@ export interface CoverageStateDetail
             |'parentId'
         >
 {
+    // data:
+    eta    : ShippingEta|null
+    
+    
+    
     // relations:
-    zones : CoverageCityDetail[] 
+    zones  : CoverageCityDetail[] 
 }
 export interface CoverageCityDetail
     extends
@@ -88,6 +105,43 @@ export interface CoverageCityDetail
             // data:
             |'updatedAt' // changed to optional for the `EditCoverageZoneDialog`
         >>
+{
+    // data:
+    eta    : ShippingEta|null
+}
+
+
+
+export interface ShippingEta
+    extends
+        Omit<ShippingProviderEta,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >,
+        Omit<CoverageCountryEta,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >,
+        Omit<CoverageStateEta,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >,
+        Omit<CoverageCityEta,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >
 {
 }
 

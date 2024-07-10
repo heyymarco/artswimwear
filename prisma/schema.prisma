@@ -158,7 +158,7 @@ model ShippingProvider {
     name                            String                          // minLength: 2, maxLength: 50
     
     weightStep                      Float                           // min: 0, max: 1000
-    eta                             ShippingEta?
+    eta                             ShippingProviderEta?
     rates                           ShippingRate[]
     
     // relations:
@@ -177,7 +177,7 @@ model CoverageCountry {
     
     name                            String                          // minLength: 2, maxLength: 3
     
-    eta                             ShippingEta?
+    eta                             CoverageCountryEta?
     rates                           ShippingRate[]
     
     // relations:
@@ -196,7 +196,7 @@ model CoverageState {
     
     name                            String                          // minLength: 3, maxLength: 50
     
-    eta                             ShippingEta?
+    eta                             CoverageStateEta?
     rates                           ShippingRate[]
     
     // relations:
@@ -216,7 +216,7 @@ model CoverageCity {
     
     name                            String                          // minLength: 3, maxLength: 50
     
-    eta                             ShippingEta?
+    eta                             CoverageCityEta?
     rates                           ShippingRate[]
     
     // relations:
@@ -240,10 +240,53 @@ model ShippingOrigin {
     parentId                        String                          @unique
     parent                          ShippingProvider                @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShippingOrigin if the ShippingProvider deleted
 }
-type ShippingEta {
+model ShippingProviderEta {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
     // data:
     min                             Float                           // min: 0, max: 999
     max                             Float                           // min: `min`, max: 999
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          ShippingProvider                @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShippingProviderEta if the ShippingProvider deleted
+}
+model CoverageCountryEta {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    min                             Float                           // min: 0, max: 999
+    max                             Float                           // min: `min`, max: 999
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          CoverageCountry                 @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CoverageCountryEta if the CoverageCountry deleted
+}
+model CoverageStateEta {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    min                             Float                           // min: 0, max: 999
+    max                             Float                           // min: `min`, max: 999
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          CoverageState                   @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CoverageStateEta if the CoverageState deleted
+}
+model CoverageCityEta {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    min                             Float                           // min: 0, max: 999
+    max                             Float                           // min: `min`, max: 999
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          CoverageCity                    @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CoverageCityEta if the CoverageCity deleted
 }
 type ShippingRate {
     // data:

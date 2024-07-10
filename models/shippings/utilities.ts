@@ -14,23 +14,23 @@ import {
 
 export const shippingPreviewSelect = {
     // records:
-    id         : true,
+    id          : true,
     
     // data:
-    name       : true,
+    name        : true,
 } satisfies Prisma.ShippingProviderSelect;
 
 
 
 export const shippingDetailSelect = {
     // records:
-    id         : true,
+    id          : true,
     
     // data:
-    visibility : true,
+    visibility  : true,
     
-    autoUpdate : true,
-    origin     : {
+    autoUpdate  : true,
+    origin      : {
         select : {
             // data:
             country : true,
@@ -39,55 +39,79 @@ export const shippingDetailSelect = {
         },
     },
     
-    name       : true,
+    name        : true,
     
-    weightStep : true,
-    eta        : true,
-    rates      : true,
+    weightStep  : true,
+    eta         : {
+        select : {
+            // data:
+            min : true,
+            max : true,
+        },
+    },
+    rates       : true,
     
     // relations:
-    useZones   : true,
-    zones      : {
+    useZones    : true,
+    zones       : {
         select : {
             // records:
-            id        : true,
+            id          : true,
             
             // data:
-            sort      : true,
+            sort        : true,
             
-            name      : true,
+            name        : true,
             
-            eta       : true,
-            rates     : true,
+            eta         : {
+                select : {
+                    // data:
+                    min : true,
+                    max : true,
+                },
+            },
+            rates       : true,
             
-            useZones  : true,
-            zones     : {
+            useZones    : true,
+            zones       : {
                 select : {
                     // records:
-                    id        : true,
+                    id          : true,
                     
                     // data:
-                    sort      : true,
+                    sort        : true,
                     
-                    name      : true,
+                    name        : true,
                     
-                    eta       : true,
-                    rates     : true,
+                    eta         : {
+                        select : {
+                            // data:
+                            min : true,
+                            max : true,
+                        },
+                    },
+                    rates       : true,
                     
-                    useZones  : true,
-                    zones     : {
+                    useZones    : true,
+                    zones       : {
                         select : {
                             // records:
-                            id        : true,
-                            updatedAt : false,
+                            id          : true,
+                            updatedAt   : false,
                             
                             // data:
-                            sort      : true,
+                            sort        : true,
                             
-                            name      : true,
+                            name        : true,
                             
-                            eta       : true,
-                            rates     : true,
+                            eta         : {
+                                select : {
+                                    // data:
+                                    min : true,
+                                    max : true,
+                                },
+                            },
+                            rates       : true,
                         },
                         orderBy : {
                             sort: 'asc',
