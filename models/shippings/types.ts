@@ -31,8 +31,12 @@ export interface ShippingDetail
             |'updatedAt'
         >
 {
-    // relations:
+    // data:
     origin : ShippingOriginDetail|null
+    
+    
+    
+    // relations:
     zones  : CoverageCountryDetail[]
 }
 

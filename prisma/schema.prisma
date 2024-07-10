@@ -153,6 +153,7 @@ model ShippingProvider {
     visibility                      ShippingVisibility
     
     autoUpdate                      Boolean                         @default(false)
+    origin                          ShippingOrigin?
     
     name                            String                          // minLength: 2, maxLength: 50
     
@@ -161,8 +162,6 @@ model ShippingProvider {
     rates                           ShippingRate[]
     
     // relations:
-    origin                          ShippingOrigin?
-    
     useZones                        Boolean
     zones                           CoverageCountry[]               // a ShippingProvider may have some related CoverageCountry(s)                                  // one  to many
     
