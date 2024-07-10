@@ -48,7 +48,7 @@ export interface ShippingOriginDetail
         |'id'
         
         // relations:
-        |'shippingProviderId'
+        |'parentId'
     >
 {
 }

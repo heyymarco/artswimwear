@@ -237,8 +237,8 @@ model ShippingOrigin {
     city                            String                          // minLength: 3 , maxLength: 50
     
     // relations:
-    shippingProviderId              String                          @unique
-    shippingProvider                ShippingProvider                @relation(fields: [shippingProviderId], references: [id], onDelete: Cascade) // delete the related ShippingOrigin if the ShippingProvider deleted
+    parentId                        String                          @unique
+    parent                          ShippingProvider                @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShippingOrigin if the ShippingProvider deleted
 }
 type ShippingEta {
     // data:
