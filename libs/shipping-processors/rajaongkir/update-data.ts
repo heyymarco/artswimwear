@@ -383,7 +383,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     name           : getNormalizedCityName(countryUppercased, state, city) ?? city,
                     
-                    eta            : (newCityEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                    eta            : (newCityEta === undefined) /* do NOT modify if undefined */ ? undefined : { // one to one relation
                         // moved to createCityData:
                         // one_conditional nested_update if create:
                         create : (newCityEta === null) ? undefined /* do NOT update if null */ : newCityEta,
@@ -404,7 +404,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         updatedAt  : now,
                         
                         // data:
-                        eta        : (newCityEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                        eta        : (newCityEta === undefined) /* do NOT modify if undefined */ ? undefined : { // one to one relation
                             // nested_delete if set to null:
                             delete : (newCityEta !== null) ? undefined /* do NOT delete if NOT null */ : {
                                 // do DELETE
@@ -435,7 +435,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     name           : getNormalizedStateName(countryUppercased, state) ?? state,
                     
-                    eta            : (newStateEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                    eta            : (newStateEta === undefined) /* do NOT modify if undefined */ ? undefined : { // one to one relation
                         // moved to createStateData:
                         // one_conditional nested_update if create:
                         create : (newStateEta === null) ? undefined /* do NOT update if null */ : newStateEta,
@@ -459,7 +459,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     },
                     data   : {
                         // data:
-                        eta        : (newStateEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                        eta        : (newStateEta === undefined) /* do NOT modify if undefined */ ? undefined : { // one to one relation
                             // nested_delete if set to null:
                             delete : (newStateEta !== null) ? undefined /* do NOT delete if NOT null */ : {
                                 // do DELETE
@@ -496,7 +496,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     
                     name           : countryUppercased,
                     
-                    eta            : (newCountryEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                    eta            : (newCountryEta === undefined) /* do NOT modify if undefined */ ? undefined : { // one to one relation
                         // moved to createCountryData:
                         // one_conditional nested_update if create:
                         create : (newCountryEta === null) ? undefined /* do NOT update if null */ : newCountryEta,
@@ -520,7 +520,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     },
                     data   : {
                         // data:
-                        eta        : (newCountryEta === undefined) ? undefined /* do NOT modify if undefined */ : { // one to one relation
+                        eta        : (newCountryEta === undefined) /* do NOT modify if undefined */ ? undefined : { // one to one relation
                             // nested_delete if set to null:
                             delete : (newCountryEta !== null) ? undefined /* do NOT delete if NOT null */ : {
                                 // do DELETE
