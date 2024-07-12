@@ -396,7 +396,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     },
                     rates          : (newCityRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
                         // create all item(s) with sequential order:
-                        create : !newCityRates.length ? undefined /* do NOT update if empty */ : newCityRates.map(selectWithSort),
+                        create : !newCityRates.length /* do NOT update if empty */ ? undefined : newCityRates.map(selectWithSort),
                     },
                 }
             );
@@ -438,7 +438,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             },
                             
                             // create all item(s) with sequential order:
-                            create : !newCityRates.length ? undefined /* do NOT update if empty */ : newCityRates.map(selectWithSort),
+                            create : !newCityRates.length /* do NOT update if empty */ ? undefined : newCityRates.map(selectWithSort),
                         },
                     },
                 }
@@ -460,7 +460,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     },
                     rates          : (newStateRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
                         // create all item(s) with sequential order:
-                        create : !newStateRates.length ? undefined /* do NOT update if empty */ : newStateRates.map(selectWithSort),
+                        create : !newStateRates.length /* do NOT update if empty */ ? undefined : newStateRates.map(selectWithSort),
                     },
                     
                     // relations:
@@ -505,7 +505,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             },
                             
                             // create all item(s) with sequential order:
-                            create : !newStateRates.length ? undefined /* do NOT update if empty */ : newStateRates.map(selectWithSort),
+                            create : !newStateRates.length /* do NOT update if empty */ ? undefined : newStateRates.map(selectWithSort),
                         },
                         
                         // relations:
@@ -533,7 +533,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     },
                     rates          : (newCountryRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
                         // create all item(s) with sequential order:
-                        create : !newCountryRates.length ? undefined /* do NOT update if empty */ : newCountryRates.map(selectWithSort),
+                        create : !newCountryRates.length /* do NOT update if empty */ ? undefined : newCountryRates.map(selectWithSort),
                     },
                     
                     // relations:
@@ -578,7 +578,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             },
                             
                             // create all item(s) with sequential order:
-                            create : !newCountryRates.length ? undefined /* do NOT update if empty */ : newCountryRates.map(selectWithSort),
+                            create : !newCountryRates.length /* do NOT update if empty */ ? undefined : newCountryRates.map(selectWithSort),
                         },
                         
                         // relations:
