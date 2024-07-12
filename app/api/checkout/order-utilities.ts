@@ -157,7 +157,10 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
         shippingProviderId,
         
         // extended data:
-        payment,
+        payment : {
+            paymentId : _paymentId, // remove
+            ...restPaymentData
+        },
         paymentConfirmationToken,
     } = createOrderData;
     
@@ -241,7 +244,9 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 }
             })(),
             
-            payment             : payment,
+            payment             : {
+                create : restPaymentData,
+            },
             paymentConfirmation : !paymentConfirmationToken ? undefined : {
                 create : {
                     token: paymentConfirmationToken,
@@ -440,7 +445,7 @@ export const cancelOrder = async <TSelect extends Prisma.OrderSelect>(prismaTran
                 &&
                 
                 // only manual payment is cancelable:
-                (order.payment.type === 'MANUAL')
+                (!!order.payment && order.payment.type === 'MANUAL')
             )
             ? (order.items.map(({productId, variantIds, quantity}) =>
                 !productId

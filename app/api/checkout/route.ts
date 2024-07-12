@@ -21,7 +21,6 @@ import type {
     VariantGroup,
     Stock,
     
-    Payment,
     PaymentConfirmation,
     PreferredCurrency,
     DraftOrdersOnProducts,
@@ -1355,7 +1354,7 @@ router
                         })(),
                         expiresAt            : authorizedOrPaymentDetail.expiresAt ?? null,
                         billingAddress       : billingAddressData,
-                    } satisfies Payment,
+                    } satisfies PaymentDetail,
                     paymentConfirmationToken : paymentConfirmationToken,
                 })
                 : null
@@ -2393,13 +2392,16 @@ Updating the confirmation is not required.`,
         shippingProviderId,
         shippingCost,
         
-        payment : {
-            billingAddress,
-            ...paymentDetail
-        },
+        payment,
+        // payment : {
+        //     billingAddress,
+        //     ...paymentDetail
+        // },
     } = order;
+    const paymentDetail  : PaymentDetail|null = payment;
+    const billingAddress = paymentDetail?.billingAddress ?? null;
     
-    const isPaid       = (paymentDetail.type !== 'MANUAL');
+    const isPaid       = (!!paymentDetail && (paymentDetail.type !== 'MANUAL'));
     const checkoutStep = isPaid ? 'paid' : 'pending';
     
     const productListAdapter = createEntityAdapter<ProductPreview>({

@@ -1,7 +1,9 @@
 // models:
 import {
-    type CheckoutStep,
     type PaymentDetail,
+}                           from '@/models'
+import {
+    type CheckoutStep,
     type AuthorizedFundData,
 }                           from './types'
 

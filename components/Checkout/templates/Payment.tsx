@@ -63,9 +63,7 @@ const BillingAddress = (): React.ReactNode => {
     const {
         // data:
         order : {
-            payment : {
-                billingAddress : address,
-            },
+            payment,
         },
         
         
@@ -73,6 +71,7 @@ const BillingAddress = (): React.ReactNode => {
         // relation data:
         countryList,
     } = useOrderDataContext();
+    const address = payment?.billingAddress;
     
     
     
@@ -95,18 +94,20 @@ const PaymentMethod = (): React.ReactNode => {
     const {
         // data:
         order : {
-            payment : {
-                // payment data:
-                type       : paymentType,
-                brand      : paymentBrand,
-                identifier : paymentIdentifier,
-            },
+            payment,
         },
     } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!payment) return null;
+    const {
+        // payment data:
+        type       : paymentType,
+        brand      : paymentBrand,
+        identifier : paymentIdentifier,
+    } = payment;
     return (
         <>
             <p
@@ -138,16 +139,18 @@ const PaymentAmount = (): React.ReactNode => {
     const {
         // data:
         order : {
-            payment : {
-                // payment data:
-                amount : paymentAmount,
-            },
+            payment,
         },
     } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!payment) return null;
+    const {
+        // payment data:
+        amount : paymentAmount,
+    } = payment;
     return (
         <>
             <p style={styles.paragraphCurrency}>
@@ -194,18 +197,20 @@ const PaymentInfo = (props: PaymentInfoProps): React.ReactNode => {
     const {
         // data:
         order : {
-            payment : {
-                type           : paymentType,
-                
-                billingAddress : address,
-            },
+            payment,
         },
     } = useOrderDataContext();
-    const isManualPayment = (paymentType === 'MANUAL_PAID');
     
     
     
     // jsx:
+    if (!payment) return null;
+    const {
+        type           : paymentType,
+        
+        billingAddress : address,
+    } = payment;
+    const isManualPayment = (paymentType === 'MANUAL_PAID');
     return (
         <table
             // styles:
@@ -390,17 +395,19 @@ export const PaymentIsManualTransfer = (props: React.PropsWithChildren<{}>): Rea
     const {
         // data:
         order : {
-            payment : {
-                type       : paymentType,
-                identifier : paymentIndentifier,
-                brand      : paymentBrand,
-            }
+            payment,
         },
     } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!payment) return null;
+    const {
+        type       : paymentType,
+        identifier : paymentIndentifier,
+        brand      : paymentBrand,
+    } = payment;
     if (paymentType !== 'MANUAL') return null;
     if (paymentIndentifier      ) return null;
     if (paymentBrand            ) return null;
@@ -411,17 +418,19 @@ export const PaymentIsManualOtc = (props: React.PropsWithChildren<{}>): React.Re
     const {
         // data:
         order : {
-            payment : {
-                type       : paymentType,
-                identifier : paymentIndentifier,
-                brand      : paymentBrand,
-            }
+            payment,
         },
     } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!payment) return null;
+    const {
+        type       : paymentType,
+        identifier : paymentIndentifier,
+        brand      : paymentBrand,
+    } = payment;
     if (paymentType !== 'MANUAL') return null;
     if (!paymentIndentifier     ) return null;
     if (!paymentBrand           ) return null;
@@ -432,17 +441,19 @@ export const PaymentOtcBrand = (props: React.PropsWithChildren<{}>): React.React
     const {
         // data:
         order : {
-            payment : {
-                type       : paymentType,
-                identifier : paymentIndentifier,
-                brand      : paymentBrand,
-            }
+            payment,
         },
     } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!payment) return null;
+    const {
+        type       : paymentType,
+        identifier : paymentIndentifier,
+        brand      : paymentBrand,
+    } = payment;
     if (paymentType !== 'MANUAL') return null;
     if (!paymentIndentifier     ) return null;
     if (!paymentBrand           ) return null;
@@ -453,17 +464,19 @@ export const PaymentOtcCode = (props: React.PropsWithChildren<{}>): React.ReactN
     const {
         // data:
         order : {
-            payment : {
-                type       : paymentType,
-                identifier : paymentIndentifier,
-                brand      : paymentBrand,
-            }
+            payment,
         },
     } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!payment) return null;
+    const {
+        type       : paymentType,
+        identifier : paymentIndentifier,
+        brand      : paymentBrand,
+    } = payment;
     if (paymentType !== 'MANUAL') return null;
     if (!paymentIndentifier     ) return null;
     if (!paymentBrand           ) return null;
@@ -475,16 +488,18 @@ export const PaymentHasExpires = (props: React.PropsWithChildren<{}>): React.Rea
     const {
         // data:
         order : {
-            payment : {
-                type       : paymentType,
-                expiresAt  : paymentExpiresAt,
-            }
+            payment,
         },
     } = useOrderDataContext();
     
     
     
     // jsx:
+    if (!payment) return null;
+    const {
+        type       : paymentType,
+        expiresAt  : paymentExpiresAt,
+    } = payment;
     if (paymentType !== 'MANUAL') return null;
     if (!paymentExpiresAt       ) return null;
     return props.children;
@@ -494,10 +509,7 @@ export const PaymentExpires = (): React.ReactNode => {
     const {
         // data:
         order : {
-            payment : {
-                type       : paymentType,
-                expiresAt  : paymentExpiresAt,
-            }
+            payment,
         },
         customerOrGuest,
     } = useOrderDataContext();
@@ -508,6 +520,11 @@ export const PaymentExpires = (): React.ReactNode => {
     
     
     // jsx:
+    if (!payment) return null;
+    const {
+        type       : paymentType,
+        expiresAt  : paymentExpiresAt,
+    } = payment;
     if (paymentType !== 'MANUAL') return null;
     if (!paymentExpiresAt       ) return null;
     return (

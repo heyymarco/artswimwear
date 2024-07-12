@@ -34,7 +34,7 @@ import {
 }                           from '@/components/Checkout/templates/businessDataContext'
 import {
     // types:
-    OrderAndData,
+    type OrderAndData,
     
     
     

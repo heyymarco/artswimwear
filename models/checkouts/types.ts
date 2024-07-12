@@ -1,6 +1,5 @@
 // models:
 import type {
-    Payment,
     DraftOrdersOnProducts,
 }                           from '@prisma/client'
 
@@ -13,6 +12,7 @@ import type {
 // models:
 import {
     type Address,
+    type PaymentDetail,
 }                           from '@/models'
 
 // stores:
@@ -66,16 +66,6 @@ export interface AuthorizedFundData {
     redirectData ?: string
     expires      ?: Date
 }
-export interface PaymentDetail
-    extends
-        Omit<Payment,
-            |'expiresAt'
-            |'billingAddress'
-        >
-{
-    paymentId ?: string
-    expiresAt ?: Payment['expiresAt']
-}
 
 
 
@@ -85,7 +75,7 @@ export interface FinishedOrderState {
     
     checkoutState     : ReduxCheckoutState
     totalShippingCost : number|null|undefined
-    paymentDetail     : PaymentDetail
+    paymentDetail     : PaymentDetail|null
 }
 
 

@@ -393,7 +393,7 @@ model Order {
     orderTrouble                    Json?
     cancelationReason               Json?
     
-    payment                         Payment
+    payment                         Payment?
     
     // relations:
     items                           OrdersOnProducts[]              // some Product(s) may have some related Order(s)  // many to many
@@ -437,7 +437,10 @@ enum OrderStatus {
     IN_TROUBLE
     COMPLETED
 }
-type Payment {
+model Payment {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
     // data:
     type                            PaymentType
     brand                           String?
@@ -448,6 +451,10 @@ type Payment {
     fee                             Float                           // min: 0
     
     billingAddress                  Address?
+    
+    // relations:
+    parentId                        String?                         @unique
+    parent                          Order?                          @relation(fields: [parentId], references: [id], onDelete: SetNull) // preserve the related Payment(s) if the Order deleted
 }
 enum PaymentType {
     CARD

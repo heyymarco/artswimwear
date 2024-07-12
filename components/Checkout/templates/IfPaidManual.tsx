@@ -18,13 +18,11 @@ export const IfPaidManual = (props: React.PropsWithChildren<{}>): React.ReactNod
     const {
         // data:
         order : {
-            payment : {
-                type : paymentType,
-            },
+            payment,
         },
         isPaid,
     } = useOrderDataContext();
-    const isManualPayment = (paymentType === 'MANUAL_PAID');
+    const isManualPayment = (!!payment && (payment.type === 'MANUAL_PAID'));
     
     
     

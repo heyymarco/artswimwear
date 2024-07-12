@@ -146,13 +146,16 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                             });
                             if (!order) return false; // the order is not found => ignore
                             if (['CANCELED', 'EXPIRED'].includes(order.orderStatus)) return false; // already 'CANCELED'|'EXPIRED' => ignore
-                            if (order.payment.type !== 'MANUAL') return false; // not 'MANUAL' payment => ignore
+                            if (!order.payment || (order.payment.type !== 'MANUAL')) return false; // not 'MANUAL' payment => ignore
                             
                             
                             
                             // (Real)Order EXPIRED => restore the `Product` stock and mark Order as 'EXPIRED':
                             await cancelOrder(prismaTransaction, {
-                                order             : order,
+                                order             : {
+                                    ...order,
+                                    payment : order.payment, // a TS hack
+                                },
                                 isExpired         : true, // mark Order as 'EXPIRED'
                                 
                                 orderSelect       : { id: true },
@@ -265,7 +268,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             if (
                 order
                 &&
-                (order.payment.type !== 'CARD') // a payment_card is already notified by `/api/checkout/PATCH`
+                (order.payment?.type !== 'CARD') // a payment_card is already notified by `/api/checkout/PATCH`
             ) {
                 await Promise.all([
                     // notify that the payment has been received:

@@ -11,6 +11,8 @@ import type {
 
 // models:
 import type {
+    OrderDetail,
+    
     CustomerOrGuest,
     CustomerOrGuestPreference,
 }                           from '@/models'
@@ -18,7 +20,6 @@ import type {
     Product,
     Variant,
     PaymentConfirmation,
-    Order,
     OrdersOnProducts,
     ShippingTracking,
 }                           from '@prisma/client'
@@ -74,7 +75,20 @@ export type CustomerOrGuestPreferenceData = Omit<CustomerOrGuestPreference,
     |'customerId'
     |'guestId'
 >
-export type OrderAndData = Order & {
+export interface OrderAndData
+    extends
+        Omit<OrderDetail,
+            // relations:
+            |'items'
+            
+            |'customer'
+            |'guest'
+            
+            |'paymentConfirmation'
+            
+            |'shippingTracking'
+        >
+{
     items                : OrderItemsAndData[]
     shippingProvider     : MatchingShipping|null
     customerOrGuest      : CustomerOrGuestData|null

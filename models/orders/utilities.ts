@@ -121,7 +121,20 @@ export const orderAndDataSelect = {
     shippingAddress   : true,
     shippingCost      : true,
     
-    payment           : true,
+    payment           : {
+        select : {
+            // data:
+            type           : true,
+            brand          : true,
+            identifier     : true,
+            expiresAt      : true,
+            
+            amount         : true,
+            fee            : true,
+            
+            billingAddress : true,
+        },
+    },
     
     // relations:
     items : {

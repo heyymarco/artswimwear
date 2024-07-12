@@ -31,6 +31,23 @@ import type {
 
 
 // types:
+export interface OrderDetail
+    extends
+        Omit<Order,
+            // records:
+            |'updatedAt'
+            
+            // relations:
+            |'customerId'
+            |'guestId'
+        >
+{
+    // data:
+    payment  : PaymentDetail|null
+}
+
+
+
 export type CustomerOrGuest =
     &Pick<Customer, keyof Customer & keyof Guest>
     &Pick<Guest   , keyof Customer & keyof Guest>
@@ -93,7 +110,7 @@ export interface CreateOrderDataBasic {
     shippingProviderId       : string|null
     
     // extended data:
-    payment                  : Payment
+    payment                  : PaymentDetail
     paymentConfirmationToken : string|null
 }
 export type CreateOrderData =
@@ -132,7 +149,7 @@ export type CommitDraftOrder = Omit<DraftOrder,
 }
 export interface CommitDraftOrderData {
     draftOrder : CommitDraftOrder
-    payment    : Payment
+    payment    : PaymentDetail
 }
 
 
@@ -176,9 +193,9 @@ export type CancelOrder = Pick<Order,
     
     |'orderStatus'
 > & {
-    payment : Pick<Payment,
+    payment : Pick<PaymentDetail,
         |'type'
-    >
+    >|null
     items : Pick<OrdersOnProducts,
         |'productId'
         |'variantIds'
@@ -204,5 +221,28 @@ export type CommitOrder = Pick<Order,
 >
 export interface CommitOrderData {
     order   : CommitOrder
-    payment : Pick<Payment, 'amount'|'fee'> & Partial<Omit<Payment, 'amount'|'fee'>>
+    payment : Pick<PaymentDetail, 'amount'|'fee'> & Partial<Omit<PaymentDetail, 'amount'|'fee'>>
+}
+
+
+
+export interface PaymentDetail
+    extends
+        Omit<Payment,
+            // records:
+            |'id'
+            
+            // data:
+            |'expiresAt'      // converted to optional
+            |'billingAddress' // converted to optional
+            
+            // relations:
+            |'parentId'
+        >
+{
+    // data:
+    expiresAt      ?: Payment['expiresAt']      // converted to optional
+    billingAddress ?: Payment['billingAddress'] // converted to optional
+    
+    paymentId      ?: string // an optional token for make manual_payment
 }
