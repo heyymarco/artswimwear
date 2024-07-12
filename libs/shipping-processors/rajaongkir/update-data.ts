@@ -1,9 +1,15 @@
 // models:
 import {
+    // types:
     type Prisma,
     type ShippingOriginDetail,
     type ShippingEta,
     type ShippingRate,
+    
+    
+    
+    // utilities:
+    selectWithSort,
 }                           from '@/models'
 
 // ORMs:
@@ -388,7 +394,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         // one_conditional nested_update if create:
                         create : (newCityEta === null) ? undefined /* do NOT update if null */ : newCityEta,
                     },
-                    rates          : newCityRates,
+                    rates          : (newCityRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
+                        // create all item(s) with sequential order:
+                        create : !newCityRates.length ? undefined /* do NOT update if empty */ : newCityRates.map(selectWithSort),
+                    },
                 }
             );
             const updateCityData    : Prisma.CoverageCityUpdateArgs|undefined = (
@@ -421,7 +430,16 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                                 create : newCityEta, // fallback to `create` if not     exist
                             },
                         },
-                        rates      : newCityRates,
+                        rates      : (newCityRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
+                            // clear the existing item(s), if any:
+                            deleteMany : {
+                                // do DELETE ALL related item(s)
+                                // no condition is needed because we want to delete all related item(s)
+                            },
+                            
+                            // create all item(s) with sequential order:
+                            create : !newCityRates.length ? undefined /* do NOT update if empty */ : newCityRates.map(selectWithSort),
+                        },
                     },
                 }
             );
@@ -440,7 +458,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         // one_conditional nested_update if create:
                         create : (newStateEta === null) ? undefined /* do NOT update if null */ : newStateEta,
                     },
-                    rates          : newStateRates,
+                    rates          : (newStateRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
+                        // create all item(s) with sequential order:
+                        create : !newStateRates.length ? undefined /* do NOT update if empty */ : newStateRates.map(selectWithSort),
+                    },
                     
                     // relations:
                     useZones       : true,
@@ -476,7 +497,16 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                                 create : newStateEta, // fallback to `create` if not     exist
                             },
                         },
-                        rates      : newStateRates,
+                        rates      : (newStateRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
+                            // clear the existing item(s), if any:
+                            deleteMany : {
+                                // do DELETE ALL related item(s)
+                                // no condition is needed because we want to delete all related item(s)
+                            },
+                            
+                            // create all item(s) with sequential order:
+                            create : !newStateRates.length ? undefined /* do NOT update if empty */ : newStateRates.map(selectWithSort),
+                        },
                         
                         // relations:
                         zones      : {
@@ -501,7 +531,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         // one_conditional nested_update if create:
                         create : (newCountryEta === null) ? undefined /* do NOT update if null */ : newCountryEta,
                     },
-                    rates          : newCountryRates,
+                    rates          : (newCountryRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
+                        // create all item(s) with sequential order:
+                        create : !newCountryRates.length ? undefined /* do NOT update if empty */ : newCountryRates.map(selectWithSort),
+                    },
                     
                     // relations:
                     useZones       : true,
@@ -537,7 +570,16 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                                 create : newCountryEta, // fallback to `create` if not     exist
                             },
                         },
-                        rates      : newCountryRates,
+                        rates      : (newCountryRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
+                            // clear the existing item(s), if any:
+                            deleteMany : {
+                                // do DELETE ALL related item(s)
+                                // no condition is needed because we want to delete all related item(s)
+                            },
+                            
+                            // create all item(s) with sequential order:
+                            create : !newCountryRates.length ? undefined /* do NOT update if empty */ : newCountryRates.map(selectWithSort),
+                        },
                         
                         // relations:
                         zones : {

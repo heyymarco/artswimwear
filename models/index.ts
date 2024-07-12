@@ -1,3 +1,5 @@
+export      * from './utilities'
+
 export type * from '@prisma/client'
 export      * from './products'
 export      * from './orders'

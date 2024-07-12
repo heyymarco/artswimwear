@@ -9,7 +9,10 @@ import {
     type CoverageCountryEta,
     type CoverageStateEta,
     type CoverageCityEta,
-    type ShippingRate,
+    type ShippingProviderRate,
+    type CoverageCountryRate,
+    type CoverageStateRate,
+    type CoverageCityRate,
 }                           from '@prisma/client'
 
 
@@ -39,6 +42,7 @@ export interface ShippingDetail
     origin : ShippingOriginDetail|null
     
     eta    : ShippingEta|null
+    rates  : ShippingRate[]
     
     
     
@@ -71,6 +75,7 @@ export interface CoverageCountryDetail
 {
     // data:
     eta    : ShippingEta|null
+    rates  : ShippingRate[]
     
     
     
@@ -86,6 +91,7 @@ export interface CoverageStateDetail
 {
     // data:
     eta    : ShippingEta|null
+    rates  : ShippingRate[]
     
     
     
@@ -108,6 +114,7 @@ export interface CoverageCityDetail
 {
     // data:
     eta    : ShippingEta|null
+    rates  : ShippingRate[]
 }
 
 
@@ -147,8 +154,58 @@ export interface ShippingEta
 
 
 
-export interface ShippingRateWithId extends ShippingRate {
+export interface ShippingRate
+    extends
+        Omit<ShippingProviderRate,
+            // records:
+            |'id'
+            
+            // data:
+            |'sort'
+            
+            // relations:
+            |'parentId'
+        >,
+        Omit<CoverageCountryRate,
+            // records:
+            |'id'
+            
+            // data:
+            |'sort'
+            
+            // relations:
+            |'parentId'
+        >,
+        Omit<CoverageStateRate,
+            // records:
+            |'id'
+            
+            // data:
+            |'sort'
+            
+            // relations:
+            |'parentId'
+        >,
+        Omit<CoverageCityRate,
+            // records:
+            |'id'
+            
+            // data:
+            |'sort'
+            
+            // relations:
+            |'parentId'
+        >
+{
+}
+export interface ShippingRateWithId
+    extends
+        ShippingRate
+{
     // records:
+    /**
+     * A temporary id on client side.
+     */
     id : string
 }
 
