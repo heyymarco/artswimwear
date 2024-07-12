@@ -347,211 +347,6 @@ model CoverageCityRate {
 
 
 
-model Customer {
-    // records:
-    id                              String                          @id @default(cuid()) @map("_id")
-    createdAt                       DateTime                        @default(now())
-    updatedAt                       DateTime                        @updatedAt
-    
-    // data:
-    name                            String                                  // minLength: 2, maxLength: 30
-    email                           String                          @unique // minLength: 5, maxLength: 50
-    
-    emailVerified                   DateTime?
-    image                           String?
-    
-    // relations:
-    orders                          Order[]                         @relation("OrdersOnCustomer")      // one Customer may have some related Order(s)       // one  to many
-    draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnCustomer") // one Customer may have some related DraftOrder(s)  // one  to many
-    customerPreference              CustomerPreference?             // a Customer may have one related CustomerPreference                                   // one  to one
-    
-    customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                                  // one  to many
-    customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                                  // one  to many
-    customerCredentials             CustomerCredentials?            // a Customer may have one  related CustomerCredentials                                 // one  to one
-    customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken                          // one  to one
-    customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken                      // one  to one
-}
-model CustomerPreference {
-    // records:
-    id                              String                          @id @default(cuid()) @map("_id")
-    
-    // data:
-    marketingOpt                    Boolean?
-    timezone                        Float?
-    
-    // relations:
-    customerId                      String                          @unique
-    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPreference if the Customer deleted
-}
-
-model Guest {
-    // records:
-    id                              String                          @id @default(cuid()) @map("_id")
-    createdAt                       DateTime                        @default(now())
-    updatedAt                       DateTime                        @updatedAt
-    
-    // data:
-    name                            String                          // minLength: 2, maxLength: 30
-    email                           String                          // minLength: 5, maxLength: 50
-    
-    // relations:
-    orders                          Order[]                         @relation("OrdersOnGuest")      // one Guest may have some related Order(s)        // one  to many
-    draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnGuest") // one Guest may have some related DraftOrder(s)   // one  to many
-    guestPreference                 GuestPreference?                                                // one Guest may have one  related GuestPreference // one  to one
-}
-model GuestPreference {
-    // records:
-    id                              String                          @id @default(cuid()) @map("_id")
-    
-    // data:
-    marketingOpt                    Boolean?
-    timezone                        Float?
-    
-    // relations:
-    guestId                         String                          @unique
-    guest                           Guest                           @relation(fields: [guestId], references: [id], onDelete: Cascade) // delete the related GuestPreference if the Guest deleted
-}
-
-
-
-model Country {
-    // records:
-    id                              String                          @id @default(cuid()) @map("_id")
-    
-    // data:
-    enabled                         Boolean
-    name                            String
-    
-    code                            String                          // minLength: 2 , maxLength:  3
-    dialCode                        String
-}
-
-
-
-type Address {
-    // data:
-    country                         String                          // minLength: 2 , maxLength:  3
-    state                           String                          // minLength: 3 , maxLength: 50
-    city                            String                          // minLength: 3 , maxLength: 50
-    zip                             String?                         // minLength: 2 , maxLength: 11
-    address                         String                          // minLength: 5 , maxLength: 90
-    
-    firstName                       String                          // minLength: 2 , maxLength: 30
-    lastName                        String                          // minLength: 1 , maxLength: 30
-    phone                           String                          // minLength: 5 , maxLength: 15
-}
-enum PaymentType {
-    CARD
-    PAYPAL
-    EWALLET
-    CUSTOM
-    MANUAL
-    MANUAL_PAID
-}
-type Payment {
-    // data:
-    type                            PaymentType
-    brand                           String?
-    identifier                      String?
-    expiresAt                       DateTime?
-    
-    amount                          Float                           // min: 0
-    fee                             Float                           // min: 0
-    
-    billingAddress                  Address?
-}
-model PaymentConfirmation {
-    // records:
-    id                              String                          @id @default(cuid()) @map("_id")
-    reportedAt                      DateTime?                       // manually set
-    reviewedAt                      DateTime?                       // manually set
-    
-    // data:
-    token                           String                          @unique
-    
-    amount                          Float?                          // min: 0
-    payerName                       String?                         // minLength: 2, maxLength: 50
-    paymentDate                     DateTime?
-    
-    originatingBank                 String?                         // minLength: 2, maxLength: 50
-    destinationBank                 String?                         // minLength: 2, maxLength: 50
-    
-    rejectionReason                 Json?
-    
-    // relations:
-    orderId                         String                          @unique
-    order                           Order                           @relation(fields: [orderId], references: [id], onDelete: Cascade) // delete the related PaymentConfirmation if the Order deleted
-}
-enum OrderStatus {
-    NEW_ORDER
-    CANCELED
-    EXPIRED
-    PROCESSED
-    ON_THE_WAY
-    IN_TROUBLE
-    COMPLETED
-}
-type PreferredCurrency {
-    // data:
-    currency                        String                          // minLength: 3, maxLength: 3
-    rate                            Float                           // min: 0
-}
-model Order {
-    // records:
-    id                              String                          @id @default(cuid()) @map("_id")
-    createdAt                       DateTime                        @default(now())
-    updatedAt                       DateTime                        @updatedAt
-    
-    // data:
-    orderId                         String                          @unique // a secondary id for public identifier
-    paymentId                       String?                         @unique // a secondary id for public identifier
-    
-    orderStatus                     OrderStatus                     @default(NEW_ORDER)
-    orderTrouble                    Json?
-    cancelationReason               Json?
-    
-    preferredCurrency               PreferredCurrency?
-    
-    shippingAddress                 Address?
-    shippingCost                    Float?                          // min: 0
-    
-    payment                         Payment
-    
-    // relations:
-    items                           OrdersOnProducts[]              // some Product(s) may have some related Order(s)  // many to many
-    
-    customerId                      String?
-    customer                        Customer?                       @relation(fields: [customerId]         , references: [id], "OrdersOnCustomer", onDelete: SetNull) // preserve the related Order(s) if the Customer deleted
-    
-    guestId                         String?
-    guest                           Guest?                          @relation(fields: [guestId]            , references: [id], "OrdersOnGuest"   , onDelete: SetNull) // preserve the related Order(s) if the Guest deleted
-    
-    shippingProviderId              String?
-    shippingProvider                ShippingProvider?               @relation(fields: [shippingProviderId] , references: [id], "OrdersOnShipping", onDelete: SetNull) // preserve the related Order(s) if the ShippingProvider deleted
-    
-    paymentConfirmation             PaymentConfirmation?            // an Order may have one related PaymentConfirmation // one to one
-    
-    shippingTracking                ShippingTracking?               // an Order may have one related ShippingTracking // one to one
-}
-model OrdersOnProducts {
-    // records:
-    // @@id([productId, orderId])
-    id                              String                          @id @default(cuid()) @map("_id")
-    
-    // data:
-    price                           Float                           // min: 0
-    shippingWeight                  Float?                          // min: 0
-    quantity                        Int                             // min: 1
-    
-    // relations:
-    orderId                         String
-    order                           Order                           @relation(fields: [orderId]     , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
-    
-    productId                       String?
-    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
-    
-    variantIds                      String[]                        // manual relation foreign key(s)
-}
 model DraftOrder {
     // records:
     id                              String                          @id @default(cuid()) @map("_id")
@@ -579,6 +374,89 @@ model DraftOrder {
     shippingProviderId              String?
     shippingProvider                ShippingProvider?               @relation(fields: [shippingProviderId] , references: [id], "DraftOrdersOnShipping", onDelete: SetNull) // preserve the related DraftOrder(s) if the ShippingProvider deleted
 }
+model Order {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
+    
+    // data:
+    orderId                         String                          @unique // a secondary id for public identifier
+    paymentId                       String?                         @unique // a secondary id for public identifier
+    
+    preferredCurrency               PreferredCurrency?
+    
+    shippingAddress                 Address?
+    shippingCost                    Float?                          // min: 0
+    
+    orderStatus                     OrderStatus                     @default(NEW_ORDER)
+    orderTrouble                    Json?
+    cancelationReason               Json?
+    
+    payment                         Payment
+    
+    // relations:
+    items                           OrdersOnProducts[]              // some Product(s) may have some related Order(s)  // many to many
+    
+    customerId                      String?
+    customer                        Customer?                       @relation(fields: [customerId]         , references: [id], "OrdersOnCustomer", onDelete: SetNull) // preserve the related Order(s) if the Customer deleted
+    
+    guestId                         String?
+    guest                           Guest?                          @relation(fields: [guestId]            , references: [id], "OrdersOnGuest"   , onDelete: SetNull) // preserve the related Order(s) if the Guest deleted
+    
+    shippingProviderId              String?
+    shippingProvider                ShippingProvider?               @relation(fields: [shippingProviderId] , references: [id], "OrdersOnShipping", onDelete: SetNull) // preserve the related Order(s) if the ShippingProvider deleted
+    
+    paymentConfirmation             PaymentConfirmation?            // an Order may have one related PaymentConfirmation // one to one
+    
+    shippingTracking                ShippingTracking?               // an Order may have one related ShippingTracking // one to one
+}
+type PreferredCurrency {
+    // data:
+    currency                        String                          // minLength: 3, maxLength: 3
+    rate                            Float                           // min: 0
+}
+type Address {
+    // data:
+    country                         String                          // minLength: 2 , maxLength:  3
+    state                           String                          // minLength: 3 , maxLength: 50
+    city                            String                          // minLength: 3 , maxLength: 50
+    zip                             String?                         // minLength: 2 , maxLength: 11
+    address                         String                          // minLength: 5 , maxLength: 90
+    
+    firstName                       String                          // minLength: 2 , maxLength: 30
+    lastName                        String                          // minLength: 1 , maxLength: 30
+    phone                           String                          // minLength: 5 , maxLength: 15
+}
+enum OrderStatus {
+    NEW_ORDER
+    CANCELED
+    EXPIRED
+    PROCESSED
+    ON_THE_WAY
+    IN_TROUBLE
+    COMPLETED
+}
+type Payment {
+    // data:
+    type                            PaymentType
+    brand                           String?
+    identifier                      String?
+    expiresAt                       DateTime?
+    
+    amount                          Float                           // min: 0
+    fee                             Float                           // min: 0
+    
+    billingAddress                  Address?
+}
+enum PaymentType {
+    CARD
+    PAYPAL
+    EWALLET
+    CUSTOM
+    MANUAL
+    MANUAL_PAID
+}
 model DraftOrdersOnProducts {
     // records:
     // @@id([productId, draftOrderId])
@@ -597,6 +475,47 @@ model DraftOrdersOnProducts {
     product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
     
     variantIds                      String[]                        // manual relation foreign key(s)
+}
+model OrdersOnProducts {
+    // records:
+    // @@id([productId, orderId])
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    price                           Float                           // min: 0
+    shippingWeight                  Float?                          // min: 0
+    quantity                        Int                             // min: 1
+    
+    // relations:
+    orderId                         String
+    order                           Order                           @relation(fields: [orderId]     , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
+    
+    productId                       String?
+    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
+    
+    variantIds                      String[]                        // manual relation foreign key(s)
+}
+model PaymentConfirmation {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    reportedAt                      DateTime?                       // manually set
+    reviewedAt                      DateTime?                       // manually set
+    
+    // data:
+    token                           String                          @unique
+    
+    amount                          Float?                          // min: 0
+    payerName                       String?                         // minLength: 2, maxLength: 50
+    paymentDate                     DateTime?
+    
+    originatingBank                 String?                         // minLength: 2, maxLength: 50
+    destinationBank                 String?                         // minLength: 2, maxLength: 50
+    
+    rejectionReason                 Json?
+    
+    // relations:
+    orderId                         String                          @unique
+    order                           Order                           @relation(fields: [orderId], references: [id], onDelete: Cascade) // delete the related PaymentConfirmation if the Order deleted
 }
 model ShippingTracking {
     // records:
@@ -625,6 +544,90 @@ model ShippingTrackingLog {
     // relations:
     shippingTrackingId              String
     shippingTracking                ShippingTracking                @relation(fields: [shippingTrackingId], references: [id], onDelete: Cascade) // delete the related ShippingTrackingLog(s) if the ShippingTracking deleted
+}
+
+
+
+model Country {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    enabled                         Boolean
+    name                            String
+    
+    code                            String                          // minLength: 2 , maxLength:  3
+    dialCode                        String
+}
+
+
+
+// customer models ----------------------------------------------------------------------------
+
+
+
+model Guest {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
+    
+    // data:
+    name                            String                          // minLength: 2, maxLength: 30
+    email                           String                          // minLength: 5, maxLength: 50
+    
+    // relations:
+    orders                          Order[]                         @relation("OrdersOnGuest")      // one Guest may have some related Order(s)        // one  to many
+    draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnGuest") // one Guest may have some related DraftOrder(s)   // one  to many
+    guestPreference                 GuestPreference?                                                // one Guest may have one  related GuestPreference // one  to one
+}
+model Customer {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
+    
+    // data:
+    name                            String                                  // minLength: 2, maxLength: 30
+    email                           String                          @unique // minLength: 5, maxLength: 50
+    
+    emailVerified                   DateTime?
+    image                           String?
+    
+    // relations:
+    orders                          Order[]                         @relation("OrdersOnCustomer")      // one Customer may have some related Order(s)       // one  to many
+    draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnCustomer") // one Customer may have some related DraftOrder(s)  // one  to many
+    customerPreference              CustomerPreference?             // a Customer may have one related CustomerPreference                                   // one  to one
+    
+    customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                                  // one  to many
+    customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                                  // one  to many
+    customerCredentials             CustomerCredentials?            // a Customer may have one  related CustomerCredentials                                 // one  to one
+    customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken                          // one  to one
+    customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken                      // one  to one
+}
+model GuestPreference {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    marketingOpt                    Boolean?
+    timezone                        Float?
+    
+    // relations:
+    guestId                         String                          @unique
+    guest                           Guest                           @relation(fields: [guestId], references: [id], onDelete: Cascade) // delete the related GuestPreference if the Guest deleted
+}
+model CustomerPreference {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    marketingOpt                    Boolean?
+    timezone                        Float?
+    
+    // relations:
+    customerId                      String                          @unique
+    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPreference if the Customer deleted
 }
 
 
