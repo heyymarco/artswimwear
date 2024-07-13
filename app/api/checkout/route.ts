@@ -1278,7 +1278,7 @@ router
                     quantity       : detailedItem.quantity,
                 };
             });
-            const preferredCurrencyData = (
+            const currencyData = (
                 (savingCurrency === checkoutConfigServer.intl.defaultCurrency)
                 ? null
                 : {
@@ -1324,7 +1324,7 @@ router
                     // primary data:
                     orderId                  : orderId,
                     items                    : orderItemsData,
-                    preferredCurrency        : preferredCurrencyData,
+                    currency                 : currencyData,
                     shippingAddress          : shippingAddressData,
                     shippingCost             : shippingCostData,
                     shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,
@@ -1342,7 +1342,7 @@ router
                     orderId                  : orderId,
                     paymentId                : authorizedOrPaymentDetail.paymentId ?? undefined, // will be random_auto_generated if null|undefined
                     items                    : orderItemsData,
-                    preferredCurrency        : preferredCurrencyData,
+                    currency                 : currencyData,
                     shippingAddress          : shippingAddressData,
                     shippingCost             : shippingCostData,
                     shippingProviderId       : !hasShippingAddress ? null : (shippingProviderId ?? null) as string|null,

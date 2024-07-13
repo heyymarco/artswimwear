@@ -104,7 +104,7 @@ export interface CreateOrderDataBasic {
         // relations:
         |'orderId'
     >[]
-    preferredCurrency        : PreferredCurrency|null
+    currency                 : PreferredCurrency|null
     shippingAddress          : Address|null
     shippingCost             : number|null
     shippingProviderId       : string|null
