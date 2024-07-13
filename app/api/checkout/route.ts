@@ -1782,7 +1782,7 @@ Updating the confirmation is not required.`,
         } = paymentConfirmationDetailRaw;
         return NextResponse.json({
             ...restPaymentConfirmationDetail,
-            currency : orderData.preferredCurrency?.currency ?? checkoutConfigServer.intl.defaultCurrency,
+            currency : orderData.currency?.currency ?? checkoutConfigServer.intl.defaultCurrency,
             preferredTimezone : orderData.customer?.customerPreference?.timezone ?? orderData.guest?.guestPreference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
         } satisfies PaymentConfirmationDetail); // handled with success
     } // if

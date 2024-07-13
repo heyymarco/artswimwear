@@ -357,7 +357,7 @@ model DraftOrder {
     orderId                         String                          @unique // a secondary id for public identifier
     paymentId                       String?                         @unique // a secondary id for public identifier
     
-    preferredCurrency               PreferredCurrency?
+    currency                        PreferredCurrency?
     
     shippingAddress                 Address?
     shippingCost                    Float?                          // min: 0
@@ -384,7 +384,7 @@ model Order {
     orderId                         String                          @unique // a secondary id for public identifier
     paymentId                       String?                         @unique // a secondary id for public identifier
     
-    preferredCurrency               PreferredCurrency?
+    currency                        PreferredCurrency?
     
     shippingAddress                 Address?
     shippingCost                    Float?                          // min: 0

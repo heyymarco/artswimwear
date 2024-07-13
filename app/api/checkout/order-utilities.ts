@@ -77,7 +77,7 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
                 create          : items,
             },
             
-            preferredCurrency   : preferredCurrency,
+            currency            : preferredCurrency,
             
             shippingAddress     : shippingAddress,
             shippingCost        : shippingCost,
@@ -177,7 +177,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 create          : items,
             },
             
-            preferredCurrency   : preferredCurrency,
+            currency            : preferredCurrency,
             
             shippingAddress     : shippingAddress,
             shippingCost        : shippingCost,
@@ -311,7 +311,7 @@ export const commitDraftOrder = async (prismaTransaction: Parameters<Parameters<
             items                    : draftOrder.items,
             customerId               : draftOrder.customerId,
             guestId                  : draftOrder.guestId,
-            preferredCurrency        : draftOrder.preferredCurrency,
+            preferredCurrency        : draftOrder.currency,
             shippingAddress          : draftOrder.shippingAddress,
             shippingCost             : draftOrder.shippingCost,
             shippingProviderId       : draftOrder.shippingProviderId,

@@ -10,10 +10,11 @@ import {
     useOrderDataContext,
 }                           from './orderDataContext'
 
-// stores:
-import type {
-    ProductPricePart,
-}                           from '@/store/features/api/apiSlice'
+// models:
+import {
+    // types:
+    type ProductPricePart,
+}                           from '@/models'
 
 // utilities:
 import {
@@ -49,7 +50,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     const {
         // data:
         order : {
-            preferredCurrency,
+            currency,
         },
     } = useOrderDataContext();
     
@@ -79,8 +80,8 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     //                     Promise.all(
     //                         priceParts
     //                         .map((pricePart): number | Promise<number> =>
-    //                             !!preferredCurrency
-    //                             ? convertCustomerCurrencyIfRequired(pricePart, preferredCurrency)
+    //                             !!currency
+    //                             ? convertCustomerCurrencyIfRequired(pricePart, currency)
     //                             : pricePart
     //                         )
     //                     )
@@ -93,8 +94,8 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     //                 );
     //             } else {
     //                 return (
-    //                     !!preferredCurrency
-    //                     ? convertCustomerCurrencyIfRequired(amountItem, preferredCurrency)
+    //                     !!currency
+    //                     ? convertCustomerCurrencyIfRequired(amountItem, currency)
     //                     : amountItem
     //                 );
     //             } // if
@@ -136,7 +137,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
                 (typeof(mergedAmount) === 'number')
                 ? (mergedAmount * multiply)     // may produces ugly_fractional_decimal
                 : mergedAmount                  // no need to decimalize accumulated numbers to avoid producing ugly_fractional_decimal // `formatCurrency()` wouldn't produce ugly_fractional_decimal
-            , preferredCurrency?.currency)}
+            , currency?.currency)}
         </>
     );
 };
