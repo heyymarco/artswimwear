@@ -182,7 +182,7 @@ export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'payme
     captcha       ?: string
 }
 export interface CurrencyOptions {
-    preferredCurrency ?: PreferredCurrency['currency']
+    currency ?: PreferredCurrency['currency']
 }
 export interface PlaceOrderDataBasic
     extends
@@ -192,7 +192,7 @@ export interface PlaceOrderDataBasic
         Partial<CustomerData>, // customer data // conditionally required if no simulateOrder
         
         PlaceOrderOptions,     // options: pay manually | paymentSource
-        CurrencyOptions        // options: preferredCurrency
+        CurrencyOptions        // options: currency
 {
 }
 export interface PlaceOrderDataWithShippingAddress
@@ -354,16 +354,16 @@ router
     
     //#region validate options
     const {
-        preferredCurrency : preferredCurrencyRaw = paymentConfig.defaultPaymentCurrency,
+        currency : currencyRaw = paymentConfig.defaultPaymentCurrency,
         paymentSource, // options: pay manually | paymentSource
         simulateOrder = false,
     } = placeOrderData;
-    if ((typeof(preferredCurrencyRaw) !== 'string') || !paymentConfig.paymentCurrencyOptions.includes(preferredCurrencyRaw)) {
+    if ((typeof(currencyRaw) !== 'string') || !paymentConfig.paymentCurrencyOptions.includes(currencyRaw)) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    const preferredCurrency : string = preferredCurrencyRaw;
+    const currency : string = currencyRaw;
     
     if ((paymentSource !== undefined) && ((typeof(paymentSource) !== 'string') || !paymentSource)) {
         return NextResponse.json({
@@ -379,13 +379,13 @@ router
     const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
     const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
     
-    if (usePaypalGateway && !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(preferredCurrency)) {
+    if (usePaypalGateway && !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(currency)) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
     
-    if (useMidtransGateway && !paymentConfig.paymentProcessors.midtrans.supportedCurrencies.includes(preferredCurrency)) {
+    if (useMidtransGateway && !paymentConfig.paymentProcessors.midtrans.supportedCurrencies.includes(currency)) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -909,12 +909,12 @@ router
                         unitPriceParts
                         .map(async (unitPricePart): Promise<number> => {
                             const unitPricePartAsCustomerCurrency = (
-                                await convertCustomerCurrencyIfRequired(unitPricePart, preferredCurrency)
+                                await convertCustomerCurrencyIfRequired(unitPricePart, currency)
                             );
                             
                             // const unitPricePartAsPaypalCurrency = (
                             //     !!usePaypalGateway
-                            //     ? await convertPaypalCurrencyIfRequired(unitPricePartAsCustomerCurrency, preferredCurrency ?? checkoutConfigServer.intl.defaultCurrency)
+                            //     ? await convertPaypalCurrencyIfRequired(unitPricePartAsCustomerCurrency, currency ?? checkoutConfigServer.intl.defaultCurrency)
                             //     : unitPricePartAsCustomerCurrency
                             // );
                             
@@ -979,12 +979,12 @@ router
             const totalShippingCost          = matchingShipping ? calculateShippingCost(matchingShipping, totalProductWeight) : null;
             const totalShippingCostConverted = await (async (): Promise<number|null> => {
                 const totalShippingCostAsCustomerCurrency = (
-                    await convertCustomerCurrencyIfRequired(totalShippingCost, preferredCurrency)
+                    await convertCustomerCurrencyIfRequired(totalShippingCost, currency)
                 );
                 
                 // const totalShippingCostAsPaypalCurrency = (
                 //     !!usePaypalGateway
-                //     ? await convertPaypalCurrencyIfRequired(totalShippingCostAsCustomerCurrency, preferredCurrency ?? checkoutConfigServer.intl.defaultCurrency)
+                //     ? await convertPaypalCurrencyIfRequired(totalShippingCostAsCustomerCurrency, currency ?? checkoutConfigServer.intl.defaultCurrency)
                 //     : totalShippingCostAsCustomerCurrency
                 // );
                 
@@ -1022,7 +1022,7 @@ router
             let authorizedOrPaymentDetail : AuthorizedFundData|PaymentDetail|undefined = undefined;
             if (usePaypalGateway) {
                 authorizedOrPaymentDetail = await paypalCreateOrder({
-                    preferredCurrency,
+                    currency,
                     totalCostConverted,
                     totalProductPriceConverted,
                     totalShippingCostConverted,
@@ -1035,7 +1035,7 @@ router
             }
             else if (cardToken) {
                 const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithCard(cardToken, orderId, {
-                    preferredCurrency,
+                    currency,
                     totalCostConverted,
                     totalProductPriceConverted,
                     totalShippingCostConverted,
@@ -1065,7 +1065,7 @@ router
             }
             else if (paymentSource === 'midtransQris') {
                 const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithQris(orderId, {
-                    preferredCurrency,
+                    currency,
                     totalCostConverted,
                     totalProductPriceConverted,
                     totalShippingCostConverted,
@@ -1095,7 +1095,7 @@ router
             }
             else if (paymentSource === 'gopay') {
                 const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithGopay(orderId, {
-                    preferredCurrency,
+                    currency,
                     totalCostConverted,
                     totalProductPriceConverted,
                     totalShippingCostConverted,
@@ -1125,7 +1125,7 @@ router
             }
             else if (paymentSource === 'shopeepay') {
                 const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithShopeepay(orderId, {
-                    preferredCurrency,
+                    currency,
                     totalCostConverted,
                     totalProductPriceConverted,
                     totalShippingCostConverted,
@@ -1155,7 +1155,7 @@ router
             }
             else if (paymentSource === 'indomaret') {
                 const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithIndomaret(orderId, {
-                    preferredCurrency,
+                    currency,
                     totalCostConverted,
                     totalProductPriceConverted,
                     totalShippingCostConverted,
@@ -1204,7 +1204,7 @@ router
             }
             else if (paymentSource === 'alfamart') {
                 const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithAlfamart(orderId, {
-                    preferredCurrency,
+                    currency,
                     totalCostConverted,
                     totalProductPriceConverted,
                     totalShippingCostConverted,
@@ -1267,7 +1267,7 @@ router
             
             
             //#region create a new(Draft|Real)Order
-            let savingCurrency   = preferredCurrency || checkoutConfigServer.intl.defaultCurrency;
+            let savingCurrency   = currency || checkoutConfigServer.intl.defaultCurrency;
             const orderItemsData = detailedItems.map((detailedItem) => {
                 return {
                     productId      : detailedItem.productId,

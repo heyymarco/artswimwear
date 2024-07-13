@@ -356,7 +356,7 @@ type MidtransPaymentDetail<TPayment extends MidtransPaymentOption> =
     }
 export const midtransCreateOrderGeneric       = async <TPayment extends MidtransPaymentOption>(midtransPaymentDetail: MidtransPaymentDetail<TPayment>, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     const {
-        preferredCurrency,
+        currency,
         totalCostConverted,
         totalProductPriceConverted,
         totalShippingCostConverted,

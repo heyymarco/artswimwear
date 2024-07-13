@@ -40,7 +40,7 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
         
         
         // accessibilities:
-        preferredCurrency,
+        currency,
         
         
         
@@ -63,7 +63,7 @@ const ViewTotalCart = (props: ViewTotalCartProps): JSX.Element|null => {
                     ? <>
                         <CurrencyDisplay amount={[...productPriceParts, totalShippingCost]} />
                         {' '}
-                        <span>{preferredCurrency}</span>
+                        <span>{currency}</span>
                     </>
                     : 'calculated at next step'
                 }

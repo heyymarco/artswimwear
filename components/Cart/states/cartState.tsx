@@ -69,7 +69,7 @@ import {
     
     
     // accessibilities:
-    setPreferredCurrency  as reduxSetPreferredCurrency,
+    setCurrency           as reduxSetCurrency,
     
     
     
@@ -88,7 +88,7 @@ import {
     
     
     // selectors:
-    selectPreferredCurrency,
+    selectCurrency,
     selectCartItems,
     selectIsCartShown,
 }                           from '@/store/features/cart/cartSlice'
@@ -133,8 +133,8 @@ export interface CartStateBase {
     
     
     // accessibilities:
-    preferredCurrency     : string
-    setPreferredCurrency  : (preferredCurrency: string|undefined) => void
+    currency              : string
+    setCurrency           : (currency: string|undefined) => void
     
     
     
@@ -225,8 +225,8 @@ const CartStateContext = createContext<CartState>({
     
     
     // accessibilities:
-    preferredCurrency     : '',
-    setPreferredCurrency  : noopCallback,
+    currency              : '',
+    setCurrency           : noopCallback,
     
     
     
@@ -286,15 +286,15 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stores:
-    const preferredCurrency = useSelector(selectPreferredCurrency);
+    const currency      = useSelector(selectCurrency);
     
-    const realCartItems     = useSelector(selectCartItems);
-    const cartItems         = mockCartItems ?? realCartItems;
-    const isCartEmpty       = !cartItems.length;
+    const realCartItems = useSelector(selectCartItems);
+    const cartItems     = mockCartItems ?? realCartItems;
+    const isCartEmpty   = !cartItems.length;
     
-    const isCartShown       = useSelector(selectIsCartShown);
+    const isCartShown   = useSelector(selectIsCartShown);
     
-    const dispatch          = useDispatch();
+    const dispatch      = useDispatch();
     
     
     
@@ -442,9 +442,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stable callbacks:
-    const setPreferredCurrency  = useEvent((preferredCurrency: string|undefined): void => {
+    const setCurrency           = useEvent((currency: string|undefined): void => {
         // actions:
-        dispatch(reduxSetPreferredCurrency(preferredCurrency));
+        dispatch(reduxSetCurrency(currency));
     });
     
     const addProductToCart      = useEvent((productId: string, variantIds: string[], quantity: number = 1): void => {
@@ -571,8 +571,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // accessibilities:
-        preferredCurrency,
-        setPreferredCurrency, // stable ref
+        currency,
+        setCurrency,           // stable ref
         
         
         
@@ -613,8 +613,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // accessibilities:
-        preferredCurrency,
-        // setPreferredCurrency,  // stable ref
+        currency,
+        // setCurrency,           // stable ref
         
         
         

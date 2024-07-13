@@ -64,7 +64,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     // states:
     const {
         // accessibilities:
-        preferredCurrency,
+        currency,
     } = useCartState();
     const [convertedAmount, setConvertedAmount] = useState<number|null|undefined>(undefined);
     
@@ -106,7 +106,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
                                 Promise.all(
                                     priceParts
                                     .map((pricePart): Promise<number> =>
-                                        convertCustomerCurrencyIfRequired(pricePart, preferredCurrency)
+                                        convertCustomerCurrencyIfRequired(pricePart, currency)
                                     )
                                 )
                                 .then((priceParts): number =>
@@ -117,7 +117,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
                                 )
                             );
                         } else {
-                            return convertCustomerCurrencyIfRequired(amountItem, preferredCurrency);
+                            return convertCustomerCurrencyIfRequired(amountItem, currency);
                         } // if
                     })
                 ))
@@ -126,7 +126,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(summedAmount);
         })();
-    }, [amountRaw, preferredCurrency]);
+    }, [amountRaw, currency]);
     
     
     
@@ -137,7 +137,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
                 (typeof(convertedAmount) === 'number')
                 ? (convertedAmount * multiply)             // may produces ugly_fractional_decimal
                 : convertedAmount                          // no need to decimalize accumulated numbers to avoid producing ugly_fractional_decimal // `formatCurrency()` wouldn't produce ugly_fractional_decimal
-            , preferredCurrency)}
+            , currency)}
         </>
     );
 };

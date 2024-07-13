@@ -107,7 +107,7 @@ const paypalHandleResponse       = async (response: Response) => {
 
 export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<AuthorizedFundData> => {
     const {
-        preferredCurrency,
+        currency,
         totalCostConverted,
         totalProductPriceConverted,
         totalShippingCostConverted,
@@ -140,7 +140,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                 amount                    : {
                     // currency_code string required
                     // The three-character ISO-4217 currency code that identifies the currency.
-                    currency_code         : preferredCurrency,
+                    currency_code         : currency,
                     
                     // value string required
                     /*
@@ -168,14 +168,14 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                         // item_total Money|undefined
                         // The subtotal for all items. Required if the request includes purchase_units[].items[].unit_amount. Must equal the sum of (items[].unit_amount * items[].quantity) for all items. item_total.value can not be a negative number.
                         item_total        : {
-                            currency_code : preferredCurrency,
+                            currency_code : currency,
                             value         : totalProductPriceConverted,
                         },
                         
                         // shipping Money|undefined
                         // The shipping fee for all items within a given purchase_unit. shipping.value can not be a negative number.
                         shipping          : (totalShippingCostConverted === null) ? undefined : {
-                            currency_code : preferredCurrency,
+                            currency_code : currency,
                             value         : totalShippingCostConverted,
                         },
                         
@@ -213,7 +213,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                     unit_amount           : {
                         // currency_code string required
                         // The three-character ISO-4217 currency code that identifies the currency.
-                        currency_code     : preferredCurrency,
+                        currency_code     : currency,
                         
                         // value string required
                         /*

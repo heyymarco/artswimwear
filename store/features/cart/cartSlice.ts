@@ -36,37 +36,37 @@ export interface CartState
         CartData
 {
     // version control:
-    version           ?: number,
+    version  ?: number,
     
     
     
     // accessibilities:
-    preferredCurrency  : string
+    currency  : string
     
     
     
     // cart dialogs:
-    showCart           : boolean
+    showCart  : boolean
 }
 
 const initialState : CartState = {
     // version control:
-    version            : 2,
+    version   : 3,
     
     
     
     // accessibilities:
-    preferredCurrency  : paymentConfig.defaultPaymentCurrency,
+    currency  : paymentConfig.defaultPaymentCurrency,
     
     
     
     // cart data:
-    items              : [],
+    items     : [],
     
     
     
     // cart dialogs:
-    showCart           : false,
+    showCart  : false,
 };
 export const cartSlice = createSlice({
     name: 'cart',
@@ -74,15 +74,15 @@ export const cartSlice = createSlice({
     reducers: {
         // version control:
         resetIfInvalid        : (state) => {
-            if ((state.version === 2) && (!state.items.length || Array.isArray(state.items[0].variantIds))) return state; // valid   => ignore
+            if ((state.version === 3) && (!state.items.length || Array.isArray(state.items[0].variantIds))) return state; // valid   => ignore
             return initialState; // invalid => reset
         },
         
         
         
         // accessibilities:
-        setPreferredCurrency  : (state, {payload: preferredCurrency = paymentConfig.defaultPaymentCurrency}: PayloadAction<string|undefined>) => {
-            state.preferredCurrency = preferredCurrency;
+        setCurrency           : (state, {payload: currency = paymentConfig.defaultPaymentCurrency}: PayloadAction<string|undefined>) => {
+            state.currency = currency;
         },
         
         
@@ -201,7 +201,7 @@ export const {
     
     
     // accessibilities:
-    setPreferredCurrency,
+    setCurrency,
     
     
     
@@ -222,12 +222,12 @@ export const {
 
 
 // selectors:
-export const selectPreferredCurrency = (state: RootState) => {
-    return state.cart.preferredCurrency;
+export const selectCurrency    = (state: RootState) => {
+    return state.cart.currency;
 };
-export const selectCartItems         = (state: RootState) => {
+export const selectCartItems   = (state: RootState) => {
     return state.cart.items;
 };
-export const selectIsCartShown       = (state: RootState) => {
+export const selectIsCartShown = (state: RootState) => {
     return state.cart.showCart;
 };

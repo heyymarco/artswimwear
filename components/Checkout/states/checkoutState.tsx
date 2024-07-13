@@ -525,7 +525,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // accessibilities:
-        preferredCurrency,
+        currency,
         
         
         
@@ -601,11 +601,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             .filter(([paymentProcessorName, {enabled, supportedCurrencies}]) =>
                 enabled
                 &&
-                supportedCurrencies.includes(preferredCurrency)
+                supportedCurrencies.includes(currency)
             )
             .map(([name, value]) => name)
         );
-    }, [preferredCurrency]);
+    }, [currency]);
     
     const checkoutProgress            = calculateCheckoutProgress(checkoutStep);
     const isPaymentTokenValid         = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
@@ -1240,7 +1240,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         try {
             const draftOrderDetailOrPaymentDetail = await placeOrder({
                 // currency options:
-                preferredCurrency, // informs the customer's preferredCurrency, so we know the selected currency when he/she made an order
+                currency, // informs the customer's currency, so we know the selected currency when he/she made an order
                 
                 
                 
@@ -1333,7 +1333,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             try {
                 await placeOrder({
                     // currency options:
-                    // preferredCurrency, // no need to inform the preferredCurrency, we just check for the available stocks
+                    // currency, // no need to inform the currency, we just check for the available stocks
                     
                     
                     

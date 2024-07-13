@@ -134,8 +134,8 @@ const CurrencyMenu = <TElement extends Element = HTMLElement>(props: CurrencyMen
     // contexts:
     const {
         // accessibilities:
-        preferredCurrency,
-        setPreferredCurrency,
+        currency,
+        setCurrency,
     } = useCartState();
     
     
@@ -168,7 +168,7 @@ const CurrencyMenu = <TElement extends Element = HTMLElement>(props: CurrencyMen
     );
     
     const handleChangeInternal      = useEvent<EditorChangeEventHandler<string>>((newValue) => {
-        setPreferredCurrency(newValue);
+        setCurrency(newValue);
     });
     const handleChange              = useMergeEvents(
         // preserves the original `onChange` from `props`:
@@ -275,7 +275,7 @@ const CurrencyMenu = <TElement extends Element = HTMLElement>(props: CurrencyMen
             
             // values:
             valueOptions      = {paymentConfig.paymentCurrencyOptions}
-            value             = {preferredCurrency}
+            value             = {currency}
             onChange          = {onChange}
             
             

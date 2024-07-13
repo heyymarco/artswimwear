@@ -112,7 +112,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     // states:
     const {
         // accessibilities:
-        preferredCurrency,
+        currency,
     } = useCartState();
     
     const {
@@ -161,7 +161,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
         'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_ID ?? '',
         'data-client-token' : paymentToken?.paymentToken,
-        currency            : paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(preferredCurrency) ? preferredCurrency : 'USD',
+        currency            : paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(currency) ? currency : 'USD',
         intent              : 'capture',
         components          : 'hosted-fields,buttons',
     }), [paymentToken?.paymentToken]);

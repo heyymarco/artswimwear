@@ -47,7 +47,7 @@ export type DetailedItem =
     &{ productName: string, variantNames: string[], priceConverted: DraftOrdersOnProducts['price'] }
 
 export interface CreateOrderOptions {
-    preferredCurrency           : string
+    currency                    : string
     totalCostConverted          : number
     totalProductPriceConverted  : number
     totalShippingCostConverted  : number|null
