@@ -225,7 +225,13 @@ export const orderAndDataSelect = {
                     max : true,
                 },
             },
-            rates      : true, // required for calculate_shipping_cost algorithm
+            rates      : {     // required for calculate_shipping_cost algorithm
+                select : {
+                    // data:
+                    start : true,
+                    rate  : true,
+                },
+            },
             
             useZones   : true, // required for matching_shipping algorithm
             zones      : true, // required for matching_shipping algorithm

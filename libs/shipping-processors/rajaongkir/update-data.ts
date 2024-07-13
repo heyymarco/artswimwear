@@ -83,7 +83,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
         select : {
             id         : true, // required for updating later
             name       : true, // required for updating later
-            origin     : { // required for rajaOngkir fetching
+            origin     : {     // required for rajaOngkir fetching
                 select : {
                     // data:
                     country : true,
@@ -111,7 +111,13 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             max : true,
                         },
                     },
-                    rates      : true,
+                    rates      : {
+                        select : {
+                            // data:
+                            start : true,
+                            rate  : true,
+                        },
+                    },
                     
                     // relations:
                     useZones : true,
@@ -133,7 +139,13 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                                     max : true,
                                 },
                             },
-                            rates      : true,
+                            rates      : {
+                                select : {
+                                    // data:
+                                    start : true,
+                                    rate  : true,
+                                },
+                            },
                             
                             // relations:
                             useZones : true,

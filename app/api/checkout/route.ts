@@ -639,7 +639,13 @@ router
                         name       : true,
                         
                         weightStep : true,
-                        rates      : true,
+                        rates      : {
+                            select : {
+                                // data:
+                                start : true,
+                                rate  : true,
+                            },
+                        },
                         
                         useZones   : true,
                         zones      : true,

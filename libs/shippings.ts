@@ -105,7 +105,13 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
                         max : true,
                     },
                 },
-                rates    : true,
+                rates       : {
+                    select : {
+                        // data:
+                        start : true,
+                        rate  : true,
+                    },
+                },
                 
                 // relations:
                 useZones : true,
@@ -123,7 +129,13 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
                                 max : true,
                             },
                         },
-                        rates    : true,
+                        rates       : {
+                            select : {
+                                // data:
+                                start : true,
+                                rate  : true,
+                            },
+                        },
                         
                         // relations:
                         useZones : true,
@@ -141,7 +153,13 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
                                         max : true,
                                     },
                                 },
-                                rates    : true,
+                                rates       : {
+                                    select : {
+                                        // data:
+                                        start : true,
+                                        rate  : true,
+                                    },
+                                },
                                 
                                 // relations:
                                 // useZones : true, // no more nested zones
