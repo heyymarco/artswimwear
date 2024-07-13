@@ -234,7 +234,6 @@ export const orderAndDataSelect = {
             },
             
             useZones   : true, // required for matching_shipping algorithm
-            zones      : true, // required for matching_shipping algorithm
         },
     },
 } satisfies Prisma.OrderSelect;

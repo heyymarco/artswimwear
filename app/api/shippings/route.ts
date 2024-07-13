@@ -97,7 +97,8 @@ router
                 city,
             });
         }
-        catch {
+        catch (error: unknown) {
+            console.log(error);
             // ignore any error
         } // try
     });
@@ -134,7 +135,6 @@ router
             },
             
             useZones   : true, // required for matching_shipping algorithm
-            zones      : true, // required for matching_shipping algorithm
         },
     }); // get all shippings including the disabled ones
     
@@ -167,7 +167,7 @@ router
             );
         }))
         .filter((shippingProvider): shippingProvider is Exclude<typeof shippingProvider, null|undefined> => !!shippingProvider)
-        .map(({visibility: _visibility, zones: _zones, ...shippingProvider}) => shippingProvider) // remove excess data
+        .map(({visibility: _visibility, ...shippingProvider}) => shippingProvider) // remove excess data
     );
     return NextResponse.json(matchingShippings); // handled with success
 });
