@@ -631,15 +631,15 @@ router
                     },
                     select : {
                         // records:
-                        id         : true,
+                        id         : true, // required for identifier
                         
                         
                         
                         // data:
-                        name       : true,
+                        name       : true, // required for identifier
                         
-                        weightStep : true,
-                        rates      : {
+                        weightStep : true, // required for calculate_shipping_cost algorithm
+                        rates      : {     // required for calculate_shipping_cost algorithm
                             select : {
                                 // data:
                                 start : true,
@@ -647,8 +647,7 @@ router
                             },
                         },
                         
-                        useZones   : true,
-                        zones      : true,
+                        useZones   : true, // required for matching_shipping algorithm
                     },
                 }) : null,
                 prismaTransaction.product.findMany({
