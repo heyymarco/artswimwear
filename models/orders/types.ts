@@ -14,10 +14,10 @@ import type {
     Address,
     Payment,
     PaymentConfirmation,
-    PreferredCurrency,
-    Order,
-    OrdersOnProducts,
     DraftOrder,
+    Order,
+    OrderCurrency,
+    OrdersOnProducts,
     DraftOrdersOnProducts,
     ShippingTracking,
 }                           from '@prisma/client'
@@ -31,6 +31,26 @@ import type {
 
 
 // types:
+export interface DraftOrderDetail
+    extends
+        Omit<DraftOrder,
+            // records:
+            |'expiresAt'
+            
+            // data:
+            // |'paymentId'  // required for `commitDraftOrder()`, do NOT omit
+            
+            // relations:
+            // |'customerId' // required for `commitDraftOrder()`, do NOT omit
+            // |'guestId'    // required for `commitDraftOrder()`, do NOT omit
+        >
+{
+    // data:
+    currency : OrderCurrencyDetail|null
+}
+
+
+
 export interface OrderDetail
     extends
         Omit<Order,
@@ -43,7 +63,45 @@ export interface OrderDetail
         >
 {
     // data:
+    currency : OrderCurrencyDetail|null
     payment  : PaymentDetail|null
+}
+
+
+
+export interface OrderCurrencyDetail
+    extends
+        Omit<OrderCurrency,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >
+{
+}
+
+
+
+export interface PaymentDetail
+    extends
+        Omit<Payment,
+            // records:
+            |'id'
+            
+            // data:
+            |'expiresAt'      // converted to optional
+            |'billingAddress' // converted to optional
+            
+            // relations:
+            |'parentId'
+        >
+{
+    // data:
+    expiresAt      ?: Payment['expiresAt']      // converted to optional
+    billingAddress ?: Payment['billingAddress'] // converted to optional
+    
+    paymentId      ?: string // an optional token for make manual_payment
 }
 
 
@@ -104,7 +162,7 @@ export interface CreateOrderDataBasic {
         // relations:
         |'orderId'
     >[]
-    currency                 : PreferredCurrency|null
+    currency                 : OrderCurrencyDetail|null
     shippingAddress          : Address|null
     shippingCost             : number|null
     shippingProviderId       : string|null
@@ -135,7 +193,7 @@ export interface FindPaymentByIdData {
 
 
 
-export type CommitDraftOrder = Omit<DraftOrder,
+export type CommitDraftOrder = Omit<DraftOrderDetail,
     // records:
     |'createdAt'
 > & {
@@ -154,7 +212,7 @@ export interface CommitDraftOrderData {
 
 
 
-export type RevertDraftOrder = Pick<DraftOrder,
+export type RevertDraftOrder = Pick<DraftOrderDetail,
     // records:
     |'id'
     
@@ -186,7 +244,7 @@ export interface FindOrderByIdData<TSelect extends Prisma.OrderSelect> {
 
 
 
-export type CancelOrder = Pick<Order,
+export type CancelOrder = Pick<OrderDetail,
     |'id'
     
     |'orderId'
@@ -215,34 +273,11 @@ export interface CancelOrderData<TSelect extends Prisma.OrderSelect> {
 
 
 
-export type CommitOrder = Pick<Order,
+export type CommitOrder = Pick<OrderDetail,
     // records:
     |'id'
 >
 export interface CommitOrderData {
     order   : CommitOrder
     payment : Pick<PaymentDetail, 'amount'|'fee'> & Partial<Omit<PaymentDetail, 'amount'|'fee'>>
-}
-
-
-
-export interface PaymentDetail
-    extends
-        Omit<Payment,
-            // records:
-            |'id'
-            
-            // data:
-            |'expiresAt'      // converted to optional
-            |'billingAddress' // converted to optional
-            
-            // relations:
-            |'parentId'
-        >
-{
-    // data:
-    expiresAt      ?: Payment['expiresAt']      // converted to optional
-    billingAddress ?: Payment['billingAddress'] // converted to optional
-    
-    paymentId      ?: string // an optional token for make manual_payment
 }

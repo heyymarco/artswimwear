@@ -357,7 +357,7 @@ model DraftOrder {
     orderId                         String                          @unique // a secondary id for public identifier
     paymentId                       String?                         @unique // a secondary id for public identifier
     
-    currency                        PreferredCurrency?
+    currency                        DraftOrderCurrency?
     
     shippingAddress                 Address?
     shippingCost                    Float?                          // min: 0
@@ -384,7 +384,7 @@ model Order {
     orderId                         String                          @unique // a secondary id for public identifier
     paymentId                       String?                         @unique // a secondary id for public identifier
     
-    currency                        PreferredCurrency?
+    currency                        OrderCurrency?
     
     shippingAddress                 Address?
     shippingCost                    Float?                          // min: 0
@@ -411,10 +411,29 @@ model Order {
     
     shippingTracking                ShippingTracking?               // an Order may have one related ShippingTracking // one to one
 }
-type PreferredCurrency {
+model DraftOrderCurrency {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
     // data:
     currency                        String                          // minLength: 3, maxLength: 3
     rate                            Float                           // min: 0
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          DraftOrder                      @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related DraftOrderCurrency(s) if the DraftOrder deleted
+}
+model OrderCurrency {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    currency                        String                          // minLength: 3, maxLength: 3
+    rate                            Float                           // min: 0
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          Order                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related OrderCurrency(s) if the Order deleted
 }
 type Address {
     // data:

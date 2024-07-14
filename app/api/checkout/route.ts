@@ -15,19 +15,18 @@ import {
 }                           from 'next-connect'
 
 // models:
-import type {
-    Product,
-    Variant,
-    VariantGroup,
-    Stock,
-    
-    PaymentConfirmation,
-    PreferredCurrency,
-    DraftOrdersOnProducts,
-    ShippingTracking,
-    ShippingTrackingLog,
-}                           from '@prisma/client'
 import {
+    type Product,
+    type Variant,
+    type VariantGroup,
+    type Stock,
+    
+    type PaymentConfirmation,
+    type OrderCurrencyDetail,
+    type DraftOrdersOnProducts,
+    type ShippingTracking,
+    type ShippingTrackingLog,
+    
     type Address,
     
     type DetailedItem,
@@ -182,7 +181,7 @@ export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'payme
     captcha       ?: string
 }
 export interface CurrencyOptions {
-    currency ?: PreferredCurrency['currency']
+    currency ?: OrderCurrencyDetail['currency']
 }
 export interface PlaceOrderDataBasic
     extends

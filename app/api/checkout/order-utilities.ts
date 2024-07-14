@@ -77,7 +77,10 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
                 create          : items,
             },
             
-            currency            : currency,
+            currency            : (currency === null) /* do NOT create if null */ ? undefined : { // compound_like relation
+                // one_conditional nested_update if create:
+                create          : currency,
+            },
             
             shippingAddress     : shippingAddress,
             shippingCost        : shippingCost,
@@ -177,7 +180,10 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 create          : items,
             },
             
-            currency            : currency,
+            currency            : (currency === null) /* do NOT create if null */ ? undefined : { // compound_like relation
+                // one_conditional nested_update if create:
+                create          : currency,
+            },
             
             shippingAddress     : shippingAddress,
             shippingCost        : shippingCost,
@@ -244,7 +250,8 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 }
             })(),
             
-            payment             : {
+            payment             : { // compound_like relation
+                // one_conditional nested_update if create:
                 create : restPaymentData,
             },
             paymentConfirmation : !paymentConfirmationToken ? undefined : {

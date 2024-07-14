@@ -37,7 +37,12 @@ export const paymentConfirmationDetailSelect = {
     // relations:
     order : {
         select : {
-            currency : true,
+            currency : {
+                select : {
+                    currency : true,
+                    rate     : true,
+                },
+            },
             
             customer : {
                 select : {
@@ -76,7 +81,12 @@ export const shippingTrackingDetailSelect = {
     // relations:
     order : {
         select : {
-            currency : true,
+            currency : {
+                select : {
+                    currency : true,
+                    rate     : true,
+                },
+            },
             
             customer : {
                 select : {
@@ -116,7 +126,12 @@ export const orderAndDataSelect = {
     orderTrouble      : true,
     cancelationReason : true,
     
-    currency          : true,
+    currency          : {
+        select : {
+            currency  : true,
+            rate      : true,
+        },
+    },
     
     shippingAddress   : true,
     shippingCost      : true,
@@ -299,7 +314,12 @@ export const commitDraftOrderSelect = {
     orderId                : true,
     paymentId              : true,
     
-    currency               : true,
+    currency               : {
+        select : {
+            currency       : true,
+            rate           : true,
+        },
+    },
     
     shippingAddress        : true,
     shippingCost           : true,
@@ -367,7 +387,7 @@ export const cancelOrderSelect = {
     
     orderStatus            : true,
     
-    payment : {
+    payment                : {
         select : {
             type           : true,
         },

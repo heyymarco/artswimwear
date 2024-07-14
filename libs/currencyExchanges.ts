@@ -5,8 +5,8 @@ import {
 
 // models:
 import type {
-    PreferredCurrency,
-}                           from '@prisma/client'
+    OrderCurrencyDetail,
+}                           from '@/models'
 
 // configs:
 import {
@@ -84,7 +84,7 @@ const getCurrencyConverter   = async (targetCurrency: string): Promise<{rate: nu
  * from app's default currency  
  * to the customer's preferred currency.
  */
-export const convertCustomerCurrencyIfRequired = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string|PreferredCurrency): Promise<TNumber> => {
+export const convertCustomerCurrencyIfRequired = async <TNumber extends number|null|undefined>(fromAmount: TNumber, customerCurrency: string|OrderCurrencyDetail): Promise<TNumber> => {
     // conditions:
     if (typeof(fromAmount) !== 'number') return fromAmount;                     // null|undefined    => nothing to convert
     if (customerCurrency === checkoutConfigShared.intl.defaultCurrency) return fromAmount; // the same currency => nothing to convert
