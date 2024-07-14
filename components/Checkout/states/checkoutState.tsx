@@ -60,7 +60,8 @@ import {
 
 // models:
 import {
-    type Address,
+    type ShippingAddressDetail,
+    type BillingAddressDetail,
     
     type CheckoutStep,
     type PaymentMethod,
@@ -249,8 +250,8 @@ export interface CheckoutStateBase {
     isShippingAddressRequired    : boolean
     shippingValidation           : boolean
     
-    shippingAddress              : Address|null
-    setShippingAddress           : (address: Address|null) => void
+    shippingAddress              : ShippingAddressDetail|null
+    setShippingAddress           : (address: ShippingAddressDetail|null) => void
     
     shippingProvider             : string | undefined
     setShippingProvider          : (shippingProvider: string) => void
@@ -266,8 +267,8 @@ export interface CheckoutStateBase {
     billingAsShipping            : boolean
     setBillingAsShipping         : (billingAsShipping: boolean) => void
     
-    billingAddress               : Address|null
-    setBillingAddress            : (address: Address|null) => void
+    billingAddress               : BillingAddressDetail|null
+    setBillingAddress            : (address: BillingAddressDetail|null) => void
     
     
     

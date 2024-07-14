@@ -61,7 +61,8 @@ import {
 
 // models:
 import {
-    type Address,
+    // type ShippingAddressDetail as Address, // the same thing
+    type BillingAddressDetail  as Address,
 }                           from '@/models'
 
 

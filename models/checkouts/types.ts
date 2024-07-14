@@ -11,7 +11,8 @@ import type {
 
 // models:
 import {
-    type Address,
+    type ShippingAddressDetail,
+    type BillingAddressDetail,
     type PaymentDetail,
 }                           from '@/models'
 
@@ -55,10 +56,10 @@ export interface CreateOrderOptions {
     detailedItems               : DetailedItem[]
     
     hasShippingAddress          : boolean
-    shippingAddress             : Address
+    shippingAddress             : ShippingAddressDetail
     
     hasBillingAddress          ?: boolean
-    billingAddress             ?: Address|null
+    billingAddress             ?: BillingAddressDetail|null
 }
 export interface AuthorizedFundData {
     paymentId     : string

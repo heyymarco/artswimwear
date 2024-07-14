@@ -11,10 +11,11 @@ import type {
 }                           from '../../store'
 
 // models:
-import type {
-    Address,
-    CheckoutStep,
-    PaymentMethod,
+import {
+    type ShippingAddressDetail,
+    type BillingAddressDetail,
+    type CheckoutStep,
+    type PaymentMethod,
 }                           from '@/models'
 
 // apis:
@@ -167,7 +168,7 @@ export const checkoutSlice = createSlice({
         setShippingValidation : (state, {payload: value}: PayloadAction<boolean>) => {
             state.shippingValidation = value;
         },
-        setShippingAddress    : (state, {payload: value}: PayloadAction<Address|null>) => {
+        setShippingAddress    : (state, {payload: value}: PayloadAction<ShippingAddressDetail|null>) => {
             state.shippingAddress = value;
         },
         setShippingProvider   : (state, {payload: value}: PayloadAction<string>) => {
@@ -185,7 +186,7 @@ export const checkoutSlice = createSlice({
             state.billingAsShipping = value;
         },
         
-        setBillingAddress     : (state, {payload: value}: PayloadAction<Address|null>) => {
+        setBillingAddress     : (state, {payload: value}: PayloadAction<BillingAddressDetail|null>) => {
             state.billingAddress = value;
         },
         

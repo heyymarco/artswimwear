@@ -27,7 +27,8 @@ import {
     type ShippingTracking,
     type ShippingTrackingLog,
     
-    type Address,
+    type ShippingAddressDetail,
+    type BillingAddressDetail,
     
     type DetailedItem,
     
@@ -166,12 +167,12 @@ export interface CustomerData {
 }
 export interface ShippingData {
     // shipping data:
-    shippingAddress    : Address|null
+    shippingAddress    : ShippingAddressDetail|null
     shippingProvider  ?: string
 }
 export interface BillingData {
     // billing data:
-    billingAddress     : Address|null
+    billingAddress     : BillingAddressDetail|null
 }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
@@ -2353,7 +2354,19 @@ Updating the confirmation is not required.`,
             
             
             // for ShippingData:
-            shippingAddress    : true,
+            shippingAddress    : {
+                select : {
+                    country   : true,
+                    state     : true,
+                    city      : true,
+                    zip       : true,
+                    address   : true,
+                    
+                    firstName : true,
+                    lastName  : true,
+                    phone     : true,
+                },
+            },
             shippingProviderId : true,
             
             // for totalShippingCost:
@@ -2373,7 +2386,19 @@ Updating the confirmation is not required.`,
                     
                     
                     // for BillingData:
-                    billingAddress : true,
+                    billingAddress : {
+                        select : {
+                            country   : true,
+                            state     : true,
+                            city      : true,
+                            zip       : true,
+                            address   : true,
+                            
+                            firstName : true,
+                            lastName  : true,
+                            phone     : true,
+                        },
+                    },
                 },
             },
         },

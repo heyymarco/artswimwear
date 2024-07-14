@@ -133,7 +133,19 @@ export const orderAndDataSelect = {
         },
     },
     
-    shippingAddress   : true,
+    shippingAddress   : {
+        select : {
+            country   : true,
+            state     : true,
+            city      : true,
+            zip       : true,
+            address   : true,
+            
+            firstName : true,
+            lastName  : true,
+            phone     : true,
+        },
+    },
     shippingCost      : true,
     
     payment           : {
@@ -147,7 +159,19 @@ export const orderAndDataSelect = {
             amount         : true,
             fee            : true,
             
-            billingAddress : true,
+            billingAddress : {
+                select : {
+                    country   : true,
+                    state     : true,
+                    city      : true,
+                    zip       : true,
+                    address   : true,
+                    
+                    firstName : true,
+                    lastName  : true,
+                    phone     : true,
+                },
+            },
         },
     },
     
@@ -321,7 +345,19 @@ export const commitDraftOrderSelect = {
         },
     },
     
-    shippingAddress        : true,
+    shippingAddress        : {
+        select : {
+            country   : true,
+            state     : true,
+            city      : true,
+            zip       : true,
+            address   : true,
+            
+            firstName : true,
+            lastName  : true,
+            phone     : true,
+        },
+    },
     shippingCost           : true,
     shippingProviderId     : true,
     

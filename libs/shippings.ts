@@ -1,10 +1,8 @@
 // models:
 import {
     type ShippingDetail,
+    type ShippingAddressDetail,
 }                           from '@/models'
-import {
-    type Address,
-}                           from '@prisma/client'
 
 // ORMs:
 import {
@@ -42,7 +40,7 @@ export interface GetMatchingShippingData
 
 export interface MatchingAddress
     extends
-        Pick<Address,
+        Pick<ShippingAddressDetail,
             // data:
             |'country'
             |'state'

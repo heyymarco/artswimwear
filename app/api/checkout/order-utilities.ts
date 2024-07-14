@@ -82,7 +82,10 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
                 create          : currency,
             },
             
-            shippingAddress     : shippingAddress,
+            shippingAddress     : (shippingAddress === null) /* do NOT create if null */ ? undefined : { // compound_like relation
+                // one_conditional nested_update if create:
+                create          : shippingAddress,
+            },
             shippingCost        : shippingCost,
             shippingProvider    : !shippingProviderId ? undefined : {
                 connect         : {
@@ -162,6 +165,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
         // extended data:
         payment : {
             paymentId : _paymentId, // remove
+            billingAddress : billingAddressData,
             ...restPaymentData
         },
         paymentConfirmationToken,
@@ -185,7 +189,10 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 create          : currency,
             },
             
-            shippingAddress     : shippingAddress,
+            shippingAddress     : (shippingAddress === null) /* do NOT create if null */ ? undefined : { // compound_like relation
+                // one_conditional nested_update if create:
+                create          : shippingAddress,
+            },
             shippingCost        : shippingCost,
             shippingProvider    : !shippingProviderId ? undefined : {
                 connect         : {
@@ -252,7 +259,13 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             
             payment             : { // compound_like relation
                 // one_conditional nested_update if create:
-                create : restPaymentData,
+                create : {
+                    ...restPaymentData,
+                    billingAddress : (billingAddressData === null) /* do NOT create if null */ ? undefined : { // compound_like relation
+                        // one_conditional nested_update if create:
+                        create : billingAddressData,
+                    },
+                },
             },
             paymentConfirmation : !paymentConfirmationToken ? undefined : {
                 create : {
@@ -480,9 +493,30 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
     // data:
     const {
         order,
-        payment,
+        payment : {
+            billingAddress : billingAddressData = null,
+            ...paymentData
+        },
     } = commitOrderData;
     
+    
+    const oldData = await prismaTransaction.order.findFirst({
+        where  : {
+            id : order.id,
+        },
+        select : {
+            payment : {
+                select : {
+                    billingAddress : {
+                        select : {
+                            id : true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+    const hasBillingAddress = oldData?.payment?.billingAddress?.id !== undefined;
     
     const orderData = await prismaTransaction.order.update({
         where  : {
@@ -493,7 +527,24 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
                 update : {
                     type      : 'MANUAL_PAID',
                     expiresAt : null, // paid, no more payment expiry date
-                    ...payment,
+                    ...paymentData,
+                    billingAddress : { // compound_like relation
+                        // nested_delete if set to null:
+                        delete : ((billingAddressData !== null) /* do NOT delete if NOT null */ || !hasBillingAddress /* do NOT delete if NOTHING to delete */) ? undefined : {
+                            // do DELETE
+                            // no condition needed because one to one relation
+                        },
+                        
+                        // moved to createCityData:
+                        // one_conditional nested_update if create:
+                     // create : (billingAddressData === null) ? undefined /* do NOT update if null */ : billingAddressData,
+                        
+                        // two_conditional nested_update if update:
+                        upsert : (billingAddressData === null) ? undefined /* do NOT update if null */ : {
+                            update : billingAddressData, // prefer   to `update` if already exist
+                            create : billingAddressData, // fallback to `create` if not     exist
+                        },
+                    },
                 },
             },
         },

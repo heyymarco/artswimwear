@@ -131,7 +131,6 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             id         : true,
                             
                             // data:
-                            // name       : true,
                             eta        : {
                                 select : {
                                     // data:
@@ -160,7 +159,12 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                                     updatedAt  : true,
                                     
                                     // data:
-                                    // name       : true,
+                                    eta        : {
+                                        select : {
+                                            // records:
+                                            id : true,
+                                        },
+                                    },
                                 },
                                 take   : 1,
                             },
@@ -320,30 +324,35 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             if (!shippingDataItem) return null;
             return {
                 // records:
-                id    : shippingProvider.id,
+                id      : shippingProvider.id,
                 
                 // data:
-                eta   : shippingDataItem.eta,
-                rates : shippingDataItem.rates,
+                eta     : shippingDataItem.eta,
+                rates   : shippingDataItem.rates,
                 
                 // relations:
-                zones : shippingProvider.zones,
+                zones   : shippingProvider.zones,
+                
+                oldData : shippingProvider,
             };
         })
         .filter(isNotNullOrUndefined)
-        .map(async ({id, eta: newCityEta, rates: newCityRates, zones}) => {
+        .map(async ({id, eta: newCityEta, rates: newCityRates, zones, oldData}) => {
             const countryModel      = zones?.at(0);
             const countryId         = countryModel?.id;
             const oldCountryEta     = countryModel?.eta;
+            const hasCountryEta     = oldCountryEta !== undefined;
             const oldCountryRates   = countryModel?.rates;
             
             const stateModel        = countryModel?.zones?.at(0);
             const stateId           = stateModel?.id;
             const oldStateEta       = stateModel?.eta;
+            const hasStateEta       = oldStateEta !== undefined;
             const oldStateRates     = stateModel?.rates;
             
             const cityModel         = stateModel?.zones?.at(0);
             const cityId            = cityModel?.id;
+            const hasCityEta        = cityModel?.eta?.id !== undefined;
             
             
             
@@ -427,7 +436,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         // data:
                         eta        : (newCityEta === undefined) /* do NOT modify if undefined */ ? undefined : { // compound_like relation
                             // nested_delete if set to null:
-                            delete : (newCityEta !== null) ? undefined /* do NOT delete if NOT null */ : {
+                            delete : ((newCityEta !== null) /* do NOT delete if NOT null */ || !hasCityEta /* do NOT delete if NOTHING to delete */) ? undefined : {
                                 // do DELETE
                                 // no condition needed because one to one relation
                             },
@@ -494,7 +503,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         // data:
                         eta        : (newStateEta === undefined) /* do NOT modify if undefined */ ? undefined : { // compound_like relation
                             // nested_delete if set to null:
-                            delete : (newStateEta !== null) ? undefined /* do NOT delete if NOT null */ : {
+                            delete : ((newStateEta !== null) /* do NOT delete if NOT null */ || !hasStateEta /* do NOT delete if NOTHING to delete */) ? undefined : {
                                 // do DELETE
                                 // no condition needed because one to one relation
                             },
@@ -567,7 +576,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                         // data:
                         eta        : (newCountryEta === undefined) /* do NOT modify if undefined */ ? undefined : { // compound_like relation
                             // nested_delete if set to null:
-                            delete : (newCountryEta !== null) ? undefined /* do NOT delete if NOT null */ : {
+                            delete : ((newCountryEta !== null) /* do NOT delete if NOT null */ || !hasCountryEta /* do NOT delete if NOTHING to delete */) ? undefined : {
                                 // do DELETE
                                 // no condition needed because one to one relation
                             },
