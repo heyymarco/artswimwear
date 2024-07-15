@@ -1,14 +1,14 @@
 // react:
-import type {
-    ServerOptions,
+import {
+    type ServerOptions,
 }                           from 'react-dom/server'
 
 // redux:
 import {
     createEntityAdapter
 }                           from '@reduxjs/toolkit'
-import type {
-    EntityState
+import {
+    type EntityState
 }                           from '@reduxjs/toolkit'
 
 // models:
@@ -22,8 +22,8 @@ import {
 }                           from '@/libs/prisma.server'
 
 // apis:
-import type {
-    CountryPreview,
+import {
+    type CountryPreview,
 }                           from '@/app/api/countries/route'
 
 // templates:
