@@ -650,7 +650,7 @@ model Guest {
     // relations:
     orders                          Order[]                         @relation("OrdersOnGuest")      // one Guest may have some related Order(s)        // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnGuest") // one Guest may have some related DraftOrder(s)   // one  to many
-    guestPreference                 GuestPreference?                                                // one Guest may have one  related GuestPreference // one  to one
+    preference                      GuestPreference?                                                // one Guest may have one  related GuestPreference // one  to one
 }
 model Customer {
     // records:
@@ -668,7 +668,7 @@ model Customer {
     // relations:
     orders                          Order[]                         @relation("OrdersOnCustomer")      // one Customer may have some related Order(s)       // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnCustomer") // one Customer may have some related DraftOrder(s)  // one  to many
-    customerPreference              CustomerPreference?             // a Customer may have one related CustomerPreference                                   // one  to one
+    preference                      CustomerPreference?             // a Customer may have one related CustomerPreference                                   // one  to one
     
     customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                                  // one  to many
     customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                                  // one  to many
@@ -785,4 +785,188 @@ model CustomerEmailConfirmationToken {
     // relations:
     customerId                      String                          @unique
     customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerEmailConfirmationToken if the Customer deleted
+}
+
+
+
+// admin models -------------------------------------------------------------------------------
+
+
+
+model Admin {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
+    
+    // data:
+    name                            String
+    email                           String                          @unique
+    
+    emailVerified                   DateTime?
+    image                           String?
+    
+    // relations:
+    adminPreference                 AdminPreference?                // an Admin may have one  related AdminPreference             // one  to one
+    
+    adminAccounts                   AdminAccount[]                  // an Admin may have some related AdminAccount(s)             // one  to many
+    adminSessions                   AdminSession[]                  // an Admin may have some related AdminSession(s)             // one  to many
+    adminCredentials                AdminCredentials?               // an Admin may have one  related AdminCredentials            // one  to one
+    adminPasswordResetToken         AdminPasswordResetToken?        // an Admin may have one  related AdminPasswordResetToken     // one  to one
+    adminEmailConfirmationToken     AdminEmailConfirmationToken?    // an Admin may have one  related AdminEmailConfirmationToken // one  to one
+    
+    adminRoleId                     String?
+    adminRole                       AdminRole?                      @relation(fields: [adminRoleId], references: [id], onDelete: SetNull) // preserve the related Admin(s) if the AdminRole deleted
+}
+model AdminPreference {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    emailOrderNewPending            Boolean?
+    emailOrderNewPaid               Boolean?
+    emailOrderCanceled              Boolean?
+    emailOrderExpired               Boolean?
+    emailOrderConfirmed             Boolean?
+    emailOrderRejected              Boolean?
+    emailOrderProcessing            Boolean?
+    emailOrderShipping              Boolean?
+    emailOrderCompleted             Boolean?
+    
+    // relations:
+    adminId                         String                          @unique
+    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminPreference if the Admin deleted
+}
+
+
+
+// admin-auth models --------------------------------------------------------------------------
+
+
+
+model AdminAccount {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // provider types:
+    type                            String
+    provider                        String
+    providerAccountId               String
+    @@unique([provider, providerAccountId])
+    
+    // jwt sessions:
+    refresh_token                   String?
+    access_token                    String?
+    expires_at                      Int?
+    
+    // jwt meta:
+    token_type                      String?
+    scope                           String?
+    id_token                        String?
+    session_state                   String?
+    
+    // relations:
+    adminId                         String
+    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminAccount(s) if the Admin deleted
+}
+
+model AdminSession {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    expires                         DateTime
+    
+    // data:
+    sessionToken                    String                          @unique
+    
+    // relations:
+    adminId                         String
+    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminSession(s) if the Admin deleted
+}
+
+model AdminCredentials {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    failureAttempts                 Int?
+    lockedAt                        DateTime?
+    username                        String?                         @unique
+    password                        String?
+    
+    // relations:
+    adminId                         String                          @unique
+    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminCredentials if the Admin deleted
+}
+
+model AdminPasswordResetToken {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    updatedAt                       DateTime                        @updatedAt
+    expiresAt                       DateTime
+    
+    // data:
+    token                           String                          @unique
+    
+    // relations:
+    adminId                         String                          @unique
+    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminPasswordResetToken if the Admin deleted
+}
+
+model AdminEmailConfirmationToken {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    token                           String                          @unique
+    
+    // relations:
+    adminId                         String                          @unique
+    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminEmailConfirmationToken if the Admin deleted
+}
+
+model AdminRole {
+    // records:
+    id                              String                          @id @default(cuid()) @map("_id")
+    
+    // data:
+    name                            String                          @unique
+    
+    product_r                       Boolean                         @default(false)
+    product_c                       Boolean                         @default(false)
+    product_ud                      Boolean                         @default(false)
+    product_ui                      Boolean                         @default(false)
+    product_up                      Boolean                         @default(false)
+    product_us                      Boolean                         @default(false)
+    product_uv                      Boolean                         @default(false)
+    product_d                       Boolean                         @default(false)
+    
+    order_r                         Boolean                         @default(false)
+    order_us                        Boolean                         @default(false)
+    order_usa                       Boolean                         @default(false)
+    order_upmu                      Boolean                         @default(false)
+    order_upmp                      Boolean                         @default(false)
+    
+    shipping_r                      Boolean                         @default(false)
+    shipping_c                      Boolean                         @default(false)
+    shipping_ud                     Boolean                         @default(false)
+    shipping_up                     Boolean                         @default(false)
+    shipping_uv                     Boolean                         @default(false)
+    shipping_d                      Boolean                         @default(false)
+    
+    admin_r                         Boolean                         @default(false)
+    admin_c                         Boolean                         @default(false)
+    admin_un                        Boolean                         @default(false)
+    admin_uu                        Boolean                         @default(false)
+    admin_ue                        Boolean                         @default(false)
+    admin_up                        Boolean                         @default(false)
+    admin_ui                        Boolean                         @default(false)
+    admin_ur                        Boolean                         @default(false)
+    admin_d                         Boolean                         @default(false)
+    
+    role_c                          Boolean                         @default(false)
+    role_u                          Boolean                         @default(false)
+    role_d                          Boolean                         @default(false)
+    
+    // relations:
+    admins                          Admin[]                         // a AdminRole may have some related Admin(s)  // one  to many
 }

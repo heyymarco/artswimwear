@@ -69,13 +69,13 @@ import {
     SimpleEditCustomerImageDialog,
 }                           from '@/components/dialogs/SimpleEditCustomerImageDialog'
 
+// models:
+import {
+    type CustomerDetail,
+}                           from '@/models'
+
 // stores:
 import {
-    // types:
-    CustomerDetail,
-    
-    
-    
     // hooks:
     useUpdateCustomer,
 }                           from '@/store/features/api/apiSlice'

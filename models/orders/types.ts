@@ -135,12 +135,12 @@ export interface PaymentDetail
 
 
 export type CustomerOrGuest =
-    &Pick<Customer, keyof Customer & keyof Guest>
-    &Pick<Guest   , keyof Customer & keyof Guest>
+    &Pick<CustomerDetail, keyof CustomerDetail & keyof GuestDetail>
+    &Pick<GuestDetail   , keyof CustomerDetail & keyof GuestDetail>
 export type CustomerOrGuestPreference =
     &Pick<CustomerPreference, keyof CustomerPreference & keyof GuestPreference>
     &Pick<GuestPreference   , keyof CustomerPreference & keyof GuestPreference>
-export type CustomerOrGuestPreferenceData = Omit<CustomerOrGuestPreference,
+export type CustomerOrGuestPreferenceDetail = Omit<CustomerOrGuestPreference,
     // records:
     |'id'
     
@@ -148,6 +148,34 @@ export type CustomerOrGuestPreferenceData = Omit<CustomerOrGuestPreference,
     |'customerId'
     |'guestId'
 >
+
+
+
+export interface CustomerDetail
+    extends
+        Omit<Customer,
+            |'createdAt'
+            |'updatedAt'
+            
+            |'emailVerified'
+        >
+{
+    // data:
+    username : string|null
+}
+
+export interface GuestDetail
+    extends
+        Omit<Guest,
+            |'createdAt'
+            |'updatedAt'
+            
+            |'emailVerified'
+        >
+{
+    // data:
+    username : string|null
+}
 
 
 

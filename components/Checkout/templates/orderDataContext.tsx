@@ -64,10 +64,13 @@ export type CustomerOrGuestData = Omit<CustomerOrGuest,
     |'id'
     |'createdAt'
     |'updatedAt'
+    
+    // data:
+    |'username'
 > & {
-    preference : CustomerOrGuestPreferenceData|null
+    preference : CustomerOrGuestPreferenceDetail|null
 }
-export type CustomerOrGuestPreferenceData = Omit<CustomerOrGuestPreference,
+export type CustomerOrGuestPreferenceDetail = Omit<CustomerOrGuestPreference,
     // records:
     |'id'
     

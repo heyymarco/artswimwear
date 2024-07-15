@@ -15,9 +15,9 @@ import {
 }                           from 'next-connect'
 
 // models:
-import type {
-    Customer,
-}                           from '@prisma/client'
+import {
+    type CustomerDetail,
+}                           from '@/models'
 
 // ORMs:
 import {
@@ -28,21 +28,6 @@ import {
 import {
     authOptions,
 }                           from '@/app/api/auth/[...nextauth]/route'
-
-
-
-// types:
-export interface CustomerDetail
-    extends
-        Omit<Customer,
-            |'createdAt'
-            |'updatedAt'
-            
-            |'emailVerified'
-        >
-{
-    username : string|null
-}
 
 
 

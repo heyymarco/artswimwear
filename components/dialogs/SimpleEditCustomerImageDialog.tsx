@@ -45,13 +45,15 @@ import {
     SimpleEditModelDialog,
 }                           from '@/components/dialogs/SimpleEditModelDialog'
 
-// stores:
+// models:
 import {
     // types:
-    CustomerDetail,
-    
-    
-    
+    type CustomerDetail,
+}                           from '@/models'
+
+
+// stores:
+import {
     // hooks:
     usePostImage,
     useDeleteImage,

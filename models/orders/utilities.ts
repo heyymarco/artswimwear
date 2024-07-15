@@ -46,7 +46,7 @@ export const paymentConfirmationDetailSelect = {
             
             customer : {
                 select : {
-                    customerPreference : {
+                    preference : {
                         select : {
                             timezone : true,
                         },
@@ -55,7 +55,7 @@ export const paymentConfirmationDetailSelect = {
             },
             guest : {
                 select : {
-                    guestPreference : {
+                    preference : {
                         select : {
                             timezone : true,
                         },
@@ -90,7 +90,7 @@ export const shippingTrackingDetailSelect = {
             
             customer : {
                 select : {
-                    customerPreference : {
+                    preference : {
                         select : {
                             timezone : true,
                         },
@@ -99,7 +99,7 @@ export const shippingTrackingDetailSelect = {
             },
             guest : {
                 select : {
-                    guestPreference : {
+                    preference : {
                         select : {
                             timezone : true,
                         },
@@ -222,7 +222,7 @@ export const orderAndDataSelect = {
         select : {
             name  : true,
             email : true,
-            customerPreference : {
+            preference : {
                 select : {
                     marketingOpt : true,
                     timezone     : true,
@@ -236,7 +236,7 @@ export const orderAndDataSelect = {
         select : {
             name  : true,
             email : true,
-            guestPreference : {
+            preference : {
                 select : {
                     marketingOpt : true,
                     timezone     : true,
@@ -304,25 +304,9 @@ export const convertOrderDataToOrderAndData = async (prismaTransaction: Paramete
             : null
         ),
         customerOrGuest : (
-            !!customer
-            ? (() => {
-                const {customerPreference: preference, ...customerData} = customer;
-                return {
-                    ...customerData,
-                    preference,
-                };
-            })()
-            : (
-                !!guest
-                ? (() => {
-                    const {guestPreference: preference, ...guestData} = guest;
-                    return {
-                        ...guestData,
-                        preference,
-                    };
-                })()
-                : null
-            )
+            customer
+            ??
+            guest
         ),
     } satisfies OrderAndData;
 };

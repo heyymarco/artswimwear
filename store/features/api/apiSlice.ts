@@ -15,9 +15,10 @@ import type {
 }                           from '@/libs/types'
 
 // models:
-import type {
-    PaymentDetail,
-    FinishedOrderState,
+import {
+    type PaymentDetail,
+    type FinishedOrderState,
+    type CustomerDetail,
 }                           from '@/models'
 export type {
     PaymentDetail,
@@ -82,8 +83,6 @@ export type {
     
     LimitedStockItem,
 }                               from '@/app/api/checkout/route'
-import type { CustomerDetail }  from '@/app/api/(protected)/customer/route'
-export type { CustomerDetail }  from '@/app/api/(protected)/customer/route'
 
 import type { ImageId }         from '@/app/api/(protected)/uploads/route'
 export type { ImageId }         from '@/app/api/(protected)/uploads/route'
