@@ -17,7 +17,7 @@ import {
 
 // configs:
 import type {
-    PaymentConfig,
+    PaymentConfigServer,
 }                           from '@/components/Checkout/types'
 
 
@@ -25,7 +25,7 @@ import type {
 // contexts:
 export interface PaymentApi {
     // data:
-    model : PaymentConfig|undefined
+    model : PaymentConfigServer|undefined
 }
 const PaymentContext = createContext<PaymentApi>({
     model : undefined,
@@ -43,7 +43,7 @@ export const usePaymentContext = () => {
 // react components:
 export interface PaymentContextProviderProps {
     // data:
-    model : PaymentConfig
+    model : PaymentConfigServer
 }
 export const PaymentContextProvider = (props: React.PropsWithChildren<PaymentContextProviderProps>): JSX.Element|null => {
     // jsx:
