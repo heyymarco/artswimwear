@@ -87,6 +87,11 @@ import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
+// configs:
+import {
+    checkoutConfigClient,
+}                           from '@/checkout.config.client'
+
 
 
 // utilities:
@@ -116,6 +121,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
         // payment data:
         appropriatePaymentProcessors,
         paymentValidation,
+        paymentToken,
         
         
         
@@ -169,7 +175,14 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     
     
-    const isPayUsingPaypal = (appropriatePaymentProcessors.includes('paypal'));
+    const isPayUsingPaypal    = (appropriatePaymentProcessors.includes('paypal'));
+    const maybePayUsingPaypal = (
+        !!checkoutConfigClient.payment.processors.paypal.enabled
+        &&
+        !!process.env.NEXT_PUBLIC_PAYPAL_ID
+        &&
+        !!paymentToken?.paymentToken
+    );
     
     
     
@@ -366,7 +379,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 </div>
                 
                 {/* conditional visibility via css */}
-                <InputWithLabel
+                {maybePayUsingPaypal && <InputWithLabel
                     // appearances:
                     icon='credit_card'
                     
@@ -409,7 +422,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // children:
                     childrenAfter={labelCardNumber}
-                />
+                />}
                 {/* conditional re-render */}
                 {!isPayUsingPaypal && <InputWithLabel
                     // appearances:
@@ -462,7 +475,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 />
                 
                 {/* conditional visibility via css */}
-                <InputWithLabel
+                {maybePayUsingPaypal && <InputWithLabel
                     // appearances:
                     icon='date_range'
                     
@@ -505,7 +518,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // children:
                     childrenAfter={labelCardExpiry}
-                />
+                />}
                 {/* conditional re-render */}
                 {!isPayUsingPaypal && <InputWithLabel
                     // appearances:
@@ -533,7 +546,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 />}
                 
                 {/* conditional visibility via css */}
-                <InputWithLabel
+                {maybePayUsingPaypal && <InputWithLabel
                     // appearances:
                     icon='edit'
                     
@@ -576,7 +589,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // children:
                     childrenAfter={labelCardCvv}
-                />
+                />}
                 {/* conditional re-render */}
                 {!isPayUsingPaypal && <InputWithLabel
                     // appearances:
