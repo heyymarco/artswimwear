@@ -63,8 +63,8 @@ import {
 
 // configs:
 import {
-    paymentConfig,
-}                           from '@/payment.config'
+    checkoutConfigClient,
+}                           from '@/checkout.config.client'
 
 
 
@@ -274,7 +274,7 @@ const CurrencyMenu = <TElement extends Element = HTMLElement>(props: CurrencyMen
             
             
             // values:
-            valueOptions      = {paymentConfig.paymentCurrencyOptions}
+            valueOptions      = {checkoutConfigClient.payment.currencyOptions}
             value             = {currency}
             onChange          = {onChange}
             

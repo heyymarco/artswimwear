@@ -26,8 +26,8 @@ export type {
 
 // configs:
 import {
-    paymentConfig,
-}                           from '@/payment.config'
+    checkoutConfigClient,
+}                           from '@/checkout.config.client'
 
 
 
@@ -56,7 +56,7 @@ const initialState : CartState = {
     
     
     // accessibilities:
-    currency  : paymentConfig.defaultPaymentCurrency,
+    currency  : checkoutConfigClient.payment.defaultCurrency,
     
     
     
@@ -81,7 +81,7 @@ export const cartSlice = createSlice({
         
         
         // accessibilities:
-        setCurrency           : (state, {payload: currency = paymentConfig.defaultPaymentCurrency}: PayloadAction<string|undefined>) => {
+        setCurrency           : (state, {payload: currency = checkoutConfigClient.payment.defaultCurrency}: PayloadAction<string|undefined>) => {
             state.currency = currency;
         },
         

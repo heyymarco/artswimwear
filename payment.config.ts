@@ -9,9 +9,6 @@ export interface PaymentProcessorConfig {
     supportedCurrencies : CurrencyCode[]
 }
 export interface PaymentConfig {
-    paymentCurrencyOptions      : CurrencyCode[]
-    defaultPaymentCurrency      : PaymentConfig['paymentCurrencyOptions'][number]
-    
     paymentProcessors           : {
         paypal : PaymentProcessorConfig
         midtrans : PaymentProcessorConfig
@@ -19,12 +16,6 @@ export interface PaymentConfig {
     preferredPaymentProcessors  : (keyof PaymentConfig['paymentProcessors'])[]
 }
 export const paymentConfig : PaymentConfig = {
-    paymentCurrencyOptions      : [
-        'USD',
-        'IDR',
-    ],
-    defaultPaymentCurrency      : 'IDR',
-    
     paymentProcessors           : {
         paypal : {
             enabled             : true,

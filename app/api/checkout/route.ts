@@ -357,11 +357,11 @@ router
     
     //#region validate options
     const {
-        currency : currencyRaw = paymentConfig.defaultPaymentCurrency,
+        currency : currencyRaw = checkoutConfigServer.payment.defaultCurrency,
         paymentSource, // options: pay manually | paymentSource
         simulateOrder = false,
     } = placeOrderData;
-    if ((typeof(currencyRaw) !== 'string') || !paymentConfig.paymentCurrencyOptions.includes(currencyRaw)) {
+    if ((typeof(currencyRaw) !== 'string') || !checkoutConfigServer.payment.currencyOptions.includes(currencyRaw)) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
