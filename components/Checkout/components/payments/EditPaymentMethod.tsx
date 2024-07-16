@@ -4,11 +4,6 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useMemo,
 }                           from 'react'
 
 import {
@@ -64,18 +59,14 @@ import {
 }                           from '../payments/ViewPaymentMethodManual'
 
 // paypal:
-import type {
-    PayPalScriptOptions,
-}                           from '@paypal/paypal-js'
 import {
-    PayPalScriptProvider,
-}                           from '@paypal/react-paypal-js'
+    ConditionalPayPalScriptProvider,
+}                           from './ConditionalPayPalScriptProvider'
 
 // midtrans:
 import {
-    MidtransScriptOptions,
-    MidtransScriptProvider,
-}                           from './MidtransScriptProvider'
+    ConditionalMidtransScriptProvider,
+}                           from './ConditionalMidtransScriptProvider'
 
 // models:
 import type {
@@ -88,17 +79,8 @@ import {
 }                           from '../../styles/loader'
 import {
     // states:
-    useCartState,
-}                           from '@/components/Cart'
-import {
-    // states:
     useCheckoutState,
 }                           from '../../states/checkoutState'
-
-// configs:
-import {
-    checkoutConfigClient,
-}                           from '@/checkout.config.client'
 
 
 
@@ -111,16 +93,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     // states:
     const {
-        // accessibilities:
-        currency,
-    } = useCartState();
-    
-    const {
         // payment data:
         appropriatePaymentProcessors,
         paymentMethod,
         setPaymentMethod,
-        paymentToken,
         
         
         
@@ -157,30 +133,10 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     
     
-    // paypal options:
-    const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
-        'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_ID ?? '',
-        'data-client-token' : paymentToken?.paymentToken,
-        currency            : checkoutConfigClient.payment.processors.paypal.supportedCurrencies.includes(currency) ? currency : 'USD',
-        intent              : 'capture',
-        components          : 'hosted-fields,buttons',
-    }), [paymentToken?.paymentToken]);
-    
-    const midtransOptions = useMemo<MidtransScriptOptions>(() => ({
-        environment         : process.env.NEXT_PUBLIC_MIDTRANS_ENV ?? 'sandbox',
-        clientId            : process.env.NEXT_PUBLIC_MIDTRANS_ID  ?? '',
-    }), []);
-    
-    
-    
     // jsx:
     return (
-        <PayPalScriptProvider
-            options={paypalOptions}
-        >
-            <MidtransScriptProvider
-                options={midtransOptions}
-            >
+        <ConditionalPayPalScriptProvider>
+            <ConditionalMidtransScriptProvider>
                 <p>
                     Choose the payment method you are most familiar with:
                 </p>
@@ -447,8 +403,8 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         <ViewPaymentMethodManual />
                     </AccordionItem>
                 </ExclusiveAccordion>
-            </MidtransScriptProvider>
-        </PayPalScriptProvider>
+            </ConditionalMidtransScriptProvider>
+        </ConditionalPayPalScriptProvider>
     );
 };
 export {
