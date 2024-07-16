@@ -14,14 +14,9 @@ export interface PaymentConfig {
     defaultPaymentCurrency      : PaymentConfig['paymentCurrencyOptions'][number]
     
     paymentProcessors           : {
-        paypal : PaymentProcessorConfig & {
-            /**
-             * @deprecated
-             */
-            defaultCurrency     : PaymentConfig['paymentProcessors']['paypal']['supportedCurrencies'][number]
-        },
-        midtrans : PaymentProcessorConfig,
-    },
+        paypal : PaymentProcessorConfig
+        midtrans : PaymentProcessorConfig
+    }
     preferredPaymentProcessors  : (keyof PaymentConfig['paymentProcessors'])[]
     
     /**
@@ -42,7 +37,6 @@ export const paymentConfig : PaymentConfig = {
             supportedCurrencies : [
                 'USD',
             ],
-            defaultCurrency     : 'USD',
         },
         midtrans : {
             enabled             : true,
