@@ -82,6 +82,11 @@ import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
+// configs:
+import {
+    checkoutConfigClient,
+}                           from '@/checkout.config.client'
+
 
 
 // react components:
@@ -375,7 +380,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         />
                     </AccordionItem>}
                     
-                    <AccordionItem
+                    {!!checkoutConfigClient.payment.processors.bank.enabled && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
@@ -401,7 +406,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         }
                     >
                         <ViewPaymentMethodManual />
-                    </AccordionItem>
+                    </AccordionItem>}
                 </ExclusiveAccordion>
             </ConditionalMidtransScriptProvider>
         </ConditionalPayPalScriptProvider>
