@@ -130,7 +130,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     const paymentMethodList : PaymentMethod[] = Array.from(new Set([
         ...(isPayUsingPaypal   ? (['card' /* card must be the first index */, 'paypal'] satisfies PaymentMethod[]) : []),
         ...(isPayUsingMidtrans ? (['card' /* card must be the first index */, 'qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
-        ...(canPayUsingBank ? (['manual'] satisfies PaymentMethod[]) : []),
+        ...(canPayUsingBank    ? (['manual'] satisfies PaymentMethod[]) : []),
     ]));
     
     
