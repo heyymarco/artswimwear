@@ -122,6 +122,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     const isPayUsingPaypal   = (appropriatePaymentProcessors.includes('paypal'));
     const isPayUsingMidtrans = (appropriatePaymentProcessors.includes('midtrans'));
+    const canPayUsingBank    = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency);
     
     
     
@@ -129,7 +130,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     const paymentMethodList : PaymentMethod[] = Array.from(new Set([
         ...(isPayUsingPaypal   ? (['card' /* card must be the first index */, 'paypal'] satisfies PaymentMethod[]) : []),
         ...(isPayUsingMidtrans ? (['card' /* card must be the first index */, 'qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
-        'manual',
+        ...(canPayUsingBank ? (['manual'] satisfies PaymentMethod[]) : []),
     ]));
     
     
@@ -389,7 +390,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         />
                     </AccordionItem>}
                     
-                    {!!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency) && <AccordionItem
+                    {canPayUsingBank && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
