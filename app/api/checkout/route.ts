@@ -382,13 +382,13 @@ router
     const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
     const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
     
-    if (usePaypalGateway && !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(currency)) {
+    if (usePaypalGateway && (!paymentConfig.paymentProcessors.paypal.enabled || !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(currency))) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
     
-    if (useMidtransGateway && !paymentConfig.paymentProcessors.midtrans.supportedCurrencies.includes(currency)) {
+    if (useMidtransGateway && (!paymentConfig.paymentProcessors.midtrans.enabled || !paymentConfig.paymentProcessors.midtrans.supportedCurrencies.includes(currency))) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
