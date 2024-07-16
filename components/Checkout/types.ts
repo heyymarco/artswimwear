@@ -43,6 +43,17 @@ export interface PaymentConfigClient extends PaymentConfigShared {
 export interface PaymentConfigShared {
     currencyOptions             : CurrencyCode[]
     defaultCurrency             : PaymentConfigShared['currencyOptions'][number]
+    processors                  : {
+        bank                    : PaymentProcessorConfig,
+        paypal                  : PaymentProcessorConfig,
+        stripe                  : PaymentProcessorConfig,
+        midtrans                : PaymentProcessorConfig,
+    },
+    preferredProcessors         : (keyof PaymentConfigShared['processors'])[]
+}
+export interface PaymentProcessorConfig {
+    enabled             : boolean
+    supportedCurrencies : CurrencyCode[]
 }
 export interface ShippingConfig {
     trackingUrl                 : string

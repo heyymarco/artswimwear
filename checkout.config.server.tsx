@@ -81,13 +81,13 @@ import {
 
 
 
-export const checkoutConfigServer  : CheckoutConfigServer = {
-    business                       : checkoutConfigShared.business,
-    intl                           : checkoutConfigShared.intl,
-    payment                        : {
+export const checkoutConfigServer   : CheckoutConfigServer = {
+    business                        : checkoutConfigShared.business,
+    intl                            : checkoutConfigShared.intl,
+    payment                         : {
         ...checkoutConfigShared.payment,
         
-        bank                       : <article>
+        bank                        : <article>
             <table style={{...styles.tableReset, ...styles.selfCenterHorz}}><tbody><tr><td>
                 <table style={styles.tableInfoFill}>
                     <thead>
@@ -148,25 +148,25 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </table>
             </td></tr></tbody></table>
         </article>,
-        confirmationUrl            : '/checkout/payment-confirmation',
+        confirmationUrl             : '/checkout/payment-confirmation',
         expires : {
-            manual                 : 2 /* days */,
-            cstore                 : 2 /* days */,
+            manual                  : 2 /* days */,
+            cstore                  : 2 /* days */,
         },
     },
-    shipping                       : {
-        trackingUrl                : '/checkout/shipping-tracking',
+    shipping                        : {
+        trackingUrl                 : '/checkout/shipping-tracking',
     },
-    customerEmails                 : {
-        checkout                   : {
-            host                   : process.env.EMAIL_CHECKOUT_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_CHECKOUT_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_CHECKOUT_SECURE === 'true'),
-            username               : process.env.EMAIL_CHECKOUT_USERNAME ?? '',
-            password               : process.env.EMAIL_CHECKOUT_PASSWORD ?? '',
+    customerEmails                  : {
+        checkout                    : {
+            host                    : process.env.EMAIL_CHECKOUT_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_CHECKOUT_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_CHECKOUT_SECURE === 'true'),
+            username                : process.env.EMAIL_CHECKOUT_USERNAME ?? '',
+            password                : process.env.EMAIL_CHECKOUT_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_CHECKOUT_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_CHECKOUT_FROM ?? '',
+            subject                 : <>
                 <IfNotPaid>
                     Awaiting Payment for Your Order at <Business.Name />
                 </IfNotPaid>
@@ -179,7 +179,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     Your Order at <Business.Name />
                 </IfPaidAuto>
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -543,18 +543,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
         
-        canceled                   : {
-            host                   : process.env.EMAIL_CANCELED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_CANCELED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_CANCELED_SECURE === 'true'),
-            username               : process.env.EMAIL_CANCELED_USERNAME ?? '',
-            password               : process.env.EMAIL_CANCELED_PASSWORD ?? '',
+        canceled                    : {
+            host                    : process.env.EMAIL_CANCELED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_CANCELED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_CANCELED_SECURE === 'true'),
+            username                : process.env.EMAIL_CANCELED_USERNAME ?? '',
+            password                : process.env.EMAIL_CANCELED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_CANCELED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_CANCELED_FROM ?? '',
+            subject                 : <>
                 Your Order Has Been Canceled at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -723,18 +723,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        expired                    : {
-            host                   : process.env.EMAIL_EXPIRED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_EXPIRED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_EXPIRED_SECURE === 'true'),
-            username               : process.env.EMAIL_EXPIRED_USERNAME ?? '',
-            password               : process.env.EMAIL_EXPIRED_PASSWORD ?? '',
+        expired                     : {
+            host                    : process.env.EMAIL_EXPIRED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_EXPIRED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_EXPIRED_SECURE === 'true'),
+            username                : process.env.EMAIL_EXPIRED_USERNAME ?? '',
+            password                : process.env.EMAIL_EXPIRED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_EXPIRED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_EXPIRED_FROM ?? '',
+            subject                 : <>
                 Your Order Has Been Canceled at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -896,18 +896,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
         
-        confirmed                  : {
-            host                   : process.env.EMAIL_CONFIRMED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_CONFIRMED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_CONFIRMED_SECURE === 'true'),
-            username               : process.env.EMAIL_CONFIRMED_USERNAME ?? '',
-            password               : process.env.EMAIL_CONFIRMED_PASSWORD ?? '',
+        confirmed                   : {
+            host                    : process.env.EMAIL_CONFIRMED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_CONFIRMED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_CONFIRMED_SECURE === 'true'),
+            username                : process.env.EMAIL_CONFIRMED_USERNAME ?? '',
+            password                : process.env.EMAIL_CONFIRMED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_CONFIRMED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_CONFIRMED_FROM ?? '',
+            subject                 : <>
                 We Have Received Your Payment Confirmation at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -1214,18 +1214,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        rejected                   : {
-            host                   : process.env.EMAIL_REJECTED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_REJECTED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_REJECTED_SECURE === 'true'),
-            username               : process.env.EMAIL_REJECTED_USERNAME ?? '',
-            password               : process.env.EMAIL_REJECTED_PASSWORD ?? '',
+        rejected                    : {
+            host                    : process.env.EMAIL_REJECTED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_REJECTED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_REJECTED_SECURE === 'true'),
+            username                : process.env.EMAIL_REJECTED_USERNAME ?? '',
+            password                : process.env.EMAIL_REJECTED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_REJECTED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_REJECTED_FROM ?? '',
+            subject                 : <>
                 Your Payment Confirmation Rejected of Your Order at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -1527,18 +1527,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
         
-        shipping                   : {
-            host                   : process.env.EMAIL_SHIPPING_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_SHIPPING_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_SHIPPING_SECURE === 'true'),
-            username               : process.env.EMAIL_SHIPPING_USERNAME ?? '',
-            password               : process.env.EMAIL_SHIPPING_PASSWORD ?? '',
+        shipping                    : {
+            host                    : process.env.EMAIL_SHIPPING_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_SHIPPING_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_SHIPPING_SECURE === 'true'),
+            username                : process.env.EMAIL_SHIPPING_USERNAME ?? '',
+            password                : process.env.EMAIL_SHIPPING_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_SHIPPING_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_SHIPPING_FROM ?? '',
+            subject                 : <>
                 A Shipping Confirmation of Your Order at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -1702,18 +1702,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        completed                  : {
-            host                   : process.env.EMAIL_COMPLETED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_COMPLETED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_COMPLETED_SECURE === 'true'),
-            username               : process.env.EMAIL_COMPLETED_USERNAME ?? '',
-            password               : process.env.EMAIL_COMPLETED_PASSWORD ?? '',
+        completed                   : {
+            host                    : process.env.EMAIL_COMPLETED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_COMPLETED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_COMPLETED_SECURE === 'true'),
+            username                : process.env.EMAIL_COMPLETED_USERNAME ?? '',
+            password                : process.env.EMAIL_COMPLETED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_COMPLETED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_COMPLETED_FROM ?? '',
+            subject                 : <>
                 Your Order Is Now Complete
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -1888,16 +1888,16 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
     },
-    adminEmails                    : {
-        checkout                   : {
-            host                   : process.env.EMAIL_ADMIN_CHECKOUT_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_ADMIN_CHECKOUT_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_ADMIN_CHECKOUT_SECURE === 'true'),
-            username               : process.env.EMAIL_ADMIN_CHECKOUT_USERNAME ?? '',
-            password               : process.env.EMAIL_ADMIN_CHECKOUT_PASSWORD ?? '',
+    adminEmails                     : {
+        checkout                    : {
+            host                    : process.env.EMAIL_ADMIN_CHECKOUT_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_ADMIN_CHECKOUT_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_ADMIN_CHECKOUT_SECURE === 'true'),
+            username                : process.env.EMAIL_ADMIN_CHECKOUT_USERNAME ?? '',
+            password                : process.env.EMAIL_ADMIN_CHECKOUT_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_ADMIN_CHECKOUT_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_ADMIN_CHECKOUT_FROM ?? '',
+            subject                 : <>
                 <IfNotPaid>
                     Pending Order at <Business.Name />
                 </IfNotPaid>
@@ -1910,7 +1910,7 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                     New Order at <Business.Name />
                 </IfPaidAuto>
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -2220,18 +2220,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
         
-        canceled                   : {
-            host                   : process.env.EMAIL_ADMIN_CANCELED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_ADMIN_CANCELED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_ADMIN_CANCELED_SECURE === 'true'),
-            username               : process.env.EMAIL_ADMIN_CANCELED_USERNAME ?? '',
-            password               : process.env.EMAIL_ADMIN_CANCELED_PASSWORD ?? '',
+        canceled                    : {
+            host                    : process.env.EMAIL_ADMIN_CANCELED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_ADMIN_CANCELED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_ADMIN_CANCELED_SECURE === 'true'),
+            username                : process.env.EMAIL_ADMIN_CANCELED_USERNAME ?? '',
+            password                : process.env.EMAIL_ADMIN_CANCELED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_ADMIN_CANCELED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_ADMIN_CANCELED_FROM ?? '',
+            subject                 : <>
                 An Order Has Been Canceled at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -2390,18 +2390,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        expired                    : {
-            host                   : process.env.EMAIL_ADMIN_EXPIRED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_ADMIN_EXPIRED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_ADMIN_EXPIRED_SECURE === 'true'),
-            username               : process.env.EMAIL_ADMIN_EXPIRED_USERNAME ?? '',
-            password               : process.env.EMAIL_ADMIN_EXPIRED_PASSWORD ?? '',
+        expired                     : {
+            host                    : process.env.EMAIL_ADMIN_EXPIRED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_ADMIN_EXPIRED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_ADMIN_EXPIRED_SECURE === 'true'),
+            username                : process.env.EMAIL_ADMIN_EXPIRED_USERNAME ?? '',
+            password                : process.env.EMAIL_ADMIN_EXPIRED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_ADMIN_EXPIRED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_ADMIN_EXPIRED_FROM ?? '',
+            subject                 : <>
                 An Order Has Been Canceled at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -2553,18 +2553,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
         
-        confirmed                  : {
-            host                   : process.env.EMAIL_ADMIN_CONFIRMED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_ADMIN_CONFIRMED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_ADMIN_CONFIRMED_SECURE === 'true'),
-            username               : process.env.EMAIL_ADMIN_CONFIRMED_USERNAME ?? '',
-            password               : process.env.EMAIL_ADMIN_CONFIRMED_PASSWORD ?? '',
+        confirmed                   : {
+            host                    : process.env.EMAIL_ADMIN_CONFIRMED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_ADMIN_CONFIRMED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_ADMIN_CONFIRMED_SECURE === 'true'),
+            username                : process.env.EMAIL_ADMIN_CONFIRMED_USERNAME ?? '',
+            password                : process.env.EMAIL_ADMIN_CONFIRMED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_ADMIN_CONFIRMED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_ADMIN_CONFIRMED_FROM ?? '',
+            subject                 : <>
                 A Payment Confirmation Has Been Received at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -2806,18 +2806,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        rejected                   : {
-            host                   : process.env.EMAIL_ADMIN_REJECTED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_ADMIN_REJECTED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_ADMIN_REJECTED_SECURE === 'true'),
-            username               : process.env.EMAIL_ADMIN_REJECTED_USERNAME ?? '',
-            password               : process.env.EMAIL_ADMIN_REJECTED_PASSWORD ?? '',
+        rejected                    : {
+            host                    : process.env.EMAIL_ADMIN_REJECTED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_ADMIN_REJECTED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_ADMIN_REJECTED_SECURE === 'true'),
+            username                : process.env.EMAIL_ADMIN_REJECTED_USERNAME ?? '',
+            password                : process.env.EMAIL_ADMIN_REJECTED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_ADMIN_REJECTED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_ADMIN_REJECTED_FROM ?? '',
+            subject                 : <>
                 A Payment Confirmation Has Been Rejected at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -3058,18 +3058,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
         
-        processing                 : {
-            host                   : process.env.EMAIL_ADMIN_PROCESSING_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_ADMIN_PROCESSING_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_ADMIN_PROCESSING_SECURE === 'true'),
-            username               : process.env.EMAIL_ADMIN_PROCESSING_USERNAME ?? '',
-            password               : process.env.EMAIL_ADMIN_PROCESSING_PASSWORD ?? '',
+        processing                  : {
+            host                    : process.env.EMAIL_ADMIN_PROCESSING_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_ADMIN_PROCESSING_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_ADMIN_PROCESSING_SECURE === 'true'),
+            username                : process.env.EMAIL_ADMIN_PROCESSING_USERNAME ?? '',
+            password                : process.env.EMAIL_ADMIN_PROCESSING_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_ADMIN_PROCESSING_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_ADMIN_PROCESSING_FROM ?? '',
+            subject                 : <>
                 An Order Is Being Processed at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -3219,18 +3219,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
             </article>,
         },
         
-        shipping                   : {
-            host                   : process.env.EMAIL_ADMIN_SHIPPING_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_ADMIN_SHIPPING_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_ADMIN_SHIPPING_SECURE === 'true'),
-            username               : process.env.EMAIL_ADMIN_SHIPPING_USERNAME ?? '',
-            password               : process.env.EMAIL_ADMIN_SHIPPING_PASSWORD ?? '',
+        shipping                    : {
+            host                    : process.env.EMAIL_ADMIN_SHIPPING_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_ADMIN_SHIPPING_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_ADMIN_SHIPPING_SECURE === 'true'),
+            username                : process.env.EMAIL_ADMIN_SHIPPING_USERNAME ?? '',
+            password                : process.env.EMAIL_ADMIN_SHIPPING_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_ADMIN_SHIPPING_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_ADMIN_SHIPPING_FROM ?? '',
+            subject                 : <>
                 A Shipping Confirmation at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
@@ -3382,18 +3382,18 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
                 </section>
             </article>,
         },
-        completed                  : {
-            host                   : process.env.EMAIL_ADMIN_COMPLETED_HOST     ?? '',
-            port                   : Number.parseInt(process.env.EMAIL_ADMIN_COMPLETED_PORT ?? '465'),
-            secure                 : (process.env.EMAIL_ADMIN_COMPLETED_SECURE === 'true'),
-            username               : process.env.EMAIL_ADMIN_COMPLETED_USERNAME ?? '',
-            password               : process.env.EMAIL_ADMIN_COMPLETED_PASSWORD ?? '',
+        completed                   : {
+            host                    : process.env.EMAIL_ADMIN_COMPLETED_HOST     ?? '',
+            port                    : Number.parseInt(process.env.EMAIL_ADMIN_COMPLETED_PORT ?? '465'),
+            secure                  : (process.env.EMAIL_ADMIN_COMPLETED_SECURE === 'true'),
+            username                : process.env.EMAIL_ADMIN_COMPLETED_USERNAME ?? '',
+            password                : process.env.EMAIL_ADMIN_COMPLETED_PASSWORD ?? '',
             
-            from                   : process.env.EMAIL_ADMIN_COMPLETED_FROM ?? '',
-            subject                : <>
+            from                    : process.env.EMAIL_ADMIN_COMPLETED_FROM ?? '',
+            subject                 : <>
                 An Order Is Now Complete at <Business.Name />
             </>,
-            message                : <article style={styles.article}>
+            message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
                 
                 <section
