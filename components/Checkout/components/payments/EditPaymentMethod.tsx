@@ -79,6 +79,10 @@ import {
 }                           from '../../styles/loader'
 import {
     // states:
+    useCartState,
+}                           from '@/components/Cart'
+import {
+    // states:
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -97,6 +101,11 @@ const EditPaymentMethod = (): JSX.Element|null => {
     
     
     // states:
+    const {
+        // accessibilities:
+        currency,
+    } = useCartState();
+    
     const {
         // payment data:
         appropriatePaymentProcessors,
@@ -380,7 +389,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
                         />
                     </AccordionItem>}
                     
-                    {!!checkoutConfigClient.payment.processors.bank.enabled && <AccordionItem
+                    {!!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency) && <AccordionItem
                         // accessibilities:
                         label={<>
                             <RadioDecorator />
