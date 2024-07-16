@@ -45,6 +45,9 @@ import {
     isAuthorizedFundData,
     isPaymentDetail,
 }                           from '@/models'
+import {
+    Prisma,
+}                           from '@prisma/client'
 import type {
     ProductPreview,
 }                           from '@/store/features/api/apiSlice'
@@ -1630,12 +1633,11 @@ router
                                 token : paymentConfirmationToken,
                                 
                                 OR : [
-                                    { reviewedAt      : { equals : null  } }, // never approved or rejected
-                                    { reviewedAt      : { isSet  : false } }, // never approved or rejected
+                                    { reviewedAt      : { equals : null          } }, // never approved or rejected
                                     
                                     /* -or- */
                                     
-                                    { rejectionReason : { not    : null  } }, // has reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
+                                    { rejectionReason : { not    : Prisma.DbNull } }, // has reviewed as rejected (prevents to confirm the *already_approved_payment_confirmation*)
                                 ],
                             },
                             select : {
@@ -1647,7 +1649,7 @@ router
                                     select : {
                                         customer : {
                                             select : {
-                                                customerPreference : {
+                                                preference : {
                                                     select : {
                                                         id : true,
                                                     },
@@ -1656,7 +1658,7 @@ router
                                         },
                                         guest    : {
                                             select : {
-                                                guestPreference : {
+                                                preference : {
                                                     select : {
                                                         id : true,
                                                     },
@@ -1675,8 +1677,8 @@ router
                             id    : paymentConfirmationId,
                             order : orderData,
                         } = paymentConfirmationData;
-                        const customerPreferenceId = orderData.customer?.customerPreference?.id;
-                        const guestPreferenceId    = orderData.guest?.guestPreference?.id;
+                        const customerPreferenceId = orderData.customer?.preference?.id;
+                        const guestPreferenceId    = orderData.guest?.preference?.id;
                         return await prismaTransaction.paymentConfirmation.update({
                             where  : {
                                 id : paymentConfirmationId,
@@ -1692,7 +1694,7 @@ router
                                 originatingBank,
                                 destinationBank,
                                 
-                                rejectionReason : null, // reset for next review
+                                rejectionReason : Prisma.DbNull, // reset for next review
                                 
                                 order : (
                                     (!customerPreferenceId && !guestPreferenceId)
@@ -1703,7 +1705,7 @@ router
                                             update : {
                                                 customer : {
                                                     update : {
-                                                        customerPreference : {
+                                                        preference : {
                                                             update : {
                                                                 timezone : preferredTimezone,
                                                             },
@@ -1716,7 +1718,7 @@ router
                                             update : {
                                                 guest : {
                                                     update : {
-                                                        guestPreference : {
+                                                        preference : {
                                                             update : {
                                                                 timezone : preferredTimezone,
                                                             },
@@ -1783,7 +1785,7 @@ Updating the confirmation is not required.`,
         return NextResponse.json({
             ...restPaymentConfirmationDetail,
             currency : orderData.currency?.currency ?? checkoutConfigServer.intl.defaultCurrency,
-            preferredTimezone : orderData.customer?.customerPreference?.timezone ?? orderData.guest?.guestPreference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
+            preferredTimezone : orderData.customer?.preference?.timezone ?? orderData.guest?.preference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
         } satisfies PaymentConfirmationDetail); // handled with success
     } // if
     
@@ -1838,7 +1840,7 @@ Updating the confirmation is not required.`,
                             select : {
                                 customer : {
                                     select : {
-                                        customerPreference : {
+                                        preference : {
                                             select : {
                                                 id : true,
                                             },
@@ -1847,7 +1849,7 @@ Updating the confirmation is not required.`,
                                 },
                                 guest    : {
                                     select : {
-                                        guestPreference : {
+                                        preference : {
                                             select : {
                                                 id : true,
                                             },
@@ -1866,8 +1868,8 @@ Updating the confirmation is not required.`,
                     id    : shippingTrackingId,
                     order : orderData,
                 } = shippingTrackingData;
-                const customerPreferenceId = orderData.customer?.customerPreference?.id;
-                const guestPreferenceId    = orderData.guest?.guestPreference?.id;
+                const customerPreferenceId = orderData.customer?.preference?.id;
+                const guestPreferenceId    = orderData.guest?.preference?.id;
                 return await prismaTransaction.shippingTracking.update({
                     where  : {
                         id : shippingTrackingId,
@@ -1882,7 +1884,7 @@ Updating the confirmation is not required.`,
                                     update : {
                                         customer : {
                                             update : {
-                                                customerPreference : {
+                                                preference : {
                                                     update : {
                                                         timezone : preferredTimezone,
                                                     },
@@ -1895,7 +1897,7 @@ Updating the confirmation is not required.`,
                                     update : {
                                         guest : {
                                             update : {
-                                                guestPreference : {
+                                                preference : {
                                                     update : {
                                                         timezone : preferredTimezone,
                                                     },
@@ -1929,7 +1931,7 @@ Updating the confirmation is not required.`,
         } = shippingTrackingDetailData;
         const shippingTrackingDetail : ShippingTrackingDetail = {
             ...restshippingTrackingDetail,
-            preferredTimezone : orderData.customer?.customerPreference?.timezone ?? orderData.guest?.guestPreference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
+            preferredTimezone : orderData.customer?.preference?.timezone ?? orderData.guest?.preference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
         };
         shippingTrackingDetail.shippingTrackingLogs.sort(({reportedAt: a}, {reportedAt: b}) => {
             if ((a === null) || (b === null)) return 0;
@@ -2326,7 +2328,7 @@ Updating the confirmation is not required.`,
                     
                     
                     
-                    customerPreference : {
+                    preference : {
                         select : {
                             // for ExtraData:
                             marketingOpt : true,
@@ -2342,7 +2344,7 @@ Updating the confirmation is not required.`,
                     
                     
                     
-                    guestPreference : {
+                    preference : {
                         select : {
                             // for ExtraData:
                             marketingOpt : true,
@@ -2465,7 +2467,7 @@ Updating the confirmation is not required.`,
         ),
         checkoutState     : {
             // extra data:
-            marketingOpt       : customer?.customerPreference?.marketingOpt ?? guest?.guestPreference?.marketingOpt ?? true,
+            marketingOpt       : customer?.preference?.marketingOpt ?? guest?.preference?.marketingOpt ?? true,
             
             
             

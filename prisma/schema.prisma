@@ -5,7 +5,7 @@ generator client {
     provider = "prisma-client-js"
 }
 datasource db {
-    provider = "mongodb"
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
@@ -22,7 +22,7 @@ enum ProductVisibility {
 }
 model Product {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -52,7 +52,7 @@ model Product {
 }
 model VariantGroup {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -74,7 +74,7 @@ enum VariantVisibility {
 }
 model Variant {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -95,7 +95,7 @@ model Variant {
 }
 model TemplateVariantGroup {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -108,7 +108,7 @@ model TemplateVariantGroup {
 }
 model TemplateVariant {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -129,7 +129,7 @@ model TemplateVariant {
 }
 model Stock {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     value                           Int?                            // min: 0
@@ -145,7 +145,7 @@ model Stock {
 
 model ShippingProvider {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -170,7 +170,7 @@ model ShippingProvider {
 }
 model CoverageCountry {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     sort                            Int
@@ -189,7 +189,7 @@ model CoverageCountry {
 }
 model CoverageState {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     sort                            Int
@@ -208,7 +208,7 @@ model CoverageState {
 }
 model CoverageCity {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     updatedAt                       DateTime?
     
     // data:
@@ -229,7 +229,7 @@ enum ShippingVisibility {
 }
 model ShippingOrigin {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     country                         String                          // minLength: 2 , maxLength:  3
@@ -242,7 +242,7 @@ model ShippingOrigin {
 }
 model ShippingProviderEta {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     min                             Float                           // min: 0, max: 999
@@ -254,7 +254,7 @@ model ShippingProviderEta {
 }
 model CoverageCountryEta {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     min                             Float                           // min: 0, max: 999
@@ -266,7 +266,7 @@ model CoverageCountryEta {
 }
 model CoverageStateEta {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     min                             Float                           // min: 0, max: 999
@@ -278,7 +278,7 @@ model CoverageStateEta {
 }
 model CoverageCityEta {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     min                             Float                           // min: 0, max: 999
@@ -290,7 +290,7 @@ model CoverageCityEta {
 }
 model ShippingProviderRate {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     sort                            Int
@@ -304,7 +304,7 @@ model ShippingProviderRate {
 }
 model CoverageCountryRate {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     sort                            Int
@@ -318,7 +318,7 @@ model CoverageCountryRate {
 }
 model CoverageStateRate {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     sort                            Int
@@ -332,7 +332,7 @@ model CoverageStateRate {
 }
 model CoverageCityRate {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     sort                            Int
@@ -349,7 +349,7 @@ model CoverageCityRate {
 
 model DraftOrder {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     expiresAt                       DateTime
     
@@ -376,7 +376,7 @@ model DraftOrder {
 }
 model Order {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -413,7 +413,7 @@ model Order {
 }
 model DraftOrderCurrency {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     currency                        String                          // minLength: 3, maxLength: 3
@@ -425,7 +425,7 @@ model DraftOrderCurrency {
 }
 model OrderCurrency {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     currency                        String                          // minLength: 3, maxLength: 3
@@ -437,7 +437,7 @@ model OrderCurrency {
 }
 model DraftShippingAddress {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     country                         String                          // minLength: 2 , maxLength:  3
@@ -456,7 +456,7 @@ model DraftShippingAddress {
 }
 model ShippingAddress {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     country                         String                          // minLength: 2 , maxLength:  3
@@ -475,7 +475,7 @@ model ShippingAddress {
 }
 model BillingAddress {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     country                         String                          // minLength: 2 , maxLength:  3
@@ -503,7 +503,7 @@ enum OrderStatus {
 }
 model Payment {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     type                            PaymentType
@@ -531,7 +531,7 @@ enum PaymentType {
 model DraftOrdersOnProducts {
     // records:
     // @@id([productId, draftOrderId])
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     price                           Float                           // min: 0
@@ -550,7 +550,7 @@ model DraftOrdersOnProducts {
 model OrdersOnProducts {
     // records:
     // @@id([productId, orderId])
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     price                           Float                           // min: 0
@@ -568,7 +568,7 @@ model OrdersOnProducts {
 }
 model PaymentConfirmation {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     reportedAt                      DateTime?                       // manually set
     reviewedAt                      DateTime?                       // manually set
     
@@ -590,7 +590,7 @@ model PaymentConfirmation {
 }
 model ShippingTracking {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     token                           String                          @unique
@@ -606,7 +606,7 @@ model ShippingTracking {
 }
 model ShippingTrackingLog {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     reportedAt                      DateTime?                       // manually set
     
     // data:
@@ -621,7 +621,7 @@ model ShippingTrackingLog {
 
 model Country {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     enabled                         Boolean
@@ -639,7 +639,7 @@ model Country {
 
 model Guest {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -654,7 +654,7 @@ model Guest {
 }
 model Customer {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -678,7 +678,7 @@ model Customer {
 }
 model GuestPreference {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     marketingOpt                    Boolean?
@@ -690,7 +690,7 @@ model GuestPreference {
 }
 model CustomerPreference {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     marketingOpt                    Boolean?
@@ -709,7 +709,7 @@ model CustomerPreference {
 
 model CustomerAccount {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // provider types:
     type                            String
@@ -735,7 +735,7 @@ model CustomerAccount {
 
 model CustomerSession {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     expires                         DateTime
     
     // data:
@@ -748,7 +748,7 @@ model CustomerSession {
 
 model CustomerCredentials {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     failureAttempts                 Int?
@@ -763,7 +763,7 @@ model CustomerCredentials {
 
 model CustomerPasswordResetToken {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     updatedAt                       DateTime                        @updatedAt
     expiresAt                       DateTime
     
@@ -777,7 +777,7 @@ model CustomerPasswordResetToken {
 
 model CustomerEmailConfirmationToken {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     token                           String                          @unique
@@ -795,7 +795,7 @@ model CustomerEmailConfirmationToken {
 
 model Admin {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     createdAt                       DateTime                        @default(now())
     updatedAt                       DateTime                        @updatedAt
     
@@ -820,7 +820,7 @@ model Admin {
 }
 model AdminPreference {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     emailOrderNewPending            Boolean?
@@ -846,7 +846,7 @@ model AdminPreference {
 
 model AdminAccount {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // provider types:
     type                            String
@@ -872,7 +872,7 @@ model AdminAccount {
 
 model AdminSession {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     expires                         DateTime
     
     // data:
@@ -885,7 +885,7 @@ model AdminSession {
 
 model AdminCredentials {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     failureAttempts                 Int?
@@ -900,7 +900,7 @@ model AdminCredentials {
 
 model AdminPasswordResetToken {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     updatedAt                       DateTime                        @updatedAt
     expiresAt                       DateTime
     
@@ -914,7 +914,7 @@ model AdminPasswordResetToken {
 
 model AdminEmailConfirmationToken {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     token                           String                          @unique
@@ -926,7 +926,7 @@ model AdminEmailConfirmationToken {
 
 model AdminRole {
     // records:
-    id                              String                          @id @default(cuid()) @map("_id")
+    id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
     name                            String                          @unique

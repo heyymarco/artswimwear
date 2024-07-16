@@ -16,7 +16,7 @@ import {
     orderAndDataSelect,
     convertOrderDataToOrderAndData,
 }                           from '@/models'
-import type {
+import {
     Prisma,
 }                           from '@prisma/client'
 
@@ -99,7 +99,7 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
             // customer         : {
             //     connect      : {
             //         ...customerOrGuestData,
-            //         customerPreference : {
+            //         preference : {
             //             ...preferenceData,
             //         },
             //     },
@@ -107,7 +107,7 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
             guest               : {
                 create          : {
                     ...customerOrGuestData,
-                    guestPreference : !preferenceData ? undefined : {
+                    preference : !preferenceData ? undefined : {
                         create  : preferenceData,
                     },
                 },
@@ -213,7 +213,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                         // customer         : {
                         //     connect      : {
                         //         ...customerOrGuestData,
-                        //         customerPreference : {
+                        //         preference : {
                         //             ...preferenceData,
                         //         },
                         //     },
@@ -221,7 +221,7 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                         guest               : {
                             create          : {
                                 ...customerOrGuestData,
-                                guestPreference : !preferenceData ? undefined : {
+                                preference : !preferenceData ? undefined : {
                                     create  : preferenceData,
                                 },
                             },
@@ -449,7 +449,7 @@ export const cancelOrder = async <TSelect extends Prisma.OrderSelect>(prismaTran
             },
             data   : {
                 orderStatus       : (isExpired ? 'EXPIRED' : 'CANCELED'),
-                cancelationReason : cancelationReason,
+                cancelationReason : (cancelationReason === null) ? Prisma.DbNull : cancelationReason,
             },
             select : orderSelect,
         }),
