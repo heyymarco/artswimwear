@@ -910,19 +910,9 @@ router
                     );
                     const unitPricePartsConverted = await Promise.all(
                         unitPriceParts
-                        .map(async (unitPricePart): Promise<number> => {
-                            const unitPricePartAsCustomerCurrency = (
-                                await convertCustomerCurrencyIfRequired(unitPricePart, currency)
-                            );
-                            
-                            // const unitPricePartAsPaypalCurrency = (
-                            //     !!usePaypalGateway
-                            //     ? await convertPaypalCurrencyIfRequired(unitPricePartAsCustomerCurrency, currency ?? checkoutConfigServer.intl.defaultCurrency)
-                            //     : unitPricePartAsCustomerCurrency
-                            // );
-                            
-                            return unitPricePartAsCustomerCurrency;
-                        })
+                        .map(async (unitPricePart): Promise<number> =>
+                            convertCustomerCurrencyIfRequired(unitPricePart, currency)
+                        )
                     );
                     const unitPriceConverted      = (
                         unitPricePartsConverted
@@ -980,19 +970,7 @@ router
             }
             if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
             const totalShippingCost          = matchingShipping ? calculateShippingCost(matchingShipping, totalProductWeight) : null;
-            const totalShippingCostConverted = await (async (): Promise<number|null> => {
-                const totalShippingCostAsCustomerCurrency = (
-                    await convertCustomerCurrencyIfRequired(totalShippingCost, currency)
-                );
-                
-                // const totalShippingCostAsPaypalCurrency = (
-                //     !!usePaypalGateway
-                //     ? await convertPaypalCurrencyIfRequired(totalShippingCostAsCustomerCurrency, currency ?? checkoutConfigServer.intl.defaultCurrency)
-                //     : totalShippingCostAsCustomerCurrency
-                // );
-                
-                return totalShippingCostAsCustomerCurrency;
-            })();
+            const totalShippingCostConverted = await convertCustomerCurrencyIfRequired(totalShippingCost, currency);
             const totalCostConverted         = trimNumber(                                 // decimalize summed numbers to avoid producing ugly_fractional_decimal
                 totalProductPriceConverted + (totalShippingCostConverted ?? 0)             // may produces ugly_fractional_decimal
             );
