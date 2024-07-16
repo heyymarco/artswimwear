@@ -12,9 +12,6 @@ import type {
 import {
     checkoutConfigShared,
 }                           from '@/checkout.config.shared'
-import {
-    paymentConfig,
-}                           from '@/payment.config'
 
 
 
@@ -66,8 +63,7 @@ export const getCurrencyRate = async (targetCurrency: string): Promise<number> =
 
 /**
  * Gets the conversion ratio (and fraction unit)
- * from user's preferred currency  
- * to the **most suitable currency** (no conversion if possible) that paypal's supports.
+ * from app's default currency to `targetCurrency`.
  */
 const getCurrencyConverter   = async (targetCurrency: string): Promise<{rate: number, fractionUnit: number}> => {
     return {
@@ -105,36 +101,6 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
         CEIL  : Math.ceil,
         FLOOR : Math.floor,
     }[checkoutConfigShared.intl.currencyConversionRounding]; // reverts using app's currencyConversionRounding (usually ROUND)
-    const fractions            = rounding(rawConverted / fractionUnit);
-    const stepped              = fractions * fractionUnit;
-    
-    
-    
-    return trimNumber(stepped) as TNumber;
-}
-
-
-
-/**
- * Converts:  
- * from user's preferred currency  
- * to the **most suitable currency** (no conversion if possible) that paypal's supports.
- */
-export const convertPaypalCurrencyIfRequired   = async <TNumber extends number|null|undefined>(fromAmount: TNumber, sourceCurrency: string, paypalCurrency: string = paymentConfig.paymentProcessors.paypal.defaultCurrency): Promise<TNumber> => {
-    // conditions:
-    if (typeof(fromAmount) !== 'number') return fromAmount;                   // null|undefined    => nothing to convert
-    if (paypalCurrency === checkoutConfigShared.intl.defaultCurrency) return fromAmount; // the same currency => nothing to convert
-    
-    
-    
-    const {rate: sourceRate  } = await getCurrencyConverter(sourceCurrency);
-    const {rate, fractionUnit} = await getCurrencyConverter(paypalCurrency);
-    const rawConverted         = fromAmount * rate / sourceRate;
-    const rounding     = {
-        ROUND : Math.round,
-        CEIL  : Math.ceil,
-        FLOOR : Math.floor,
-    }[paymentConfig.currencyConversionRounding]; // converts using app payment's currencyConversionRounding (usually FLOOR, to avoid customer complain)
     const fractions            = rounding(rawConverted / fractionUnit);
     const stepped              = fractions * fractionUnit;
     
