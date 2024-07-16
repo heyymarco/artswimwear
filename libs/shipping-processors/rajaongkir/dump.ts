@@ -51,7 +51,7 @@ for (const { name: stateRaw, isoCode } of (State.getStatesOfCountry('ID') ?? [])
             const res = await fetch('https://api.rajaongkir.com/starter/cost', {
                 method  : 'POST',
                 headers : {
-                    'key': 'd1ed66bcc966b31be08289752c1b1bbf',
+                    'key': process.env.RAJAONGKIR_SECRET ?? '',
                     'Content-Type': 'application/json',
                 },
                 body    : JSON.stringify({

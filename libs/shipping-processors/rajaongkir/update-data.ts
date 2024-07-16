@@ -658,7 +658,7 @@ const getShippingJne  = async (originId: string, destinationId: string): Promise
     const res = await fetch('https://api.rajaongkir.com/starter/cost', {
         method  : 'POST',
         headers : {
-            'key': 'd1ed66bcc966b31be08289752c1b1bbf',
+            'key': process.env.RAJAONGKIR_SECRET ?? '',
             'Content-Type': 'application/json',
         },
         body    : JSON.stringify({
@@ -718,7 +718,7 @@ const getShippingPos  = async (originId: string, destinationId: string): Promise
     const res = await fetch('https://api.rajaongkir.com/starter/cost', {
         method  : 'POST',
         headers : {
-            'key': 'd1ed66bcc966b31be08289752c1b1bbf',
+            'key': process.env.RAJAONGKIR_SECRET ?? '',
             'Content-Type': 'application/json',
         },
         body    : JSON.stringify({
@@ -766,7 +766,7 @@ const getShippingTiki = async (originId: string, destinationId: string): Promise
     const res = await fetch('https://api.rajaongkir.com/starter/cost', {
         method  : 'POST',
         headers : {
-            'key': 'd1ed66bcc966b31be08289752c1b1bbf',
+            'key': process.env.RAJAONGKIR_SECRET ?? '',
             'Content-Type': 'application/json',
         },
         body    : JSON.stringify({
