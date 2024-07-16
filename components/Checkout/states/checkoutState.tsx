@@ -175,8 +175,8 @@ import {
 
 // configs:
 import {
-    paymentConfig,
-}                           from '@/payment.config'
+    checkoutConfigClient,
+}                           from '@/checkout.config.client'
 
 
 
@@ -273,7 +273,7 @@ export interface CheckoutStateBase {
     
     
     // payment data:
-    appropriatePaymentProcessors : (typeof paymentConfig.preferredPaymentProcessors)
+    appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
     
     paymentValidation            : boolean
     
@@ -594,10 +594,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const appropriatePaymentProcessors = useMemo((): CheckoutState['appropriatePaymentProcessors'] => {
         return (
-            paymentConfig.preferredPaymentProcessors
+            checkoutConfigClient.payment.preferredProcessors
             .map((paymentProcessorName) => [
                 paymentProcessorName,
-                paymentConfig.paymentProcessors[paymentProcessorName]
+                checkoutConfigClient.payment.processors[paymentProcessorName]
             ] as const)
             .filter(([paymentProcessorName, {enabled, supportedCurrencies}]) =>
                 enabled

@@ -97,8 +97,8 @@ import {
 
 // configs:
 import {
-    paymentConfig,
-}                           from '@/payment.config'
+    checkoutConfigClient,
+}                           from '@/checkout.config.client'
 
 
 
@@ -161,7 +161,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
         'client-id'         : process.env.NEXT_PUBLIC_PAYPAL_ID ?? '',
         'data-client-token' : paymentToken?.paymentToken,
-        currency            : paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(currency) ? currency : 'USD',
+        currency            : checkoutConfigClient.payment.processors.paypal.supportedCurrencies.includes(currency) ? currency : 'USD',
         intent              : 'capture',
         components          : 'hosted-fields,buttons',
     }), [paymentToken?.paymentToken]);

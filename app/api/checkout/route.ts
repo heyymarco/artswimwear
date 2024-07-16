@@ -135,9 +135,6 @@ import {
 import {
     checkoutConfigServer,
 }                           from '@/checkout.config.server'
-import {
-    paymentConfig,
-}                           from '@/payment.config'
 
 
 
@@ -382,13 +379,13 @@ router
     const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
     const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
     
-    if (usePaypalGateway && (!paymentConfig.paymentProcessors.paypal.enabled || !paymentConfig.paymentProcessors.paypal.supportedCurrencies.includes(currency))) {
+    if (usePaypalGateway && (!checkoutConfigServer.payment.processors.paypal.enabled || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
     
-    if (useMidtransGateway && (!paymentConfig.paymentProcessors.midtrans.enabled || !paymentConfig.paymentProcessors.midtrans.supportedCurrencies.includes(currency))) {
+    if (useMidtransGateway && (!checkoutConfigServer.payment.processors.midtrans.enabled || !checkoutConfigServer.payment.processors.midtrans.supportedCurrencies.includes(currency))) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
