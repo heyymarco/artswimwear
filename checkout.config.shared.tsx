@@ -32,4 +32,11 @@ export const checkoutConfigShared  : CheckoutConfigShared = {
         defaultCurrency            : process.env.NEXT_PUBLIC_INTL_DEFAULT_CURRENCY ?? 'USD',
         currencyConversionRounding : 'ROUND',
     },
+    payment                        : {
+        currencyOptions            : [
+            'USD',
+            'IDR',
+        ],
+        defaultCurrency            : 'IDR',
+    },
 };

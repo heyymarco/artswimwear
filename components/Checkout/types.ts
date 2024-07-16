@@ -30,13 +30,19 @@ export interface IntlConfig {
     defaultCurrency             : CurrencyCode
     currencyConversionRounding  : CurrencyConversionRounding
 }
-export interface PaymentConfig {
+export interface PaymentConfigServer extends PaymentConfigShared {
     bank                       ?: React.ReactNode
     confirmationUrl             : string
     expires : {
         manual                  : number /* days */
         cstore                  : number /* days */
     },
+}
+export interface PaymentConfigClient extends PaymentConfigShared {
+}
+export interface PaymentConfigShared {
+    currencyOptions             : CurrencyCode[]
+    defaultCurrency             : PaymentConfigShared['currencyOptions'][number]
 }
 export interface ShippingConfig {
     trackingUrl                 : string
@@ -53,7 +59,7 @@ export interface EmailConfig {
     message                     : React.ReactNode
 }
 export interface CheckoutConfigServer extends CheckoutConfigShared {
-    payment                     : PaymentConfig
+    payment                     : PaymentConfigServer
     shipping                    : ShippingConfig
     customerEmails              : {
         checkout                : EmailConfig
@@ -83,8 +89,10 @@ export interface CheckoutConfigServer extends CheckoutConfigShared {
     }
 }
 export interface CheckoutConfigClient extends CheckoutConfigShared {
+    payment                     : PaymentConfigClient
 }
 export interface CheckoutConfigShared {
     business                    : BusinessConfig
     intl                        : IntlConfig
+    payment                     : PaymentConfigShared
 }

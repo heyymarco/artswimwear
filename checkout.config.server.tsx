@@ -85,6 +85,8 @@ export const checkoutConfigServer  : CheckoutConfigServer = {
     business                       : checkoutConfigShared.business,
     intl                           : checkoutConfigShared.intl,
     payment                        : {
+        ...checkoutConfigShared.payment,
+        
         bank                       : <article>
             <table style={{...styles.tableReset, ...styles.selfCenterHorz}}><tbody><tr><td>
                 <table style={styles.tableInfoFill}>
