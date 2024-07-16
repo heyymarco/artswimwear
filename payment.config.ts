@@ -1,6 +1,5 @@
 import type {
     CurrencyCode,
-    CurrencyConversionRounding,
 }                           from '@/components/Checkout/types'
 
 
@@ -18,11 +17,6 @@ export interface PaymentConfig {
         midtrans : PaymentProcessorConfig
     }
     preferredPaymentProcessors  : (keyof PaymentConfig['paymentProcessors'])[]
-    
-    /**
-     * @deprecated
-     */
-    currencyConversionRounding  : CurrencyConversionRounding
 }
 export const paymentConfig : PaymentConfig = {
     paymentCurrencyOptions      : [
@@ -49,6 +43,4 @@ export const paymentConfig : PaymentConfig = {
         'paypal',
         'midtrans',
     ],
-    
-    currencyConversionRounding  : 'FLOOR',
 };
