@@ -141,7 +141,7 @@ export interface CartStateBase {
     // cart data:
     cartItems             : CartEntry[]
     totalProductQuantity  : number
-    totalProductWeight    : number|null
+    totalProductWeight    : number|null|undefined
     productPriceParts     : ProductPricePart[]
     hasPhysicalProduct    : boolean
     
@@ -353,12 +353,15 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         return totalProductQuantity;
     }, [cartItems]);
     
-    const {productPriceParts, totalProductWeight} = useMemo<{productPriceParts: ProductPricePart[], totalProductWeight: number|null}>(() => {
-        const productPriceParts  : ProductPricePart[] = [];
-        let   totalProductWeight : number|null        = null;
+    const {productPriceParts, totalProductWeight} = useMemo<{productPriceParts: ProductPricePart[], totalProductWeight: number|null|undefined}>(() => {
+        const productPriceParts  : ProductPricePart[]    = [];
+        let   totalProductWeight : number|null|undefined = null; // if undefined => refuse to sum
         for (const {productId, variantIds, quantity} of cartItems) {
             const product = productList?.entities?.[productId];
-            if (!product) continue;
+            if (!product) {
+                totalProductWeight = undefined; // difficulty getting product data => the total weight cannot be calculated => undefined
+                continue;
+            };
             
             
             
@@ -371,7 +374,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 )
             );
             if (!selectedVariants.every((selectedVariant): selectedVariant is Exclude<typeof selectedVariant, undefined> => (selectedVariants !== undefined))) {
-                // one/some required variants are not selected => invalid product => ignore
+                // one/some required variants are not selected => invalid product
+                totalProductWeight = undefined; // difficulty getting product data => the total weight cannot be calculated => undefined
                 continue;
             } // if
             
@@ -394,24 +398,26 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             
             
             
-            const unitWeight       = (
-                [
-                    // base shippingWeight:
-                    product.shippingWeight,
-                    
-                    // additional shippingWeight, based on selected variants:
-                    ...selectedVariants.map(({shippingWeight}) => shippingWeight),
-                ]
-                .reduce<number|null>((accum, value): number|null => {
-                    if (value === null) return accum;
-                    if (accum === null) return value;
-                    return (accum + value);
-                }, null)
-            );
-            if (unitWeight !== null) { // not a physical product => ignore
-                if (totalProductWeight === null) totalProductWeight = 0; // has a/some physical products => reset the counter from zero if null
-                totalProductWeight += (unitWeight * quantity);       // may produces ugly_fractional_decimal
-                totalProductWeight = trimNumber(totalProductWeight); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
+            if (totalProductWeight !== undefined) { // refuse to sum further if the value set to `undefined`
+                const unitWeight       = (
+                    [
+                        // base shippingWeight:
+                        product.shippingWeight,
+                        
+                        // additional shippingWeight, based on selected variants:
+                        ...selectedVariants.map(({shippingWeight}) => shippingWeight),
+                    ]
+                    .reduce<number|null>((accum, value): number|null => {
+                        if (value === null) return accum;
+                        if (accum === null) return value;
+                        return (accum + value);
+                    }, null)
+                );
+                if (unitWeight !== null) { // not a physical product => ignore
+                    if (totalProductWeight === null) totalProductWeight = 0; // has a/some physical products => reset the counter from zero if null
+                    totalProductWeight += (unitWeight * quantity);       // may produces ugly_fractional_decimal
+                    totalProductWeight = trimNumber(totalProductWeight); // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
+                } // if
             } // if
         } // for
         return {
