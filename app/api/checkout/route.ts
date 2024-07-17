@@ -952,7 +952,7 @@ router
                     
                     
                     if (unitWeight !== null) {
-                        if (totalProductWeight === null) totalProductWeight = 0; // contains at least 1 PHYSICAL_GOODS
+                        if (totalProductWeight === null) totalProductWeight = 0;           // has a/some physical products => reset the counter from zero if null
                         
                         totalProductWeight      += unitWeight         * quantity;          // may produces ugly_fractional_decimal
                         totalProductWeight       = trimNumber(totalProductWeight);         // decimalize accumulated numbers to avoid producing ugly_fractional_decimal

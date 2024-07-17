@@ -90,10 +90,10 @@ const EditShippingMethod = (): JSX.Element|null => {
                 {
                     filteredShippingList
                     .map((shippingEntry) => ({
-                        totalShippingCost : calculateShippingCost(shippingEntry, totalProductWeight),
                         ...shippingEntry,
+                        totalShippingCost : calculateShippingCost(shippingEntry, totalProductWeight) ?? -1, // -1 means: no need to ship (digital products)
                     }))
-                    .sort(({totalShippingCost: a}, {totalShippingCost: b}): number => (a ?? 0) - (b ?? 0))
+                    .sort(({totalShippingCost: a}, {totalShippingCost: b}) => (a - b))
                     .map(({totalShippingCost, ...shippingEntry}) => {
                         const isActive = `${shippingEntry.id}` === shippingProvider;
                         

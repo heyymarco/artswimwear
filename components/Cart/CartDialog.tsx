@@ -146,7 +146,7 @@ const CartDialog = () => {
                     // classes:
                     className={styleSheet.shippingTips}
                 >
-                    Tax included{hasPhysicalProduct && <> and <u>shipping calculated</u> at checkout</>}.
+                    Tax included{!!hasPhysicalProduct && <> and <u>shipping calculated</u> at checkout</>}.
                 </p>
                 
                 <ButtonIcon
