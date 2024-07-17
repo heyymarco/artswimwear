@@ -650,9 +650,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // apis:
     const [showPrevOrder       , {data: prevOrderData, isLoading : isPrevOrderLoading, isError: isPrevOrderError}] = useShowPrevOrder();
     const                        {data: countryList  , isFetching: isCountryLoading  , isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
-    const [generatePaymentToken, {                     isLoading : isTokenLoading    , isError: isTokenError  }] = useGeneratePaymentToken();
-    
-    const [getShippingByAddress, {data: shippingList , isUninitialized: isShippingUninitialized, isError: isShippingError, isSuccess: isShippingSuccess}]  = useGetMatchingShippingList();
+    const [getShippingByAddress, {data: shippingList , isLoading : isShippingLoading , isError: isShippingError }] = useGetMatchingShippingList();
+    const [generatePaymentToken, {                     isLoading : isTokenLoading    , isError: isTokenError    }] = useGeneratePaymentToken();
     
     
     
@@ -675,9 +674,26 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isShippingAddressRequired      = (totalShippingCost !== null); // null => non physical product; undefined => has physical product but no shippingProvider selected; number => has physical product and has shippingProvider selected
     const shippingValidation             = isShippingAddressRequired && reduxShippingValidation;
     
-    const isPerformedRecoverShippingList = useRef<boolean>(false);
-    const isNeedsRecoverShippingList     =  isShippingAddressRequired  && (checkoutStep !== 'info') && isShippingUninitialized && !isPerformedRecoverShippingList.current;
-    const isNeedsRecoverShippingProvider = !isNeedsRecoverShippingList && (checkoutStep !== 'info') && (isShippingError || isShippingSuccess) && !shippingList?.entities?.[shippingProvider ?? ''];
+    const isNeedsRecoverShippingList     = (
+        (checkoutStep !== 'info')   // not at the_first_step (cannot go back any further)
+        &&
+        isShippingAddressRequired   // has physical product to ship
+        &&
+        !shippingList               // there is NO shippingList data
+    );
+    const isNeedsResetShippingProvider   = (
+        (checkoutStep !== 'info')   // not at the_first_step (cannot go back any further)
+        &&
+        isShippingAddressRequired   // has physical product to ship
+        &&
+        !isNeedsRecoverShippingList // the matching shippingList is not being recovered (can be recovered AFTER the matching shippingList is recovered first)
+        &&
+        !isShippingLoading          // the matching shippingList is not loading
+        &&
+        !isShippingError            // the matching shippingList is not error
+        &&
+        !shippingList?.entities?.[shippingProvider ?? ''] // no longer having a valid matching shippingProvider
+    );
     
     const isBillingAddressRequired       = (paymentMethod === 'card'); // the billingAddress is required for 'card'
     const billingAsShipping              = isShippingAddressRequired && reduxBillingAsShipping;
@@ -698,6 +714,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             isPrevOrderLoading
             ||
             isCountryLoading
+            ||
+            (
+                isShippingAddressRequired     // IGNORE shippingLoading if no shipping required
+                &&
+                isShippingLoading
+                &&
+                (isBusy !== 'checkShipping')  // silently paymentToken loading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
+            )
             ||
             (
                 isTokenLoading                // paymentToken is loading
@@ -735,11 +759,17 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 isCountryError
                 ||
                 (
-                    isTokenError         // paymentToken is error
+                    isShippingAddressRequired // IGNORE shippingLoading if no shipping required
                     &&
-                    !isPaymentTokenValid // oldPaymentToken is also invalid (no backup)
+                    isShippingError
+                )
+                ||
+                (
+                    isTokenError              // paymentToken is error
                     &&
-                    !isPaymentStep       // IGNORE paymentToken error if NOT at_payment_step, the paymentToken is no longer required at this step (no matter valid or invalid)
+                    !isPaymentTokenValid      // oldPaymentToken is also invalid (no backup)
+                    &&
+                    !isPaymentStep            // IGNORE paymentToken error if NOT at_payment_step, the paymentToken is no longer required at this step (no matter valid or invalid)
                 )
             )
         )
@@ -805,9 +835,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, []);
     
     // try to recover shippingList on page_refresh:
+    const isRecoverShippingListTriggeredRef = useRef<boolean>(false);
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (!isNeedsRecoverShippingList)     return; // already being initialized/recovered => ignore
+        if (!isNeedsRecoverShippingList)               return; // already being initialized/recovered => ignore
+        if (isRecoverShippingListTriggeredRef.current) return; // already triggered => ignore
+        isRecoverShippingListTriggeredRef.current = true;      // mark as triggered
         
         
         
@@ -825,7 +858,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // initialize shippingList:
-        isPerformedRecoverShippingList.current = true;
+        console.log('recovering shippingList...');
         getShippingByAddress({
             country : shippingAddress.country,
             state   : shippingAddress.state,
@@ -836,19 +869,20 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // go back to shipping page if the selected shippingProvider is not in shippingList:
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (!isNeedsRecoverShippingProvider) return; // already recovered => ignore
+        if (!isNeedsResetShippingProvider) return; // already recovered => ignore
         
         
         
+        console.log('resetting selected shippingProvider...');
         if (shippingList?.ids?.length) {
-            // no valid selected shippingProvider -AND- have shippingList => go back to shipping page:
+            // NOT HAVING VALID selected matching shippingProvider -AND- HAVE shippingList to select => go back to shipping page:
             setCheckoutStep('shipping');
         }
         else {
-            // no valid selected shippingProvider -AND- no shippingList => go back to information page:
+            // NOT HAVING VALID selected matching shippingProvider -AND- NO   shippingList to select => go back to information page:
             setCheckoutStep('info');
         } // if
-    }, [isNeedsRecoverShippingProvider, shippingList]);
+    }, [isNeedsResetShippingProvider, shippingList]);
     
     // if no selected shipping method => auto select the cheapest one:
     useIsomorphicLayoutEffect(() => {
@@ -900,9 +934,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep]);
     
     // auto renew paymentToken:
-    const isMounted                        = useMountedFlag();
-    const schedulingRefreshPaymentTokenRef = useRef<ReturnType<typeof setTimeout>|null>(null);
-    const scheduleRefreshPaymentToken      = useEvent(async (): Promise<void> => {
+    const isMounted                                 = useMountedFlag();
+    const schedulingRefreshPaymentTokenRef          = useRef<ReturnType<typeof setTimeout>|null>(null);
+    const scheduleRefreshPaymentToken               = useEvent(async (): Promise<void> => {
         // conditions:
         if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
         
@@ -963,12 +997,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         }, nextRefreshDuration);
     });
     
-    const isScheduleTriggeredRef           = useRef<boolean>(false);
+    const isScheduleRefreshPaymentTokenTriggeredRef = useRef<boolean>(false);
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!isPaymentStep) return; // no paymentToken renewal when NOT at_payment_step
-        if (isScheduleTriggeredRef.current) return; // already triggered => ignore
-        isScheduleTriggeredRef.current = true; // mark as triggered
+        if (isScheduleRefreshPaymentTokenTriggeredRef.current) return; // already triggered => ignore
+        isScheduleRefreshPaymentTokenTriggeredRef.current = true;      // mark as triggered
         
         
         
