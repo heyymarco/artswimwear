@@ -37,7 +37,7 @@ const ViewShippingCart = (): JSX.Element|null => {
     // jsx:
     if (!isCheckoutReady)           return null;
     if (totalShippingCost === null) return null; // not_physical_product => nothing to display
-    if ((totalShippingCost === undefined) && (shippingProvider !== undefined)) return null; // unknown_kind_product -and- has shippingProvider selected => something error => nothing to display
+    if ((totalShippingCost === undefined) && (shippingProvider !== undefined)) return null; // unknown_kind_product (due to incomplete loading of related data) -and- has shippingProvider selected => something error => nothing to display
     return (
         <p className='currencyBlock'>
             <span>Shipping</span>
