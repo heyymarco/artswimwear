@@ -648,8 +648,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const [showPrevOrder       , {data: prevOrderData, isLoading : isPrevOrderLoading, isError: isPrevOrderError}] = useShowPrevOrder();
     const                        {data: countryList  , isFetching: isCountryLoading  , isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
+    const [showPrevOrder       , {data: prevOrderData, isLoading : isPrevOrderLoading, isError: isPrevOrderError}] = useShowPrevOrder();
     const [getShippingByAddress, {data: shippingList , isLoading : isShippingLoading , isError: isShippingError }] = useGetMatchingShippingList();
     const [generatePaymentToken, {                     isLoading : isTokenLoading    , isError: isTokenError    }] = useGeneratePaymentToken();
     
@@ -709,11 +709,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         (
             // have any loading(s):
             
+            isCountryLoading
+            ||
             isCartLoading
             ||
             isPrevOrderLoading
-            ||
-            isCountryLoading
             ||
             (
                 isShippingAddressRequired     // IGNORE shippingLoading if no shipping required
@@ -731,13 +731,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 (isBusy !== 'preparePayment') // silently paymentToken loading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
             )
             ||
-            isNeedsRecoverShippingList // still recovering shippingList
+            isNeedsRecoverShippingList        // still recovering shippingList
+            ||
+            isNeedsResetShippingProvider      // still resetting selected shippingProvider
         )
     );
     const hasData                        = (
-        !!productList           // must have productList data
-        &&
         !!countryList           // must have countryList data
+        &&
+        !!productList           // must have productList data
         &&
         (
             isPaymentTokenValid // must have valid paymentToken
@@ -752,11 +754,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             (
                 // have any error(s):
                 
+                isCountryError
+                ||
                 isCartError
                 ||
                 isPrevOrderError
-                ||
-                isCountryError
                 ||
                 (
                     isShippingAddressRequired // IGNORE shippingLoading if no shipping required
