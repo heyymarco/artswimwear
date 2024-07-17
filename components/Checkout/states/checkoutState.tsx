@@ -43,6 +43,7 @@ import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
     useEvent,
+    useMountedFlag,
     
     
     
@@ -897,79 +898,87 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep]);
     
     // auto renew paymentToken:
+    const isMounted                        = useMountedFlag();
+    const schedulingRefreshPaymentTokenRef = useRef<ReturnType<typeof setTimeout>|null>(null);
+    const scheduleRefreshPaymentToken      = useEvent(async (): Promise<void> => {
+        // conditions:
+        if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
+        
+        
+        
+        // determine the next refresh duration:
+        const paymentTokenRemainingAge = (
+            !!paymentToken
+            ? Math.max(0, paymentToken.refreshAt - Date.now())
+            : 0
+        );
+        const nextRefreshDuration = (
+            (paymentTokenRemainingAge > 0) // still have valid oldPaymentToken
+            ? paymentTokenRemainingAge // re-use valid oldPaymentToken
+            : await (async (): Promise<number> => { // create newPaymentToken
+                try {
+                    // retry to generate a new paymentToken:
+                    const newPaymentToken = await generatePaymentToken().unwrap();
+                    
+                    
+                    
+                    // replace the expiring one:
+                    dispatch(reduxSetPaymentToken(newPaymentToken));
+                    
+                    
+                    
+                    // report the next refresh duration:
+                    console.log('paymentToken renewed', {
+                        expiresAt: newPaymentToken ? new Date(newPaymentToken.expiresAt).toLocaleString() : null,
+                        refreshAt: newPaymentToken ? new Date(newPaymentToken.refreshAt).toLocaleString() : null,
+                    });
+                    return Math.max(0, newPaymentToken.refreshAt - Date.now());
+                }
+                catch (error: any) {
+                    // report the next retry duration:
+                    console.log('failed to renew paymentToken: ', error);
+                    return (60 * 1000);
+                } // try
+            })()
+        );
+        
+        
+        
+        // conditions:
+        if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+        
+        
+        
+        // re-schedule:
+        if (schedulingRefreshPaymentTokenRef.current) clearTimeout(schedulingRefreshPaymentTokenRef.current); // abort prev schedule (if any)
+        
+        console.log(`schedule refresh paymentToken in ${nextRefreshDuration/1000} seconds`);
+        schedulingRefreshPaymentTokenRef.current = setTimeout(() => {
+            scheduleRefreshPaymentToken()
+            .then(() => {
+                console.log('schedule refresh paymentToken PERFORMED');
+            });
+        }, nextRefreshDuration);
+    });
+    
+    const isScheduleTriggeredRef           = useRef<boolean>(false);
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!isPaymentStep) return; // no paymentToken renewal when NOT at_payment_step
+        if (isScheduleTriggeredRef.current) return; // already triggered => ignore
+        isScheduleTriggeredRef.current = true; // mark as triggered
         
         
         
         // setups:
-        const performRefreshPaymentToken = async (): Promise<number> => {
-            try {
-                // retry to generate a new paymentToken:
-                const newPaymentToken = await generatePaymentToken().unwrap();
-                
-                
-                
-                // replace the expiring one:
-                dispatch(reduxSetPaymentToken(newPaymentToken));
-                
-                
-                
-                // report the next refresh duration:
-                console.log('paymentToken renewed', {
-                    expiresAt: newPaymentToken ? new Date(newPaymentToken.expiresAt).toLocaleString() : null,
-                    refreshAt: newPaymentToken ? new Date(newPaymentToken.refreshAt).toLocaleString() : null,
-                });
-                return Math.max(0, newPaymentToken.refreshAt - Date.now());
-            }
-            catch (error: any) {
-                // report the next retry duration:
-                console.log('failed to renew paymentToken: ', error);
-                return (60 * 1000);
-            } // try
-        };
-        
-        let schedulingAborted             = false;
-        let schedulingRefreshPaymentToken : ReturnType<typeof setTimeout>|undefined = undefined;
-        const scheduleRefreshPaymentToken = async (): Promise<void> => {
-            // conditions:
-            if (schedulingAborted) return;
-            
-            
-            
-            // determine the next refresh duration:
-            const paymentTokenRemainingAge = (
-                !!paymentToken
-                ? Math.max(0, paymentToken.refreshAt - Date.now())
-                : 0
-            );
-            const nextRefreshDuration = (
-                (paymentTokenRemainingAge > 0)
-                ? paymentTokenRemainingAge
-                : await performRefreshPaymentToken()
-            );
-            
-            
-            
-            // conditions:
-            if (schedulingAborted) return;
-            
-            
-            
-            // re-schedule:
-            console.log(`schedule refresh paymentToken in ${nextRefreshDuration/1000} seconds`);
-            schedulingRefreshPaymentToken = setTimeout(scheduleRefreshPaymentToken, nextRefreshDuration);
-        };
-        // first-schedule & avoids double re-run in StrictMode:
-        Promise.resolve().then(scheduleRefreshPaymentToken);
+        // trigger to start schedule:
+        scheduleRefreshPaymentToken();
         
         
         
         // cleanups:
         return () => {
-            schedulingAborted = true;
-            if (schedulingRefreshPaymentToken) clearTimeout(schedulingRefreshPaymentToken);
+            if (schedulingRefreshPaymentTokenRef.current) clearTimeout(schedulingRefreshPaymentTokenRef.current); // abort prev schedule (if any)
         };
     }, [isPaymentStep, paymentToken, isPaymentTokenValid]);
     
