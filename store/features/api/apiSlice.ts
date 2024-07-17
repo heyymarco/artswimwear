@@ -203,11 +203,10 @@ export const apiSlice = createApi({
         
         
         
-        getMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, MatchingAddress>({
-            query : (address) => ({
-                url    : 'shippings',
-                method : 'POST',
-                body   : address,
+        getMatchingShippingList : builder.query<EntityState<MatchingShipping>, MatchingAddress>({
+            query : ({country, state, city}) => ({
+                url    : `shippings?country=${encodeURIComponent(country)}&state=${encodeURIComponent(state)}&city=${encodeURIComponent(city)}`,
+                method : 'GET',
             }),
             transformResponse(response: MatchingShipping[]) {
                 return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
@@ -315,29 +314,29 @@ export const apiSlice = createApi({
 
 
 export const {
-    useGetProductListQuery             : useGetProductList,
-    useGetProductDetailQuery           : useGetProductDetail,
+    useGetProductListQuery              : useGetProductList,
+    useGetProductDetailQuery            : useGetProductDetail,
     
-    useGetCountryListQuery             : useGetCountryList,
-    useLazyGetStateListQuery           : useGetStateList,
-    useLazyGetCityListQuery            : useGetCityList,
+    useGetCountryListQuery              : useGetCountryList,
+    useLazyGetStateListQuery            : useGetStateList,
+    useLazyGetCityListQuery             : useGetCityList,
     
-    useGetMatchingShippingListMutation : useGetMatchingShippingList,
+    useLazyGetMatchingShippingListQuery : useGetMatchingShippingList,
     
-    useLazyGeneratePaymentTokenQuery   : useGeneratePaymentToken,
-    usePlaceOrderMutation              : usePlaceOrder,
-    useMakePaymentMutation             : useMakePayment,
-    usePaymentConfirmationMutation     : usePaymentConfirmation,
-    useShippingTrackingMutation        : useShippingTracking,
-    useShowPrevOrderMutation           : useShowPrevOrder,
+    useLazyGeneratePaymentTokenQuery    : useGeneratePaymentToken,
+    usePlaceOrderMutation               : usePlaceOrder,
+    useMakePaymentMutation              : useMakePayment,
+    usePaymentConfirmationMutation      : usePaymentConfirmation,
+    useShippingTrackingMutation         : useShippingTracking,
+    useShowPrevOrderMutation            : useShowPrevOrder,
     
-    useUpdateCustomerMutation          : useUpdateCustomer,
-    useLazyAvailableUsernameQuery      : useAvailableUsername,
-    useLazyNotProhibitedUsernameQuery  : useNotProhibitedUsername,
-    // useLazyAvailableEmailQuery         : useAvailableEmail, // TODO
+    useUpdateCustomerMutation           : useUpdateCustomer,
+    useLazyAvailableUsernameQuery       : useAvailableUsername,
+    useLazyNotProhibitedUsernameQuery   : useNotProhibitedUsername,
+    // useLazyAvailableEmailQuery          : useAvailableEmail, // TODO
     
-    usePostImageMutation               : usePostImage,
-    useDeleteImageMutation             : useDeleteImage,
+    usePostImageMutation                : usePostImage,
+    useDeleteImageMutation              : useDeleteImage,
 } = apiSlice;
 
 export const usePrefetchProductList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList'  , options);

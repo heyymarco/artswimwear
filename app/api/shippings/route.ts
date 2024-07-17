@@ -40,8 +40,8 @@ interface RequestContext {
 const router  = createEdgeRouter<NextRequest, RequestContext>();
 const handler = async (req: NextRequest, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
 export {
-    // handler as GET,
-    handler as POST,
+    handler as GET,
+    // handler as POST,
     // handler as PUT,
     // handler as PATCH,
     // handler as DELETE,
@@ -49,7 +49,7 @@ export {
 }
 
 router
-.post(async (req) => {
+.get(async (req) => {
     /* required for displaying products page */
     
     
@@ -69,7 +69,7 @@ router
         country,
         state,
         city,
-    } = await req.json();
+    } = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
     //#endregion parsing request
     
     
