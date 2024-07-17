@@ -686,14 +686,78 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const isPaymentStep                  = (checkoutStep === 'payment');
     const isLastCheckoutStep             = (checkoutStep === 'pending') || (checkoutStep === 'paid');
-    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isPrevOrderLoading || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently paymentToken loading if still have old_valid_token */) || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
-    const hasData                        = (!!productList      && !!countryList    && (!isPaymentStep /* ignore paymentToken error if not at_payment_step */ || isPaymentTokenValid));
-    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isPrevOrderError || isCountryError   || (isTokenError && !isPaymentTokenValid /* silently paymentToken error if still have old_valid_token */ && !isLastCheckoutStep /* ignore paymentToken error if payment has finished */))) || !hasData /* considered as error if no data */;
-    const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
-    const isCheckoutFinished             = isCheckoutReady && isLastCheckoutStep;
-    if (isCheckoutError) {
-        debugger;
-    }
+    const isCheckoutLoading              = (
+        !isCheckoutEmpty // has cartItem(s) to display, if no cartItem(s) => nothing to load
+        &&
+        (
+            // have any loading(s):
+            
+            isCartLoading
+            ||
+            isPrevOrderLoading
+            ||
+            isCountryLoading
+            ||
+            (
+                isTokenLoading       // paymentToken is loading
+                &&
+                !isPaymentTokenValid // silently paymentToken loading if still have valid oldPaymentToken (has backup)
+            )
+            ||
+            isNeedsRecoverShippingList // still recovering shippingList
+        )
+    );
+    const hasData                        = (
+        !!productList           // must have productList data
+        &&
+        !!countryList           // must have countryList data
+        &&
+        (
+            isPaymentTokenValid // must have valid paymentToken
+            ||
+            !isPaymentStep      // EXCEPT if NOT at_payment_step, the paymentToken is no longer required at this step (no matter valid or invalid)
+        )
+    );
+    const isCheckoutError                = (
+        (
+            !isCheckoutLoading // while still LOADING => consider as NOT error
+            &&
+            (
+                // have any error(s):
+                
+                isCartError
+                ||
+                isPrevOrderError
+                ||
+                isCountryError
+                ||
+                (
+                    isTokenError         // paymentToken is error
+                    &&
+                    !isPaymentTokenValid // oldPaymentToken is also invalid (no backup)
+                    &&
+                    !isPaymentStep       // IGNORE paymentToken error if NOT at_payment_step, the paymentToken is no longer required at this step (no matter valid or invalid)
+                )
+            )
+        )
+        
+        ||
+        
+        // considered as error if no data, even if no_error_occured, because we cannot display anything without data
+        !hasData
+    );
+    const isCheckoutReady                = (
+        !isCheckoutLoading // not still LOADING
+        &&
+        !isCheckoutError   // not having ERROR
+        &&
+        !isCheckoutEmpty   // has cartItem(s) to display
+    );
+    const isCheckoutFinished             = (
+        isCheckoutReady    // must have READY state
+        &&
+        isLastCheckoutStep // must at_the_last_step
+    );
     
     
     
