@@ -1096,7 +1096,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             dispatch(reduxSetCustomerValidation(true)); // enable customerAccount validation
-            dispatch(reduxSetShippingValidation(true)); // enable billingAddress validation
+            dispatch(reduxSetShippingValidation(true)); // enable shippingAddress validation
             await new Promise<void>((resolve) => { // wait for a validation state applied
                 setTimeout(() => {
                     setTimeout(() => {
@@ -1210,6 +1210,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             dispatch(reduxSetCustomerValidation(true)); // enable customerAccount validation
+            // dispatch(reduxSetShippingValidation(true)); // enable shippingAddress validation // NO shippingAddress validation required, because NOT have physical product(s)
             await new Promise<void>((resolve) => { // wait for a validation state applied
                 setTimeout(() => {
                     setTimeout(() => {
@@ -1261,7 +1262,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             if (!billingAsShipping) { // use dedicated billingAddress => enable billingAddress validation
-                dispatch(reduxSetBillingValidation(true));
+                dispatch(reduxSetBillingValidation(true)); // enable billingAddress validation
             } // if
             dispatch(reduxSetPaymentValidation(true)); // enable paymentForm validation
             await new Promise<void>((resolve) => { // wait for a validation state applied
