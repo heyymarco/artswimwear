@@ -290,7 +290,6 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     const realCartItems = useSelector(selectCartItems);
     const cartItems     = mockCartItems ?? realCartItems;
-    const isCartEmpty   = !cartItems.length;
     
     const isCartShown   = useSelector(selectIsCartShown);
     
@@ -305,10 +304,43 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const isProductError   = mockProductList ?    false     : realIsProductError;
     const refetchCart      = mockProductList ? noopCallback : realRefetchCart;
     
-    const isCartLoading =  !isCartEmpty   && (isProductLoading); // do not report the loading state if the cart is empty
-    const hasData       = (!!productList);
-    const isCartError   = (!isCartLoading && (isProductError)) || !hasData /* considered as error if no data */;
-    const isCartReady   =  !isCartLoading &&  !isCartError     && !isCartEmpty;
+    const isCartEmpty   = (
+        !cartItems.length
+        /* isOther1Empty */
+        /* isOther2Empty */
+        /* isOther3Empty */
+    );
+    const isCartLoading = (
+        !isCartEmpty // has cartItem(s) to display, if no cartItem(s) => nothing to load
+        &&
+        (
+            // have any loading(s):
+            
+            isProductLoading
+            /* isOther1Loading */
+            /* isOther2Loading */
+            /* isOther3Loading */
+        )
+    );
+    const isCartError   = (
+        !isCartLoading // while still LOADING => consider as NOT error
+        &&
+        (
+            // have any error(s):
+            
+            isProductError
+            /* isOther1Error */
+            /* isOther2Error */
+            /* isOther3Error */
+        )
+    );
+    const isCartReady   =  (
+        !isCartLoading // not still LOADING
+        &&
+        !isCartError   // not having ERROR
+        &&
+        !isCartEmpty   // has cartItem(s) to display
+    );
     
     
     
