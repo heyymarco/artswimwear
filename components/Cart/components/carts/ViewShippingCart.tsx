@@ -36,15 +36,15 @@ const ViewShippingCart = (props: ViewShippingCartProps): JSX.Element|null => {
     const {
         // states:
         isCartReady,
+        hasPhysicalProduct,
     } = useCartState();
-    const hasPhysicalProduct    = (totalShippingCost !== null);
     const isNotShippingSelected = (totalShippingCost === undefined);
     
     
     
     // jsx:
     if (!isCartReady)        return null;
-    if (!hasPhysicalProduct) return null;
+    if (!hasPhysicalProduct) return null; // unknown -or- not_physical_product => nothing to display
     return (
         <p className='currencyBlock'>
             <span>Shipping</span>
