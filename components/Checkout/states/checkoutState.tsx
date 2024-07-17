@@ -687,9 +687,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isPrevOrderLoading || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */) || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
     const isLastCheckoutStep             = (checkoutStep === 'pending') || (checkoutStep === 'paid');
     const hasData                        = (!!productList      && !!countryList    && (isLastCheckoutStep || isPaymentTokenValid));
-    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isPrevOrderError || isCountryError   || (!isLastCheckoutStep && isTokenError && !isPaymentTokenValid /* silently token error   if still have old_valid_token */))) || !hasData /* considered as error if no data */;
+    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isPrevOrderError || isCountryError   || (isTokenError && !isPaymentTokenValid /* silently token error   if still have old_valid_token */ && !isLastCheckoutStep /* ignore token error if payment has finished */))) || !hasData /* considered as error if no data */;
     const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
     const isCheckoutFinished             = isCheckoutReady && isLastCheckoutStep;
+    if (isCheckoutError) {
+        debugger;
+    }
     
     
     
