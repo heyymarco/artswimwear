@@ -672,7 +672,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const customerValidation             = reduxCustomerValidation;
     
-    const isShippingAddressRequired      = (totalShippingCost !== null); // null => non physical product; undefined => has physical product but no shippingProvider selected; number => has physical product and has shippingProvider selected
+    const isShippingAddressRequired      = (
+        (totalProductWeight === undefined)
+        ? false                         // undefined => unknown_kind_product due to incomplete loading of related data => assumes as non physical product (prevents reset shippingProvider => go back to 'info'|'shipping' page)
+        : (totalProductWeight !== null) // null => non physical product; ; number (not null) => has physical product
+    );
     const shippingValidation             = isShippingAddressRequired && reduxShippingValidation;
     
     const isNeedsRecoverShippingList     = (
