@@ -657,10 +657,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const realTotalShippingCost          = useMemo<number|null|undefined>(() => {
         // conditions:
-        if (totalProductWeight === null) return null;      // non physical product => no shipping required
-        if (!shippingList)               return undefined; // the shippingList data is not available yet => nothing to calculate
+        if (totalProductWeight === undefined) return undefined; // unable to calculate due to incomplete loading of related data => nothing to calculate
+        if (totalProductWeight === null)      return null;      // non physical product => no shipping required
+        if (!shippingList)                    return undefined; // the shippingList data is not available yet => nothing to calculate
         const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
-        if (!selectedShipping)           return undefined; // no valid selected shippingProvider => nothing to calculate
+        if (!selectedShipping)                return undefined; // no valid selected shippingProvider => nothing to calculate
         
         
         
@@ -744,7 +745,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             isNeedsResetShippingProvider      // still resetting selected shippingProvider
         )
     );
-    // if (isCheckoutLoading) console.log('LOADING: ', Object.fromEntries(Object.entries({
+    // if (isCheckoutLoading) console.log('LOADING: ', Object.entries({
     //     isCountryLoading,
     //     isCartLoading,
     //     isPrevOrderLoading,
@@ -752,7 +753,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     //     isTokenLoading : isTokenLoading && !isPaymentTokenValid && (isBusy !== 'preparePayment'),
     //     isNeedsRecoverShippingList,
     //     isNeedsResetShippingProvider,
-    // }).filter(([, val]) => (val === true))));
+    // }).filter(([, val]) => (val === true)).map(([key]) => key));
     const isCheckoutError                = (
         !isCheckoutLoading // while still LOADING => consider as NOT error
         &&
@@ -792,13 +793,13 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         &&
         isLastCheckoutStep // must at_the_last_step
     );
-    // if (isCheckoutError) console.log('ERROR: ', Object.fromEntries(Object.entries({
+    // if (isCheckoutError) console.log('ERROR: ', Object.entries({
     //     isCountryError,
     //     isCartError,
     //     isPrevOrderError,
     //     isShippingError : isShippingAddressRequired && isShippingError,
     //     isTokenError : isTokenError && !isPaymentTokenValid && !isPaymentStep,
-    // }).filter(([, val]) => (val === true))));
+    // }).filter(([, val]) => (val === true)).map(([key]) => key));
     // if (isCheckoutReady) console.log('checkout is READY');
     
     
