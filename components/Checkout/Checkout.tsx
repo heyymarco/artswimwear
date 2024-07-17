@@ -45,7 +45,7 @@ import {
 }                           from './components/carts/EditCart'
 import {
     ViewSubtotalCart,
-}                           from './components/carts/ViewSubtotalCart'
+}                           from '@/components/Cart/components/carts/ViewSubtotalCart'
 import {
     ViewShippingCart,
 }                           from './components/carts/ViewShippingCart'
@@ -239,17 +239,11 @@ const CheckoutInternal = (): JSX.Element|null => {
                 <hr />
                 
                 <ViewSubtotalCart />
-                {isShippingAddressRequired && <ViewShippingCart
-                    // data:
-                    totalShippingCost={totalShippingCost}
-                />}
+                {isShippingAddressRequired && <ViewShippingCart />}
                 
                 <hr />
                 
-                <ViewTotalCart
-                    // data:
-                    totalShippingCost={totalShippingCost}
-                />
+                <ViewTotalCart />
             </Section>
             
             <Section
