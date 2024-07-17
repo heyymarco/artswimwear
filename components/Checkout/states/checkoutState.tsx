@@ -899,7 +899,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // auto renew paymentToken:
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if ((checkoutStep === 'pending') || (checkoutStep === 'paid')) return; // no paymentToken renewal when state is 'pending' or 'paid'
+        if (!isPaymentStep) return; // no paymentToken renewal when NOT at_payment_step
         
         
         
@@ -971,7 +971,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             schedulingAborted = true;
             if (schedulingRefreshPaymentToken) clearTimeout(schedulingRefreshPaymentToken);
         };
-    }, [paymentToken, isPaymentTokenValid]);
+    }, [isPaymentStep, paymentToken, isPaymentTokenValid]);
     
     // auto reset billing validation:
     useIsomorphicLayoutEffect(() => {
