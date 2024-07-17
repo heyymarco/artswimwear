@@ -700,9 +700,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             isCountryLoading
             ||
             (
-                isTokenLoading       // paymentToken is loading
+                isTokenLoading                // paymentToken is loading
                 &&
-                !isPaymentTokenValid // silently paymentToken loading if still have valid oldPaymentToken (has backup)
+                !isPaymentTokenValid          // silently paymentToken loading if still have valid oldPaymentToken (has backup)
+                &&
+                (isBusy !== 'preparePayment') // silently paymentToken loading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
             )
             ||
             isNeedsRecoverShippingList // still recovering shippingList
@@ -1206,6 +1208,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return true; // transaction completed
     });
     const gotoPayment          = useEvent(async (): Promise<boolean> => {
+        // const goForward = ... // always go_forward, never go_backward after finishing the payment
         if (!isShippingAddressRequired) { // if only digital products => validate the customer account
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
@@ -1227,6 +1230,20 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         else {
             // if physical products => the customer account is *already validated* by `gotoStepShipping()`
         } // if
+        
+        
+        
+        // update and wait for paymentToken to avoid whole_page_spinning_busy:
+        setIsBusy('preparePayment');
+        try {
+            await scheduleRefreshPaymentToken();
+        }
+        catch {
+            // ignore any error => just display whole_page_error
+        }
+        finally {
+            setIsBusy(false);
+        } // try
         
         
         

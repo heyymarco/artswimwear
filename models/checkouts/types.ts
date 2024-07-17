@@ -84,4 +84,5 @@ export interface FinishedOrderState {
 export type BusyState =
     | false // idle
     | 'checkShipping'
+    | 'preparePayment'
     | 'transaction'
