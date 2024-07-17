@@ -686,9 +686,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const isPaymentStep                  = (checkoutStep === 'payment');
     const isLastCheckoutStep             = (checkoutStep === 'pending') || (checkoutStep === 'paid');
-    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isPrevOrderLoading || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently token loading if still have old_valid_token */) || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
-    const hasData                        = (!!productList      && !!countryList    && (!isPaymentStep /* do not validate paymentToken if not at_payment_step */ || isPaymentTokenValid));
-    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isPrevOrderError || isCountryError   || (isTokenError && !isPaymentTokenValid /* silently token error   if still have old_valid_token */ && !isLastCheckoutStep /* ignore token error if payment has finished */))) || !hasData /* considered as error if no data */;
+    const isCheckoutLoading              =  !isCheckoutEmpty   && (isCartLoading   || isPrevOrderLoading || isCountryLoading || (isTokenLoading && !isPaymentTokenValid /* silently paymentToken loading if still have old_valid_token */) || isNeedsRecoverShippingList); // do not report the loading state if the checkout is empty
+    const hasData                        = (!!productList      && !!countryList    && (!isPaymentStep /* ignore paymentToken error if not at_payment_step */ || isPaymentTokenValid));
+    const isCheckoutError                = (!isCheckoutLoading && (isCartError     || isPrevOrderError || isCountryError   || (isTokenError && !isPaymentTokenValid /* silently paymentToken error if still have old_valid_token */ && !isLastCheckoutStep /* ignore paymentToken error if payment has finished */))) || !hasData /* considered as error if no data */;
     const isCheckoutReady                =  !isCheckoutLoading && !isCheckoutError && !isCheckoutEmpty;
     const isCheckoutFinished             = isCheckoutReady && isLastCheckoutStep;
     if (isCheckoutError) {
@@ -832,7 +832,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isSubsequentStep.current = true;
     }, [checkoutStep]);
     
-    // auto renew payment token:
+    // auto renew paymentToken:
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if ((checkoutStep === 'pending') || (checkoutStep === 'paid')) return; // no paymentToken renewal when state is 'pending' or 'paid'
@@ -842,7 +842,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // setups:
         const performRefreshPaymentToken = async (): Promise<number> => {
             try {
-                // retry to generate a new token:
+                // retry to generate a new paymentToken:
                 const newPaymentToken = await generatePaymentToken().unwrap();
                 
                 
@@ -861,7 +861,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             }
             catch (error: any) {
                 // report the next retry duration:
-                console.log('failed to renew payment token: ', error);
+                console.log('failed to renew paymentToken: ', error);
                 return (60 * 1000);
             } // try
         };
@@ -894,7 +894,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             // re-schedule:
-            console.log(`schedule refresh token in ${nextRefreshDuration/1000} seconds`);
+            console.log(`schedule refresh paymentToken in ${nextRefreshDuration/1000} seconds`);
             schedulingRefreshPaymentToken = setTimeout(scheduleRefreshPaymentToken, nextRefreshDuration);
         };
         // first-schedule & avoids double re-run in StrictMode:
