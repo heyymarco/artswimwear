@@ -89,19 +89,19 @@ router
     
     
     // auto update rajaongkir:
-    await prisma.$transaction(async (prismaTransaction) => {
-        try {
+    try {
+        await prisma.$transaction(async (prismaTransaction) => {
             await updateShippingProviders(prismaTransaction, {
                 country,
                 state,
                 city,
             });
-        }
-        catch (error: unknown) {
-            console.log(error);
-            // ignore any error
-        } // try
-    });
+        }, { timeout: 10000 }); // give a longer timeout for `updateShippingProviders()`
+    }
+    catch (error: unknown) {
+        console.log('autoUpdate shipping error: ', error);
+        // ignore any error
+    } // try
     
     
     
