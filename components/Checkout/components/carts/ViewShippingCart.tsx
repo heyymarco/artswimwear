@@ -13,9 +13,6 @@ import {
 
 // contexts:
 import {
-    useCartState,
-}                           from '@/components/Cart/states/cartState'
-import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -24,11 +21,6 @@ import {
 // react components:
 const ViewShippingCart = (): JSX.Element|null => {
     // contexts:
-    const {
-        // cart data:
-        hasPhysicalProduct,
-    } = useCartState();
-    
     const {
         // states:
         isCheckoutReady,
@@ -43,8 +35,9 @@ const ViewShippingCart = (): JSX.Element|null => {
     
     
     // jsx:
-    if (!isCheckoutReady)    return null;
-    if (!hasPhysicalProduct) return null; // unknown -or- not_physical_product => nothing to display
+    if (!isCheckoutReady)           return null;
+    if (totalShippingCost === null) return null; // not_physical_product => nothing to display
+    if ((totalShippingCost === undefined) && (shippingProvider !== undefined)) return null; // unknown_kind_product -and- has shippingProvider selected => something error => nothing to display
     return (
         <p className='currencyBlock'>
             <span>Shipping</span>
