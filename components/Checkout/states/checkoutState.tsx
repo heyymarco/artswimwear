@@ -521,6 +521,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // contexts:
     const {
         // states:
+        isCartEmpty,
         isCartLoading,
         isCartError,
         
@@ -549,7 +550,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         refetchCart,
     } = useCartState();
     const cartItems           = finishedOrderState?.cartItems     ?? globalCartItems;
-    const isCheckoutEmpty     = !cartItems.length;
     
     const productList         = finishedOrderState?.productList   ?? globalProductList;
     
@@ -650,7 +650,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // apis:
     const                        {data: countryList  , isFetching: isCountryLoading  , isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
     const [showPrevOrder       , {data: prevOrderData, isLoading : isPrevOrderLoading, isError: isPrevOrderError}] = useShowPrevOrder();
-    const [getShippingByAddress, {data: shippingList , isLoading : isShippingLoading , isError: isShippingError }] = useGetMatchingShippingList();
+    const [getShippingByAddress, {data: shippingList , isLoading : isShippingLoading , isError: isShippingError , isUninitialized : isShippingUninitialized}] = useGetMatchingShippingList();
     const [generatePaymentToken, {                     isLoading : isTokenLoading    , isError: isTokenError    }] = useGeneratePaymentToken();
     
     
@@ -675,6 +675,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const shippingValidation             = isShippingAddressRequired && reduxShippingValidation;
     
     const isNeedsRecoverShippingList     = (
+        isShippingUninitialized     // never recovered, just run ONCE
+        &&
         (checkoutStep !== 'info')   // not at the_first_step (cannot go back any further)
         &&
         isShippingAddressRequired   // has physical product to ship
@@ -703,6 +705,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const isPaymentStep                  = (checkoutStep === 'payment');
     const isLastCheckoutStep             = (checkoutStep === 'pending') || (checkoutStep === 'paid');
+    const isCheckoutEmpty                = (
+        isCartEmpty
+        /* isOther1Empty */
+        /* isOther2Empty */
+        /* isOther3Empty */
+    );
     const isCheckoutLoading              = (
         !isCheckoutEmpty // has cartItem(s) to display, if no cartItem(s) => nothing to load
         &&
@@ -736,50 +744,41 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             isNeedsResetShippingProvider      // still resetting selected shippingProvider
         )
     );
-    const hasData                        = (
-        !!countryList           // must have countryList data
-        &&
-        !!productList           // must have productList data
-        &&
-        (
-            isPaymentTokenValid // must have valid paymentToken
-            ||
-            !isPaymentStep      // EXCEPT if NOT at_payment_step, the paymentToken is no longer required at this step (no matter valid or invalid)
-        )
-    );
+    // if (isCheckoutLoading) console.log('LOADING: ', Object.fromEntries(Object.entries({
+    //     isCountryLoading,
+    //     isCartLoading,
+    //     isPrevOrderLoading,
+    //     isShippingLoading : isShippingAddressRequired && isShippingLoading && (isBusy !== 'checkShipping'),
+    //     isTokenLoading : isTokenLoading && !isPaymentTokenValid && (isBusy !== 'preparePayment'),
+    //     isNeedsRecoverShippingList,
+    //     isNeedsResetShippingProvider,
+    // }).filter(([, val]) => (val === true))));
     const isCheckoutError                = (
+        !isCheckoutLoading // while still LOADING => consider as NOT error
+        &&
         (
-            !isCheckoutLoading // while still LOADING => consider as NOT error
-            &&
+            // have any error(s):
+            
+            isCountryError
+            ||
+            isCartError
+            ||
+            isPrevOrderError
+            ||
             (
-                // have any error(s):
-                
-                isCountryError
-                ||
-                isCartError
-                ||
-                isPrevOrderError
-                ||
-                (
-                    isShippingAddressRequired // IGNORE shippingLoading if no shipping required
-                    &&
-                    isShippingError
-                )
-                ||
-                (
-                    isTokenError              // paymentToken is error
-                    &&
-                    !isPaymentTokenValid      // oldPaymentToken is also invalid (no backup)
-                    &&
-                    !isPaymentStep            // IGNORE paymentToken error if NOT at_payment_step, the paymentToken is no longer required at this step (no matter valid or invalid)
-                )
+                isShippingAddressRequired // IGNORE shippingLoading if no shipping required
+                &&
+                isShippingError
+            )
+            ||
+            (
+                isTokenError              // paymentToken is error
+                &&
+                !isPaymentTokenValid      // oldPaymentToken is also invalid (no backup)
+                &&
+                !isPaymentStep            // IGNORE paymentToken error if NOT at_payment_step, the paymentToken is no longer required at this step (no matter valid or invalid)
             )
         )
-        
-        ||
-        
-        // considered as error if no data, even if no_error_occured, because we cannot display anything without data
-        !hasData
     );
     const isCheckoutReady                = (
         !isCheckoutLoading // not still LOADING
@@ -793,6 +792,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         &&
         isLastCheckoutStep // must at_the_last_step
     );
+    // if (isCheckoutError) console.log('ERROR: ', Object.fromEntries(Object.entries({
+    //     isCountryError,
+    //     isCartError,
+    //     isPrevOrderError,
+    //     isShippingError : isShippingAddressRequired && isShippingError,
+    //     isTokenError : isTokenError && !isPaymentTokenValid && !isPaymentStep,
+    // }).filter(([, val]) => (val === true))));
+    // if (isCheckoutReady) console.log('checkout is READY');
     
     
     
@@ -837,12 +844,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, []);
     
     // try to recover shippingList on page_refresh:
-    const isRecoverShippingListTriggeredRef = useRef<boolean>(false);
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (!isNeedsRecoverShippingList)               return; // already being initialized/recovered => ignore
-        if (isRecoverShippingListTriggeredRef.current) return; // already triggered => ignore
-        isRecoverShippingListTriggeredRef.current = true;      // mark as triggered
+        if (!isNeedsRecoverShippingList) return; // already being initialized/recovered => ignore
         
         
         
