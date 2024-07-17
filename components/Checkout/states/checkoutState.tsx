@@ -549,15 +549,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         refetchCart,
     } = useCartState();
-    const cartItems           = finishedOrderState?.cartItems     ?? globalCartItems;
+    const cartItems           = finishedOrderState ? finishedOrderState.cartItems     : globalCartItems;
     
-    const productList         = finishedOrderState?.productList   ?? globalProductList;
+    const productList         = finishedOrderState ? finishedOrderState.productList   : globalProductList;
     
     
     
     // stores:
     const globalCheckoutState = useSelector(selectCheckoutState);
-    const localCheckoutState  = finishedOrderState?.checkoutState ?? globalCheckoutState;
+    const localCheckoutState  = finishedOrderState ? finishedOrderState.checkoutState : globalCheckoutState;
     const {
         // states:
         checkoutStep,
@@ -667,7 +667,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
         return calculateShippingCost(selectedShipping, totalProductWeight);
     }, [totalProductWeight, shippingList, shippingProvider]);
-    const totalShippingCost              = finishedOrderState?.totalShippingCost ?? realTotalShippingCost;
+    const totalShippingCost              = finishedOrderState ? finishedOrderState?.totalShippingCost : realTotalShippingCost;
     
     const customerValidation             = reduxCustomerValidation;
     
