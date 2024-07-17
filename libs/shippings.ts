@@ -219,9 +219,9 @@ export interface CalculateShippingCostData
         >
 {
 }
-export const calculateShippingCost = (shippingProvider: CalculateShippingCostData, totalWeight: number|null): number|null => {
+export const calculateShippingCost = (shippingProvider: CalculateShippingCostData, totalWeight: number|null|undefined): number|null => {
     // conditions:
-    if ((totalWeight === null) || isNaN(totalWeight) || !isFinite(totalWeight)) return null;
+    if ((totalWeight === undefined) || (totalWeight === null) || !isFinite(totalWeight)) return null;
     
     
     
