@@ -266,13 +266,13 @@ export const apiSlice = createApi({
                 body   : patch
             }),
         }),
-        availableUsername       : builder.mutation<boolean, string>({
+        availableUsername       : builder.query<boolean, string>({
             query: (username) => ({
                 url    : `customer/check-username?username=${encodeURIComponent(username)}`, // cloned from @heymarco/next-auth, because this api was disabled in auth.config.shared
                 method : 'GET',
             }),
         }),
-        notProhibitedUsername   : builder.mutation<boolean, string>({
+        notProhibitedUsername   : builder.query<boolean, string>({
             query: (username) => ({
                 url    : `customer/check-username?username=${encodeURIComponent(username)}`, // cloned from @heymarco/next-auth, because this api was disabled in auth.config.shared
                 method : 'PUT',
@@ -332,8 +332,9 @@ export const {
     useShowPrevOrderMutation           : useShowPrevOrder,
     
     useUpdateCustomerMutation          : useUpdateCustomer,
-    useAvailableUsernameMutation       : useAvailableUsername,
-    useNotProhibitedUsernameMutation   : useNotProhibitedUsername,
+    useLazyAvailableUsernameQuery      : useAvailableUsername,
+    useLazyNotProhibitedUsernameQuery  : useNotProhibitedUsername,
+    // useLazyAvailableEmailQuery         : useAvailableEmail, // TODO
     
     usePostImageMutation               : usePostImage,
     useDeleteImageMutation             : useDeleteImage,

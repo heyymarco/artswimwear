@@ -139,6 +139,7 @@ import {
 
 
 // configs:
+export const dynamic    = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export const maxDuration = 60; // this function can run for a maximum of 60 seconds for many & complex transactions
 
