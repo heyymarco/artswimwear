@@ -216,7 +216,7 @@ export const apiSlice = createApi({
         
         
         
-        generatePaymentToken    : builder.mutation<PaymentToken, void>({
+        generatePaymentToken    : builder.query<PaymentToken, void>({
             query : () => ({
                 url    : 'checkout',
                 method : 'GET',
@@ -324,7 +324,7 @@ export const {
     
     useGetMatchingShippingListMutation : useGetMatchingShippingList,
     
-    useGeneratePaymentTokenMutation    : useGeneratePaymentToken,
+    useLazyGeneratePaymentTokenQuery   : useGeneratePaymentToken,
     usePlaceOrderMutation              : usePlaceOrder,
     useMakePaymentMutation             : useMakePayment,
     usePaymentConfirmationMutation     : usePaymentConfirmation,
