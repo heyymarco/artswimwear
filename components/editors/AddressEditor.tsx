@@ -8,6 +8,8 @@ import {
     // hooks:
     useState,
     useMemo,
+    useEffect,
+    useRef,
 }                           from 'react'
 
 // heymarco components:
@@ -83,18 +85,54 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     const [getStateList     ] = useGetStateList();
     const [getCityList      ] = useGetCityList();
     
+    const mountedSignalRef = useRef<((isMounted: boolean) => void)|null>(null);
+    const [mountedPromise] = useState<Promise<boolean>>(() =>
+        new Promise<boolean>((resolve) => {
+            mountedSignalRef.current = resolve;
+        })
+    );
+    useEffect(() => {
+        // setups:
+        mountedSignalRef.current?.(true); // signal that the component is mounted;
+        mountedSignalRef.current = null;  // no more signaling in the future
+        
+        
+        
+        // cleanups:
+        return () => {
+            mountedSignalRef.current?.(false); // signal that the component is never mounted;
+            mountedSignalRef.current = null;  // no more signaling in the future
+        };
+    }, []);
+    
     const countryOptions = useMemo((): string[] => {
         if (!countryList) return [];
         return Object.values(countryList.entities).filter((country): country is Exclude<typeof country, undefined> => !!country).map(({name}) => name);
     }, [countryList]);
     const stateOptionsPromise = useMemo(() => {
         if (!country) return [];
-        return getStateList({ countryCode: country }).unwrap();
+        return mountedPromise.then((isMounted) => {
+            // conditions:
+            if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
+            
+            
+            
+            // actions:
+            return getStateList({ countryCode: country }).unwrap();
+        });
     }, [country]);
     const cityOptionsPromise = useMemo(() => {
         if (!country) return [];
         if (!state) return [];
-        return getCityList({ countryCode: country, state: state }).unwrap();
+        return mountedPromise.then((isMounted) => {
+            // conditions:
+            if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
+            
+            
+            
+            // actions:
+            return getCityList({ countryCode: country, state: state }).unwrap();
+        });
     }, [country, state]);
     
     
