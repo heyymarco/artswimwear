@@ -41,6 +41,7 @@ const ViewTotalCart = (): JSX.Element|null => {
         
         
         // shipping data:
+        isShippingAddressRequired,
         shippingProvider,
         totalShippingCost,
     } = useCheckoutState();
@@ -55,7 +56,7 @@ const ViewTotalCart = (): JSX.Element|null => {
             
             <span className='currency'>
                 {
-                    (shippingProvider !== undefined)
+                    (!isShippingAddressRequired || (shippingProvider !== undefined))
                     ? <>
                         <CurrencyDisplay amount={(productPriceParts === undefined) ? undefined : [...productPriceParts, totalShippingCost]} />
                         {' '}
