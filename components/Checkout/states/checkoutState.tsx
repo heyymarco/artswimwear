@@ -1741,7 +1741,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // setShippingAddress,        // stable ref
         
         shippingProvider,
-        // setShippingProvider        // stable ref,
+        // setShippingProvider        // stable ref
         
         totalShippingCost,
         

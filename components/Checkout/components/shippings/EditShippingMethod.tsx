@@ -91,10 +91,10 @@ const EditShippingMethod = (): JSX.Element|null => {
                     filteredShippingList
                     .map((shippingEntry) => ({
                         ...shippingEntry,
-                        totalShippingCost : calculateShippingCost(shippingEntry, totalProductWeight) ?? -1, // -1 means: no need to ship (digital products)
+                        previewShippingCost : calculateShippingCost(shippingEntry, totalProductWeight) ?? -1, // -1 means: no need to ship (digital products)
                     }))
-                    .sort(({totalShippingCost: a}, {totalShippingCost: b}) => (a - b))
-                    .map(({totalShippingCost, ...shippingEntry}) => {
+                    .sort(({previewShippingCost: a}, {previewShippingCost: b}) => (a - b))
+                    .map(({previewShippingCost, ...shippingEntry}) => {
                         const isActive = `${shippingEntry.id}` === shippingProvider;
                         
                         
@@ -131,7 +131,7 @@ const EditShippingMethod = (): JSX.Element|null => {
                                 </span>}
                                 
                                 <span className='cost'>
-                                    <CurrencyDisplay amount={totalShippingCost} />
+                                    <CurrencyDisplay amount={previewShippingCost} />
                                 </span>
                             </ListItem>
                         );
