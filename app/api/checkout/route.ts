@@ -146,7 +146,7 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 
 
 // types:
-export interface PaymentToken extends PaypalPaymentSession {}
+export interface PaymentSession extends PaypalPaymentSession {}
 
 export interface CartEntry {
     productId   : string

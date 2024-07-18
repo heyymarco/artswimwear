@@ -71,7 +71,7 @@ import {
 // stores:
 import {
     // types:
-    PaymentToken,
+    PaymentSession,
     CheckoutState         as ReduxCheckoutState,
     
     
@@ -194,7 +194,7 @@ export type {
     
     CheckoutStep,
     PaymentMethod,
-    PaymentToken,
+    PaymentSession,
     
     ProductPreview,
     PaymentDetail,
@@ -288,7 +288,7 @@ export interface CheckoutStateBase {
     paymentMethod                : PaymentMethod
     setPaymentMethod             : (paymentMethod: PaymentMethod) => void
     
-    paymentToken                 : PaymentToken | undefined
+    paymentToken                 : PaymentSession|undefined
     
     paymentType                  : string|undefined
     paymentBrand                 : string|null|undefined

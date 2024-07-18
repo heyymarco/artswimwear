@@ -26,7 +26,7 @@ import {
 }                           from '@/components/Cart'
 import {
     // types:
-    type PaymentToken,
+    type PaymentSession,
     
     
     
@@ -83,7 +83,7 @@ const ConditionalPayPalScriptProvider = ({children}: React.PropsWithChildren) =>
 interface ImplementedPayPalScriptProviderProps {
     // options:
     clientId       : string
-    paymentSession : PaymentToken
+    paymentSession : PaymentSession
     
     
     

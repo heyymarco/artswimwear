@@ -46,7 +46,7 @@ export type {
     ProductPricePart,
 }                               from '@/app/api/products/route'
 import type {
-    PaymentToken,
+    PaymentSession,
     
     // PlaceOrderOptions,
     PlaceOrderData,
@@ -64,7 +64,7 @@ import type {
     ShowOrderRequest,
 }                               from '@/app/api/checkout/route'
 export type {
-    PaymentToken,
+    PaymentSession,
     
     PlaceOrderOptions,
     PlaceOrderData,
@@ -215,7 +215,7 @@ export const apiSlice = createApi({
         
         
         
-        generatePaymentToken    : builder.query<PaymentToken, void>({
+        generatePaymentToken    : builder.query<PaymentSession, void>({
             query : () => ({
                 url    : 'checkout',
                 method : 'GET',

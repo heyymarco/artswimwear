@@ -20,7 +20,7 @@ import {
 
 // apis:
 import type {
-    PaymentToken,
+    PaymentSession,
     
     ExtraData,
     CustomerData,
@@ -28,7 +28,7 @@ import type {
     BillingData,
 }                           from '@/app/api/checkout/route'
 export type {
-    PaymentToken,
+    PaymentSession,
     
     ExtraData,
     CustomerData,
@@ -76,7 +76,7 @@ export interface CheckoutState
     
     paymentMethod     ?: PaymentMethod
     
-    paymentToken      ?: PaymentToken
+    paymentToken      ?: PaymentSession
 }
 
 const initialState : CheckoutState = {
@@ -201,7 +201,7 @@ export const checkoutSlice = createSlice({
             state.paymentMethod = value;
         },
         
-        setPaymentToken       : (state, {payload: value}: PayloadAction<PaymentToken|undefined>) => {
+        setPaymentToken       : (state, {payload: value}: PayloadAction<PaymentSession|undefined>) => {
             state.paymentToken = value;
         },
         
