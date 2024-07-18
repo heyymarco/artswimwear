@@ -121,7 +121,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
         // payment data:
         appropriatePaymentProcessors,
         paymentValidation,
-        paymentToken,
+        paymentToken : paymentSession,
         
         
         
@@ -181,7 +181,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
         &&
         !!process.env.NEXT_PUBLIC_PAYPAL_ID
         &&
-        !!paymentToken?.paymentToken
+        !!paymentSession
     );
     
     

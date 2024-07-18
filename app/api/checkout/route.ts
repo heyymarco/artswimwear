@@ -93,12 +93,12 @@ import {
 }                           from './email-utilities'
 import {
     // types:
-    PaypalPaymentToken,
+    PaypalPaymentSession,
     
     
     
     // utilities:
-    paypalCreatePaymentToken,
+    paypalCreatePaymentSession,
     paypalCreateOrder,
     paypalCaptureFund,
 }                           from './paymentProcessors.paypal'
@@ -146,7 +146,7 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 
 
 // types:
-export interface PaymentToken extends PaypalPaymentToken {}
+export interface PaymentToken extends PaypalPaymentSession {}
 
 export interface CartEntry {
     productId   : string
@@ -333,11 +333,11 @@ export {
 router
 
 /**
- * intialize paymentToken
+ * intialize paymentSession
  */
 .get(async (req) => {
-    const paymentToken : PaypalPaymentToken = await paypalCreatePaymentToken();
-    return NextResponse.json(paymentToken); // handled with success
+    const paymentSession : PaypalPaymentSession = await paypalCreatePaymentSession();
+    return NextResponse.json(paymentSession); // handled with success
 })
 
 /**

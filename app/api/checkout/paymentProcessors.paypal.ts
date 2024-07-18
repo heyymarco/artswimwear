@@ -13,10 +13,10 @@ import {
 
 
 // types:
-export interface PaypalPaymentToken {
-    paymentToken : string
-    expiresAt    : number
-    refreshAt    : number
+export interface PaypalPaymentSession {
+    token      : string
+    expiresAt  : number
+    refreshAt  : number
 }
 
 
@@ -60,11 +60,13 @@ const paypalCreateAccessToken  = async () => {
     return accessTokenData.access_token;
 }
 
-const paypalPaymentTokenExpiresThreshold = 0.5;
+const paypalPaymentSessionExpiresThreshold = 0.5;
 /**
- * Call this function to create your client token (paymentToken).
+ * Call this function to create your client checkout session (paymentSession).
+ * Uniquely identifies each payer.
+ * Expires in a few minutes because it's meant to be used during checkout. Generate new sessions if the current sessions expire.
  */
-export const paypalCreatePaymentToken = async (): Promise<PaypalPaymentToken> => {
+export const paypalCreatePaymentSession = async (): Promise<PaypalPaymentSession> => {
     const response    = await fetch(`${paypalUrl}/v1/identity/generate-token`, {
         method  : 'POST',
         headers : {
@@ -74,7 +76,7 @@ export const paypalCreatePaymentToken = async (): Promise<PaypalPaymentToken> =>
             'Authorization'   : `Bearer ${await paypalCreateAccessToken()}`,
         },
     });
-    const paymentTokenData = await response.json();
+    const paymentSessionData = await response.json();
     /*
         example:
         {
@@ -82,15 +84,15 @@ export const paypalCreatePaymentToken = async (): Promise<PaypalPaymentToken> =>
             expires_in: 3600, // seconds
         }
     */
-    console.log('created: paymentTokenData');
-    // console.log('created: paymentTokenData: ', paymentTokenData);
-    if (!paymentTokenData || paymentTokenData.error) throw paymentTokenData?.error_description ?? paymentTokenData?.error ?? Error('Fetch paymentToken failed.');
+    console.log('created: paymentSessionData');
+    // console.log('created: paymentSessionData: ', paymentSessionData);
+    if (!paymentSessionData || paymentSessionData.error) throw paymentSessionData?.error_description ?? paymentSessionData?.error ?? Error('Fetch paymentSessionData failed.');
     
-    const expiresIn = (paymentTokenData.expires_in ?? 3600) * 1000;
+    const expiresIn = (paymentSessionData.expires_in ?? 3600) * 1000;
     return {
-        paymentToken : paymentTokenData.client_token,
-        expiresAt    : Date.now() +  expiresIn,
-        refreshAt    : Date.now() + (expiresIn * paypalPaymentTokenExpiresThreshold),
+        token     : paymentSessionData.client_token,
+        expiresAt : Date.now() +  expiresIn,
+        refreshAt : Date.now() + (expiresIn * paypalPaymentSessionExpiresThreshold),
     };
 }
 

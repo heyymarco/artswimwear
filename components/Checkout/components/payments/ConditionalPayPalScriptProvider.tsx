@@ -25,6 +25,11 @@ import {
     useCartState,
 }                           from '@/components/Cart'
 import {
+    // types:
+    type PaymentToken,
+    
+    
+    
     // states:
     useCheckoutState,
 }                           from '../../states/checkoutState'
@@ -40,20 +45,19 @@ const ConditionalPayPalScriptProvider = ({children}: React.PropsWithChildren) =>
     // states:
     const {
         // payment data:
-        paymentToken,
+        paymentToken : paymentSession,
     } = useCheckoutState();
     
     
     
     // conditions:
-    const clientId    = process.env.NEXT_PUBLIC_PAYPAL_ID ?? '';
-    const clientToken = paymentToken?.paymentToken;
+    const clientId = process.env.NEXT_PUBLIC_PAYPAL_ID ?? '';
     if (
         !checkoutConfigClient.payment.processors.paypal.enabled
         ||
         !clientId
         ||
-        !clientToken
+        !paymentSession
     ) {
         // jsx:
         return (
@@ -70,7 +74,7 @@ const ConditionalPayPalScriptProvider = ({children}: React.PropsWithChildren) =>
         <ImplementedPayPalScriptProvider
             // options:
             clientId={clientId}
-            clientToken={clientToken}
+            paymentSession={paymentSession}
         >
             {children}
         </ImplementedPayPalScriptProvider>
@@ -78,8 +82,8 @@ const ConditionalPayPalScriptProvider = ({children}: React.PropsWithChildren) =>
 }
 interface ImplementedPayPalScriptProviderProps {
     // options:
-    clientId    : string
-    clientToken : string
+    clientId       : string
+    paymentSession : PaymentToken
     
     
     
@@ -91,7 +95,7 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
     const {
         // options:
         clientId,
-        clientToken,
+        paymentSession,
         
         
         
@@ -112,11 +116,11 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
     // options:
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
         'client-id'         : clientId,
-        'data-client-token' : clientToken,
+        'data-client-token' : paymentSession.token,
         currency            : checkoutConfigClient.payment.processors.paypal.supportedCurrencies.includes(currency) ? currency : 'USD',
         intent              : 'capture',
         components          : 'hosted-fields,buttons',
-    }), [clientId, clientToken, currency]);
+    }), [clientId, paymentSession, currency]);
     
     
     
