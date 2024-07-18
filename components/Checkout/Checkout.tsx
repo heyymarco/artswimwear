@@ -132,8 +132,6 @@ const CheckoutInternal = (): JSX.Element|null => {
         // shipping data:
         isShippingAddressRequired,
         
-        totalShippingCost,
-        
         
         
         // sections:
