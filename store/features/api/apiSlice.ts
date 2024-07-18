@@ -215,7 +215,7 @@ export const apiSlice = createApi({
         
         
         
-        generatePaymentToken    : builder.query<PaymentSession, void>({
+        generatePaymentSession  : builder.query<PaymentSession, void>({
             query : () => ({
                 url    : 'checkout',
                 method : 'GET',
@@ -323,7 +323,7 @@ export const {
     
     useLazyGetMatchingShippingListQuery : useGetMatchingShippingList,
     
-    useLazyGeneratePaymentTokenQuery    : useGeneratePaymentToken,
+    useLazyGeneratePaymentSessionQuery  : useGeneratePaymentSession,
     // usePlaceOrderMutation               : usePlaceOrder,
     // useMakePaymentMutation              : useMakePayment,
     usePaymentConfirmationMutation      : usePaymentConfirmation,

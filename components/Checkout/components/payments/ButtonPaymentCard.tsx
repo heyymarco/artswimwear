@@ -312,7 +312,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
-                // TODO: re-generate paypal payment token
+                // TODO: re-generate PaypalPaymentSession
             } // try
         });
     });

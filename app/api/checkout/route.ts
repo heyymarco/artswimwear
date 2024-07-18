@@ -2493,7 +2493,7 @@ Updating the confirmation is not required.`,
             // payment data:
             paymentValidation  : true,
             paymentMethod      : '' as any,
-            paymentToken       : '' as any,
+            paymentSession     : '' as any,
         },
         totalShippingCost      : shippingCost,
         paymentDetail          : paymentDetail,

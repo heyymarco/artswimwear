@@ -121,7 +121,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
         // payment data:
         appropriatePaymentProcessors,
         paymentValidation,
-        paymentToken : paymentSession,
+        paymentSession,
         
         
         

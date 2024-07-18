@@ -106,7 +106,7 @@ import {
     // payment data:
     setPaymentValidation  as reduxSetPaymentValidation,
     setPaymentMethod      as reduxSetPaymentMethod,
-    setPaymentToken       as reduxSetPaymentToken,
+    setPaymentSession     as reduxSetPaymentSession,
     
     // actions:
     resetCheckoutData     as reduxResetCheckoutData,
@@ -131,7 +131,7 @@ import {
     // hooks:
     useGetCountryList,
     useGetMatchingShippingList,
-    useGeneratePaymentToken,
+    useGeneratePaymentSession,
     // usePlaceOrder,
     // useMakePayment,
     useShowPrevOrder,
@@ -288,7 +288,7 @@ export interface CheckoutStateBase {
     paymentMethod                : PaymentMethod
     setPaymentMethod             : (paymentMethod: PaymentMethod) => void
     
-    paymentToken                 : PaymentSession|undefined
+    paymentSession               : PaymentSession|undefined
     
     paymentType                  : string|undefined
     paymentBrand                 : string|null|undefined
@@ -334,7 +334,7 @@ export type PickAlways<T, K extends keyof T, V> = {
     [P in K] : Extract<T[P], V>
 }
 export type CheckoutState =
-    &Omit<CheckoutStateBase, 'isCheckoutEmpty'|'isCheckoutLoading'|'isCheckoutError'|'isCheckoutReady'|'isCheckoutFinished' | 'countryList'|'paymentToken'>
+    &Omit<CheckoutStateBase, 'isCheckoutEmpty'|'isCheckoutLoading'|'isCheckoutError'|'isCheckoutReady'|'isCheckoutFinished' | 'countryList'|'paymentSession'>
     &(
         |(
             &PickAlways<CheckoutStateBase, 'isCheckoutEmpty'                                                           , true   > // if   the checkout is  empty
@@ -367,14 +367,14 @@ export type CheckoutState =
     )
     &(
         |(
-            &PickAlways<CheckoutStateBase, 'isCheckoutReady'           , true        > // if   the checkout is  ready
-            &PickAlways<CheckoutStateBase, 'isCheckoutFinished'        , boolean     > // then the checkout is  maybe finished
-            &PickAlways<CheckoutStateBase, 'countryList'|'paymentToken', {}          > // then the checkout is  always having_data
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady'             , true        > // if   the checkout is  ready
+            &PickAlways<CheckoutStateBase, 'isCheckoutFinished'          , boolean     > // then the checkout is  maybe finished
+            &PickAlways<CheckoutStateBase, 'countryList'|'paymentSession', {}          > // then the checkout is  always having_data
         )
         |(
-            &PickAlways<CheckoutStateBase, 'isCheckoutReady'           , false       > // if   the checkout not ready
-            &PickAlways<CheckoutStateBase, 'isCheckoutFinished'        , false       > // then the checkout is  never finished
-            &PickAlways<CheckoutStateBase, 'countryList'|'paymentToken', {}|undefined> // then the checkout is  maybe  having_data
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady'             , false       > // if   the checkout not ready
+            &PickAlways<CheckoutStateBase, 'isCheckoutFinished'          , false       > // then the checkout is  never finished
+            &PickAlways<CheckoutStateBase, 'countryList'|'paymentSession', {}|undefined> // then the checkout is  maybe  having_data
         )
     )
 
@@ -448,7 +448,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     paymentMethod                : '',
     setPaymentMethod             : noopCallback,
     
-    paymentToken                 : undefined,
+    paymentSession               : undefined,
     
     paymentType                  : undefined,
     paymentBrand                 : undefined,
@@ -597,7 +597,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     } = localCheckoutState;
     
     const {
-        paymentToken,
+        paymentSession,
     } = globalCheckoutState;
     
     const appropriatePaymentProcessors = useMemo((): CheckoutState['appropriatePaymentProcessors'] => {
@@ -617,7 +617,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [currency]);
     
     const checkoutProgress            = calculateCheckoutProgress(checkoutStep);
-    const isPaymentTokenValid         = !!paymentToken?.expiresAt && (paymentToken.expiresAt > Date.now());
+    const isPaymentSessionValid       = !!paymentSession?.expiresAt && (paymentSession.expiresAt > Date.now());
     
     const {
         // payment data:
@@ -655,10 +655,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const                        {data: countryList  , isFetching: isCountryLoading  , isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
-    const [showPrevOrder       , {data: prevOrderData, isLoading : isPrevOrderLoading, isError: isPrevOrderError}] = useShowPrevOrder();
-    const [getShippingByAddress, {data: shippingList , isLoading : isShippingLoading , isError: isShippingError , isUninitialized : isShippingUninitialized}] = useGetMatchingShippingList();
-    const [generatePaymentToken, {                     isLoading : isTokenLoading    , isError: isTokenError    }] = useGeneratePaymentToken();
+    const                          {data: countryList  , isFetching: isCountryLoading       , isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
+    const [showPrevOrder         , {data: prevOrderData, isLoading : isPrevOrderLoading     , isError: isPrevOrderError     }] = useShowPrevOrder();
+    const [getShippingByAddress  , {data: shippingList , isLoading : isShippingLoading      , isError: isShippingError , isUninitialized : isShippingUninitialized}] = useGetMatchingShippingList();
+    const [generatePaymentSession, {                     isLoading : isPaymentSessionLoading, isError: isPaymentSessionError}] = useGeneratePaymentSession();
     
     
     
@@ -740,15 +740,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 &&
                 isShippingLoading
                 &&
-                (isBusy !== 'checkShipping')  // silently paymentToken loading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
+                (isBusy !== 'checkShipping')  // silently shipping loading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
             )
             ||
             (
-                isTokenLoading                // paymentToken is loading
+                isPaymentSessionLoading       // paymentSession is loading
                 &&
-                !isPaymentTokenValid          // silently paymentToken loading if still have valid oldPaymentToken (has backup)
+                !isPaymentSessionValid        // silently paymentSession loading if still have valid oldPaymentSession (has backup)
                 &&
-                (isBusy !== 'preparePayment') // silently paymentToken loading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
+                (isBusy !== 'preparePayment') // silently paymentSession loading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
             )
             ||
             isNeedsRecoverShippingList        // still recovering shippingList
@@ -761,7 +761,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     //     isCartLoading,
     //     isPrevOrderLoading,
     //     isShippingLoading : isShippingAddressRequired && isShippingLoading && (isBusy !== 'checkShipping'),
-    //     isTokenLoading : isTokenLoading && !isPaymentTokenValid && (isBusy !== 'preparePayment'),
+    //     isTokenLoading : isTokenLoading && !isPaymentSessionValid && (isBusy !== 'preparePayment'),
     //     isNeedsRecoverShippingList,
     //     isNeedsResetShippingProvider,
     // }).filter(([, val]) => (val === true)).map(([key]) => key));
@@ -784,11 +784,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             )
             ||
             (
-                isTokenError              // paymentToken is error
+                isPaymentSessionError     // paymentSession is error
                 &&
-                !isPaymentTokenValid      // oldPaymentToken is also invalid (no backup)
+                !isPaymentSessionValid    // oldPaymentSession is also invalid (no backup)
                 &&
-                !isPaymentStep            // IGNORE paymentToken error if NOT at_payment_step, the paymentToken is no longer required at this step (no matter valid or invalid)
+                !isPaymentStep            // IGNORE paymentSession error if NOT at_payment_step, the paymentSession is no longer required at this step (no matter valid or invalid)
             )
         )
     );
@@ -809,7 +809,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     //     isCartError,
     //     isPrevOrderError,
     //     isShippingError : isShippingAddressRequired && isShippingError,
-    //     isTokenError : isTokenError && !isPaymentTokenValid && !isPaymentStep,
+    //     isTokenError : isTokenError && !isPaymentSessionValid && !isPaymentStep,
     // }).filter(([, val]) => (val === true)).map(([key]) => key));
     // if (isCheckoutReady) console.log('checkout is READY');
     
@@ -951,46 +951,46 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isSubsequentStep.current = true;
     }, [checkoutStep]);
     
-    // auto renew paymentToken:
-    const isMounted                                 = useMountedFlag();
-    const schedulingRefreshPaymentTokenRef          = useRef<ReturnType<typeof setTimeout>|null>(null);
-    const scheduleRefreshPaymentToken               = useEvent(async (): Promise<void> => {
+    // auto renew paymentSession:
+    const isMounted                                   = useMountedFlag();
+    const schedulingRefreshPaymentSessionRef          = useRef<ReturnType<typeof setTimeout>|null>(null);
+    const scheduleRefreshPaymentSession               = useEvent(async (): Promise<void> => {
         // conditions:
         if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
         
         
         
         // determine the next refresh duration:
-        const paymentTokenRemainingAge = (
-            !!paymentToken
-            ? Math.max(0, paymentToken.refreshAt - Date.now())
+        const paymentSessionRemainingAge = (
+            !!paymentSession
+            ? Math.max(0, paymentSession.refreshAt - Date.now())
             : 0
         );
         const nextRefreshDuration = (
-            (paymentTokenRemainingAge > 0) // still have valid oldPaymentToken
-            ? paymentTokenRemainingAge // re-use valid oldPaymentToken
-            : await (async (): Promise<number> => { // create newPaymentToken
+            (paymentSessionRemainingAge > 0) // still have valid oldPaymentSession
+            ? paymentSessionRemainingAge // re-use valid oldPaymentSession
+            : await (async (): Promise<number> => { // create newPaymentSession
                 try {
-                    // retry to generate a new paymentToken:
-                    const newPaymentToken = await generatePaymentToken().unwrap();
+                    // retry to generate a new paymentSession:
+                    const newPaymentSession = await generatePaymentSession().unwrap();
                     
                     
                     
                     // replace the expiring one:
-                    dispatch(reduxSetPaymentToken(newPaymentToken));
+                    dispatch(reduxSetPaymentSession(newPaymentSession));
                     
                     
                     
                     // report the next refresh duration:
-                    console.log('paymentToken renewed', {
-                        expiresAt: newPaymentToken ? new Date(newPaymentToken.expiresAt).toLocaleString() : null,
-                        refreshAt: newPaymentToken ? new Date(newPaymentToken.refreshAt).toLocaleString() : null,
+                    console.log('paymentSession renewed', {
+                        expiresAt: newPaymentSession ? new Date(newPaymentSession.expiresAt).toLocaleString() : null,
+                        refreshAt: newPaymentSession ? new Date(newPaymentSession.refreshAt).toLocaleString() : null,
                     });
-                    return Math.max(0, newPaymentToken.refreshAt - Date.now());
+                    return Math.max(0, newPaymentSession.refreshAt - Date.now());
                 }
                 catch (error: any) {
                     // report the next retry duration:
-                    console.log('failed to renew paymentToken: ', error);
+                    console.log('failed to renew paymentSession: ', error);
                     return (60 * 1000);
                 } // try
             })()
@@ -1004,37 +1004,37 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // re-schedule:
-        if (schedulingRefreshPaymentTokenRef.current) clearTimeout(schedulingRefreshPaymentTokenRef.current); // abort prev schedule (if any)
+        if (schedulingRefreshPaymentSessionRef.current) clearTimeout(schedulingRefreshPaymentSessionRef.current); // abort prev schedule (if any)
         
-        console.log(`schedule refresh paymentToken in ${nextRefreshDuration/1000} seconds`);
-        schedulingRefreshPaymentTokenRef.current = setTimeout(() => {
-            scheduleRefreshPaymentToken()
+        console.log(`schedule refresh paymentSession in ${nextRefreshDuration/1000} seconds`);
+        schedulingRefreshPaymentSessionRef.current = setTimeout(() => {
+            scheduleRefreshPaymentSession()
             .then(() => {
-                console.log('schedule refresh paymentToken PERFORMED');
+                console.log('schedule refresh paymentSession PERFORMED');
             });
         }, nextRefreshDuration);
     });
     
-    const isScheduleRefreshPaymentTokenTriggeredRef = useRef<boolean>(false);
+    const isScheduleRefreshPaymentSessionTriggeredRef = useRef<boolean>(false);
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (!isPaymentStep) return; // no paymentToken renewal when NOT at_payment_step
-        if (isScheduleRefreshPaymentTokenTriggeredRef.current) return; // already triggered => ignore
-        isScheduleRefreshPaymentTokenTriggeredRef.current = true;      // mark as triggered
+        if (!isPaymentStep) return; // no paymentSession renewal when NOT at_payment_step
+        if (isScheduleRefreshPaymentSessionTriggeredRef.current) return; // already triggered => ignore
+        isScheduleRefreshPaymentSessionTriggeredRef.current = true;      // mark as triggered
         
         
         
         // setups:
         // trigger to start schedule:
-        scheduleRefreshPaymentToken();
+        scheduleRefreshPaymentSession();
         
         
         
         // cleanups:
         return () => {
-            if (schedulingRefreshPaymentTokenRef.current) clearTimeout(schedulingRefreshPaymentTokenRef.current); // abort prev schedule (if any)
+            if (schedulingRefreshPaymentSessionRef.current) clearTimeout(schedulingRefreshPaymentSessionRef.current); // abort prev schedule (if any)
         };
-    }, [isPaymentStep, paymentToken, isPaymentTokenValid]);
+    }, [isPaymentStep, paymentSession, isPaymentSessionValid]);
     
     // auto reset billing validation:
     useIsomorphicLayoutEffect(() => {
@@ -1285,10 +1285,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // update and wait for paymentToken to avoid whole_page_spinning_busy:
+        // update and wait for paymentSession to avoid whole_page_spinning_busy:
         setIsBusy('preparePayment');
         try {
-            await scheduleRefreshPaymentToken();
+            await scheduleRefreshPaymentSession();
         }
         catch {
             // ignore any error => just display whole_page_error
@@ -1581,8 +1581,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // discard used paymentToken:
-        dispatch(reduxSetPaymentToken(undefined));
+        // discard used paymentSession:
+        dispatch(reduxSetPaymentSession(undefined));
         
         
         
@@ -1667,7 +1667,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentMethod,
         setPaymentMethod,             // stable ref
         
-        paymentToken,
+        paymentSession,
         
         paymentType,
         paymentBrand,
@@ -1774,7 +1774,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentMethod,
         // setPaymentMethod,          // stable ref
         
-        paymentToken,
+        paymentSession,
         
         paymentType,
         paymentBrand,

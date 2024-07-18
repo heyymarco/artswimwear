@@ -45,7 +45,7 @@ const ConditionalPayPalScriptProvider = ({children}: React.PropsWithChildren) =>
     // states:
     const {
         // payment data:
-        paymentToken : paymentSession,
+        paymentSession,
     } = useCheckoutState();
     
     
