@@ -11,11 +11,6 @@ import {
     useMemo,
 }                           from 'react'
 
-// redux:
-import {
-    useDispatch,
-}                           from 'react-redux'
-
 // reusable-ui components:
 import {
     // simple-components:
@@ -36,6 +31,10 @@ import {
 import {
     showCart,
 }                           from '@/store/features/cart/cartSlice'
+import {
+    // hooks:
+    useAppDispatch,
+}                           from '@/store/hooks'
 
 // internals:
 import {
@@ -69,7 +68,7 @@ const NavCheckout = (): JSX.Element|null => {
     
     
     // stores:
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     
     
     

@@ -20,10 +20,6 @@ import {
 }                           from 'react'
 
 // redux:
-import {
-    useDispatch,
-    useSelector,
-}                           from 'react-redux'
 import type {
     EntityState
 }                           from '@reduxjs/toolkit'
@@ -136,10 +132,21 @@ import {
     useGetCountryList,
     useGetMatchingShippingList,
     useGeneratePaymentToken,
-    usePlaceOrder,
-    useMakePayment,
+    // usePlaceOrder,
+    // useMakePayment,
     useShowPrevOrder,
+    
+    
+    
+    // apis:
+    placeOrder,
+    makePayment,
 }                           from '@/store/features/api/apiSlice'
+import {
+    // hooks:
+    useAppDispatch,
+    useAppSelector,
+}                           from '@/store/hooks'
 
 // contexts:
 import {
@@ -556,7 +563,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // stores:
-    const globalCheckoutState = useSelector(selectCheckoutState);
+    const globalCheckoutState = useAppSelector(selectCheckoutState);
     const localCheckoutState  = finishedOrderState ? finishedOrderState.checkoutState : globalCheckoutState;
     const {
         // states:
@@ -619,7 +626,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         identifier : paymentIdentifier,
     } = finishedOrderState?.paymentDetail ?? {};
     
-    const dispatch                    = useDispatch();
+    const dispatch                    = useAppDispatch();
     const setCheckoutStep             = useEvent((checkoutStep: CheckoutStep): void => {
         dispatch(reduxSetCheckoutStep(checkoutStep));
     });
@@ -1097,9 +1104,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
-    // apis:
-    const [placeOrder ] = usePlaceOrder();
-    const [makePayment] = useMakePayment();
+    // // apis:
+    // const [placeOrder ] = usePlaceOrder();
+    // const [makePayment] = useMakePayment();
     
     
     
@@ -1379,7 +1386,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<DraftOrderDetail|undefined> => {
         try {
-            const draftOrderDetailOrPaymentDetail = await placeOrder({
+            const draftOrderDetailOrPaymentDetail = await dispatch(placeOrder({
                 // currency options:
                 currency, // informs the customer's currency, so we know the selected currency when he/she made an order
                 
@@ -1421,7 +1428,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 // options: pay manually | paymentSource (by <PayPalButtons>)
                 ...options,
-            }).unwrap();
+            })).unwrap();
             
             
             
@@ -1472,7 +1479,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             if (!cartItems.length) return true; // if cart is empty => always success
             try {
-                await placeOrder({
+                await dispatch(placeOrder({
                     // currency options:
                     // currency, // no need to inform the currency, we just check for the available stocks
                     
@@ -1485,7 +1492,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     
                     // options:
                     simulateOrder: true,
-                }).unwrap();
+                })).unwrap();
                 return true;
             }
             catch (fetchError: any) {
@@ -1510,21 +1517,21 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const doMakePayment        = useEvent(async (orderId: string, paid: boolean, options?: MakePaymentOptions): Promise<void> => {
         if (options?.cancelOrder) {
             console.log('canceling order...');
-            await makePayment({
+            await dispatch(makePayment({
                 orderId,
                 
                 
                 
                 // options: cancel the order
                 cancelOrder: true,
-            }).unwrap();
+            })).unwrap();
             console.log('canceled');
             return;
         } // if
         
         
         
-        const paymentDetail = await makePayment({
+        const paymentDetail = await dispatch(makePayment({
             orderId,
             
             
@@ -1538,7 +1545,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             // options: cancelOrder
             ...options,
-        }).unwrap();
+        })).unwrap();
         
         
         

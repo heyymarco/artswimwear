@@ -28,9 +28,11 @@ export const store = configureStore({
     },
     devTools   : true,
 });
-export const persistor = persistStore(store)
+export const persistor = persistStore(store);
 
 
+
+export type AppStore = typeof store
 
 // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
 export type AppDispatch = typeof store.dispatch

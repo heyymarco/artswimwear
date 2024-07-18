@@ -45,10 +45,21 @@ export {
 
 // stores:
 import {
+    // hooks:
     useGetCountryList,
-    useGetStateList,
-    useGetCityList,
+    // useGetStateList,
+    // useGetCityList,
+    
+    
+    
+    // apis:
+    getStateList,
+    getCityList,
 }                           from '@/store/features/api/apiSlice'
+import {
+    // hooks:
+    useAppDispatch,
+}                           from '@/store/hooks'
 
 
 
@@ -81,9 +92,9 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     
     
     // stores:
+    const dispatch = useAppDispatch();
+    
     const {data: countryList} = useGetCountryList();
-    const [getStateList     ] = useGetStateList();
-    const [getCityList      ] = useGetCityList();
     
     const mountedSignalRef = useRef<((isMounted: boolean) => void)|null>(null);
     const [mountedPromise] = useState<Promise<boolean>>(() =>
@@ -118,7 +129,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
             
             
             // actions:
-            return getStateList({ countryCode: country }).unwrap();
+            return dispatch(getStateList({ countryCode: country })).unwrap();
         });
     }, [country]);
     const cityOptionsPromise = useMemo(() => {
@@ -131,7 +142,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
             
             
             // actions:
-            return getCityList({ countryCode: country, state: state }).unwrap();
+            return dispatch(getCityList({ countryCode: country, state: state })).unwrap();
         });
     }, [country, state]);
     

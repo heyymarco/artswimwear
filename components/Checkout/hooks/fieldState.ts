@@ -6,11 +6,6 @@ import {
     useMemo,
 }                           from 'react'
 
-// redux:
-import {
-    useDispatch,
-}                           from 'react-redux'
-
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -22,6 +17,10 @@ import type {
     // types:
     CheckoutState,
 }                           from '@/store/features/checkout/checkoutSlice'
+import {
+    // hooks:
+    useAppDispatch,
+}                           from '@/store/hooks'
 
 
 
@@ -39,7 +38,7 @@ export type FieldHandlers<TElement extends HTMLInputElement = HTMLInputElement> 
 export const useFieldState = <TField extends keyof CheckoutState, TValue extends CheckoutState[TField], TElement extends HTMLInputElement = HTMLInputElement>(options: FieldStateOptions<TField, TValue>): readonly [TValue, FieldSetter<TField>, FieldHandlers<TElement>] => {
     // stores:
     const value    : TValue = options.state[options.get] as TValue;
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     
     
     

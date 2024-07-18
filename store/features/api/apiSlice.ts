@@ -318,14 +318,14 @@ export const {
     useGetProductDetailQuery            : useGetProductDetail,
     
     useGetCountryListQuery              : useGetCountryList,
-    useLazyGetStateListQuery            : useGetStateList,
-    useLazyGetCityListQuery             : useGetCityList,
+    // useLazyGetStateListQuery            : useGetStateList,
+    // useLazyGetCityListQuery             : useGetCityList,
     
     useLazyGetMatchingShippingListQuery : useGetMatchingShippingList,
     
     useLazyGeneratePaymentTokenQuery    : useGeneratePaymentToken,
-    usePlaceOrderMutation               : usePlaceOrder,
-    useMakePaymentMutation              : useMakePayment,
+    // usePlaceOrderMutation               : usePlaceOrder,
+    // useMakePaymentMutation              : useMakePayment,
     usePaymentConfirmationMutation      : usePaymentConfirmation,
     useShippingTrackingMutation         : useShippingTracking,
     useShowPrevOrderMutation            : useShowPrevOrder,
@@ -338,6 +338,15 @@ export const {
     usePostImageMutation                : usePostImage,
     useDeleteImageMutation              : useDeleteImage,
 } = apiSlice;
+
+export const {
+    placeOrder     : { initiate : placeOrder     },
+    makePayment    : { initiate : makePayment    },
+    
+    // getCountryList : { initiate : getCountryList },
+    getStateList   : { initiate : getStateList   },
+    getCityList    : { initiate : getCityList    },
+} = apiSlice.endpoints;
 
 export const usePrefetchProductList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList'  , options);
 export const usePrefetchProductDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail', options);

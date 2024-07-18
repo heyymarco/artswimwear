@@ -19,10 +19,6 @@ import {
 }                           from 'react'
 
 // redux:
-import {
-    useDispatch,
-    useSelector,
-}                           from 'react-redux'
 import type {
     EntityState
 }                           from '@reduxjs/toolkit'
@@ -103,6 +99,11 @@ import {
     // hooks:
     useGetProductList,
 }                           from '@/store/features/api/apiSlice'
+import {
+    // hooks:
+    useAppDispatch,
+    useAppSelector,
+}                           from '@/store/hooks'
 
 
 
@@ -286,14 +287,14 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stores:
-    const currency      = useSelector(selectCurrency);
+    const currency      = useAppSelector(selectCurrency);
     
-    const realCartItems = useSelector(selectCartItems);
+    const realCartItems = useAppSelector(selectCartItems);
     const cartItems     = mockCartItems ?? realCartItems;
     
-    const isCartShown   = useSelector(selectIsCartShown);
+    const isCartShown   = useAppSelector(selectIsCartShown);
     
-    const dispatch      = useDispatch();
+    const dispatch      = useAppDispatch();
     
     
     
