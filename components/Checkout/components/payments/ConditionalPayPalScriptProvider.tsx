@@ -88,7 +88,7 @@ interface ImplementedPayPalScriptProviderProps {
     
     
     // children:
-    children    : React.ReactNode
+    children       : React.ReactNode
 }
 const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderProps) => {
     // props:
