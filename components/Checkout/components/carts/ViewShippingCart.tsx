@@ -37,15 +37,20 @@ const ViewShippingCart = (): JSX.Element|null => {
     
     // jsx:
     if (!isCheckoutReady)           return null;
-    if (!isShippingAddressRequired) return null; // not_physical_product => nothing to display
+    if (!isShippingAddressRequired) return null; // not_physical_product => no need to display the selected shippingCost
     return (
         <p className='currencyBlock'>
             <span>Shipping</span>
             
             <span className='currency'>
                 {
-                    (shippingProvider !== undefined)
+                    (shippingProvider !== undefined) /* physical_product && have selected shippingProvider */
+                    
+                    // not_physical_product : never displayed
+                    // physical_product     : displays the selected shippingCost
                     ? <CurrencyDisplay amount={totalShippingCost} />
+                    
+                    // physical_product: requires selected shippingProvider to display the shippingCost:
                     : 'calculated at next step'
                 }
             </span>

@@ -56,12 +56,17 @@ const ViewTotalCart = (): JSX.Element|null => {
             
             <span className='currency'>
                 {
-                    (!isShippingAddressRequired || (shippingProvider !== undefined))
+                    (!isShippingAddressRequired /* not_physical_product */ || (shippingProvider !== undefined) /* physical_product && have selected shippingProvider */)
+                    
+                    // not_physical_product : displays the subTotal + null shippingCost
+                    // physical_product     : displays the subTotal + selected shippingCost
                     ? <>
                         <CurrencyDisplay amount={(productPriceParts === undefined) ? undefined : [...productPriceParts, totalShippingCost]} />
                         {' '}
                         <span>{currency}</span>
                     </>
+                    
+                    // physical_product: requires selected shippingProvider to display the (subTotal + shippingCost):
                     : 'calculated at next step'
                 }
             </span>
