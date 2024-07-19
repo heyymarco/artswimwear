@@ -59,7 +59,7 @@ const ShippingAddress = (): React.ReactNode => {
             </p>
             
             <p style={styles.paragraphLast}>
-                {`${address}, ${city}, ${state} (${zip}), ${countryList?.entities?.[country ?? '']?.name ?? country}`}
+                {`${address}, ${city}, ${state} (${zip}), ${countryList?.entities?.[country]?.name ?? country}`}
             </p>
         </>
     );
