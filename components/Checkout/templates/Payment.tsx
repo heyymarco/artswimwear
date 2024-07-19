@@ -71,20 +71,31 @@ const BillingAddress = (): React.ReactNode => {
         // relation data:
         countryList,
     } = useOrderDataContext();
-    const address = payment?.billingAddress;
+    const billingAddress = payment?.billingAddress;
     
     
     
     // jsx:
-    if (!address) return null;
+    if (!billingAddress) return null;
+    const {
+        country,
+        state,
+        city,
+        zip,
+        address,
+        
+        firstName,
+        lastName,
+        phone,
+    } = billingAddress;
     return (
         <>
             <p style={styles.paragraphFirst}>
-                {address.firstName} {address.lastName} ({address.phone})
+                {firstName} {lastName} ({phone})
             </p>
             
             <p style={styles.paragraphLast}>
-                {`${address.address}, ${address.city}, ${address.state} (${address.zip}), ${countryList?.entities?.[address.country ?? '']?.name}`}
+                {`${address}, ${city}, ${state} (${zip}), ${countryList?.entities?.[country ?? '']?.name ?? country}`}
             </p>
         </>
     );
