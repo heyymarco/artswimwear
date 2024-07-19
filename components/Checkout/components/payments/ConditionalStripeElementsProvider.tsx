@@ -15,6 +15,7 @@ import {
 import {
     type Stripe,
     type StripeElementsOptions,
+    type StripeElementLocale,
     loadStripe,
 }                           from '@stripe/stripe-js'
 import {
@@ -106,6 +107,7 @@ const ImplementedStripeElementsProvider = (props: ImplementedStripeElementsProvi
         currency : checkoutConfigClient.payment.processors.stripe.supportedCurrencies.includes(currency) ? currency.toLowerCase() : 'usd',
         amount   : totalShippingCost ?? 0,
         mode     : 'payment',
+        locale   : checkoutConfigClient.intl.locale as StripeElementLocale,
     }), [clientId, currency]);
     
     
