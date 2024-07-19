@@ -46,13 +46,14 @@ export {
 // stores:
 import {
     // hooks:
-    useGetCountryList,
+    // useGetCountryList,
     // useGetStateList,
     // useGetCityList,
     
     
     
     // apis:
+    getCountryList,
     getStateList,
     getCityList,
 }                           from '@/store/features/api/apiSlice'
@@ -94,8 +95,6 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     // stores:
     const dispatch = useAppDispatch();
     
-    const {data: countryList} = useGetCountryList();
-    
     const mountedSignalRef = useRef<((isMounted: boolean) => void)|null>(null);
     const [mountedPromise] = useState<Promise<boolean>>(() =>
         new Promise<boolean>((resolve) => {
@@ -116,10 +115,26 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
         };
     }, []);
     
-    const countryOptions = useMemo((): string[] => {
-        if (!countryList) return [];
-        return Object.values(countryList.entities).filter((country): country is Exclude<typeof country, undefined> => !!country).map(({name}) => name);
-    }, [countryList]);
+    const countryOptionsPromise = useMemo(() => {
+        return mountedPromise.then(async (isMounted) => {
+            // conditions:
+            if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
+            
+            
+            
+            // actions:
+            return (
+                Array.from(
+                    Object.values(
+                        (await dispatch(getCountryList()).unwrap())
+                        .entities
+                    )
+                )
+                .filter((entity): entity is Exclude<typeof entity, undefined> => (entity !== undefined))
+                .map(({code}) => code)
+            );
+        });
+    }, []);
     const stateOptionsPromise = useMemo(() => {
         if (!country) return [];
         return mountedPromise.then((isMounted) => {
@@ -157,7 +172,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
         
         // components:
         countryEditorComponent=(
-            <SelectCountryEditor theme='primary' onChange={setCountry} valueOptions={countryOptions} />
+            <SelectCountryEditor theme='primary' onChange={setCountry} valueOptions={countryOptionsPromise} />
         ),
         stateEditorComponent=(
             <SelectStateEditor theme='primary' onChange={setState} valueOptions={stateOptionsPromise} minLength={3} maxLength={50} />
