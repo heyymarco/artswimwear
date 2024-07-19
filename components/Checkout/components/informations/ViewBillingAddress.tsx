@@ -14,6 +14,12 @@ import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
+// stores:
+import {
+    // hooks:
+    useGetCountryList,
+}                           from '@/store/features/api/apiSlice'
+
 
 
 // react components:
@@ -36,27 +42,38 @@ const ViewBillingAddress = (): JSX.Element|null => {
         billingAsShipping,
         
         billingAddress,
-        
-        
-        
-        // relation data:
-        countryList,
     } = useCheckoutState();
     
     const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
     
     
     
+    // stores:
+    const {data: countryList}  = useGetCountryList();
+    
+    
+    
     // jsx:
     if (!isBillingAddressRequired) return null;
     if (!finalBillingAddress) return null;
+    const {
+        country,
+        state,
+        city,
+        zip,
+        address,
+        
+        firstName,
+        lastName,
+        phone,
+    } = finalBillingAddress;
     return (
         <>
             <p>
-                <span className={styleSheet.data}>{finalBillingAddress.firstName} {finalBillingAddress.lastName} ({finalBillingAddress.phone})</span>
+                <span className={styleSheet.data}>{firstName} {lastName} ({phone})</span>
             </p>
             <p>
-                <span className={styleSheet.data}>{`${finalBillingAddress.address}, ${finalBillingAddress.city}, ${finalBillingAddress.state} (${finalBillingAddress.zip}), ${countryList?.entities?.[finalBillingAddress.country]?.name}`}</span>
+                <span className={styleSheet.data}>{`${address}, ${city}, ${state} (${zip}), ${countryList?.entities?.[country]?.name ?? country}`}</span>
             </p>
         </>
     );

@@ -66,6 +66,8 @@ import {
     type FinishedOrderState,
     type BusyState,
     
+    type CountryPreview,
+    
     calculateCheckoutProgress,
 }                           from '@/models'
 // stores:
@@ -118,7 +120,6 @@ import {
 }                           from '@/store/features/checkout/checkoutSlice'
 import {
     // types:
-    CountryPreview,
     DraftOrderDetail,
     PaymentDetail,
     PlaceOrderOptions,
@@ -129,7 +130,6 @@ import {
     
     
     // hooks:
-    useGetCountryList,
     useGetMatchingShippingList,
     useGeneratePaymentSession,
     // usePlaceOrder,
@@ -297,7 +297,6 @@ export interface CheckoutStateBase {
     
     
     // relation data:
-    countryList                  : EntityState<CountryPreview>   | undefined
     shippingList                 : EntityState<MatchingShipping> | undefined
     
     
@@ -334,7 +333,7 @@ export type PickAlways<T, K extends keyof T, V> = {
     [P in K] : Extract<T[P], V>
 }
 export type CheckoutState =
-    &Omit<CheckoutStateBase, 'isCheckoutEmpty'|'isCheckoutLoading'|'isCheckoutError'|'isCheckoutReady'|'isCheckoutFinished' | 'countryList'|'paymentSession'>
+    &Omit<CheckoutStateBase, 'isCheckoutEmpty'|'isCheckoutLoading'|'isCheckoutError'|'isCheckoutReady'|'isCheckoutFinished' | 'paymentSession'>
     &(
         |(
             &PickAlways<CheckoutStateBase, 'isCheckoutEmpty'                                                           , true   > // if   the checkout is  empty
@@ -367,14 +366,14 @@ export type CheckoutState =
     )
     &(
         |(
-            &PickAlways<CheckoutStateBase, 'isCheckoutReady'             , true        > // if   the checkout is  ready
-            &PickAlways<CheckoutStateBase, 'isCheckoutFinished'          , boolean     > // then the checkout is  maybe finished
-            &PickAlways<CheckoutStateBase, 'countryList'|'paymentSession', {}          > // then the checkout is  always having_data
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady'   , true        > // if   the checkout is  ready
+            &PickAlways<CheckoutStateBase, 'isCheckoutFinished', boolean     > // then the checkout is  maybe finished
+            &PickAlways<CheckoutStateBase, 'paymentSession'    , {}          > // then the checkout is  always having_data
         )
         |(
-            &PickAlways<CheckoutStateBase, 'isCheckoutReady'             , false       > // if   the checkout not ready
-            &PickAlways<CheckoutStateBase, 'isCheckoutFinished'          , false       > // then the checkout is  never finished
-            &PickAlways<CheckoutStateBase, 'countryList'|'paymentSession', {}|undefined> // then the checkout is  maybe  having_data
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady'   , false       > // if   the checkout not ready
+            &PickAlways<CheckoutStateBase, 'isCheckoutFinished', false       > // then the checkout is  never finished
+            &PickAlways<CheckoutStateBase, 'paymentSession'    , {}|undefined> // then the checkout is  maybe  having_data
         )
     )
 
@@ -457,7 +456,6 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // relation data:
-    countryList                  : undefined,
     shippingList                 : undefined,
     
     
@@ -655,7 +653,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const                          {data: countryList  , isFetching: isCountryLoading       , isError: isCountryError, refetch: countryRefetch}  = useGetCountryList();
     const [showPrevOrder         , {data: prevOrderData, isLoading : isPrevOrderLoading     , isError: isPrevOrderError     }] = useShowPrevOrder();
     const [getShippingByAddress  , {data: shippingList , isLoading : isShippingLoading      , isError: isShippingError , isUninitialized : isShippingUninitialized}] = useGetMatchingShippingList();
     const [generatePaymentSession, {                     isLoading : isPaymentSessionLoading, isError: isPaymentSessionError}] = useGeneratePaymentSession();
@@ -729,8 +726,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         (
             // have any loading(s):
             
-            isCountryLoading
-            ||
             isCartLoading
             ||
             isPrevOrderLoading
@@ -757,7 +752,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         )
     );
     // if (isCheckoutLoading) console.log('LOADING: ', Object.entries({
-    //     isCountryLoading,
     //     isCartLoading,
     //     isPrevOrderLoading,
     //     isShippingLoading : isShippingAddressRequired && isShippingLoading && (isBusy !== 'checkShipping'),
@@ -771,8 +765,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         (
             // have any error(s):
             
-            isCountryError
-            ||
             isCartError
             ||
             isPrevOrderError
@@ -805,7 +797,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         isLastCheckoutStep // must at_the_last_step
     );
     // if (isCheckoutError) console.log('ERROR: ', Object.entries({
-    //     isCountryError,
     //     isCartError,
     //     isPrevOrderError,
     //     isShippingError : isShippingAddressRequired && isShippingError,
@@ -1593,7 +1584,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const refetchCheckout      = useEvent((): void => {
         refetchCart();
-        countryRefetch();
         if (prevOrderId) showPrevOrder({orderId: prevOrderId});
     });
     
@@ -1676,7 +1666,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // relation data:
-        countryList,
         shippingList,
         
         
@@ -1783,7 +1772,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // relation data:
-        countryList,
         shippingList,
         
         
