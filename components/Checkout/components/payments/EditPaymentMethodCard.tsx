@@ -67,6 +67,13 @@ import {
     ConditionalPayPalHostedFieldsProvider,
 }                           from './ConditionalPayPalHostedFieldsProvider'
 
+// stripe:
+import {
+    CardNumberElement,
+    CardExpiryElement,
+    CardCvcElement,
+}                           from '@stripe/react-stripe-js'
+
 // internals:
 import {
     useCheckoutState,
@@ -80,15 +87,17 @@ import {
 
 
 // utilities:
-const cardNumberOptions  : PayPalHostedFieldExtendedProps['options'] = {
+const supportedCardProcessors : (typeof checkoutConfigClient.payment.preferredProcessors) = ['paypal', 'stripe', 'midtrans'];
+
+const cardNumberOptions       : PayPalHostedFieldExtendedProps['options'] = {
     selector    : '#cardNumber',
     placeholder : '1111-2222-3333-4444',
 };
-const cardExpiresOptions : PayPalHostedFieldExtendedProps['options'] = {
+const cardExpiresOptions      : PayPalHostedFieldExtendedProps['options'] = {
     selector    : '#cardExpires',
     placeholder : '11/2020',
 };
-const cardCvvOptions     : PayPalHostedFieldExtendedProps['options'] = {
+const cardCvvOptions          : PayPalHostedFieldExtendedProps['options'] = {
     selector    : '#cardCvv',
     placeholder : '123',
 };
@@ -124,14 +133,17 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     
     
-    const isPayUsingPaypal    = (appropriatePaymentProcessors.includes('paypal'));
-    const maybePayUsingPaypal = (
+    const priorityPaymentProcessor   = appropriatePaymentProcessors.find((processor) => supportedCardProcessors.includes(processor)); // find the highest priority payment processor that supports card payment
+    const isPayUsingPaypalPriority   = (priorityPaymentProcessor === 'paypal');
+    const maybePayUsingPaypal        = (
         !!checkoutConfigClient.payment.processors.paypal.enabled
         &&
         !!process.env.NEXT_PUBLIC_PAYPAL_ID
         &&
         !!paymentSession
     );
+    const isPayUsingStripePriority   = (priorityPaymentProcessor === 'stripe');
+    const isPayUsingMidtransPriority = (priorityPaymentProcessor === 'midtrans');
     
     
     
@@ -319,6 +331,8 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     </p>
                 </div>
                 
+                {/* conditional re-render */}
+                {isPayUsingStripePriority && <CardNumberElement className='number' />}
                 {/* conditional visibility via css */}
                 {maybePayUsingPaypal && <InputWithLabel
                     // appearances:
@@ -327,7 +341,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'number' + (isPayUsingPaypal ? '' : ' hidden')}
+                    className={'number' + (isPayUsingPaypalPriority ? '' : ' hidden')}
                     
                     
                     
@@ -345,7 +359,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingPaypal ? undefined : false}
+                            enableValidation={isPayUsingPaypalPriority ? undefined : false}
                             
                             
                             
@@ -365,7 +379,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     childrenAfter={labelCardNumber}
                 />}
                 {/* conditional re-render */}
-                {!isPayUsingPaypal && <InputWithLabel
+                {isPayUsingMidtransPriority && <InputWithLabel
                     // appearances:
                     icon='credit_card'
                     
@@ -415,6 +429,8 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     childrenAfter={labelCardName}
                 />
                 
+                {/* conditional re-render */}
+                {isPayUsingStripePriority && <CardExpiryElement className='expiry' />}
                 {/* conditional visibility via css */}
                 {maybePayUsingPaypal && <InputWithLabel
                     // appearances:
@@ -423,7 +439,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'expiry' + (isPayUsingPaypal ? '' : ' hidden')}
+                    className={'expiry' + (isPayUsingPaypalPriority ? '' : ' hidden')}
                     
                     
                     
@@ -441,7 +457,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingPaypal ? undefined : false}
+                            enableValidation={isPayUsingPaypalPriority ? undefined : false}
                             
                             
                             
@@ -461,7 +477,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     childrenAfter={labelCardExpiry}
                 />}
                 {/* conditional re-render */}
-                {!isPayUsingPaypal && <InputWithLabel
+                {isPayUsingMidtransPriority && <InputWithLabel
                     // appearances:
                     icon='date_range'
                     
@@ -486,6 +502,8 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     childrenAfter={labelCardExpiry}
                 />}
                 
+                {/* conditional re-render */}
+                {isPayUsingStripePriority && <CardCvcElement className='csc' />}
                 {/* conditional visibility via css */}
                 {maybePayUsingPaypal && <InputWithLabel
                     // appearances:
@@ -494,7 +512,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'csc' + (isPayUsingPaypal ? '' : ' hidden')}
+                    className={'csc' + (isPayUsingPaypalPriority ? '' : ' hidden')}
                     
                     
                     
@@ -512,7 +530,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingPaypal ? undefined : false}
+                            enableValidation={isPayUsingPaypalPriority ? undefined : false}
                             
                             
                             
@@ -532,7 +550,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     childrenAfter={labelCardCvv}
                 />}
                 {/* conditional re-render */}
-                {!isPayUsingPaypal && <InputWithLabel
+                {isPayUsingMidtransPriority && <InputWithLabel
                     // appearances:
                     icon='edit'
                     
@@ -586,7 +604,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     <p>
                         Enter the address that matches your card&apos;s billing address.
                     </p>
-                    <EditBillingAddress />
+                    {/* <EditBillingAddress /> */}
                     
                     <hr className='horz2' />
                 </Collapse>

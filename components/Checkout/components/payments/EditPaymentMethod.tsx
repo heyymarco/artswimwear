@@ -63,6 +63,11 @@ import {
     ConditionalPayPalScriptProvider,
 }                           from './ConditionalPayPalScriptProvider'
 
+// stripe:
+import {
+    ConditionalStripeElementsProvider,
+}                           from './ConditionalStripeElementsProvider'
+
 // midtrans:
 import {
     ConditionalMidtransScriptProvider,
@@ -151,274 +156,276 @@ const EditPaymentMethod = (): JSX.Element|null => {
     // jsx:
     return (
         <ConditionalPayPalScriptProvider>
-            <ConditionalMidtransScriptProvider>
-                <p>
-                    Choose the payment method you are most familiar with:
-                </p>
-                
-                <ExclusiveAccordion
-                    // classes:
-                    className={styleSheet.selectPayment}
+            <ConditionalStripeElementsProvider>
+                <ConditionalMidtransScriptProvider>
+                    <p>
+                        Choose the payment method you are most familiar with:
+                    </p>
                     
-                    
-                    
-                    // states:
-                    expandedListIndex={
-                        Math.max(-1, paymentMethodList.findIndex((option) => (option === paymentMethod)))
-                    }
-                    
-                    
-                    
-                    // handlers:
-                    onExpandedChange={handlePaymentMethodExpandedChange}
-                >
-                    {(isPayUsingPaypal || isPayUsingMidtrans) && <AccordionItem
-                        // accessibilities:
-                        label={<>
-                            <RadioDecorator />
-                            <span className='label'>
-                                Credit Card
-                            </span>
-                            <NextImage alt='Credit Card' src='/brands/creditcard.svg' width={39} height={30} />
-                        </>}
+                    <ExclusiveAccordion
+                        // classes:
+                        className={styleSheet.selectPayment}
                         
                         
                         
-                        // behaviors:
-                        // lazy={true} // causes error
-                        
-                        
-                        
-                        // components:
-                        bodyComponent={
-                            <Section
-                                // refs:
-                                elmRef={paymentCardSectionRef}
-                                
-                                
-                                
-                                // semantics:
-                                tag='form'
-                                
-                                
-                                
-                                // classes:
-                                className={styleSheet.paymentEntryCard}
-                            />
+                        // states:
+                        expandedListIndex={
+                            Math.max(-1, paymentMethodList.findIndex((option) => (option === paymentMethod)))
                         }
+                        
+                        
+                        
+                        // handlers:
+                        onExpandedChange={handlePaymentMethodExpandedChange}
                     >
-                        <EditPaymentMethodCard />
-                    </AccordionItem>}
-                    
-                    {isPayUsingPaypal && <AccordionItem
-                        // accessibilities:
-                        label={<>
-                            <RadioDecorator />
-                            <span className='label'>
-                                PayPal
-                            </span>
-                            <NextImage alt='PayPal' src='/brands/paypal.svg' width={60} height={15.5} />
-                        </>}
+                        {(isPayUsingPaypal || isPayUsingMidtrans) && <AccordionItem
+                            // accessibilities:
+                            label={<>
+                                <RadioDecorator />
+                                <span className='label'>
+                                    Credit Card
+                                </span>
+                                <NextImage alt='Credit Card' src='/brands/creditcard.svg' width={39} height={30} />
+                            </>}
+                            
+                            
+                            
+                            // behaviors:
+                            // lazy={true} // causes error
+                            
+                            
+                            
+                            // components:
+                            bodyComponent={
+                                <Section
+                                    // refs:
+                                    elmRef={paymentCardSectionRef}
+                                    
+                                    
+                                    
+                                    // semantics:
+                                    tag='form'
+                                    
+                                    
+                                    
+                                    // classes:
+                                    className={styleSheet.paymentEntryCard}
+                                />
+                            }
+                        >
+                            <EditPaymentMethodCard />
+                        </AccordionItem>}
                         
+                        {isPayUsingPaypal && <AccordionItem
+                            // accessibilities:
+                            label={<>
+                                <RadioDecorator />
+                                <span className='label'>
+                                    PayPal
+                                </span>
+                                <NextImage alt='PayPal' src='/brands/paypal.svg' width={60} height={15.5} />
+                            </>}
+                            
+                            
+                            
+                            // behaviors:
+                            // lazy={true} // causes error
+                            
+                            
+                            
+                            // components:
+                            bodyComponent={
+                                <Section
+                                    // classes:
+                                    className={styleSheet.paymentEntryPaypal}
+                                />
+                            }
+                        >
+                            <ViewPaymentMethodPaypal />
+                        </AccordionItem>}
                         
+                        {isPayUsingMidtrans && <AccordionItem
+                            // accessibilities:
+                            label={<>
+                                <RadioDecorator />
+                                <span className='label'>
+                                    QRIS
+                                </span>
+                                <NextImage alt='QRIS' src='/brands/qris.svg' width={60} height={22.75} />
+                            </>}
+                            
+                            
+                            
+                            // behaviors:
+                            // lazy={true} // causes collapsing animation error
+                            
+                            
+                            
+                            // components:
+                            bodyComponent={
+                                <Section
+                                    // classes:
+                                    className={styleSheet.paymentEntryPaymentButton}
+                                />
+                            }
+                        >
+                            <ViewPaymentMethodQris />
+                        </AccordionItem>}
                         
-                        // behaviors:
-                        // lazy={true} // causes error
-                        
-                        
-                        
-                        // components:
-                        bodyComponent={
-                            <Section
-                                // classes:
-                                className={styleSheet.paymentEntryPaypal}
+                        {isPayUsingMidtrans && <AccordionItem
+                            // accessibilities:
+                            label={<>
+                                <RadioDecorator />
+                                <span className='label'>
+                                    GoPay
+                                </span>
+                                <NextImage alt='GoPay' src='/brands/gopay.svg' width={60} height={12.25} />
+                            </>}
+                            
+                            
+                            
+                            // behaviors:
+                            // lazy={true} // causes collapsing animation error
+                            
+                            
+                            
+                            // components:
+                            bodyComponent={
+                                <Section
+                                    // classes:
+                                    className={styleSheet.paymentEntryPaymentButton}
+                                />
+                            }
+                        >
+                            <ViewPaymentMethodRedirect
+                                paymentSource='gopay'
+                                appName='GoPay'
                             />
-                        }
-                    >
-                        <ViewPaymentMethodPaypal />
-                    </AccordionItem>}
-                    
-                    {isPayUsingMidtrans && <AccordionItem
-                        // accessibilities:
-                        label={<>
-                            <RadioDecorator />
-                            <span className='label'>
-                                QRIS
-                            </span>
-                            <NextImage alt='QRIS' src='/brands/qris.svg' width={60} height={22.75} />
-                        </>}
+                        </AccordionItem>}
                         
-                        
-                        
-                        // behaviors:
-                        // lazy={true} // causes collapsing animation error
-                        
-                        
-                        
-                        // components:
-                        bodyComponent={
-                            <Section
-                                // classes:
-                                className={styleSheet.paymentEntryPaymentButton}
+                        {isPayUsingMidtrans && <AccordionItem
+                            // accessibilities:
+                            label={<>
+                                <RadioDecorator />
+                                <span className='label'>
+                                    ShopeePay
+                                </span>
+                                <NextImage alt='ShopeePay' src='/brands/shopeepay.svg' width={60} height={19.2} />
+                            </>}
+                            
+                            
+                            
+                            // behaviors:
+                            // lazy={true} // causes collapsing animation error
+                            
+                            
+                            
+                            // components:
+                            bodyComponent={
+                                <Section
+                                    // classes:
+                                    className={styleSheet.paymentEntryPaymentButton}
+                                />
+                            }
+                        >
+                            <ViewPaymentMethodRedirect
+                                paymentSource='shopeepay'
+                                appName='ShopeePay'
                             />
-                        }
-                    >
-                        <ViewPaymentMethodQris />
-                    </AccordionItem>}
-                    
-                    {isPayUsingMidtrans && <AccordionItem
-                        // accessibilities:
-                        label={<>
-                            <RadioDecorator />
-                            <span className='label'>
-                                GoPay
-                            </span>
-                            <NextImage alt='GoPay' src='/brands/gopay.svg' width={60} height={12.25} />
-                        </>}
+                        </AccordionItem>}
                         
-                        
-                        
-                        // behaviors:
-                        // lazy={true} // causes collapsing animation error
-                        
-                        
-                        
-                        // components:
-                        bodyComponent={
-                            <Section
-                                // classes:
-                                className={styleSheet.paymentEntryPaymentButton}
+                        {isPayUsingMidtrans && <AccordionItem
+                            // accessibilities:
+                            label={<>
+                                <RadioDecorator />
+                                <span className='label'>
+                                    Pay at Indomaret Store
+                                </span>
+                                <NextImage alt='Indomaret' src='/brands/indomaret.svg' width={60} height={19.25} />
+                            </>}
+                            
+                            
+                            
+                            // behaviors:
+                            // lazy={true} // causes collapsing animation error
+                            
+                            
+                            
+                            // components:
+                            bodyComponent={
+                                <Section
+                                    // classes:
+                                    className={styleSheet.paymentEntryPaymentButton}
+                                />
+                            }
+                        >
+                            <ViewPaymentMethodOtc
+                                paymentSource='indomaret'
+                                storeName='Indomaret'
                             />
-                        }
-                    >
-                        <ViewPaymentMethodRedirect
-                            paymentSource='gopay'
-                            appName='GoPay'
-                        />
-                    </AccordionItem>}
-                    
-                    {isPayUsingMidtrans && <AccordionItem
-                        // accessibilities:
-                        label={<>
-                            <RadioDecorator />
-                            <span className='label'>
-                                ShopeePay
-                            </span>
-                            <NextImage alt='ShopeePay' src='/brands/shopeepay.svg' width={60} height={19.2} />
-                        </>}
+                        </AccordionItem>}
                         
-                        
-                        
-                        // behaviors:
-                        // lazy={true} // causes collapsing animation error
-                        
-                        
-                        
-                        // components:
-                        bodyComponent={
-                            <Section
-                                // classes:
-                                className={styleSheet.paymentEntryPaymentButton}
+                        {isPayUsingMidtrans && <AccordionItem
+                            // accessibilities:
+                            label={<>
+                                <RadioDecorator />
+                                <span className='label'>
+                                    Pay at Alfamart Store
+                                </span>
+                                <NextImage alt='Alfamart' src='/brands/alfamart.svg' width={60} height={19.2} />
+                            </>}
+                            
+                            
+                            
+                            // behaviors:
+                            // lazy={true} // causes collapsing animation error
+                            
+                            
+                            
+                            // components:
+                            bodyComponent={
+                                <Section
+                                    // classes:
+                                    className={styleSheet.paymentEntryPaymentButton}
+                                />
+                            }
+                        >
+                            <ViewPaymentMethodOtc
+                                paymentSource='alfamart'
+                                storeName='Alfamart'
                             />
-                        }
-                    >
-                        <ViewPaymentMethodRedirect
-                            paymentSource='shopeepay'
-                            appName='ShopeePay'
-                        />
-                    </AccordionItem>}
-                    
-                    {isPayUsingMidtrans && <AccordionItem
-                        // accessibilities:
-                        label={<>
-                            <RadioDecorator />
-                            <span className='label'>
-                                Pay at Indomaret Store
-                            </span>
-                            <NextImage alt='Indomaret' src='/brands/indomaret.svg' width={60} height={19.25} />
-                        </>}
+                        </AccordionItem>}
                         
-                        
-                        
-                        // behaviors:
-                        // lazy={true} // causes collapsing animation error
-                        
-                        
-                        
-                        // components:
-                        bodyComponent={
-                            <Section
-                                // classes:
-                                className={styleSheet.paymentEntryPaymentButton}
-                            />
-                        }
-                    >
-                        <ViewPaymentMethodOtc
-                            paymentSource='indomaret'
-                            storeName='Indomaret'
-                        />
-                    </AccordionItem>}
-                    
-                    {isPayUsingMidtrans && <AccordionItem
-                        // accessibilities:
-                        label={<>
-                            <RadioDecorator />
-                            <span className='label'>
-                                Pay at Alfamart Store
-                            </span>
-                            <NextImage alt='Alfamart' src='/brands/alfamart.svg' width={60} height={19.2} />
-                        </>}
-                        
-                        
-                        
-                        // behaviors:
-                        // lazy={true} // causes collapsing animation error
-                        
-                        
-                        
-                        // components:
-                        bodyComponent={
-                            <Section
-                                // classes:
-                                className={styleSheet.paymentEntryPaymentButton}
-                            />
-                        }
-                    >
-                        <ViewPaymentMethodOtc
-                            paymentSource='alfamart'
-                            storeName='Alfamart'
-                        />
-                    </AccordionItem>}
-                    
-                    {canPayUsingBank && <AccordionItem
-                        // accessibilities:
-                        label={<>
-                            <RadioDecorator />
-                            <span className='label'>
-                                Bank Transfer
-                            </span>
-                            <NextImage alt='Bank Transfer' src='/brands/banktransfer.svg' width={60} height={30} />
-                        </>}
-                        
-                        
-                        
-                        // behaviors:
-                        // lazy={true} // causes collapsing animation error
-                        
-                        
-                        
-                        // components:
-                        bodyComponent={
-                            <Section
-                                // classes:
-                                className={styleSheet.paymentEntryPaymentButton}
-                            />
-                        }
-                    >
-                        <ViewPaymentMethodManual />
-                    </AccordionItem>}
-                </ExclusiveAccordion>
-            </ConditionalMidtransScriptProvider>
+                        {canPayUsingBank && <AccordionItem
+                            // accessibilities:
+                            label={<>
+                                <RadioDecorator />
+                                <span className='label'>
+                                    Bank Transfer
+                                </span>
+                                <NextImage alt='Bank Transfer' src='/brands/banktransfer.svg' width={60} height={30} />
+                            </>}
+                            
+                            
+                            
+                            // behaviors:
+                            // lazy={true} // causes collapsing animation error
+                            
+                            
+                            
+                            // components:
+                            bodyComponent={
+                                <Section
+                                    // classes:
+                                    className={styleSheet.paymentEntryPaymentButton}
+                                />
+                            }
+                        >
+                            <ViewPaymentMethodManual />
+                        </AccordionItem>}
+                    </ExclusiveAccordion>
+                </ConditionalMidtransScriptProvider>
+            </ConditionalStripeElementsProvider>
         </ConditionalPayPalScriptProvider>
     );
 };

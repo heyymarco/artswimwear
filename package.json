@@ -46,6 +46,8 @@
     "@reusable-ui/invalidable": "^6.6.0",
     "@reusable-ui/next-compat-link": "^6.5.0",
     "@reusable-ui/visually-hidden": "^6.5.1",
+    "@stripe/react-stripe-js": "^2.7.3",
+    "@stripe/stripe-js": "^4.1.0",
     "@types/node": "^18.14.4",
     "@types/nodemailer": "^6.4.13",
     "@types/react": "^18.0.28",
@@ -73,6 +75,7 @@
     "redux-persist": "^6.0.0",
     "sass": "^1.58.3",
     "sharp": "0.32.6",
+    "stripe": "^16.2.0",
     "typescript": "^5.0.3",
     "use-immer": "^0.9.0"
   },
