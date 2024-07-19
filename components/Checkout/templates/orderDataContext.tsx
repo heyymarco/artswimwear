@@ -13,6 +13,8 @@ import type {
 import type {
     OrderDetail,
     
+    CountryPreview,
+    
     CustomerOrGuest,
     CustomerOrGuestPreference,
 }                           from '@/models'
@@ -23,12 +25,6 @@ import type {
     OrdersOnProducts,
     ShippingTracking,
 }                           from '@prisma/client'
-
-// stores:
-import type {
-    // types:
-    CountryPreview,
-}                           from '@/store/features/api/apiSlice'
 
 // internals:
 import {

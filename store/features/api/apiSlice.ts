@@ -18,6 +18,7 @@ import type {
 import {
     type PaymentDetail,
     type FinishedOrderState,
+    type CountryPreview,
     type CustomerDetail,
 }                           from '@/models'
 export type {
@@ -25,12 +26,6 @@ export type {
 }                           from '@/models'
 
 // apis:
-import type {
-    CountryPreview,
-}                               from '@/app/api/countries/route'
-export type {
-    CountryPreview,
-}                               from '@/app/api/countries/route'
 import type {
     ProductPreview,
     ProductDetail,
@@ -181,7 +176,7 @@ export const apiSlice = createApi({
         
         getCountryList          : builder.query<EntityState<CountryPreview>, void>({
             query : () => ({
-                url    : 'countries',
+                url    : 'shippings/countries',
                 method : 'GET',
             }),
             transformResponse(response: CountryPreview[]) {
@@ -343,7 +338,7 @@ export const {
     placeOrder     : { initiate : placeOrder     },
     makePayment    : { initiate : makePayment    },
     
-    // getCountryList : { initiate : getCountryList },
+    getCountryList : { initiate : getCountryList },
     getStateList   : { initiate : getStateList   },
     getCityList    : { initiate : getCityList    },
 } = apiSlice.endpoints;

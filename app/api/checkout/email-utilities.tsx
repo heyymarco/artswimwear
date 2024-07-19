@@ -14,17 +14,13 @@ import {
 // models:
 import {
     type SendEmailData,
+    type CountryPreview,
 }                           from '@/models'
 
 // ORMs:
 import {
     prisma,
 }                           from '@/libs/prisma.server'
-
-// apis:
-import {
-    type CountryPreview,
-}                           from '@/app/api/countries/route'
 
 // templates:
 import {

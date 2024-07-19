@@ -13,6 +13,8 @@ import {
     type CoverageCountryRate,
     type CoverageStateRate,
     type CoverageCityRate,
+    
+    type Country,
 }                           from '@prisma/client'
 
 
@@ -235,3 +237,14 @@ export interface CoverageZoneDetail<TSubzone extends CoverageSubzoneDetail>
 }
 
 export type CoverageSubzoneDetail = CoverageStateDetail|CoverageCityDetail|never
+
+
+
+export interface CountryPreview
+    extends
+        Pick<Country,
+            |'name'
+            |'code'
+        >
+{
+}
