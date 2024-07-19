@@ -131,7 +131,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
                     )
                 )
                 .filter((entity): entity is Exclude<typeof entity, undefined> => (entity !== undefined))
-                .map(({code}) => code)
+                .map(({name}) => name)
             );
         });
     }, []);

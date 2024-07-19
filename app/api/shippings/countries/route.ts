@@ -3,6 +3,11 @@ import {
     createEdgeRouter,
 }                           from 'next-connect'
 
+// models:
+import type {
+    CountryPreview,
+}                           from '@/models'
+
 // ORMs:
 import {
     prisma,
@@ -64,10 +69,10 @@ router
     
     
     
-    const countryList : string[] = (
+    const countryPreview : CountryPreview[] = (
         allCountries
         .filter((country) => country.enabled)
-        .map((country) => country.name)
+        .map(({enabled: _enabled, ...restCountry}) => restCountry)
     );
-    return Response.json(countryList); // handled with success
+    return Response.json(countryPreview); // handled with success
 });
