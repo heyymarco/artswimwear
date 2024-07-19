@@ -943,10 +943,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep]);
     
     // auto renew paymentSession:
+    const isPaymentSessionRequired                    = (
+        !!checkoutConfigClient.payment.processors.paypal.enabled
+        &&
+        !!process.env.NEXT_PUBLIC_PAYPAL_ID
+    );
     const isMounted                                   = useMountedFlag();
     const schedulingRefreshPaymentSessionRef          = useRef<ReturnType<typeof setTimeout>|null>(null);
     const scheduleRefreshPaymentSession               = useEvent(async (): Promise<void> => {
         // conditions:
+        if (!isPaymentSessionRequired) return; // no paymentSession required => do nothing
         if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
         
         
@@ -1009,6 +1015,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isScheduleRefreshPaymentSessionTriggeredRef = useRef<boolean>(false);
     useIsomorphicLayoutEffect(() => {
         // conditions:
+        if (!isPaymentSessionRequired) return; // no paymentSession required => ignore
         if (!isPaymentStep) return; // no paymentSession renewal when NOT at_payment_step
         if (isScheduleRefreshPaymentSessionTriggeredRef.current) return; // already triggered => ignore
         isScheduleRefreshPaymentSessionTriggeredRef.current = true;      // mark as triggered
@@ -1025,7 +1032,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return () => {
             if (schedulingRefreshPaymentSessionRef.current) clearTimeout(schedulingRefreshPaymentSessionRef.current); // abort prev schedule (if any)
         };
-    }, [isPaymentStep, paymentSession, isPaymentSessionValid]);
+    }, [isPaymentSessionRequired, isPaymentStep, paymentSession, isPaymentSessionValid]);
     
     // auto reset billing validation:
     useIsomorphicLayoutEffect(() => {
