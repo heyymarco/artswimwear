@@ -51,14 +51,6 @@ import {
     CreditCardCvvEditor,
 }                           from '@/components/editors/CreditCardCvvEditor'
 import {
-    // react components:
-    PayPalHostedFieldExtendedProps,
-    PayPalHostedFieldExtended,
-}                           from '../payments/PayPalHostedFieldExtended'
-import {
-    EditBillingAddress,
-}                           from './EditBillingAddress'
-import {
     ButtonPaymentCard,
 }                           from '../payments/ButtonPaymentCard'
 
@@ -66,6 +58,11 @@ import {
 import {
     ConditionalPayPalHostedFieldsProvider,
 }                           from './ConditionalPayPalHostedFieldsProvider'
+import {
+    // react components:
+    PayPalHostedFieldExtendedProps,
+    PayPalHostedFieldExtended,
+}                           from '../payments/PayPalHostedFieldExtended'
 
 // stripe:
 import {
@@ -73,6 +70,10 @@ import {
     CardExpiryElement,
     CardCvcElement,
 }                           from '@stripe/react-stripe-js'
+import {
+    // react components:
+    StripeCardFieldWrapper,
+}                           from '../payments/StripeCardFieldWrapper'
 
 // internals:
 import {
@@ -332,7 +333,37 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 </div>
                 
                 {/* conditional re-render */}
-                {isPayUsingStripePriority && <CardNumberElement className='number' />}
+                {isPayUsingStripePriority && <InputWithLabel
+                    // appearances:
+                    icon='credit_card'
+                    
+                    
+                    
+                    // classes:
+                    className='number'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <StripeCardFieldWrapper
+                            // validations:
+                            enableValidation={isPayUsingStripePriority ? undefined : false}
+                            
+                            
+                            
+                            // components:
+                            cardElementComponent={
+                                <CardNumberElement />
+                            }
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardNumber}
+                />}
                 {/* conditional visibility via css */}
                 {maybePayUsingPaypal && <InputWithLabel
                     // appearances:
@@ -430,7 +461,37 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 />
                 
                 {/* conditional re-render */}
-                {isPayUsingStripePriority && <CardExpiryElement className='expiry' />}
+                {isPayUsingStripePriority && <InputWithLabel
+                    // appearances:
+                    icon='date_range'
+                    
+                    
+                    
+                    // classes:
+                    className='expiry'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <StripeCardFieldWrapper
+                            // validations:
+                            enableValidation={isPayUsingStripePriority ? undefined : false}
+                            
+                            
+                            
+                            // components:
+                            cardElementComponent={
+                                <CardExpiryElement />
+                            }
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardExpiry}
+                />}
                 {/* conditional visibility via css */}
                 {maybePayUsingPaypal && <InputWithLabel
                     // appearances:
@@ -503,7 +564,37 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                 />}
                 
                 {/* conditional re-render */}
-                {isPayUsingStripePriority && <CardCvcElement className='csc' />}
+                {isPayUsingStripePriority && <InputWithLabel
+                    // appearances:
+                    icon='edit'
+                    
+                    
+                    
+                    // classes:
+                    className='csc'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <StripeCardFieldWrapper
+                            // validations:
+                            enableValidation={isPayUsingStripePriority ? undefined : false}
+                            
+                            
+                            
+                            // components:
+                            cardElementComponent={
+                                <CardCvcElement />
+                            }
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardCvv}
+                />}
                 {/* conditional visibility via css */}
                 {maybePayUsingPaypal && <InputWithLabel
                     // appearances:
