@@ -189,7 +189,12 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                     };
                 }
             );
-            else if (isPayUsingStripePriority) return undefined;
+            else if (isPayUsingStripePriority) return (
+                async (): Promise<DraftOrderDetail|undefined> => {
+                    showMessageError('under construction');
+                    return undefined;
+                }
+            );
             else if (isPayUsingMidtransPriority) return (
                 !paymentCardSectionElm
                 ? undefined
