@@ -22,44 +22,31 @@ import {
 import {
     // styles:
     hostedFieldsStyle,
-}                           from '../payments/PayPalHostedFieldWrapper'
+}                           from '../../payments/PayPalHostedFieldWrapper'
 
 // paypal:
 import {
     PayPalHostedFieldsProvider,
 }                           from '@paypal/react-paypal-js'
+import {
+    IsInPayPalHostedFieldsProviderContextProvider,
+}                           from './states/isInPayPalHostedFieldsProvider'
+import {
+    useIsInPayPalScriptProvider,
+}                           from '../ConditionalPayPalScriptProvider'
 
 // internals:
 import {
     // states:
     useCheckoutState,
-}                           from '../../states/checkoutState'
-
-// configs:
-import {
-    checkoutConfigClient,
-}                           from '@/checkout.config.client'
+}                           from '../../../states/checkoutState'
 
 
 
 const ConditionalPayPalHostedFieldsProvider = ({children}: React.PropsWithChildren) => {
-    // states:
-    const {
-        // payment data:
-        paymentSession,
-    } = useCheckoutState();
-    
-    
-    
     // conditions:
-    const clientId = process.env.NEXT_PUBLIC_PAYPAL_ID ?? '';
-    if (
-        !checkoutConfigClient.payment.processors.paypal.enabled
-        ||
-        !clientId
-        ||
-        !paymentSession
-    ) {
+    const isInPayPalScriptProvider = useIsInPayPalScriptProvider();
+    if (!isInPayPalScriptProvider) {
         // jsx:
         return (
             /* the <div> is for preserving the layout */
@@ -141,7 +128,9 @@ const ImplementedPayPalHostedFieldsProvider = (props: ImplementedPayPalHostedFie
             // handlers:
             createOrder={handleCreateOrder}
         >
-            {children}
+            <IsInPayPalHostedFieldsProviderContextProvider>
+                {children}
+            </IsInPayPalHostedFieldsProviderContextProvider>
         </PayPalHostedFieldsProvider>
     );
 };

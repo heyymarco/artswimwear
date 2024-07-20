@@ -51,11 +51,19 @@ import type {
 import {
     usePayPalHostedFields,
 }                           from '@paypal/react-paypal-js'
+import {
+    useIsInPayPalHostedFieldsProvider,
+}                           from './ConditionalPayPalHostedFieldsProvider'
 
 // internals:
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
+
+// configs:
+import {
+    type checkoutConfigClient,
+}                           from '@/checkout.config.client'
 
 
 
@@ -105,7 +113,17 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     
     
-    const isPayUsingPaypal = (appropriatePaymentProcessors.includes('paypal'));
+    const isInPayPalHostedFieldsProvider = useIsInPayPalHostedFieldsProvider();
+    const supportedCardProcessors : string[] = (
+        ([
+            !isInPayPalHostedFieldsProvider ? undefined : 'paypal',
+            'stripe',
+            'midtrans',
+        ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
+        .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))
+    );
+    const priorityPaymentProcessor   = appropriatePaymentProcessors.find((processor) => supportedCardProcessors.includes(processor)); // find the highest priority payment processor that supports card payment
+    const isPayUsingPaypalPriority   = (priorityPaymentProcessor === 'paypal');
     
     
     
@@ -115,7 +133,7 @@ const ButtonPaymentCard = (): JSX.Element|null => {
         const paypalDoPlaceOrder = hostedFields.cardFields?.submit;
         const paymentCardSectionElm = paymentCardSectionRef?.current;
         const proxyDoPlaceOrder : (() => Promise<DraftOrderDetail|undefined>)|undefined = (
-            isPayUsingPaypal
+            isPayUsingPaypalPriority
             ? (
                 (!paymentCardSectionElm || (typeof(paypalDoPlaceOrder) !== 'function')) // validate that `submit()` exists before invoke it
                 ? undefined

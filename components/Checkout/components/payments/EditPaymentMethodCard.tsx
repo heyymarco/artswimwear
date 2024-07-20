@@ -59,7 +59,12 @@ import {
 
 // paypal:
 import {
+    useIsInPayPalHostedFieldsProvider,
+    
+    
+    
     ConditionalPayPalHostedFieldsProvider,
+    IfInPayPalHostedFieldsProvider,
 }                           from './ConditionalPayPalHostedFieldsProvider'
 import {
     // react components:
@@ -85,23 +90,21 @@ import {
 
 // configs:
 import {
-    checkoutConfigClient,
+    type checkoutConfigClient,
 }                           from '@/checkout.config.client'
 
 
 
 // utilities:
-const supportedCardProcessors : (typeof checkoutConfigClient.payment.preferredProcessors) = ['paypal', 'stripe', 'midtrans'];
-
-const cardNumberOptions       : PayPalHostedFieldWrapperProps['options'] = {
+const cardNumberOptions  : PayPalHostedFieldWrapperProps['options'] = {
     selector    : '#cardNumber',
     placeholder : '1111-2222-3333-4444',
 };
-const cardExpiresOptions      : PayPalHostedFieldWrapperProps['options'] = {
+const cardExpiresOptions : PayPalHostedFieldWrapperProps['options'] = {
     selector    : '#cardExpires',
     placeholder : '11/2020',
 };
-const cardCvvOptions          : PayPalHostedFieldWrapperProps['options'] = {
+const cardCvvOptions     : PayPalHostedFieldWrapperProps['options'] = {
     selector    : '#cardCvv',
     placeholder : '123',
 };
@@ -110,6 +113,14 @@ const cardCvvOptions          : PayPalHostedFieldWrapperProps['options'] = {
 
 // react components:
 const EditPaymentMethodCard = (): JSX.Element|null => {
+    // jsx:
+    return (
+        <ConditionalPayPalHostedFieldsProvider>
+            <EditPaymentMethodCardInternal />
+        </ConditionalPayPalHostedFieldsProvider>
+    );
+};
+const EditPaymentMethodCardInternal = (): JSX.Element|null => {
     const {
         // billing data:
         isBillingAddressRequired,
@@ -137,15 +148,17 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
     
     
     
+    const isInPayPalHostedFieldsProvider = useIsInPayPalHostedFieldsProvider();
+    const supportedCardProcessors : string[] = (
+        ([
+            !isInPayPalHostedFieldsProvider ? undefined : 'paypal',
+            'stripe',
+            'midtrans',
+        ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
+        .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))
+    );
     const priorityPaymentProcessor   = appropriatePaymentProcessors.find((processor) => supportedCardProcessors.includes(processor)); // find the highest priority payment processor that supports card payment
     const isPayUsingPaypalPriority   = (priorityPaymentProcessor === 'paypal');
-    const maybePayUsingPaypal        = (
-        !!checkoutConfigClient.payment.processors.paypal.enabled
-        &&
-        !!process.env.NEXT_PUBLIC_PAYPAL_ID
-        &&
-        !!paymentSession
-    );
     const isPayUsingStripePriority   = (priorityPaymentProcessor === 'stripe');
     const isPayUsingMidtransPriority = (priorityPaymentProcessor === 'midtrans');
     
@@ -324,56 +337,56 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
         </Label>
     );
     return (
-        <ConditionalPayPalHostedFieldsProvider>
-            <ValidationProvider
-                // validations:
-                enableValidation={paymentValidation}
-            >
-                <div className='instruct'>
-                    <p>
-                        Fill in your credit card information below and then click the <em>Pay Now</em> button:
-                    </p>
-                </div>
+        <ValidationProvider
+            // validations:
+            enableValidation={paymentValidation}
+        >
+            <div className='instruct'>
+                <p>
+                    Fill in your credit card information below and then click the <em>Pay Now</em> button:
+                </p>
+            </div>
+            
+            {/* conditional re-render */}
+            {isPayUsingStripePriority && <InputWithLabel
+                // appearances:
+                icon='credit_card'
                 
-                {/* conditional re-render */}
-                {isPayUsingStripePriority && <InputWithLabel
-                    // appearances:
-                    icon='credit_card'
-                    
-                    
-                    
-                    // classes:
-                    className='number'
-                    
-                    
-                    
-                    // components:
-                    inputComponent={
-                        <StripeHostedFieldWrapper
-                            // accessibilities:
-                            aria-label='Card Number'
-                            
-                            
-                            
-                            // validations:
-                            enableValidation={isPayUsingStripePriority ? undefined : false}
-                            
-                            
-                            
-                            // components:
-                            cardElementComponent={
-                                <CardNumberElement />
-                            }
-                        />
-                    }
-                    
-                    
-                    
-                    // children:
-                    childrenAfter={labelCardNumber}
-                />}
+                
+                
+                // classes:
+                className='number'
+                
+                
+                
+                // components:
+                inputComponent={
+                    <StripeHostedFieldWrapper
+                        // accessibilities:
+                        aria-label='Card Number'
+                        
+                        
+                        
+                        // validations:
+                        enableValidation={isPayUsingStripePriority ? undefined : false}
+                        
+                        
+                        
+                        // components:
+                        cardElementComponent={
+                            <CardNumberElement />
+                        }
+                    />
+                }
+                
+                
+                
+                // children:
+                childrenAfter={labelCardNumber}
+            />}
+            <IfInPayPalHostedFieldsProvider>
                 {/* conditional visibility via css */}
-                {maybePayUsingPaypal && <InputWithLabel
+                <InputWithLabel
                     // appearances:
                     icon='credit_card'
                     
@@ -421,97 +434,99 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // children:
                     childrenAfter={labelCardNumber}
-                />}
-                {/* conditional re-render */}
-                {isPayUsingMidtransPriority && <InputWithLabel
-                    // appearances:
-                    icon='credit_card'
-                    
-                    
-                    
-                    // classes:
-                    className='number'
-                    
-                    
-                    
-                    // components:
-                    inputComponent={
-                        <CreditCardNumberEditor
-                            // forms:
-                            name='cardNumber'
-                        />
-                    }
-                    
-                    
-                    
-                    // children:
-                    childrenAfter={labelCardNumber}
-                />}
-                
-                <InputWithLabel
-                    // appearances:
-                    icon='person'
-                    
-                    
-                    
-                    // classes:
-                    className='name'
-                    
-                    
-                    
-                    // components:
-                    inputComponent={
-                        <CreditCardNameEditor
-                            // forms:
-                            name='cardHolder'
-                        />
-                    }
-                    
-                    
-                    
-                    // children:
-                    childrenAfter={labelCardName}
                 />
+            </IfInPayPalHostedFieldsProvider>
+            {/* conditional re-render */}
+            {isPayUsingMidtransPriority && <InputWithLabel
+                // appearances:
+                icon='credit_card'
                 
-                {/* conditional re-render */}
-                {isPayUsingStripePriority && <InputWithLabel
-                    // appearances:
-                    icon='date_range'
-                    
-                    
-                    
-                    // classes:
-                    className='expiry'
-                    
-                    
-                    
-                    // components:
-                    inputComponent={
-                        <StripeHostedFieldWrapper
-                            // accessibilities:
-                            aria-label='Card Expires'
-                            
-                            
-                            
-                            // validations:
-                            enableValidation={isPayUsingStripePriority ? undefined : false}
-                            
-                            
-                            
-                            // components:
-                            cardElementComponent={
-                                <CardExpiryElement />
-                            }
-                        />
-                    }
-                    
-                    
-                    
-                    // children:
-                    childrenAfter={labelCardExpiry}
-                />}
+                
+                
+                // classes:
+                className='number'
+                
+                
+                
+                // components:
+                inputComponent={
+                    <CreditCardNumberEditor
+                        // forms:
+                        name='cardNumber'
+                    />
+                }
+                
+                
+                
+                // children:
+                childrenAfter={labelCardNumber}
+            />}
+            
+            <InputWithLabel
+                // appearances:
+                icon='person'
+                
+                
+                
+                // classes:
+                className='name'
+                
+                
+                
+                // components:
+                inputComponent={
+                    <CreditCardNameEditor
+                        // forms:
+                        name='cardHolder'
+                    />
+                }
+                
+                
+                
+                // children:
+                childrenAfter={labelCardName}
+            />
+            
+            {/* conditional re-render */}
+            {isPayUsingStripePriority && <InputWithLabel
+                // appearances:
+                icon='date_range'
+                
+                
+                
+                // classes:
+                className='expiry'
+                
+                
+                
+                // components:
+                inputComponent={
+                    <StripeHostedFieldWrapper
+                        // accessibilities:
+                        aria-label='Card Expires'
+                        
+                        
+                        
+                        // validations:
+                        enableValidation={isPayUsingStripePriority ? undefined : false}
+                        
+                        
+                        
+                        // components:
+                        cardElementComponent={
+                            <CardExpiryElement />
+                        }
+                    />
+                }
+                
+                
+                
+                // children:
+                childrenAfter={labelCardExpiry}
+            />}
+            <IfInPayPalHostedFieldsProvider>
                 {/* conditional visibility via css */}
-                {maybePayUsingPaypal && <InputWithLabel
+                <InputWithLabel
                     // appearances:
                     icon='date_range'
                     
@@ -559,72 +574,74 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // children:
                     childrenAfter={labelCardExpiry}
-                />}
-                {/* conditional re-render */}
-                {isPayUsingMidtransPriority && <InputWithLabel
-                    // appearances:
-                    icon='date_range'
-                    
-                    
-                    
-                    // classes:
-                    className='expiry'
-                    
-                    
-                    
-                    // components:
-                    inputComponent={
-                        <CreditCardExpiresEditor
-                            // forms:
-                            name='cardExpires'
-                        />
-                    }
-                    
-                    
-                    
-                    // children:
-                    childrenAfter={labelCardExpiry}
-                />}
+                />
+            </IfInPayPalHostedFieldsProvider>
+            {/* conditional re-render */}
+            {isPayUsingMidtransPriority && <InputWithLabel
+                // appearances:
+                icon='date_range'
                 
-                {/* conditional re-render */}
-                {isPayUsingStripePriority && <InputWithLabel
-                    // appearances:
-                    icon='edit'
-                    
-                    
-                    
-                    // classes:
-                    className='csc'
-                    
-                    
-                    
-                    // components:
-                    inputComponent={
-                        <StripeHostedFieldWrapper
-                            // accessibilities:
-                            aria-label='Card CSC/CVV'
-                            
-                            
-                            
-                            // validations:
-                            enableValidation={isPayUsingStripePriority ? undefined : false}
-                            
-                            
-                            
-                            // components:
-                            cardElementComponent={
-                                <CardCvcElement />
-                            }
-                        />
-                    }
-                    
-                    
-                    
-                    // children:
-                    childrenAfter={labelCardCvv}
-                />}
+                
+                
+                // classes:
+                className='expiry'
+                
+                
+                
+                // components:
+                inputComponent={
+                    <CreditCardExpiresEditor
+                        // forms:
+                        name='cardExpires'
+                    />
+                }
+                
+                
+                
+                // children:
+                childrenAfter={labelCardExpiry}
+            />}
+            
+            {/* conditional re-render */}
+            {isPayUsingStripePriority && <InputWithLabel
+                // appearances:
+                icon='edit'
+                
+                
+                
+                // classes:
+                className='csc'
+                
+                
+                
+                // components:
+                inputComponent={
+                    <StripeHostedFieldWrapper
+                        // accessibilities:
+                        aria-label='Card CSC/CVV'
+                        
+                        
+                        
+                        // validations:
+                        enableValidation={isPayUsingStripePriority ? undefined : false}
+                        
+                        
+                        
+                        // components:
+                        cardElementComponent={
+                            <CardCvcElement />
+                        }
+                    />
+                }
+                
+                
+                
+                // children:
+                childrenAfter={labelCardCvv}
+            />}
+            <IfInPayPalHostedFieldsProvider>
                 {/* conditional visibility via css */}
-                {maybePayUsingPaypal && <InputWithLabel
+                <InputWithLabel
                     // appearances:
                     icon='edit'
                     
@@ -672,70 +689,70 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // children:
                     childrenAfter={labelCardCvv}
-                />}
-                {/* conditional re-render */}
-                {isPayUsingMidtransPriority && <InputWithLabel
-                    // appearances:
-                    icon='edit'
-                    
-                    
-                    
-                    // classes:
-                    className='csc'
-                    
-                    
-                    
-                    // components:
-                    inputComponent={
-                        <CreditCardCvvEditor
-                            // forms:
-                            name='cardCvv'
-                        />
-                    }
-                    
-                    
-                    
-                    // children:
-                    childrenAfter={labelCardCvv}
-                />}
+                />
+            </IfInPayPalHostedFieldsProvider>
+            {/* conditional re-render */}
+            {isPayUsingMidtransPriority && <InputWithLabel
+                // appearances:
+                icon='edit'
                 
-                <hr className='horz1' />
                 
-                <Collapse
-                    // refs:
-                    elmRef={billingAddressSectionRef}
-                    
-                    
-                    
-                    // semantics:
-                    tag='section'
-                    
-                    
-                    
-                    // classes:
-                    className='billing'
-                    
-                    
-                    
-                    // behaviors:
-                    // lazy={true} // causes collapsing animation error
-                    
-                    
-                    
-                    // states:
-                    expanded={isBillingAddressRequired}
-                >
-                    <p>
-                        Enter the address that matches your card&apos;s billing address.
-                    </p>
-                    <EditBillingAddress />
-                    
-                    <hr className='horz2' />
-                </Collapse>
                 
-                <ButtonPaymentCard />
-            </ValidationProvider>
-        </ConditionalPayPalHostedFieldsProvider>
+                // classes:
+                className='csc'
+                
+                
+                
+                // components:
+                inputComponent={
+                    <CreditCardCvvEditor
+                        // forms:
+                        name='cardCvv'
+                    />
+                }
+                
+                
+                
+                // children:
+                childrenAfter={labelCardCvv}
+            />}
+            
+            <hr className='horz1' />
+            
+            <Collapse
+                // refs:
+                elmRef={billingAddressSectionRef}
+                
+                
+                
+                // semantics:
+                tag='section'
+                
+                
+                
+                // classes:
+                className='billing'
+                
+                
+                
+                // behaviors:
+                // lazy={true} // causes collapsing animation error
+                
+                
+                
+                // states:
+                expanded={isBillingAddressRequired}
+            >
+                <p>
+                    Enter the address that matches your card&apos;s billing address.
+                </p>
+                <EditBillingAddress />
+                
+                <hr className='horz2' />
+            </Collapse>
+            
+            <ButtonPaymentCard />
+        </ValidationProvider>
     );
 };
 export {

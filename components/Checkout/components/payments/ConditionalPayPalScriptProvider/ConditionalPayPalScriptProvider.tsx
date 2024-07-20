@@ -18,6 +18,9 @@ import {
 import {
     PayPalScriptProvider,
 }                           from '@paypal/react-paypal-js'
+import {
+    IsInPayPalScriptProviderContextProvider,
+}                           from './states/isInPayPalScriptProvider'
 
 // internals:
 import {
@@ -32,7 +35,7 @@ import {
     
     // states:
     useCheckoutState,
-}                           from '../../states/checkoutState'
+}                           from '../../../states/checkoutState'
 
 // configs:
 import {
@@ -129,7 +132,9 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
         <PayPalScriptProvider
             options={paypalOptions}
         >
-            {children}
+            <IsInPayPalScriptProviderContextProvider>
+                {children}
+            </IsInPayPalScriptProviderContextProvider>
         </PayPalScriptProvider>
     );
 };
