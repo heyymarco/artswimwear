@@ -51,6 +51,9 @@ import {
     CreditCardCvvEditor,
 }                           from '@/components/editors/CreditCardCvvEditor'
 import {
+    EditBillingAddress,
+}                           from './EditBillingAddress'
+import {
     ButtonPaymentCard,
 }                           from '../payments/ButtonPaymentCard'
 
@@ -695,7 +698,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     <p>
                         Enter the address that matches your card&apos;s billing address.
                     </p>
-                    {/* <EditBillingAddress /> */}
+                    <EditBillingAddress />
                     
                     <hr className='horz2' />
                 </Collapse>

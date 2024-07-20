@@ -165,11 +165,6 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     
     // default props:
     const {
-        // semantics:
-        tag = 'form',
-        
-        
-        
         // components:
         countryEditorComponent=(
             <SelectCountryEditor theme='primary' onChange={setCountry} valueOptions={countryOptionsPromise} />
@@ -209,11 +204,6 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
         <BaseAddressEditor<TElement>
             // other props:
             {...restBaseAddressEditorProps}
-            
-            
-            
-            // semantics:
-            tag={tag}
             
             
             

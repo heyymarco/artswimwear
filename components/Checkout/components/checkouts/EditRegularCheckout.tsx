@@ -10,6 +10,8 @@ import {
 import {
     Section,
 }                           from '@heymarco/section'
+
+// internal components:
 import {
     EditCustomerAccount,
 }                           from './EditCustomerAccount'
