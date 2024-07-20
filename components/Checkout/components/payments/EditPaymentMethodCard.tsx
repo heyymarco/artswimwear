@@ -59,12 +59,11 @@ import {
 
 // paypal:
 import {
-    useIsInPayPalHostedFieldsProvider,
-    
-    
-    
+    useIsInPayPalScriptProvider,
+    IfInPayPalScriptProvider,
+}                           from './ConditionalPayPalScriptProvider'
+import {
     ConditionalPayPalHostedFieldsProvider,
-    IfInPayPalHostedFieldsProvider,
 }                           from './ConditionalPayPalHostedFieldsProvider'
 import {
     // react components:
@@ -148,10 +147,10 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
     
     
     
-    const isInPayPalHostedFieldsProvider = useIsInPayPalHostedFieldsProvider();
-    const supportedCardProcessors : string[] = (
+    const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
+    const supportedCardProcessors    : string[] = (
         ([
-            !isInPayPalHostedFieldsProvider ? undefined : 'paypal',
+            !isInPayPalScriptProvider ? undefined : 'paypal',
             'stripe',
             'midtrans',
         ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
@@ -384,7 +383,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 // children:
                 childrenAfter={labelCardNumber}
             />}
-            <IfInPayPalHostedFieldsProvider>
+            <IfInPayPalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
                     // appearances:
@@ -435,7 +434,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     // children:
                     childrenAfter={labelCardNumber}
                 />
-            </IfInPayPalHostedFieldsProvider>
+            </IfInPayPalScriptProvider>
             {/* conditional re-render */}
             {isPayUsingMidtransPriority && <InputWithLabel
                 // appearances:
@@ -524,7 +523,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 // children:
                 childrenAfter={labelCardExpiry}
             />}
-            <IfInPayPalHostedFieldsProvider>
+            <IfInPayPalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
                     // appearances:
@@ -575,7 +574,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     // children:
                     childrenAfter={labelCardExpiry}
                 />
-            </IfInPayPalHostedFieldsProvider>
+            </IfInPayPalScriptProvider>
             {/* conditional re-render */}
             {isPayUsingMidtransPriority && <InputWithLabel
                 // appearances:
@@ -639,7 +638,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 // children:
                 childrenAfter={labelCardCvv}
             />}
-            <IfInPayPalHostedFieldsProvider>
+            <IfInPayPalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
                     // appearances:
@@ -690,7 +689,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     // children:
                     childrenAfter={labelCardCvv}
                 />
-            </IfInPayPalHostedFieldsProvider>
+            </IfInPayPalScriptProvider>
             {/* conditional re-render */}
             {isPayUsingMidtransPriority && <InputWithLabel
                 // appearances:

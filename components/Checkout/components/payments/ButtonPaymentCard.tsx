@@ -52,8 +52,8 @@ import {
     usePayPalHostedFields,
 }                           from '@paypal/react-paypal-js'
 import {
-    useIsInPayPalHostedFieldsProvider,
-}                           from './ConditionalPayPalHostedFieldsProvider'
+    useIsInPayPalScriptProvider,
+}                           from './ConditionalPayPalScriptProvider'
 
 // internals:
 import {
@@ -113,10 +113,10 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     
     
-    const isInPayPalHostedFieldsProvider = useIsInPayPalHostedFieldsProvider();
-    const supportedCardProcessors : string[] = (
+    const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
+    const supportedCardProcessors    : string[] = (
         ([
-            !isInPayPalHostedFieldsProvider ? undefined : 'paypal',
+            !isInPayPalScriptProvider ? undefined : 'paypal',
             'stripe',
             'midtrans',
         ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])

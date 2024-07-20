@@ -29,9 +29,6 @@ import {
     PayPalHostedFieldsProvider,
 }                           from '@paypal/react-paypal-js'
 import {
-    IsInPayPalHostedFieldsProviderContextProvider,
-}                           from './states/isInPayPalHostedFieldsProvider'
-import {
     useIsInPayPalScriptProvider,
 }                           from '../ConditionalPayPalScriptProvider'
 
@@ -128,9 +125,7 @@ const ImplementedPayPalHostedFieldsProvider = (props: ImplementedPayPalHostedFie
             // handlers:
             createOrder={handleCreateOrder}
         >
-            <IsInPayPalHostedFieldsProviderContextProvider>
-                {children}
-            </IsInPayPalHostedFieldsProviderContextProvider>
+            {children}
         </PayPalHostedFieldsProvider>
     );
 };
