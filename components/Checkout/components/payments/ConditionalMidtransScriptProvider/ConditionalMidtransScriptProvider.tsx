@@ -15,7 +15,10 @@ import {
 import {
     type MidtransScriptOptions,
     MidtransScriptProvider,
-}                           from './MidtransScriptProvider'
+}                           from '../MidtransScriptProvider'
+import {
+    IsInMidtransScriptProviderContextProvider,
+}                           from './states/isInMidtransScriptProvider'
 
 // configs:
 import {
@@ -94,7 +97,9 @@ const ImplementedMidtransScriptProvider = (props: ImplementedMidtransScriptProvi
         <MidtransScriptProvider
             options={midtransOptions}
         >
-            {children}
+            <IsInMidtransScriptProviderContextProvider>
+                {children}
+            </IsInMidtransScriptProviderContextProvider>
         </MidtransScriptProvider>
     );
 };

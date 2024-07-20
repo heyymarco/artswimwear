@@ -72,6 +72,7 @@ import {
 
 // midtrans:
 import {
+    useIsInMidtransScriptProvider,
     ConditionalMidtransScriptProvider,
 }                           from './ConditionalMidtransScriptProvider'
 
@@ -141,9 +142,10 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     
     const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
     const isInStripeElementsProvider = useIsInStripeElementsProvider();
+    const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
     const isPayUsingPaypal           = isInPayPalScriptProvider   && appropriatePaymentProcessors.includes('paypal');
     const isPayUsingStripe           = isInStripeElementsProvider && appropriatePaymentProcessors.includes('stripe');
-    const isPayUsingMidtrans         = (appropriatePaymentProcessors.includes('midtrans'));
+    const isPayUsingMidtrans         = isInMidtransScriptProvider && appropriatePaymentProcessors.includes('midtrans');
     const canPayUsingBank            = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency);
     
     

@@ -86,6 +86,12 @@ import {
     StripeHostedFieldWrapper,
 }                           from '../payments/StripeHostedFieldWrapper'
 
+// midtrans:
+import {
+    useIsInMidtransScriptProvider,
+    IfInMidtransScriptProvider,
+}                           from './ConditionalMidtransScriptProvider'
+
 // internals:
 import {
     useCheckoutState,
@@ -153,11 +159,12 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
     
     const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
     const isInStripeElementsProvider = useIsInStripeElementsProvider();
+    const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
     const supportedCardProcessors    : string[] = (
         ([
             !isInPayPalScriptProvider   ? undefined : 'paypal',
             !isInStripeElementsProvider ? undefined : 'stripe',
-            'midtrans',
+            !isInMidtransScriptProvider ? undefined : 'midtrans',
         ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
         .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))
     );
@@ -442,31 +449,33 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     childrenAfter={labelCardNumber}
                 />
             </IfInPayPalScriptProvider>
-            {/* conditional re-render */}
-            {isPayUsingMidtransPriority && <InputWithLabel
-                // appearances:
-                icon='credit_card'
-                
-                
-                
-                // classes:
-                className='number'
-                
-                
-                
-                // components:
-                inputComponent={
-                    <CreditCardNumberEditor
-                        // forms:
-                        name='cardNumber'
-                    />
-                }
-                
-                
-                
-                // children:
-                childrenAfter={labelCardNumber}
-            />}
+            <IfInMidtransScriptProvider>
+                {/* conditional re-render */}
+                {isPayUsingMidtransPriority && <InputWithLabel
+                    // appearances:
+                    icon='credit_card'
+                    
+                    
+                    
+                    // classes:
+                    className='number'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <CreditCardNumberEditor
+                            // forms:
+                            name='cardNumber'
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardNumber}
+                />}
+            </IfInMidtransScriptProvider>
             
             <InputWithLabel
                 // appearances:
@@ -584,31 +593,33 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     childrenAfter={labelCardExpiry}
                 />
             </IfInPayPalScriptProvider>
-            {/* conditional re-render */}
-            {isPayUsingMidtransPriority && <InputWithLabel
-                // appearances:
-                icon='date_range'
-                
-                
-                
-                // classes:
-                className='expiry'
-                
-                
-                
-                // components:
-                inputComponent={
-                    <CreditCardExpiresEditor
-                        // forms:
-                        name='cardExpires'
-                    />
-                }
-                
-                
-                
-                // children:
-                childrenAfter={labelCardExpiry}
-            />}
+            <IfInMidtransScriptProvider>
+                {/* conditional re-render */}
+                {isPayUsingMidtransPriority && <InputWithLabel
+                    // appearances:
+                    icon='date_range'
+                    
+                    
+                    
+                    // classes:
+                    className='expiry'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <CreditCardExpiresEditor
+                            // forms:
+                            name='cardExpires'
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardExpiry}
+                />}
+            </IfInMidtransScriptProvider>
             
             <IfInStripeElementsProvider>
                 {/* conditional re-render */}
@@ -701,31 +712,33 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     childrenAfter={labelCardCvv}
                 />
             </IfInPayPalScriptProvider>
-            {/* conditional re-render */}
-            {isPayUsingMidtransPriority && <InputWithLabel
-                // appearances:
-                icon='edit'
-                
-                
-                
-                // classes:
-                className='csc'
-                
-                
-                
-                // components:
-                inputComponent={
-                    <CreditCardCvvEditor
-                        // forms:
-                        name='cardCvv'
-                    />
-                }
-                
-                
-                
-                // children:
-                childrenAfter={labelCardCvv}
-            />}
+            <IfInMidtransScriptProvider>
+                {/* conditional re-render */}
+                {isPayUsingMidtransPriority && <InputWithLabel
+                    // appearances:
+                    icon='edit'
+                    
+                    
+                    
+                    // classes:
+                    className='csc'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <CreditCardCvvEditor
+                            // forms:
+                            name='cardCvv'
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardCvv}
+                />}
+            </IfInMidtransScriptProvider>
             
             <hr className='horz1' />
             

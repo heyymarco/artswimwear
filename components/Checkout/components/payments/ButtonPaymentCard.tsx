@@ -60,6 +60,11 @@ import {
     useIsInStripeElementsProvider,
 }                           from './ConditionalStripeElementsProvider'
 
+// midtrans:
+import {
+    useIsInMidtransScriptProvider,
+}                           from './ConditionalMidtransScriptProvider'
+
 // internals:
 import {
     useCheckoutState,
@@ -120,11 +125,12 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
     const isInStripeElementsProvider = useIsInStripeElementsProvider();
+    const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
     const supportedCardProcessors    : string[] = (
         ([
             !isInPayPalScriptProvider   ? undefined : 'paypal',
             !isInStripeElementsProvider ? undefined : 'stripe',
-            'midtrans',
+            !isInMidtransScriptProvider ? undefined : 'midtrans',
         ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
         .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))
     );
