@@ -60,9 +60,9 @@ import {
 }                           from './ConditionalPayPalHostedFieldsProvider'
 import {
     // react components:
-    PayPalHostedFieldExtendedProps,
-    PayPalHostedFieldExtended,
-}                           from '../payments/PayPalHostedFieldExtended'
+    PayPalHostedFieldWrapperProps,
+    PayPalHostedFieldWrapper,
+}                           from '../payments/PayPalHostedFieldWrapper'
 
 // stripe:
 import {
@@ -90,15 +90,15 @@ import {
 // utilities:
 const supportedCardProcessors : (typeof checkoutConfigClient.payment.preferredProcessors) = ['paypal', 'stripe', 'midtrans'];
 
-const cardNumberOptions       : PayPalHostedFieldExtendedProps['options'] = {
+const cardNumberOptions       : PayPalHostedFieldWrapperProps['options'] = {
     selector    : '#cardNumber',
     placeholder : '1111-2222-3333-4444',
 };
-const cardExpiresOptions      : PayPalHostedFieldExtendedProps['options'] = {
+const cardExpiresOptions      : PayPalHostedFieldWrapperProps['options'] = {
     selector    : '#cardExpires',
     placeholder : '11/2020',
 };
-const cardCvvOptions          : PayPalHostedFieldExtendedProps['options'] = {
+const cardCvvOptions          : PayPalHostedFieldWrapperProps['options'] = {
     selector    : '#cardCvv',
     placeholder : '123',
 };
@@ -378,7 +378,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <PayPalHostedFieldExtended
+                        <PayPalHostedFieldWrapper
                             // identifiers:
                             id='cardNumber'
                             
@@ -506,7 +506,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <PayPalHostedFieldExtended
+                        <PayPalHostedFieldWrapper
                             // identifiers:
                             id='cardExpires'
                             
@@ -609,7 +609,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <PayPalHostedFieldExtended
+                        <PayPalHostedFieldWrapper
                             // identifiers:
                             id='cardCvv'
                             

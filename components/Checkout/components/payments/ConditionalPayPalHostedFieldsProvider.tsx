@@ -22,7 +22,7 @@ import {
 import {
     // styles:
     hostedFieldsStyle,
-}                           from '../payments/PayPalHostedFieldExtended'
+}                           from '../payments/PayPalHostedFieldWrapper'
 
 // paypal:
 import {

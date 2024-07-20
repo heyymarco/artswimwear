@@ -41,6 +41,11 @@ import {
     inputValues,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// // styles:
+// import {
+//     usePayPalHostedFieldStyleSheet,
+// }                           from './styles/loader'
+
 // paypal:
 import type {
     HostedFieldsEvent,
@@ -99,7 +104,7 @@ export const hostedFieldsStyle = {
 
 
 // react components:
-export interface PayPalHostedFieldExtendedProps
+export interface PayPalHostedFieldWrapperProps
     extends
         EditableTextControlProps,
         Pick<PayPalHostedFieldProps,
@@ -119,7 +124,7 @@ export interface PayPalHostedFieldExtendedProps
     // formats:
     hostedFieldType : HostedFieldsHostedFieldsFieldName
 }
-const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
+const PayPalHostedFieldWrapper = (props: PayPalHostedFieldWrapperProps) => {
     // rest props:
     const {
         // identifiers:
@@ -131,6 +136,11 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
         hostedFieldType,
         options,
     ...restEditableTextControlProps} = props;
+    
+    
+    
+    // // styles:
+    // const styleSheet = usePayPalHostedFieldStyleSheet();
     
     
     
@@ -247,6 +257,11 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
                 
                 
                 
+                // classes:
+                // className={styleSheet.main} // doesn't work for focusing/blurring
+                
+                
+                
                 // formats:
                 hostedFieldType={hostedFieldType}
                 
@@ -305,6 +320,6 @@ const PayPalHostedFieldExtended = (props: PayPalHostedFieldExtendedProps) => {
     );
 };
 export {
-    PayPalHostedFieldExtended,
-    PayPalHostedFieldExtended as default,
+    PayPalHostedFieldWrapper,
+    PayPalHostedFieldWrapper as default,
 };
