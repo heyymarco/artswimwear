@@ -21,6 +21,9 @@ import {
 import {
     Elements,
 }                           from '@stripe/react-stripe-js'
+import {
+    IsInStripeElementsProviderContextProvider,
+}                           from './states/isInStripeElementsProvider'
 
 // internals:
 import {
@@ -29,7 +32,7 @@ import {
 }                           from '@/components/Cart'
 import {
     useCheckoutState,
-}                           from '../../states/checkoutState'
+}                           from '../../../states/checkoutState'
 
 // configs:
 import {
@@ -118,7 +121,9 @@ const ImplementedStripeElementsProvider = (props: ImplementedStripeElementsProvi
             stripe={stripePromise}
             options={stripeOptions}
         >
-            {children}
+            <IsInStripeElementsProviderContextProvider>
+                {children}
+            </IsInStripeElementsProviderContextProvider>
         </Elements>
     );
 };

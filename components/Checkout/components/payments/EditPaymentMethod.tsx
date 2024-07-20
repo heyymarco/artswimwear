@@ -66,6 +66,7 @@ import {
 
 // stripe:
 import {
+    useIsInStripeElementsProvider,
     ConditionalStripeElementsProvider,
 }                           from './ConditionalStripeElementsProvider'
 
@@ -138,11 +139,12 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     
     
     
-    const isInPayPalScriptProvider = useIsInPayPalScriptProvider();
-    const isPayUsingPaypal         = isInPayPalScriptProvider && (appropriatePaymentProcessors.includes('paypal'));
-    const isPayUsingStripe         = appropriatePaymentProcessors.includes('stripe');
-    const isPayUsingMidtrans       = (appropriatePaymentProcessors.includes('midtrans'));
-    const canPayUsingBank          = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency);
+    const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
+    const isInStripeElementsProvider = useIsInStripeElementsProvider();
+    const isPayUsingPaypal           = isInPayPalScriptProvider   && appropriatePaymentProcessors.includes('paypal');
+    const isPayUsingStripe           = isInStripeElementsProvider && appropriatePaymentProcessors.includes('stripe');
+    const isPayUsingMidtrans         = (appropriatePaymentProcessors.includes('midtrans'));
+    const canPayUsingBank            = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency);
     
     
     

@@ -55,6 +55,11 @@ import {
     useIsInPayPalScriptProvider,
 }                           from './ConditionalPayPalScriptProvider'
 
+// stripe:
+import {
+    useIsInStripeElementsProvider,
+}                           from './ConditionalStripeElementsProvider'
+
 // internals:
 import {
     useCheckoutState,
@@ -114,16 +119,19 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     
     const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
+    const isInStripeElementsProvider = useIsInStripeElementsProvider();
     const supportedCardProcessors    : string[] = (
         ([
-            !isInPayPalScriptProvider ? undefined : 'paypal',
-            'stripe',
+            !isInPayPalScriptProvider   ? undefined : 'paypal',
+            !isInStripeElementsProvider ? undefined : 'stripe',
             'midtrans',
         ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
         .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))
     );
     const priorityPaymentProcessor   = appropriatePaymentProcessors.find((processor) => supportedCardProcessors.includes(processor)); // find the highest priority payment processor that supports card payment
     const isPayUsingPaypalPriority   = (priorityPaymentProcessor === 'paypal');
+    const isPayUsingStripePriority   = (priorityPaymentProcessor === 'stripe');
+    const isPayUsingMidtransPriority = (priorityPaymentProcessor === 'midtrans');
     
     
     
@@ -132,9 +140,8 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     const handlePayButtonClick = useEvent(async () => {
         const paypalDoPlaceOrder = hostedFields.cardFields?.submit;
         const paymentCardSectionElm = paymentCardSectionRef?.current;
-        const proxyDoPlaceOrder : (() => Promise<DraftOrderDetail|undefined>)|undefined = (
-            isPayUsingPaypalPriority
-            ? (
+        const proxyDoPlaceOrder : (() => Promise<DraftOrderDetail|undefined>)|undefined = (() => {
+            if (isPayUsingPaypalPriority) return (
                 (!paymentCardSectionElm || (typeof(paypalDoPlaceOrder) !== 'function')) // validate that `submit()` exists before invoke it
                 ? undefined
                 : async (): Promise<DraftOrderDetail> => {
@@ -181,8 +188,9 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                         redirectData : undefined,
                     };
                 }
-            )
-            : (
+            );
+            else if (isPayUsingStripePriority) return undefined;
+            else if (isPayUsingMidtransPriority) return (
                 !paymentCardSectionElm
                 ? undefined
                 : async (): Promise<DraftOrderDetail|undefined> => {
@@ -224,8 +232,9 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                     if (!draftOrderDetail) return undefined;
                     return draftOrderDetail;
                 }
-            )
-        );
+            );
+            else return undefined;
+        })();
         if (!proxyDoPlaceOrder) return;
         
         

@@ -78,6 +78,10 @@ import {
     CardCvcElement,
 }                           from '@stripe/react-stripe-js'
 import {
+    useIsInStripeElementsProvider,
+    IfInStripeElementsProvider,
+}                           from './ConditionalStripeElementsProvider'
+import {
     // react components:
     StripeHostedFieldWrapper,
 }                           from '../payments/StripeHostedFieldWrapper'
@@ -148,10 +152,11 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
     
     
     const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
+    const isInStripeElementsProvider = useIsInStripeElementsProvider();
     const supportedCardProcessors    : string[] = (
         ([
-            !isInPayPalScriptProvider ? undefined : 'paypal',
-            'stripe',
+            !isInPayPalScriptProvider   ? undefined : 'paypal',
+            !isInStripeElementsProvider ? undefined : 'stripe',
             'midtrans',
         ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
         .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))
@@ -346,43 +351,45 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 </p>
             </div>
             
-            {/* conditional re-render */}
-            {isPayUsingStripePriority && <InputWithLabel
-                // appearances:
-                icon='credit_card'
-                
-                
-                
-                // classes:
-                className='number'
-                
-                
-                
-                // components:
-                inputComponent={
-                    <StripeHostedFieldWrapper
-                        // accessibilities:
-                        aria-label='Card Number'
-                        
-                        
-                        
-                        // validations:
-                        enableValidation={isPayUsingStripePriority ? undefined : false}
-                        
-                        
-                        
-                        // components:
-                        cardElementComponent={
-                            <CardNumberElement />
-                        }
-                    />
-                }
-                
-                
-                
-                // children:
-                childrenAfter={labelCardNumber}
-            />}
+            <IfInStripeElementsProvider>
+                {/* conditional re-render */}
+                {isPayUsingStripePriority && <InputWithLabel
+                    // appearances:
+                    icon='credit_card'
+                    
+                    
+                    
+                    // classes:
+                    className='number'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <StripeHostedFieldWrapper
+                            // accessibilities:
+                            aria-label='Card Number'
+                            
+                            
+                            
+                            // validations:
+                            enableValidation={isPayUsingStripePriority ? undefined : false}
+                            
+                            
+                            
+                            // components:
+                            cardElementComponent={
+                                <CardNumberElement />
+                            }
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardNumber}
+                />}
+            </IfInStripeElementsProvider>
             <IfInPayPalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
@@ -486,43 +493,45 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 childrenAfter={labelCardName}
             />
             
-            {/* conditional re-render */}
-            {isPayUsingStripePriority && <InputWithLabel
-                // appearances:
-                icon='date_range'
-                
-                
-                
-                // classes:
-                className='expiry'
-                
-                
-                
-                // components:
-                inputComponent={
-                    <StripeHostedFieldWrapper
-                        // accessibilities:
-                        aria-label='Card Expires'
-                        
-                        
-                        
-                        // validations:
-                        enableValidation={isPayUsingStripePriority ? undefined : false}
-                        
-                        
-                        
-                        // components:
-                        cardElementComponent={
-                            <CardExpiryElement />
-                        }
-                    />
-                }
-                
-                
-                
-                // children:
-                childrenAfter={labelCardExpiry}
-            />}
+            <IfInStripeElementsProvider>
+                {/* conditional re-render */}
+                {isPayUsingStripePriority && <InputWithLabel
+                    // appearances:
+                    icon='date_range'
+                    
+                    
+                    
+                    // classes:
+                    className='expiry'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <StripeHostedFieldWrapper
+                            // accessibilities:
+                            aria-label='Card Expires'
+                            
+                            
+                            
+                            // validations:
+                            enableValidation={isPayUsingStripePriority ? undefined : false}
+                            
+                            
+                            
+                            // components:
+                            cardElementComponent={
+                                <CardExpiryElement />
+                            }
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardExpiry}
+                />}
+            </IfInStripeElementsProvider>
             <IfInPayPalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
@@ -601,43 +610,45 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 childrenAfter={labelCardExpiry}
             />}
             
-            {/* conditional re-render */}
-            {isPayUsingStripePriority && <InputWithLabel
-                // appearances:
-                icon='edit'
-                
-                
-                
-                // classes:
-                className='csc'
-                
-                
-                
-                // components:
-                inputComponent={
-                    <StripeHostedFieldWrapper
-                        // accessibilities:
-                        aria-label='Card CSC/CVV'
-                        
-                        
-                        
-                        // validations:
-                        enableValidation={isPayUsingStripePriority ? undefined : false}
-                        
-                        
-                        
-                        // components:
-                        cardElementComponent={
-                            <CardCvcElement />
-                        }
-                    />
-                }
-                
-                
-                
-                // children:
-                childrenAfter={labelCardCvv}
-            />}
+            <IfInStripeElementsProvider>
+                {/* conditional re-render */}
+                {isPayUsingStripePriority && <InputWithLabel
+                    // appearances:
+                    icon='edit'
+                    
+                    
+                    
+                    // classes:
+                    className='csc'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <StripeHostedFieldWrapper
+                            // accessibilities:
+                            aria-label='Card CSC/CVV'
+                            
+                            
+                            
+                            // validations:
+                            enableValidation={isPayUsingStripePriority ? undefined : false}
+                            
+                            
+                            
+                            // components:
+                            cardElementComponent={
+                                <CardCvcElement />
+                            }
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardCvv}
+                />}
+            </IfInStripeElementsProvider>
             <IfInPayPalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
