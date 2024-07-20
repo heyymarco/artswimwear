@@ -72,8 +72,8 @@ import {
 }                           from '@stripe/react-stripe-js'
 import {
     // react components:
-    StripeCardFieldWrapper,
-}                           from '../payments/StripeCardFieldWrapper'
+    StripeHostedFieldWrapper,
+}                           from '../payments/StripeHostedFieldWrapper'
 
 // internals:
 import {
@@ -346,7 +346,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <StripeCardFieldWrapper
+                        <StripeHostedFieldWrapper
                             // validations:
                             enableValidation={isPayUsingStripePriority ? undefined : false}
                             
@@ -474,7 +474,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <StripeCardFieldWrapper
+                        <StripeHostedFieldWrapper
                             // validations:
                             enableValidation={isPayUsingStripePriority ? undefined : false}
                             
@@ -577,7 +577,7 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <StripeCardFieldWrapper
+                        <StripeHostedFieldWrapper
                             // validations:
                             enableValidation={isPayUsingStripePriority ? undefined : false}
                             

@@ -40,6 +40,11 @@ import {
     inputValues,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// styles:
+import {
+    useStripeHostedFieldStyleSheet,
+}                           from './styles/loader'
+
 // stripe:
 import {
     type StripeCardNumberElementChangeEvent,
@@ -102,19 +107,24 @@ export type CardBaseElementProps =
     |CardNumberElementProps
     |CardExpiryElementProps
     |CardCvcElementProps
-export interface StripeCardFieldWrapperProps
+export interface StripeHostedFieldWrapperProps
     extends
         EditableTextControlProps
 {
     // components:
     cardElementComponent : React.ReactElement<CardBaseElementProps>
 }
-const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
+const StripeHostedFieldWrapper = (props: StripeHostedFieldWrapperProps) => {
     // rest props:
     const {
         // components:
         cardElementComponent,
     ...restEditableTextControlProps} = props;
+    
+    
+    
+    // styles:
+    const styleSheet = useStripeHostedFieldStyleSheet();
     
     
     
@@ -150,10 +160,15 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
                 
                 
                 
+                // classes:
+                className : styleSheet.main,
+                
+                
+                
                 // hanlders:
-                onFocus  : handleFocus,
-                onBlur   : handleBlur,
-                onChange : handleChange,
+                onFocus   : handleFocus,
+                onBlur    : handleBlur,
+                onChange  : handleChange,
             },
         );
     }, []);
@@ -183,6 +198,6 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     );
 };
 export {
-    StripeCardFieldWrapper,
-    StripeCardFieldWrapper as default,
+    StripeHostedFieldWrapper,
+    StripeHostedFieldWrapper as default,
 };
