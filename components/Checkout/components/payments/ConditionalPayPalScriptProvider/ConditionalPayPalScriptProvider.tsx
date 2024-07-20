@@ -47,6 +47,11 @@ import {
 const ConditionalPayPalScriptProvider = ({children}: React.PropsWithChildren) => {
     // states:
     const {
+        // accessibilities:
+        currency,
+    } = useCartState();
+    
+    const {
         // payment data:
         paymentSession,
     } = useCheckoutState();
@@ -61,6 +66,8 @@ const ConditionalPayPalScriptProvider = ({children}: React.PropsWithChildren) =>
         !clientId
         ||
         !paymentSession
+        ||
+        !checkoutConfigClient.payment.processors.paypal.supportedCurrencies.includes(currency) // the selected currency is not supported
     ) {
         // jsx:
         return (
@@ -78,6 +85,7 @@ const ConditionalPayPalScriptProvider = ({children}: React.PropsWithChildren) =>
             // options:
             clientId={clientId}
             paymentSession={paymentSession}
+            currency={currency}
         >
             {children}
         </ImplementedPayPalScriptProvider>
@@ -87,6 +95,7 @@ interface ImplementedPayPalScriptProviderProps {
     // options:
     clientId       : string
     paymentSession : PaymentSession
+    currency       : string
     
     
     
@@ -99,6 +108,7 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
         // options:
         clientId,
         paymentSession,
+        currency,
         
         
         
@@ -108,19 +118,11 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
     
     
     
-    // states:
-    const {
-        // accessibilities:
-        currency,
-    } = useCartState();
-    
-    
-    
     // options:
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
         'client-id'         : clientId,
         'data-client-token' : paymentSession.token,
-        currency            : checkoutConfigClient.payment.processors.paypal.supportedCurrencies.includes(currency) ? currency : 'USD',
+        currency            :  currency.toUpperCase(),
         intent              : 'capture',
         components          : 'hosted-fields,buttons',
     }), [clientId, paymentSession, currency]);
