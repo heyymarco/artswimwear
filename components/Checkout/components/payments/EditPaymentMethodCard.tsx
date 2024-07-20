@@ -354,7 +354,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
         >
             <div className='instruct'>
                 <p>
-                    Fill in your credit card information below and then click the <em>Pay Now</em> button:
+                    Fill in your <strong>credit card information</strong> below, enter <strong>billing address</strong>, and then click the <strong>Pay Now</strong> button:
                 </p>
             </div>
             
@@ -774,6 +774,11 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 <hr className='horz2' />
             </Collapse>
             
+            <div className='verify'>
+                <p>
+                    Make sure the information above is correct. Click <strong>Pay Now</strong> button below to process the payment:
+                </p>
+            </div>
             <ButtonPaymentCard />
         </ValidationProvider>
     );

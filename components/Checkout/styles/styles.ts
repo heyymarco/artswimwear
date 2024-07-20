@@ -604,6 +604,7 @@ export default () => {
                     '"csc      " auto',
                     '"horz1    " auto',
                     '"billing  " auto',
+                    '"verify   " auto',
                     '"payButton" auto',
                     '/',
                     '1fr'
@@ -616,6 +617,7 @@ export default () => {
                         '"expiry          csc" auto',
                         '"horz1         horz1" auto',
                         '"billing     billing" auto',
+                        '"verify       verify" auto',
                         '"payButton payButton" auto',
                         '/',
                         '1fr 1fr'
@@ -651,6 +653,9 @@ export default () => {
                         marginBlockStart: '1rem',
                         marginBlockEnd  : 0,
                     }),
+                }),
+                ...children('.verify', {
+                    gridArea: 'verify',
                 }),
                 ...children('.payButton', {
                     gridArea: 'payButton',
