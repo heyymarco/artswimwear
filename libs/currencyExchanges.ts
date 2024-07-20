@@ -2,10 +2,14 @@
 import {
     trimNumber,
 }                           from '@/libs/formatters'
+import {
+    sumReducer,
+}                           from '@/libs/numbers'
 
 // models:
-import type {
-    OrderCurrencyDetail,
+import {
+    type ProductPricePart,
+    type OrderCurrencyDetail,
 }                           from '@/models'
 
 // configs:
@@ -131,4 +135,54 @@ export const convertForeignToSystemCurrencyIfRequired = async <TNumber extends n
     
     
     return trimNumber(stepped) as TNumber;
+}
+
+
+
+export const convertAndSumAmount = async (amount: number|null|undefined | Array<ProductPricePart|number|null|undefined>, customerCurrency: string|OrderCurrencyDetail): Promise<number|null|undefined> => {
+    const amountList = (
+        !Array.isArray(amount)
+        ? [amount]
+        : amount
+    );
+    if (!amountList.length) return undefined; // empty => nothing to convert
+    
+    
+    
+    /*
+        ConvertCurrency *each* item first, then sum them all.
+        Do not sum first, to avoid precision error.
+    */
+    const summedAmount = (
+        (await Promise.all(
+            amountList
+            .flatMap((amountItem): Promise<number|null|undefined> => {
+                if (amountItem && typeof(amountItem) === 'object') {
+                    const {
+                        priceParts,
+                        quantity,
+                    } = amountItem;
+                    
+                    return (
+                        Promise.all(
+                            priceParts
+                            .map((pricePart): Promise<number> =>
+                                convertCustomerCurrencyIfRequired(pricePart, customerCurrency)
+                            )
+                        )
+                        .then((priceParts): number =>
+                            priceParts
+                            .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
+                            *
+                            quantity               // may produces ugly_fractional_decimal
+                        )
+                    );
+                } else {
+                    return convertCustomerCurrencyIfRequired(amountItem, customerCurrency);
+                } // if
+            })
+        ))
+        .reduce(sumReducer, undefined)             // may produces ugly_fractional_decimal
+    );
+    return summedAmount;
 }

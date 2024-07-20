@@ -60,43 +60,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     
     
     // no need to convert. The saved amount is already in customer's preference currency
-    // const convertedAmount = (
-    //     (await Promise.all(
-    //         amountList
-    //         .flatMap((amountItem): number|null|undefined | Promise<number|null|undefined> => {
-    //             if (amountItem && typeof(amountItem) === 'object') {
-    //                 const {
-    //                     priceParts,
-    //                     quantity,
-    //                 } = amountItem;
-    //                 
-    //                 return (
-    //                     Promise.all(
-    //                         priceParts
-    //                         .map((pricePart): number | Promise<number> =>
-    //                             !!currency
-    //                             ? convertCustomerCurrencyIfRequired(pricePart, currency)
-    //                             : pricePart
-    //                         )
-    //                     )
-    //                     .then((priceParts): number =>
-    //                         priceParts
-    //                         .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
-    //                         *
-    //                         quantity               // may produces ugly_fractional_decimal
-    //                     )
-    //                 );
-    //             } else {
-    //                 return (
-    //                     !!currency
-    //                     ? convertCustomerCurrencyIfRequired(amountItem, currency)
-    //                     : amountItem
-    //                 );
-    //             } // if
-    //         })
-    //     ))
-    //     .reduce(sumReducer, undefined)             // may produces ugly_fractional_decimal
-    // );
+    // const convertedAmount2 = await convertAndSumAmount(amountList, currency);
     
     
     

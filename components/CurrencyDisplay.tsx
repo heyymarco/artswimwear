@@ -33,11 +33,8 @@ import {
     formatCurrency,
 }                           from '@/libs/formatters'
 import {
-    convertCustomerCurrencyIfRequired,
+    convertAndSumAmount,
 }                           from '@/libs/currencyExchanges'
-import {
-    sumReducer,
-}                           from '@/libs/numbers'
 
 
 
@@ -82,41 +79,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
         
         // actions:
         (async () => {
-            /*
-                ConvertCurrency *each* item first, then sum them all.
-                Do not sum first, to avoid precision error.
-            */
-            const summedAmount = (
-                (await Promise.all(
-                    amountList
-                    .flatMap((amountItem): Promise<number|null|undefined> => {
-                        if (amountItem && typeof(amountItem) === 'object') {
-                            const {
-                                priceParts,
-                                quantity,
-                            } = amountItem;
-                            
-                            return (
-                                Promise.all(
-                                    priceParts
-                                    .map((pricePart): Promise<number> =>
-                                        convertCustomerCurrencyIfRequired(pricePart, currency)
-                                    )
-                                )
-                                .then((priceParts): number =>
-                                    priceParts
-                                    .reduce(sumReducer, 0) // may produces ugly_fractional_decimal
-                                    *
-                                    quantity               // may produces ugly_fractional_decimal
-                                )
-                            );
-                        } else {
-                            return convertCustomerCurrencyIfRequired(amountItem, currency);
-                        } // if
-                    })
-                ))
-                .reduce(sumReducer, undefined)             // may produces ugly_fractional_decimal
-            );
+            const summedAmount = await convertAndSumAmount(amountList, currency);
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(summedAmount);
         })();
