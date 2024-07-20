@@ -77,10 +77,6 @@ import {
 // internals:
 import {
     // utilities:
-    sumReducer,
-}                           from './utilities'
-import {
-    // utilities:
     createDraftOrder,
     findDraftOrderById,
     
@@ -123,6 +119,9 @@ import {
     
     convertCustomerCurrencyIfRequired,
 }                           from '@/libs/currencyExchanges'
+import {
+    sumReducer,
+}                           from '@/libs/numbers'
 import {
     getMatchingShipping,
     calculateShippingCost,
