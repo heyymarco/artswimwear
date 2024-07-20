@@ -32,7 +32,7 @@ const CreditCardCvvEditor = <TElement extends Element = HTMLSpanElement>(props: 
     // default props:
     const {
         // accessibilities:
-        'aria-label' : ariaLabel = 'Card CVV Number',
+        'aria-label' : ariaLabel = 'Card CSC/CVV',
         placeholder              = '123',
         
         
