@@ -387,6 +387,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             
                             
                             
+                            // accessibilities:
+                            aria-label='Card Number'
+                            
+                            
+                            
                             // classes:
                             className='hostedField'
                             
@@ -515,6 +520,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                             
                             
                             
+                            // accessibilities:
+                            aria-label='Card Expires'
+                            
+                            
+                            
                             // classes:
                             className='hostedField'
                             
@@ -615,6 +625,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                         <PayPalHostedFieldWrapper
                             // identifiers:
                             id='cardCvv'
+                            
+                            
+                            
+                            // accessibilities:
+                            aria-label='Card CSC/CVV'
                             
                             
                             

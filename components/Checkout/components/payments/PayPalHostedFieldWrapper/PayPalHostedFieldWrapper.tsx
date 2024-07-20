@@ -135,7 +135,7 @@ const PayPalHostedFieldWrapper = (props: PayPalHostedFieldWrapperProps) => {
         // formats:
         hostedFieldType,
         options,
-    ...restEditableTextControlProps} = props;
+    ...restPayPalHostedFieldWrapperProps} = props;
     
     
     
@@ -297,6 +297,24 @@ const PayPalHostedFieldWrapper = (props: PayPalHostedFieldWrapperProps) => {
     
     
     
+    // default props:
+    const {
+        // accessibilities:
+        tabIndex     : editableTabIndex  = -1,
+        'aria-label' : editableAriaLabel = placeholder,
+        
+        
+        
+        // states:
+        focused      : editableFocused   = isFocused ?? false,
+        isValid      : editableIsValid   = isValid   ?? null,
+        
+        
+        ...restEditableTextControlProps
+    } = restPayPalHostedFieldWrapperProps;
+    
+    
+    
     // jsx:
     return (
         <EditableTextControl
@@ -306,14 +324,14 @@ const PayPalHostedFieldWrapper = (props: PayPalHostedFieldWrapperProps) => {
             
             
             // accessibilities:
-            tabIndex   = {-1}
-            aria-label = {placeholder}
+            tabIndex   = {editableTabIndex}
+            aria-label = {editableAriaLabel}
             
             
             
             // states:
-            focused    = {isFocused ?? false}
-            isValid    = {isValid   ?? null }
+            focused    = {editableFocused}
+            isValid    = {editableIsValid}
         >
             {cachedHostedField}
         </EditableTextControl>
