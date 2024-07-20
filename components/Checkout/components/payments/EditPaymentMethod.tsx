@@ -104,14 +104,20 @@ import {
 // react components:
 const EditPaymentMethod = (): JSX.Element|null => {
     // jsx:
+    /*
+        The <ConditionalStripeElementsProvider> must be on top of <ConditionalPayPalScriptProvider>
+        to avoid re-render error from <ConditionalStripeElementsProvider>
+        Error:
+        Error: Failed to render <PayPalHostedFieldsProvider /> component. BraintreeError: Element already contains a Braintree iframe.
+    */
     return (
-        <ConditionalPayPalScriptProvider>
-            <ConditionalStripeElementsProvider>
+        <ConditionalStripeElementsProvider>
+            <ConditionalPayPalScriptProvider>
                 <ConditionalMidtransScriptProvider>
                     <EditPaymentMethodInternal />
                 </ConditionalMidtransScriptProvider>
-            </ConditionalStripeElementsProvider>
-        </ConditionalPayPalScriptProvider>
+            </ConditionalPayPalScriptProvider>
+        </ConditionalStripeElementsProvider>
     );
 };
 const EditPaymentMethodInternal = (): JSX.Element|null => {
