@@ -119,7 +119,7 @@ const StripeHostedFieldWrapper = (props: StripeHostedFieldWrapperProps) => {
     const {
         // components:
         cardElementComponent,
-    ...restEditableTextControlProps} = props;
+    ...restStripeHostedFieldWrapperProps} = props;
     
     
     
@@ -175,6 +175,24 @@ const StripeHostedFieldWrapper = (props: StripeHostedFieldWrapperProps) => {
     
     
     
+    // default props:
+    const {
+        // accessibilities:
+        tabIndex     : editableTabIndex  = -1,
+        // 'aria-label' : editableAriaLabel = placeholder,
+        
+        
+        
+        // states:
+        focused      : editableFocused   = isFocused ?? false,
+        isValid      : editableIsValid   = isValid   ?? null,
+        
+        
+        ...restEditableTextControlProps
+    } = restStripeHostedFieldWrapperProps;
+    
+    
+    
     // jsx:
     return (
         <EditableTextControl
@@ -184,14 +202,14 @@ const StripeHostedFieldWrapper = (props: StripeHostedFieldWrapperProps) => {
             
             
             // accessibilities:
-            tabIndex   = {-1}
-            // aria-label = {placeholder}
+            tabIndex   = {editableTabIndex}
+            // aria-label = {editableAriaLabel}
             
             
             
             // states:
-            focused    = {isFocused ?? false}
-            isValid    = {isValid   ?? null }
+            focused    = {editableFocused}
+            isValid    = {editableIsValid}
         >
             {cachedHostedElement}
         </EditableTextControl>

@@ -350,6 +350,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     // components:
                     inputComponent={
                         <StripeHostedFieldWrapper
+                            // accessibilities:
+                            aria-label='Card Number'
+                            
+                            
+                            
                             // validations:
                             enableValidation={isPayUsingStripePriority ? undefined : false}
                             
@@ -483,6 +488,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     // components:
                     inputComponent={
                         <StripeHostedFieldWrapper
+                            // accessibilities:
+                            aria-label='Card Expires'
+                            
+                            
+                            
                             // validations:
                             enableValidation={isPayUsingStripePriority ? undefined : false}
                             
@@ -591,6 +601,11 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
                     // components:
                     inputComponent={
                         <StripeHostedFieldWrapper
+                            // accessibilities:
+                            aria-label='Card CSC/CVV'
+                            
+                            
+                            
                             // validations:
                             enableValidation={isPayUsingStripePriority ? undefined : false}
                             
