@@ -37,60 +37,50 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
 
 
 
-export const stripeCreateOrder = async (cardToken: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail> => {
+export const stripeCreateOrder = async (options: CreateOrderOptions): Promise<AuthorizedFundData> => {
     if (!stripe) throw Error('not implemented');
     
     
     
+    const {
+        currency,
+        totalCostConverted,
+        totalProductPriceConverted,
+        totalShippingCostConverted,
+        
+        detailedItems,
+        
+        hasShippingAddress,
+        shippingAddress,
+    } = options;
+    
+    
+    
     const paymentIntent = await stripe.paymentIntents.create({
-        confirm            : true,
-        currency           : options.currency.toLowerCase(),
-        amount             : options.totalCostConverted,
-        confirmation_token : cardToken,
+        currency : currency.toLowerCase(),
+        amount   : Math.ceil(totalCostConverted * 100), // TODO: fix this
+        
+        shipping : !shippingAddress ? undefined : {
+            address : {
+                country     : shippingAddress.country,
+                state       : shippingAddress.state,
+                city        : shippingAddress.city,
+                postal_code : shippingAddress.zip ?? undefined,
+                line1       : shippingAddress.address,
+                line2       : undefined,
+            },
+            name    : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
+            phone   : shippingAddress.phone,
+        },
     });
     const {
-        id,
-        status,
         client_secret,
-        
-        amount,
-        application_fee_amount,
-        
-        payment_method,
     } = paymentIntent;
     
     
     
-    switch (status) {
-        case 'requires_action': return {
-            paymentId    : id,
-            redirectData : client_secret ?? undefined,
-        } satisfies AuthorizedFundData;
-        
-        
-        
-        case 'succeeded': return {
-            type       : (!payment_method || (typeof(payment_method) !== 'object') || !payment_method.card) ? 'CUSTOM' : 'CARD',
-            brand      : (!payment_method || (typeof(payment_method) !== 'object') || !payment_method.card) ? null : payment_method.card.brand,
-            identifier : (!payment_method || (typeof(payment_method) !== 'object') || !payment_method.card) ? null : payment_method.card.last4,
-            
-            amount     : amount,
-            fee        : application_fee_amount ?? 0,
-        } satisfies PaymentDetail;
-        
-        
-        
-        // case 'canceled':
-        // case 'processing':
-        // case 'requires_capture':
-        // case 'requires_confirmation':
-        // case 'requires_payment_method':
-        
-        
-        
-        default: {
-            console.log('unexpected response: ', paymentIntent);
-            throw Error('unexpected API response');
-        }
-    } // switch
+    return {
+        paymentId    : client_secret,
+        redirectData : undefined, // no redirectData required
+    } as AuthorizedFundData;
 }

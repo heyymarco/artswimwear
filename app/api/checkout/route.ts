@@ -416,21 +416,21 @@ router
     
     
     let cardToken : string|null = null;
-    if (useStripeGateway) {
-        const {
-            cardToken: cardTokenRaw,
-        } = placeOrderData;
-        
-        if (paymentSource === 'stripeCard') {
-            if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
-                return NextResponse.json({
-                    error: 'Invalid data.',
-                }, { status: 400 }); // handled with error
-            } // if
-            cardToken = cardTokenRaw;
-        } // if
-    }
-    else if (useMidtransGateway) {
+    // if (useStripeGateway) {
+    //     const {
+    //         cardToken: cardTokenRaw,
+    //     } = placeOrderData;
+    //     
+    //     if (paymentSource === 'stripeCard') {
+    //         if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
+    //             return NextResponse.json({
+    //                 error: 'Invalid data.',
+    //             }, { status: 400 }); // handled with error
+    //         } // if
+    //         cardToken = cardTokenRaw;
+    //     } // if
+    // }
+    if (useMidtransGateway) {
         const {
             cardToken: cardTokenRaw,
         } = placeOrderData;
@@ -1050,25 +1050,25 @@ router
                     detailedItems,
                 });
             }
+            if (useStripeGateway) {
+                authorizedOrPaymentDetail = await stripeCreateOrder({
+                    currency,
+                    totalCostConverted,
+                    totalProductPriceConverted,
+                    totalShippingCostConverted,
+                    
+                    hasShippingAddress,
+                    shippingAddress,
+                    
+                    hasBillingAddress,
+                    billingAddress,
+                    
+                    detailedItems,
+                });
+            }
             else if (cardToken) {
                 let authorizedOrPaymentDetailOrDeclined : AuthorizedFundData|PaymentDetail|null;
-                if (useStripeGateway) {
-                    authorizedOrPaymentDetailOrDeclined = await stripeCreateOrder(cardToken, {
-                        currency,
-                        totalCostConverted,
-                        totalProductPriceConverted,
-                        totalShippingCostConverted,
-                        
-                        hasShippingAddress,
-                        shippingAddress,
-                        
-                        hasBillingAddress,
-                        billingAddress,
-                        
-                        detailedItems,
-                    });
-                }
-                else if (useMidtransGateway) {
+                if (useMidtransGateway) {
                     authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithCard(cardToken, orderId, {
                         currency,
                         totalCostConverted,

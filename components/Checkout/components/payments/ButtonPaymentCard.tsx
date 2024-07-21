@@ -85,45 +85,9 @@ import {
 const ButtonPaymentCard = (): JSX.Element|null => {
     // states:
     const {
-        // shipping data:
-        shippingAddress,
-        
-        
-        
-        // billing data:
-        billingAsShipping,
-        
-        billingAddress,
-        
-        
-        
         // payment data:
         appropriatePaymentProcessors,
-        
-        
-        
-        // sections:
-        paymentCardSectionRef,
-        
-        
-        
-        // actions:
-        doTransaction,
-        doPlaceOrder,
-        doMakePayment,
     } = useCheckoutState();
-    
-    const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
-    
-    
-    
-    // dialogs:
-    const {
-        showDialog,
-        showMessageError,
-        showMessageFetchError,
-    } = useDialogMessage();
-    const modal3dsRef = useRef<PromiseDialog<boolean|null|undefined>|null>(null);
     
     
     
@@ -274,13 +238,38 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
     const elements            = useElements();
     
     const proxyDoPlaceOrder   = useEvent(async (): Promise<DraftOrderDetail|undefined> => {
-        if (!stripe)   return undefined;
-        if (!elements) return undefined;
+        if (!stripe)            return undefined;
+        if (!elements)          return undefined;
+        const cardNumberElement = elements.getElement('cardNumber');
+        if (!cardNumberElement) return undefined;
+        
+        
+        
+        const draftOrderDetail = await doPlaceOrder({
+            paymentSource  : 'stripeCard',
+        });
+        if (!draftOrderDetail) return;
         
         
         
         // trigger form validation and wallet collection:
-        const {error: submitError} = await elements.submit();
+        const {error: submitError, paymentIntent} = await stripe.confirmCardPayment(draftOrderDetail.orderId, {
+            payment_method : {
+                card : cardNumberElement,
+                billing_details : !finalBillingAddress ? undefined : {
+                    address : {
+                        country     : finalBillingAddress.country,
+                        state       : finalBillingAddress.state,
+                        city        : finalBillingAddress.city,
+                        postal_code : finalBillingAddress.zip ?? undefined,
+                        line1       : finalBillingAddress.address,
+                        line2       : undefined,
+                    },
+                    name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
+                    phone           : finalBillingAddress.phone,
+                },
+            },
+        });
         if (submitError) {
             showMessageError({
                 error : <>
@@ -292,52 +281,29 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         
         
-        const {error: tokenizeError, confirmationToken} = await stripe.createConfirmationToken({
-            elements,
-            params : {
-                payment_method_data : {
-                    billing_details : !finalBillingAddress ? undefined : {
-                        address : {
-                            country     : finalBillingAddress.country,
-                            state       : finalBillingAddress.state,
-                            city        : finalBillingAddress.city,
-                            postal_code : finalBillingAddress.zip,
-                            line1       : finalBillingAddress.address,
-                            line2       : null,
-                        },
-                        name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
-                        phone           : finalBillingAddress.phone,
-                    },
-                },
-                shipping : !shippingAddress ? undefined : {
-                    address : {
-                        country     : shippingAddress.country,
-                        state       : shippingAddress.state,
-                        city        : shippingAddress.city,
-                        postal_code : shippingAddress.zip,
-                        line1       : shippingAddress.address,
-                        line2       : null,
-                    },
-                    name    : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
-                    phone   : shippingAddress.phone,
-                },
-            },
-        });
-        if (tokenizeError) {
-            showMessageError({
-                error : <>
-                    Oops, there was an error processing your transaction.
-                </>
-            });
-            return undefined;
-        } // if
+        const {
+            id,
+            next_action,
+            
+            /*
+                Status of this PaymentIntent, one of:
+                * requires_payment_method   // MAYBE happened => if the payment attempt fails (for example due to a decline), the PaymentIntent’s status returns to requires_payment_method
+                * requires_confirmation     // never happened => the `confirmCardPayment()` is already invoked
+                * requires_action           // MAYBE happened => handled by `next_action?.redirect_to_url?.url`
+                * processing                // never happened => cards are processed more quickly and don''t go into the processing status
+                * requires_capture          // never happened => if you’re separately authorizing and capturing funds, your PaymentIntent can instead move to requires_capture. In that case, attempting to capture the funds moves it to processing.
+                * canceled                  // never happened => you can cancel a PaymentIntent at any point before it’s in a processing2 or succeeded state
+                * succeeded                 // MAYBE happened => instant PAID without 3DS_verification
+            */
+            status,
+        } = paymentIntent;
         
         
         
-        return await doPlaceOrder({
-            paymentSource  : 'stripeCard',
-            cardToken      : confirmationToken.id,
-        });
+        return {
+            orderId      : id,
+            redirectData : next_action?.redirect_to_url?.url ?? undefined,
+        } satisfies DraftOrderDetail;
     });
     const proxyDoAuthenticate = useEvent(async (redirectData: string): Promise<boolean|null|undefined> => {
         if (!stripe)   return false; // payment failed
