@@ -1362,7 +1362,7 @@ router
                 // pending_paid => create new (draft)Order:
                 ? createDraftOrder(prismaTransaction, {
                     // temporary data:
-                    expiresAt                : new Date(Date.now() + (5 * 60 * 1000)), // expires in 5 minutes
+                    expiresAt                : new Date(Date.now() + (15 * 60 * 1000)), // expires in 15 minutes
                     paymentId                : authorizedOrPaymentDetail.paymentId,
                     
                     // primary data:
