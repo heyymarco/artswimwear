@@ -76,7 +76,6 @@ import {
     CardNumberElement,
     CardExpiryElement,
     CardCvcElement,
-    ExpressCheckoutElement,
 }                           from '@stripe/react-stripe-js'
 import {
     useIsInStripeElementsProvider,
@@ -779,9 +778,6 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 <p>
                     Make sure the information above is correct. Click <strong>Pay Now</strong> button below to process the payment:
                 </p>
-                <IfInStripeElementsProvider>
-                    <ExpressCheckoutElement onConfirm={() => {}} />
-                </IfInStripeElementsProvider>
             </div>
             <ButtonPaymentCard />
         </ValidationProvider>

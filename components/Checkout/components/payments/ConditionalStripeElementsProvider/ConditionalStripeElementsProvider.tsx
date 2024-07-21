@@ -28,7 +28,6 @@ import {
 }                           from '@stripe/stripe-js'
 import {
     Elements,
-    PaymentElement,
 }                           from '@stripe/react-stripe-js'
 import {
     IsInStripeElementsProviderContextProvider,
@@ -210,7 +209,6 @@ const ImplementedStripeElementsProvider = (props: ImplementedStripeElementsProvi
             stripe={stripePromise}
             options={stripeOptions}
         >
-            <PaymentElement />
             <IsInStripeElementsProviderContextProvider>
                 {children}
             </IsInStripeElementsProviderContextProvider>
