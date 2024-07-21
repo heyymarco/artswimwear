@@ -305,9 +305,9 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             redirectData : next_action?.redirect_to_url?.url ?? undefined,
         } satisfies DraftOrderDetail;
     });
-    const proxyDoAuthenticate = useEvent(async (redirectData: string): Promise<boolean|null|undefined> => {
-        if (!stripe)   return false; // payment failed
-        if (!elements) return false; // payment failed
+    const proxyDoAuthenticate = useEvent(async (redirectData: string): Promise<AuthenticatedResult> => {
+        if (!stripe)   return AuthenticatedResult.FAILED;
+        if (!elements) return AuthenticatedResult.FAILED;
         
         
         
@@ -315,11 +315,11 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             const result = await stripe.handleNextAction({
                 clientSecret : redirectData,
             });
-            if (result.error) return false; // payment failed
-            return true;; // payment succeeded
+            if (result.error) return AuthenticatedResult.FAILED;
+            return AuthenticatedResult.CAPTURED;
         }
         catch {
-            return false;
+            return AuthenticatedResult.FAILED;
         } // try
     });
     
@@ -352,7 +352,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
     const {
         showDialog,
     } = useDialogMessage();
-    const modal3dsRef = useRef<PromiseDialog<boolean|null|undefined>|null>(null);
+    const modal3dsRef = useRef<PromiseDialog<AuthenticatedResult>|null>(null);
     
     
     
@@ -401,13 +401,13 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
             cardToken      : cardToken,
         });
     });
-    const proxyDoAuthenticate = useEvent(async (redirectData: string): Promise<boolean|null|undefined> => {
-        return new Promise<boolean|null|undefined>((resolve) => {
+    const proxyDoAuthenticate = useEvent(async (redirectData: string): Promise<AuthenticatedResult> => {
+        return new Promise<AuthenticatedResult>((resolve) => {
             const MidtransNew3ds = (window as any).MidtransNew3ds;
             MidtransNew3ds.authenticate(redirectData, {
                 performAuthentication: function(redirectUrl: string){
                     // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
-                    modal3dsRef.current = showDialog<boolean|null>(
+                    modal3dsRef.current = showDialog<AuthenticatedResult>(
                         <IframeDialog
                             // accessibilities:
                             title='3DS Verification'
@@ -419,11 +419,12 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                         />
                     );
                     modal3dsRef.current.collapseEndEvent().then(({data}) => {
-                        resolve(data); // undefined : payment aborted
+                        resolve(data ?? AuthenticatedResult.CANCELED /* undefined => escape the dialog => CANCELED */);
                         modal3dsRef.current = null;
                     });
                 },
-                onSuccess: function(response: Response){
+                onSuccess: function(response: any){
+                    // 3ds authentication success, implement payment success scenario
                     /*
                         with feature type: 'authorize'
                         {
@@ -483,17 +484,23 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                             eci: "05",
                         }
                     */
-                    // 3ds authentication success, implement payment success scenario
-                    modal3dsRef.current?.closeDialog(true, 'ui'); // true: payment succeed
+                    switch (response?.transaction_status?.toLowerCase?.()) {
+                        case 'authorize':
+                            modal3dsRef.current?.closeDialog(AuthenticatedResult.AUTHORIZED, 'ui');
+                        case 'capture':
+                            modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui');
+                        default:
+                            throw Error('unexpected error');
+                    } // switch
                 },
-                onFailure: function(response: Response){
+                onFailure: function(response: any){
                     // 3ds authentication failure, implement payment failure scenario
-                    modal3dsRef.current?.closeDialog(false, 'ui'); // false     : payment failed
+                    modal3dsRef.current?.closeDialog(AuthenticatedResult.FAILED, 'ui');
                 },
-                onPending: function(response: Response){
+                onPending: function(response: any){
                     // transaction is pending, transaction result will be notified later via 
                     // HTTP POST notification, implement as you wish here
-                    modal3dsRef.current?.closeDialog(null, 'ui'); // null      : payment pending
+                    modal3dsRef.current?.closeDialog(AuthenticatedResult.PENDING, 'ui');
                     // TODO: handle pending transaction
                 },
             });
@@ -511,9 +518,37 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
         />
     );
 };
+const enum AuthenticatedResult {
+    /**
+     * The user is not authenticated until the timeout expires.
+     */
+    EXPIRED    = -2,
+    /**
+     * The user has decided to cancel the transaction.
+     */
+    CANCELED   = -1,
+    /**
+     * An error occured.  
+     * Usually using invalid card.
+     */
+    FAILED     = 0,
+    
+    /**
+     * Requires to capture the funds in server side.
+     */
+    AUTHORIZED = 1,
+    /**
+     * The transaction was successful but the funds have not yet settled your account.
+     */
+    PENDING    = 2,
+    /**
+     * The transaction was successful and the funds have settled your account.
+     */
+    CAPTURED   = 3,
+}
 interface ButtonPaymentGeneralProps {
     doPlaceOrder    : () => Promise<DraftOrderDetail|undefined>
-    doAuthenticate ?: (redirectData: string) => Promise<boolean|null|undefined>
+    doAuthenticate ?: (redirectData: string) => Promise<AuthenticatedResult>
 }
 const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|null => {
     // props:
@@ -527,6 +562,8 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
     // states:
     const {
         // actions:
+        // gotoFinished,
+        
         doTransaction,
         doMakePayment,
     } = useCheckoutState();
@@ -554,7 +591,25 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 const redirectData = draftOrderDetail.redirectData;
                 if (redirectData /* not undefined && not empty_string */ && proxyDoAuthenticate) {
                     switch (await proxyDoAuthenticate(redirectData) /* trigger `authenticate` function */) {
-                        case undefined: { // payment canceled or expired
+                        case AuthenticatedResult.FAILED     : {
+                            showMessageError({
+                                error: <>
+                                    <p>
+                                        The credit card <strong>verification failed</strong>.
+                                    </p>
+                                    <p>
+                                        <strong>No funds</strong> have been deducted.
+                                    </p>
+                                    <p>
+                                        Please try using another card.
+                                    </p>
+                                </>
+                            });
+                            return;
+                        }
+                        
+                        case AuthenticatedResult.CANCELED   :
+                        case AuthenticatedResult.EXPIRED    : {
                             // notify cancel transaction, so the authorized payment will be released:
                             (doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true }))
                             .catch(() => {
@@ -578,30 +633,25 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                         
                         
                         
-                        case null  :   // payment pending => assumes as payment failed
-                        case false : { // payment failed
-                            showMessageError({
-                                error: <>
-                                    <p>
-                                        The credit card <strong>verification failed</strong>.
-                                    </p>
-                                    <p>
-                                        <strong>No funds</strong> have been deducted.
-                                    </p>
-                                    <p>
-                                        Please try using another card.
-                                    </p>
-                                </>
-                            });
-                            return;
+                        case AuthenticatedResult.AUTHORIZED : {
+                            // then forward the authentication to backend_API to receive the fund:
+                            await doMakePayment(draftOrderDetail.orderId, /*paid:*/true);
+                        }
+                        
+                        
+                        
+                        case AuthenticatedResult.PENDING    :
+                        case AuthenticatedResult.CAPTURED   : {
+                            // gotoFinished(); // TODO: display paid page
+                        }
+                        
+                        
+                        
+                        default : {
+                            throw Error('unexpected error');
                         }
                     } // switch
                 } // if
-                
-                
-                
-                // then forward the authentication to backend_API to receive the fund:
-                await doMakePayment(draftOrderDetail.orderId, /*paid:*/true);
             }
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
