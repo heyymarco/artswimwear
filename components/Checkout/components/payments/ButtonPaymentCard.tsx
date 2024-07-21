@@ -57,6 +57,10 @@ import {
 
 // stripe:
 import {
+    useStripe,
+    useElements,
+}                           from '@stripe/react-stripe-js'
+import {
     useIsInStripeElementsProvider,
 }                           from './ConditionalStripeElementsProvider'
 
@@ -143,6 +147,10 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     // handlers:
     const hostedFields = usePayPalHostedFields();
+    
+    const stripe       = useStripe();
+    const elements     = useElements();
+    
     const handlePayButtonClick = useEvent(async () => {
         const paypalDoPlaceOrder = hostedFields.cardFields?.submit;
         const paymentCardSectionElm = paymentCardSectionRef?.current;
@@ -196,9 +204,70 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 }
             );
             else if (isPayUsingStripePriority) return (
-                async (): Promise<DraftOrderDetail|undefined> => {
-                    showMessageError('under construction');
-                    return undefined;
+                (!stripe || !elements) // Stripe.js hasn't yet loaded. Make sure to disable form submission until Stripe.js has loaded.
+                ? undefined
+                : async (): Promise<DraftOrderDetail|undefined> => {
+                    // trigger form validation and wallet collection:
+                    const {error: submitError} = await elements.submit();
+                    if (submitError) {
+                        showMessageError({
+                            error : <>
+                                Oops, there was an error processing your transaction.
+                            </>
+                        });
+                        return undefined;
+                    } // if
+                    
+                    
+                    
+                    const {error: tokenizeError, confirmationToken} = await stripe.createConfirmationToken({
+                        elements,
+                        params : {
+                            payment_method_data : {
+                                billing_details : !finalBillingAddress ? undefined : {
+                                    address : {
+                                        country     : finalBillingAddress.country,
+                                        state       : finalBillingAddress.state,
+                                        city        : finalBillingAddress.city,
+                                        postal_code : finalBillingAddress.zip,
+                                        line1       : finalBillingAddress.address,
+                                        line2       : null,
+                                    },
+                                    name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
+                                    phone           : finalBillingAddress.phone,
+                                },
+                            },
+                            shipping : !shippingAddress ? undefined : {
+                                address : {
+                                    country     : shippingAddress.country,
+                                    state       : shippingAddress.state,
+                                    city        : shippingAddress.city,
+                                    postal_code : shippingAddress.zip,
+                                    line1       : shippingAddress.address,
+                                    line2       : null,
+                                },
+                                name    : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
+                                phone   : shippingAddress.phone,
+                            },
+                        },
+                    });
+                    if (tokenizeError) {
+                        showMessageError({
+                            error : <>
+                                Oops, there was an error processing your transaction.
+                            </>
+                        });
+                        return undefined;
+                    } // if
+                    
+                    
+                    
+                    const draftOrderDetail = await doPlaceOrder({
+                        paymentSource  : 'stripeCard',
+                        cardToken      : confirmationToken.id,
+                    });
+                    if (!draftOrderDetail) return undefined;
+                    return draftOrderDetail;
                 }
             );
             else if (isPayUsingMidtransPriority) return (
@@ -262,41 +331,67 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 if (redirectData) { // not undefined && not empty_string
                     // trigger `authenticate` function
                     const isVerified = await new Promise<boolean|null|undefined>((resolve) => {
-                        const MidtransNew3ds = (window as any).MidtransNew3ds;
-                        MidtransNew3ds.authenticate(redirectData, {
-                            performAuthentication: function(redirectUrl: string){
-                                // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
-                                modal3dsRef.current = showDialog<boolean|null>(
-                                    <IframeDialog
-                                        // accessibilities:
-                                        title='3DS Verification'
-                                        
-                                        
-                                        
-                                        // resources:
-                                        src={redirectUrl}
-                                    />
-                                );
-                                modal3dsRef.current.collapseEndEvent().then(({data}) => {
-                                    resolve(data); // undefined : payment aborted
-                                    modal3dsRef.current = null;
-                                });
-                            },
-                            onSuccess: function(response: Response){
-                                // 3ds authentication success, implement payment success scenario
-                                modal3dsRef.current?.closeDialog(true, 'ui'); // true: payment succeed
-                            },
-                            onFailure: function(response: Response){
-                                // 3ds authentication failure, implement payment failure scenario
-                                modal3dsRef.current?.closeDialog(false, 'ui'); // false     : payment failed
-                            },
-                            onPending: function(response: Response){
-                                // transaction is pending, transaction result will be notified later via 
-                                // HTTP POST notification, implement as you wish here
-                                modal3dsRef.current?.closeDialog(null, 'ui'); // null      : payment pending
-                                // TODO: handle pending transaction
-                            },
-                        });
+                        if (isPayUsingStripePriority) {
+                            if (!stripe || !draftOrderDetail.redirectData) {
+                                resolve(false); // payment failed
+                            }
+                            else {
+                                stripe.handleNextAction({
+                                    clientSecret : draftOrderDetail.redirectData,
+                                })
+                                .catch((error) => {
+                                    resolve(false); // payment failed
+                                })
+                                .then((result) => {
+                                    if (!result) {
+                                        resolve(false); // payment failed
+                                    }
+                                    else {
+                                        resolve(true); // payment succeeded
+                                    } // if
+                                })
+                            } // if
+                        }
+                        else if (isPayUsingMidtransPriority) {
+                            const MidtransNew3ds = (window as any).MidtransNew3ds;
+                            MidtransNew3ds.authenticate(redirectData, {
+                                performAuthentication: function(redirectUrl: string){
+                                    // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
+                                    modal3dsRef.current = showDialog<boolean|null>(
+                                        <IframeDialog
+                                            // accessibilities:
+                                            title='3DS Verification'
+                                            
+                                            
+                                            
+                                            // resources:
+                                            src={redirectUrl}
+                                        />
+                                    );
+                                    modal3dsRef.current.collapseEndEvent().then(({data}) => {
+                                        resolve(data); // undefined : payment aborted
+                                        modal3dsRef.current = null;
+                                    });
+                                },
+                                onSuccess: function(response: Response){
+                                    // 3ds authentication success, implement payment success scenario
+                                    modal3dsRef.current?.closeDialog(true, 'ui'); // true: payment succeed
+                                },
+                                onFailure: function(response: Response){
+                                    // 3ds authentication failure, implement payment failure scenario
+                                    modal3dsRef.current?.closeDialog(false, 'ui'); // false     : payment failed
+                                },
+                                onPending: function(response: Response){
+                                    // transaction is pending, transaction result will be notified later via 
+                                    // HTTP POST notification, implement as you wish here
+                                    modal3dsRef.current?.closeDialog(null, 'ui'); // null      : payment pending
+                                    // TODO: handle pending transaction
+                                },
+                            });
+                        }
+                        else {
+                            resolve(false); // payment failed
+                        } // if
                     });
                     switch (isVerified) {
                         case undefined: { // payment canceled or expired

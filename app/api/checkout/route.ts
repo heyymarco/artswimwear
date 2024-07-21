@@ -99,6 +99,9 @@ import {
     paypalCaptureFund,
 }                           from './paymentProcessors.paypal'
 import {
+    stripeCreateOrder,
+}                           from './paymentProcessors.stripe'
+import {
     midtransCreateOrderWithCard,
     midtransCreateOrderWithQris,
     midtransCreateOrderWithGopay,
@@ -176,7 +179,19 @@ export interface BillingData {
 }
 
 export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
-    paymentSource ?: Partial<CreateOrderData>['paymentSource']|'manual'|'midtransCard'|'midtransQris'|'gopay'|'shopeepay'|'indomaret'|'alfamart'
+    paymentSource ?:
+        // manual:
+        |'manual'
+        
+        // paypal:
+        |Partial<CreateOrderData>['paymentSource']
+        
+        // stripe:
+        |'stripeCard'
+        
+        // midtrans:
+        |'midtransCard'|'midtransQris'|'gopay'|'shopeepay'|'indomaret'|'alfamart'
+    
     cardToken     ?: string
     simulateOrder ?: boolean
     captcha       ?: string
@@ -376,7 +391,10 @@ router
         }, { status: 400 }); // handled with error
     } // if
     
-    const usePaypalGateway   = !simulateOrder && !['manual', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
+    
+    
+    const usePaypalGateway   = !simulateOrder && !['manual', 'stripeCard', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
+    const useStripeGateway   = !simulateOrder &&  ['stripeCard'].includes(paymentSource);
     const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
     
     if (usePaypalGateway && (!checkoutConfigServer.payment.processors.paypal.enabled || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
@@ -384,14 +402,35 @@ router
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    
+    if (useStripeGateway && (!checkoutConfigServer.payment.processors.stripe.enabled || !checkoutConfigServer.payment.processors.stripe.supportedCurrencies.includes(currency))) {
+        return NextResponse.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
     if (useMidtransGateway && (!checkoutConfigServer.payment.processors.midtrans.enabled || !checkoutConfigServer.payment.processors.midtrans.supportedCurrencies.includes(currency))) {
         return NextResponse.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
+    
+    
+    
     let cardToken : string|null = null;
-    if (useMidtransGateway) {
+    if (useStripeGateway) {
+        const {
+            cardToken: cardTokenRaw,
+        } = placeOrderData;
+        
+        if (paymentSource === 'stripeCard') {
+            if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
+                return NextResponse.json({
+                    error: 'Invalid data.',
+                }, { status: 400 }); // handled with error
+            } // if
+            cardToken = cardTokenRaw;
+        } // if
+    }
+    else if (useMidtransGateway) {
         const {
             cardToken: cardTokenRaw,
         } = placeOrderData;
@@ -1012,20 +1051,44 @@ router
                 });
             }
             else if (cardToken) {
-                const authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithCard(cardToken, orderId, {
-                    currency,
-                    totalCostConverted,
-                    totalProductPriceConverted,
-                    totalShippingCostConverted,
-                    
-                    hasShippingAddress,
-                    shippingAddress,
-                    
-                    hasBillingAddress,
-                    billingAddress,
-                    
-                    detailedItems,
-                });
+                let authorizedOrPaymentDetailOrDeclined : AuthorizedFundData|PaymentDetail|null;
+                if (useStripeGateway) {
+                    authorizedOrPaymentDetailOrDeclined = await stripeCreateOrder(cardToken, {
+                        currency,
+                        totalCostConverted,
+                        totalProductPriceConverted,
+                        totalShippingCostConverted,
+                        
+                        hasShippingAddress,
+                        shippingAddress,
+                        
+                        hasBillingAddress,
+                        billingAddress,
+                        
+                        detailedItems,
+                    });
+                }
+                else if (useMidtransGateway) {
+                    authorizedOrPaymentDetailOrDeclined = await midtransCreateOrderWithCard(cardToken, orderId, {
+                        currency,
+                        totalCostConverted,
+                        totalProductPriceConverted,
+                        totalShippingCostConverted,
+                        
+                        hasShippingAddress,
+                        shippingAddress,
+                        
+                        hasBillingAddress,
+                        billingAddress,
+                        
+                        detailedItems,
+                    });
+                }
+                else {
+                    throw Error('unexpected condition');
+                } // if
+                
+                
                 
                 if (authorizedOrPaymentDetailOrDeclined === null) {
                     // payment DECLINED:
@@ -1239,6 +1302,9 @@ router
                     amount     : 0,
                     fee        : 0,
                 } satisfies PaymentDetail;
+            }
+            else {
+                throw Error('unexpected condition');
             } // if
             //#endregion fetch payment gateway API
             
