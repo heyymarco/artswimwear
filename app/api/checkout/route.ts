@@ -1223,16 +1223,16 @@ router
                 else if (isAuthorizedFundData(authorizedOrPaymentDetailOrDeclined)) {
                     const {
                         paymentId,
-                        paymentCode,
-                        expires,
+                        paymentCode, // for Indomaret payment code
+                        expires,     // for Indomaret payment code expiry_date
                     } = authorizedOrPaymentDetailOrDeclined;
                     
                     authorizedOrPaymentDetail = {
                         type       : 'MANUAL',
                         brand      : 'indomaret',
-                        identifier : paymentCode ?? '',
+                        identifier : paymentCode ?? '', // for Indomaret payment code
                         paymentId  : paymentId,
-                        expiresAt  : expires,
+                        expiresAt  : expires,           // for Indomaret payment code expiry_date
                         
                         amount     : 0,
                         fee        : 0,
@@ -1272,16 +1272,16 @@ router
                 else if (isAuthorizedFundData(authorizedOrPaymentDetailOrDeclined)) {
                     const {
                         paymentId,
-                        paymentCode,
-                        expires,
+                        paymentCode, // for Alfamart payment code
+                        expires,     // for Alfamart payment code expiry_date
                     } = authorizedOrPaymentDetailOrDeclined;
                     
                     authorizedOrPaymentDetail = {
                         type       : 'MANUAL',
                         brand      : 'alfamart',
-                        identifier : paymentCode ?? '',
+                        identifier : paymentCode ?? '', // for Alfamart payment code
                         paymentId  : paymentId,
-                        expiresAt  : expires,
+                        expiresAt  : expires,           // for Alfamart payment code expiry_date
                         
                         amount     : 0,
                         fee        : 0,

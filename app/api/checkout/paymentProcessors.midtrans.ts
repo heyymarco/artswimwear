@@ -136,7 +136,7 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                 paymentId,
                                 paymentCode,  // for Indomaret|Alfamart payment code
                                 redirectData, // redirectData for 3DS verification (credit_card) // undefined for gopay, shopeepay
-                                expires,
+                                expires,      // for Indomaret|Alfamart payment code expiry_date
                             } satisfies AuthorizedFundData;
                         }
                         
