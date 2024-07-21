@@ -10,12 +10,12 @@ import {
     // hooks:
     useMemo,
     useState,
-    useEffect,
 }                           from 'react'
 
 // reusable-ui core:
 import {
     // react helper hooks:
+    useIsomorphicLayoutEffect,
     useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
@@ -99,7 +99,7 @@ const ConditionalStripeElementsProvider = ({children}: React.PropsWithChildren) 
     
     // effects:
     const isMounted = useMountedFlag();
-    useEffect(() => {
+    useIsomorphicLayoutEffect(() => {
         // conditions:
         if ((productPriceParts === undefined) || (totalShippingCost === undefined)) {
             setConvertedAmount(undefined);
