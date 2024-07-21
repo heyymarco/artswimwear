@@ -145,180 +145,379 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     
     
+    // jsx:
+    if (isPayUsingPaypalPriority  ) return <ButtonPaymentCardForPayPal />;
+    if (isPayUsingStripePriority  ) return <ButtonPaymentCardForStripe />;
+    if (isPayUsingMidtransPriority) return <ButtonPaymentCardForMidtrans />;
+    return null;
+}
+const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
+    // states:
+    const {
+        // shipping data:
+        shippingAddress,
+        
+        
+        
+        // billing data:
+        billingAsShipping,
+        
+        billingAddress,
+        
+        
+        
+        // sections:
+        paymentCardSectionRef,
+    } = useCheckoutState();
+    
+    const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
+    
+    
+    
     // handlers:
-    const hostedFields = usePayPalHostedFields();
+    const hostedFields      = usePayPalHostedFields();
     
-    const stripe       = useStripe();
-    const elements     = useElements();
-    
-    const handlePayButtonClick = useEvent(async () => {
-        const paypalDoPlaceOrder = hostedFields.cardFields?.submit;
+    const proxyDoPlaceOrder = useEvent(async (): Promise<DraftOrderDetail|undefined> => {
         const paymentCardSectionElm = paymentCardSectionRef?.current;
-        const proxyDoPlaceOrder : (() => Promise<DraftOrderDetail|undefined>)|undefined = (() => {
-            if (isPayUsingPaypalPriority) return (
-                (!paymentCardSectionElm || (typeof(paypalDoPlaceOrder) !== 'function')) // validate that `submit()` exists before invoke it
-                ? undefined
-                : async (): Promise<DraftOrderDetail> => {
-                    // submit card data to PayPal_API to get authentication:
-                    const formData = new FormData(paymentCardSectionElm);
-                    const paypalAuthentication = await paypalDoPlaceOrder({
-                        // trigger 3D Secure authentication:
-                        contingencies  : ['SCA_WHEN_REQUIRED'],
-                        
-                        cardholderName        : formData.get('cardHolder')?.toString()?.trim(), // cardholder's first and last name
-                        billingAddress : {
-                            countryCodeAlpha2 : finalBillingAddress?.country, // country Code
-                            region            : finalBillingAddress?.state,   // state
-                            locality          : finalBillingAddress?.city,    // city
-                            postalCode        : finalBillingAddress?.zip,     // postal Code
-                            streetAddress     : finalBillingAddress?.address, // street address, line 1
-                         // extendedAddress   : undefined,                    // street address, line 2 (Ex: Unit, Apartment, etc.)
+        const paypalDoPlaceOrder    = hostedFields.cardFields?.submit;
+        if (!paymentCardSectionElm) return undefined;
+        if (!paypalDoPlaceOrder)    return undefined;
+        
+        
+        
+        // submit card data to PayPal_API to get authentication:
+        const formData = new FormData(paymentCardSectionElm);
+        const paypalAuthentication = await paypalDoPlaceOrder({
+            // trigger 3D Secure authentication:
+            contingencies  : ['SCA_WHEN_REQUIRED'],
+            
+            cardholderName        : formData.get('cardHolder')?.toString()?.trim(), // cardholder's first and last name
+            billingAddress : {
+                countryCodeAlpha2 : finalBillingAddress?.country, // country Code
+                region            : finalBillingAddress?.state,   // state
+                locality          : finalBillingAddress?.city,    // city
+                postalCode        : finalBillingAddress?.zip,     // postal Code
+                streetAddress     : finalBillingAddress?.address, // street address, line 1
+             // extendedAddress   : undefined,                    // street address, line 2 (Ex: Unit, Apartment, etc.)
+            },
+        });
+        /*
+            example:
+            {
+                authenticationReason: undefined
+                authenticationStatus: "APPROVED",
+                card: {
+                    brand: "VISA",
+                    card_type: "VISA",
+                    last_digits: "7704",
+                    type: "CREDIT",
+                },
+                liabilityShift: undefined
+                liabilityShifted: undefined
+                orderId: "1N785713SG267310M"
+            }
+        */
+        const rawOrderId = paypalAuthentication.orderId;
+        const orderId = (
+            rawOrderId.startsWith('#PAYPAL_')
+            ? rawOrderId              // already prefixed => no need to modify
+            : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+        );
+        return {
+            orderId      : orderId,
+            redirectData : undefined,
+        } satisfies DraftOrderDetail;
+    });
+    
+    
+    
+    // jsx:
+    return (
+        <ButtonPaymentCardGeneral
+            // handlers:
+            doPlaceOrder={proxyDoPlaceOrder}
+        />
+    );
+};
+const ButtonPaymentCardForStripe = (): JSX.Element|null => {
+    // states:
+    const {
+        // shipping data:
+        shippingAddress,
+        
+        
+        
+        // billing data:
+        billingAsShipping,
+        
+        billingAddress,
+        
+        
+        
+        // actions:
+        doPlaceOrder,
+    } = useCheckoutState();
+    
+    const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
+    
+    
+    
+    // dialogs:
+    const {
+        showMessageError,
+    } = useDialogMessage();
+    
+    
+    
+    // handlers:
+    const stripe              = useStripe();
+    const elements            = useElements();
+    
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<DraftOrderDetail|undefined> => {
+        if (!stripe)   return undefined;
+        if (!elements) return undefined;
+        
+        
+        
+        // trigger form validation and wallet collection:
+        const {error: submitError} = await elements.submit();
+        if (submitError) {
+            showMessageError({
+                error : <>
+                    Oops, there was an error processing your transaction.
+                </>
+            });
+            return undefined;
+        } // if
+        
+        
+        
+        const {error: tokenizeError, confirmationToken} = await stripe.createConfirmationToken({
+            elements,
+            params : {
+                payment_method_data : {
+                    billing_details : !finalBillingAddress ? undefined : {
+                        address : {
+                            country     : finalBillingAddress.country,
+                            state       : finalBillingAddress.state,
+                            city        : finalBillingAddress.city,
+                            postal_code : finalBillingAddress.zip,
+                            line1       : finalBillingAddress.address,
+                            line2       : null,
                         },
-                    });
-                    /*
-                        example:
-                        {
-                            authenticationReason: undefined
-                            authenticationStatus: "APPROVED",
-                            card: {
-                                brand: "VISA",
-                                card_type: "VISA",
-                                last_digits: "7704",
-                                type: "CREDIT",
-                            },
-                            liabilityShift: undefined
-                            liabilityShifted: undefined
-                            orderId: "1N785713SG267310M"
-                        }
-                    */
-                    const rawOrderId = paypalAuthentication.orderId;
-                    const orderId = (
-                        rawOrderId.startsWith('#PAYPAL_')
-                        ? rawOrderId              // already prefixed => no need to modify
-                        : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
-                    );
-                    return {
-                        orderId      : orderId,
-                        redirectData : undefined,
-                    };
-                }
-            );
-            else if (isPayUsingStripePriority) return (
-                (!stripe || !elements) // Stripe.js hasn't yet loaded. Make sure to disable form submission until Stripe.js has loaded.
-                ? undefined
-                : async (): Promise<DraftOrderDetail|undefined> => {
-                    // trigger form validation and wallet collection:
-                    const {error: submitError} = await elements.submit();
-                    if (submitError) {
-                        showMessageError({
-                            error : <>
-                                Oops, there was an error processing your transaction.
-                            </>
-                        });
-                        return undefined;
-                    } // if
-                    
-                    
-                    
-                    const {error: tokenizeError, confirmationToken} = await stripe.createConfirmationToken({
-                        elements,
-                        params : {
-                            payment_method_data : {
-                                billing_details : !finalBillingAddress ? undefined : {
-                                    address : {
-                                        country     : finalBillingAddress.country,
-                                        state       : finalBillingAddress.state,
-                                        city        : finalBillingAddress.city,
-                                        postal_code : finalBillingAddress.zip,
-                                        line1       : finalBillingAddress.address,
-                                        line2       : null,
-                                    },
-                                    name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
-                                    phone           : finalBillingAddress.phone,
+                        name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
+                        phone           : finalBillingAddress.phone,
+                    },
+                },
+                shipping : !shippingAddress ? undefined : {
+                    address : {
+                        country     : shippingAddress.country,
+                        state       : shippingAddress.state,
+                        city        : shippingAddress.city,
+                        postal_code : shippingAddress.zip,
+                        line1       : shippingAddress.address,
+                        line2       : null,
+                    },
+                    name    : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
+                    phone   : shippingAddress.phone,
+                },
+            },
+        });
+        if (tokenizeError) {
+            showMessageError({
+                error : <>
+                    Oops, there was an error processing your transaction.
+                </>
+            });
+            return undefined;
+        } // if
+        
+        
+        
+        return await doPlaceOrder({
+            paymentSource  : 'stripeCard',
+            cardToken      : confirmationToken.id,
+        });
+    });
+    const proxyDoAuthenticate = useEvent(async (redirectData: string): Promise<boolean|null|undefined> => {
+        if (!stripe)   return false; // payment failed
+        if (!elements) return false; // payment failed
+        
+        
+        
+        try {
+            const result = await stripe.handleNextAction({
+                clientSecret : redirectData,
+            });
+            if (result.error) return false; // payment failed
+            return true;; // payment succeeded
+        }
+        catch {
+            return false;
+        } // try
+    });
+    
+    
+    
+    // jsx:
+    return (
+        <ButtonPaymentCardGeneral
+            // handlers:
+            doPlaceOrder={proxyDoPlaceOrder}
+            doAuthenticate={proxyDoAuthenticate}
+        />
+    );
+};
+const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
+    // states:
+    const {
+        // sections:
+        paymentCardSectionRef,
+        
+        
+        
+        // actions:
+        doPlaceOrder,
+    } = useCheckoutState();
+    
+    
+    
+    // dialogs:
+    const {
+        showDialog,
+    } = useDialogMessage();
+    const modal3dsRef = useRef<PromiseDialog<boolean|null|undefined>|null>(null);
+    
+    
+    
+    // handlers:
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<DraftOrderDetail|undefined> => {
+        const paymentCardSectionElm = paymentCardSectionRef?.current;
+        if (!paymentCardSectionElm) return undefined;
+        
+        
+        
+        const MidtransNew3ds = (window as any).MidtransNew3ds;
+        const cardToken = await new Promise<string>((resolve, reject) => {
+            const formData = new FormData(paymentCardSectionElm);
+            const card = {
+                card_number         : formData.get('cardNumber' )?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
+                card_exp_month      : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[0] || undefined,
+                card_exp_year       : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[1] || undefined,
+                card_cvv            : formData.get('cardCvv'    )?.toString()?.trim(),
+                // bank_one_time_token : "12345678"
+            };
+            MidtransNew3ds.getCardToken(card, {
+                onSuccess : (response: any) => {
+                    resolve(response.token_id);
+                },
+                onFailure : (response: any) => {
+                    const defaultErrorMessage = 'Cannot make transactions with this card. Try using another card.';
+                    let errorMessage = response?.validation_messages ?? defaultErrorMessage;
+                    if (Array.isArray(errorMessage)) errorMessage = errorMessage?.[0] ?? defaultErrorMessage;
+                    reject(
+                        Error(errorMessage, {
+                            cause : new Response(errorMessage, {
+                                headers : {
+                                    'Content-Type': 'text/plain',
                                 },
-                            },
-                            shipping : !shippingAddress ? undefined : {
-                                address : {
-                                    country     : shippingAddress.country,
-                                    state       : shippingAddress.state,
-                                    city        : shippingAddress.city,
-                                    postal_code : shippingAddress.zip,
-                                    line1       : shippingAddress.address,
-                                    line2       : null,
-                                },
-                                name    : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
-                                phone   : shippingAddress.phone,
-                            },
-                        },
-                    });
-                    if (tokenizeError) {
-                        showMessageError({
-                            error : <>
-                                Oops, there was an error processing your transaction.
-                            </>
-                        });
-                        return undefined;
-                    } // if
-                    
-                    
-                    
-                    const draftOrderDetail = await doPlaceOrder({
-                        paymentSource  : 'stripeCard',
-                        cardToken      : confirmationToken.id,
-                    });
-                    if (!draftOrderDetail) return undefined;
-                    return draftOrderDetail;
-                }
-            );
-            else if (isPayUsingMidtransPriority) return (
-                !paymentCardSectionElm
-                ? undefined
-                : async (): Promise<DraftOrderDetail|undefined> => {
-                    const MidtransNew3ds = (window as any).MidtransNew3ds;
-                    const cardToken = await new Promise<string>((resolve, reject) => {
-                        const formData = new FormData(paymentCardSectionElm);
-                        const card = {
-                            card_number         : formData.get('cardNumber' )?.toString()?.trim()?.replaceAll(' ', '')?.trim(),
-                            card_exp_month      : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[0] || undefined,
-                            card_exp_year       : formData.get('cardExpires')?.toString()?.trim()?.split('/')?.[1] || undefined,
-                            card_cvv            : formData.get('cardCvv'    )?.toString()?.trim(),
-                            // bank_one_time_token : "12345678"
-                        };
-                        MidtransNew3ds.getCardToken(card, {
-                            onSuccess : (response: any) => {
-                                resolve(response.token_id);
-                            },
-                            onFailure : (response: any) => {
-                                const defaultErrorMessage = 'Cannot make transactions with this card. Try using another card.';
-                                let errorMessage = response?.validation_messages ?? defaultErrorMessage;
-                                if (Array.isArray(errorMessage)) errorMessage = errorMessage?.[0] ?? defaultErrorMessage;
-                                reject(
-                                    Error(errorMessage, {
-                                        cause : new Response(errorMessage, {
-                                            headers : {
-                                                'Content-Type': 'text/plain',
-                                            },
-                                        }),
-                                    })
-                                );
-                            },
+                            }),
                         })
+                    );
+                },
+            })
+        });
+        
+        
+        
+        return await doPlaceOrder({
+            paymentSource  : 'midtransCard',
+            cardToken      : cardToken,
+        });
+    });
+    const proxyDoAuthenticate = useEvent(async (redirectData: string): Promise<boolean|null|undefined> => {
+        return new Promise<boolean|null|undefined>((resolve) => {
+            const MidtransNew3ds = (window as any).MidtransNew3ds;
+            MidtransNew3ds.authenticate(redirectData, {
+                performAuthentication: function(redirectUrl: string){
+                    // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
+                    modal3dsRef.current = showDialog<boolean|null>(
+                        <IframeDialog
+                            // accessibilities:
+                            title='3DS Verification'
+                            
+                            
+                            
+                            // resources:
+                            src={redirectUrl}
+                        />
+                    );
+                    modal3dsRef.current.collapseEndEvent().then(({data}) => {
+                        resolve(data); // undefined : payment aborted
+                        modal3dsRef.current = null;
                     });
-                    
-                    const draftOrderDetail = await doPlaceOrder({
-                        paymentSource  : 'midtransCard',
-                        cardToken      : cardToken,
-                    });
-                    if (!draftOrderDetail) return undefined;
-                    return draftOrderDetail;
-                }
-            );
-            else return undefined;
-        })();
-        if (!proxyDoPlaceOrder) return;
-        
-        
-        
+                },
+                onSuccess: function(response: Response){
+                    // 3ds authentication success, implement payment success scenario
+                    modal3dsRef.current?.closeDialog(true, 'ui'); // true: payment succeed
+                },
+                onFailure: function(response: Response){
+                    // 3ds authentication failure, implement payment failure scenario
+                    modal3dsRef.current?.closeDialog(false, 'ui'); // false     : payment failed
+                },
+                onPending: function(response: Response){
+                    // transaction is pending, transaction result will be notified later via 
+                    // HTTP POST notification, implement as you wish here
+                    modal3dsRef.current?.closeDialog(null, 'ui'); // null      : payment pending
+                    // TODO: handle pending transaction
+                },
+            });
+        });
+    });
+    
+    
+    
+    // jsx:
+    return (
+        <ButtonPaymentCardGeneral
+            // handlers:
+            doPlaceOrder={proxyDoPlaceOrder}
+            doAuthenticate={proxyDoAuthenticate}
+        />
+    );
+};
+interface ButtonPaymentGeneralProps {
+    doPlaceOrder    : () => Promise<DraftOrderDetail|undefined>
+    doAuthenticate ?: (redirectData: string) => Promise<boolean|null|undefined>
+}
+const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|null => {
+    // props:
+    const {
+        doPlaceOrder   : proxyDoPlaceOrder,
+        doAuthenticate : proxyDoAuthenticate,
+    } = props;
+    
+    
+    
+    // states:
+    const {
+        // actions:
+        doTransaction,
+        doMakePayment,
+    } = useCheckoutState();
+    
+    
+    
+    // dialogs:
+    const {
+        showMessageError,
+        showMessageFetchError,
+    } = useDialogMessage();
+    
+    
+    
+    // handlers:
+    const handlePayButtonClick = useEvent(async () => {
         doTransaction(async () => {
             try {
                 // createOrder:
@@ -328,72 +527,8 @@ const ButtonPaymentCard = (): JSX.Element|null => {
                 
                 
                 const redirectData = draftOrderDetail.redirectData;
-                if (redirectData) { // not undefined && not empty_string
-                    // trigger `authenticate` function
-                    const isVerified = await new Promise<boolean|null|undefined>((resolve) => {
-                        if (isPayUsingStripePriority) {
-                            if (!stripe || !draftOrderDetail.redirectData) {
-                                resolve(false); // payment failed
-                            }
-                            else {
-                                stripe.handleNextAction({
-                                    clientSecret : draftOrderDetail.redirectData,
-                                })
-                                .catch((error) => {
-                                    resolve(false); // payment failed
-                                })
-                                .then((result) => {
-                                    if (!result) {
-                                        resolve(false); // payment failed
-                                    }
-                                    else {
-                                        resolve(true); // payment succeeded
-                                    } // if
-                                })
-                            } // if
-                        }
-                        else if (isPayUsingMidtransPriority) {
-                            const MidtransNew3ds = (window as any).MidtransNew3ds;
-                            MidtransNew3ds.authenticate(redirectData, {
-                                performAuthentication: function(redirectUrl: string){
-                                    // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
-                                    modal3dsRef.current = showDialog<boolean|null>(
-                                        <IframeDialog
-                                            // accessibilities:
-                                            title='3DS Verification'
-                                            
-                                            
-                                            
-                                            // resources:
-                                            src={redirectUrl}
-                                        />
-                                    );
-                                    modal3dsRef.current.collapseEndEvent().then(({data}) => {
-                                        resolve(data); // undefined : payment aborted
-                                        modal3dsRef.current = null;
-                                    });
-                                },
-                                onSuccess: function(response: Response){
-                                    // 3ds authentication success, implement payment success scenario
-                                    modal3dsRef.current?.closeDialog(true, 'ui'); // true: payment succeed
-                                },
-                                onFailure: function(response: Response){
-                                    // 3ds authentication failure, implement payment failure scenario
-                                    modal3dsRef.current?.closeDialog(false, 'ui'); // false     : payment failed
-                                },
-                                onPending: function(response: Response){
-                                    // transaction is pending, transaction result will be notified later via 
-                                    // HTTP POST notification, implement as you wish here
-                                    modal3dsRef.current?.closeDialog(null, 'ui'); // null      : payment pending
-                                    // TODO: handle pending transaction
-                                },
-                            });
-                        }
-                        else {
-                            resolve(false); // payment failed
-                        } // if
-                    });
-                    switch (isVerified) {
+                if (redirectData /* not undefined && not empty_string */ && proxyDoAuthenticate) {
+                    switch (await proxyDoAuthenticate(redirectData) /* trigger `authenticate` function */) {
                         case undefined: { // payment canceled or expired
                             // notify cancel transaction, so the authorized payment will be released:
                             (doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true }))
