@@ -428,7 +428,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             case 'requires_action'         : { // the payment requires additional actions, such as authenticating with 3D Secure
                 return {
                     orderId      : id, // paymentIntent Id
-                    redirectData : next_action?.redirect_to_url?.url ?? undefined, // will be processed by `handleNextAction()`
+                    redirectData : next_action?.redirect_to_url?.url ?? undefined, // will be handled by `proxyDoNextAction()` => `stripe.handleNextAction()`
                 } satisfies DraftOrderDetail;
             }
             
