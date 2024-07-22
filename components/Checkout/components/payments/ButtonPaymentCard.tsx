@@ -413,7 +413,9 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         switch (status) {
             // step 1:
-         // case 'requires_payment_method' :   // if the payment attempt fails (for example due to a decline)
+            case 'requires_payment_method' : { // if the payment attempt fails (for example due to a decline)
+                throw 'DECLINED';
+            }
             
             
             
@@ -559,18 +561,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                     resolve(response.token_id);
                 },
                 onFailure : (response: any) => {
-                    const defaultErrorMessage = 'Cannot make transactions with this card. Try using another card.';
-                    let errorMessage = response?.validation_messages ?? defaultErrorMessage;
-                    if (Array.isArray(errorMessage)) errorMessage = errorMessage?.[0] ?? defaultErrorMessage;
-                    reject(
-                        Error(errorMessage, {
-                            cause : new Response(errorMessage, {
-                                headers : {
-                                    'Content-Type': 'text/plain',
-                                },
-                            }),
-                        })
-                    );
+                    reject('DECLINED');
                 },
             })
         });
@@ -794,7 +785,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                                     <strong>No funds</strong> have been deducted.
                                 </p>
                                 <p>
-                                    Please try using another card.
+                                    Please try using <strong>another card</strong>.
                                 </p>
                             </>
                         });
@@ -848,7 +839,19 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 } // switch
             }
             catch (fetchError: any) {
-                if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
+                if (fetchError === 'DECLINED') {
+                    showMessageError({
+                        error: <>
+                            <p>
+                                Cannot make transactions with this card.
+                            </p>
+                            <p>
+                                Please try using <strong>another card</strong>.
+                            </p>
+                        </>
+                    });
+                }
+                else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
                 // TODO: re-generate PaypalPaymentSession
             } // try
         });
