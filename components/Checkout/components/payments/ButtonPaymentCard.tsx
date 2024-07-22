@@ -586,115 +586,120 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
         
         
         return new Promise<AuthenticatedResult>((resolve) => {
-            const MidtransNew3ds = (window as any).MidtransNew3ds;
-            MidtransNew3ds.authenticate(redirectData, {
-                performAuthentication: function(redirectUrl: string){
-                    // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
-                    modal3dsRef.current = showDialog<AuthenticatedResult>(
-                        <IframeDialog
-                            // accessibilities:
-                            title='3DS Verification'
+            try {
+                const MidtransNew3ds = (window as any).MidtransNew3ds;
+                MidtransNew3ds.authenticate(redirectData, {
+                    performAuthentication: function(redirectUrl: string){
+                        // Implement how you will open iframe to display 3ds authentication redirectUrl to customer
+                        modal3dsRef.current = showDialog<AuthenticatedResult>(
+                            <IframeDialog
+                                // accessibilities:
+                                title='3DS Verification'
+                                
+                                
+                                
+                                // resources:
+                                src={redirectUrl}
+                            />
+                        );
+                        modal3dsRef.current.collapseEndEvent().then(({data}) => {
+                            resolve(data ?? AuthenticatedResult.CANCELED /* undefined => escape the dialog => CANCELED */);
+                            modal3dsRef.current = null;
+                        });
+                    },
+                    onSuccess: function(response: any){
+                        // 3ds authentication success, implement payment success scenario
+                        /*
+                            with feature type: 'authorize'
+                            {
+                                status_code: "200",
+                                transaction_id: "a82a389b-94c9-4a82-9d01-da9dc3745615",
+                                gross_amount: "406000.00",
+                                currency: "IDR",
+                                order_id: "0465054995089660",
+                                payment_type: "credit_card",
+                                signature_key: "6f81de66301e701f9028d69eda2bdf078af9ec58bf460408520ce1fd58105d5d1fa32eb9915f257c959b63a4fed7509127b5b279ead997a037dd20f176cf8619",
+                                transaction_status: "authorize", // not paid until manually capture on server_side
+                                fraud_status: "accept",
+                                status_message: "Success, Credit Card transaction is successful",
+                                merchant_id: "G551313466",
+                                transaction_time: "2024-07-22 03:02:11",
+                                expiry_time: "2024-07-30 03:02:10",
+                                channel_response_code: "00",
+                                channel_response_message: "Approved",
+                                bank: "mandiri",
+                                approval_code: "1721592142277",
+                                masked_card: "48111111-1114",
+                                card_type: "credit",
+                                channel: "mti",
+                                three_ds_version: "2",
+                                on_us: false,
+                                challenge_completion: true,
+                                eci: "05",
+                            }
+                        */
+                        /*
+                            without feature type: 'authorize'
+                            {
+                                status_code: "200",
+                                transaction_id: "68394be2-9038-4029-8a8d-f7832d0de064",
+                                gross_amount: "406000.00",
+                                currency: "IDR",
+                                order_id: "2014825178094227",
+                                payment_type: "credit_card",
+                                signature_key: "4fc5c2f0031729965e93f4790fe5a05219fd379a059347d7a3fe3be75039301baed01050badabe8e4d1e1d2291bca7cb63b7a6bba82efa86613b9d12e5c93f9b",
+                                transaction_status: "capture", // capture => paid
+                                fraud_status: "accept",
+                                status_message: "Success, Credit Card capture transaction is successful",
+                                merchant_id: "G551313466",
+                                transaction_time: "2024-07-22 03:04:19",
+                                settlement_time: "2024-07-22 03:04:27", // settlement => paid
+                                expiry_time: "2024-07-30 03:04:19",
+                                channel_response_code: "00",
+                                channel_response_message: "Approved",
+                                bank: "mega",
+                                approval_code: "1721592267072",
+                                masked_card: "48111111-1114",
+                                card_type: "credit",
+                                channel: "dragon",
+                                three_ds_version: "2",
+                                on_us: false,
+                                challenge_completion: true,
+                                eci: "05",
+                            }
+                        */
+                        switch (response?.transaction_status?.toLowerCase?.()) {
+                            case 'authorize':
+                                modal3dsRef.current?.closeDialog(AuthenticatedResult.AUTHORIZED, 'ui'); // will be manually capture on server_side
+                                break;
                             
                             
                             
-                            // resources:
-                            src={redirectUrl}
-                        />
-                    );
-                    modal3dsRef.current.collapseEndEvent().then(({data}) => {
-                        resolve(data ?? AuthenticatedResult.CANCELED /* undefined => escape the dialog => CANCELED */);
-                        modal3dsRef.current = null;
-                    });
-                },
-                onSuccess: function(response: any){
-                    // 3ds authentication success, implement payment success scenario
-                    /*
-                        with feature type: 'authorize'
-                        {
-                            status_code: "200",
-                            transaction_id: "a82a389b-94c9-4a82-9d01-da9dc3745615",
-                            gross_amount: "406000.00",
-                            currency: "IDR",
-                            order_id: "0465054995089660",
-                            payment_type: "credit_card",
-                            signature_key: "6f81de66301e701f9028d69eda2bdf078af9ec58bf460408520ce1fd58105d5d1fa32eb9915f257c959b63a4fed7509127b5b279ead997a037dd20f176cf8619",
-                            transaction_status: "authorize", // not paid until manually capture on server_side
-                            fraud_status: "accept",
-                            status_message: "Success, Credit Card transaction is successful",
-                            merchant_id: "G551313466",
-                            transaction_time: "2024-07-22 03:02:11",
-                            expiry_time: "2024-07-30 03:02:10",
-                            channel_response_code: "00",
-                            channel_response_message: "Approved",
-                            bank: "mandiri",
-                            approval_code: "1721592142277",
-                            masked_card: "48111111-1114",
-                            card_type: "credit",
-                            channel: "mti",
-                            three_ds_version: "2",
-                            on_us: false,
-                            challenge_completion: true,
-                            eci: "05",
-                        }
-                    */
-                    /*
-                        without feature type: 'authorize'
-                        {
-                            status_code: "200",
-                            transaction_id: "68394be2-9038-4029-8a8d-f7832d0de064",
-                            gross_amount: "406000.00",
-                            currency: "IDR",
-                            order_id: "2014825178094227",
-                            payment_type: "credit_card",
-                            signature_key: "4fc5c2f0031729965e93f4790fe5a05219fd379a059347d7a3fe3be75039301baed01050badabe8e4d1e1d2291bca7cb63b7a6bba82efa86613b9d12e5c93f9b",
-                            transaction_status: "capture", // capture => paid
-                            fraud_status: "accept",
-                            status_message: "Success, Credit Card capture transaction is successful",
-                            merchant_id: "G551313466",
-                            transaction_time: "2024-07-22 03:04:19",
-                            settlement_time: "2024-07-22 03:04:27", // settlement => paid
-                            expiry_time: "2024-07-30 03:04:19",
-                            channel_response_code: "00",
-                            channel_response_message: "Approved",
-                            bank: "mega",
-                            approval_code: "1721592267072",
-                            masked_card: "48111111-1114",
-                            card_type: "credit",
-                            channel: "dragon",
-                            three_ds_version: "2",
-                            on_us: false,
-                            challenge_completion: true,
-                            eci: "05",
-                        }
-                    */
-                    switch (response?.transaction_status?.toLowerCase?.()) {
-                        case 'authorize':
-                            modal3dsRef.current?.closeDialog(AuthenticatedResult.AUTHORIZED, 'ui'); // will be manually capture on server_side
-                            break;
-                        
-                        
-                        
-                        case 'capture':
-                            modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui'); // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
-                            break;
-                        
-                        
-                        
-                        default:
-                            throw Error('Oops, an error occured!');
-                    } // switch
-                },
-                onFailure: function(response: any){
-                    // 3ds authentication failure, implement payment failure scenario
-                    modal3dsRef.current?.closeDialog(AuthenticatedResult.FAILED, 'ui');
-                },
-                onPending: function(response: any){
-                    // transaction is pending, transaction result will be notified later via 
-                    // HTTP POST notification, implement as you wish here
-                    modal3dsRef.current?.closeDialog(AuthenticatedResult.PENDING, 'ui');
-                    // TODO: handle pending transaction
-                },
-            });
+                            case 'capture':
+                                modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui'); // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                                break;
+                            
+                            
+                            
+                            default:
+                                throw Error('Oops, an error occured!');
+                        } // switch
+                    },
+                    onFailure: function(response: any){
+                        // 3ds authentication failure, implement payment failure scenario
+                        modal3dsRef.current?.closeDialog(AuthenticatedResult.FAILED, 'ui');
+                    },
+                    onPending: function(response: any){
+                        // transaction is pending, transaction result will be notified later via 
+                        // HTTP POST notification, implement as you wish here
+                        modal3dsRef.current?.closeDialog(AuthenticatedResult.PENDING, 'ui');
+                        // TODO: handle pending transaction
+                    },
+                });
+            }
+            catch {
+                resolve(AuthenticatedResult.FAILED);
+            } // try
         });
     });
     
