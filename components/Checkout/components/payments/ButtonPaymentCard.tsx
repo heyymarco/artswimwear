@@ -494,9 +494,13 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
                     return AuthenticatedResult.AUTHORIZED; // will be manually capture on server_side
                 }
                 
+                
+                
                 case 'succeeded'        : {
                     return AuthenticatedResult.CAPTURED; // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
                 }
+                
+                
                 
                 default : {
                     throw Error('Oops, an error occured!');
