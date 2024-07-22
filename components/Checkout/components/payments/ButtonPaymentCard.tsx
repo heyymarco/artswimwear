@@ -477,10 +477,10 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         const redirectData = draftOrderDetail.redirectData;
         if (redirectData === undefined) return (
-                !draftOrderDetail.orderId
-                ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
-                : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
-            );
+            !draftOrderDetail.orderId
+            ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
+            : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
+        );
         
         
         
