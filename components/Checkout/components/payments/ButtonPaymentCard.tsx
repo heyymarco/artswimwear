@@ -280,7 +280,118 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         } // if
         
         
-        
+        /*
+            with feature capture_method : 'manual'
+            {
+                id: "pi_3PfEJUD6SqU8owGY0YZF7VAk",
+                object: "payment_intent",
+                amount: 2512,
+                amount_details: {
+                    tip: {
+                    },
+                },
+                automatic_payment_methods: {
+                    allow_redirects: "always",
+                    enabled: true,
+                },
+                canceled_at: null,
+                cancellation_reason: null,
+                capture_method: "manual",
+                client_secret: "pi_3PfEJUD6SqU8owGY0YZF7VAk_secret_UK4Y2RHas2eSOx2Te9teI75do",
+                confirmation_method: "automatic",
+                created: 1721624252,
+                currency: "usd",
+                description: null,
+                last_payment_error: null,
+                livemode: false,
+                next_action: null,
+                payment_method: "pm_1PfEJVD6SqU8owGYbDXZJGfM",
+                payment_method_configuration_details: {
+                    id: "pmc_1MjPO8D6SqU8owGY7P1fFomG",
+                    parent: null,
+                },
+                payment_method_types: [
+                    "card",
+                    "link",
+                    "cashapp",
+                ],
+                processing: null,
+                receipt_email: null,
+                setup_future_usage: null,
+                shipping: {
+                    address: {
+                    city: "Yogyakarta",
+                    country: "ID",
+                    line1: "Jl monjali",
+                    line2: null,
+                    postal_code: "55284",
+                    state: "DI Yogyakarta",
+                    },
+                    carrier: null,
+                    name: "Yunus Kurniawan",
+                    phone: "0888889999999",
+                    tracking_number: null,
+                },
+                source: null,
+                status: "requires_capture", // not paid until manually capture on server_side
+            }
+        */
+        /*
+            without feature capture_method : 'manual'
+            {
+                id: "pi_3PfEMfD6SqU8owGY1fBYM3cw",
+                object: "payment_intent",
+                amount: 2512,
+                amount_details: {
+                    tip: {
+                    },
+                },
+                automatic_payment_methods: {
+                    allow_redirects: "always",
+                    enabled: true,
+                },
+                canceled_at: null,
+                cancellation_reason: null,
+                capture_method: "automatic_async",
+                client_secret: "pi_3PfEMfD6SqU8owGY1fBYM3cw_secret_vnymV4LeCpkO1tLf6ES08xIiQ",
+                confirmation_method: "automatic",
+                created: 1721624449,
+                currency: "usd",
+                description: null,
+                last_payment_error: null,
+                livemode: false,
+                next_action: null,
+                payment_method: "pm_1PfEMhD6SqU8owGYEvlI3zH5",
+                payment_method_configuration_details: {
+                    id: "pmc_1MjPO8D6SqU8owGY7P1fFomG",
+                    parent: null,
+                },
+                payment_method_types: [
+                    "card",
+                    "link",
+                    "cashapp",
+                ],
+                processing: null,
+                receipt_email: null,
+                setup_future_usage: null,
+                shipping: {
+                    address: {
+                    city: "Yogyakarta",
+                    country: "ID",
+                    line1: "Jl monjali",
+                    line2: null,
+                    postal_code: "55284",
+                    state: "DI Yogyakarta",
+                    },
+                    carrier: null,
+                    name: "Yunus Kurniawan",
+                    phone: "0888889999999",
+                    tracking_number: null,
+                },
+                source: null,
+                status: "succeeded",
+            }
+        */
         const {
             id,
             next_action,
@@ -299,11 +410,60 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         } = paymentIntent;
         
         
-        
-        return {
-            orderId      : id,
-            redirectData : next_action?.redirect_to_url?.url ?? undefined,
-        } satisfies DraftOrderDetail;
+        switch (status) {
+            // step 1:
+         // case 'requires_payment_method' :   // if the payment attempt fails (for example due to a decline)
+            
+            
+            
+            // step 2:
+         // case 'requires_confirmation'   :   // never happened, the confirmation is already invoked
+            
+            
+            
+            // step 3:
+            case 'requires_action'         : { // the payment requires additional actions, such as authenticating with 3D Secure
+                return {
+                    orderId      : id, // paymentIntent Id
+                    redirectData : next_action?.redirect_to_url?.url ?? '', // will be processed by `handleNextAction()`
+                } satisfies DraftOrderDetail;
+            }
+            
+            
+            
+            // step 4 (optional):
+            case 'requires_capture'        : { // not paid until manually capture on server_side
+                return {
+                    orderId      : id, // paymentIntent Id
+                    redirectData : 'AUTHORIZED', // will be manually capture on server_side
+                } satisfies DraftOrderDetail;
+            }
+            
+            
+            
+            // step 5 (for asynchronous payment methods):
+         // case 'processing'              :   // never happened for cards
+            
+            
+            
+            // step 6:
+         // case 'canceled'                :   // never happened, unless manually requested by api
+            
+            
+            
+            // step 7:
+            case 'succeeded'               : { // paid
+                return {
+                    orderId      : id, // paymentIntent Id
+                } satisfies DraftOrderDetail;
+            }
+            
+            
+            
+            default : {
+                throw Error('unexpected error');
+            }
+        } // switch
     });
     const proxyDoAuthenticate = useEvent(async (redirectData: string): Promise<AuthenticatedResult> => {
         if (!stripe)   return AuthenticatedResult.FAILED;
@@ -311,12 +471,28 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         
         
+        if (redirectData === 'AUTHORIZED') return AuthenticatedResult.AUTHORIZED; // will be manually capture on server_side
+        
+        
+        
         try {
             const result = await stripe.handleNextAction({
                 clientSecret : redirectData,
             });
-            if (result.error) return AuthenticatedResult.FAILED;
-            return AuthenticatedResult.CAPTURED;
+            if (result.error || !result.paymentIntent) return AuthenticatedResult.FAILED;
+            switch (result.paymentIntent.status) {
+                case 'requires_capture' : {
+                    return AuthenticatedResult.AUTHORIZED;
+                }
+                
+                case 'succeeded'        : {
+                    return AuthenticatedResult.CAPTURED;
+                }
+                
+                default : {
+                    throw Error('unexpected error');
+                }
+            } // switch
         }
         catch {
             return AuthenticatedResult.FAILED;
@@ -486,7 +662,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                     */
                     switch (response?.transaction_status?.toLowerCase?.()) {
                         case 'authorize':
-                            modal3dsRef.current?.closeDialog(AuthenticatedResult.AUTHORIZED, 'ui');
+                            modal3dsRef.current?.closeDialog(AuthenticatedResult.AUTHORIZED, 'ui'); // will be manually capture on server_side
                         case 'capture':
                             modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui');
                         default:
@@ -633,7 +809,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                         
                         
                         
-                        case AuthenticatedResult.AUTHORIZED : {
+                        case AuthenticatedResult.AUTHORIZED : { // will be manually capture on server_side
                             // then forward the authentication to backend_API to receive the fund:
                             await doMakePayment(draftOrderDetail.orderId, /*paid:*/true);
                         }

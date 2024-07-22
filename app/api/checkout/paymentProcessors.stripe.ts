@@ -57,10 +57,10 @@ export const stripeCreateOrder = async (options: CreateOrderOptions): Promise<Au
     
     
     const paymentIntent = await stripe.paymentIntents.create({
-        currency : currency.toLowerCase(),
-        amount   : Math.ceil(totalCostConverted * 100), // TODO: fix this
+        currency       : currency.toLowerCase(),
+        amount         : Math.ceil(totalCostConverted * 100), // TODO: fix this
         
-        shipping : !shippingAddress ? undefined : {
+        shipping       : !shippingAddress ? undefined : {
             address : {
                 country     : shippingAddress.country,
                 state       : shippingAddress.state,
@@ -69,9 +69,10 @@ export const stripeCreateOrder = async (options: CreateOrderOptions): Promise<Au
                 line1       : shippingAddress.address,
                 line2       : undefined,
             },
-            name    : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
-            phone   : shippingAddress.phone,
+            name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
+            phone           : shippingAddress.phone,
         },
+        // capture_method : 'manual'
     });
     const {
         client_secret,
@@ -80,7 +81,7 @@ export const stripeCreateOrder = async (options: CreateOrderOptions): Promise<Au
     
     
     return {
-        paymentId    : client_secret,
-        redirectData : undefined, // no redirectData required
+        paymentId    : client_secret, // to be confirmed on the client_side
+        redirectData : undefined,     // no redirectData required
     } as AuthorizedFundData;
 }
