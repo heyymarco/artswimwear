@@ -770,6 +770,13 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
     
     
     // handlers:
+    const handleRevertDraftOrder = useEvent((orderId: string): void => {
+        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
+        .catch(() => {
+            // ignore any error
+        });
+    });
     const handlePayButtonClick = useEvent(async () => {
         doTransaction(async () => {
             try {
@@ -783,10 +790,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 switch (await proxyDoNextAction(draftOrderDetail) /* trigger `authenticate` function */) {
                     case AuthenticatedResult.FAILED     : {
                         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true })
-                        .catch(() => {
-                            // ignore any error
-                        });
+                        handleRevertDraftOrder(draftOrderDetail.orderId);
                         
                         
                         
@@ -809,10 +813,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     case AuthenticatedResult.CANCELED   :
                     case AuthenticatedResult.EXPIRED    : {
                         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true })
-                        .catch(() => {
-                            // ignore any error
-                        });
+                        handleRevertDraftOrder(draftOrderDetail.orderId);
                         
                         
                         
@@ -849,10 +850,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     
                     default : {
                         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true })
-                        .catch(() => {
-                            // ignore any error
-                        });
+                        handleRevertDraftOrder(draftOrderDetail.orderId);
                         
                         
                         
