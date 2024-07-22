@@ -428,7 +428,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             case 'requires_action'         : { // the payment requires additional actions, such as authenticating with 3D Secure
                 return {
                     orderId      : id, // paymentIntent Id
-                    redirectData : next_action?.redirect_to_url?.url ?? '', // will be processed by `handleNextAction()`
+                    redirectData : next_action?.redirect_to_url?.url ?? undefined, // will be processed by `handleNextAction()`
                 } satisfies DraftOrderDetail;
             }
             
@@ -456,11 +456,9 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             
             // step 7:
             case 'succeeded'               : { // paid
-                // return {
-                //     // TODO....
-                // } satisfies PaymentDetail;
                 return {
-                    orderId      : id, // paymentIntent Id
+                    orderId      : '',        // an empty_string means already CAPTURED, no need to AUTHORIZE
+                    redirectData : undefined, // will be handled by `proxyDoNextAction()` => CAPTURED => will be manually capture on server_side
                 } satisfies DraftOrderDetail;
             }
             
@@ -478,7 +476,11 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         
         const redirectData = draftOrderDetail.redirectData;
-        if (redirectData === undefined) return AuthenticatedResult.AUTHORIZED; // will be manually capture on server_side
+        if (redirectData === undefined) return (
+                !draftOrderDetail.orderId
+                ? AuthenticatedResult.CAPTURED   // already CAPTURED, no need to AUTHORIZE, just needs display paid page
+                : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
+            );
         
         
         
