@@ -470,8 +470,8 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         } // switch
     });
     const proxyDoNextAction = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
-        if (!stripe)   return AuthenticatedResult.FAILED;
-        if (!elements) return AuthenticatedResult.FAILED;
+        if (!stripe)   throw Error('Oops, an error occured!');
+        if (!elements) throw Error('Oops, an error occured!');
         
         
         
@@ -508,7 +508,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             } // switch
         }
         catch {
-            return AuthenticatedResult.FAILED;
+            throw Error('Oops, an error occured!');
         } // try
     });
     
@@ -698,7 +698,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                 });
             }
             catch {
-                resolve(AuthenticatedResult.FAILED);
+                throw Error('Oops, an error occured!');
             } // try
         });
     });
@@ -791,8 +791,17 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 if (!proxyDoNextAction) return; // the nextAction callback is not defined => no need further action
                 
                 
-                
-                switch (await proxyDoNextAction(draftOrderDetail) /* trigger `authenticate` function */) {
+                let authenticatedResult : AuthenticatedResult;
+                try {
+                    authenticatedResult = await proxyDoNextAction(draftOrderDetail); // trigger `authenticate` function
+                }
+                catch { // an unexpected error occured
+                    // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                    handleRevertDraftOrder(draftOrderDetail.orderId);
+                    
+                    return;
+                } // try
+                switch (authenticatedResult) {
                     case AuthenticatedResult.FAILED     : {
                         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
                         handleRevertDraftOrder(draftOrderDetail.orderId);
