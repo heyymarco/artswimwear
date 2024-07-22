@@ -457,7 +457,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             // step 7:
             case 'succeeded'               : { // paid
                 return {
-                    orderId      : '',        // an empty_string means already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs display paid page
+                    orderId      : '',        // an empty_string means already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
                     redirectData : undefined, // will be handled by `proxyDoNextAction()` => CAPTURED => will be manually capture on server_side
                 } satisfies DraftOrderDetail;
             }
@@ -478,7 +478,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         const redirectData = draftOrderDetail.redirectData;
         if (redirectData === undefined) return (
                 !draftOrderDetail.orderId
-                ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs display paid page
+                ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
                 : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
             );
         
@@ -495,7 +495,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
                 }
                 
                 case 'succeeded'        : {
-                    return AuthenticatedResult.CAPTURED; // has been CAPTURED (maybe delayed), just needs display paid page
+                    return AuthenticatedResult.CAPTURED; // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
                 }
                 
                 default : {
@@ -671,7 +671,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                         
                         
                         case 'capture':
-                            modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui'); // has been CAPTURED (maybe delayed), just needs display paid page
+                            modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui'); // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
                             break;
                         
                         
@@ -828,8 +828,8 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     
                     
                     case AuthenticatedResult.PENDING    :
-                    case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs display paid page
-                        // gotoFinished(); // TODO: display paid page
+                    case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                        // gotoFinished(); // TODO: DISPLAY paid page
                         break;
                     }
                     
