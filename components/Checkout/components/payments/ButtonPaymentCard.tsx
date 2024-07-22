@@ -782,6 +782,14 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 
                 switch (await proxyDoNextAction(draftOrderDetail) /* trigger `authenticate` function */) {
                     case AuthenticatedResult.FAILED     : {
+                        // notify to cancel transaction, so the draftOrder will be reverted:
+                        doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true })
+                        .catch(() => {
+                            // ignore any error
+                        });
+                        
+                        
+                        
                         showMessageError({
                             error: <>
                                 <p>
@@ -800,8 +808,8 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     
                     case AuthenticatedResult.CANCELED   :
                     case AuthenticatedResult.EXPIRED    : {
-                        // notify cancel transaction, so the authorized payment will be released:
-                        (doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true }))
+                        // notify to cancel transaction, so the draftOrder will be reverted:
+                        doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true })
                         .catch(() => {
                             // ignore any error
                         });
