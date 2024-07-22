@@ -92,11 +92,11 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
                 const draftOrderDetail = await doPlaceOrder({
                     paymentSource : paymentSource,
                 });
-                if (!draftOrderDetail) return; // paid => no need redirection
+                if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
                 
                 
                 
-                const redirectData = draftOrderDetail.redirectData;
+                const redirectData = draftOrderDetail.redirectData; // get the unfinished redirectData
                 if (redirectData) { // not undefined && not empty_string
                     const redirectResult = await showDialog<PaymentDetail|false>(
                         <RedirectDialog

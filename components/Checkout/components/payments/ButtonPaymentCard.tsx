@@ -141,11 +141,11 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
     // handlers:
     const hostedFields      = usePayPalHostedFields();
     
-    const proxyDoPlaceOrder = useEvent(async (): Promise<DraftOrderDetail|undefined> => {
+    const proxyDoPlaceOrder = useEvent(async (): Promise<DraftOrderDetail> => {
         const paymentCardSectionElm = paymentCardSectionRef?.current;
         const paypalDoPlaceOrder    = hostedFields.cardFields?.submit;
-        if (!paymentCardSectionElm) return undefined;
-        if (!paypalDoPlaceOrder)    return undefined;
+        if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
+        if (!paypalDoPlaceOrder)    throw Error('Oops, an error occured!');
         
         
         
@@ -237,23 +237,29 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
     const stripe              = useStripe();
     const elements            = useElements();
     
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<DraftOrderDetail|undefined> => {
-        if (!stripe)            return undefined;
-        if (!elements)          return undefined;
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<DraftOrderDetail> => {
+        if (!stripe)            throw Error('Oops, an error occured!');
+        if (!elements)          throw Error('Oops, an error occured!');
         const cardNumberElement = elements.getElement('cardNumber');
-        if (!cardNumberElement) return undefined;
+        if (!cardNumberElement) throw Error('Oops, an error occured!');
         
         
         
         const draftOrderDetail = await doPlaceOrder({
             paymentSource  : 'stripeCard',
         });
-        if (!draftOrderDetail) return;
+        if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
         
         
         
         // trigger form validation and wallet collection:
-        const {error: submitError, paymentIntent} = await stripe.confirmCardPayment(draftOrderDetail.orderId, {
+        const rawOrderId = draftOrderDetail.orderId;
+        const clientSecret = (
+            rawOrderId.startsWith('#STRIPE_')
+            ? rawOrderId.slice(8) // remove prefix #STRIPE_
+            : rawOrderId          // not prefixed => no need to modify
+        );
+        const {error: submitError, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
             payment_method : {
                 card : cardNumberElement,
                 billing_details : !finalBillingAddress ? undefined : {
@@ -271,12 +277,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             },
         });
         if (submitError) {
-            showMessageError({
-                error : <>
-                    Oops, there was an error processing your transaction.
-                </>
-            });
-            return undefined;
+            throw Error('Oops, an error occured!');
         } // if
         
         
@@ -453,6 +454,9 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             
             // step 7:
             case 'succeeded'               : { // paid
+                // return {
+                //     // TODO....
+                // } satisfies PaymentDetail;
                 return {
                     orderId      : id, // paymentIntent Id
                 } satisfies DraftOrderDetail;
@@ -461,7 +465,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             
             
             default : {
-                throw Error('unexpected error');
+                throw Error('Oops, an error occured!');
             }
         } // switch
     });
@@ -490,7 +494,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
                 }
                 
                 default : {
-                    throw Error('unexpected error');
+                    throw Error('Oops, an error occured!');
                 }
             } // switch
         }
@@ -533,9 +537,9 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
     
     
     // handlers:
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<DraftOrderDetail|undefined> => {
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<DraftOrderDetail|true> => {
         const paymentCardSectionElm = paymentCardSectionRef?.current;
-        if (!paymentCardSectionElm) return undefined;
+        if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
         
         
         
@@ -572,7 +576,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
         
         
         
-        return await doPlaceOrder({
+        return await doPlaceOrder({ // may require further action -OR- immediately paid
             paymentSource  : 'midtransCard',
             cardToken      : cardToken,
         });
@@ -666,7 +670,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                         case 'capture':
                             modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui');
                         default:
-                            throw Error('unexpected error');
+                            throw Error('Oops, an error occured!');
                     } // switch
                 },
                 onFailure: function(response: any){
@@ -723,7 +727,7 @@ const enum AuthenticatedResult {
     CAPTURED   = 3,
 }
 interface ButtonPaymentGeneralProps {
-    doPlaceOrder    : () => Promise<DraftOrderDetail|undefined>
+    doPlaceOrder    : () => Promise<DraftOrderDetail|true>
     doAuthenticate ?: (redirectData: string) => Promise<AuthenticatedResult>
 }
 const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|null => {
@@ -760,12 +764,16 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
             try {
                 // createOrder:
                 const draftOrderDetail = await proxyDoPlaceOrder();
-                if (!draftOrderDetail) return; // paid => no need redirection
+                if (draftOrderDetail === true) return; // immediately paid => no need further action
                 
                 
                 
                 const redirectData = draftOrderDetail.redirectData;
-                if (redirectData /* not undefined && not empty_string */ && proxyDoAuthenticate) {
+                if (!redirectData) {
+                    // now paid => no need redirection
+                    // gotoFinished(); // TODO: display paid page
+                }
+                else if (redirectData /* not undefined && not empty_string */ && proxyDoAuthenticate) {
                     switch (await proxyDoAuthenticate(redirectData) /* trigger `authenticate` function */) {
                         case AuthenticatedResult.FAILED     : {
                             showMessageError({
@@ -824,7 +832,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                         
                         
                         default : {
-                            throw Error('unexpected error');
+                            throw Error('Oops, an error occured!');
                         }
                     } // switch
                 } // if

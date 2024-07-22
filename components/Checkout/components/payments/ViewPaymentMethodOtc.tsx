@@ -83,7 +83,7 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
         doTransaction(async () => {
             try {
                 // createOrder:
-                await doPlaceOrder({
+                await doPlaceOrder({ // will be immediately paid => no need further action
                     paymentSource : paymentSource,
                     captcha       : captcha,
                 });

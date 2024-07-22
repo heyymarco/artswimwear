@@ -100,6 +100,9 @@ import {
 }                           from './paymentProcessors.paypal'
 import {
     stripeCreateOrder,
+    
+    stripeCaptureFund,
+    stripeCancelOrder,
 }                           from './paymentProcessors.stripe'
 import {
     midtransCreateOrderWithCard,
@@ -1545,6 +1548,7 @@ router
                 let prefix = '';
                 
                 if      (usePaypalGateway  ) prefix = '#PAYPAL_';
+                else if (useStripeGateway  ) prefix = '#STRIPE_'
                 else if (useMidtransGateway) prefix = '#MIDTRANS_';
                 
                 return `${prefix}${authorizedOrPaymentDetail.paymentId}`;
@@ -1996,6 +2000,7 @@ Updating the confirmation is not required.`,
     let orderId           : string|null = null;
     let paymentId         : string|null = null;
     let paypalPaymentId   : string|null = null;
+    let stripePaymentId   : string|null = null;
     let midtransPaymentId : string|null = null;
     if (rawOrderId.startsWith('#PAYPAL_')) {
         paymentId = rawOrderId.slice(8); // remove prefix #PAYPAL_
@@ -2005,6 +2010,15 @@ Updating the confirmation is not required.`,
             }, { status: 400 }); // handled with error
         } // if
         paypalPaymentId = paymentId;
+    }
+    else if (rawOrderId.startsWith('#STRIPE_')) {
+        paymentId = rawOrderId.slice(8); // remove prefix #STRIPE_
+        if (!paymentId.length) {
+            return NextResponse.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+        stripePaymentId = paymentId;
     }
     else if (rawOrderId.startsWith('#MIDTRANS_')) {
         paymentId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
@@ -2060,6 +2074,9 @@ Updating the confirmation is not required.`,
             try {
                 if (paypalPaymentId) {
                     // no need an order cancelation for paypal
+                }
+                else if (stripePaymentId) {
+                    await stripeCancelOrder(stripePaymentId);
                 }
                 else if (midtransPaymentId) {
                     await midtransCancelOrder(midtransPaymentId);
@@ -2138,6 +2155,21 @@ Updating the confirmation is not required.`,
             if (paypalPaymentId) {
                 const paymentDetail = await paypalCaptureFund(paypalPaymentId);
                 if (paymentDetail === null) {
+                    // payment DECLINED:
+                    
+                    paymentResponse = {
+                        error     : 'payment declined',
+                    };
+                }
+                else {
+                    // payment APPROVED:
+                    
+                    paymentResponse = paymentDetail;
+                } // if
+            }
+            else if (stripePaymentId) {
+                const paymentDetail = await stripeCaptureFund(stripePaymentId);
+                if (!paymentDetail) {
                     // payment DECLINED:
                     
                     paymentResponse = {

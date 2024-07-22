@@ -79,11 +79,11 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                 const draftOrderDetail = await doPlaceOrder({
                     paymentSource : 'midtransQris',
                 });
-                if (!draftOrderDetail) return; // paid => no need redirection
+                if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
                 
                 
                 
-                const qrisData = draftOrderDetail.redirectData;
+                const qrisData = draftOrderDetail.redirectData; // get the unfinished redirectData
                 if (qrisData) { // not undefined && not empty_string
                     let expiresRaw = draftOrderDetail.expires;
                     if (typeof(expiresRaw) === 'string') expiresRaw = new Date(Date.parse(expiresRaw));

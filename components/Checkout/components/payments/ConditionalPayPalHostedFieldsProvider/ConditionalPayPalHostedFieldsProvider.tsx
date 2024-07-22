@@ -94,11 +94,11 @@ const ImplementedPayPalHostedFieldsProvider = (props: ImplementedPayPalHostedFie
     const handleCreateOrder = useEvent(async (): Promise<string> => {
         try {
             const draftOrderDetail = await doPlaceOrder();
-            if (!draftOrderDetail) throw Error('Oops, an error occured!');
+            if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
             
             
             
-            const rawOrderId = draftOrderDetail.orderId;
+            const rawOrderId = draftOrderDetail.orderId; // get the unfinished orderId
             const orderId = (
                 rawOrderId.startsWith('#PAYPAL_')
                 ? rawOrderId.slice(8) // remove prefix #PAYPAL_

@@ -323,7 +323,7 @@ export interface CheckoutStateBase {
     gotoFinished                 : (paymentDetail: PaymentDetail, paid: boolean) => void
     
     doTransaction                : (transaction: (() => Promise<void>)) => Promise<boolean>
-    doPlaceOrder                 : (options?: PlaceOrderOptions) => Promise<DraftOrderDetail|undefined>
+    doPlaceOrder                 : (options?: PlaceOrderOptions) => Promise<DraftOrderDetail|true>
     doMakePayment                : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
     
     refetchCheckout              : () => void
@@ -1382,7 +1382,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<DraftOrderDetail|undefined> => {
+    const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<DraftOrderDetail|true> => {
         try {
             const draftOrderDetailOrPaymentDetail = await dispatch(placeOrder({
                 // currency options:
@@ -1432,7 +1432,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             if (!('orderId' in draftOrderDetailOrPaymentDetail)) {
                 gotoFinished(draftOrderDetailOrPaymentDetail, /*paid:*/(draftOrderDetailOrPaymentDetail.type !== 'MANUAL')); // buggy
-                return undefined;
+                return true; // paid
             }
             else {
                 return draftOrderDetailOrPaymentDetail;

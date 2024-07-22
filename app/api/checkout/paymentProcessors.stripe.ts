@@ -38,7 +38,7 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
 
 
 export const stripeCreateOrder = async (options: CreateOrderOptions): Promise<AuthorizedFundData> => {
-    if (!stripe) throw Error('not implemented');
+    if (!stripe) throw Error('stripe is not loaded');
     
     
     
@@ -85,3 +85,59 @@ export const stripeCreateOrder = async (options: CreateOrderOptions): Promise<Au
         redirectData : undefined,     // no redirectData required
     } as AuthorizedFundData;
 }
+
+
+
+export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetail|undefined> => {
+    if (!stripe) throw Error('stripe is not loaded');
+    
+    
+    
+    const paymentIntent = await stripe.paymentIntents.capture(paymentId);
+    if (paymentIntent.status !== 'succeeded') return undefined;
+    
+    
+    
+    const {
+        payment_method,
+        
+        amount_received,
+        application_fee_amount,
+    } = paymentIntent;
+    const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
+        if (payment_method && (typeof(payment_method) === 'object')) {
+            /* PAY WITH CARD */
+            if (payment_method.card) return {
+                type       : 'CARD',
+                brand      : payment_method.card.brand,
+                identifier : payment_method.card.last4,
+            };
+        } // if
+        
+        
+        
+        /* PAY WITH OTHER */
+        return {
+            type       : 'CUSTOM',
+            brand      : null,
+            identifier : null,
+        };
+    })();
+    return {
+        ...paymentDetailPartial,
+        
+        amount : amount_received,
+        fee    : application_fee_amount ?? 0,
+    } satisfies PaymentDetail;
+}
+export const stripeCancelOrder = async (paymentId: string): Promise<boolean> => {
+    if (!stripe) throw Error('stripe is not loaded');
+    
+    
+    
+    const paymentIntent = await stripe.paymentIntents.cancel(paymentId);
+    return (paymentIntent.status === 'canceled');
+}
+
+
+const isStripePaymentMethod = (paymentMethod: string|Stripe.PaymentMethod|null) : paymentMethod is Stripe.PaymentMethod => !!paymentMethod && (typeof(paymentMethod) === 'object');

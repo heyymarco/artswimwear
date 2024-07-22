@@ -70,7 +70,7 @@ const ViewPaymentMethodManual = (): JSX.Element|null => {
         doTransaction(async () => {
             try {
                 // createOrder:
-                await doPlaceOrder({
+                await doPlaceOrder({ // will be immediately paid => no need further action
                     paymentSource : 'manual',
                     captcha       : captcha,
                 });
