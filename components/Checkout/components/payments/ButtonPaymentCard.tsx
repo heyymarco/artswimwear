@@ -673,8 +673,16 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                     switch (response?.transaction_status?.toLowerCase?.()) {
                         case 'authorize':
                             modal3dsRef.current?.closeDialog(AuthenticatedResult.AUTHORIZED, 'ui'); // will be manually capture on server_side
+                            break;
+                        
+                        
+                        
                         case 'capture':
                             modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui');
+                            break;
+                        
+                        
+                        
                         default:
                             throw Error('Oops, an error occured!');
                     } // switch
@@ -790,7 +798,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                                 </p>
                             </>
                         });
-                        return;
+                        break;
                     }
                     
                     case AuthenticatedResult.CANCELED   :
@@ -813,7 +821,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                                 </p>
                             </>
                         });
-                        return;
+                        break;
                     }
                     
                     
@@ -821,6 +829,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     case AuthenticatedResult.AUTHORIZED : { // will be manually capture on server_side
                         // then forward the authentication to backend_API to receive the fund:
                         await doMakePayment(draftOrderDetail.orderId, /*paid:*/true);
+                        break;
                     }
                     
                     
@@ -828,6 +837,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     case AuthenticatedResult.PENDING    :
                     case AuthenticatedResult.CAPTURED   : {
                         // gotoFinished(); // TODO: display paid page
+                        break;
                     }
                     
                     
