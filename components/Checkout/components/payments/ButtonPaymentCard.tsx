@@ -220,6 +220,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         // actions:
         doPlaceOrder,
+        doMakePayment,
     } = useCheckoutState();
     
     const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
@@ -237,7 +238,15 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
     const stripe            = useStripe();
     const elements          = useElements();
     
-    const proxyDoPlaceOrder = useEvent(async (): Promise<DraftOrderDetail> => {
+    
+    const handleRevertDraftOrder = useEvent((orderId: string): void => {
+        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
+        .catch(() => {
+            // ignore any error
+        });
+    });
+    const proxyDoPlaceOrder      = useEvent(async (): Promise<DraftOrderDetail> => {
         if (!stripe)            throw Error('Oops, an error occured!');
         if (!elements)          throw Error('Oops, an error occured!');
         const cardNumberElement = elements.getElement('cardNumber');
@@ -277,6 +286,9 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             },
         });
         if (submitError) {
+            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+            handleRevertDraftOrder(draftOrderDetail.orderId);
+            
             throw Error('Oops, an error occured!');
         } // if
         
@@ -414,6 +426,9 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         switch (status) {
             // step 1:
             case 'requires_payment_method' : { // if the payment attempt fails (for example due to a decline)
+                // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                handleRevertDraftOrder(draftOrderDetail.orderId);
+                
                 throw 'DECLINED';
             }
             
@@ -465,11 +480,14 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             
             
             default : {
+                // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                handleRevertDraftOrder(draftOrderDetail.orderId);
+                
                 throw Error('Oops, an error occured!');
             }
         } // switch
     });
-    const proxyDoNextAction = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
+    const proxyDoNextAction      = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
         if (!stripe)   throw Error('Oops, an error occured!');
         if (!elements) throw Error('Oops, an error occured!');
         
@@ -782,7 +800,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
             // ignore any error
         });
     });
-    const handlePayButtonClick = useEvent(async () => {
+    const handlePayButtonClick   = useEvent(async () => {
         doTransaction(async () => {
             try {
                 // createOrder:
