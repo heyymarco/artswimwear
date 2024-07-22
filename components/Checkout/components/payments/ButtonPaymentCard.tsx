@@ -457,7 +457,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             // step 7:
             case 'succeeded'               : { // paid
                 return {
-                    orderId      : '',        // an empty_string means already CAPTURED, no need to AUTHORIZE
+                    orderId      : '',        // an empty_string means already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs display paid page
                     redirectData : undefined, // will be handled by `proxyDoNextAction()` => CAPTURED => will be manually capture on server_side
                 } satisfies DraftOrderDetail;
             }
@@ -478,7 +478,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         const redirectData = draftOrderDetail.redirectData;
         if (redirectData === undefined) return (
                 !draftOrderDetail.orderId
-                ? AuthenticatedResult.CAPTURED   // already CAPTURED, no need to AUTHORIZE, just needs display paid page
+                ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs display paid page
                 : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
             );
         
@@ -491,11 +491,11 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             if (result.error || !result.paymentIntent) return AuthenticatedResult.FAILED;
             switch (result.paymentIntent.status) {
                 case 'requires_capture' : {
-                    return AuthenticatedResult.AUTHORIZED;
+                    return AuthenticatedResult.AUTHORIZED; // will be manually capture on server_side
                 }
                 
                 case 'succeeded'        : {
-                    return AuthenticatedResult.CAPTURED;
+                    return AuthenticatedResult.CAPTURED; // has been CAPTURED (maybe delayed), just needs display paid page
                 }
                 
                 default : {
@@ -671,7 +671,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                         
                         
                         case 'capture':
-                            modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui');
+                            modal3dsRef.current?.closeDialog(AuthenticatedResult.CAPTURED, 'ui'); // has been CAPTURED (maybe delayed), just needs display paid page
                             break;
                         
                         
@@ -828,7 +828,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     
                     
                     case AuthenticatedResult.PENDING    :
-                    case AuthenticatedResult.CAPTURED   : {
+                    case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs display paid page
                         // gotoFinished(); // TODO: display paid page
                         break;
                     }
