@@ -791,16 +791,20 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 if (!proxyDoNextAction) return; // the nextAction callback is not defined => no need further action
                 
                 
+                
                 let authenticatedResult : AuthenticatedResult;
                 try {
                     authenticatedResult = await proxyDoNextAction(draftOrderDetail); // trigger `authenticate` function
                 }
-                catch { // an unexpected error occured
+                catch (error: any) { // an unexpected error occured
                     // notify to cancel transaction, so the draftOrder (if any) will be reverted:
                     handleRevertDraftOrder(draftOrderDetail.orderId);
                     
-                    return;
+                    throw error;
                 } // try
+                
+                
+                
                 switch (authenticatedResult) {
                     case AuthenticatedResult.FAILED     : {
                         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
