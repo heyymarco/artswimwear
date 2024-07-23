@@ -526,7 +526,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // contexts:
     const {
         // states:
-        isCartEmpty,
+        // isCartEmpty,
         isCartLoading,
         isCartError,
         
@@ -715,7 +715,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isPaymentStep                  = (checkoutStep === 'payment');
     const isLastCheckoutStep             = (checkoutStep === 'pending') || (checkoutStep === 'paid');
     const isCheckoutEmpty                = (
-        isCartEmpty
+        // isCartEmpty      // do NOT rely on `isCartEmpty`
+        !cartItems.length  // instead use own `cartItems.length`, because when the order is finished, the cartItem(s) will be GONE, we need to see the LAST state stored in `finishedOrderState`
+        
         /* isOther1Empty */
         /* isOther2Empty */
         /* isOther3Empty */
