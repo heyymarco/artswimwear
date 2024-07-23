@@ -569,13 +569,23 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
+        // extra data:
+        marketingOpt,
+        
+        
+        
         // customer data:
         customerValidation,
+        
+        customerName,
+        customerEmail,
         
         
         
         // shipping data:
         shippingValidation : shippingValidationRaw,
+        
+        shippingAddress,
         
         shippingProvider,
         
@@ -583,8 +593,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // billing data:
         billingValidation  : billingValidationRaw,
-        
         billingAsShipping  : billingAsShippingRaw,
+        
         billingAddress,
         
         
@@ -633,23 +643,23 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // extra data:
-    const [marketingOpt   , , marketingOptHandlers] = useFieldState({ state: localCheckoutState, get: 'marketingOpt'     , set: reduxSetMarketingOpt      });
+    const [, , marketingOptHandlers] = useFieldState({ state: localCheckoutState, get: 'marketingOpt'     , set: reduxSetMarketingOpt      });
     
     
     
     // customer data:
-    const [customerName   , setCustomerName       ] = useFieldState({ state: localCheckoutState, get: 'customerName'     , set: reduxSetCustomerName      });
-    const [customerEmail  , setCustomerEmail      ] = useFieldState({ state: localCheckoutState, get: 'customerEmail'    , set: reduxSetCustomerEmail     });
+    const [, setCustomerName       ] = useFieldState({ state: localCheckoutState, get: 'customerName'     , set: reduxSetCustomerName      });
+    const [, setCustomerEmail      ] = useFieldState({ state: localCheckoutState, get: 'customerEmail'    , set: reduxSetCustomerEmail     });
     
     
     
     // shipping data:
-    const [shippingAddress, setShippingAddress    ] = useFieldState({ state: localCheckoutState, get: 'shippingAddress'  , set: reduxSetShippingAddress   });
+    const [, setShippingAddress    ] = useFieldState({ state: localCheckoutState, get: 'shippingAddress'  , set: reduxSetShippingAddress   });
     
     
     
     // billing data:
-    const [ , setBillingAddress     ] = useFieldState({ state: localCheckoutState, get: 'billingAddress'   , set: reduxSetBillingAddress    });
+    const [, setBillingAddress     ] = useFieldState({ state: localCheckoutState, get: 'billingAddress'   , set: reduxSetBillingAddress    });
     
     
     
@@ -1743,6 +1753,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // customer data:
         customerValidation,
+        
         customerName,
         // setCustomerName,           // stable ref
         
