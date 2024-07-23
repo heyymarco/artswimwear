@@ -72,7 +72,7 @@ export const stripeCreateOrder = async (options: CreateOrderOptions): Promise<Au
             name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
             phone           : shippingAddress.phone,
         },
-        // capture_method : 'manual'
+        capture_method : 'manual'
     });
     const {
         client_secret,
@@ -81,7 +81,7 @@ export const stripeCreateOrder = async (options: CreateOrderOptions): Promise<Au
     
     
     return {
-        paymentId    : client_secret, // to be confirmed on the client_side
+        paymentId    : client_secret, // to be confirmed on the client_side, contains paymentIntentId + clientSecretToken, eg: pi_3Pfco5D6SqU8owGY1dwhOu2O_secret_5yy7AsjFNZJeIGyytPdlmeGeO
         redirectData : undefined,     // no redirectData required
     } as AuthorizedFundData;
 }
@@ -93,7 +93,12 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
     
     
     
-    const paymentIntent = await stripe.paymentIntents.capture(paymentId);
+    const paymentIntentId = ((): string => { // pi_3Pfco5D6SqU8owGY1dwhOu2O
+        var secretIndex = paymentId.indexOf('_secret_');
+        if (secretIndex < 0) return paymentId;
+        return paymentId.slice(0, secretIndex);
+    })();
+    const paymentIntent = await stripe.paymentIntents.capture(paymentIntentId);
     if (paymentIntent.status !== 'succeeded') return undefined;
     
     
@@ -135,7 +140,12 @@ export const stripeCancelOrder = async (paymentId: string): Promise<boolean> => 
     
     
     
-    const paymentIntent = await stripe.paymentIntents.cancel(paymentId);
+    const paymentIntentId = ((): string => { // pi_3Pfco5D6SqU8owGY1dwhOu2O
+        var secretIndex = paymentId.indexOf('_secret_');
+        if (secretIndex < 0) return paymentId;
+        return paymentId.slice(0, secretIndex);
+    })();
+    const paymentIntent = await stripe.paymentIntents.cancel(paymentIntentId);
     return (paymentIntent.status === 'canceled');
 }
 

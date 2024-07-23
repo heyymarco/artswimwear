@@ -262,8 +262,8 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         
         // trigger form validation and wallet collection:
-        const rawOrderId = draftOrderDetail.orderId;
-        const clientSecret = (
+        const rawOrderId   = draftOrderDetail.orderId; // #STRIPE_pi_3Pfco5D6SqU8owGY1dwhOu2O_secret_5yy7AsjFNZJeIGyytPdlmeGeO
+        const clientSecret = ( // pi_3Pfco5D6SqU8owGY1dwhOu2O_secret_5yy7AsjFNZJeIGyytPdlmeGeO
             rawOrderId.startsWith('#STRIPE_')
             ? rawOrderId.slice(8) // remove prefix #STRIPE_
             : rawOrderId          // not prefixed => no need to modify
@@ -287,7 +287,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         });
         if (submitError) {
             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-            handleRevertDraftOrder(draftOrderDetail.orderId);
+            handleRevertDraftOrder(rawOrderId);
             
             throw Error('Oops, an error occured!');
         } // if
@@ -427,7 +427,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             // step 1:
             case 'requires_payment_method' : { // if the payment attempt fails (for example due to a decline)
                 // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                handleRevertDraftOrder(draftOrderDetail.orderId);
+                handleRevertDraftOrder(rawOrderId);
                 
                 throw 'DECLINED';
             }
@@ -452,8 +452,8 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             // step 4 (optional):
             case 'requires_capture'        : { // not paid until manually capture on server_side
                 return {
-                    orderId      : id, // paymentIntent Id
-                    redirectData : undefined, // will be handled by `proxyDoNextAction()` => AUTHORIZED => will be manually capture on server_side
+                    orderId      : rawOrderId, // the rawOrderId to be passed to server_side for capturing the fund
+                    redirectData : undefined,  // will be handled by `proxyDoNextAction()` => AUTHORIZED => will be manually capture on server_side
                 } satisfies DraftOrderDetail;
             }
             
@@ -481,7 +481,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             
             default : {
                 // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                handleRevertDraftOrder(draftOrderDetail.orderId);
+                handleRevertDraftOrder(rawOrderId);
                 
                 throw Error('Oops, an error occured!');
             }
@@ -495,7 +495,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         const redirectData = draftOrderDetail.redirectData;
         if (redirectData === undefined) return (
-            !draftOrderDetail.orderId
+            !draftOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
             ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
             : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
         );
@@ -810,13 +810,14 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 
                 
                 
+                const rawOrderId = draftOrderDetail.orderId;
                 let authenticatedResult : AuthenticatedResult;
                 try {
                     authenticatedResult = await proxyDoNextAction(draftOrderDetail); // trigger `authenticate` function
                 }
                 catch (error: any) { // an unexpected error occured
                     // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                    handleRevertDraftOrder(draftOrderDetail.orderId);
+                    handleRevertDraftOrder(rawOrderId);
                     
                     throw error;
                 } // try
@@ -826,7 +827,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 switch (authenticatedResult) {
                     case AuthenticatedResult.FAILED     : {
                         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        handleRevertDraftOrder(draftOrderDetail.orderId);
+                        handleRevertDraftOrder(rawOrderId);
                         
                         
                         
@@ -849,7 +850,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     case AuthenticatedResult.CANCELED   :
                     case AuthenticatedResult.EXPIRED    : {
                         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        handleRevertDraftOrder(draftOrderDetail.orderId);
+                        handleRevertDraftOrder(rawOrderId);
                         
                         
                         
@@ -870,7 +871,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     
                     case AuthenticatedResult.AUTHORIZED : { // will be manually capture on server_side
                         // then forward the authentication to backend_API to receive the fund:
-                        await doMakePayment(draftOrderDetail.orderId, /*paid:*/true);
+                        await doMakePayment(rawOrderId, /*paid:*/true);
                         break;
                     }
                     
@@ -886,7 +887,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     
                     default : {
                         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        handleRevertDraftOrder(draftOrderDetail.orderId);
+                        handleRevertDraftOrder(rawOrderId);
                         
                         
                         
