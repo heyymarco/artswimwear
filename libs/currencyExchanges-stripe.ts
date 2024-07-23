@@ -1,3 +1,10 @@
+// reusable-ui core:
+import {
+    decimalify,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+
+
 // utilities:
 const stripeZeroDecimalCurrencies = [
     'BIF',
@@ -24,10 +31,10 @@ const stripeThreeDecimalCurrencies = [
     'OMR',
     'TND',
 ];
-export const stripeFormatCurrency = (amount: number, currency: string): number => {
+export const convertCurrencyToStripeNominal = (amount: number, currency: string): number => {
     currency = currency.toUpperCase();
     if (stripeZeroDecimalCurrencies.includes(currency)) {
-        return Math.ceil(amount);
+        return decimalify(Math.ceil(amount));
     }
     else if (stripeThreeDecimalCurrencies.includes(currency)) {
         /*
@@ -35,12 +42,24 @@ export const stripeFormatCurrency = (amount: number, currency: string): number =
             Your integration must round amounts to the nearest ten.
             For example, 5.124 KWD must be rounded to 5120 or 5130.
         */
-        return Math.ceil(amount * 100) * 10;
+        return decimalify(Math.ceil(amount * 100) * 10);
     }
     else {
         /*
             To charge 10 USD, provide an amount value of 1000 (that is, 1000 cents).
         */
-        return Math.ceil(amount * 100); // convert to cents
+        return decimalify(Math.ceil(amount * 100)); // convert to cents
+    } // if
+}
+export const revertCurrencyFromStripeNominal = (amount: number, currency: string): number => {
+    currency = currency.toUpperCase();
+    if (stripeZeroDecimalCurrencies.includes(currency)) {
+        return decimalify(amount);
+    }
+    else if (stripeThreeDecimalCurrencies.includes(currency)) {
+        return decimalify(amount / 1000);
+    }
+    else {
+        return decimalify(amount / 100);
     } // if
 }

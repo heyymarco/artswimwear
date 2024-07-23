@@ -52,8 +52,8 @@ import {
     convertAndSumAmount,
 }                           from '@/libs/currencyExchanges'
 import {
-    stripeFormatCurrency,
-}                           from './utilities'
+    convertCurrencyToStripeNominal,
+}                           from '@/libs/currencyExchanges-stripe'
 
 // configs:
 import {
@@ -196,7 +196,7 @@ const ImplementedStripeElementsProvider = (props: ImplementedStripeElementsProvi
     // options:
     const stripeOptions = useMemo<StripeElementsOptions>(() => ({
         currency : currency.toLowerCase(),
-        amount   : stripeFormatCurrency(totalAmount, currency),
+        amount   : convertCurrencyToStripeNominal(totalAmount, currency),
         mode     : 'payment',
         locale   : checkoutConfigClient.intl.locale as StripeElementLocale,
     }), [currency, totalAmount]);
