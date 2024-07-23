@@ -104,8 +104,8 @@ const EditBillingAddress = (): JSX.Element|null => {
     
     
     // jsx:
-    if (!isBillingAddressRequired) return null;
-    if (!isShippingAddressRequired) return (
+    if (!isBillingAddressRequired) return null; // do NOT render billingEditor if the billingAddress is NOT required
+    if (!isShippingAddressRequired) return (    // the billingEditor is MANDATORY required if NO shippingAddress required (NO shippingEditor)
         <Section
             // classes:
             className={styleSheet.billingEntry}
@@ -113,7 +113,7 @@ const EditBillingAddress = (): JSX.Element|null => {
             <EditBillingAddressImpl />
         </Section>
     );
-    return (
+    return ( // if BOTH billingAddress AND shippingAddress REQUIRED => the user can choose billingAsShipping OR type billingAddress manually
         <>
             <ExclusiveAccordion
                 // classes:
