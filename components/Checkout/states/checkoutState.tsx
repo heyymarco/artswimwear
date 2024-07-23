@@ -570,21 +570,22 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // customer data:
-        customerValidation : reduxCustomerValidation,
+        customerValidation,
         
         
         
         // shipping data:
-        shippingValidation : reduxShippingValidation,
+        shippingValidation : shippingValidationRaw,
         
         shippingProvider,
         
         
         
         // billing data:
-        billingValidation : reduxBillingValidation,
+        billingValidation  : billingValidationRaw,
         
-        billingAsShipping : reduxBillingAsShipping,
+        billingAsShipping  : billingAsShippingRaw,
+        billingAddress,
         
         
         
@@ -648,7 +649,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // billing data:
-    const [billingAddress , setBillingAddress     ] = useFieldState({ state: localCheckoutState, get: 'billingAddress'   , set: reduxSetBillingAddress    });
+    const [ , setBillingAddress     ] = useFieldState({ state: localCheckoutState, get: 'billingAddress'   , set: reduxSetBillingAddress    });
     
     
     
@@ -674,14 +675,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [totalProductWeight, shippingList, shippingProvider]);
     const totalShippingCost              = finishedOrderState ? finishedOrderState?.totalShippingCost : realTotalShippingCost;
     
-    const customerValidation             = reduxCustomerValidation;
-    
     const isShippingAddressRequired      = (
         (totalProductWeight === undefined)
         ? false                         // undefined => unknown_kind_product due to incomplete loading of related data => assumes as non physical product (prevents reset shippingProvider => go back to 'info'|'shipping' page)
         : (totalProductWeight !== null) // null => non physical product; ; number (not null) => has physical product
     );
-    const shippingValidation             = isShippingAddressRequired && reduxShippingValidation;
+    const shippingValidation             = (
+        shippingValidationRaw
+        &&
+        isShippingAddressRequired // ENABLE shippingValidation if shipping_address_REQUIRED
+    );
     
     const isNeedsRecoverShippingList     = (
         isShippingUninitialized     // never recovered, just run ONCE
@@ -706,9 +709,19 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         !shippingList?.entities?.[shippingProvider ?? ''] // no longer having a valid matching shippingProvider
     );
     
-    const isBillingAddressRequired       = (paymentMethod === 'card'); // the billingAddress is required for 'card'
-    const billingAsShipping              = isShippingAddressRequired && reduxBillingAsShipping;
-    const billingValidation              = isBillingAddressRequired  && reduxBillingValidation && !billingAsShipping;
+    const isBillingAddressRequired       = (paymentMethod === 'card'); // the billingAddress is REQUIRED for 'card'
+    const billingAsShipping              = (
+        billingAsShippingRaw
+        &&
+        isShippingAddressRequired // ENABLE OPTION_billingAsShipping if shipping_address_REQUIRED
+    );
+    const billingValidation              = (
+        billingValidationRaw
+        &&
+        isBillingAddressRequired  // ENABLE billingValidation if billing_address_REQUIRED
+        &&
+        !billingAsShipping        // ENABLE billingValidation if OPTION_billingAsShipping is NOT_SELECTED
+    );
     
     
     
@@ -1041,13 +1054,13 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // conditions:
         if (isBillingAddressRequired) return; // billing is required                => nothing to reset
         if (!billingAsShipping)       return; // billing is different than shipping => nothing to reset
-        if (!reduxBillingValidation)  return; // already reseted                    => nothing to reset
+        if (!billingValidationRaw)    return; // already reseted                    => nothing to reset
         
         
         
         // reset:
-        dispatch(reduxSetBillingValidation(false));
-    }, [isBillingAddressRequired, billingAsShipping, reduxBillingValidation]);
+        dispatch(reduxSetBillingValidation(false)); // reset `billingValidationRaw`
+    }, [isBillingAddressRequired, billingAsShipping, billingValidationRaw]);
     
     // pooling for available stocks:
     useIsomorphicLayoutEffect((): (() => void)|undefined => {
