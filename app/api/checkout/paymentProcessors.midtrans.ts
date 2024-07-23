@@ -270,10 +270,6 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                         
                         amount : amount,
                         fee    : ((): number => {
-                            const vat = (amount * (11 / 100)); // VAT is 11%
-                            
-                            
-                            
                             let mdrFee = 0;
                             switch (paymentDetailPartial.type) {
                                 case 'CARD':
@@ -281,13 +277,49 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                                     break;
                                 
                                 case 'EWALLET':
-                                    mdrFee = (amount * (0.7 / 100)); // 0.7% + Rp2000
+                                    switch (paymentDetailPartial.brand?.toLowerCase()) {
+                                        case 'gopay':
+                                            mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
+                                            break;
+                                        
+                                        case 'shopeepay':
+                                            mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
+                                            break;
+                                        
+                                        case 'qris':
+                                            mdrFee = (amount * (0.7 / 100)); // 0.7% + Rp2000
+                                            break;
+                                        
+                                        default:
+                                            mdrFee = (amount *   (2 / 100)); // 2% + Rp2000
+                                            break;
+                                    } // switch
+                                    break;
+                                
+                                case 'MANUAL_PAID':
+                                    switch (paymentDetailPartial.brand?.toLowerCase()) {
+                                        case 'indomaret':
+                                            mdrFee = 5000; // Rp5000
+                                            break;
+                                        
+                                        case 'alfamart':
+                                            mdrFee = 5000; // Rp5000
+                                            break;
+                                        
+                                        default:
+                                            mdrFee = 5000; // Rp5000
+                                            break;
+                                    } // switch
                                     break;
                             } // switch
                             
                             
                             
-                            const totalFeeRaw  = (vat + mdrFee);
+                            const vat = (mdrFee * (11 / 100)); // VAT is 11%
+                            
+                            
+                            
+                            const totalFeeRaw  = (mdrFee + vat);
                             const fractionUnit = checkoutConfigServer.intl.currencies.IDR.fractionUnit
                             const rounding     = {
                                 ROUND : Math.round,
