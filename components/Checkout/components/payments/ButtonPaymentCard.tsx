@@ -227,16 +227,9 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
     
     
     
-    // dialogs:
-    const {
-        showMessageError,
-    } = useDialogMessage();
-    
-    
-    
     // handlers:
-    const stripe            = useStripe();
-    const elements          = useElements();
+    const stripe   = useStripe();
+    const elements = useElements();
     
     
     const handleRevertDraftOrder = useEvent((orderId: string): void => {
