@@ -71,12 +71,14 @@ export interface AuthorizedFundData {
 
 
 export interface FinishedOrderState {
-    cartItems         : CartState['cartItems'  ]
-    productList       : CartState['productList']
+    cartItems                 : CartState['cartItems'  ]
+    productList               : CartState['productList']
     
-    checkoutState     : ReduxCheckoutState
-    totalShippingCost : number|null|undefined
-    paymentDetail     : PaymentDetail|null
+    checkoutState             : ReduxCheckoutState
+    totalShippingCost         : number|null|undefined
+    paymentDetail             : PaymentDetail|null
+    
+    isShippingAddressRequired : boolean
 }
 
 

@@ -685,7 +685,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [totalProductWeight, shippingList, shippingProvider]);
     const totalShippingCost              = finishedOrderState ? finishedOrderState?.totalShippingCost : realTotalShippingCost;
     
-    const isShippingAddressRequired      = (
+    const isShippingAddressRequired      = finishedOrderState ? finishedOrderState.isShippingAddressRequired : (
         (totalProductWeight === undefined)
         ? false                         // undefined => unknown_kind_product due to incomplete loading of related data => assumes as non physical product (prevents reset shippingProvider => go back to 'info'|'shipping' page)
         : (totalProductWeight !== null) // null => non physical product; ; number (not null) => has physical product
@@ -1599,6 +1599,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             },
             totalShippingCost,
             paymentDetail,
+            
+            isShippingAddressRequired,
         };
         setFinishedOrderState(finishedOrderState); // backup the cart & checkout states from redux to react state
         

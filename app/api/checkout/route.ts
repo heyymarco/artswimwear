@@ -2240,30 +2240,30 @@ Updating the confirmation is not required.`,
         
         
         // send email confirmation:
-        if (newOrder) {
-            await Promise.all([
-                // notify that the payment has been received:
-                sendConfirmationEmail({
-                    order                    : newOrder,
-                    
-                    isPaid                   : true,
-                    paymentConfirmationToken : null,
-                }),
-                
-                
-                
-                // notify that the payment has been received to adminApp via webhook:
-                fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
-                    method  : 'POST',
-                    headers : {
-                        'X-Secret' : process.env.APP_SECRET ?? '',
-                    },
-                    body    : JSON.stringify({
-                        orderId : newOrder.orderId,
-                    }),
-                }),
-            ]);
-        } // if
+        // if (newOrder) {
+        //     await Promise.all([
+        //         // notify that the payment has been received:
+        //         sendConfirmationEmail({
+        //             order                    : newOrder,
+        //             
+        //             isPaid                   : true,
+        //             paymentConfirmationToken : null,
+        //         }),
+        //         
+        //         
+        //         
+        //         // notify that the payment has been received to adminApp via webhook:
+        //         fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
+        //             method  : 'POST',
+        //             headers : {
+        //                 'X-Secret' : process.env.APP_SECRET ?? '',
+        //             },
+        //             body    : JSON.stringify({
+        //                 orderId : newOrder.orderId,
+        //             }),
+        //         }),
+        //     ]);
+        // } // if
     }
     catch (error: any) {
         // await session.abortTransaction(); // already implicitly aborted
@@ -2513,8 +2513,8 @@ Updating the confirmation is not required.`,
     });
     
     const finishedOrderState : FinishedOrderState = {
-        cartItems         : items.map(({productId, variantIds, quantity}) => ({productId : productId ?? '', variantIds, quantity})),
-        productList       : productListAdapter.addMany(
+        cartItems                 : items.map(({productId, variantIds, quantity}) => ({productId : productId ?? '', variantIds, quantity})),
+        productList               : productListAdapter.addMany(
             productListAdapter.getInitialState(),
             items.map(({product}) => product).filter((product): product is Exclude<typeof product, null> => (product !== null))
             .map((product) => {
@@ -2538,7 +2538,7 @@ Updating the confirmation is not required.`,
                 };
             })
         ),
-        checkoutState     : {
+        checkoutState             : {
             // extra data:
             marketingOpt       : customer?.preference?.marketingOpt ?? guest?.preference?.marketingOpt ?? true,
             
@@ -2592,8 +2592,10 @@ Updating the confirmation is not required.`,
             paymentMethod      : '' as any,
             paymentSession     : '' as any,
         },
-        totalShippingCost      : shippingCost,
-        paymentDetail          : paymentDetail,
+        totalShippingCost         : shippingCost,
+        paymentDetail             : paymentDetail,
+        
+        isShippingAddressRequired : items.some(({quantity, product}) => (quantity > 0) && product && (product.shippingWeight !== null)),
     };
     return NextResponse.json(finishedOrderState); // handled with success
 })
