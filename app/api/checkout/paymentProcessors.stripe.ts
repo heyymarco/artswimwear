@@ -58,7 +58,7 @@ export const stripeCreateOrder = async (options: CreateOrderOptions): Promise<Au
             name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
             phone           : shippingAddress.phone,
         },
-        capture_method : 'manual'
+        capture_method : 'manual',
     });
     const {
         client_secret,
@@ -84,9 +84,12 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
         if (secretIndex < 0) return paymentId;
         return paymentId.slice(0, secretIndex);
     })();
-    const paymentIntent = await stripe.paymentIntents.capture(paymentIntentId);
+    const paymentIntent = await stripe.paymentIntents.capture(paymentIntentId, {
+        expand : [
+            'latest_charge.balance_transaction',
+        ],
+    });
     if (paymentIntent.status !== 'succeeded') return undefined;
-    
     
     
     /*
@@ -117,7 +120,153 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
             description: null,
             invoice: null,
             last_payment_error: null,
-            latest_charge: "ch_3PfjefD6SqU8owGY1wN5xzIl",
+            latest_charge: {
+                id: "ch_3PfsJrD6SqU8owGY0zU9goco",
+                object: "charge",
+                amount: 2506,
+                amount_captured: 2506,
+                amount_refunded: 0,
+                application: null,
+                application_fee: null,
+                application_fee_amount: null,
+                balance_transaction: {
+                    id: "txn_3PfsJrD6SqU8owGY067HDvT6",
+                    object: "balance_transaction",
+                    amount: 2506,
+                    available_on: 1722297600,
+                    created: 1721778039,
+                    currency: "usd",
+                    description: null,
+                    exchange_rate: null,
+                    fee: 103,
+                    fee_details: [
+                        {
+                            amount: 103,
+                            application: null,
+                            currency: "usd",
+                            description: "Stripe processing fees",
+                            type: "stripe_fee",
+                        },
+                    ],
+                    net: 2403,
+                    reporting_category: "charge",
+                    source: "ch_3PfsJrD6SqU8owGY0zU9goco",
+                    status: "pending",
+                    type: "charge",
+                },
+                billing_details: {
+                    address: {
+                        city: "Sleman",
+                        country: "ID",
+                        line1: "Jl Monjali Gang Perkutut 25",
+                        line2: null,
+                        postal_code: "55284",
+                        state: "DI Yogyakarta",
+                    },
+                    email: null,
+                    name: "Yunus Kurniawan",
+                    phone: "0838467735677",
+                },
+                calculated_statement_descriptor: "Stripe",
+                captured: true,
+                created: 1721778038,
+                currency: "usd",
+                customer: null,
+                description: null,
+                destination: null,
+                dispute: null,
+                disputed: false,
+                failure_balance_transaction: null,
+                failure_code: null,
+                failure_message: null,
+                fraud_details: {
+                },
+                invoice: null,
+                livemode: false,
+                metadata: {
+                },
+                on_behalf_of: null,
+                order: null,
+                outcome: {
+                    network_status: "approved_by_network",
+                    reason: null,
+                    risk_level: "normal",
+                    risk_score: 62,
+                    seller_message: "Payment complete.",
+                    type: "authorized",
+                },
+                paid: true,
+                payment_intent: "pi_3PfsJrD6SqU8owGY0tGh2nfy",
+                payment_method: "pm_1PfsJtD6SqU8owGYPJrRrKOL",
+                payment_method_details: {
+                    card: {
+                        amount_authorized: 2506,
+                        brand: "visa",
+                        capture_before: 1722382838,
+                        checks: {
+                            address_line1_check: "pass",
+                            address_postal_code_check: "pass",
+                            cvc_check: "pass",
+                        },
+                        country: "US",
+                        exp_month: 12,
+                        exp_year: 2034,
+                        extended_authorization: {
+                            status: "disabled",
+                        },
+                        fingerprint: "ER4JXzEkwjffY8fr",
+                        funding: "credit",
+                        incremental_authorization: {
+                            status: "unavailable",
+                        },
+                        installments: null,
+                        last4: "4242",
+                        mandate: null,
+                        multicapture: {
+                            status: "unavailable",
+                        },
+                        network: "visa",
+                        network_token: {
+                            used: false,
+                        },
+                        overcapture: {
+                            maximum_amount_capturable: 2506,
+                            status: "unavailable",
+                        },
+                        three_d_secure: null,
+                        wallet: null,
+                    },
+                    type: "card",
+                },
+                radar_options: {
+                },
+                receipt_email: null,
+                receipt_number: null,
+                receipt_url: "https://pay.stripe.com/receipts/payment/CAcaFwoVYWNjdF8xTVN2dGdENlNxVThvd0dZKPj-gLUGMgYMx6Ud7dA6LBazz3AE9ragp0BJVQoi6O4xHvm05FsyRiNq5a4K6IVi4S50C6ghsT0hhm2r",
+                refunded: false,
+                review: null,
+                shipping: {
+                    address: {
+                        city: "Sleman",
+                        country: "ID",
+                        line1: "Jl Monjali Gang Perkutut 25",
+                        line2: null,
+                        postal_code: "55284",
+                        state: "DI Yogyakarta",
+                    },
+                    carrier: null,
+                    name: "Yunus Kurniawan",
+                    phone: "0838467735677",
+                    tracking_number: null,
+                },
+                source: null,
+                source_transfer: null,
+                statement_descriptor: null,
+                statement_descriptor_suffix: null,
+                status: "succeeded",
+                transfer_data: null,
+                transfer_group: null,
+            },
             livemode: false,
             metadata: {
             },
@@ -176,9 +325,9 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
         payment_method : paymentMethodRaw,
         
         amount_received,
-        application_fee_amount,
         currency,
     } = paymentIntent;
+    const feeDetails = ((paymentIntent.latest_charge as Stripe.Charge)?.balance_transaction as Stripe.BalanceTransaction)?.fee_details?.[0];
     const paymentMethod : Stripe.PaymentMethod|null = await (async () => {
         if (typeof(paymentMethodRaw) !== 'string') return paymentMethodRaw;
         try {
@@ -263,7 +412,7 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
         ...paymentDetailPartial,
         
         amount : revertCurrencyFromStripeNominal(amount_received, currency),
-        fee    : revertCurrencyFromStripeNominal(application_fee_amount ?? 0, currency),
+        fee    : !feeDetails ? 0 : revertCurrencyFromStripeNominal(feeDetails.amount ?? 0, feeDetails.currency ?? currency),
     } satisfies PaymentDetail;
 }
 export const stripeCancelOrder = async (paymentId: string): Promise<boolean> => {
