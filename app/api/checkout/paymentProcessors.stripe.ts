@@ -373,8 +373,8 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
         }
     */
     const {
-        amount_received : amountFallback,
         currency        : currencyFallback,
+        amount_received : amountFallback,
         
         payment_method  : paymentMethodRaw,
     } = paymentIntent;
