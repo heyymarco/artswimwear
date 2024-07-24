@@ -378,7 +378,7 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
         
         payment_method  : paymentMethodRaw,
     } = paymentIntent;
-    const latestCharge       = paymentIntent.latest_charge as Stripe.Charge|undefined;
+    const latestCharge       = paymentIntent.latest_charge       as Stripe.Charge|undefined;
     const balanceTransaction = latestCharge?.balance_transaction as Stripe.BalanceTransaction|undefined;
     const currency           = balanceTransaction?.currency ?? latestCharge?.currency        ?? currencyFallback;
     const amount             = balanceTransaction?.amount   ?? latestCharge?.amount_captured ?? amountFallback;
@@ -394,9 +394,9 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
     const paymentDetailPartial = ((): Pick<PaymentDetail, 'type'|'brand'|'identifier'> => {
         if (paymentMethod) {
             /* PAY WITH CARD */
-            if (paymentMethod.card) return {
+            if ((paymentMethod.type === 'card') && paymentMethod.card) return {
                 type       : 'CARD',
-                brand      : paymentMethod.card.brand,
+                brand      : paymentMethod.card.brand /* machine readable name */ ?? paymentMethod.card.display_brand /* human readable name */,
                 identifier : paymentMethod.card.last4,
             };
         } // if
