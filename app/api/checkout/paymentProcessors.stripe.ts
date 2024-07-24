@@ -29,15 +29,62 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
 
 
 /**
- * undefined          : NOT_IMPLEMENTED_YET Transaction not found.  
- * null               : NOT_IMPLEMENTED_YET Transaction creation was denied.  
- * AuthorizedFundData : NOT_IMPLEMENTED_YET Authorized for payment.  
+ * undefined          : (never happened) Transaction not found.  
+ * null               : Transaction creation was denied.  
+ * 0                  : Transaction is being processed (may be processed on customer_side or stripe_side).  
+ * AuthorizedFundData : Authorized for payment.  
  * PaymentDetail      : Paid.  
- * false              : NOT_IMPLEMENTED_YET Transaction was deleted due to canceled or expired.  
+ * false              : Transaction was deleted due to canceled or expired.  
  */
-export const stripeTranslateData = (paymentIntent: Stripe.Response<Stripe.PaymentIntent>): undefined|null|AuthorizedFundData|PaymentDetail|false => {
+export const stripeTranslateData = (paymentIntent: Stripe.Response<Stripe.PaymentIntent>): undefined|0|null|AuthorizedFundData|PaymentDetail|false => {
     switch (paymentIntent.status) {
-        case 'succeeded' : {
+        // step 1:
+        case 'requires_payment_method' : { // if the payment attempt fails (for example due to a decline)
+            return null;
+        }
+        
+        
+        
+        // step 2:
+        case 'requires_confirmation'   : {
+            return 0; // being processed on customer_side, click [pay] button
+        }
+        
+        
+        
+        // step 3:
+        case 'requires_action'         : { // the payment requires additional actions, such as authenticating with 3D Secure
+            return 0; // being processed on customer_side, verify 3DS
+        }
+        
+        
+        
+        // step 4 (optional):
+        case 'requires_capture'        : { // not paid until manually capture on server_side
+            return {
+                paymentId    : paymentIntent.id, // paymentIntent Id
+                redirectData : undefined, // no redirectData required but require a `stripeCaptureFund()` to capture the fund
+            } satisfies AuthorizedFundData;
+        }
+        
+        
+        
+        // step 5 (for asynchronous payment methods):
+        case 'processing'              : { // created, all the required data passed, but not paid
+            return 0; // being processed on stripe_side
+        }
+        
+        
+        
+        // step 6:
+        case 'canceled'                : { // canceled by api
+            return false;
+        }
+        
+        
+        
+        // step 7:
+        case 'succeeded'               : { // paid
             /*
                 {
                     id: "pi_3Pg295D6SqU8owGY1RScPekB",
@@ -442,7 +489,10 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
     });
     const result = stripeTranslateData(paymentIntent);
     switch (result) {
+        // unexpected results:
+        case undefined :   // (never happened) Transaction not found.
         case null      :   // Transaction creation was denied.
+        case 0         :   // Transaction is being processed (may be processed on customer_side or stripe_side).
         case false     : { // Transaction was deleted due to canceled or expired.
             console.log('unexpected response: ', paymentIntent);
             throw Error('unexpected API response');
@@ -451,6 +501,7 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
         
         
         default:
+            // unexpected result:
             if (isAuthorizedFundData(result)) {
                 // AuthorizedFundData : Authorized for payment.
                 console.log('unexpected response: ', paymentIntent);
@@ -459,8 +510,7 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
             
             
             
-            // undefined     : Transaction not found.
-            // PaymentDetail : Paid.
+            // expected result: PaymentDetail => Paid.
             return result;
     } // switch
 }
