@@ -30,7 +30,7 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
 
 /**
  * undefined          : (never happened) Transaction not found.  
- * null               : Transaction creation was denied.  
+ * null               : Transaction creation was denied (for example due to a decline).  
  * 0                  : Transaction is being processed (may be processed on customer_side or stripe_side).  
  * AuthorizedFundData : Authorized for payment.  
  * PaymentDetail      : Paid.  
