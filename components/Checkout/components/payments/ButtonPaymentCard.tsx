@@ -81,6 +81,15 @@ import {
 
 
 
+// utilities:
+class ErrorDeclined extends Error {
+    constructor(message?: string) {
+        super(message)
+    }
+}
+
+
+
 // react components:
 const ButtonPaymentCard = (): JSX.Element|null => {
     // states:
@@ -279,10 +288,177 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             },
         });
         if (submitError) {
+            /*
+                {
+                    type: "card_error",
+                    charge: "ch_3PgAujD6SqU8owGY1V9OWa9X",
+                    code: "card_declined",
+                    decline_code: "insufficient_funds",
+                    doc_url: "https://stripe.com/docs/error-codes/card-declined",
+                    message: "Your card has insufficient funds.",
+                    payment_intent: {
+                        id: "pi_3PgAujD6SqU8owGY1XzTR5s1",
+                        object: "payment_intent",
+                        amount: 2506,
+                        amount_details: {
+                            tip: {
+                            },
+                        },
+                        automatic_payment_methods: {
+                            allow_redirects: "always",
+                            enabled: true,
+                        },
+                        canceled_at: null,
+                        cancellation_reason: null,
+                        capture_method: "manual",
+                        client_secret: "pi_3PgAujD6SqU8owGY1XzTR5s1_secret_xAtltknq3WSlFU7RkcZACRSUN",
+                        confirmation_method: "automatic",
+                        created: 1721849513,
+                        currency: "usd",
+                        description: null,
+                        last_payment_error: {
+                            charge: "ch_3PgAujD6SqU8owGY1V9OWa9X",
+                            code: "card_declined",
+                            decline_code: "insufficient_funds",
+                            doc_url: "https://stripe.com/docs/error-codes/card-declined",
+                            message: "Your card has insufficient funds.",
+                            payment_method: {
+                                id: "pm_1PgAulD6SqU8owGYIsLeUCge",
+                                object: "payment_method",
+                                allow_redisplay: "unspecified",
+                                billing_details: {
+                                    address: {
+                                        city: "Sleman",
+                                        country: "ID",
+                                        line1: "Jl Monjali Gang Perkutut 25",
+                                        line2: null,
+                                        postal_code: "55284",
+                                        state: "DI Yogyakarta",
+                                    },
+                                    email: null,
+                                    name: "Yunus Kurniawan",
+                                    phone: "0838467735677",
+                                },
+                                card: {
+                                    brand: "visa",
+                                    checks: {
+                                        address_line1_check: null,
+                                        address_postal_code_check: null,
+                                        cvc_check: null,
+                                    },
+                                    country: "US",
+                                    display_brand: "visa",
+                                    exp_month: 12,
+                                    exp_year: 2034,
+                                    funding: "credit",
+                                    generated_from: null,
+                                    last4: "9995",
+                                    networks: {
+                                        available: [
+                                            "visa",
+                                        ],
+                                        preferred: null,
+                                    },
+                                    three_d_secure_usage: {
+                                        supported: true,
+                                    },
+                                    wallet: null,
+                                },
+                                created: 1721849515,
+                                customer: null,
+                                livemode: false,
+                                type: "card",
+                            },
+                            type: "card_error",
+                        },
+                        livemode: false,
+                        next_action: null,
+                        payment_method: null,
+                        payment_method_configuration_details: {
+                            id: "pmc_1MjPO8D6SqU8owGY7P1fFomG",
+                            parent: null,
+                        },
+                        payment_method_types: [
+                            "card",
+                            "link",
+                            "cashapp",
+                        ],
+                        processing: null,
+                        receipt_email: null,
+                        setup_future_usage: null,
+                        shipping: {
+                            address: {
+                                city: "Sleman",
+                                country: "ID",
+                                line1: "Jl Monjali Gang Perkutut 25",
+                                line2: null,
+                                postal_code: "55284",
+                                state: "DI Yogyakarta",
+                            },
+                            carrier: null,
+                            name: "Yunus Kurniawan",
+                            phone: "0838467735677",
+                            tracking_number: null,
+                        },
+                        source: null,
+                        status: "requires_payment_method",
+                    },
+                    payment_method: {
+                        id: "pm_1PgAulD6SqU8owGYIsLeUCge",
+                        object: "payment_method",
+                        allow_redisplay: "unspecified",
+                        billing_details: {
+                            address: {
+                                city: "Sleman",
+                                country: "ID",
+                                line1: "Jl Monjali Gang Perkutut 25",
+                                line2: null,
+                                postal_code: "55284",
+                                state: "DI Yogyakarta",
+                            },
+                            email: null,
+                            name: "Yunus Kurniawan",
+                            phone: "0838467735677",
+                        },
+                        card: {
+                            brand: "visa",
+                            checks: {
+                                address_line1_check: null,
+                                address_postal_code_check: null,
+                                cvc_check: null,
+                            },
+                            country: "US",
+                            display_brand: "visa",
+                            exp_month: 12,
+                            exp_year: 2034,
+                            funding: "credit",
+                            generated_from: null,
+                            last4: "9995",
+                            networks: {
+                                available: [
+                                    "visa",
+                                ],
+                                preferred: null,
+                            },
+                            three_d_secure_usage: {
+                                supported: true,
+                            },
+                            wallet: null,
+                        },
+                        created: 1721849515,
+                        customer: null,
+                        livemode: false,
+                        type: "card",
+                    },
+                    request_log_url: "https://dashboard.stripe.com/test/logs/req_GqHweYTzpGpxbw?t=1721849515",
+                    shouldRetry: false,
+                }
+            */
+            
             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
             handleRevertDraftOrder(rawOrderId);
             
-            throw Error('Oops, an error occured!');
+            throw new ErrorDeclined(submitError.message);
         } // if
         
         
@@ -423,7 +599,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
                 // notify to cancel transaction, so the draftOrder (if any) will be reverted:
                 handleRevertDraftOrder(rawOrderId);
                 
-                throw 'DECLINED';
+                throw new ErrorDeclined();
             }
             
             
@@ -579,7 +755,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                     resolve(response.token_id);
                 },
                 onFailure : (response: any) => {
-                    reject('DECLINED');
+                    reject(new ErrorDeclined());
                 },
             })
         });
@@ -890,12 +1066,15 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 } // switch
             }
             catch (fetchError: any) {
-                if (fetchError === 'DECLINED') {
+                if (fetchError instanceof ErrorDeclined) {
                     showMessageError({
                         error: <>
                             <p>
                                 Cannot make transactions with this card.
                             </p>
+                            {!!fetchError.message && <p>
+                                {fetchError.message}
+                            </p>}
                             <p>
                                 Please try using <strong>another card</strong>.
                             </p>
