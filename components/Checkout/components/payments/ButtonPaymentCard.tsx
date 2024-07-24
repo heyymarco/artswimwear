@@ -255,8 +255,8 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         
         // trigger form validation and wallet collection:
-        const rawOrderId   = draftOrderDetail.orderId; // #STRIPE_pi_3Pfco5D6SqU8owGY1dwhOu2O_secret_5yy7AsjFNZJeIGyytPdlmeGeO
-        const clientSecret = ( // pi_3Pfco5D6SqU8owGY1dwhOu2O_secret_5yy7AsjFNZJeIGyytPdlmeGeO
+        const rawOrderId   = draftOrderDetail.orderId; // #STRIPE_pi_3Pg295D6SqU8owGY1RScPekB_secret_VYiYYEUsKwarB1YAqTWqF11cI
+        const clientSecret = ( // pi_3Pg295D6SqU8owGY1RScPekB_secret_VYiYYEUsKwarB1YAqTWqF11cI
             rawOrderId.startsWith('#STRIPE_')
             ? rawOrderId.slice(8) // remove prefix #STRIPE_
             : rawOrderId          // not prefixed => no need to modify
@@ -284,6 +284,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             
             throw Error('Oops, an error occured!');
         } // if
+        
         
         
         /*
