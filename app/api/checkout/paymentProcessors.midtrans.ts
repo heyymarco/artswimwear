@@ -53,6 +53,16 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
             
             return undefined;
         }
+        case '402' : {
+            /*
+                {
+                    status_code: '402',
+                    status_message: 'Cards with 3DS version 1 or lower are not supported. Please retry with another card that supports the minimum 3DS version 2.',
+                    id: 'a8cba6c9-a7c8-4c06-a7af-2b9bd7be219b'
+                }
+            */
+            return null;
+        }
         
         
         

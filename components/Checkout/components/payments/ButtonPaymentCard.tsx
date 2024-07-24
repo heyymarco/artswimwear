@@ -874,6 +874,58 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
                         } // switch
                     },
                     onFailure: function(response: any){
+                        /*
+                            {
+                                status_code: "202",
+                                transaction_id: "25b6db00-550e-42b4-8cbd-bf778a78fa54",
+                                gross_amount: "405000.00",
+                                currency: "IDR",
+                                order_id: "9291695765128641",
+                                payment_type: "credit_card",
+                                signature_key: "9ae5243ff9508672571004b0b01e69abad9890a87e31fe27e174e1ded172d32eccec845b9f3b936d72483af6e4bfd63eb5c19485208ee33c8be502657492ac32",
+                                transaction_status: "deny",
+                                fraud_status: "accept",
+                                status_message: "Deny by Bank [MANDIRI] with code [05] and message [Do not honour]",
+                                merchant_id: "G551313466",
+                                transaction_time: "2024-07-25 02:53:35",
+                                expiry_time: "2024-08-02 02:53:35",
+                                channel_response_code: "05",
+                                channel_response_message: "Do not honour",
+                                bank: "mandiri",
+                                masked_card: "49111111-1113",
+                                card_type: "debit",
+                                channel: "mti",
+                                three_ds_version: "2",
+                                on_us: false,
+                                challenge_completion: true,
+                                eci: "05",
+                            }
+                        */
+                        /*
+                            {
+                                status_code: "202",
+                                transaction_id: "ca52b211-13f6-4627-9166-297cd8501483",
+                                gross_amount: "405000.00",
+                                currency: "IDR",
+                                order_id: "8381211428235331",
+                                payment_type: "credit_card",
+                                signature_key: "4dc8e84d8f7844e6c4d8ac5a7fc5a307e152c378ef9c3d2e4546d6b26d3bd322df84f04de072d6e2a55f19a330536403a9d81de600709001cc8c789f5fee0a4d",
+                                transaction_status: "deny",
+                                fraud_status: "deny",
+                                status_message: "Denied by Veritrans Fraud Detection System",
+                                merchant_id: "G551313466",
+                                transaction_time: "2024-07-25 02:56:13",
+                                expiry_time: "2024-08-02 02:56:13",
+                                bank: "mandiri",
+                                masked_card: "46111111-1116",
+                                card_type: "debit",
+                                channel: "mti",
+                                three_ds_version: "2",
+                                on_us: false,
+                                challenge_completion: false,
+                                eci: "06",
+                            }
+                        */
                         // 3ds authentication failure, implement payment failure scenario
                         modal3dsRef.current?.closeDialog(AuthenticatedResult.FAILED, 'ui');
                     },
@@ -1007,9 +1059,6 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                                     The credit card <strong>verification failed</strong>.
                                 </p>
                                 <p>
-                                    <strong>No funds</strong> have been deducted.
-                                </p>
-                                <p>
                                     Please try using <strong>another card</strong>.
                                 </p>
                             </>
@@ -1072,6 +1121,9 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                             <p>
                                 Cannot make transactions with this card.
                             </p>
+                            {/* <p>
+                                The credit card <strong>verification failed</strong>.
+                            </p> */}
                             {!!fetchError.message && <p>
                                 {fetchError.message}
                             </p>}
