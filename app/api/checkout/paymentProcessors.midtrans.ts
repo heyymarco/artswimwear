@@ -683,6 +683,8 @@ export const midtransCaptureFund          = async (paymentId: string): Promise<P
     const midtransPaymentData = await midtransHandleResponse(response);
     const result = midtransTranslateData(midtransPaymentData);
     switch (result) {
+        // unexpected results:
+        case undefined :   // Transaction not found.
         case null      :   // Transaction creation was denied.
         case false     : { // Transaction was deleted due to canceled or expired.
             console.log('unexpected response: ', midtransPaymentData);
@@ -692,6 +694,7 @@ export const midtransCaptureFund          = async (paymentId: string): Promise<P
         
         
         default:
+            // unexpected result:
             if (isAuthorizedFundData(result)) {
                 // AuthorizedFundData : Authorized for payment.
                 console.log('unexpected response: ', midtransPaymentData);
@@ -700,8 +703,7 @@ export const midtransCaptureFund          = async (paymentId: string): Promise<P
             
             
             
-            // undefined     : Transaction not found.
-            // PaymentDetail : Paid.
+            // expected result: PaymentDetail => Paid.
             return result;
     } // switch
 }
