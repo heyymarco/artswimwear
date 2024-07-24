@@ -2240,30 +2240,30 @@ Updating the confirmation is not required.`,
         
         
         // send email confirmation:
-        // if (newOrder) {
-        //     await Promise.all([
-        //         // notify that the payment has been received:
-        //         sendConfirmationEmail({
-        //             order                    : newOrder,
-        //             
-        //             isPaid                   : true,
-        //             paymentConfirmationToken : null,
-        //         }),
-        //         
-        //         
-        //         
-        //         // notify that the payment has been received to adminApp via webhook:
-        //         fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
-        //             method  : 'POST',
-        //             headers : {
-        //                 'X-Secret' : process.env.APP_SECRET ?? '',
-        //             },
-        //             body    : JSON.stringify({
-        //                 orderId : newOrder.orderId,
-        //             }),
-        //         }),
-        //     ]);
-        // } // if
+        if (newOrder) {
+            await Promise.all([
+                // notify that the payment has been received:
+                sendConfirmationEmail({
+                    order                    : newOrder,
+                    
+                    isPaid                   : true,
+                    paymentConfirmationToken : null,
+                }),
+                
+                
+                
+                // notify that the payment has been received to adminApp via webhook:
+                fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
+                    method  : 'POST',
+                    headers : {
+                        'X-Secret' : process.env.APP_SECRET ?? '',
+                    },
+                    body    : JSON.stringify({
+                        orderId : newOrder.orderId,
+                    }),
+                }),
+            ]);
+        } // if
     }
     catch (error: any) {
         // await session.abortTransaction(); // already implicitly aborted
