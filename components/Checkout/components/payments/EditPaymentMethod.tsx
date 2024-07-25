@@ -159,9 +159,9 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     // payment method options:
     const paymentMethodList : PaymentMethod[] = Array.from(
         new Set([ // remove duplicate(s)
-            ...(isPayUsingPaypal   ? (['card' /* card must be the first index */, 'paypal'] satisfies PaymentMethod[]) : []),
-            ...(isPayUsingStripe   ? (['card' /* card must be the first index */] satisfies PaymentMethod[]) : []),
-            ...(isPayUsingMidtrans ? (['card' /* card must be the first index */, 'qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
+            ...((isPayUsingPaypal || isPayUsingStripe || isPayUsingMidtrans) ? ['card'] satisfies PaymentMethod[] : []),
+            ...(isPayUsingPaypal   ? (['paypal'] satisfies PaymentMethod[]) : []),
+            ...(isPayUsingMidtrans ? (['qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
             ...(canPayUsingBank    ? (['manual'] satisfies PaymentMethod[]) : []),
         ])
     );
