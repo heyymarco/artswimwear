@@ -472,6 +472,7 @@ export const midtransCreateOrderGeneric       = async <TPayment extends Midtrans
     const midtransPaymentData = await midtransHandleResponse(response);
     const result = midtransTranslateData(midtransPaymentData);
     switch (result) {
+        // unexpected results:
         case undefined :   // Transaction not found.
         case false     : { // Transaction was deleted due to canceled or expired.
             console.log('unexpected response: ', midtransPaymentData);
@@ -481,9 +482,12 @@ export const midtransCreateOrderGeneric       = async <TPayment extends Midtrans
         
         
         default:
-            // null               : Transaction creation was denied.
-            // AuthorizedFundData : Authorized for payment.
-            // PaymentDetail      : Paid.
+            /*
+                expected result:
+                * null               : Transaction creation was denied.
+                * AuthorizedFundData : Authorized for payment.
+                * PaymentDetail      : Paid.
+            */
             return result;
     } // switch
 }
@@ -713,7 +717,10 @@ export const midtransCaptureFund          = async (paymentId: string): Promise<P
             
             
             
-            // expected result: PaymentDetail => Paid.
+            /*
+                expected result:
+                * PaymentDetail : Paid.
+            */
             return result;
     } // switch
 }
