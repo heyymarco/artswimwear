@@ -246,14 +246,6 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
     const stripe   = useStripe();
     const elements = useElements();
     
-    
-    const handleRevertDraftOrder = useEvent((orderId: string): void => {
-        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
-        .catch(() => {
-            // ignore any error
-        });
-    });
     const proxyDoPlaceOrder      = useEvent(async (): Promise<DraftOrderDetail> => {
         if (!stripe)            throw Error('Oops, an error occured!');
         if (!elements)          throw Error('Oops, an error occured!');
@@ -876,6 +868,13 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             throw Error('Oops, an error occured!');
         } // try
     });
+    const handleRevertDraftOrder = useEvent((orderId: string): void => {
+        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
+        .catch(() => {
+            // ignore any error
+        });
+    });
     
     
     
@@ -1194,13 +1193,6 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
     
     
     // handlers:
-    const handleRevertDraftOrder = useEvent((orderId: string): void => {
-        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
-        .catch(() => {
-            // ignore any error
-        });
-    });
     const handlePayButtonClick   = useEvent(async () => {
         doTransaction(async () => {
             try {
@@ -1318,6 +1310,13 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
                 // TODO: re-generate PaypalPaymentSession
             } // try
+        });
+    });
+    const handleRevertDraftOrder = useEvent((orderId: string): void => {
+        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
+        .catch(() => {
+            // ignore any error
         });
     });
     
