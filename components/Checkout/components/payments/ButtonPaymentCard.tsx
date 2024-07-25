@@ -246,7 +246,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
     const stripe   = useStripe();
     const elements = useElements();
     
-    const proxyDoPlaceOrder      = useEvent(async (): Promise<DraftOrderDetail> => {
+    const proxyDoPlaceOrder      = useEvent(async (): Promise<DraftOrderDetail|true> => {
         if (!stripe)            throw Error('Oops, an error occured!');
         if (!elements)          throw Error('Oops, an error occured!');
         const cardNumberElement = elements.getElement('cardNumber');
@@ -254,577 +254,43 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         
         
-        const draftOrderDetail = await doPlaceOrder({
-            paymentSource  : 'stripeCard',
-        });
-        if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
-        
-        
-        
         // trigger form validation and wallet collection:
-        const rawOrderId   = draftOrderDetail.orderId; // #STRIPE_pi_3Pg295D6SqU8owGY1RScPekB_secret_VYiYYEUsKwarB1YAqTWqF11cI
-        const clientSecret = ( // pi_3Pg295D6SqU8owGY1RScPekB_secret_VYiYYEUsKwarB1YAqTWqF11cI
-            rawOrderId.startsWith('#STRIPE_')
-            ? rawOrderId.slice(8) // remove prefix #STRIPE_
-            : rawOrderId          // not prefixed => no need to modify
-        );
-        const {error: submitError, paymentIntent} = await stripe.confirmCardPayment(clientSecret, {
-            payment_method : {
-                card : cardNumberElement,
-                billing_details : !finalBillingAddress ? undefined : {
-                    address : {
-                        country     : finalBillingAddress.country,
-                        state       : finalBillingAddress.state,
-                        city        : finalBillingAddress.city,
-                        postal_code : finalBillingAddress.zip ?? undefined,
-                        line1       : finalBillingAddress.address,
-                        line2       : undefined,
-                    },
-                    name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
-                    phone           : finalBillingAddress.phone,
+        const {
+            error : paymentMethodError,
+            paymentMethod,
+        } = await stripe.createPaymentMethod({
+            type            : 'card',
+            card            : cardNumberElement,
+            billing_details : !finalBillingAddress ? undefined : {
+                address : {
+                    country     : finalBillingAddress.country,
+                    state       : finalBillingAddress.state,
+                    city        : finalBillingAddress.city,
+                    postal_code : finalBillingAddress.zip ?? undefined,
+                    line1       : finalBillingAddress.address,
+                    line2       : undefined,
                 },
+                name            : (finalBillingAddress.firstName ?? '') + ((!!finalBillingAddress.firstName && !!finalBillingAddress.lastName) ? ' ' : '') + (finalBillingAddress.lastName ?? ''),
+                phone           : finalBillingAddress.phone,
             },
         });
-        if (submitError) {
+        if (paymentMethodError) {
             /*
-                {
-                    type: "card_error",
-                    charge: "ch_3PgAujD6SqU8owGY1V9OWa9X",
-                    code: "card_declined",
-                    decline_code: "insufficient_funds",
-                    doc_url: "https://stripe.com/docs/error-codes/card-declined",
-                    message: "Your card has insufficient funds.",
-                    payment_intent: {
-                        id: "pi_3PgAujD6SqU8owGY1XzTR5s1",
-                        object: "payment_intent",
-                        amount: 2506,
-                        amount_details: {
-                            tip: {
-                            },
-                        },
-                        automatic_payment_methods: {
-                            allow_redirects: "always",
-                            enabled: true,
-                        },
-                        canceled_at: null,
-                        cancellation_reason: null,
-                        capture_method: "manual",
-                        client_secret: "pi_3PgAujD6SqU8owGY1XzTR5s1_secret_xAtltknq3WSlFU7RkcZACRSUN",
-                        confirmation_method: "automatic",
-                        created: 1721849513,
-                        currency: "usd",
-                        description: null,
-                        last_payment_error: {
-                            charge: "ch_3PgAujD6SqU8owGY1V9OWa9X",
-                            code: "card_declined",
-                            decline_code: "insufficient_funds",
-                            doc_url: "https://stripe.com/docs/error-codes/card-declined",
-                            message: "Your card has insufficient funds.",
-                            payment_method: {
-                                id: "pm_1PgAulD6SqU8owGYIsLeUCge",
-                                object: "payment_method",
-                                allow_redisplay: "unspecified",
-                                billing_details: {
-                                    address: {
-                                        city: "Sleman",
-                                        country: "ID",
-                                        line1: "Jl Monjali Gang Perkutut 25",
-                                        line2: null,
-                                        postal_code: "55284",
-                                        state: "DI Yogyakarta",
-                                    },
-                                    email: null,
-                                    name: "Yunus Kurniawan",
-                                    phone: "0838467735677",
-                                },
-                                card: {
-                                    brand: "visa",
-                                    checks: {
-                                        address_line1_check: null,
-                                        address_postal_code_check: null,
-                                        cvc_check: null,
-                                    },
-                                    country: "US",
-                                    display_brand: "visa",
-                                    exp_month: 12,
-                                    exp_year: 2034,
-                                    funding: "credit",
-                                    generated_from: null,
-                                    last4: "9995",
-                                    networks: {
-                                        available: [
-                                            "visa",
-                                        ],
-                                        preferred: null,
-                                    },
-                                    three_d_secure_usage: {
-                                        supported: true,
-                                    },
-                                    wallet: null,
-                                },
-                                created: 1721849515,
-                                customer: null,
-                                livemode: false,
-                                type: "card",
-                            },
-                            type: "card_error",
-                        },
-                        livemode: false,
-                        next_action: null,
-                        payment_method: null,
-                        payment_method_configuration_details: {
-                            id: "pmc_1MjPO8D6SqU8owGY7P1fFomG",
-                            parent: null,
-                        },
-                        payment_method_types: [
-                            "card",
-                            "link",
-                            "cashapp",
-                        ],
-                        processing: null,
-                        receipt_email: null,
-                        setup_future_usage: null,
-                        shipping: {
-                            address: {
-                                city: "Sleman",
-                                country: "ID",
-                                line1: "Jl Monjali Gang Perkutut 25",
-                                line2: null,
-                                postal_code: "55284",
-                                state: "DI Yogyakarta",
-                            },
-                            carrier: null,
-                            name: "Yunus Kurniawan",
-                            phone: "0838467735677",
-                            tracking_number: null,
-                        },
-                        source: null,
-                        status: "requires_payment_method",
-                    },
-                    payment_method: {
-                        id: "pm_1PgAulD6SqU8owGYIsLeUCge",
-                        object: "payment_method",
-                        allow_redisplay: "unspecified",
-                        billing_details: {
-                            address: {
-                                city: "Sleman",
-                                country: "ID",
-                                line1: "Jl Monjali Gang Perkutut 25",
-                                line2: null,
-                                postal_code: "55284",
-                                state: "DI Yogyakarta",
-                            },
-                            email: null,
-                            name: "Yunus Kurniawan",
-                            phone: "0838467735677",
-                        },
-                        card: {
-                            brand: "visa",
-                            checks: {
-                                address_line1_check: null,
-                                address_postal_code_check: null,
-                                cvc_check: null,
-                            },
-                            country: "US",
-                            display_brand: "visa",
-                            exp_month: 12,
-                            exp_year: 2034,
-                            funding: "credit",
-                            generated_from: null,
-                            last4: "9995",
-                            networks: {
-                                available: [
-                                    "visa",
-                                ],
-                                preferred: null,
-                            },
-                            three_d_secure_usage: {
-                                supported: true,
-                            },
-                            wallet: null,
-                        },
-                        created: 1721849515,
-                        customer: null,
-                        livemode: false,
-                        type: "card",
-                    },
-                    request_log_url: "https://dashboard.stripe.com/test/logs/req_GqHweYTzpGpxbw?t=1721849515",
-                    shouldRetry: false,
-                }
+                TODO: sample error
             */
-            /*
-                {
-                    type: "card_error",
-                    charge: "ch_3PgBrUD6SqU8owGY1HAL0jXe",
-                    code: "incorrect_cvc",
-                    doc_url: "https://stripe.com/docs/error-codes/incorrect-cvc",
-                    message: "Your card's security code is incorrect.",
-                    param: "cvc",
-                    payment_intent: {
-                        id: "pi_3PgBrUD6SqU8owGY1kqyoqzf",
-                        object: "payment_intent",
-                        amount: 2506,
-                        amount_details: {
-                            tip: {
-                            },
-                        },
-                        automatic_payment_methods: {
-                            allow_redirects: "always",
-                            enabled: true,
-                        },
-                        canceled_at: null,
-                        cancellation_reason: null,
-                        capture_method: "manual",
-                        client_secret: "pi_3PgBrUD6SqU8owGY1kqyoqzf_secret_l9QubU4UIaF0U1WebnFXSjHkK",
-                        confirmation_method: "automatic",
-                        created: 1721853156,
-                        currency: "usd",
-                        description: null,
-                        last_payment_error: {
-                            charge: "ch_3PgBrUD6SqU8owGY1HAL0jXe",
-                            code: "incorrect_cvc",
-                            doc_url: "https://stripe.com/docs/error-codes/incorrect-cvc",
-                            message: "Your card's security code is incorrect.",
-                            param: "cvc",
-                            payment_method: {
-                                id: "pm_1PgBrWD6SqU8owGY3QC4TqXX",
-                                object: "payment_method",
-                                allow_redisplay: "unspecified",
-                                billing_details: {
-                                    address: {
-                                        city: "Sleman",
-                                        country: "ID",
-                                        line1: "Jl Monjali Gang Perkutut 25",
-                                        line2: null,
-                                        postal_code: "55284",
-                                        state: "DI Yogyakarta",
-                                    },
-                                    email: null,
-                                    name: "Yunus Kurniawan",
-                                    phone: "0838467735677",
-                                },
-                                card: {
-                                    brand: "visa",
-                                    checks: {
-                                        address_line1_check: null,
-                                        address_postal_code_check: null,
-                                        cvc_check: null,
-                                    },
-                                    country: "US",
-                                    display_brand: "visa",
-                                    exp_month: 12,
-                                    exp_year: 2034,
-                                    funding: "credit",
-                                    generated_from: null,
-                                    last4: "0101",
-                                    networks: {
-                                        available: [
-                                            "visa",
-                                        ],
-                                        preferred: null,
-                                    },
-                                    three_d_secure_usage: {
-                                        supported: true,
-                                    },
-                                    wallet: null,
-                                },
-                                created: 1721853158,
-                                customer: null,
-                                livemode: false,
-                                type: "card",
-                            },
-                            type: "card_error",
-                        },
-                        livemode: false,
-                        next_action: null,
-                        payment_method: null,
-                        payment_method_configuration_details: {
-                            id: "pmc_1MjPO8D6SqU8owGY7P1fFomG",
-                            parent: null,
-                        },
-                        payment_method_types: [
-                            "card",
-                            "link",
-                            "cashapp",
-                        ],
-                        processing: null,
-                        receipt_email: null,
-                        setup_future_usage: null,
-                        shipping: {
-                            address: {
-                                city: "Sleman",
-                                country: "ID",
-                                line1: "Jl Monjali Gang Perkutut 25",
-                                line2: null,
-                                postal_code: "55284",
-                                state: "DI Yogyakarta",
-                            },
-                            carrier: null,
-                            name: "Yunus Kurniawan",
-                            phone: "0838467735677",
-                            tracking_number: null,
-                        },
-                        source: null,
-                        status: "requires_payment_method",
-                    },
-                    payment_method: {
-                        id: "pm_1PgBrWD6SqU8owGY3QC4TqXX",
-                        object: "payment_method",
-                        allow_redisplay: "unspecified",
-                        billing_details: {
-                            address: {
-                                city: "Sleman",
-                                country: "ID",
-                                line1: "Jl Monjali Gang Perkutut 25",
-                                line2: null,
-                                postal_code: "55284",
-                                state: "DI Yogyakarta",
-                            },
-                            email: null,
-                            name: "Yunus Kurniawan",
-                            phone: "0838467735677",
-                        },
-                        card: {
-                            brand: "visa",
-                            checks: {
-                                address_line1_check: null,
-                                address_postal_code_check: null,
-                                cvc_check: null,
-                            },
-                            country: "US",
-                            display_brand: "visa",
-                            exp_month: 12,
-                            exp_year: 2034,
-                            funding: "credit",
-                            generated_from: null,
-                            last4: "0101",
-                            networks: {
-                                available: [
-                                    "visa",
-                                ],
-                                preferred: null,
-                            },
-                            three_d_secure_usage: {
-                                supported: true,
-                            },
-                            wallet: null,
-                        },
-                        created: 1721853158,
-                        customer: null,
-                        livemode: false,
-                        type: "card",
-                    },
-                    request_log_url: "https://dashboard.stripe.com/test/logs/req_ELlXCwVKEqfKUW?t=1721853158",
-                    shouldRetry: false,
-                }
-            */
-            
-            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-            handleRevertDraftOrder(rawOrderId);
             
             throw new ErrorDeclined({
-                message     : submitError.message,
-                shouldRetry : (submitError as any).shouldRetry ?? false, // default: please use another card
+                message     : paymentMethodError.message,
+                shouldRetry : (paymentMethodError as any).shouldRetry ?? false, // default: please use another card
             });
         } // if
         
         
         
-        /*
-            with feature capture_method : 'manual'
-            {
-                id: "pi_3PfEJUD6SqU8owGY0YZF7VAk",
-                object: "payment_intent",
-                amount: 2512,
-                amount_details: {
-                    tip: {
-                    },
-                },
-                automatic_payment_methods: {
-                    allow_redirects: "always",
-                    enabled: true,
-                },
-                canceled_at: null,
-                cancellation_reason: null,
-                capture_method: "manual",
-                client_secret: "pi_3PfEJUD6SqU8owGY0YZF7VAk_secret_UK4Y2RHas2eSOx2Te9teI75do",
-                confirmation_method: "automatic",
-                created: 1721624252,
-                currency: "usd",
-                description: null,
-                last_payment_error: null,
-                livemode: false,
-                next_action: null,
-                payment_method: "pm_1PfEJVD6SqU8owGYbDXZJGfM",
-                payment_method_configuration_details: {
-                    id: "pmc_1MjPO8D6SqU8owGY7P1fFomG",
-                    parent: null,
-                },
-                payment_method_types: [
-                    "card",
-                    "link",
-                    "cashapp",
-                ],
-                processing: null,
-                receipt_email: null,
-                setup_future_usage: null,
-                shipping: {
-                    address: {
-                    city: "Yogyakarta",
-                    country: "ID",
-                    line1: "Jl monjali",
-                    line2: null,
-                    postal_code: "55284",
-                    state: "DI Yogyakarta",
-                    },
-                    carrier: null,
-                    name: "Yunus Kurniawan",
-                    phone: "0888889999999",
-                    tracking_number: null,
-                },
-                source: null,
-                status: "requires_capture", // not paid until manually capture on server_side
-            }
-        */
-        /*
-            without feature capture_method : 'manual'
-            {
-                id: "pi_3PfEMfD6SqU8owGY1fBYM3cw",
-                object: "payment_intent",
-                amount: 2512,
-                amount_details: {
-                    tip: {
-                    },
-                },
-                automatic_payment_methods: {
-                    allow_redirects: "always",
-                    enabled: true,
-                },
-                canceled_at: null,
-                cancellation_reason: null,
-                capture_method: "automatic_async",
-                client_secret: "pi_3PfEMfD6SqU8owGY1fBYM3cw_secret_vnymV4LeCpkO1tLf6ES08xIiQ",
-                confirmation_method: "automatic",
-                created: 1721624449,
-                currency: "usd",
-                description: null,
-                last_payment_error: null,
-                livemode: false,
-                next_action: null,
-                payment_method: "pm_1PfEMhD6SqU8owGYEvlI3zH5",
-                payment_method_configuration_details: {
-                    id: "pmc_1MjPO8D6SqU8owGY7P1fFomG",
-                    parent: null,
-                },
-                payment_method_types: [
-                    "card",
-                    "link",
-                    "cashapp",
-                ],
-                processing: null,
-                receipt_email: null,
-                setup_future_usage: null,
-                shipping: {
-                    address: {
-                    city: "Yogyakarta",
-                    country: "ID",
-                    line1: "Jl monjali",
-                    line2: null,
-                    postal_code: "55284",
-                    state: "DI Yogyakarta",
-                    },
-                    carrier: null,
-                    name: "Yunus Kurniawan",
-                    phone: "0888889999999",
-                    tracking_number: null,
-                },
-                source: null,
-                status: "succeeded",
-            }
-        */
-        const {
-            id,
-            next_action,
-            
-            /*
-                Status of this PaymentIntent, one of:
-                * requires_payment_method   // MAYBE happened => if the payment attempt fails (for example due to a decline), the PaymentIntent’s status returns to requires_payment_method
-                * requires_confirmation     // never happened => the `confirmCardPayment()` is already invoked
-                * requires_action           // MAYBE happened => handled by `next_action?.redirect_to_url?.url`
-                * processing                // never happened => cards are processed more quickly and don''t go into the processing status
-                * requires_capture          // never happened => if you’re separately authorizing and capturing funds, your PaymentIntent can instead move to requires_capture. In that case, attempting to capture the funds moves it to processing.
-                * canceled                  // never happened => you can cancel a PaymentIntent at any point before it’s in a processing2 or succeeded state
-                * succeeded                 // MAYBE happened => instant PAID without 3DS_verification
-            */
-            status,
-        } = paymentIntent;
-        
-        
-        switch (status) {
-            // step 1:
-            case 'requires_payment_method' : { // if the payment attempt fails (for example due to a decline)
-                // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                handleRevertDraftOrder(rawOrderId);
-                
-                throw new ErrorDeclined({
-                    shouldRetry : false, // please use another card
-                });
-            }
-            
-            
-            
-            // step 2:
-         // case 'requires_confirmation'   :   // never happened, the confirmation is already invoked
-            
-            
-            
-            // step 3:
-            case 'requires_action'         : { // the payment requires additional actions, such as authenticating with 3D Secure
-                return {
-                    orderId      : id, // paymentIntent Id
-                    redirectData : next_action?.redirect_to_url?.url ?? undefined, // will be handled by `proxyDoNextAction()` => `stripe.handleNextAction()`
-                } satisfies DraftOrderDetail;
-            }
-            
-            
-            
-            // step 4 (optional):
-            case 'requires_capture'        : { // not paid until manually capture on server_side
-                return {
-                    orderId      : rawOrderId, // the rawOrderId to be passed to server_side for capturing the fund
-                    redirectData : undefined,  // will be handled by `proxyDoNextAction()` => AUTHORIZED => will be manually capture on server_side
-                } satisfies DraftOrderDetail;
-            }
-            
-            
-            
-            // step 5 (for asynchronous payment methods):
-         // case 'processing'              :   // never happened for cards
-            
-            
-            
-            // step 6:
-         // case 'canceled'                :   // never happened, unless manually requested by api
-            
-            
-            
-            // step 7:
-            case 'succeeded'               : { // paid
-                return {
-                    orderId      : '',        // an empty_string means already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
-                    redirectData : undefined, // will be handled by `proxyDoNextAction()` => CAPTURED => will be manually capture on server_side
-                } satisfies DraftOrderDetail;
-            }
-            
-            
-            
-            default : {
-                // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                handleRevertDraftOrder(rawOrderId);
-                
-                throw Error('Oops, an error occured!');
-            }
-        } // switch
+        return await doPlaceOrder({
+            paymentSource  : 'stripeCard',
+            cardToken      : paymentMethod.id,
+        });
     });
     const proxyDoNextAction      = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
         if (!stripe)   throw Error('Oops, an error occured!');
@@ -867,13 +333,6 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         catch {
             throw Error('Oops, an error occured!');
         } // try
-    });
-    const handleRevertDraftOrder = useEvent((orderId: string): void => {
-        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
-        .catch(() => {
-            // ignore any error
-        });
     });
     
     
@@ -1286,7 +745,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 } // switch
             }
             catch (fetchError: any) {
-                if (fetchError instanceof ErrorDeclined) {
+                if ((fetchError instanceof ErrorDeclined) || (fetchError?.status === 402)) {
                     showMessageError({
                         error: <>
                             <p>
@@ -1295,6 +754,9 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                             {/* <p>
                                 The credit card <strong>verification failed</strong>.
                             </p> */}
+                            {!fetchError.message && <p>
+                                Your card was declined.
+                            </p>}
                             {!!fetchError.message && <p>
                                 {fetchError.message}
                             </p>}
