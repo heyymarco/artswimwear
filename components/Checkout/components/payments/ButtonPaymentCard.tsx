@@ -242,7 +242,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         
         
-        // trigger form validation and wallet collection:
+        // create PaymentMethod using card:
         const {
             error : paymentMethodError,
             paymentMethod,
