@@ -192,7 +192,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             handleEndTransaction();
         } // try
     });
-    const handleFundApproved     = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
+    const handleApproved         = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
             const rawOrderId = paypalAuthentication.orderID;
             const orderId = (
@@ -281,7 +281,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     
                     createOrder={handleCreateOrder}
                     onCancel={handleCancelOrder}
-                    onApprove={handleFundApproved}
+                    onApprove={handleApproved}
                     onShippingChange={handleShippingChange}
                 />
             </div>
