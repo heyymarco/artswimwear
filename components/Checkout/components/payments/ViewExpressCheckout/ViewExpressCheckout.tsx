@@ -143,6 +143,11 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     
     const checkoutState = useCheckoutState();
     const {
+        // shipping data:
+        shippingAddress,
+        
+        
+        
         // actions:
         doTransaction,
         doPlaceOrder,
@@ -371,14 +376,6 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     const proxyDoPlaceOrder      = useEvent(async (): Promise<[DraftOrderDetail|true, string]> => {
         if (!stripe)   throw Error('Oops, an error occured!');
         if (!elements) throw Error('Oops, an error occured!');
-        
-        
-        
-        // states:
-        const {
-            // shipping data:
-            shippingAddress,
-        } = useCheckoutState();
         
         
         
