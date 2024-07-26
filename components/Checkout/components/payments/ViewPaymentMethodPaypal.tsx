@@ -218,7 +218,7 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     return (
         <>
             <p>
-                Click the PayPal button below. You will be redirected to the PayPal website to complete the payment.
+                Click the PayPal button below. You will be redirected to the PayPal&apos;s website to complete the payment.
             </p>
             
             <PayPalButtons
