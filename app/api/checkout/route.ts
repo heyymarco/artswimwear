@@ -191,6 +191,7 @@ export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'payme
         
         // stripe:
         |'stripeCard'
+        |'stripeExpress'
         
         // midtrans:
         |'midtransCard'|'midtransQris'|'gopay'|'shopeepay'|'indomaret'|'alfamart'
@@ -396,8 +397,8 @@ router
     
     
     
-    const usePaypalGateway   = !simulateOrder && !['manual', 'stripeCard', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
-    const useStripeGateway   = !simulateOrder &&  ['stripeCard'].includes(paymentSource);
+    const usePaypalGateway   = !simulateOrder && !['manual', 'stripeCard', 'stripeExpress', 'midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource); // if undefined || not 'manual' => use paypal gateway
+    const useStripeGateway   = !simulateOrder &&  ['stripeCard', 'stripeExpress'].includes(paymentSource);
     const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
     
     if (usePaypalGateway && (!checkoutConfigServer.payment.processors.paypal.enabled || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
@@ -424,7 +425,7 @@ router
             cardToken: cardTokenRaw,
         } = placeOrderData;
         
-        if (paymentSource === 'stripeCard') {
+        if ((paymentSource === 'stripeCard') || (paymentSource === 'stripeExpress')) {
             if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
                 return NextResponse.json({
                     error: 'Invalid data.',
