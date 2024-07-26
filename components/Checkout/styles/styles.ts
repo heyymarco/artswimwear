@@ -675,22 +675,25 @@ export default () => {
                 })
             }),
         }, {specificityWeight: 2}),
-        scope('paymentEntryPaypal', {
-            [paddingVars.paddingInline] : '1rem',
-            [paddingVars.paddingBlock ] : '1rem',
+        scope('paymentEntryExpressCheckout', {
+            [paddingVars.paddingInline] : '0rem',
+            [paddingVars.paddingBlock ] : '0rem',
+            paddingInline : paddingVars.paddingInline,
+            paddingBlock  : paddingVars.paddingBlock,
+            
             ...children('article', {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
             ...children('article', {
                 ...children('div', {
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    // layouts:
+                    display      : 'grid',
+                    justifyItems : 'center',
+                    alignItems   : 'center',
                 }),
             }),
-        }, {specificityWeight: 2}),
+        }, {specificityWeight: 4}),
         scope('paymentEntryPaymentButton', {
             [paddingVars.paddingInline] : '1rem',
             [paddingVars.paddingBlock ] : '1rem',

@@ -43,9 +43,6 @@ import {
     EditPaymentMethodCard,
 }                           from '../payments/EditPaymentMethodCard'
 import {
-    ViewPaymentMethodPaypal,
-}                           from '../payments/ViewPaymentMethodPaypal'
-import {
     ViewPaymentMethodQris,
 }                           from '../payments/ViewPaymentMethodQris'
 import {
@@ -69,6 +66,10 @@ import {
     useIsInStripeElementsProvider,
     ConditionalStripeElementsProvider,
 }                           from './ConditionalStripeElementsProvider'
+import {
+    ViewExpressCheckout,
+    ViewExpressCheckoutPaypal,
+}                           from './ViewExpressCheckout'
 
 // midtrans:
 import {
@@ -160,6 +161,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     const paymentMethodList : PaymentMethod[] = Array.from(
         new Set([ // remove duplicate(s)
             ...((isPayUsingPaypal || isPayUsingStripe || isPayUsingMidtrans) ? ['card'] satisfies PaymentMethod[] : []),
+            ...(isPayUsingStripe   ? (['googlePay' as any, 'applePay' as any, 'amazonPay' as any, 'link' as any] satisfies PaymentMethod[]) : []),
             ...(isPayUsingPaypal   ? (['paypal'] satisfies PaymentMethod[]) : []),
             ...(isPayUsingMidtrans ? (['qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
             ...(canPayUsingBank    ? (['manual'] satisfies PaymentMethod[]) : []),
@@ -242,6 +244,118 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     <EditPaymentMethodCard />
                 </AccordionItem>}
                 
+                {isPayUsingStripe && <AccordionItem
+                    // accessibilities:
+                    label={<>
+                        <RadioDecorator />
+                        <span className='label'>
+                            Google Pay
+                        </span>
+                        <NextImage alt='Google Pay' src='/brands/googlepay.svg' width={60*1.5} height={11.51*1.5} />
+                    </>}
+                    
+                    
+                    
+                    // behaviors:
+                    lazy={true}
+                    
+                    
+                    
+                    // components:
+                    bodyComponent={
+                        <Section
+                            // classes:
+                            className={styleSheet.paymentEntryExpressCheckout}
+                        />
+                    }
+                >
+                    {(paymentMethod === 'googlePay' as any) && <ViewExpressCheckout type='googlePay' buttonName='GooglePay' websiteName='Google' />}
+                </AccordionItem>}
+                
+                {isPayUsingStripe && <AccordionItem
+                    // accessibilities:
+                    label={<>
+                        <RadioDecorator />
+                        <span className='label'>
+                            Apple Pay
+                        </span>
+                        <NextImage alt='Apple Pay' src='/brands/applepay.svg' width={60*1.5} height={11.51*1.5} />
+                    </>}
+                    
+                    
+                    
+                    // behaviors:
+                    lazy={true}
+                    
+                    
+                    
+                    // components:
+                    bodyComponent={
+                        <Section
+                            // classes:
+                            className={styleSheet.paymentEntryExpressCheckout}
+                        />
+                    }
+                >
+                    {(paymentMethod === 'applePay' as any) && <ViewExpressCheckout type='applePay' buttonName='ApplePay' websiteName='Apple' />}
+                </AccordionItem>}
+                
+                {isPayUsingStripe && <AccordionItem
+                    // accessibilities:
+                    label={<>
+                        <RadioDecorator />
+                        <span className='label'>
+                            Amazon Pay
+                        </span>
+                        <NextImage alt='Amazon Pay' src='/brands/amazonpay.svg' width={60*1.5} height={11.51*1.5} />
+                    </>}
+                    
+                    
+                    
+                    // behaviors:
+                    lazy={true}
+                    
+                    
+                    
+                    // components:
+                    bodyComponent={
+                        <Section
+                            // classes:
+                            className={styleSheet.paymentEntryExpressCheckout}
+                        />
+                    }
+                >
+                    {(paymentMethod === 'amazonPay' as any) && <ViewExpressCheckout type='amazonPay' buttonName='AmazonPay' websiteName='Amazon' />}
+                </AccordionItem>}
+                
+                {isPayUsingStripe && <AccordionItem
+                    // accessibilities:
+                    label={<>
+                        <RadioDecorator />
+                        <span className='label'>
+                            Link
+                        </span>
+                        <NextImage alt='Link' src='/brands/link.svg' width={60} height={20} />
+                    </>}
+                    
+                    
+                    
+                    // behaviors:
+                    lazy={true}
+                    
+                    
+                    
+                    // components:
+                    bodyComponent={
+                        <Section
+                            // classes:
+                            className={styleSheet.paymentEntryExpressCheckout}
+                        />
+                    }
+                >
+                    {(paymentMethod === 'link' as any) && <ViewExpressCheckout type='link' buttonName='Link' websiteName='Link' />}
+                </AccordionItem>}
+                
                 {isPayUsingPaypal && <AccordionItem
                     // accessibilities:
                     label={<>
@@ -255,7 +369,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     
                     
                     // behaviors:
-                    // lazy={true} // causes error
+                    lazy={true}
                     
                     
                     
@@ -263,11 +377,11 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     bodyComponent={
                         <Section
                             // classes:
-                            className={styleSheet.paymentEntryPaypal}
+                            className={styleSheet.paymentEntryExpressCheckout}
                         />
                     }
                 >
-                    <ViewPaymentMethodPaypal />
+                    <ViewExpressCheckoutPaypal />
                 </AccordionItem>}
                 
                 {isPayUsingMidtrans && <AccordionItem

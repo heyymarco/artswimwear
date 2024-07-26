@@ -9,6 +9,7 @@ import {
     
     // hooks:
     useRef,
+    useState,
 }                           from 'react'
 
 // reusable-ui core:
@@ -19,9 +20,24 @@ import {
 
 // reusable-ui components:
 import {
+    // base-content-components:
+    Content,
+    
+    
+    
+    // status-components:
+    Busy,
+    
+    
+    
     // utility-components:
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// internal components:
+import {
+    MessageError,
+}                           from '@/components/MessageError'
 
 // paypal:
 import type {
@@ -40,12 +56,22 @@ import {
 // internals:
 import {
     useCheckoutState,
-}                           from '../../states/checkoutState'
+}                           from '../../../states/checkoutState'
+
+// styles:
+import {
+    useViewExpressCheckoutStyleSheet,
+}                           from './styles/loader'
 
 
 
 // react components:
-const ViewPaymentMethodPaypal = (): JSX.Element|null => {
+const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
+    // styles:
+    const styleSheet = useViewExpressCheckoutStyleSheet();
+    
+    
+    
     // states:
     const checkoutState = useCheckoutState();
     const {
@@ -54,6 +80,17 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
         doPlaceOrder,
         doMakePayment,
     } = checkoutState;
+    
+    
+    
+    // states:
+    const enum LoadedState {
+        Loading,
+        Errored,
+        FullyLoaded,
+    }
+    const [isLoaded  , setIsLoaded  ] = useState<LoadedState>(LoadedState.Loading);
+    const [generation, setGeneration] = useState<number>(1);
     
     
     
@@ -66,6 +103,18 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
     
     
     // handlers:
+    const handleLoaded  = useEvent((): void => {
+        setIsLoaded(LoadedState.FullyLoaded);
+    });
+    const handleErrored = useEvent((): void => {
+        // actions:
+        setIsLoaded(LoadedState.Errored);
+    });
+    const handleReload  = useEvent((): void => {
+        setIsLoaded(LoadedState.Loading);
+        setGeneration((current) => (current + 1));
+    });
+    
     const signalOrderFinishedRef = useRef<(() => void)|undefined>(undefined);
     const handleBeginTransaction = useEvent(() => {
         if (signalOrderFinishedRef.current) return; // already began => ignore
@@ -203,36 +252,63 @@ const ViewPaymentMethodPaypal = (): JSX.Element|null => {
             return actions.resolve();
         } // if
     });
-    const handleError            = useEvent((err: Record<string, unknown>): void => {
-        handleEndTransaction();
-        
-        
-        
-        // already handled by `handleCreateOrder()` & `handleFundApproved()`
-        console.log('paypal button error', err);
-    });
     
     
     
     // jsx:
+    const isErrored      = (isLoaded === LoadedState.Errored);
+    const isLoading      = !isErrored &&               (isLoaded === LoadedState.Loading    );
+    const isReady        = !isErrored && !isLoading && (isLoaded === LoadedState.FullyLoaded);
     return (
-        <>
-            <p>
-                Click the PayPal button below. You will be redirected to the PayPal&apos;s website to complete the payment.
-            </p>
+        <div
+            // classes:
+            className={styleSheet.main}
+        >
+            <div className={`${styleSheet.expressCheckout} ${isReady ? '' : 'hidden'}`}>
+                <p>
+                    Click the PayPal button below. You will be redirected to the PayPal&apos;s website to complete the payment.
+                </p>
+                
+                <PayPalButtons
+                    // identifiers:
+                    key={generation}
+                    
+                    
+                    
+                    // handlers:
+                    onInit={handleLoaded}
+                    onError={handleErrored}
+                    
+                    createOrder={handleCreateOrder}
+                    onCancel={handleCancelOrder}
+                    onApprove={handleFundApproved}
+                    onShippingChange={handleShippingChange}
+                />
+            </div>
             
-            <PayPalButtons
-                // handlers:
-                createOrder={handleCreateOrder}
-                onCancel={handleCancelOrder}
-                onApprove={handleFundApproved}
-                onShippingChange={handleShippingChange}
-                onError={handleError}
+            <Content theme='danger' className={`${styleSheet.error} ${isErrored ? '' : 'hidden'}`}>
+                <MessageError message={null} onRetry={handleReload} />
+            </Content>
+            
+            <Busy
+                // classes:
+                className={styleSheet.loading}
+                
+                
+                
+                // variants:
+                size='lg'
+                theme='primary'
+                
+                
+                
+                // states:
+                expanded={isLoading}
             />
-        </>
+        </div>
     );
 };
 export {
-    ViewPaymentMethodPaypal,
-    ViewPaymentMethodPaypal as default,
+    ViewExpressCheckoutPaypal,
+    ViewExpressCheckoutPaypal as default,
 };
