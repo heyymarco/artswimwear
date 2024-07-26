@@ -286,8 +286,8 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         
         
-        const redirectData = draftOrderDetail.redirectData;
-        if (redirectData === undefined) return (
+        const clientSecret = draftOrderDetail.redirectData;
+        if (clientSecret === undefined) return (
             !draftOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
             ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
             : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
@@ -297,7 +297,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         try {
             const result = await stripe.handleNextAction({
-                clientSecret : redirectData,
+                clientSecret : clientSecret,
             });
             if (result.error || !result.paymentIntent) return AuthenticatedResult.FAILED;
             switch (result.paymentIntent.status) {
