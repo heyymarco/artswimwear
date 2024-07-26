@@ -73,26 +73,14 @@ import {
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
+import {
+    ErrorDeclined,
+}                           from './ErrorDeclined'
 
 // configs:
 import {
     type checkoutConfigClient,
 }                           from '@/checkout.config.client'
-
-
-
-// utilities:
-interface ErrorDeclinedArg {
-    message     ?: string
-    shouldRetry ?: boolean
-}
-class ErrorDeclined extends Error {
-    readonly shouldRetry : boolean
-    constructor(arg: ErrorDeclinedArg) {
-        super(arg.message);
-        this.shouldRetry = arg.shouldRetry ?? false; // default: please use another card
-    }
-}
 
 
 
