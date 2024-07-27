@@ -161,8 +161,8 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     const paymentMethodList : PaymentMethod[] = Array.from(
         new Set([ // remove duplicate(s)
             ...((isPayUsingPaypal || isPayUsingStripe || isPayUsingMidtrans) ? ['card'] satisfies PaymentMethod[] : []),
-            ...(isPayUsingStripe   ? (['googlePay' as any, 'applePay' as any, 'amazonPay' as any, 'link' as any] satisfies PaymentMethod[]) : []),
             ...(isPayUsingPaypal   ? (['paypal'] satisfies PaymentMethod[]) : []),
+            ...(isPayUsingStripe   ? (['googlePay' as any, 'applePay' as any, 'amazonPay' as any, 'link' as any] satisfies PaymentMethod[]) : []),
             ...(isPayUsingMidtrans ? (['qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
             ...(canPayUsingBank    ? (['manual'] satisfies PaymentMethod[]) : []),
         ])
@@ -242,6 +242,34 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     }
                 >
                     <EditPaymentMethodCard />
+                </AccordionItem>}
+                
+                {isPayUsingPaypal && <AccordionItem
+                    // accessibilities:
+                    label={<>
+                        <RadioDecorator />
+                        <span className='label'>
+                            PayPal
+                        </span>
+                        <NextImage alt='PayPal' src='/brands/paypal.svg' width={60} height={15.5} />
+                    </>}
+                    
+                    
+                    
+                    // behaviors:
+                    lazy={true}
+                    
+                    
+                    
+                    // components:
+                    bodyComponent={
+                        <Section
+                            // classes:
+                            className={styleSheet.paymentEntryExpressCheckout}
+                        />
+                    }
+                >
+                    <ViewExpressCheckoutPaypal />
                 </AccordionItem>}
                 
                 {isPayUsingStripe && <AccordionItem
@@ -354,34 +382,6 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     }
                 >
                     {(paymentMethod === 'link' as any) && <ViewExpressCheckout type='link' buttonName='Link' websiteName='Link' />}
-                </AccordionItem>}
-                
-                {isPayUsingPaypal && <AccordionItem
-                    // accessibilities:
-                    label={<>
-                        <RadioDecorator />
-                        <span className='label'>
-                            PayPal
-                        </span>
-                        <NextImage alt='PayPal' src='/brands/paypal.svg' width={60} height={15.5} />
-                    </>}
-                    
-                    
-                    
-                    // behaviors:
-                    lazy={true}
-                    
-                    
-                    
-                    // components:
-                    bodyComponent={
-                        <Section
-                            // classes:
-                            className={styleSheet.paymentEntryExpressCheckout}
-                        />
-                    }
-                >
-                    <ViewExpressCheckoutPaypal />
                 </AccordionItem>}
                 
                 {isPayUsingMidtrans && <AccordionItem
