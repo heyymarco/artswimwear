@@ -375,7 +375,8 @@ export const stripeTranslateData = async (paymentIntent: Stripe.Response<Stripe.
             const latestCharge       = paymentIntent.latest_charge       as Stripe.Charge|undefined;
             let   balanceTransaction = latestCharge?.balance_transaction as Stripe.BalanceTransaction|undefined|null;
             if (latestCharge?.id && !balanceTransaction && stripe) {
-                for (let remainingRetries = 5, retryCounter = 1; remainingRetries > 0; remainingRetries--, retryCounter++) {
+                for (let remainingRetries = 9, retryCounter = 0; remainingRetries > 0; remainingRetries--, retryCounter++) {
+                    const prevTick = performance.now();
                     try {
                         const newLatestCharge = await stripe.charges.retrieve(latestCharge.id, {
                             expand : [
@@ -390,13 +391,17 @@ export const stripeTranslateData = async (paymentIntent: Stripe.Response<Stripe.
                     catch {
                         // ignore any error
                     } // try
+                    const executionInterval = performance.now() - prevTick;
                     
                     
                     
                     if (remainingRetries > 0) {
                         // wait for a brief moment for next retry:
+                        const absoluteDelay = (((1.4 ** retryCounter) - 1) * 1000); // absoluteDelay: 0, 0.4, 0.96, 1.74, 2.84, 4.38, 6.53, 9.54, 13.76 => sum 40.15 secs
+                        const relativeDelay = Math.min(absoluteDelay - executionInterval, 0);
+                        console.log(`wait for: ${absoluteDelay} => ${relativeDelay}`);
                         await new Promise<void>((resolve) => {
-                            setTimeout(resolve, (1 ** retryCounter) * 1000); // next waits: 1, 2, 4, 8, 16
+                            setTimeout(resolve, relativeDelay);
                         });
                     } // if
                 } // for
