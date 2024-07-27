@@ -29,7 +29,7 @@ import {
 }                           from '../ButtonWithBusy'
 import {
     CaptchaDialog,
-}                           from './CaptchaDialog'
+}                           from '@/components/dialogs/CaptchaDialog'
 
 // internals:
 import {

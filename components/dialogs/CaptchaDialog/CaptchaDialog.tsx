@@ -61,10 +61,10 @@ import {
     ErrorBlankSection,
 }                           from '@/components/BlankSection'
 
-// internals:
+// styles:
 import {
-    useCheckoutStyleSheet,
-}                           from '../../styles/loader'
+    useCaptchaDialogStyleSheet,
+}                           from './styles/loader'
 
 
 
@@ -80,7 +80,7 @@ export interface CaptchaDialogProps<TElement extends Element = HTMLElement, TMod
 }
 const CaptchaDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<string> = ModalExpandedChangeEvent<string>>(props: CaptchaDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // styles:
-    const styleSheet = useCheckoutStyleSheet();
+    const styleSheet = useCaptchaDialogStyleSheet();
     
     
     
@@ -213,34 +213,41 @@ const CaptchaDialog = <TElement extends Element = HTMLElement, TModalExpandedCha
                 <h1>Please Prove You&apos;re Not a Robot</h1>
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
-            <CardBody className={styleSheet.captchaDialogBody}>
-                <ReCAPTCHAComponent
-                    // identifiers:
-                    key={recaptchaKey}
-                    
-                    
-                    
-                    // refs:
-                    ref={recaptchaRef}
-                    
-                    
-                    
-                    // configs:
-                    sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_ID ?? ''}
-                    
-                    
-                    
-                    // variants:
-                    theme='light'
-                    size='normal'
-                    
-                    
-                    
-                    // handlers:
-                    asyncScriptOnLoad={handleLoaded}
-                    onErrored={handleErrored}
-                    onChange={handleChange}
-                />
+            <CardBody className={styleSheet.main}>
+                <div className='content'>
+                    <div className='instructions'>
+                        <p>
+                            Please check the captcha below to continue:
+                        </p>
+                    </div>
+                    <ReCAPTCHAComponent
+                        // identifiers:
+                        key={recaptchaKey}
+                        
+                        
+                        
+                        // refs:
+                        ref={recaptchaRef}
+                        
+                        
+                        
+                        // configs:
+                        sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_ID ?? ''}
+                        
+                        
+                        
+                        // variants:
+                        theme='light'
+                        size='normal'
+                        
+                        
+                        
+                        // handlers:
+                        asyncScriptOnLoad={handleLoaded}
+                        onErrored={handleErrored}
+                        onChange={handleChange}
+                    />
+                </div>
                 
                 {(isLoaded === LoadedState.Errored) && <ErrorBlankSection className='error' onRetry={handleReload} />}
                 
