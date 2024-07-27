@@ -737,7 +737,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     showMessageError({
                         error: <>
                             <p>
-                                Cannot make transactions with this card.
+                                Unable to make a transaction using this card.
                             </p>
                             {/* <p>
                                 The credit card <strong>verification failed</strong>.
