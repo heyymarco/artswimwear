@@ -398,7 +398,7 @@ export const stripeTranslateData = async (paymentIntent: Stripe.Response<Stripe.
                     if (remainingRetries > 0) {
                         // wait for a brief moment for next retry:
                         const absoluteDelay = (((1.4 ** retryCounter) - 1) * 1000); // absoluteDelay: 0, 0.4, 0.96, 1.74, 2.84, 4.38, 6.53, 9.54, 13.76 => sum 40.15 secs
-                        const relativeDelay = Math.min(absoluteDelay - executionInterval, 0);
+                        const relativeDelay = Math.max(absoluteDelay - executionInterval, 0);
                         console.log(`wait for: ${absoluteDelay} => ${relativeDelay}`);
                         await new Promise<void>((resolve) => {
                             setTimeout(resolve, relativeDelay);
