@@ -92,7 +92,7 @@ export type ViewExpressCheckoutType =
 export interface ViewExpressCheckoutProps {
     // options:
     type        : ViewExpressCheckoutType
-    buttonName  : string
+    walletName  : string
     websiteName : string
 }
 const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null => {
@@ -100,7 +100,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     const {
         // options:
         type,
-        buttonName,
+        walletName,
         websiteName,
     } = props;
     
@@ -282,10 +282,10 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                     showMessageError({
                         error: <>
                             <p>
-                                The credit card <strong>verification failed</strong>.
+                                Unable to make a transaction using {walletName}.
                             </p>
                             <p>
-                                Please try using <strong>another card</strong>.
+                                Please try <strong>another payment method</strong>.
                             </p>
                         </>
                     });
@@ -345,19 +345,13 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 showMessageError({
                     error: <>
                         <p>
-                            Cannot make transactions with this card.
+                            Unable to make a transaction using {walletName}.
                         </p>
-                        {/* <p>
-                            The credit card <strong>verification failed</strong>.
-                        </p> */}
-                        {!fetchError.message && <p>
-                            Your card was declined.
-                        </p>}
                         {!!fetchError.message && <p>
                             {fetchError.message}
                         </p>}
                         {!fetchError.shouldRetry  /* === false */ && <p>
-                            Please try using <strong>another card</strong>.
+                            Please try <strong>another payment method</strong>.
                         </p>}
                         {!!fetchError.shouldRetry /* === true  */ && <p>
                             Please <strong>try again</strong> in a few minutes.
@@ -390,13 +384,13 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             throw new ErrorDeclined({
                 message     : submitError.message,
-                shouldRetry : (submitError as any).shouldRetry ?? false, // default: please use another card
+                shouldRetry : (submitError as any).shouldRetry ?? false, // default: please use another payment method
             });
         } // if
         
         
         
-        // create PaymentMethod using card:
+        // create PaymentMethod using expressCheckout:
         const {
             error : paymentMethodError,
             confirmationToken,
@@ -426,7 +420,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             throw new ErrorDeclined({
                 message     : paymentMethodError.message,
-                shouldRetry : (paymentMethodError as any).shouldRetry ?? false, // default: please use another card
+                shouldRetry : (paymentMethodError as any).shouldRetry ?? false, // default: please use another payment method
             });
         } // if
         
@@ -451,7 +445,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         CANCELED   = -1,
         /**
          * An error occured.  
-         * Usually using invalid card.
+         * Unknown error, but usually caused by incorrect configuration.
          */
         FAILED     = 0,
         
@@ -526,7 +520,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         >
             <div className={`${styleSheet.expressCheckout} ${isReady ? '' : 'hidden'}`}>
                 <p>
-                    Click the {buttonName} button below. You will be redirected to the {websiteName}&apos;s website to complete the payment.
+                    Click the {walletName} button below. You will be redirected to the {websiteName}&apos;s website to complete the payment.
                 </p>
                 
                 <ExpressCheckoutElement

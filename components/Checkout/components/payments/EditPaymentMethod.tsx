@@ -297,7 +297,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'googlePay' as any) && <ViewExpressCheckout type='googlePay' buttonName='GooglePay' websiteName='Google' />}
+                    {(paymentMethod === 'googlePay' as any) && <ViewExpressCheckout type='googlePay' walletName='Google Pay' websiteName='Google' />}
                 </AccordionItem>}
                 
                 {isPayUsingStripe && <AccordionItem
@@ -325,7 +325,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'applePay' as any) && <ViewExpressCheckout type='applePay' buttonName='ApplePay' websiteName='Apple' />}
+                    {(paymentMethod === 'applePay' as any) && <ViewExpressCheckout type='applePay' walletName='Apple Pay' websiteName='Apple' />}
                 </AccordionItem>}
                 
                 {isPayUsingStripe && <AccordionItem
@@ -353,7 +353,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'amazonPay' as any) && <ViewExpressCheckout type='amazonPay' buttonName='AmazonPay' websiteName='Amazon' />}
+                    {(paymentMethod === 'amazonPay' as any) && <ViewExpressCheckout type='amazonPay' walletName='Amazon Pay' websiteName='Amazon' />}
                 </AccordionItem>}
                 
                 {isPayUsingStripe && <AccordionItem
@@ -381,7 +381,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'link' as any) && <ViewExpressCheckout type='link' buttonName='Link' websiteName='Link' />}
+                    {(paymentMethod === 'link' as any) && <ViewExpressCheckout type='link' walletName='Link' websiteName='Link' />}
                 </AccordionItem>}
                 
                 {isPayUsingMidtrans && <AccordionItem
