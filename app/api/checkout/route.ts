@@ -21,6 +21,7 @@ import {
     type VariantGroup,
     type Stock,
     
+    type CreateOrderDataBasic,
     type PaymentConfirmation,
     type OrderCurrencyDetail,
     type DraftOrdersOnProducts,
@@ -1316,7 +1317,7 @@ router
             
             //#region create a new(Draft|Real)Order
             let savingCurrency   = currency || checkoutConfigServer.intl.defaultCurrency;
-            const orderItemsData = detailedItems.map((detailedItem) => {
+            const orderItemsData : CreateOrderDataBasic['items'] = detailedItems.map((detailedItem) => {
                 return {
                     productId      : detailedItem.productId,
                     variantIds     : detailedItem.variantIds,
@@ -1324,22 +1325,22 @@ router
                     price          : detailedItem.priceConverted,
                     shippingWeight : detailedItem.shippingWeight,
                     quantity       : detailedItem.quantity,
-                };
+                } satisfies CreateOrderDataBasic['items'][number];
             });
-            const currencyData = (
+            const currencyData : OrderCurrencyDetail|null = (
                 (savingCurrency === checkoutConfigServer.intl.defaultCurrency)
                 ? null
                 : {
                     currency       : savingCurrency,
                     rate           : await getCurrencyRate(savingCurrency),
-                }
+                } satisfies OrderCurrencyDetail
             );
-            const shippingAddressData = (
+            const shippingAddressData : ShippingAddressDetail|null = (
                 !hasShippingAddress
                 ? null
                 : shippingAddress
             );
-            const shippingCostData = (
+            const shippingCostData : number|null = (
                 !hasShippingAddress
                 ? null
                 : totalShippingCostConverted
@@ -1353,7 +1354,7 @@ router
                     timezone         : checkoutConfigServer.intl.defaultTimezone, // TODO: detect customer's|guest's timezone based on browser detection `(0 - (new Date()).getTimezoneOffset())`
                 },
             };
-            const billingAddressData = (
+            const billingAddressData : BillingAddressDetail|null = (
                 !hasBillingAddress
                 ? null
                 : billingAddress
