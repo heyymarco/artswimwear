@@ -1,6 +1,7 @@
 // cssfn:
 import {
     // writes css in javascript:
+    rule,
     children,
     style,
 }                           from '@cssfn/core'                  // writes css in javascript
@@ -9,6 +10,12 @@ import {
     // groups a list of UIs into a single UI:
     usesGroupable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // base-components:
+    basics,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 
 
@@ -43,6 +50,28 @@ export const usesCaptchaDialogBodyLayout  = () => {
         ...children('.content', {
             // layouts:
             display: 'grid',
+            
+            
+            
+            // appearances:
+            ...rule('.hidden', {
+                opacity    : 0,
+            }),
+            
+            
+            
+            // accessibilities:
+            ...rule('.hidden', {
+                pointerEvents : 'none', // prevents user interaction
+            }),
+            
+            
+            
+            // animations:
+            transition : [
+                // appearances:
+                ['opacity' , basics.defaultAnimationDuration, 'ease-out'],
+            ],
             
             
             

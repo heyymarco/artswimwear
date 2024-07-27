@@ -214,7 +214,7 @@ const CaptchaDialog = <TElement extends Element = HTMLElement, TModalExpandedCha
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheet.main}>
-                <div className='content'>
+                <div className={`content ${(isLoaded === LoadedState.FullyLoaded) ? '' : 'hidden'}`}>
                     <div className='instructions'>
                         <p>
                             Please check the captcha below to continue:
