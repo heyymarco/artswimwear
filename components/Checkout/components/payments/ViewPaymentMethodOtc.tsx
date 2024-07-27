@@ -72,15 +72,15 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     
     // handlers:
     const handlePayWithOtc = useEvent(async (): Promise<void> => {
-        // conditions:
-        const captcha = await showDialog<string>(
-            <CaptchaDialog />
-        );
-        if (!captcha) return;
-        
-        
-        
         doTransaction(async () => {
+            // conditions:
+            const captcha = await showDialog<string>(
+                <CaptchaDialog />
+            );
+            if (!captcha) return;
+            
+            
+            
             try {
                 // createOrder:
                 await doPlaceOrder({ // will be immediately paid => no need further action
