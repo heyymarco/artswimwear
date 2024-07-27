@@ -36,7 +36,7 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
  * PaymentDetail      : Paid.  
  * false              : Transaction was deleted due to canceled or expired.  
  */
-export const stripeTranslateData = (paymentIntent: Stripe.Response<Stripe.PaymentIntent>): undefined|0|null|AuthorizedFundData|PaymentDetail|false => {
+export const stripeTranslateData = async (paymentIntent: Stripe.Response<Stripe.PaymentIntent>): Promise<undefined|0|null|AuthorizedFundData|PaymentDetail|false> => {
     switch (paymentIntent.status) {
         // step 1:
         case 'requires_payment_method' : { // if the payment attempt fails (for example due to a decline)
@@ -373,7 +373,34 @@ export const stripeTranslateData = (paymentIntent: Stripe.Response<Stripe.Paymen
                 payment_method  : paymentMethodRaw,
             } = paymentIntent;
             const latestCharge       = paymentIntent.latest_charge       as Stripe.Charge|undefined;
-            const balanceTransaction = latestCharge?.balance_transaction as Stripe.BalanceTransaction|undefined;
+            let   balanceTransaction = latestCharge?.balance_transaction as Stripe.BalanceTransaction|undefined|null;
+            if (latestCharge?.id && !balanceTransaction && stripe) {
+                for (let remainingRetries = 5, retryCounter = 1; remainingRetries > 0; remainingRetries--, retryCounter++) {
+                    try {
+                        const newLatestCharge = await stripe.charges.retrieve(latestCharge.id, {
+                            expand : [
+                                'balance_transaction',
+                            ],
+                        });
+                        balanceTransaction = newLatestCharge.balance_transaction as Stripe.BalanceTransaction|undefined|null;
+                        if (balanceTransaction) {
+                            break;
+                        } // if
+                    }
+                    catch {
+                        // ignore any error
+                    } // try
+                    
+                    
+                    
+                    if (remainingRetries > 0) {
+                        // wait for a brief moment for next retry:
+                        await new Promise<void>((resolve) => {
+                            setTimeout(resolve, (1 ** retryCounter) * 1000); // next waits: 1, 2, 4, 8, 16
+                        });
+                    } // if
+                } // for
+            } // if
             const currency           = balanceTransaction?.currency ?? latestCharge?.currency        ?? currencyFallback;
             const amount             = balanceTransaction?.amount   ?? latestCharge?.amount_captured ?? amountFallback;
             const fee                = balanceTransaction?.fee      ?? 0;
@@ -953,7 +980,7 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
         
         return null;
     } // try
-    const result = stripeTranslateData(paymentIntent);
+    const result = await stripeTranslateData(paymentIntent);
     switch (result) {
         // unexpected results:
         case undefined :   // (never happened) Transaction not found.
@@ -994,7 +1021,7 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
             'payment_method',
         ],
     });
-    const result = stripeTranslateData(paymentIntent);
+    const result = await stripeTranslateData(paymentIntent);
     switch (result) {
         // unexpected results:
         case undefined :   // (never happened) Transaction not found.
