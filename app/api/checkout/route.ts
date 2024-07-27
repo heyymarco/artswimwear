@@ -1057,7 +1057,7 @@ router
             else if (cardToken) {
                 let authorizedOrPaymentDetailOrDeclined : AuthorizedFundData|PaymentDetail|null;
                 if (useStripeGateway) {
-                    authorizedOrPaymentDetailOrDeclined = await stripeCreateOrder(cardToken, {
+                    authorizedOrPaymentDetailOrDeclined = await stripeCreateOrder(cardToken, orderId, {
                         currency,
                         totalCostConverted,
                         totalProductPriceConverted,

@@ -393,6 +393,15 @@ export const stripeTranslateData = (paymentIntent: Stripe.Response<Stripe.Paymen
                         brand      : paymentMethod.card.brand /* machine readable name */ ?? paymentMethod.card.display_brand /* human readable name */,
                         identifier : paymentMethod.card.last4,
                     };
+                    
+                    
+                    
+                    /* PAY WITH AMAZON_PAY */
+                    if ((paymentMethod.type === 'amazon_pay') && paymentMethod.amazon_pay) return {
+                        type       : 'EWALLET',
+                        brand      : 'amazonpay',
+                        identifier : null,
+                    };
                 } // if
                 
                 
@@ -423,7 +432,7 @@ export const stripeTranslateData = (paymentIntent: Stripe.Response<Stripe.Paymen
 
 
 
-export const stripeCreateOrder = async (cardToken: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
+export const stripeCreateOrder = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
     if (!stripe) throw Error('stripe is not loaded');
     
     
@@ -442,13 +451,14 @@ export const stripeCreateOrder = async (cardToken: string, options: CreateOrderO
     
     
     
+    const isConfirmationToken = cardToken.startsWith('ctoken_');
     let paymentIntent: Stripe.Response<Stripe.PaymentIntent>;
     try {
         paymentIntent = await stripe.paymentIntents.create({
-            currency       : currency.toLowerCase(),
-            amount         : convertCurrencyToStripeNominal(totalCostConverted, currency),
+            currency                  : currency.toLowerCase(),
+            amount                    : convertCurrencyToStripeNominal(totalCostConverted, currency),
             
-            shipping       : !shippingAddress ? undefined : {
+            shipping                  : !shippingAddress ? undefined : {
                 address : {
                     country     : shippingAddress.country,
                     state       : shippingAddress.state,
@@ -460,14 +470,21 @@ export const stripeCreateOrder = async (cardToken: string, options: CreateOrderO
                 name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
                 phone           : shippingAddress.phone,
             },
-            capture_method : 'manual',
+            capture_method            : isConfirmationToken ? undefined : 'manual',
             
-            confirm        : true,
-            payment_method : cardToken,
+            confirm                   : true,
+            payment_method            : isConfirmationToken ? undefined : cardToken,
+            confirmation_token        : isConfirmationToken ? cardToken : undefined,
+            return_url                : isConfirmationToken ? `${process.env.APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}` : undefined,
             automatic_payment_methods : {
                 enabled         : true,
                 allow_redirects : 'never',
             },
+            
+            expand                    : [
+                'latest_charge.balance_transaction',
+                'payment_method',
+            ],
         });
     }
     catch (error: any) {
