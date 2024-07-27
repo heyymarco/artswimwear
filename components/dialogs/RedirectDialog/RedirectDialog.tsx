@@ -17,7 +17,6 @@ import {
 import {
     // react helper hooks:
     useEvent,
-    useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -230,6 +229,39 @@ const RedirectDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
         
         // second attempt: open in current window (and clear browsing history):
         if (!openedRedirectWindow) window.location.replace(redirectUrl);
+        
+        
+        
+        // watchdog for new window closed:
+        let cancelTimeout : ReturnType<typeof setTimeout>|undefined = undefined;
+        if (openedRedirectWindow) {
+            const checkIfClosed = () => {
+                // conditions:
+                const openedRedirectWindowLive = openedRedirectWindowRef.current;
+                if (!openedRedirectWindowLive) return; // already closed by another event => ignore
+                
+                
+                
+                // tests:
+                if (openedRedirectWindowLive.closed) {
+                    handleCloseDialog();
+                    return;
+                } // if
+                
+                
+                
+                // re-schedule:
+                cancelTimeout = setTimeout(checkIfClosed, 1000);
+            }
+            checkIfClosed();
+        } // if
+        
+        
+        
+        // cleanups:
+        return () => {
+            clearTimeout(cancelTimeout);
+        } // if
     }, [redirectUrl, isReady]);
     
     
