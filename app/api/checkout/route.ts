@@ -1431,7 +1431,7 @@ router
                 paymentDetail             : isPaymentDetail(authorizedOrPaymentDetail) ? authorizedOrPaymentDetail : undefined,
                 newOrder                  : (await createNewOrderPromise) ?? undefined,
             };
-        }));
+        }, { timeout: 50000 })); // give a longer timeout for `paymentProcessorCreateOrder` // may up to 31 secs => rounded up to 50 secs
         
         
         
@@ -2236,7 +2236,7 @@ Updating the confirmation is not required.`,
             
             // report the payment result:
             return [paymentResponse, newOrder];
-        }, { timeout: 50000 })); // give a longer timeout for `revertDraftOrder`
+        }, { timeout: 50000 })); // give a longer timeout for `revertDraftOrder` and `stripeCaptureFund` // may up to 31 secs => rounded up to 50 secs
         
         
         
