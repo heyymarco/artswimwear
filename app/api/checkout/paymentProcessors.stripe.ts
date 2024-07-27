@@ -451,7 +451,8 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
     
     
     
-    const isConfirmationToken = cardToken.startsWith('ctoken_');
+    const isPaymentMethodToken = cardToken.startsWith('pm_');
+    const isConfirmationToken  = cardToken.startsWith('ctoken_');
     let paymentIntent: Stripe.Response<Stripe.PaymentIntent>;
     try {
         paymentIntent = await stripe.paymentIntents.create({
@@ -470,12 +471,12 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
                 name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
                 phone           : shippingAddress.phone,
             },
-            capture_method            : isConfirmationToken ? undefined : 'manual',
+            capture_method            : isPaymentMethodToken ? 'manual' : undefined,
             
             confirm                   : true,
-            payment_method            : isConfirmationToken ? undefined : cardToken,
-            confirmation_token        : isConfirmationToken ? cardToken : undefined,
-            return_url                : isConfirmationToken ? `${process.env.APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}` : undefined,
+            payment_method            : isPaymentMethodToken ? cardToken : undefined,
+            confirmation_token        : isConfirmationToken  ? cardToken : undefined,
+            return_url                : isConfirmationToken  ? `${process.env.APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}` : undefined,
             automatic_payment_methods : {
                 enabled         : true,
                 allow_redirects : 'never',
