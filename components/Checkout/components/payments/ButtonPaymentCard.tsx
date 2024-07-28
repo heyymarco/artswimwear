@@ -69,13 +69,16 @@ import {
     useIsInMidtransScriptProvider,
 }                           from './ConditionalMidtransScriptProvider'
 
-// internals:
-import {
-    useCheckoutState,
-}                           from '../../states/checkoutState'
+// errors:
 import {
     ErrorDeclined,
-}                           from './ErrorDeclined'
+}                           from '@/errors'
+
+// internals:
+import {
+    AuthenticatedResult,
+    useCheckoutState,
+}                           from '../../states/checkoutState'
 
 // configs:
 import {
@@ -579,34 +582,6 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
         />
     );
 };
-const enum AuthenticatedResult {
-    /**
-     * The user is not authenticated until the timeout expires.
-     */
-    EXPIRED    = -2,
-    /**
-     * The user has decided to cancel the transaction.
-     */
-    CANCELED   = -1,
-    /**
-     * An error occured.  
-     * Usually using invalid card.
-     */
-    FAILED     = 0,
-    
-    /**
-     * Requires to capture the funds in server side.
-     */
-    AUTHORIZED = 1,
-    /**
-     * The transaction was successful but the funds have not yet settled your account.
-     */
-    PENDING    = 2,
-    /**
-     * The transaction was successful and the funds have settled your account.
-     */
-    CAPTURED   = 3,
-}
 interface ButtonPaymentGeneralProps {
     doPlaceOrder    : () => Promise<DraftOrderDetail|true>
     doAuthenticate ?: (draftOrderDetail: DraftOrderDetail) => Promise<AuthenticatedResult>
@@ -623,150 +598,59 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
     // states:
     const {
         // actions:
-        // gotoFinished,
-        
-        doTransaction,
-        doMakePayment,
+        startTransaction,
     } = useCheckoutState();
-    
-    
-    
-    // dialogs:
-    const {
-        showMessageError,
-        showMessageFetchError,
-    } = useDialogMessage();
     
     
     
     // handlers:
     const handlePayButtonClick   = useEvent(async () => {
-        doTransaction(async () => {
-            try {
-                // createOrder:
-                const draftOrderDetail = await proxyDoPlaceOrder(); // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
-                if (draftOrderDetail === true) return; // immediately paid => no need further action
-                if (!proxyDoAuthenticate) return; // the nextAction callback is not defined => no need further action
-                
-                
-                
-                const rawOrderId = draftOrderDetail.orderId;
-                let authenticatedResult : AuthenticatedResult;
-                try {
-                    authenticatedResult = await proxyDoAuthenticate(draftOrderDetail); // trigger `authenticate` function
-                }
-                catch (error: any) { // an unexpected error occured
-                    // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                    handleRevertDraftOrder(rawOrderId);
-                    
-                    throw error;
-                } // try
-                
-                
-                
-                switch (authenticatedResult) {
-                    case AuthenticatedResult.FAILED     : {
-                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        handleRevertDraftOrder(rawOrderId);
-                        
-                        
-                        
-                        showMessageError({
-                            error: <>
-                                <p>
-                                    The credit card <strong>verification failed</strong>.
-                                </p>
-                                <p>
-                                    Please try using <strong>another card</strong>.
-                                </p>
-                            </>
-                        });
-                        break;
-                    }
-                    
-                    case AuthenticatedResult.CANCELED   :
-                    case AuthenticatedResult.EXPIRED    : {
-                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        handleRevertDraftOrder(rawOrderId);
-                        
-                        
-                        
-                        showMessageError({
-                            error: <>
-                                <p>
-                                    The transaction has been <strong>canceled</strong> by the user.
-                                </p>
-                                <p>
-                                    <strong>No funds</strong> have been deducted.
-                                </p>
-                            </>
-                        });
-                        break;
-                    }
-                    
-                    
-                    
-                    case AuthenticatedResult.AUTHORIZED : { // will be manually capture on server_side
-                        // then forward the authentication to backend_API to receive the fund:
-                        await doMakePayment(rawOrderId, /*paid:*/true);
-                        break;
-                    }
-                    
-                    
-                    
-                    case AuthenticatedResult.PENDING    :
-                    case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
-                        // gotoFinished(); // TODO: DISPLAY paid page
-                        break;
-                    }
-                    
-                    
-                    
-                    default : {
-                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-                        handleRevertDraftOrder(rawOrderId);
-                        
-                        
-                        
-                        throw Error('Oops, an error occured!');
-                    }
-                } // switch
-            }
-            catch (fetchError: any) {
-                if ((fetchError instanceof ErrorDeclined) || (fetchError?.status === 402)) {
-                    showMessageError({
-                        error: <>
-                            <p>
-                                Unable to make a transaction using this card.
-                            </p>
-                            {/* <p>
-                                The credit card <strong>verification failed</strong>.
-                            </p> */}
-                            {!fetchError.message && <p>
-                                Your card was declined.
-                            </p>}
-                            {!!fetchError.message && <p>
-                                {fetchError.message}
-                            </p>}
-                            {!fetchError.shouldRetry  /* === false */ && <p>
-                                Please try using <strong>another card</strong>.
-                            </p>}
-                            {!!fetchError.shouldRetry /* === true  */ && <p>
-                                Please <strong>try again</strong> in a few minutes.
-                            </p>}
-                        </>
-                    });
-                }
-                else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
-                // TODO: re-generate PaypalPaymentSession
-            } // try
-        });
-    });
-    const handleRevertDraftOrder = useEvent((rawOrderId: string): void => {
-        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-        doMakePayment(rawOrderId, /*paid:*/false, { cancelOrder: true })
-        .catch(() => {
-            // ignore any error
+        startTransaction({
+            // handlers:
+            doPlaceOrder         : proxyDoPlaceOrder,   // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
+            doAuthenticate       : proxyDoAuthenticate, // trigger `authenticate` function
+            
+            
+            
+            // messages:
+            messageFailed        : <>
+                <p>
+                    The credit card <strong>verification failed</strong>.
+                </p>
+                <p>
+                    Please try using <strong>another card</strong>.
+                </p>
+            </>,
+            messageCanceled      : undefined, // use default canceled message
+            messageExpired       : undefined, // same as `messageCanceled`
+            messageDeclined      : (errorMessage) => <>
+                <p>
+                    Unable to make a transaction using this card.
+                </p>
+                {!errorMessage && <p>
+                    Your card was declined.
+                </p>}
+                {!!errorMessage && <p>
+                    {errorMessage}
+                </p>}
+                <p>
+                    Please try using <strong>another card</strong>.
+                </p>
+            </>,
+            messageDeclinedRetry : (errorMessage) => <>
+                <p>
+                    Unable to make a transaction using this card.
+                </p>
+                {!errorMessage && <p>
+                    Your card was declined.
+                </p>}
+                {!!errorMessage && <p>
+                    {errorMessage}
+                </p>}
+                <p>
+                    Please <strong>try again</strong> in a few minutes.
+                </p>
+            </>,
         });
     });
     
