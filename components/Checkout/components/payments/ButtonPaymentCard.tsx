@@ -280,7 +280,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             cardToken      : paymentMethod.id,
         });
     });
-    const proxyDoNextAction      = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
+    const proxyDoAuthenticate    = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
         if (!stripe)   throw Error('Oops, an error occured!');
         if (!elements) throw Error('Oops, an error occured!');
         
@@ -330,7 +330,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         <ButtonPaymentCardGeneral
             // handlers:
             doPlaceOrder={proxyDoPlaceOrder}
-            doNextAction={proxyDoNextAction}
+            doAuthenticate={proxyDoAuthenticate}
         />
     );
 };
@@ -357,7 +357,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
     
     
     // handlers:
-    const proxyDoPlaceOrder = useEvent(async (): Promise<DraftOrderDetail|true> => {
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<DraftOrderDetail|true> => {
         const paymentCardSectionElm = paymentCardSectionRef?.current;
         if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
         
@@ -392,7 +392,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
             cardToken      : cardToken,
         });
     });
-    const proxyDoNextAction = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
+    const proxyDoAuthenticate = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
         const redirectData = draftOrderDetail.redirectData;
         if (redirectData === undefined) throw Error('Oops, an error occured!');
         
@@ -575,7 +575,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
         <ButtonPaymentCardGeneral
             // handlers:
             doPlaceOrder={proxyDoPlaceOrder}
-            doNextAction={proxyDoNextAction}
+            doAuthenticate={proxyDoAuthenticate}
         />
     );
 };
@@ -609,13 +609,13 @@ const enum AuthenticatedResult {
 }
 interface ButtonPaymentGeneralProps {
     doPlaceOrder    : () => Promise<DraftOrderDetail|true>
-    doNextAction   ?: (draftOrderDetail: DraftOrderDetail) => Promise<AuthenticatedResult>
+    doAuthenticate ?: (draftOrderDetail: DraftOrderDetail) => Promise<AuthenticatedResult>
 }
 const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|null => {
     // props:
     const {
-        doPlaceOrder : proxyDoPlaceOrder,
-        doNextAction : proxyDoNextAction,
+        doPlaceOrder   : proxyDoPlaceOrder,
+        doAuthenticate : proxyDoAuthenticate,
     } = props;
     
     
@@ -646,14 +646,14 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                 // createOrder:
                 const draftOrderDetail = await proxyDoPlaceOrder(); // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
                 if (draftOrderDetail === true) return; // immediately paid => no need further action
-                if (!proxyDoNextAction) return; // the nextAction callback is not defined => no need further action
+                if (!proxyDoAuthenticate) return; // the nextAction callback is not defined => no need further action
                 
                 
                 
                 const rawOrderId = draftOrderDetail.orderId;
                 let authenticatedResult : AuthenticatedResult;
                 try {
-                    authenticatedResult = await proxyDoNextAction(draftOrderDetail); // trigger `authenticate` function
+                    authenticatedResult = await proxyDoAuthenticate(draftOrderDetail); // trigger `authenticate` function
                 }
                 catch (error: any) { // an unexpected error occured
                     // notify to cancel transaction, so the draftOrder (if any) will be reverted:

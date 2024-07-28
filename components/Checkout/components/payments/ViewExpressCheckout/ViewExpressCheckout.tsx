@@ -254,14 +254,14 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             // createOrder:
             const [draftOrderDetail, confirmationToken] = await proxyDoPlaceOrder();
             if (draftOrderDetail === true) return; // immediately paid => no need further action
-            if (!proxyDoNextAction) return; // the nextAction callback is not defined => no need further action
+            if (!proxyDoAuthenticate) return; // the nextAction callback is not defined => no need further action
             
             
             
             const rawOrderId = draftOrderDetail.orderId;
             let authenticatedResult : AuthenticatedResult;
             try {
-                authenticatedResult = await proxyDoNextAction(draftOrderDetail, confirmationToken); // trigger `authenticate` function
+                authenticatedResult = await proxyDoAuthenticate(draftOrderDetail, confirmationToken); // trigger `authenticate` function
             }
             catch (error: any) { // an unexpected error occured
                 // notify to cancel transaction, so the draftOrder (if any) will be reverted:
@@ -462,7 +462,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
          */
         CAPTURED   = 3, // twice
     }
-    const proxyDoNextAction              = useEvent(async (draftOrderDetail: DraftOrderDetail, confirmationToken: string): Promise<AuthenticatedResult> => {
+    const proxyDoAuthenticate            = useEvent(async (draftOrderDetail: DraftOrderDetail, confirmationToken: string): Promise<AuthenticatedResult> => {
         if (!stripe)   throw Error('Oops, an error occured!');
         if (!elements) throw Error('Oops, an error occured!');
         
