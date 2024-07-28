@@ -134,7 +134,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     });
     
     const handleCreateOrder      = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
-        handleBeginTransaction();
+        handleBeginTransaction(); // enters `doTransaction()`
         
         
         
@@ -153,7 +153,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             return orderId;
         }
         catch (fetchError: any) {
-            handleEndTransaction();
+            handleEndTransaction(); // exits `doTransaction()`
             
             
             
@@ -189,7 +189,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             });
         }
         finally {
-            handleEndTransaction();
+            handleEndTransaction(); // exits `doTransaction()`
         } // try
     });
     const handleApproved         = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
@@ -207,7 +207,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             showMessageFetchError({ fetchError, context: 'payment' });
         }
         finally {
-            handleEndTransaction();
+            handleEndTransaction(); // exits `doTransaction()`
         } // try
     });
     const handleShippingChange   = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {

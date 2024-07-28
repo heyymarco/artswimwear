@@ -216,7 +216,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     });
     
     const handleCreateOrder      = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
-        handleBeginTransaction();
+        handleBeginTransaction(); // enters `doTransaction()`
         
         
         
@@ -247,7 +247,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         });
     });
     const handleCancelOrder      = useEvent((event): void => {
-        handleEndTransaction();
+        handleEndTransaction(); // exits `doTransaction()`
     });
     const handleApproved         = useEvent(async (event: StripeExpressCheckoutElementConfirmEvent): Promise<void> => {
         try {
@@ -363,7 +363,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             // TODO: re-generate PaypalPaymentSession
         }
         finally {
-            handleEndTransaction();
+            handleEndTransaction(); // exits `doTransaction()`
         } // try
     });
     
