@@ -77,6 +77,7 @@ import {
 // internals:
 import {
     AuthenticatedResult,
+    type StartTransactionArg,
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -582,15 +583,21 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
         />
     );
 };
-interface ButtonPaymentGeneralProps {
-    doPlaceOrder    : () => Promise<DraftOrderDetail|true>
-    doAuthenticate ?: (draftOrderDetail: DraftOrderDetail) => Promise<AuthenticatedResult>
+interface ButtonPaymentGeneralProps
+    extends
+        // handlers:
+        Pick<StartTransactionArg,
+            // handlers:
+            |'doPlaceOrder'
+            |'doAuthenticate'
+        >
+{
 }
 const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element|null => {
     // props:
     const {
-        doPlaceOrder   : proxyDoPlaceOrder,
-        doAuthenticate : proxyDoAuthenticate,
+        doPlaceOrder,
+        doAuthenticate,
     } = props;
     
     
@@ -607,8 +614,8 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
     const handlePayButtonClick   = useEvent(async () => {
         startTransaction({
             // handlers:
-            doPlaceOrder         : proxyDoPlaceOrder,   // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
-            doAuthenticate       : proxyDoAuthenticate, // trigger `authenticate` function
+            doPlaceOrder         : doPlaceOrder,   // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
+            doAuthenticate       : doAuthenticate, // trigger `authenticate` function
             
             
             
