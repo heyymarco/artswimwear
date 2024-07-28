@@ -169,7 +169,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                         throw fetchError;
                     } // try
                 },
-                doAuthenticate : promiseAuthenticate,
+                doAuthenticate : (draftOrderDetail) => promiseAuthenticate,
                 
                 messageFailed,
                 messageCanceled,
