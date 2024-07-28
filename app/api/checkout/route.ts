@@ -1528,7 +1528,11 @@ router
     if (orderId === undefined) { // undefined => declined
         // payment rejected:
         const paymentDeclined : PaymentDeclined = {
-            error  : 'Your payment was declined.',
+            error  : (
+                ((paymentSource === 'card') || paymentSource?.endsWith?.('Card'))
+                ? 'Your card was declined.'
+                : 'The payment was declined.'
+            ),
         };
         return Response.json(paymentDeclined, {
             status : 402 // payment DECLINED
