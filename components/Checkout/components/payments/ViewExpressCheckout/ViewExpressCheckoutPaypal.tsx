@@ -120,6 +120,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             });
             return { promise, resolve: resolve!, reject: reject! };
         })();
+        
         const {promise: promiseAuthenticate , resolve: resolveAuthenticate} = ((): ReturnType<typeof Promise.withResolvers<AuthenticatedResult>> => { // Promise.withResolvers<AuthenticatedResult>();
             let resolve : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['resolve'];
             let reject  : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['reject' ];
