@@ -158,7 +158,7 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
         
         // submit card data to PayPal_API to get authentication:
         const formData = new FormData(paymentCardSectionElm);
-        const paypalAuthentication = await paypalDoPlaceOrder({ // triggers <PayPalHostedFieldsProvider> => handleCreateOrder() => doPlaceOrder()
+        const paypalAuthentication = await paypalDoPlaceOrder({ // triggers <PayPalHostedFieldsProvider> => proxyDoPlaceOrder() => doPlaceOrder()
             // trigger 3D Secure authentication:
             contingencies  : ['SCA_WHEN_REQUIRED'],
             

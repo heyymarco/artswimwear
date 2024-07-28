@@ -91,7 +91,7 @@ const ImplementedPayPalHostedFieldsProvider = (props: ImplementedPayPalHostedFie
     
     
     // handlers:
-    const handleCreateOrder = useEvent(async (): Promise<string> => { // triggered when <ButtonPaymentCardForPayPal> => hostedFields.cardFields.submit()
+    const proxyDoPlaceOrder = useEvent(async (): Promise<string> => { // triggered when <ButtonPaymentCardForPayPal> => hostedFields.cardFields.submit()
         try {
             const draftOrderDetail = await doPlaceOrder();
             if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
@@ -123,7 +123,7 @@ const ImplementedPayPalHostedFieldsProvider = (props: ImplementedPayPalHostedFie
             
             
             // handlers:
-            createOrder={handleCreateOrder}
+            createOrder={proxyDoPlaceOrder}
         >
             {children}
         </PayPalHostedFieldsProvider>
