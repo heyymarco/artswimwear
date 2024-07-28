@@ -227,7 +227,6 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
         
         // actions:
         doPlaceOrder,
-        doMakePayment,
     } = useCheckoutState();
     
     const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
