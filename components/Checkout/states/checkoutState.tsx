@@ -166,6 +166,11 @@ import {
     CartStateProvider,
 }                           from '@/components/Cart'
 
+// errors:
+import {
+    ErrorDeclined,
+}                           from '@/errors'
+
 // internals:
 import type {
     // types:
@@ -219,6 +224,50 @@ const invalidSelector = ':is(.invalidating, .invalidated):not([aria-invalid="fal
 // states:
 
 //#region checkoutState
+
+// types:
+export const enum AuthenticatedResult {
+    /**
+     * The user is not authenticated until the timeout expires.
+     */
+    EXPIRED    = -2,
+    /**
+     * The user has decided to cancel the transaction.
+     */
+    CANCELED   = -1,
+    /**
+     * An error occured.  
+     * Usually using invalid card.
+     */
+    FAILED     = 0,
+    
+    /**
+     * Requires to capture the funds in server side.
+     */
+    AUTHORIZED = 1,
+    /**
+     * The transaction was successful but the funds have not yet settled your account.
+     */
+    PENDING    = 2,
+    /**
+     * The transaction was successful and the funds have settled your account.
+     */
+    CAPTURED   = 3,
+}
+export interface StartTransactionArg {
+    // handlers:
+    doPlaceOrder          : () => Promise<DraftOrderDetail|true>
+    doAuthenticate       ?: (draftOrderDetail: DraftOrderDetail) => Promise<AuthenticatedResult>
+    
+    
+    
+    // messages:
+    messageFailed         : React.ReactNode
+    messageCanceled      ?: React.ReactNode
+    messageExpired       ?: React.ReactNode
+    messageDeclined       : React.ReactNode | ((errorMessage: string) => React.ReactNode)
+    messageDeclinedRetry ?: React.ReactNode | ((errorMessage: string) => React.ReactNode)
+}
 
 // contexts:
 export interface CheckoutStateBase {
@@ -322,6 +371,7 @@ export interface CheckoutStateBase {
     gotoPayment                  : () => Promise<boolean>
     gotoFinished                 : (paymentDetail: PaymentDetail, paid: boolean) => void
     
+    startTransaction             : (arg: StartTransactionArg) => Promise<boolean>
     doTransaction                : (transaction: (() => Promise<void>)) => Promise<boolean>
     doPlaceOrder                 : (options?: PlaceOrderOptions) => Promise<DraftOrderDetail|true>
     doMakePayment                : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
@@ -481,6 +531,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     gotoPayment                  : noopCallback as any,
     gotoFinished                 : noopCallback as any,
     
+    startTransaction             : noopCallback as any,
     doTransaction                : noopCallback as any,
     doPlaceOrder                 : noopCallback as any,
     doMakePayment                : noopCallback as any,
@@ -1137,7 +1188,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const {
         showMessageError,
         showMessageFieldError,
-        showMessageNotification,
+        showMessageFetchError,
     } = useDialogMessage();
     
     
@@ -1344,6 +1395,135 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         dispatch(reduxSetBillingAsShipping(billingAsShipping));
     });
     
+    const startTransaction     = useEvent(async (arg: StartTransactionArg): Promise<boolean> => {
+        // args:
+        const {
+            // handlers:
+            doPlaceOrder,
+            doAuthenticate,
+            
+            
+            
+            // messages:
+            messageFailed,
+            messageCanceled      = <>
+                <p>
+                    The transaction has been <strong>canceled</strong> by the user.
+                </p>
+                <p>
+                    <strong>No funds</strong> have been deducted.
+                </p>
+            </>,
+            messageExpired       = messageCanceled,
+            messageDeclined,
+            messageDeclinedRetry = messageDeclined,
+        } = arg;
+        
+        
+        
+        // actions:
+        return await doTransaction(async (): Promise<void> => {
+            try {
+                // createOrder:
+                const draftOrderDetail = await doPlaceOrder(); // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
+                if (draftOrderDetail === true) return; // immediately paid => no need further action
+                if (!doAuthenticate) return; // the nextAction callback is not defined => no need further action
+                
+                
+                
+                const rawOrderId = draftOrderDetail.orderId;
+                let authenticatedResult : AuthenticatedResult;
+                try {
+                    authenticatedResult = await doAuthenticate(draftOrderDetail);
+                }
+                catch (error: any) { // an unexpected authentication error occured
+                    // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                    doCancelDraftOrder(rawOrderId);
+                    
+                    throw error;
+                } // try
+                
+                
+                
+                switch (authenticatedResult) {
+                    case AuthenticatedResult.FAILED     : {
+                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                        doCancelDraftOrder(rawOrderId);
+                        
+                        
+                        
+                        showMessageError({
+                            error: messageFailed,
+                        });
+                        break;
+                    }
+                    
+                    case AuthenticatedResult.CANCELED   : {
+                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                        doCancelDraftOrder(rawOrderId);
+                        
+                        
+                        
+                        showMessageError({
+                            error: messageCanceled,
+                        });
+                        break;
+                    }
+                    case AuthenticatedResult.EXPIRED    : {
+                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                        doCancelDraftOrder(rawOrderId);
+                        
+                        
+                        
+                        showMessageError({
+                            error: messageExpired,
+                        });
+                        break;
+                    }
+                    
+                    
+                    
+                    case AuthenticatedResult.AUTHORIZED : { // will be manually capture on server_side
+                        // then forward the authentication to backend_API to receive the fund:
+                        await doMakePayment(rawOrderId, /*paid:*/true);
+                        break;
+                    }
+                    
+                    
+                    
+                    case AuthenticatedResult.PENDING    :
+                    case AuthenticatedResult.CAPTURED   : { // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                        // gotoFinished(); // TODO: DISPLAY paid page
+                        break;
+                    }
+                    
+                    
+                    
+                    default : { // an unexpected authentication result occured
+                        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                        doCancelDraftOrder(rawOrderId);
+                        
+                        
+                        
+                        throw Error('Oops, an error occured!');
+                    }
+                } // switch
+            }
+            catch (fetchError: any) {
+                if ((fetchError instanceof ErrorDeclined) || (fetchError?.status === 402)) {
+                    showMessageError({
+                        error : (
+                            fetchError.shouldRetry
+                            ? ((typeof(messageDeclinedRetry) !== 'function') ? messageDeclinedRetry : messageDeclinedRetry(fetchError.message ?? ''))
+                            : ((typeof(messageDeclined     ) !== 'function') ? messageDeclined      : messageDeclined(fetchError.message ?? ''))
+                        ),
+                    });
+                }
+                else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
+                // TODO: re-generate PaypalPaymentSession
+            } // try
+        });
+    });
     const doTransaction        = useEvent(async (transaction: (() => Promise<void>)): Promise<boolean> => {
         // conditions:
         if (checkoutState.isBusy) return false; // ignore when busy /* instant update without waiting for (slow|delayed) re-render */
@@ -1574,6 +1754,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         gotoFinished(paymentDetail, paid);
     });
+    const doCancelDraftOrder   = useEvent(async (orderId: string): Promise<void> => {
+        try {
+            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+            await doMakePayment(orderId, /*paid:*/false, { cancelOrder: true });
+        }
+        catch {
+            // ignore any error
+        } // try
+    });
     const gotoFinished         = useEvent((paymentDetail: PaymentDetail, paid: boolean): void => {
         // save the finished order states:
         // setCheckoutStep(paid ? 'paid' : 'pending'); // not needed this code, already handled by `setFinishedOrderState` below:
@@ -1725,6 +1914,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         gotoPayment,                  // stable ref
         gotoFinished,                 // stable ref
         
+        startTransaction,             // stable ref
         doTransaction,                // stable ref
         doPlaceOrder,                 // stable ref
         doMakePayment,                // stable ref
@@ -1832,6 +2022,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // gotoPayment,               // stable ref
         // gotoFinished,              // stable ref
         
+        // startTransaction,          // stable ref
         // doTransaction,             // stable ref
         // doPlaceOrder,              // stable ref
         // doMakePayment,             // stable ref
