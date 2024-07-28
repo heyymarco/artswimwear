@@ -438,29 +438,29 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         /**
          * The user is not authenticated until the timeout expires.
          */
-        EXPIRED    = -2,
+        EXPIRED    = -2, // never
         /**
          * The user has decided to cancel the transaction.
          */
-        CANCELED   = -1,
+        CANCELED   = -1, // never
         /**
          * An error occured.  
          * Unknown error, but usually caused by incorrect configuration.
          */
-        FAILED     = 0,
+        FAILED     = 0, // once
         
         /**
          * Requires to capture the funds in server side.
          */
-        AUTHORIZED = 1,
+        AUTHORIZED = 1, // once
         /**
          * The transaction was successful but the funds have not yet settled your account.
          */
-        PENDING    = 2,
+        PENDING    = 2, // never
         /**
          * The transaction was successful and the funds have settled your account.
          */
-        CAPTURED   = 3,
+        CAPTURED   = 3, // twice
     }
     const proxyDoNextAction      = useEvent(async (draftOrderDetail: DraftOrderDetail, confirmationToken: string): Promise<AuthenticatedResult> => {
         if (!stripe)   throw Error('Oops, an error occured!');
