@@ -164,13 +164,13 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     const handlePaymentInterfaceAbort    = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
         try {
             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-            const rawOrderId = data.orderID as string;
-            const orderId = (
-                rawOrderId.startsWith('#PAYPAL_')
-                ? rawOrderId              // already prefixed => no need to modify
-                : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+            const paypalOrderId = data.orderID as string;
+            const rawOrderId = (
+                paypalOrderId.startsWith('#PAYPAL_')
+                ? paypalOrderId              // already prefixed => no need to modify
+                : `#PAYPAL_${paypalOrderId}` // not     prefixed => modify with prefix #PAYPAL_
             );
-            handleRevertDraftOrder(orderId);
+            handleRevertDraftOrder(rawOrderId);
             
             
             
@@ -249,9 +249,9 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             return actions.resolve();
         } // if
     });
-    const handleRevertDraftOrder         = useEvent((orderId: string): void => {
+    const handleRevertDraftOrder         = useEvent((rawOrderId: string): void => {
         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
+        doMakePayment(rawOrderId, /*paid:*/false, { cancelOrder: true })
         .catch(() => {
             // ignore any error
         });
