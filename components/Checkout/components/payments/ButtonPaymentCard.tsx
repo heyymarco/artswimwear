@@ -762,9 +762,9 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
             } // try
         });
     });
-    const handleRevertDraftOrder = useEvent((orderId: string): void => {
+    const handleRevertDraftOrder = useEvent((rawOrderId: string): void => {
         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
+        doMakePayment(rawOrderId, /*paid:*/false, { cancelOrder: true })
         .catch(() => {
             // ignore any error
         });
