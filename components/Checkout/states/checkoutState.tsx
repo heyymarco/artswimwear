@@ -1520,7 +1520,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         ),
                     });
                 }
-                else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
+                else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' /* context: 'order' */ });
                 // TODO: re-generate PaypalPaymentSession
             } // try
         });
