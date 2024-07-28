@@ -145,12 +145,12 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             
             
             const rawOrderId = draftOrderDetail.orderId; // get the unfinished orderId
-            const orderId = (
+            const paypalOrderId = (
                 rawOrderId.startsWith('#PAYPAL_')
                 ? rawOrderId.slice(8) // remove prefix #PAYPAL_
                 : rawOrderId
             );
-            return orderId;
+            return paypalOrderId;
         }
         catch (fetchError: any) {
             handleEndTransaction(); // exits `doTransaction()`
@@ -191,14 +191,14 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     });
     const handlePaymentInterfaceApproved = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
-            const rawOrderId = paypalAuthentication.orderID;
-            const orderId = (
-                rawOrderId.startsWith('#PAYPAL_')
-                ? rawOrderId              // already prefixed => no need to modify
-                : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+            const paypalOrderId = paypalAuthentication.orderID;
+            const rawOrderId = (
+                paypalOrderId.startsWith('#PAYPAL_')
+                ? paypalOrderId              // already prefixed => no need to modify
+                : `#PAYPAL_${paypalOrderId}` // not     prefixed => modify with prefix #PAYPAL_
             );
             // forward the authentication to backend_API to receive the fund agreement:
-            await doMakePayment(orderId, /*paid:*/true);
+            await doMakePayment(rawOrderId, /*paid:*/true);
         }
         catch (fetchError: any) {
             showMessageFetchError({ fetchError, context: 'payment' });
