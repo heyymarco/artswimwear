@@ -138,6 +138,52 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         
         
         
+        /*
+            const {promise: promisePaypalOrderId, resolve: resolvePaypalOrderId, reject: rejectPaypalOrderId} = Promise.withResolvers<string>();
+            const {promise: promiseAuthenticate, resolve: resolveAuthenticate} = Promise.withResolvers<string>();
+            
+            const doTransaction = useTransaction({
+                doPlaceOrder : async () {
+                    try {
+                        const draftOrderDetail = await doPlaceOrder(data);
+                        if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
+                        
+                        
+                        
+                        const rawOrderId = draftOrderDetail.orderId; // get the unfinished orderId
+                        const paypalOrderId = (
+                            rawOrderId.startsWith('#PAYPAL_')
+                            ? rawOrderId.slice(8) // remove prefix #PAYPAL_
+                            : rawOrderId
+                        );
+                        resolvePaypalOrderId(paypalOrderId);
+                        
+                        
+                        
+                        return draftOrderDetail; // a DraftOrder has been created
+                    }
+                    catch (fetchError: any) {
+                        if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
+                        rejectPaypalOrderId(fetchError);
+                        resolveAuthenticate(AuthenticatedResult.FAILED);
+                        throw fetchError;
+                    } // try
+                },
+                doAuthenticate : promiseAuthenticate,
+                
+                messageFailed,
+                messageCanceled,
+                messageExpired,
+                messageDeclined,
+                messageDeclinedRetry,
+            });
+            doTransaction(); // fire and forget
+            
+            return promisePaypalOrderId;
+        */
+        
+        
+        
         try {
             const draftOrderDetail = await doPlaceOrder(data);
             if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
@@ -162,6 +208,10 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         } // try
     });
     const handlePaymentInterfaceAbort    = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
+        // resolveAuthenticate(AuthenticatedResult.CANCELED);
+        
+        
+        
         try {
             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
             const paypalOrderId = data.orderID as string;
@@ -190,6 +240,10 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         } // try
     });
     const handlePaymentInterfaceApproved = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
+        // resolveAuthenticate(AuthenticatedResult.AUTHORIZED);
+        
+        
+        
         try {
             const paypalOrderId = paypalAuthentication.orderID;
             const rawOrderId = (
