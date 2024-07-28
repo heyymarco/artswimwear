@@ -72,7 +72,7 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
     
     
     // handlers:
-    const handlePayWithQris = useEvent(async (): Promise<void> => {
+    const handlePayWithQris      = useEvent(async (): Promise<void> => {
         doTransaction(async () => {
             try {
                 // createOrder:
@@ -104,11 +104,8 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                     switch (qrisResult) {
                         case 0:
                         case undefined: { // payment canceled or expired
-                            // notify cancel transaction, so the authorized payment will be released:
-                            (doMakePayment(draftOrderDetail.orderId, /*paid:*/false, { cancelOrder: true }))
-                            .catch(() => {
-                                // ignore any error
-                            });
+                            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+                            handleRevertDraftOrder(draftOrderDetail.orderId);
                             
                             
                             
@@ -153,6 +150,13 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
             catch (fetchError: any) {
                 if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
             } // try
+        });
+    });
+    const handleRevertDraftOrder = useEvent((orderId: string): void => {
+        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
+        doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
+        .catch(() => {
+            // ignore any error
         });
     });
     
