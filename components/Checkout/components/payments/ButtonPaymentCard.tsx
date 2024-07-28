@@ -644,7 +644,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
         doTransaction(async () => {
             try {
                 // createOrder:
-                const draftOrderDetail = await proxyDoPlaceOrder();
+                const draftOrderDetail = await proxyDoPlaceOrder(); // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
                 if (draftOrderDetail === true) return; // immediately paid => no need further action
                 if (!proxyDoNextAction) return; // the nextAction callback is not defined => no need further action
                 
