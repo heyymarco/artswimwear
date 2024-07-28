@@ -115,8 +115,8 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         setGeneration((current) => (current + 1));
     });
     
-    const signalOrderFinishedRef = useRef<(() => void)|undefined>(undefined);
-    const handleBeginTransaction = useEvent(() => {
+    const signalOrderFinishedRef         = useRef<(() => void)|undefined>(undefined);
+    const handleBeginTransaction         = useEvent(() => {
         if (signalOrderFinishedRef.current) return; // already began => ignore
         
         
@@ -128,12 +128,12 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             return promiseOrderFinished;
         });
     });
-    const handleEndTransaction   = useEvent(() => {
+    const handleEndTransaction           = useEvent(() => {
         signalOrderFinishedRef.current?.();
         signalOrderFinishedRef.current = undefined;
     });
     
-    const handleCreateOrder      = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
+    const handlePaymentInterfaceStart    = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
         handleBeginTransaction(); // enters `doTransaction()`
         
         
@@ -161,7 +161,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             throw fetchError;
         } // try
     });
-    const handleCancelOrder      = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
+    const handlePaymentInterfaceAbort    = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
         try {
             // notify cancel transaction, so the authorized payment will be released:
             const rawOrderId = data.orderID as string;
@@ -192,7 +192,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             handleEndTransaction(); // exits `doTransaction()`
         } // try
     });
-    const handleApproved         = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
+    const handlePaymentInterfaceApproved = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
         try {
             const rawOrderId = paypalAuthentication.orderID;
             const orderId = (
@@ -210,7 +210,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             handleEndTransaction(); // exits `doTransaction()`
         } // try
     });
-    const handleShippingChange   = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
+    const handleShippingChange           = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
         // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
         const shipping_address = data.shipping_address;
         if (shipping_address) {
@@ -279,9 +279,9 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     onInit={handleLoaded}
                     onError={handleErrored}
                     
-                    createOrder={handleCreateOrder}
-                    onCancel={handleCancelOrder}
-                    onApprove={handleApproved}
+                    createOrder={handlePaymentInterfaceStart}
+                    onCancel={handlePaymentInterfaceAbort}
+                    onApprove={handlePaymentInterfaceApproved}
                     onShippingChange={handleShippingChange}
                 />
             </div>
