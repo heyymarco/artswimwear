@@ -27,11 +27,6 @@ import {
     
     // status-components:
     Busy,
-    
-    
-    
-    // utility-components:
-    useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
@@ -55,6 +50,7 @@ import {
 
 // internals:
 import {
+    AuthenticatedResult,
     useCheckoutState,
 }                           from '../../../states/checkoutState'
 
@@ -76,9 +72,8 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     const checkoutState = useCheckoutState();
     const {
         // actions:
-        doTransaction,
+        startTransaction,
         doPlaceOrder,
-        doMakePayment,
     } = checkoutState;
     
     
@@ -94,172 +89,124 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     
     
     
-    // dialogs:
-    const {
-        showMessageError,
-        showMessageFetchError,
-    } = useDialogMessage();
-    
-    
-    
     // handlers:
     const handleLoaded  = useEvent((): void => {
         setIsLoaded(LoadedState.FullyLoaded);
     });
     const handleErrored = useEvent((): void => {
+        /*
+            Unable to delegate rendering. Possibly the component is not loaded in the target window.
+            
+            Error: No ack for postMessage zoid_delegate_paypal_checkout in https://www.sandbox.paypal.com in 10000ms
+        */
+        
         // actions:
         setIsLoaded(LoadedState.Errored);
+        signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
     });
     const handleReload  = useEvent((): void => {
         setIsLoaded(LoadedState.Loading);
         setGeneration((current) => (current + 1));
     });
     
-    const signalOrderFinishedRef         = useRef<(() => void)|undefined>(undefined);
-    const handleBeginTransaction         = useEvent(() => {
-        if (signalOrderFinishedRef.current) return; // already began => ignore
-        
-        
-        
-        doTransaction((): Promise<void> => {
-            const promiseOrderFinished = new Promise<void>((resolved) => {
-                signalOrderFinishedRef.current = resolved;
-            });
-            return promiseOrderFinished;
-        });
-    });
-    const handleEndTransaction           = useEvent(() => {
-        signalOrderFinishedRef.current?.();
-        signalOrderFinishedRef.current = undefined;
-    });
-    
+    const signalAuthenticatedRef         = useRef<((authenticatedResult: AuthenticatedResult) => void)|undefined>(undefined);
     const handlePaymentInterfaceStart    = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
-        handleBeginTransaction(); // enters `doTransaction()`
-        
-        
-        
-        /*
-            const {promise: promisePaypalOrderId, resolve: resolvePaypalOrderId, reject: rejectPaypalOrderId} = Promise.withResolvers<string>();
-            const {promise: promiseAuthenticate, resolve: resolveAuthenticate} = Promise.withResolvers<string>();
-            
-            const doTransaction = useTransaction({
-                doPlaceOrder : async () {
-                    try {
-                        const draftOrderDetail = await doPlaceOrder(data);
-                        if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
-                        
-                        
-                        
-                        const rawOrderId = draftOrderDetail.orderId; // get the unfinished orderId
-                        const paypalOrderId = (
-                            rawOrderId.startsWith('#PAYPAL_')
-                            ? rawOrderId.slice(8) // remove prefix #PAYPAL_
-                            : rawOrderId
-                        );
-                        resolvePaypalOrderId(paypalOrderId);
-                        
-                        
-                        
-                        return draftOrderDetail; // a DraftOrder has been created
-                    }
-                    catch (fetchError: any) {
-                        if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
-                        rejectPaypalOrderId(fetchError);
-                        resolveAuthenticate(AuthenticatedResult.FAILED);
-                        throw fetchError;
-                    } // try
-                },
-                doAuthenticate : (draftOrderDetail) => promiseAuthenticate,
-                
-                messageFailed,
-                messageCanceled,
-                messageExpired,
-                messageDeclined,
-                messageDeclinedRetry,
+        const {promise: promisePaypalOrderId, resolve: resolvePaypalOrderId, reject: rejectPaypalOrderId} = ((): ReturnType<typeof Promise.withResolvers<string>> => { // Promise.withResolvers<string>();
+            let resolve : ReturnType<typeof Promise.withResolvers<string>>['resolve'];
+            let reject  : ReturnType<typeof Promise.withResolvers<string>>['reject' ];
+            const promise = new Promise<string>((res, rej) => {
+                resolve = res;
+                reject  = rej;
             });
-            doTransaction(); // fire and forget
-            
-            return promisePaypalOrderId;
-        */
+            return { promise, resolve: resolve!, reject: reject! };
+        })();
+        const {promise: promiseAuthenticate , resolve: resolveAuthenticate} = ((): ReturnType<typeof Promise.withResolvers<AuthenticatedResult>> => { // Promise.withResolvers<AuthenticatedResult>();
+            let resolve : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['resolve'];
+            let reject  : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['reject' ];
+            const promise = new Promise<AuthenticatedResult>((res, rej) => {
+                resolve = res;
+                reject  = rej;
+            });
+            return { promise, resolve: resolve!, reject: reject! };
+        })();
+        signalAuthenticatedRef.current = (authenticatedResult: AuthenticatedResult): void => {
+            resolveAuthenticate(authenticatedResult);   // invoke the origin_resolver
+            signalAuthenticatedRef.current = undefined; // now it's resolved => unref the proxy_resolver
+        };
         
+        startTransaction({ // fire and forget
+            doPlaceOrder         : async () => {
+                try {
+                    const draftOrderDetail = await doPlaceOrder(data);
+                    if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
+                    
+                    
+                    
+                    const rawOrderId = draftOrderDetail.orderId; // get the DraftOrder's id
+                    const paypalOrderId = (
+                        rawOrderId.startsWith('#PAYPAL_')
+                        ? rawOrderId.slice(8) // remove prefix #PAYPAL_
+                        : rawOrderId
+                    );
+                    resolvePaypalOrderId(paypalOrderId);
+                    
+                    
+                    
+                    return draftOrderDetail; // a DraftOrder has been created
+                }
+                catch (fetchError: any) { // intercepts the exception
+                    // DEL: if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' });
+                    rejectPaypalOrderId(fetchError);                 // the `paypalOrderId` is never resolved because an exception was thrown during DraftOrder creation
+                    resolveAuthenticate(AuthenticatedResult.FAILED); // the authentication  is FAILED         because an exception was thrown during DraftOrder creation
+                    throw fetchError; // re-throw the exception
+                } // try
+            },
+            doAuthenticate       : () => promiseAuthenticate,
+            
+            
+            
+            // messages:
+            messageFailed        : <>
+                <p>
+                    Unable to make a transaction using PayPal.
+                </p>
+                <p>
+                    Please try <strong>another payment method</strong>.
+                </p>
+            </>,
+            messageCanceled      : undefined, // use default canceled message
+            messageExpired       : undefined, // same as `messageCanceled`
+            messageDeclined      : (errorMessage) => <>
+                <p>
+                    Unable to make a transaction using PayPal.
+                </p>
+                {!!errorMessage && <p>
+                    {errorMessage}
+                </p>}
+                <p>
+                    Please try <strong>another payment method</strong>.
+                </p>
+            </>,
+            messageDeclinedRetry : (errorMessage) => <>
+                <p>
+                    Unable to make a transaction using PayPal.
+                </p>
+                {!!errorMessage && <p>
+                    {errorMessage}
+                </p>}
+                <p>
+                    Please <strong>try again</strong> in a few minutes.
+                </p>
+            </>,
+        });
         
-        
-        try {
-            const draftOrderDetail = await doPlaceOrder(data);
-            if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
-            
-            
-            
-            const rawOrderId = draftOrderDetail.orderId; // get the unfinished orderId
-            const paypalOrderId = (
-                rawOrderId.startsWith('#PAYPAL_')
-                ? rawOrderId.slice(8) // remove prefix #PAYPAL_
-                : rawOrderId
-            );
-            return paypalOrderId;
-        }
-        catch (fetchError: any) {
-            handleEndTransaction(); // exits `doTransaction()`
-            
-            
-            
-            if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
-            throw fetchError;
-        } // try
+        return promisePaypalOrderId;
     });
     const handlePaymentInterfaceAbort    = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
-        // resolveAuthenticate(AuthenticatedResult.CANCELED);
-        
-        
-        
-        try {
-            // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-            const paypalOrderId = data.orderID as string;
-            const rawOrderId = (
-                paypalOrderId.startsWith('#PAYPAL_')
-                ? paypalOrderId              // already prefixed => no need to modify
-                : `#PAYPAL_${paypalOrderId}` // not     prefixed => modify with prefix #PAYPAL_
-            );
-            handleRevertDraftOrder(rawOrderId);
-            
-            
-            
-            showMessageError({
-                error: <>
-                    <p>
-                        The transaction has been <strong>canceled</strong> by the user.
-                    </p>
-                    <p>
-                        <strong>No funds</strong> have been deducted.
-                    </p>
-                </>
-            });
-        }
-        finally {
-            handleEndTransaction(); // exits `doTransaction()`
-        } // try
+        signalAuthenticatedRef.current?.(AuthenticatedResult.CANCELED);
     });
     const handlePaymentInterfaceApproved = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
-        // resolveAuthenticate(AuthenticatedResult.AUTHORIZED);
-        
-        
-        
-        try {
-            const paypalOrderId = paypalAuthentication.orderID;
-            const rawOrderId = (
-                paypalOrderId.startsWith('#PAYPAL_')
-                ? paypalOrderId              // already prefixed => no need to modify
-                : `#PAYPAL_${paypalOrderId}` // not     prefixed => modify with prefix #PAYPAL_
-            );
-            // forward the authentication to backend_API to receive the fund agreement:
-            await doMakePayment(rawOrderId, /*paid:*/true);
-        }
-        catch (fetchError: any) {
-            showMessageFetchError({ fetchError, context: 'payment' });
-        }
-        finally {
-            handleEndTransaction(); // exits `doTransaction()`
-        } // try
+        signalAuthenticatedRef.current?.(AuthenticatedResult.AUTHORIZED);
     });
     const handleShippingChange           = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
         // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
@@ -302,13 +249,6 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             
             return actions.resolve();
         } // if
-    });
-    const handleRevertDraftOrder         = useEvent((rawOrderId: string): void => {
-        // notify to cancel transaction, so the draftOrder (if any) will be reverted:
-        doMakePayment(rawOrderId, /*paid:*/false, { cancelOrder: true })
-        .catch(() => {
-            // ignore any error
-        });
     });
     
     
