@@ -197,8 +197,8 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     const stripe   = useStripe();
     const elements = useElements();
     
-    const signalOrderFinishedRef = useRef<(() => void)|undefined>(undefined);
-    const handleBeginTransaction = useEvent(() => {
+    const signalOrderFinishedRef         = useRef<(() => void)|undefined>(undefined);
+    const handleBeginTransaction         = useEvent(() => {
         if (signalOrderFinishedRef.current) return; // already began => ignore
         
         
@@ -210,12 +210,12 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             return promiseOrderFinished;
         });
     });
-    const handleEndTransaction   = useEvent(() => {
+    const handleEndTransaction           = useEvent(() => {
         signalOrderFinishedRef.current?.();
         signalOrderFinishedRef.current = undefined;
     });
     
-    const handleCreateOrder      = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
+    const handlePaymentInterfaceStart    = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
         handleBeginTransaction(); // enters `doTransaction()`
         
         
@@ -246,10 +246,10 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             billingAddressRequired   : true,      // we don't show billingAddress on express checkout, so we need a billingAddress data
         });
     });
-    const handleCancelOrder      = useEvent((event): void => {
+    const handlePaymentInterfaceAbort    = useEvent((event): void => {
         handleEndTransaction(); // exits `doTransaction()`
     });
-    const handleApproved         = useEvent(async (event: StripeExpressCheckoutElementConfirmEvent): Promise<void> => {
+    const handlePaymentInterfaceApproved = useEvent(async (event: StripeExpressCheckoutElementConfirmEvent): Promise<void> => {
         try {
             // createOrder:
             const [draftOrderDetail, confirmationToken] = await proxyDoPlaceOrder();
@@ -367,7 +367,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         } // try
     });
     
-    const proxyDoPlaceOrder      = useEvent(async (): Promise<[DraftOrderDetail|true, string]> => {
+    const proxyDoPlaceOrder              = useEvent(async (): Promise<[DraftOrderDetail|true, string]> => {
         if (!stripe)   throw Error('Oops, an error occured!');
         if (!elements) throw Error('Oops, an error occured!');
         
@@ -462,7 +462,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
          */
         CAPTURED   = 3, // twice
     }
-    const proxyDoNextAction      = useEvent(async (draftOrderDetail: DraftOrderDetail, confirmationToken: string): Promise<AuthenticatedResult> => {
+    const proxyDoNextAction              = useEvent(async (draftOrderDetail: DraftOrderDetail, confirmationToken: string): Promise<AuthenticatedResult> => {
         if (!stripe)   throw Error('Oops, an error occured!');
         if (!elements) throw Error('Oops, an error occured!');
         
@@ -498,7 +498,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             throw Error('Oops, an error occured!');
         } // try
     });
-    const handleRevertDraftOrder = useEvent((orderId: string): void => {
+    const handleRevertDraftOrder         = useEvent((orderId: string): void => {
         // notify to cancel transaction, so the draftOrder (if any) will be reverted:
         doMakePayment(orderId, /*paid:*/false, { cancelOrder: true })
         .catch(() => {
@@ -538,12 +538,12 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                     onReady={handleLoaded}
                     onLoadError={handleErrored}
                     
-                    onClick={handleCreateOrder}
+                    onClick={handlePaymentInterfaceStart}
                     // onShippingAddressChange={undefined} // never called because we configured it to use own shippingAddress
                     // onShippingRateChange={undefined}    // never called because we configured it to use own shippingAddress
-                    onCancel={handleCancelOrder}
+                    onCancel={handlePaymentInterfaceAbort}
                     onEscape={undefined}
-                    onConfirm={handleApproved}
+                    onConfirm={handlePaymentInterfaceApproved}
                 />
             </div>
             
