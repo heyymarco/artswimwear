@@ -220,6 +220,97 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         
         
         
+        /*
+            const {promise: promiseAuthenticate, resolve: resolveAuthenticate} = Promise.withResolvers<string>();
+            const {promise: promiseConfirmation, resolve: resolveConfirmation} = Promise.withResolvers<{draftOrderDetail: DraftOrderDetail, confirmationToken: string}|null>();
+            
+            const doTransaction = useTransaction({
+                doPlaceOrder : async () { // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
+                    event.resolve({...});
+                    
+                    
+                    
+                    if (!stripe)   throw Error('Oops, an error occured!');
+                    if (!elements) throw Error('Oops, an error occured!');
+                    
+                    
+                    
+                    // submit data to stripe:
+                    const {
+                        error : submitError,
+                    } = await elements.submit();
+                    if (submitError) {
+                        // TODO: sample error
+                        
+                        throw new ErrorDeclined({
+                            message     : submitError.message,
+                            shouldRetry : (submitError as any).shouldRetry ?? false, // default: please use another payment method
+                        });
+                    } // if
+                    
+                    
+                    
+                    // create PaymentMethod using expressCheckout:
+                    const {
+                        error : paymentMethodError,
+                        confirmationToken,
+                    } = await stripe.createConfirmationToken({
+                        elements : elements,
+                        params   : {
+                            shipping : !shippingAddress ? undefined : {
+                                address : {
+                                    country     : shippingAddress.country,
+                                    state       : shippingAddress.state,
+                                    city        : shippingAddress.city,
+                                    postal_code : shippingAddress.zip ?? null,
+                                    line1       : shippingAddress.address,
+                                    line2       : null,
+                                },
+                                name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
+                                phone           : shippingAddress.phone,
+                            },
+                            // billing_details : {
+                            // },
+                        },
+                    });
+                    if (paymentMethodError) {
+                        // TODO: sample error
+                        
+                        throw new ErrorDeclined({
+                            message     : paymentMethodError.message,
+                            shouldRetry : (paymentMethodError as any).shouldRetry ?? false, // default: please use another payment method
+                        });
+                    } // if
+                    
+                    
+                    
+                    const draftOrderDetail = await doPlaceOrder({
+                        paymentSource  : 'stripeExpress',
+                        cardToken      : confirmationToken.id,
+                    });
+                    resolveConfirmation(
+                        (draftOrderDetail === true)
+                        ? null
+                        : {
+                            draftOrderDetail,
+                            confirmationToken : confirmationToken.id,
+                        }
+                    );
+                    return draftOrderDetail;
+                },
+                doAuthenticate : (draftOrderDetail) => promiseAuthenticate,
+                
+                messageFailed,
+                messageCanceled,
+                messageExpired,
+                messageDeclined,
+                messageDeclinedRetry,
+            });
+            doTransaction();
+        */
+        
+        
+        
         event.resolve({
             // TODO:
             // // cart data:
@@ -247,12 +338,66 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         });
     });
     const handlePaymentInterfaceAbort    = useEvent((event): void => {
+        // resolveAuthenticate(AuthenticatedResult.CANCELED);
+        
+        
+        
         handleEndTransaction(); // exits `doTransaction()`
     });
     const handlePaymentInterfaceApproved = useEvent(async (event: StripeExpressCheckoutElementConfirmEvent): Promise<void> => {
+        // if (!stripe || !elements) {
+        //     resolveAuthenticate(AuthenticatedResult.FAILED);
+        //     return;
+        // } // if
+        // const {draftOrderDetail, confirmationToken} = await promiseConfirmation;
+        // if (!confirmationToken) {
+        //     resolveAuthenticate(AuthenticatedResult.FAILED);
+        //     return;
+        // } // if
+        // 
+        // 
+        // 
+        // const clientSecret = draftOrderDetail.redirectData;
+        // if (clientSecret === undefined) {
+        //     resolveAuthenticate(
+        //         !draftOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
+        //         ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
+        //         : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
+        //     );
+        //     return;
+        // } // if
+        // 
+        // 
+        // 
+        // const rawOrderId = draftOrderDetail.orderId;
+        // const orderId = (
+        //     rawOrderId.startsWith('#STRIPE_')
+        //     ? rawOrderId          // not prefixed => no need to modify
+        //     : rawOrderId.slice(8) // is  prefixed => remove prefix #STRIPE_
+        // );
+        // try {
+        //     const result = await stripe.confirmPayment({
+        //         clientSecret : clientSecret,
+        //         confirmParams : {
+        //             confirmation_token : confirmationToken,
+        //             return_url         : `${process.env.APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
+        //         },
+        //     });
+        //     resolveAuthenticate(
+        //         result.error
+        //         ? AuthenticatedResult.FAILED
+        //         : AuthenticatedResult.CAPTURED // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+        //     );
+        // }
+        // catch {
+        //     resolveAuthenticate(AuthenticatedResult.FAILED);
+        // } // try
+        
+        
+        
         try {
             // createOrder:
-            const [draftOrderDetail, confirmationToken] = await proxyDoPlaceOrder();
+            const [draftOrderDetail, confirmationToken] = await proxyDoPlaceOrder(); // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
             if (draftOrderDetail === true) return; // immediately paid => no need further action
             if (!proxyDoAuthenticate) return; // the nextAction callback is not defined => no need further action
             
