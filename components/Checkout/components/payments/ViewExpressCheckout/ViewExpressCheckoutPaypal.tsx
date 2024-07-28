@@ -135,6 +135,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         };
         
         startTransaction({ // fire and forget
+            // handlers:
             doPlaceOrder         : async () => {
                 try {
                     const draftOrderDetail = await doPlaceOrder(data);
