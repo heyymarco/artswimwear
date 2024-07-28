@@ -1511,11 +1511,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             }
             catch (fetchError: any) {
                 if ((fetchError instanceof ErrorDeclined) || (fetchError?.status === 402)) {
+                    const errorMessage : string = fetchError?.message ?? fetchError?.data?.error ?? '';
                     showMessageError({
                         error : (
                             fetchError.shouldRetry
-                            ? ((typeof(messageDeclinedRetry) !== 'function') ? messageDeclinedRetry : messageDeclinedRetry(fetchError.message ?? ''))
-                            : ((typeof(messageDeclined     ) !== 'function') ? messageDeclined      : messageDeclined(fetchError.message ?? ''))
+                            ? ((typeof(messageDeclinedRetry) !== 'function') ? messageDeclinedRetry : messageDeclinedRetry(errorMessage))
+                            : ((typeof(messageDeclined     ) !== 'function') ? messageDeclined      : messageDeclined(errorMessage))
                         ),
                     });
                 }
