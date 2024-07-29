@@ -172,9 +172,10 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     const elements                       = useElements();
     
     const signalAuthenticatedRef         = useRef<((authenticatedResult: AuthenticatedResult) => void)|undefined>(undefined);
+    const throwAuthenticatedRef          = useRef<((error: unknown) => void)|undefined>(undefined);
     const draftOrderDetailRef            = useRef<DraftOrderDetail|undefined>(undefined);
     const handlePaymentInterfaceStart    = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
-        const {promise: promiseAuthenticate , resolve: resolveAuthenticate} = ((): ReturnType<typeof Promise.withResolvers<AuthenticatedResult>> => { // Promise.withResolvers<AuthenticatedResult>();
+        const {promise: promiseAuthenticate , resolve: resolveAuthenticate, reject: rejectAuthenticate} = ((): ReturnType<typeof Promise.withResolvers<AuthenticatedResult>> => { // Promise.withResolvers<AuthenticatedResult>();
             let resolve : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['resolve'];
             let reject  : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['reject' ];
             const promise = new Promise<AuthenticatedResult>((res, rej) => {
@@ -186,6 +187,10 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         signalAuthenticatedRef.current = (authenticatedResult: AuthenticatedResult): void => {
             resolveAuthenticate(authenticatedResult);   // invoke the origin_resolver
             signalAuthenticatedRef.current = undefined; // now it's resolved => unref the proxy_resolver
+        };
+        throwAuthenticatedRef.current = (error: unknown): void => {
+            rejectAuthenticate(error);
+            throwAuthenticatedRef.current = undefined; // now it's thrown => unref the proxy_resolver
         };
         
         startTransaction({ // fire and forget
@@ -272,111 +277,116 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             </>,
         })
         .finally(() => {
-            draftOrderDetailRef.current = undefined; // un-ref
+            draftOrderDetailRef.current    = undefined; // un-ref
+            
+            signalAuthenticatedRef.current = undefined; // un-ref
+            throwAuthenticatedRef.current  = undefined; // un-ref
         });
     });
     const handlePaymentInterfaceAbort    = useEvent((event): void => {
         signalAuthenticatedRef.current?.(AuthenticatedResult.CANCELED);
     });
     const handlePaymentInterfaceApproved = useEvent(async (event: StripeExpressCheckoutElementConfirmEvent): Promise<void> => {
-        if (!stripe || !elements) {
-            signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
-            return;
-        } // if
-        
-        
-        
-        // submit data to stripe:
-        const {
-            error : submitError,
-        } = await elements.submit();
-        if (submitError) {
-            /*
-                TODO: sample error
-            */
-            
-            signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
-            return;
-        } // if
-        
-        
-        
-        // create PaymentMethod using expressCheckout:
-        const {
-            error             : paymentMethodError,
-            confirmationToken : confirmationTokenObject,
-        } = await stripe.createConfirmationToken({
-            elements : elements,
-            params   : {
-                shipping : !shippingAddress ? undefined : {
-                    address : {
-                        country     : shippingAddress.country,
-                        state       : shippingAddress.state,
-                        city        : shippingAddress.city,
-                        postal_code : shippingAddress.zip ?? null,
-                        line1       : shippingAddress.address,
-                        line2       : null,
-                    },
-                    name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
-                    phone           : shippingAddress.phone,
-                },
-                // billing_details : {
-                // },
-            },
-        });
-        if (paymentMethodError) {
-            /*
-                TODO: sample error
-            */
-            
-            signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
-            return;
-        } // if
-        const confirmationToken = confirmationTokenObject.id;
-        
-        
-        
-        const draftOrderDetail = await doPlaceOrder({
-            paymentSource  : 'stripeExpress',
-            cardToken      : confirmationToken,
-        });
-        if (draftOrderDetail === true) { // immediately paid => no need further action
-            signalAuthenticatedRef.current?.(AuthenticatedResult.CAPTURED);
-            return;
-        } // if
-        
-        
-        
-        const oldDraftOrderDetail = draftOrderDetailRef.current;
-        if (oldDraftOrderDetail) oldDraftOrderDetail.orderId = draftOrderDetail.orderId;
-        
-        
-        
-        const clientSecret = draftOrderDetail.redirectData;
-        if (clientSecret === undefined) {
-            signalAuthenticatedRef.current?.(
-                !draftOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
-                ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
-                : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
-            );
-            return;
-        } // if
-        
-        
-        
-        const rawOrderId = draftOrderDetail.orderId;
-        const orderId = (
-            rawOrderId.startsWith('#STRIPE_')
-            ? rawOrderId          // not prefixed => no need to modify
-            : rawOrderId.slice(8) // is  prefixed => remove prefix #STRIPE_
-        );
         try {
+            if (!stripe)   throw Error('Oops, an error occured!');
+            if (!elements) throw Error('Oops, an error occured!');
+            
+            
+            
+            // submit data to stripe:
+            const {
+                error : submitError,
+            } = await elements.submit();
+            if (submitError) {
+                /*
+                    TODO: sample error
+                */
+                
+                signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
+                return;
+            } // if
+            
+            
+            
+            // create PaymentMethod using expressCheckout:
+            const {
+                error             : paymentMethodError,
+                confirmationToken : confirmationTokenObject,
+            } = await stripe.createConfirmationToken({
+                elements : elements,
+                params   : {
+                    shipping : !shippingAddress ? undefined : {
+                        address : {
+                            country     : shippingAddress.country,
+                            state       : shippingAddress.state,
+                            city        : shippingAddress.city,
+                            postal_code : shippingAddress.zip ?? null,
+                            line1       : shippingAddress.address,
+                            line2       : null,
+                        },
+                        name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
+                        phone           : shippingAddress.phone,
+                    },
+                    // billing_details : {
+                    // },
+                },
+            });
+            if (paymentMethodError) {
+                /*
+                    TODO: sample error
+                */
+                
+                signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
+                return;
+            } // if
+            const confirmationToken = confirmationTokenObject.id;
+            
+            
+            
+            const draftOrderDetail = await doPlaceOrder({
+                paymentSource  : 'stripeExpress',
+                cardToken      : confirmationToken,
+            });
+            if (draftOrderDetail === true) { // immediately paid => no need further action
+                signalAuthenticatedRef.current?.(AuthenticatedResult.CAPTURED);
+                return;
+            } // if
+            
+            
+            
+            const oldDraftOrderDetail = draftOrderDetailRef.current;
+            if (oldDraftOrderDetail) oldDraftOrderDetail.orderId = draftOrderDetail.orderId;
+            
+            
+            
+            const clientSecret = draftOrderDetail.redirectData;
+            if (clientSecret === undefined) {
+                signalAuthenticatedRef.current?.(
+                    !draftOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
+                    ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
+                    : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
+                );
+                return;
+            } // if
+            
+            
+            
+            const rawOrderId = draftOrderDetail.orderId;
+            const orderId = (
+                rawOrderId.startsWith('#STRIPE_')
+                ? rawOrderId          // not prefixed => no need to modify
+                : rawOrderId.slice(8) // is  prefixed => remove prefix #STRIPE_
+            );
+            
+            
+            
             const result = await stripe.confirmPayment({
-                clientSecret : clientSecret,
-                confirmParams : {
+                clientSecret           : clientSecret,
+                confirmParams          : {
                     confirmation_token : confirmationToken,
                     return_url         : `${process.env.APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
                 },
+                redirect               : 'if_required', // do not redirect for non_redirect_based payment
             });
             signalAuthenticatedRef.current?.(
                 result.error
@@ -384,8 +394,8 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 : AuthenticatedResult.CAPTURED // has been CAPTURED (maybe delayed), just needs DISPLAY paid page // TODO: display confirmed payment
             );
         }
-        catch {
-            signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
+        catch (error: any) {
+            throwAuthenticatedRef.current?.(error);
         } // try
     });
     
