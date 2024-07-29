@@ -87,8 +87,8 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     try {
         stripeEvent = stripe.webhooks.constructEvent(body, stripeSignature, stripeWebhookSecret);
     }
-    catch {
-        console.log('webhook: signature mismatch', body);
+    catch (error: any) {
+        console.log('webhook: signature mismatch', stripeSignature, body);
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
