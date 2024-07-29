@@ -64,7 +64,6 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 
 export async function POST(req: Request, res: Response): Promise<Response> {
     if (!stripe || !stripeWebhookSecret) {
-        console.log('webhook: invalid config');
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -74,7 +73,6 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     
     const stripeSignature = req.headers.get('Stripe-Signature');
     if (!stripeSignature) {
-        console.log('webhook: no signature');
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -87,7 +85,6 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         stripeEvent = stripe.webhooks.constructEvent(Buffer.from(await req.arrayBuffer()), stripeSignature, stripeWebhookSecret);
     }
     catch (error: any) {
-        console.log('webhook: signature mismatch', stripeSignature, error);
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -99,8 +96,9 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         case 'payment_intent.canceled'  :   // Transaction was deleted due to canceled or expired. 
         case 'payment_intent.succeeded' : { // Transaction succeeded (paid).
             const paymentIntent = stripeEvent.data.object;
-            const result = stripeTranslateData(paymentIntent);
-            console.log('Stripe Webhook: ',  result);
+            const result = await stripeTranslateData(paymentIntent);
+            console.log('Stripe Webhook intent: ',  paymentIntent);
+            console.log('Stripe Webhook result: ',  result);
             break;
         }
     } // switch
