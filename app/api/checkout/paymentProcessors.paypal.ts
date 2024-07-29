@@ -23,10 +23,10 @@ export interface PaypalPaymentSession {
 
 // utilities:
 const paypalBaseUrl = {
-    development : 'https://api-m.sandbox.paypal.com',
-    production  : 'https://api-m.paypal.com',
+    sandbox    : 'https://api-m.sandbox.paypal.com',
+    production : 'https://api-m.paypal.com',
 };
-const paypalUrl = paypalBaseUrl.development; // TODO: auto switch development vs production
+const paypalUrl = (paypalBaseUrl?.[(process.env.PAYPAL_ENV ?? 'sandbox') as keyof typeof paypalBaseUrl] ?? paypalBaseUrl.sandbox); // TODO: auto switch development vs production
 
 
 
