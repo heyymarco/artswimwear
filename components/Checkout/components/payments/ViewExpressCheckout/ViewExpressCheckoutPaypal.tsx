@@ -200,6 +200,9 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     Please <strong>try again</strong> in a few minutes.
                 </p>
             </>,
+        })
+        .finally(() => {
+            signalAuthenticatedRef.current = undefined; // un-ref
         });
         
         return promisePaypalOrderId;
