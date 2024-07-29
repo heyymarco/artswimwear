@@ -64,6 +64,7 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 
 export async function POST(req: Request, res: Response): Promise<Response> {
     if (!stripe || !stripeWebhookSecret) {
+        console.log('webhook: invalid config');
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -73,6 +74,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     
     const stripeSignature = req.headers.get('Stripe-Signature');
     if (!stripeSignature) {
+        console.log('webhook: no signature');
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -86,6 +88,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         stripeEvent = stripe.webhooks.constructEvent(body, stripeSignature, stripeWebhookSecret);
     }
     catch {
+        console.log('webhook: signature mismatch', body);
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
