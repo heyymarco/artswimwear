@@ -384,11 +384,11 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
             } = paymentIntent;
             const latestCharge       = ((paymentIntent.latest_charge       && (typeof(paymentIntent.latest_charge     ) === 'object')) ? paymentIntent.latest_charge      : undefined);
             let   balanceTransaction = ((latestCharge?.balance_transaction && (typeof(latestCharge.balance_transaction) === 'object')) ? latestCharge.balance_transaction : undefined);
-            if (resolveMissing && latestCharge?.id && !balanceTransaction && stripe) {
+            if (resolveMissing && (typeof(paymentIntent.latest_charge) === 'string') && !balanceTransaction && stripe) {
                 for (let remainingRetries = 9, retryCounter = 0; remainingRetries > 0; remainingRetries--, retryCounter++) {
                     const prevTick = performance.now();
                     try {
-                        const newLatestCharge = await stripe.charges.retrieve(latestCharge.id, {
+                        const newLatestCharge = await stripe.charges.retrieve(paymentIntent.latest_charge, {
                             expand : [
                                 'balance_transaction',
                             ],
