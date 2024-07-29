@@ -36,7 +36,7 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
  * PaymentDetail      : Paid.  
  * false              : Transaction was deleted due to canceled or expired.  
  */
-export const stripeTranslateData = async (paymentIntent: Stripe.Response<Stripe.PaymentIntent>): Promise<undefined|0|null|AuthorizedFundData|PaymentDetail|false> => {
+export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent): Promise<undefined|0|null|AuthorizedFundData|PaymentDetail|false> => {
     switch (paymentIntent.status) {
         // step 1:
         case 'requires_payment_method' : { // if the payment attempt fails (for example due to a decline)
