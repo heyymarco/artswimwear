@@ -68,6 +68,11 @@ import {
     useViewExpressCheckoutStyleSheet,
 }                           from './styles/loader'
 
+// configs:
+import {
+    checkoutConfigClient,
+}                           from '@/checkout.config.client'
+
 
 
 // react components:
@@ -203,6 +208,13 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 
                 // collect customer details and display line items:
                 event.resolve({
+                    // generals:
+                    business                 : {
+                        name                 : checkoutConfigClient.business.name,
+                    },
+                    
+                    
+                    
                     // TODO:
                     // // cart data:
                     // lineItems                : [
