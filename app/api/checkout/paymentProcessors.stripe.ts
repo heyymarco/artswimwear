@@ -503,7 +503,8 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
                 name            : (shippingAddress.firstName ?? '') + ((!!shippingAddress.firstName && !!shippingAddress.lastName) ? ' ' : '') + (shippingAddress.lastName ?? ''),
                 phone           : shippingAddress.phone,
             },
-            capture_method            : isPaymentMethodToken ? 'manual' : undefined,
+            capture_method            : isPaymentMethodToken ? 'manual' : undefined, // the fund must be captured on server_side
+            // confirmation_method       : isConfirmationToken  ? 'manual' : undefined, // the fund must be captured on server_side // DOESN'T WORK
             
             confirm                   : true,
             payment_method            : isPaymentMethodToken ? cardToken : undefined,
