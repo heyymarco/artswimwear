@@ -1431,10 +1431,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 
-                const rawOrderId = draftOrderDetail.orderId;
+                let rawOrderId = draftOrderDetail.orderId;
                 let authenticatedResult : AuthenticatedResult;
                 try {
                     authenticatedResult = await doAuthenticate(draftOrderDetail);
+                    rawOrderId = draftOrderDetail.orderId; // the `draftOrderDetail.orderId` may be updated during `doAuthenticate()` call.
                 }
                 catch (error: any) { // an unexpected authentication error occured
                     // notify to cancel transaction, so the draftOrder (if any) will be reverted:
@@ -1485,7 +1486,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     
                     case AuthenticatedResult.AUTHORIZED : { // will be manually capture on server_side
                         // then forward the authentication to backend_API to receive the fund:
-                        await doMakePayment(rawOrderId, /*paid:*/true);
+                        if (rawOrderId /* ignore empty string */) await doMakePayment(rawOrderId, /*paid:*/true);
                         break;
                     }
                     
@@ -1756,6 +1757,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         gotoFinished(paymentDetail, paid);
     });
     const doCancelDraftOrder   = useEvent(async (orderId: string): Promise<void> => {
+        // conditions:
+        if (!orderId) return; // empty string => ignore
+        
+        
+        
         try {
             // notify to cancel transaction, so the draftOrder (if any) will be reverted:
             await doMakePayment(orderId, /*paid:*/false, { cancelOrder: true });
