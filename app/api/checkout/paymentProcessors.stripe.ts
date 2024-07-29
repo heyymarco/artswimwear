@@ -422,7 +422,11 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
             const paymentMethod      = (
                 (paymentMethodRaw && (typeof(paymentMethodRaw) === 'object'))
                 ? paymentMethodRaw
-                : null
+                : (
+                    (!resolveMissing || (typeof(paymentMethodRaw) !== 'string') || !stripe)
+                    ? undefined
+                    : await stripe.paymentMethods.retrieve(paymentMethodRaw)
+                )
             );
             
             
