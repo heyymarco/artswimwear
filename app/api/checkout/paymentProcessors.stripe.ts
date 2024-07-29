@@ -28,6 +28,9 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
 
 
 
+export interface StripeTranslateDataOptions {
+    resolveMissing ?: boolean
+}
 /**
  * undefined          : (never happened) Transaction not found.  
  * null               : Transaction creation was denied (for example due to a decline).  
@@ -36,7 +39,14 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
  * PaymentDetail      : Paid.  
  * false              : Transaction was deleted due to canceled or expired.  
  */
-export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent): Promise<undefined|0|null|AuthorizedFundData|PaymentDetail|false> => {
+export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, options?: StripeTranslateDataOptions): Promise<undefined|0|null|AuthorizedFundData|PaymentDetail|false> => {
+    // options:
+    const {
+        resolveMissing = true,
+    } = options ?? {};
+    
+    
+    
     switch (paymentIntent.status) {
         // step 1:
         case 'requires_payment_method' : { // if the payment attempt fails (for example due to a decline)
@@ -372,9 +382,9 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent): 
                 
                 payment_method  : paymentMethodRaw,
             } = paymentIntent;
-            const latestCharge       = paymentIntent.latest_charge       as Stripe.Charge|undefined;
-            let   balanceTransaction = latestCharge?.balance_transaction as Stripe.BalanceTransaction|undefined|null;
-            if (latestCharge?.id && !balanceTransaction && stripe) {
+            const latestCharge       = ((paymentIntent.latest_charge       && (typeof(paymentIntent.latest_charge     ) === 'object')) ? paymentIntent.latest_charge      : undefined);
+            let   balanceTransaction = ((latestCharge?.balance_transaction && (typeof(latestCharge.balance_transaction) === 'object')) ? latestCharge.balance_transaction : undefined);
+            if (resolveMissing && latestCharge?.id && !balanceTransaction && stripe) {
                 for (let remainingRetries = 9, retryCounter = 0; remainingRetries > 0; remainingRetries--, retryCounter++) {
                     const prevTick = performance.now();
                     try {
@@ -383,7 +393,7 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent): 
                                 'balance_transaction',
                             ],
                         });
-                        balanceTransaction = newLatestCharge.balance_transaction as Stripe.BalanceTransaction|undefined|null;
+                        balanceTransaction = ((newLatestCharge.balance_transaction && (typeof(newLatestCharge.balance_transaction) === 'object')) ? newLatestCharge.balance_transaction : undefined);
                         if (balanceTransaction) {
                             break;
                         } // if
