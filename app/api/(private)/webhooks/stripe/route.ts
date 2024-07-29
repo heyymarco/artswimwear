@@ -82,13 +82,12 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     
     
     
-    const body = await req.json();
     let stripeEvent : Stripe.Event;
     try {
-        stripeEvent = stripe.webhooks.constructEvent(body, stripeSignature, stripeWebhookSecret);
+        stripeEvent = stripe.webhooks.constructEvent(Buffer.from(await req.arrayBuffer()), stripeSignature, stripeWebhookSecret);
     }
     catch (error: any) {
-        console.log('webhook: signature mismatch', stripeSignature, body, error);
+        console.log('webhook: signature mismatch', stripeSignature, error);
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
