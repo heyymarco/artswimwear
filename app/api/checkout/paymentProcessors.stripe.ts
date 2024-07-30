@@ -451,6 +451,15 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                         brand      : 'amazonpay',
                         identifier : null,
                     };
+                    
+                    
+                    
+                    /* PAY WITH LINK */
+                    if ((paymentMethod.type === 'link') && paymentMethod.link) return {
+                        type       : 'EWALLET',
+                        brand      : 'link',
+                        identifier : paymentMethod.link.email,
+                    };
                 } // if
                 
                 
