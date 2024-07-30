@@ -228,6 +228,10 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         }
     } // switch
     
+    if (stripeEvent.type.startsWith('charge.')) {
+        console.log('event: ', stripeEvent.type, stripeEvent.data.object);
+    } // if
+    
     
     
     // Return OK:
