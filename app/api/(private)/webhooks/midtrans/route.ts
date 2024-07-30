@@ -107,10 +107,13 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         case null:      // Transaction creation was denied.
             // ignore failure_create_transaction
             break;
+        case false:     // Transaction was deleted due to canceled.
+            // ignore canceled_transaction
+            break;
         
         
         
-        case false: {   // Transaction was deleted due to canceled or expired.  
+        case '': {   // Transaction was deleted due to expired.
             const paymentId = midtransPaymentData.transaction_id;
             if (paymentId) {
                 const result = await prisma.$transaction(async (prismaTransaction): Promise<string|boolean> => {

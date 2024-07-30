@@ -42,9 +42,10 @@ const midtransUrl = midtransBaseUrl.development; // TODO: auto switch developmen
  * null               : Transaction creation was denied.  
  * AuthorizedFundData : Authorized for payment.  
  * PaymentDetail      : Paid.  
- * false              : Transaction was deleted due to canceled or expired.  
+ * false              : Transaction was deleted due to canceled.  
+ * empty_string       : Transaction was deleted due to expired.  
  */
-export const midtransTranslateData = (midtransPaymentData: any): undefined|null|AuthorizedFundData|PaymentDetail|false => {
+export const midtransTranslateData = (midtransPaymentData: any): undefined|null|AuthorizedFundData|PaymentDetail|false|'' => {
     switch (`${midtransPaymentData.status_code}` /* stringify */) {
         case '404' : {
             // Transaction not found
@@ -72,11 +73,13 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
             
             
             switch (midtransPaymentData.transaction_status) {
-                /* handle inconsistent status_code <==> transaction_status */
-                case 'cancel':
-                case 'expire': {
-                    // Transaction was deleted due to canceled or expired:
+                case 'cancel': {
+                    // Transaction was deleted due to canceled:
                     return false;
+                }
+                case 'expire': {
+                    // Transaction was deleted due to expired:
+                    return '';
                 }
                 
                 
@@ -164,10 +167,13 @@ export const midtransTranslateData = (midtransPaymentData: any): undefined|null|
                         
                         
                         
-                        case 'cancel':
-                        case 'expire': {
-                            // Transaction was deleted due to canceled or expired:
+                        case 'cancel': {
+                            // Transaction was deleted due to canceled:
                             return false;
+                        }
+                        case 'expire': {
+                            // Transaction was deleted due to expired:
+                            return '';
                         }
                         
                         
@@ -474,7 +480,8 @@ export const midtransCreateOrderGeneric       = async <TPayment extends Midtrans
     switch (result) {
         // unexpected results:
         case undefined :   // Transaction not found.
-        case false     : { // Transaction was deleted due to canceled or expired.
+        case false     :   // Transaction was deleted due to canceled.
+        case ''        : { // Transaction was deleted due to expired.
             console.log('unexpected response: ', midtransPaymentData);
             throw Error('unexpected API response');
         }
@@ -700,7 +707,8 @@ export const midtransCaptureFund          = async (paymentId: string): Promise<P
         // unexpected results:
         case undefined :   // Transaction not found.
         case null      :   // Transaction creation was denied.
-        case false     : { // Transaction was deleted due to canceled or expired.
+        case false     :   // Transaction was deleted due to canceled.
+        case ''        : { // Transaction was deleted due to expired.
             console.log('unexpected response: ', midtransPaymentData);
             throw Error('unexpected API response');
         }
