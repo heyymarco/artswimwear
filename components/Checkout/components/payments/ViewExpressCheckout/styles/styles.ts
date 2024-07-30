@@ -2,6 +2,7 @@
 import {
     // writes css in javascript:
     rule,
+    descendants,
     children,
     style,
     scope,
@@ -107,6 +108,11 @@ export const usesMainLayout  = () => {
             // children:
             ...children('*', {
                 gridArea: '1 / 1 / -1 / -1',
+            }),
+            ...descendants('[role="dialog"]', {
+                // remove the padding of <Dialog>'s backdrop:
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
             }),
         }),
         
@@ -232,7 +238,20 @@ export const usesNotAvailableLayout = () => {
         // states:
         ...usesHiddenableLayout(),
     });
-}
+};
+export const usesProcessingMessageLayout = () => {
+    return style({
+        // layouts:
+        display: 'grid',
+        gridAutoFlow : 'column',
+        justifyItems: 'center',
+        
+        
+        
+        // spacings:
+        gap: spacers.sm,
+    });
+};
 
 export default () => [
     scope('main', {
@@ -251,5 +270,8 @@ export default () => [
     }, { specificityWeight: 2 }),
     scope('notAvailable', {
         ...usesNotAvailableLayout(),
+    }),
+    scope('processingMessage', {
+        ...usesProcessingMessageLayout(),
     }),
 ];
