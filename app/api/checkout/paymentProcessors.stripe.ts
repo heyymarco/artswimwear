@@ -37,7 +37,8 @@ export interface StripeTranslateDataOptions {
  * 0                  : Transaction is being processed (may be processed on customer_side or stripe_side).  
  * AuthorizedFundData : Authorized for payment.  
  * PaymentDetail      : Paid.  
- * false              : Transaction was deleted due to canceled or expired.  
+ * false              : Transaction was deleted due to canceled.  
+ * empty_string       : (never happened) Transaction was deleted due to expired.  
  */
 export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, options?: StripeTranslateDataOptions): Promise<undefined|0|null|AuthorizedFundData|PaymentDetail|false> => {
     // options:
@@ -1005,7 +1006,7 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
         // unexpected results:
         case undefined :   // (never happened) Transaction not found.
         case 0         :   // Transaction is being processed (may be processed on customer_side or stripe_side).
-        case false     : { // Transaction was deleted due to canceled or expired.
+        case false     : { // Transaction was deleted due to canceled.
             console.log('unexpected response: ', paymentIntent);
             throw Error('unexpected API response');
         }
@@ -1047,7 +1048,7 @@ export const stripeCaptureFund = async (paymentId: string): Promise<PaymentDetai
         case undefined :   // (never happened) Transaction not found.
         case null      :   // Transaction creation was denied.
         case 0         :   // Transaction is being processed (may be processed on customer_side or stripe_side).
-        case false     : { // Transaction was deleted due to canceled or expired.
+        case false     : { // Transaction was deleted due to canceled.
             console.log('unexpected response: ', paymentIntent);
             throw Error('unexpected API response');
         }

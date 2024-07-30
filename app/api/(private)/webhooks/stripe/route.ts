@@ -93,12 +93,132 @@ export async function POST(req: Request, res: Response): Promise<Response> {
     
     
     switch (stripeEvent.type) {
-        case 'payment_intent.canceled'  :   // Transaction was deleted due to canceled or expired. 
+        case 'payment_intent.canceled'  :   // Transaction was deleted due to canceled. 
         case 'payment_intent.succeeded' : { // Transaction succeeded (paid).
             const paymentIntent = stripeEvent.data.object;
             const result = await stripeTranslateData(paymentIntent);
-            console.log('Stripe Webhook intent: ',  paymentIntent);
-            console.log('Stripe Webhook result: ',  result);
+            switch (result) {
+                case undefined: // Transaction not found.
+                    // ignore non_existing_transaction
+                    break;
+                case null:      // Transaction creation was denied.
+                    // ignore failure_create_transaction
+                    break;
+                case 0:         // Transaction is being processed (may be processed on customer_side or stripe_side).
+                    // ignore processing_transaction
+                    break;
+                case false:     // Transaction was deleted due to canceled.
+                    // ignore canceled_transaction
+                    break;
+                
+                
+                
+                default: {
+                    if (isAuthorizedFundData(result)) {
+                        // AuthorizedFundData : Authorized for payment.
+                        // ignore Authorized for payment
+                        break;
+                    } // if
+                    
+                    
+                    //#region save the database
+                    const paymentId = paymentIntent.id;
+                    const paymentDetail = result;
+                    
+                    
+                    
+                    const order : OrderAndData|null = await prisma.$transaction(async (prismaTransaction): Promise<OrderAndData|null> => {
+                        return (
+                            // 1st step: search on DraftOrder(s):
+                            await (async (): Promise<OrderAndData|null> => {
+                                const draftOrder = await findDraftOrderById(prismaTransaction, {
+                                    paymentId   : paymentId,
+                                    
+                                    orderSelect : commitDraftOrderSelect,
+                                });
+                                if (!draftOrder) return null;
+                                
+                                
+                                
+                                // payment APPROVED => move the `draftOrder` to `order`:
+                                return await commitDraftOrder(prismaTransaction, {
+                                    draftOrder         : draftOrder,
+                                    payment            : {
+                                        ...paymentDetail,
+                                        expiresAt      : null, // paid, no more payment expiry date
+                                        billingAddress : null,
+                                    },
+                                });
+                            })()
+                            
+                            ??
+                            
+                            // 2nd step: search on Order(s):
+                            await (async (): Promise<OrderAndData|null> => {
+                                const order = await findOrderById(prismaTransaction, {
+                                    paymentId   : paymentId,
+                                    
+                                    orderSelect : commitOrderSelect,
+                                });
+                                if (!order) return null;
+                                
+                                
+                                
+                                // payment APPROVED => mark the `order` as 'MANUAL_PAID':
+                                return await commitOrder(prismaTransaction, {
+                                    order   : order,
+                                    payment : paymentDetail,
+                                });
+                            })()
+                            
+                            ??
+                            
+                            // 3rd step: not found
+                            null
+                        );
+                    });
+                    //#endregion save the database
+                    
+                    
+                    
+                    // send email confirmation:
+                    if (
+                        order
+                        &&
+                        (order.payment?.type !== 'CARD') // a payment_card is already notified by `/api/checkout/PATCH`
+                    ) {
+                        await Promise.all([
+                            // notify that the payment has been received:
+                            await sendConfirmationEmail({
+                                order                    : order,
+                                
+                                isPaid                   : true,
+                                paymentConfirmationToken : null,
+                            }),
+                            
+                            
+                            
+                            // notify that the payment has been received to adminApp via webhook:
+                            fetch(`${process.env.ADMIN_APP_URL ?? ''}/api/webhooks/checkouts/new`, {
+                                method  : 'POST',
+                                headers : {
+                                    'X-Secret' : process.env.APP_SECRET ?? '',
+                                },
+                                body    : JSON.stringify({
+                                    orderId : order.orderId,
+                                }),
+                            }),
+                        ]);
+                    } // if
+                    
+                    
+                    
+                    break;
+                }
+            } // switch
+            
+            
+            
             break;
         }
     } // switch
