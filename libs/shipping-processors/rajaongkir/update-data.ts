@@ -56,6 +56,10 @@ export interface UpdateShippingProviderData {
 
 }
 export const updateShippingProviders = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], shippingAddress: MatchingAddress): Promise<void> => {
+    if (!process.env.RAJAONGKIR_SECRET) return;
+    
+    
+    
     const {
         country,
         state,

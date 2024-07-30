@@ -95,19 +95,21 @@ router
     
     
     // auto update rajaongkir:
-    try {
-        await prisma.$transaction(async (prismaTransaction) => {
-            await updateShippingProviders(prismaTransaction, {
-                country,
-                state,
-                city,
-            });
-        }, { timeout: 10000 }); // give a longer timeout for `updateShippingProviders()`
-    }
-    catch (error: unknown) {
-        console.log('autoUpdate shipping error: ', error);
-        // ignore any error
-    } // try
+    if (process.env.RAJAONGKIR_SECRET) {
+        try {
+            await prisma.$transaction(async (prismaTransaction) => {
+                await updateShippingProviders(prismaTransaction, {
+                    country,
+                    state,
+                    city,
+                });
+            }, { timeout: 10000 }); // give a longer timeout for `updateShippingProviders()`
+        }
+        catch (error: unknown) {
+            console.log('autoUpdate shipping error: ', error);
+            // ignore any error
+        } // try
+    } // if
     
     
     
