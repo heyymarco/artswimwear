@@ -528,6 +528,10 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
     let paymentIntent: Stripe.Response<Stripe.PaymentIntent>;
     try {
         paymentIntent = await stripe.paymentIntents.create({
+            metadata                  : {
+                orderId               : orderId,
+            },
+            
             currency                  : currency.toLowerCase(),
             amount                    : convertCurrencyToStripeNominal(totalCostConverted, currency),
             

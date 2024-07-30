@@ -122,8 +122,13 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                     } // if
                     
                     
+                    
+                    const orderId = paymentIntent.metadata.orderId;
+                    if (!orderId) break;
+                    
+                    
+                    
                     //#region save the database
-                    const paymentId = paymentIntent.id;
                     const paymentDetail = result;
                     
                     
@@ -133,7 +138,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                             // 1st step: search on DraftOrder(s):
                             await (async (): Promise<OrderAndData|null> => {
                                 const draftOrder = await findDraftOrderById(prismaTransaction, {
-                                    paymentId   : paymentId,
+                                    orderId     : orderId,
                                     
                                     orderSelect : commitDraftOrderSelect,
                                 });
@@ -157,7 +162,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                             // 2nd step: search on Order(s):
                             await (async (): Promise<OrderAndData|null> => {
                                 const order = await findOrderById(prismaTransaction, {
-                                    paymentId   : paymentId,
+                                    orderId     : orderId,
                                     
                                     orderSelect : commitOrderSelect,
                                 });
@@ -226,18 +231,22 @@ export async function POST(req: Request, res: Response): Promise<Response> {
         
         
         case 'charge.updated'           : {
-            const charge    = stripeEvent.data.object;
-            const paymentId = (
+            const charge  = stripeEvent.data.object;
+            const orderId = (
                 !charge.payment_intent
                 ? undefined
                 : (
-                    (typeof(charge.payment_intent) === 'string')
-                    ? charge.payment_intent
-                    : charge.payment_intent.id
+                    (typeof(charge.payment_intent) === 'object')
+                    ? charge.payment_intent.metadata.orderId
+                    : (await stripe.paymentIntents.retrieve(charge.payment_intent)).metadata.orderId
                 )
             );
-            const fee       = await stripeGetPaymentFee(charge);
-            console.log('updated fee: ', { paymentId, fee });
+            if (!orderId) break;
+            
+            
+            
+            const fee     = await stripeGetPaymentFee(charge);
+            console.log('updated fee: ', { orderId, fee });
             break;
         }
     } // switch
