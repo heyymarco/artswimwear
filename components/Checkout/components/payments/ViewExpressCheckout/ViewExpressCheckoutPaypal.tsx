@@ -16,6 +16,7 @@ import {
 import {
     // react helper hooks:
     useEvent,
+    useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -25,8 +26,18 @@ import {
     
     
     
+    // layout-components:
+    CardBody,
+    
+    
+    
     // status-components:
     Busy,
+    
+    
+    
+    // dialog-components:
+    ModalCard,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
@@ -71,6 +82,11 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     // states:
     const checkoutState = useCheckoutState();
     const {
+        // states:
+        isBusy,
+        
+        
+        
         // actions:
         startTransaction,
         doPlaceOrder,
@@ -86,6 +102,13 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     }
     const [isLoaded  , setIsLoaded  ] = useState<LoadedState>(LoadedState.Loading);
     const [generation, setGeneration] = useState<number>(1);
+    
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    
+    
+    
+    // effects:
+    const isMounted = useMountedFlag();
     
     
     
@@ -201,8 +224,17 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                 </p>
             </>,
         })
-        .finally(() => {
+        .finally(async () => {
             signalAuthenticatedRef.current = undefined; // un-ref
+            
+            
+            
+            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+            await new Promise<void>((resolve) => {
+                setTimeout(resolve, 400); // wait for a brief moment until the <ModalCard> is fully hidden, so the spinning busy is still visible during collapsing animation
+            });
+            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+            setIsProcessing(false);
         });
         
         return promisePaypalOrderId;
@@ -211,6 +243,10 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
         signalAuthenticatedRef.current?.(AuthenticatedResult.CANCELED);
     });
     const handlePaymentInterfaceApproved = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
+        setIsProcessing(true);
+        
+        
+        
         signalAuthenticatedRef.current?.(AuthenticatedResult.AUTHORIZED);
     });
     const handleShippingChange           = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
@@ -258,12 +294,22 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     
     
     
+    // refs:
+    const containerRef = useRef<HTMLDivElement|null>(null);
+    
+    
+    
     // jsx:
     const isErrored      = (isLoaded === LoadedState.Errored);
     const isLoading      = !isErrored &&               (isLoaded === LoadedState.Loading    );
     const isReady        = !isErrored && !isLoading && (isLoaded === LoadedState.FullyLoaded);
     return (
         <div
+            // refs:
+            ref={containerRef}
+            
+            
+            
             // classes:
             className={styleSheet.main}
         >
@@ -308,6 +354,30 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                 // states:
                 expanded={isLoading}
             />
+            <ModalCard
+                // states:
+                expanded={isBusy === 'transaction'}
+                inheritEnabled={false} // prevents from being seen disabled
+                
+                
+                
+                // global stackable:
+                viewport={containerRef}
+            >
+                <CardBody>
+                    {!isProcessing && <>
+                        <p>
+                            A <strong>PayPal&apos;s payment interface</strong> is being displayed.
+                        </p>
+                        <p>
+                            Please follow up on the payment to complete the order.
+                        </p>
+                    </>}
+                    {isProcessing && <p className={styleSheet.processingMessage}>
+                        <Busy theme='primary' size='lg' /> Processing your payment...
+                    </p>}
+                </CardBody>
+            </ModalCard>
         </div>
     );
 };
