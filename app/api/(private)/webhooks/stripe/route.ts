@@ -246,7 +246,19 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             
             const fee     = await stripeGetPaymentFee(charge);
-            console.log('updated fee: ', { orderId, fee });
+            if (fee !== undefined) {
+                const updated = await prisma.payment.updateMany({
+                    where : {
+                        parent : {
+                            orderId : orderId, // unique, guarantees only update one or zero
+                        },
+                    },
+                    data  : {
+                        fee : fee,
+                    },
+                });
+                console.log('fee updated: ', { orderId, fee, count: updated.count});
+            } // if
             break;
         }
     } // switch
