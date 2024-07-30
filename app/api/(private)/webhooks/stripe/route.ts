@@ -221,6 +221,11 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             break;
         }
+        case 'balance.available'        : {
+            const balanceTransaction = stripeEvent.data.object;
+            console.log('updated balance: ', balanceTransaction);
+            break;
+        }
     } // switch
     
     
