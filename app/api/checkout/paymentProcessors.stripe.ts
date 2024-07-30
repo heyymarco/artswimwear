@@ -30,7 +30,7 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
 
 export interface StripeTranslateDataOptions {
     resolveMissingFee           ?: boolean
-    resolveMissingPaymentDetail ?: boolean
+    resolveMissingPaymentMethod ?: boolean
 }
 /**
  * undefined          : (never happened) Transaction not found.  
@@ -45,7 +45,7 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
     // options:
     const {
         resolveMissingFee           = false, // false by default because the operation may take quite long time
-        resolveMissingPaymentDetail = true,  // true  by default because the operation can be done quickly
+        resolveMissingPaymentMethod = true,  // true  by default because the operation can be done quickly
     } = options ?? {};
     
     
@@ -426,7 +426,7 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                 (paymentMethodRaw && (typeof(paymentMethodRaw) === 'object'))
                 ? paymentMethodRaw
                 : (
-                    (!resolveMissingPaymentDetail || (typeof(paymentMethodRaw) !== 'string') || !stripe)
+                    (!resolveMissingPaymentMethod || (typeof(paymentMethodRaw) !== 'string') || !stripe)
                     ? undefined
                     : await stripe.paymentMethods.retrieve(paymentMethodRaw)
                 )
