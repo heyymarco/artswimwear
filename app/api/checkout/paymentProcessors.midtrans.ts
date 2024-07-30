@@ -547,7 +547,7 @@ export const midtransCreateOrderWithGopay     = async (orderId: string, options:
         payment_type         : 'gopay',
         gopay                : {
             enable_callback  : true,
-            callback_url     : `${process.env.APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
+            callback_url     : `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
         },
     }, orderId, options);
     /*
@@ -593,7 +593,7 @@ export const midtransCreateOrderWithShopeepay = async (orderId: string, options:
     return midtransCreateOrderGeneric<'shopeepay'>({
         payment_type         : 'shopeepay',
         shopeepay            : {
-            callback_url     : `${process.env.APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
+            callback_url     : `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
         },
     }, orderId, options);
     /*

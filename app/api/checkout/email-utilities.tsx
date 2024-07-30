@@ -204,7 +204,7 @@ export const sendConfirmationEmail = async (options: SendEmailConfirmationOption
         
         
         
-        await fetch(`${process.env.APP_URL ?? ''}/api/send-email`, {
+        await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api/send-email`, {
             method  : 'POST',
             headers : {
                 'X-Secret' : process.env.APP_SECRET ?? '',

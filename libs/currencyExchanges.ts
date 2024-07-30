@@ -37,7 +37,7 @@ export const getCurrencyRate = async (targetCurrency: string): Promise<number> =
             
             
             
-            const exchangeRateResponse = await fetch(`${process.env.APP_URL ?? ''}/api/currency-exchange`, {
+            const exchangeRateResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api/currency-exchange`, {
                 cache : 'force-cache',
                 // next  : { // "cache: force-cache" and "revalidate: 86400", only one should be specified
                 //     revalidate : 1 * 24 * 3600, // set the cache lifetime of a resource (in seconds).

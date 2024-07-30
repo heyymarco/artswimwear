@@ -562,7 +562,7 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
             confirm                   : true,
             payment_method            : isPaymentMethodToken ? cardToken : undefined,
             confirmation_token        : isConfirmationToken  ? cardToken : undefined,
-            return_url                : isConfirmationToken  ? `${process.env.APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}` : undefined,
+            return_url                : isConfirmationToken  ? `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}` : undefined,
             automatic_payment_methods : {
                 enabled         : true,
                 allow_redirects : 'never',

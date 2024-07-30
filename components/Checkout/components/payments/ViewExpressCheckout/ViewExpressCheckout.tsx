@@ -429,7 +429,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 clientSecret           : clientSecret,
                 confirmParams          : {
                     confirmation_token : confirmationToken,
-                    return_url         : `${process.env.APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
+                    return_url         : `${process.env.NEXT_PUBLIC_APP_URL}/checkout?orderId=${encodeURIComponent(orderId)}`,
                 },
                 redirect               : 'if_required', // do not redirect for non_redirect_based payment
             });
