@@ -29,7 +29,8 @@ const stripe = !process.env.STRIPE_SECRET ? undefined : new Stripe(process.env.S
 
 
 export interface StripeTranslateDataOptions {
-    resolveMissing ?: boolean
+    resolveMissingFee           ?: boolean
+    resolveMissingPaymentDetail ?: boolean
 }
 /**
  * undefined          : (never happened) Transaction not found.  
@@ -43,7 +44,8 @@ export interface StripeTranslateDataOptions {
 export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, options?: StripeTranslateDataOptions): Promise<undefined|0|null|AuthorizedFundData|PaymentDetail|false> => {
     // options:
     const {
-        resolveMissing = true,
+        resolveMissingFee           = false, // false by default because the operation may take quite long time
+        resolveMissingPaymentDetail = true,  // true  by default because the operation can be done quickly
     } = options ?? {};
     
     
@@ -385,7 +387,7 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
             } = paymentIntent;
             const latestCharge       = ((paymentIntent.latest_charge       && (typeof(paymentIntent.latest_charge     ) === 'object')) ? paymentIntent.latest_charge      : undefined);
             let   balanceTransaction = ((latestCharge?.balance_transaction && (typeof(latestCharge.balance_transaction) === 'object')) ? latestCharge.balance_transaction : undefined);
-            if (resolveMissing && !!paymentIntent.latest_charge && !balanceTransaction && stripe) {
+            if (resolveMissingFee && !!paymentIntent.latest_charge && !balanceTransaction && stripe) {
                 for (let remainingRetries = 9, retryCounter = 0; remainingRetries > 0; remainingRetries--, retryCounter++) {
                     const prevTick = performance.now();
                     try {
@@ -424,7 +426,7 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
                 (paymentMethodRaw && (typeof(paymentMethodRaw) === 'object'))
                 ? paymentMethodRaw
                 : (
-                    (!resolveMissing || (typeof(paymentMethodRaw) !== 'string') || !stripe)
+                    (!resolveMissingPaymentDetail || (typeof(paymentMethodRaw) !== 'string') || !stripe)
                     ? undefined
                     : await stripe.paymentMethods.retrieve(paymentMethodRaw)
                 )
