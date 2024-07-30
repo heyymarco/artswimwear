@@ -26,6 +26,7 @@ import type {
 // internals:
 import {
     stripeTranslateData,
+    stripeGetPaymentFee,
 }                           from '../../../checkout/paymentProcessors.stripe'
 import {
     // utilities:
@@ -221,16 +222,25 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             
             break;
         }
-        case 'balance.available'        : {
-            const balanceTransaction = stripeEvent.data.object;
-            console.log('updated balance: ', balanceTransaction);
+        
+        
+        
+        case 'charge.updated'           : {
+            const charge    = stripeEvent.data.object;
+            const paymentId = (
+                !charge.payment_intent
+                ? undefined
+                : (
+                    (typeof(charge.payment_intent) === 'string')
+                    ? charge.payment_intent
+                    : charge.payment_intent.id
+                )
+            );
+            const fee       = await stripeGetPaymentFee(charge);
+            console.log('updated fee: ', { paymentId, fee });
             break;
         }
     } // switch
-    
-    if (stripeEvent.type.startsWith('charge.')) {
-        console.log('event: ', stripeEvent.type, stripeEvent.data.object);
-    } // if
     
     
     

@@ -479,6 +479,29 @@ export const stripeTranslateData = async (paymentIntent: Stripe.PaymentIntent, o
     } // switch
 }
 
+export const stripeGetPaymentFee = async (charge: Stripe.Charge): Promise<number|undefined> => {
+    const balanceTransaction = (
+        !charge.balance_transaction
+        ? undefined
+        : (
+            (typeof(charge.balance_transaction) === 'object')
+            ? charge.balance_transaction
+            : (
+                !stripe
+                ? undefined
+                : await stripe.balanceTransactions.retrieve(charge.balance_transaction)
+            )
+        )
+    );
+    if (balanceTransaction === undefined) return undefined;
+    
+    
+    
+    const currency = balanceTransaction?.currency ?? charge?.currency;
+    const fee      = balanceTransaction.fee;
+    return revertCurrencyFromStripeNominal(fee, currency);
+}
+
 
 
 export const stripeCreateOrder = async (cardToken: string, orderId: string, options: CreateOrderOptions): Promise<AuthorizedFundData|PaymentDetail|null> => {
