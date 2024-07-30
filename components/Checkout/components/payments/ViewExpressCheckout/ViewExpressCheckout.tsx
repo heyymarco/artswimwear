@@ -311,11 +311,20 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 </p>
             </>,
         })
-        .finally(() => {
+        .finally(async () => {
             draftOrderDetailRef.current    = undefined; // un-ref
             
             signalAuthenticatedRef.current = undefined; // un-ref
             throwAuthenticatedRef.current  = undefined; // un-ref
+            
+            
+            
+            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+            await new Promise<void>((resolve) => {
+                setTimeout(resolve, 400); // wait for a brief moment until the <ModalCard> is fully hidden, so the spinning busy is still visible during collapsing animation
+            });
+            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+            setIsProcessing(false);
         });
     });
     const handlePaymentInterfaceAbort    = useEvent((event): void => {
@@ -432,14 +441,6 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         }
         catch (error: any) {
             throwAuthenticatedRef.current?.(error);
-        }
-        finally {
-            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-            await new Promise<void>((resolve) => {
-                setTimeout(resolve, 400); // wait for a brief moment until the <ModalCard> is fully hidden, so the spinning busy is still visible during collapsing animation
-            });
-            if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
-            setIsProcessing(false);
         } // try
     });
     
