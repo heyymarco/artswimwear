@@ -416,6 +416,47 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             
             
+            const result = await stripe.handleNextAction({
+                clientSecret : clientSecret,
+            });
+            /*
+                the code below is actually never be called because the webpage is redirected to amazon's website
+            */
+            if (result.error || !result.paymentIntent) {
+                signalAuthenticatedRef.current?.(AuthenticatedResult.FAILED);
+                return;
+            } // if
+            switch (result.paymentIntent.status) {
+                case 'requires_capture' : {
+                    signalAuthenticatedRef.current?.(
+                        AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
+                    );
+                    return;
+                }
+                
+                
+                
+                case 'succeeded'        : {
+                    signalAuthenticatedRef.current?.(
+                        AuthenticatedResult.CAPTURED // has been CAPTURED (maybe delayed), just needs DISPLAY paid page
+                    );
+                    return;
+                }
+                
+                
+                
+                default : {
+                    throw Error('Oops, an error occured!');
+                }
+            } // switch
+            
+            
+            
+            /*
+            NOT WORKING:
+            
+            
+            
             const rawOrderId = draftOrderDetail.orderId;
             const orderId = (
                 rawOrderId.startsWith('#STRIPE_')
@@ -438,6 +479,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 ? AuthenticatedResult.FAILED
                 : AuthenticatedResult.CAPTURED // has been CAPTURED (maybe delayed), just needs DISPLAY paid page // TODO: display confirmed payment
             );
+            */
         }
         catch (error: any) {
             throwAuthenticatedRef.current?.(error);
