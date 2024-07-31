@@ -2,6 +2,7 @@
 import {
     // writes css in javascript:
     rule,
+    keyframes,
     descendants,
     children,
     style,
@@ -38,6 +39,11 @@ import {
 import {
     // base-components:
     basics,
+    
+    
+    
+    // status-components:
+    popups,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 
@@ -83,6 +89,28 @@ export const usesMainLayout  = () => {
     
     
     
+    // animations:
+    const [keyframesExpandRule  , keyframesExpand  ] = keyframes({
+        from : {
+            opacity: 0,
+        },
+        to   : {
+            opacity: 1,
+        },
+    });
+    keyframesExpand.value   = 'modal-checkout-expand';   // the @keyframes name should contain 'expand'   in order to be recognized by `useCollapsible`
+    const [keyframesCollapseRule, keyframesCollapse] = keyframes({
+        from : {
+            opacity: 1,
+        },
+        to   : {
+            opacity: 0,
+        },
+    });
+    keyframesCollapse.value = 'modal-checkout-collapse'; // the @keyframes name should contain 'collapse' in order to be recognized by `useCollapsible`
+    
+    
+    
     return style({
         // capabilities:
         ...groupableRule(), // make a nicely rounded corners
@@ -110,9 +138,24 @@ export const usesMainLayout  = () => {
                 gridArea: '1 / 1 / -1 / -1',
             }),
             ...descendants('[role="dialog"]', {
+                // spacings:
                 // remove the padding of <Dialog>'s backdrop:
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
+                
+                
+                
+                // children:
+                ...children('*', { // <Popup>
+                    ...keyframesExpandRule,
+                    ...keyframesCollapseRule,
+                    [popups.animExpand  ]: [
+                        ['500ms', 'ease-out', 'both', keyframesExpand],
+                    ],
+                    [popups.animCollapse]: [
+                        ['150ms', 'ease-out', 'both', keyframesCollapse],
+                    ],
+                }),
             }),
         }),
         
