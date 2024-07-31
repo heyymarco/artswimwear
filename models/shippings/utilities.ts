@@ -17,6 +17,25 @@ import {
 
 // utilities:
 
+export const shippingOriginSelect = {
+    // data:
+    country : true,
+    state   : true,
+    city    : true,
+} satisfies Prisma.ShippingOriginSelect;
+
+export const defaultShippingOriginSelect = {
+    // records:
+    id          : true,
+    
+    // data:
+    country : true,
+    state   : true,
+    city    : true,
+} satisfies Prisma.DefaultShippingOriginSelect;
+
+
+
 export const shippingPreviewSelect = {
     // records:
     id          : true,
@@ -36,12 +55,7 @@ export const shippingDetailSelect = {
     
     autoUpdate  : true,
     origin      : {
-        select : {
-            // data:
-            country : true,
-            state   : true,
-            city    : true,
-        },
+        select : shippingOriginSelect,
     },
     
     name        : true,

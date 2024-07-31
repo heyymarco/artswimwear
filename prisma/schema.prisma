@@ -240,6 +240,15 @@ model ShippingOrigin {
     parentId                        String                          @unique
     parent                          ShippingProvider                @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShippingOrigin if the ShippingProvider deleted
 }
+model DefaultShippingOrigin {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    country                         String                          // minLength: 2 , maxLength:  3
+    state                           String                          // minLength: 3 , maxLength: 50
+    city                            String                          // minLength: 3 , maxLength: 50
+}
 model ShippingProviderEta {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
