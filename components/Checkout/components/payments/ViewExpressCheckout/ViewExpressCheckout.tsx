@@ -128,7 +128,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             aliPay    : 'never',
             
             // set:
-            [type]    : 'auto',
+            [type]    : (type === 'googlePay') ? 'always' : 'auto',
         },
         layout : {
             maxRows    : 0,
