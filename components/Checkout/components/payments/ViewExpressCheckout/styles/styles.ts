@@ -178,6 +178,17 @@ export const usesExpressCheckoutLayout = () => {
             // sizes:
             justifySelf  : 'stretch',
             alignSelf    : 'stretch',
+            
+            
+            
+            // children:
+            ...children('.paypalButton', {
+                display: 'grid',
+                justifyItems: 'center',
+                ...children('div', {
+                    maxInlineSize: '750px',
+                }),
+            }),
         }),
         
         

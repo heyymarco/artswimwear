@@ -54,6 +54,7 @@ import type {
     OnApproveData,
     OnShippingChangeActions,
     OnShippingChangeData,
+    PayPalButtonsComponentOptions,
 }                           from '@paypal/paypal-js'
 import {
     PayPalButtons,
@@ -69,6 +70,13 @@ import {
 import {
     useViewExpressCheckoutStyleSheet,
 }                           from './styles/loader'
+
+
+
+// styles:
+const paypalButtonStyle : PayPalButtonsComponentOptions['style'] = {
+    height: 44,
+};
 
 
 
@@ -321,6 +329,12 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                 <PayPalButtons
                     // identifiers:
                     key={generation}
+                    
+                    
+                    
+                    // classes:
+                    className='paypalButton'
+                    style={paypalButtonStyle}
                     
                     
                     
