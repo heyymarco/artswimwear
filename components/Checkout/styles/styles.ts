@@ -686,6 +686,15 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px',
             }),
             ...children('article', {
+                [groupableVars.borderStartStartRadius] : ['inherit', '!important'], // reads parent's prop
+                [groupableVars.borderStartEndRadius  ] : ['inherit', '!important'], // reads parent's prop
+                [groupableVars.borderEndStartRadius  ] : ['inherit', '!important'], // reads parent's prop
+                [groupableVars.borderEndEndRadius    ] : ['inherit', '!important'], // reads parent's prop
+                borderStartStartRadius                 : groupableVars.borderStartStartRadius,
+                borderStartEndRadius                   : groupableVars.borderStartEndRadius,
+                borderEndStartRadius                   : groupableVars.borderEndStartRadius,
+                borderEndEndRadius                     : groupableVars.borderEndEndRadius,
+                
                 ...children('div', {
                     // layouts:
                     display      : 'grid',
