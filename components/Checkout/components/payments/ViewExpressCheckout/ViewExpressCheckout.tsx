@@ -130,6 +130,11 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             // set:
             [type]    : (type === 'googlePay') ? 'always' : 'auto',
         },
+        buttonType : {
+            googlePay : 'pay',
+            applePay  : 'plain',
+            paypal    : 'pay',
+        },
         layout : {
             maxRows    : 0,
             maxColumns : 1,
