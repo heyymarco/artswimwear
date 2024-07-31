@@ -5,6 +5,7 @@ import {
     type CoverageState,
     type CoverageCity,
     type ShippingOrigin,
+    type DefaultShippingOrigin,
     type ShippingProviderEta,
     type CoverageCountryEta,
     type CoverageStateEta,
@@ -63,6 +64,12 @@ export interface ShippingOriginDetail
             // relations:
             |'parentId'
         >
+{
+}
+
+export interface DefaultShippingOriginDetail
+    extends
+        DefaultShippingOrigin
 {
 }
 
