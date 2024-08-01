@@ -11,6 +11,11 @@ import {
 
 // models:
 import {
+    // types:
+    type DefaultShippingOriginDetail,
+    
+    
+    
     // utilities:
     defaultShippingOriginSelect,
 }                           from '@/models'
@@ -100,26 +105,45 @@ router
     
     
     
-    // auto update rajaongkir:
-    if (process.env.RAJAONGKIR_SECRET) {
+    // get the shipping origin:
+    const shippingOrigin = await (async (): Promise<DefaultShippingOriginDetail|null> => {
         try {
-            await prisma.$transaction(async (prismaTransaction) => {
-                const origin = await prismaTransaction.defaultShippingOrigin.findFirst({
-                    select : defaultShippingOriginSelect,
-                });
-                if (origin) {
-                    await updateShippingProviders(prismaTransaction, origin, {
-                        country,
-                        state,
-                        city,
-                    });
-                } // if
-            }, { timeout: 10000 }); // give a longer timeout for `updateShippingProviders()`
+            return await prisma.defaultShippingOrigin.findFirst({
+                select : defaultShippingOriginSelect,
+            });
         }
-        catch (error: unknown) {
-            console.log('autoUpdate shipping error: ', error);
-            // ignore any error
+        catch {
+            return null;
         } // try
+    })();
+    
+    
+    
+    // auto update rajaongkir:
+    if (process.env.RAJAONGKIR_SECRET && shippingOrigin) {
+        await Promise.race([
+            // auto update up to 10 seconds:
+            async (): Promise<void> => {
+                try {
+                    await prisma.$transaction(async (prismaTransaction) => {
+                        await updateShippingProviders(prismaTransaction, shippingOrigin, {
+                            country,
+                            state,
+                            city,
+                        });
+                    }, { timeout: 10000 }); // give a longer timeout for `updateShippingProviders()`
+                }
+                catch (error: unknown) {
+                    console.log('autoUpdate shipping error: ', error);
+                    // ignore any error
+                } // try
+            },
+            
+            // ignore the auto update above if runs longer than 5 secs:
+            new Promise<void>((resolve) => {
+                setTimeout(resolve, 5000);
+            }),
+        ]);
     } // if
     
     
