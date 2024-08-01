@@ -2,7 +2,7 @@
 import {
     // types:
     type Prisma,
-    type ShippingOriginDetail,
+    type DefaultShippingOriginDetail,
     type ShippingEta,
     type ShippingRate,
     
@@ -10,6 +10,7 @@ import {
     
     // utilities:
     selectWithSort,
+    defaultShippingOriginSelect,
 }                           from '@/models'
 
 // ORMs:
@@ -55,8 +56,14 @@ const isNotNullOrUndefined = <TValue>(value: TValue): value is Exclude<TValue, n
 export interface UpdateShippingProviderData {
 
 }
-export const updateShippingProviders = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], shippingAddress: MatchingAddress): Promise<void> => {
+export const updateShippingProviders = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], origin: DefaultShippingOriginDetail, shippingAddress: MatchingAddress): Promise<void> => {
     if (!process.env.RAJAONGKIR_SECRET) return;
+    
+    
+    
+    if (origin.country.trim().toLowerCase() !== 'id') return; // indonesia only, international is not supported yet
+    const originId = stateCityToIdMap.get(`${origin.state.trim().toLowerCase()}/${origin.city.trim().toLowerCase()}`);
+    if (originId === undefined) return; // the origin id is not known => abort updating
     
     
     
@@ -76,9 +83,6 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
     const shippingProviders = await prismaTransaction.shippingProvider.findMany({
         where  : {
             autoUpdate : true, // autoUpdate is enabled
-            NOT : {
-                origin : null, // has origin defined
-            },
             name : {
                 mode   : 'insensitive',
                 in     : systemShippings,
@@ -87,14 +91,6 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
         select : {
             id         : true, // required for updating later
             name       : true, // required for updating later
-            origin     : {     // required for rajaOngkir fetching
-                select : {
-                    // data:
-                    country : true,
-                    state   : true,
-                    city    : true,
-                },
-            },
             
             useZones   : true,
             zones      : { // countries
@@ -197,10 +193,6 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
     const shippingProvidersWithUnique = (
         expiredShippingProviders
         .map((shippingProvider) => {
-            if (!shippingProvider.origin) return null;
-            
-            
-            
             let baseName = shippingProvider.name.trim().toLowerCase();
             switch (baseName) {
                 case 'jne reguler':
@@ -224,17 +216,9 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
             
             
             
-            const {
-                country,
-                state,
-                city,
-            } = shippingProvider.origin;
-            
-            
-            
             return {
-                // key: the uniqueness by combination of baseName + country + state + city
-                unique: `${baseName}/${country.trim().toLowerCase()}/${state.trim().toLowerCase()}/${city.trim().toLowerCase()}`,
+                // key: the uniqueness by combination of baseName /* + country + state + city */
+                unique: baseName,
                 
                 // value:
                 baseName,
@@ -258,19 +242,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                 uniqueShippingProviders
                 .values()
             )
-            .map(({baseName, origin}) => {
-                if (!origin) return null;
-                const {
-                    country,
-                    state,
-                    city,
-                } = origin;
-                if (country.trim().toLowerCase() !== 'id') return null; // indonesia only, international is not supported yet
-                const originId = stateCityToIdMap.get(`${state.trim().toLowerCase()}/${city.trim().toLowerCase()}`);
-                if (originId === undefined) return null; // the origin id is not known => abort updating
-                
-                
-                
+            .map(({baseName}) => {
                 try {
                     switch (baseName) {
                         case 'jne':
@@ -306,24 +278,6 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
         .map((shippingProvider) => {
             const shippingDataItem        = newShippingData.find(({name, origin}) =>
                 (shippingProvider.name.trim().toLowerCase() === name.trim().toLowerCase())
-                &&
-                
-                // doesn't work:
-                // (shippingProvider.origin === origin) // match by reference as passed by `shippingDataWithOrigin()`
-                
-                // works:
-                // use compare by values to preserve another shippingProvider(s) having identical origin but not identical by reference
-                (
-                    !!shippingProvider.origin
-                    &&
-                    !!origin
-                    &&
-                    (shippingProvider.origin.country.trim().toLowerCase() === origin.country.trim().toLowerCase())
-                    &&
-                    (shippingProvider.origin.state.trim().toLowerCase()   === origin.state.trim().toLowerCase()  )
-                    &&
-                    (shippingProvider.origin.city.trim().toLowerCase()    === origin.city.trim().toLowerCase()   )
-                )
             );
             if (!shippingDataItem) return null;
             return {
@@ -638,9 +592,9 @@ interface ShippingDataWithOrigin
     extends
         ShippingData
 {
-    origin : ShippingOriginDetail
+    origin : DefaultShippingOriginDetail
 }
-const shippingDataWithOrigin = async (shippingData: Promise<ShippingData[]>, origin: ShippingOriginDetail): Promise<ShippingDataWithOrigin[]> => {
+const shippingDataWithOrigin = async (shippingData: Promise<ShippingData[]>, origin: DefaultShippingOriginDetail): Promise<ShippingDataWithOrigin[]> => {
     return (
         (await shippingData)
         .map((item) => ({

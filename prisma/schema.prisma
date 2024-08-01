@@ -153,7 +153,6 @@ model ShippingProvider {
     visibility                      ShippingVisibility
     
     autoUpdate                      Boolean                         @default(false)
-    origin                          ShippingOrigin?
     
     name                            String                          // minLength: 2, maxLength: 50
     
@@ -226,19 +225,6 @@ model CoverageCity {
 enum ShippingVisibility {
     PUBLISHED
     DRAFT
-}
-model ShippingOrigin {
-    // records:
-    id                              String                          @id @default(cuid()) // @map("_id")
-    
-    // data:
-    country                         String                          // minLength: 2 , maxLength:  3
-    state                           String                          // minLength: 3 , maxLength: 50
-    city                            String                          // minLength: 3 , maxLength: 50
-    
-    // relations:
-    parentId                        String                          @unique
-    parent                          ShippingProvider                @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShippingOrigin if the ShippingProvider deleted
 }
 model DefaultShippingOrigin {
     // records:

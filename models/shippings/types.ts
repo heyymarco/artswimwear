@@ -4,7 +4,6 @@ import {
     type CoverageCountry,
     type CoverageState,
     type CoverageCity,
-    type ShippingOrigin,
     type DefaultShippingOrigin,
     type ShippingProviderEta,
     type CoverageCountryEta,
@@ -42,8 +41,6 @@ export interface ShippingDetail
         >
 {
     // data:
-    origin : ShippingOriginDetail|null
-    
     eta    : ShippingEta|null
     rates  : ShippingRate[]
     
@@ -54,18 +51,6 @@ export interface ShippingDetail
 }
 
 
-
-export interface ShippingOriginDetail
-    extends
-        Omit<ShippingOrigin,
-            // records:
-            |'id'
-            
-            // relations:
-            |'parentId'
-        >
-{
-}
 
 export interface DefaultShippingOriginDetail
     extends

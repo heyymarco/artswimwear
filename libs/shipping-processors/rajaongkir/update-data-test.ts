@@ -1,3 +1,8 @@
+// models:
+import {
+    // utilities:
+    defaultShippingOriginSelect,
+}                           from '@/models'
 
 // ORMs:
 import {
@@ -12,7 +17,11 @@ import {
 
 
 await prisma.$transaction(async (prismaTransaction) => {
-    await updateShippingProviders(prismaTransaction, {
+    const origin = await prismaTransaction.defaultShippingOrigin.findFirst({
+        select : defaultShippingOriginSelect,
+    });
+    if (!origin) return;
+    await updateShippingProviders(prismaTransaction, origin, {
         country : 'ID',
         state   : 'Jawa Timur',
         city    : 'Surabaya',

@@ -9,6 +9,12 @@ import {
     createEdgeRouter,
 }                           from 'next-connect'
 
+// models:
+import {
+    // utilities:
+    defaultShippingOriginSelect,
+}                           from '@/models'
+
 // ORMs:
 import {
     prisma,
@@ -98,11 +104,16 @@ router
     if (process.env.RAJAONGKIR_SECRET) {
         try {
             await prisma.$transaction(async (prismaTransaction) => {
-                await updateShippingProviders(prismaTransaction, {
-                    country,
-                    state,
-                    city,
+                const origin = await prismaTransaction.defaultShippingOrigin.findFirst({
+                    select : defaultShippingOriginSelect,
                 });
+                if (origin) {
+                    await updateShippingProviders(prismaTransaction, origin, {
+                        country,
+                        state,
+                        city,
+                    });
+                } // if
             }, { timeout: 10000 }); // give a longer timeout for `updateShippingProviders()`
         }
         catch (error: unknown) {
