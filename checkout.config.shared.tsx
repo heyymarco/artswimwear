@@ -7,8 +7,9 @@ import type {
 
 export const checkoutConfigShared   : CheckoutConfigShared = {
     business                        : {
-        name                        : process.env.NEXT_PUBLIC_BUSINESS_NAME ?? '',
-        url                         : process.env.NEXT_PUBLIC_BUSINESS_URL  ?? '',
+        name                        : process.env.NEXT_PUBLIC_BUSINESS_NAME  ?? '',
+        url                         : process.env.NEXT_PUBLIC_BUSINESS_URL   ?? '',
+        phone                       : process.env.NEXT_PUBLIC_BUSINESS_PHONE ?? '',
     },
     intl                            : {
         locale                      : process.env.NEXT_PUBLIC_INTL_LOCALE || 'en-US',
