@@ -209,6 +209,7 @@ const EditBillingAddressImpl = (): JSX.Element|null => {
         if (!billingAddress) return null;
         return {
             ...billingAddress,
+            company : '',
             zip: billingAddress.zip ?? '',
         };
     }, [billingAddress]);
@@ -220,10 +221,16 @@ const EditBillingAddressImpl = (): JSX.Element|null => {
         const address : Address|null = (
             !newValue
             ? null
-            : {
-                ...newValue,
-                zip : newValue.zip.trim() || null,
-            }
+            : (() => {
+                const {
+                    company : _company,
+                    ...restValue
+                } = newValue;
+                return {
+                    ...restValue,
+                    zip : newValue.zip.trim() || null,
+                } satisfies Address;
+            })()
         );
         setBillingAddress(address);
     });
@@ -245,6 +252,11 @@ const EditBillingAddressImpl = (): JSX.Element|null => {
                 // values:
                 value       = {editorAddress}
                 onChange    = {handleChange}
+                
+                
+                
+                // components:
+                companyEditorComponent={null}
             />
         </ValidationProvider>
     );

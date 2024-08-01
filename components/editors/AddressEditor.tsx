@@ -213,6 +213,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
             cityEditorComponent={cityEditorComponent}
             zipEditorComponent={zipEditorComponent}
             addressEditorComponent={addressEditorComponent}
+            companyEditorComponent={null}
             firstNameEditorComponent={firstNameEditorComponent}
             lastNameEditorComponent={lastNameEditorComponent}
             phoneEditorComponent={phoneEditorComponent}

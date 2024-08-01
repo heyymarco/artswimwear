@@ -67,6 +67,7 @@ const EditShippingAddress = (): JSX.Element|null => {
         if (!shippingAddress) return null;
         return {
             ...shippingAddress,
+            company : '',
             zip: shippingAddress.zip ?? '',
         };
     }, [shippingAddress]);
@@ -78,10 +79,16 @@ const EditShippingAddress = (): JSX.Element|null => {
         const address : Address|null = (
             !newValue
             ? null
-            : {
-                ...newValue,
-                zip : newValue.zip.trim() || null,
-            }
+            : (() => {
+                const {
+                    company : _company,
+                    ...restValue
+                } = newValue;
+                return {
+                    ...restValue,
+                    zip : newValue.zip.trim() || null,
+                } satisfies Address;
+            })()
         );
         setShippingAddress(address);
     });
@@ -109,6 +116,11 @@ const EditShippingAddress = (): JSX.Element|null => {
                 // values:
                 value       = {editorAddress}
                 onChange    = {handleChange}
+                
+                
+                
+                // components:
+                companyEditorComponent={null}
             />
         </ValidationProvider>
     );
