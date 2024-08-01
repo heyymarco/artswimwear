@@ -234,6 +234,13 @@ model DefaultShippingOrigin {
     country                         String                          // minLength: 2 , maxLength:  3
     state                           String                          // minLength: 3 , maxLength: 50
     city                            String                          // minLength: 3 , maxLength: 50
+    zip                             String?                         // minLength: 2 , maxLength: 11
+    address                         String                          // minLength: 5 , maxLength: 90
+    
+    company                         String                          // minLength: 2 , maxLength: 30
+    firstName                       String                          // minLength: 2 , maxLength: 30
+    lastName                        String                          // minLength: 1 , maxLength: 30
+    phone                           String                          // minLength: 5 , maxLength: 15
 }
 model ShippingProviderEta {
     // records:

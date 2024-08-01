@@ -22,9 +22,16 @@ export const defaultShippingOriginSelect = {
     id          : true,
     
     // data:
-    country : true,
-    state   : true,
-    city    : true,
+    country   : true,
+    state     : true,
+    city      : true,
+    zip       : true,
+    address   : true,
+    
+    company   : true,
+    firstName : true,
+    lastName  : true,
+    phone     : true,
 } satisfies Prisma.DefaultShippingOriginSelect;
 
 
