@@ -9,7 +9,6 @@ import {
 export interface BusinessConfig {
     name                        : string
     url                         : string
-    phone                       : string
 }
 export type CurrencyCode = string & {}
 export interface CurrencyConfig {
