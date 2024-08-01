@@ -55,8 +55,8 @@ const isNotNullOrUndefined = <TValue>(value: TValue): value is Exclude<TValue, n
 export interface UpdateShippingProviderData {
 
 }
-export const updateShippingProviders = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], origin: DefaultShippingOriginDetail, shippingAddress: MatchingAddress): Promise<void> => {
-    if (!process.env.RAJAONGKIR_SECRET) return;
+export const updateShippingProviders = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], origin: DefaultShippingOriginDetail|null|undefined, shippingAddress: MatchingAddress): Promise<void> => {
+    if (!process.env.RAJAONGKIR_SECRET || !origin) return;
     
     
     
