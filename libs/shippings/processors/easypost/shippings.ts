@@ -28,6 +28,9 @@ import {
     // utilities:
     getMatchingShipping,
 }                           from '@/libs/shippings/shippings'
+import {
+    convertForeignToSystemCurrencyIfRequired,
+}                           from '@/libs/currencyExchanges'
 
 // easypost:
 import {
@@ -125,27 +128,36 @@ export const getAllRates = async (prisma: typeof prismaClient, origin: DefaultSh
     ]);
     const rates = shipment.rates;
     const matchingShipping : MatchingShipping[] = (
-        rates
-        .map((rate) => {
-            const carrierNameRaw   = rate.carrier;
-            const carrierName      = friendlyNameCarriers.get(carrierNameRaw) ?? carrierNameRaw;
-            const shippingNameRaw  = `${carrierName} ${rate.service}`;
-            const shippingName     = friendlyNameShipping.get(shippingNameRaw) ?? shippingNameRaw;
-            console.log(shippingName);
-            
-            const shippingProvider = shippingProviders.find(({name}) => name.toLowerCase() === shippingName.toLocaleLowerCase());
-            if (!shippingProvider) return undefined;
-            
-            
-            
-            return {
-                id         : shippingProvider.id,
-                name       : shippingProvider.name,
+        (await Promise.all(
+            rates
+            .map(async (rate): Promise<MatchingShipping|undefined> => {
+                const carrierNameRaw   = rate.carrier;
+                const carrierName      = friendlyNameCarriers.get(carrierNameRaw) ?? carrierNameRaw;
+                const shippingNameRaw  = `${carrierName} ${rate.service}`;
+                const shippingName     = friendlyNameShipping.get(shippingNameRaw) ?? shippingNameRaw;
+                console.log(shippingName);
                 
-                weightStep : 0,
-                rates      : [],
-            } satisfies MatchingShipping;
-        })
+                const shippingProvider = shippingProviders.find(({name}) => name.toLowerCase() === shippingName.toLocaleLowerCase());
+                if (!shippingProvider) return undefined;
+                
+                
+                
+                const amountRaw = rate.rate;
+                if (!amountRaw) return undefined;
+                const amount = Number.parseFloat(amountRaw);
+                if (!isFinite(amount)) return undefined;
+                
+                
+                
+                return {
+                    id         : shippingProvider.id,
+                    name       : shippingProvider.name,
+                    
+                    weightStep : 0,
+                    rates      : await convertForeignToSystemCurrencyIfRequired(amount, rate.currency),
+                } satisfies MatchingShipping;
+            })
+        ))
         .filter((rate): rate is Exclude<typeof rate, undefined> => (rate !== undefined))
     )
     console.log(JSON.stringify(matchingShipping, undefined, 3));
