@@ -38,7 +38,7 @@ import {
 }                           from '@/libs/shippings/shippings'
 import {
     updateShippingProviders,
-}                           from '@/libs/shipping-processors/rajaongkir'
+}                           from '@/libs/shippings/processors/rajaongkir'
 
 
 
