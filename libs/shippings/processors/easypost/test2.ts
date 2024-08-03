@@ -25,14 +25,12 @@ const shippingOrigin = await (async (): Promise<DefaultShippingOriginDetail|null
     } // try
 })();
 if (shippingOrigin) {
-    await prisma.$transaction(async (prismaTransaction) => {
-        await getAllRates(prismaTransaction, {
-            ...shippingOrigin,
-            country : 'US',
-            state   : 'CA',
-            city: 'Redondo Beach',
-            zip: '90277',
-            address: '179 N Harbor Dr',
-        });
-    }, { timeout: 10000 });
+    await getAllRates(prisma, {
+        ...shippingOrigin,
+        country : 'US',
+        state   : 'CA',
+        city: 'Redondo Beach',
+        zip: '90277',
+        address: '179 N Harbor Dr',
+    });
 }

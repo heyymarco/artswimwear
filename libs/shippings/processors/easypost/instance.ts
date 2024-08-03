@@ -25,7 +25,7 @@ export const getEasyPostInstance = (): EasyPostClient|undefined => {
         
         
         instanceCache = new EasyPostClient(clientSecret, {
-            // timeout: 5000,
+            timeout: 5000,
         });
         return instanceCache;
     }

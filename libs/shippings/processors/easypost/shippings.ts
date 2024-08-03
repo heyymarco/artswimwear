@@ -14,7 +14,7 @@ import {
 
 // ORMs:
 import {
-    prisma,
+    type prisma as prismaClient,
 }                           from '@/libs/prisma.server'
 
 // internals:
@@ -75,7 +75,7 @@ const friendlyNameShipping = new Map<string, string>([
 
 
 
-export const getAllRates = async (prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], origin: DefaultShippingOriginDetail|null|undefined): Promise<MatchingShipping[]> => {
+export const getAllRates = async (prisma: typeof prismaClient, origin: DefaultShippingOriginDetail|null|undefined): Promise<MatchingShipping[]> => {
     const easyPost = getEasyPostInstance();
     if (!easyPost || !origin) return [];
     
@@ -113,7 +113,7 @@ export const getAllRates = async (prismaTransaction: Parameters<Parameters<typeo
         //     // 'ca_204ed43d30614919b933bb446d92cf02', // FedExDefault: FEDEX_GROUND, FEDEX_EXPRESS_SAVER, FEDEX_2_DAY, FEDEX_2_DAY_AM, SMART_POST, PRIORITY_OVERNIGHT, STANDARD_OVERNIGHT
         // ],
         }),
-        prismaTransaction.shippingProvider.findMany({
+        prisma.shippingProvider.findMany({
             where  : {
                 // no condition needed
             },
