@@ -175,10 +175,10 @@ import {
 import type {
     // types:
     MatchingShipping,
-}                           from '@/libs/shippings'
+}                           from '@/libs/shippings/shippings'
 import {
     calculateShippingCost,
-}                           from '@/libs/shippings'
+}                           from '@/libs/shippings/shippings'
 import {
     // hooks:
     FieldSetter,

@@ -11,7 +11,7 @@ import {
 // utilities:
 import {
     getMatchingShipping,
-}                           from '@/libs/shippings'
+}                           from '@/libs/shippings/shippings'
 
 // templates:
 import type {

@@ -39,7 +39,7 @@ import {
 import type {
     // types:
     MatchingShipping,
-}                           from '@/libs/shippings'
+}                           from '@/libs/shippings/shippings'
 
 
 

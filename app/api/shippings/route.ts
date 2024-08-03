@@ -35,7 +35,7 @@ import {
     
     // utilities:
     getMatchingShipping,
-}                           from '@/libs/shippings'
+}                           from '@/libs/shippings/shippings'
 import {
     updateShippingProviders,
 }                           from '@/libs/shipping-processors/rajaongkir'

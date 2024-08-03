@@ -39,7 +39,7 @@ import {
 // utilities:
 import {
     calculateShippingCost,
-}                           from '@/libs/shippings'
+}                           from '@/libs/shippings/shippings'
 
 
 

@@ -21,7 +21,7 @@ import {
 import {
     // types:
     type MatchingAddress,
-}                           from '@/libs/shippings'
+}                           from '@/libs/shippings/shippings'
 import {
     stateCityToIdMap,
 }                           from './stateCityToIdMap'

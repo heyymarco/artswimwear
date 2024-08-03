@@ -132,7 +132,7 @@ import {
 import {
     getMatchingShipping,
     calculateShippingCost,
-}                           from '@/libs/shippings'
+}                           from '@/libs/shippings/shippings'
 import {
     possibleTimezoneValues,
 }                           from '@/components/editors/TimezoneEditor/types'
