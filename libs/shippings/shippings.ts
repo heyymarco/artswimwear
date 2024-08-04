@@ -24,7 +24,7 @@ export interface GetMatchingShippingData
             // data:
             |'name'     // required for identifier
             
-            |'rates'    // required for matching_shipping algorithm
+            // |'rates'    // required for matching_shipping algorithm
             
             |'useZones' // required for matching_shipping algorithm
         >,
@@ -36,6 +36,7 @@ export interface GetMatchingShippingData
             |'eta'      // optional for matching_shipping algorithm
         >>
 {
+    rates : ShippingDetail['rates'] | number // required for matching_shipping algorithm
 }
 
 export interface MatchingAddress
@@ -61,7 +62,7 @@ export interface MatchingShipping
             // data:
             |'name'     // required for identifier
             
-            |'rates'    // required for matching_shipping algorithm
+            // |'rates'    // required for matching_shipping algorithm
         >,
         CalculateShippingCostData, // required for returning result
         
@@ -71,6 +72,7 @@ export interface MatchingShipping
             |'eta'      // optional for matching_shipping algorithm
         >>
 {
+    rates : ShippingDetail['rates'] | number // required for matching_shipping algorithm
 }
 
 export const getMatchingShipping = async <TGetMatchingShippingData extends GetMatchingShippingData>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], shippingProvider: TGetMatchingShippingData, shippingAddress: MatchingAddress): Promise<(MatchingShipping & Omit<TGetMatchingShippingData, 'useZones'>)|null> => {
@@ -198,7 +200,7 @@ export const getMatchingShipping = async <TGetMatchingShippingData extends GetMa
     
     
     
-    if (!rates.length) return null;
+    if (Array.isArray(rates) && !rates.length) return null;
     return {
         ...restrestShippingProvider,
         
@@ -215,9 +217,10 @@ export interface CalculateShippingCostData
         Pick<ShippingDetail,
             // data:
             |'weightStep' // required for calculate_shipping_cost algorithm
-            |'rates'      // required for calculate_shipping_cost algorithm
+            // |'rates'      // required for calculate_shipping_cost algorithm
         >
 {
+    rates : ShippingDetail['rates'] | number // required for matching_shipping algorithm
 }
 export const calculateShippingCost = (shippingProvider: CalculateShippingCostData, totalWeight: number|null|undefined): number|null => {
     // conditions:
@@ -231,6 +234,11 @@ export const calculateShippingCost = (shippingProvider: CalculateShippingCostDat
         weightStep : weightStepRaw,
         rates,
     } = shippingProvider;
+    
+    
+    
+    // fixed rate => return its value:
+    if (typeof(rates) === 'number') return rates;
     
     
     
