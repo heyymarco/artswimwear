@@ -164,6 +164,10 @@ export const getAllRates = async (prisma: typeof prismaClient, options: GetAllRa
                     name       : shippingProvider.name,
                     
                     weightStep : 0,
+                    eta        : (rate.delivery_days <= 0) ? undefined : {
+                        min    : rate.delivery_days,
+                        max    : rate.delivery_days,
+                    },
                     rates      : await convertForeignToSystemCurrencyIfRequired(amount, rate.currency),
                 } satisfies MatchingShipping;
             })
