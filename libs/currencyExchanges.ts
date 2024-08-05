@@ -122,7 +122,8 @@ export const convertForeignToSystemCurrencyIfRequired = async <TNumber extends n
     
     
     
-    const {rate, fractionUnit} = await getCurrencyConverter(foreignCurrency);
+    const fractionUnit = checkoutConfigShared.intl.currencies[checkoutConfigShared.intl.defaultCurrency].fractionUnit;
+    const {rate} = await getCurrencyConverter(foreignCurrency);
     const rawConverted = fromAmount / rate;
     const rounding     = {
         ROUND : Math.round,
