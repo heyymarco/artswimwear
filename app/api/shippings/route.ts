@@ -66,7 +66,7 @@ export {
 }
 
 router
-.get(async (req) => {
+.post(async (req) => {
     /* required for displaying products page */
     
     
@@ -86,7 +86,7 @@ router
         country,
         state,
         city,
-    } = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
+    } = await req.json();
     //#endregion parsing request
     
     

@@ -202,9 +202,10 @@ export const apiSlice = createApi({
         
         
         getMatchingShippingList     : builder.query<EntityState<MatchingShipping>, ShippingAddressDetail & { totalProductWeight: number }>({
-            query : ({country, state, city}) => ({
-                url    : `shippings?country=${encodeURIComponent(country)}&state=${encodeURIComponent(state)}&city=${encodeURIComponent(city)}`,
-                method : 'GET',
+            query : (shippingAddressDetail) => ({
+                url    : 'shippings',
+                method : 'POST',
+                body   : shippingAddressDetail,
             }),
             transformResponse(response: MatchingShipping[]) {
                 return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
