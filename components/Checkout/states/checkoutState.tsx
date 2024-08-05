@@ -944,11 +944,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // initialize shippingList:
         console.log('recovering shippingList...');
-        getShippingByAddress({
-            country : shippingAddress.country,
-            state   : shippingAddress.state,
-            city    : shippingAddress.city,
-        });
+        getShippingByAddress(shippingAddress);
     }, [isNeedsRecoverShippingList, shippingAddress]);
     
     // go back to shipping page if the selected shippingProvider is not in shippingList:
@@ -1248,11 +1244,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 // check for suitable shippingProvider(s) for given address:
                 setIsBusy('checkShipping');
                 try {
-                    const shippingList = !shippingAddress ? undefined : await getShippingByAddress({
-                        country : shippingAddress.country,
-                        state   : shippingAddress.state,
-                        city    : shippingAddress.city,
-                    }).unwrap();
+                    const shippingList = !shippingAddress ? undefined : await getShippingByAddress(shippingAddress).unwrap();
                     
                     
                     

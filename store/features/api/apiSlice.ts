@@ -6,7 +6,7 @@ import type { BaseEndpointDefinition, MutationCacheLifecycleApi }   from '@redux
 import type { CartState }                                           from '../cart/cartSlice'
 import type { CheckoutState }                                       from '../checkout/checkoutSlice'
 import type { CreateOrderData }                                     from '@paypal/paypal-js'
-import type { MatchingShipping, MatchingAddress }                   from '@/libs/shippings/shippings'
+import type { MatchingShipping }                                    from '@/libs/shippings/shippings'
 
 // types:
 import type {
@@ -18,6 +18,7 @@ import type {
 
 // models:
 import {
+    type ShippingAddressDetail,
     type PaymentDetail,
     type FinishedOrderState,
     type CountryPreview,
@@ -200,7 +201,7 @@ export const apiSlice = createApi({
         
         
         
-        getMatchingShippingList     : builder.query<EntityState<MatchingShipping>, MatchingAddress>({
+        getMatchingShippingList     : builder.query<EntityState<MatchingShipping>, ShippingAddressDetail>({
             query : ({country, state, city}) => ({
                 url    : `shippings?country=${encodeURIComponent(country)}&state=${encodeURIComponent(state)}&city=${encodeURIComponent(city)}`,
                 method : 'GET',
@@ -209,11 +210,11 @@ export const apiSlice = createApi({
                 return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
             },
         }),
-        refreshMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, MatchingAddress>({
-            query : (matchingAddress) => ({
+        refreshMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, ShippingAddressDetail>({
+            query : (shippingAddressDetail) => ({
                 url    : 'shippings',
                 method : 'PATCH',
-                body   : matchingAddress,
+                body   : shippingAddressDetail,
             }),
             transformResponse(response: MatchingShipping[]) {
                 return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
@@ -231,7 +232,7 @@ export const apiSlice = createApi({
                 const endpointName   = 'getMatchingShippingList';
                 const queryCaches    = (
                     Object.values(allQueryCaches)
-                    .filter((allQueryCache): allQueryCache is QuerySubState<BaseEndpointDefinition<MatchingAddress, BaseQueryFn<AxiosRequestConfig<any>>, EntityState<MatchingShipping>>> =>
+                    .filter((allQueryCache): allQueryCache is QuerySubState<BaseEndpointDefinition<ShippingAddressDetail, BaseQueryFn<AxiosRequestConfig<any>>, EntityState<MatchingShipping>>> =>
                         !!allQueryCache
                         &&
                         (allQueryCache.endpointName === endpointName)
@@ -245,11 +246,23 @@ export const apiSlice = createApi({
                     .filter(({originalArgs}) =>
                         !!originalArgs
                         &&
-                        (originalArgs.country === arg.country)
+                        (originalArgs.country   === arg.country)
                         &&
-                        (originalArgs.state   === arg.state)
+                        (originalArgs.state     === arg.state)
                         &&
-                        (originalArgs.city    === arg.city)
+                        (originalArgs.city      === arg.city)
+                        &&
+                        (originalArgs.zip       === arg.zip)
+                        &&
+                        (originalArgs.address   === arg.address)
+                        
+                        &&
+                        
+                        (originalArgs.firstName === arg.firstName)
+                        &&
+                        (originalArgs.lastName  === arg.lastName)
+                        &&
+                        (originalArgs.phone     === arg.phone)
                     )
                 );
                 
