@@ -13,6 +13,7 @@ import {
 import {
     // types:
     type DefaultShippingOriginDetail,
+    type ShippingAddressDetail,
     
     
     
@@ -39,6 +40,9 @@ import {
 import {
     updateShippingProviders,
 }                           from '@/libs/shippings/processors/rajaongkir'
+import {
+    getAllRates,
+}                           from '@/libs/shippings/processors/easypost'
 
 
 
@@ -57,10 +61,10 @@ interface RequestContext {
 const router  = createEdgeRouter<NextRequest, RequestContext>();
 const handler = async (req: NextRequest, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
 export {
-    handler as GET,
-    // handler as POST,
+    // handler as GET,
+    handler as POST,
     // handler as PUT,
-    // handler as PATCH,
+    handler as PATCH,
     // handler as DELETE,
     // handler as HEAD,
 }
@@ -86,6 +90,12 @@ router
         country,
         state,
         city,
+        zip,
+        address,
+        
+        firstName,
+        lastName,
+        phone,
     } = await req.json();
     //#endregion parsing request
     
@@ -93,9 +103,15 @@ router
     
     //#region validating request
     if (
-           !country || (typeof(country) !== 'string') || (country.length < 2) || (country.length >  3)
-        || !state   || (typeof(state)   !== 'string') || (state.length   < 3) || (state.length   > 50)
-        || !city    || (typeof(city)    !== 'string') || (city.length    < 3) || (city.length    > 50)
+           !country               || (typeof(country)   !== 'string') || (country.length   < 2) || (country.length   >  3)
+        || !state                 || (typeof(state)     !== 'string') || (state.length     < 3) || (state.length     > 50)
+        || !city                  || (typeof(city)      !== 'string') || (city.length      < 3) || (city.length      > 50)
+        || (!zip && (zip !== '')) || (typeof(zip)       !== 'string') || (zip.length       < 2) || (zip.length       > 11)
+        || !address               || (typeof(address)   !== 'string') || (address.length   < 5) || (address.length   > 90)
+        
+        || !firstName             || (typeof(firstName) !== 'string') || (firstName.length < 2) || (firstName.length > 30)
+        || !lastName              || (typeof(lastName)  !== 'string') || (lastName.length  < 1) || (lastName.length  > 30)
+        || !phone                 || (typeof(phone)     !== 'string') || (phone.length     < 5) || (phone.length     > 15)
     ) {
         return NextResponse.json({
             error: 'Invalid parameter(s).',
@@ -106,7 +122,7 @@ router
     
     
     // get the shipping origin:
-    const shippingOrigin = await (async (): Promise<DefaultShippingOriginDetail|null> => {
+    const shippingOriginPromise = (async (): Promise<DefaultShippingOriginDetail|null> => {
         try {
             return await prisma.defaultShippingOrigin.findFirst({
                 select : defaultShippingOriginSelect,
@@ -119,11 +135,39 @@ router
     
     
     
-    // auto update rajaongkir:
-    if (process.env.RAJAONGKIR_SECRET && shippingOrigin) {
-        await Promise.race([
+    // easypost's shipping rates:
+    const systemShippingRatesPromise = (async (): Promise<MatchingShipping[]> => {
+        const shippingOrigin = await shippingOriginPromise;
+        if (!shippingOrigin) return [];
+        
+        
+        
+        return getAllRates(prisma, {
+            origin      : shippingOrigin,
+            destination : {
+                country,
+                state,
+                city,
+                zip,
+                address,
+                
+                firstName,
+                lastName,
+                phone,
+            },
+        });
+    })();
+    
+    const rajaongkirUpdatedPromise = (async (): Promise<boolean> => {
+        if (!process.env.RAJAONGKIR_SECRET) return false;
+        const shippingOrigin = await shippingOriginPromise;
+        if (!shippingOrigin) return false;
+        
+        
+        
+        return Promise.race([
             // auto update up to 10 seconds:
-            async (): Promise<void> => {
+            (async (): Promise<boolean> => {
                 try {
                     await prisma.$transaction(async (prismaTransaction) => {
                         await updateShippingProviders(prismaTransaction, shippingOrigin, {
@@ -132,85 +176,109 @@ router
                             city,
                         });
                     }, { timeout: 10000 }); // give a longer timeout for `updateShippingProviders()`
+                    
+                    
+                    
+                    return true;
                 }
                 catch (error: unknown) {
                     console.log('autoUpdate shipping error: ', error);
                     // ignore any error
+                    
+                    
+                    
+                    return false;
                 } // try
-            },
+            })(),
             
             // ignore the auto update above if runs longer than 5 secs:
-            new Promise<void>((resolve) => {
-                setTimeout(resolve, 5000);
+            new Promise<false>((resolve) => {
+                setTimeout(() => {
+                    resolve(false);
+                }, 5000);
             }),
         ]);
-    } // if
+    });
     
-    
-    
-    // populate:
-    let allShippings = await prisma.shippingProvider.findMany({
-        select : {
-            // records:
-            id         : true, // required for identifier
-            
-            
-            
-            // data:
-            visibility : true, // required for auto_init
-            
-            name       : true, // required for identifier
-            
-            weightStep : true, // required for calculate_shipping_cost algorithm
-            eta        : {     // optional for matching_shipping algorithm
-                select : {
-                    // data:
-                    min : true,
-                    max : true,
-                },
+    const internalShippingRatesPromise = (async (): Promise<MatchingShipping[]> => {
+        await rajaongkirUpdatedPromise;
+        
+        
+        
+        // populate:
+        let shippings = await prisma.shippingProvider.findMany({
+            where  : {
+                visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
             },
-            rates      : {     // required for calculate_shipping_cost algorithm
-                select : {
-                    // data:
-                    start : true,
-                    rate  : true,
+            select : {
+                // records:
+                id         : true, // required for identifier
+                
+                
+                
+                // data:
+                name       : true, // required for identifier
+                
+                weightStep : true, // required for calculate_shipping_cost algorithm
+                eta        : {     // optional for matching_shipping algorithm
+                    select : {
+                        // data:
+                        min : true,
+                        max : true,
+                    },
                 },
+                rates      : {     // required for calculate_shipping_cost algorithm
+                    select : {
+                        // data:
+                        start : true,
+                        rate  : true,
+                    },
+                },
+                
+                useZones   : true, // required for matching_shipping algorithm
             },
+        }); // get all shippings excluding the disabled ones
+        
+        
+        
+        // filter out non_compatible shippings:
+        const shippingAddress : ShippingAddressDetail = {
+            country,
+            state,
+            city,
+            zip,
+            address,
             
-            useZones   : true, // required for matching_shipping algorithm
-        },
-    }); // get all shippings including the disabled ones
+            firstName,
+            lastName,
+            phone,
+        };
+        const matchingShippings : MatchingShipping[] = (
+            (await prisma.$transaction(async (prismaTransaction) => {
+                return await Promise.all( // await for all promises completed before closing the transaction
+                    shippings
+                    .map((shippingProvider) => getMatchingShipping(prismaTransaction, shippingProvider, shippingAddress))
+                );
+            }))
+            .filter((shippingProvider): shippingProvider is Exclude<typeof shippingProvider, null|undefined> => !!shippingProvider)
+        );
+        return matchingShippings;
+    })();
+    
+    const [systemShippingRates, internalShippingRates] = await Promise.all([
+        // easypost's shipping rates:
+        systemShippingRatesPromise,
+        
+        
+        
+        // internal's shipping rates:
+        internalShippingRatesPromise,
+    ]);
     
     
     
-    // auto_init:
-    if (!allShippings.length) { // empty => first app setup => initialize the default shippings
-        const defaultShippings = (await import('@/libs/defaultShippings')).default;
-        await prisma.shippingProvider.createMany({
-            data: defaultShippings,
-        });
-    } // if
-    
-    
-    
-    // filter out disabled shippings:
-    const shippings = allShippings.filter(({visibility}) => (visibility !== 'DRAFT'));
-    
-    // filter out non_compatible shippings:
-    const shippingAddress   : MatchingAddress    = {
-        country,
-        state,
-        city,
-    };
-    const matchingShippings : MatchingShipping[] = (
-        (await prisma.$transaction(async (prismaTransaction) => {
-            return await Promise.all( // await for all promises completed before closing the transaction
-                shippings
-                .map((shippingProvider) => getMatchingShipping(prismaTransaction, shippingProvider, shippingAddress))
-            );
-        }))
-        .filter((shippingProvider): shippingProvider is Exclude<typeof shippingProvider, null|undefined> => !!shippingProvider)
-        .map(({visibility: _visibility, ...shippingProvider}) => shippingProvider) // remove excess data
-    );
-    return NextResponse.json(matchingShippings); // handled with success
+    return NextResponse.json([
+        ...internalShippingRates,
+        ...systemShippingRates,
+    ]); // handled with success
 });

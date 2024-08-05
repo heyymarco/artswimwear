@@ -1,15 +1,8 @@
 // models:
 import {
     // types:
-    type Prisma,
     type DefaultShippingOriginDetail,
-    type ShippingEta,
-    type ShippingRate,
-    
-    
-    
-    // utilities:
-    selectWithSort,
+    type ShippingAddressDetail,
 }                           from '@/models'
 
 // ORMs:
@@ -21,12 +14,6 @@ import {
 import {
     // types:
     MatchingShipping,
-    MatchingAddress,
-    
-    
-    
-    // utilities:
-    getMatchingShipping,
 }                           from '@/libs/shippings/shippings'
 import {
     convertForeignToSystemCurrencyIfRequired,
@@ -36,11 +23,6 @@ import {
 import {
     getEasyPostInstance,
 }                           from './instance'
-
-// configs:
-import {
-    checkoutConfigServer,
-}                           from '@/checkout.config.server'
 
 
 
@@ -78,19 +60,36 @@ const friendlyNameShipping = new Map<string, string>([
 
 
 
-export const getAllRates = async (prisma: typeof prismaClient, origin: DefaultShippingOriginDetail|null|undefined): Promise<MatchingShipping[]> => {
+export interface GetAllRatesOptions {
+    origin      : DefaultShippingOriginDetail,
+    destination : ShippingAddressDetail
+}
+export const getAllRates = async (prisma: typeof prismaClient, options: GetAllRatesOptions): Promise<MatchingShipping[]> => {
+    // options:
+    const {
+        origin,
+        destination,
+    } = options;
+    
+    
+    
     const easyPost = getEasyPostInstance();
-    if (!easyPost || !origin) return [];
+    if (!easyPost) return [];
     
     
     
     const [shipment, shippingProviders] = await Promise.all([
         easyPost.Shipment.create({
         from_address: {
-            country   : origin.country.toUpperCase(),
-            state     : origin.state,
-            city      : origin.city,
-            zip       : origin.zip,
+            country   : 'US',
+            state     : 'California',
+            city      : 'San Francisco',
+            zip       : '94104',
+            
+            // country   : origin.country.toUpperCase(),
+            // state     : origin.state,
+            // city      : origin.city,
+            // zip       : origin.zip,
             street1   : origin.address,
             
             company   : origin.company   || undefined,
@@ -107,6 +106,17 @@ export const getAllRates = async (prisma: typeof prismaClient, origin: DefaultSh
             
             // name      : 'Dr. Steve Brule',
             // phone     : '4155559999',
+            
+            
+            // country   : destination.country.toUpperCase(),
+            // state     : destination.state,
+            // city      : destination.city,
+            // zip       : destination.zip,
+            street1   : destination.address,
+            
+            firstName : destination.firstName || undefined,
+            lastName  : destination.lastName  || undefined,
+            phone     : destination.phone     || undefined,
         },
         parcel: {
             weight: Math.max(16, 0.16),
