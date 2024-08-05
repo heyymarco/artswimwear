@@ -930,7 +930,27 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // check shipping address:
-        if (!shippingAddress || !shippingAddress.country || !shippingAddress.state || !shippingAddress.city) {
+        if (
+            !shippingAddress
+            ||
+            !shippingAddress.country
+            ||
+            !shippingAddress.state
+            ||
+            !shippingAddress.city
+            // ||
+            // !shippingAddress.zip // optional
+            ||
+            !shippingAddress.address
+            
+            ||
+            
+            !shippingAddress.firstName
+            ||
+            !shippingAddress.lastName
+            ||
+            !shippingAddress.phone
+        ) {
             // no shippingList => go back to information page:
             setCheckoutStep('info');
             
@@ -944,8 +964,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // initialize shippingList:
         console.log('recovering shippingList...');
-        getShippingByAddress(shippingAddress);
-    }, [isNeedsRecoverShippingList, shippingAddress]);
+        getShippingByAddress({
+            ...shippingAddress,
+            totalProductWeight : totalProductWeight ?? 0, // the totalProductWeight should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
+        });
+    }, [isNeedsRecoverShippingList, shippingAddress, totalProductWeight]);
     
     // go back to shipping page if the selected shippingProvider is not in shippingList:
     useIsomorphicLayoutEffect(() => {
@@ -1244,7 +1267,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 // check for suitable shippingProvider(s) for given address:
                 setIsBusy('checkShipping');
                 try {
-                    const shippingList = !shippingAddress ? undefined : await getShippingByAddress(shippingAddress).unwrap();
+                    const shippingList = !shippingAddress ? undefined : await getShippingByAddress({
+                        ...shippingAddress,
+                        totalProductWeight : totalProductWeight ?? 0, // the totalProductWeight should be number, because of `isShippingAddressRequired` condition
+                    }).unwrap();
                     
                     
                     

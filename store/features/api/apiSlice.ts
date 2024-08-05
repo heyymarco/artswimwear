@@ -201,7 +201,7 @@ export const apiSlice = createApi({
         
         
         
-        getMatchingShippingList     : builder.query<EntityState<MatchingShipping>, ShippingAddressDetail>({
+        getMatchingShippingList     : builder.query<EntityState<MatchingShipping>, ShippingAddressDetail & { totalProductWeight: number }>({
             query : ({country, state, city}) => ({
                 url    : `shippings?country=${encodeURIComponent(country)}&state=${encodeURIComponent(state)}&city=${encodeURIComponent(city)}`,
                 method : 'GET',
@@ -210,7 +210,7 @@ export const apiSlice = createApi({
                 return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
             },
         }),
-        refreshMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, ShippingAddressDetail>({
+        refreshMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, ShippingAddressDetail & { totalProductWeight: number }>({
             query : (shippingAddressDetail) => ({
                 url    : 'shippings',
                 method : 'PATCH',
@@ -253,16 +253,18 @@ export const apiSlice = createApi({
                         (originalArgs.city      === arg.city)
                         &&
                         (originalArgs.zip       === arg.zip)
-                        &&
-                        (originalArgs.address   === arg.address)
                         
-                        &&
-                        
-                        (originalArgs.firstName === arg.firstName)
-                        &&
-                        (originalArgs.lastName  === arg.lastName)
-                        &&
-                        (originalArgs.phone     === arg.phone)
+                        // not contributing of determining shipping cost:
+                        // &&
+                        // (originalArgs.address   === arg.address)
+                        // 
+                        // &&
+                        // 
+                        // (originalArgs.firstName === arg.firstName)
+                        // &&
+                        // (originalArgs.lastName  === arg.lastName)
+                        // &&
+                        // (originalArgs.phone     === arg.phone)
                     )
                 );
                 
