@@ -121,12 +121,60 @@ router
     
     
     
-    // get the shipping origin:
+    // get the shipping origin & shippingProviders:
+    const shippingOriginAndProvidersPromise = prisma.$transaction([
+        prisma.defaultShippingOrigin.findFirst({
+            select : defaultShippingOriginSelect,
+        }),
+        
+        prisma.shippingProvider.findMany({
+            where  : {
+                visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
+            },
+            select : {
+                // records:
+                id         : true, // required for identifier
+                
+                
+                
+                // data:
+                name       : true, // required for identifier
+                
+                weightStep : true, // required for calculate_shipping_cost algorithm
+                eta        : {     // optional for matching_shipping algorithm
+                    select : {
+                        // data:
+                        min : true,
+                        max : true,
+                    },
+                },
+                rates      : {     // required for calculate_shipping_cost algorithm
+                    select : {
+                        // data:
+                        start : true,
+                        rate  : true,
+                    },
+                },
+                
+                useZones   : true, // required for matching_shipping algorithm
+            },
+        }),
+    ]);
+    
     const shippingOriginPromise = (async (): Promise<DefaultShippingOriginDetail|null> => {
         try {
-            return await prisma.defaultShippingOrigin.findFirst({
-                select : defaultShippingOriginSelect,
-            });
+            const [shippingOrigin] = await shippingOriginAndProvidersPromise;
+            return shippingOrigin;
+        }
+        catch {
+            return null;
+        } // try
+    })();
+    
+    const shippingProvidersPromise = (async (): Promise<Awaited<typeof shippingOriginAndProvidersPromise>[1] | null> => {
+        try {
+            const [, shippingProviders] = await shippingOriginAndProvidersPromise;
+            return shippingProviders;
         }
         catch {
             return null;
@@ -206,38 +254,8 @@ router
         
         
         // populate:
-        let shippings = await prisma.shippingProvider.findMany({
-            where  : {
-                visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
-            },
-            select : {
-                // records:
-                id         : true, // required for identifier
-                
-                
-                
-                // data:
-                name       : true, // required for identifier
-                
-                weightStep : true, // required for calculate_shipping_cost algorithm
-                eta        : {     // optional for matching_shipping algorithm
-                    select : {
-                        // data:
-                        min : true,
-                        max : true,
-                    },
-                },
-                rates      : {     // required for calculate_shipping_cost algorithm
-                    select : {
-                        // data:
-                        start : true,
-                        rate  : true,
-                    },
-                },
-                
-                useZones   : true, // required for matching_shipping algorithm
-            },
-        }); // get all shippings excluding the disabled ones
+        const shippings = await shippingProvidersPromise;
+        if (!shippings?.length) return [];
         
         
         
