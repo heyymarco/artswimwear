@@ -185,12 +185,15 @@ router
     
     // easypost's shipping rates:
     const systemShippingRatesPromise = (async (): Promise<MatchingShipping[]> => {
-        const shippingOrigin = await shippingOriginPromise;
-        if (!shippingOrigin) return [];
+        const [shippingOrigin, shippingProviders] = await Promise.all([
+            shippingOriginPromise,
+            shippingProvidersPromise,
+        ]);
+        if (!shippingOrigin || !shippingProviders?.length) return [];
         
         
         
-        return getAllRates(prisma, {
+        return getAllRates(shippingProviders, {
             origin      : shippingOrigin,
             destination : {
                 country,

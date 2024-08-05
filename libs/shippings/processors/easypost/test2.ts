@@ -3,29 +3,52 @@ import {
 }                           from '@/libs/prisma.server'
 import {getAllRates} from './shippings'
 import {
-    // types:
-    type DefaultShippingOriginDetail,
-    
-    
-    
     // utilities:
     defaultShippingOriginSelect,
 }                           from '@/models'
 
 
 
-const shippingOrigin = await (async (): Promise<DefaultShippingOriginDetail|null> => {
-    try {
-        return await prisma.defaultShippingOrigin.findFirst({
-            select : defaultShippingOriginSelect,
-        });
-    }
-    catch {
-        return null;
-    } // try
-})();
-if (shippingOrigin) {
-    await getAllRates(prisma, {
+const [shippingOrigin, shippingProviders] = await prisma.$transaction([
+    prisma.defaultShippingOrigin.findFirst({
+        select : defaultShippingOriginSelect,
+    }),
+    
+    prisma.shippingProvider.findMany({
+        where  : {
+            visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
+        },
+        select : {
+            // records:
+            id         : true, // required for identifier
+            
+            
+            
+            // data:
+            name       : true, // required for identifier
+            
+            weightStep : true, // required for calculate_shipping_cost algorithm
+            eta        : {     // optional for matching_shipping algorithm
+                select : {
+                    // data:
+                    min : true,
+                    max : true,
+                },
+            },
+            rates      : {     // required for calculate_shipping_cost algorithm
+                select : {
+                    // data:
+                    start : true,
+                    rate  : true,
+                },
+            },
+            
+            useZones   : true, // required for matching_shipping algorithm
+        },
+    }),
+]);
+if (shippingOrigin && shippingProviders.length) {
+    await getAllRates(shippingProviders, {
         origin      : {
             ...shippingOrigin,
             country : 'US',
