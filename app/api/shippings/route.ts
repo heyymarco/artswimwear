@@ -1,14 +1,3 @@
-// next-js:
-import {
-    NextRequest,
-    NextResponse,
-}                           from 'next/server'
-
-// next-connect:
-import {
-    createEdgeRouter,
-}                           from 'next-connect'
-
 // models:
 import {
     // types:
@@ -53,37 +42,10 @@ export const fetchCache = 'force-no-store';
 
 
 // routers:
-interface RequestContext {
-    params: {
-        /* no params yet */
-    }
-}
-const router  = createEdgeRouter<NextRequest, RequestContext>();
-const handler = async (req: NextRequest, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
-export {
-    // handler as GET,
-    handler as POST,
-    // handler as PUT,
-    handler as PATCH,
-    // handler as DELETE,
-    // handler as HEAD,
-}
-
-router
-.post(async (req) => {
+export const POST = async (req: Request): Promise<Response> => {
     /* required for displaying products page */
     
     
-    
-    if (process.env.SIMULATE_SLOW_NETWORK === 'true') {
-        await new Promise<void>((resolve) => {
-            setTimeout(() => {
-                resolve();
-            }, 2000);
-        });
-    } // if
-    
-    // throw '';
     
     //#region parsing request
     const {
@@ -113,7 +75,7 @@ router
         || !lastName              || (typeof(lastName)  !== 'string') || (lastName.length  < 1) || (lastName.length  > 30)
         || !phone                 || (typeof(phone)     !== 'string') || (phone.length     < 5) || (phone.length     > 15)
     ) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid parameter(s).',
         }, { status: 400 }); // handled with error
     } // if
@@ -298,8 +260,8 @@ router
     
     
     
-    return NextResponse.json([
+    return Response.json([
         ...internalShippingRates,
         ...systemShippingRates,
     ]); // handled with success
-});
+}
