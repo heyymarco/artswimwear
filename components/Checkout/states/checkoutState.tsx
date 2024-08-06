@@ -722,18 +722,32 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
-    const realTotalShippingCost          = useMemo<number|null|undefined>(() => {
+    const [realTotalShippingCost, setRealTotalShippingCost] = useState<number|null|undefined>(undefined);
+    useIsomorphicLayoutEffect((): void => {
         // conditions:
-        if (totalProductWeight === undefined) return undefined; // unable to calculate due to incomplete loading of related data => nothing to calculate
-        if (totalProductWeight === null)      return null;      // non physical product => no shipping required
-        if (!shippingList)                    return undefined; // the shippingList data is not available yet => nothing to calculate
+        if (totalProductWeight === undefined) { // unable to calculate due to incomplete loading of related data => nothing to calculate
+            setRealTotalShippingCost(undefined);
+            return;
+        } // if
+        if (totalProductWeight === null) {      // non physical product => no shipping required
+            setRealTotalShippingCost(null);
+            return;
+        }
+        if (!shippingList) {                    // the shippingList data is not available yet => nothing to calculate
+            setRealTotalShippingCost(undefined);
+            return;
+        } // if
         const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
-        if (!selectedShipping)                return undefined; // no valid selected shippingProvider => nothing to calculate
+        if (!selectedShipping) {                // no valid selected shippingProvider => nothing to calculate
+            setRealTotalShippingCost(undefined);
+            return;
+        } // if
         
         
         
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
-        return calculateShippingCost(selectedShipping, totalProductWeight);
+        const shippingCost = calculateShippingCost(selectedShipping, totalProductWeight);
+        setRealTotalShippingCost(shippingCost);
     }, [totalProductWeight, shippingList, shippingProvider]);
     const totalShippingCost              = finishedOrderState ? finishedOrderState?.totalShippingCost : realTotalShippingCost;
     
