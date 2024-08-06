@@ -131,6 +131,7 @@ import {
     
     // hooks:
     useGetMatchingShippingList,
+    useRefreshMatchingShippingList,
     useGeneratePaymentSession,
     // usePlaceOrder,
     // useMakePayment,
@@ -716,14 +717,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // apis:
-    const [showPrevOrder         , {data: prevOrderData, isLoading : isPrevOrderLoading     , isError: isPrevOrderError     }] = useShowPrevOrder();
-    const [getShippingByAddress  , {data: shippingList , isLoading : isShippingLoading      , isError: isShippingError , isUninitialized : isShippingUninitialized}] = useGetMatchingShippingList();
-    const [generatePaymentSession, {                     isLoading : isPaymentSessionLoading, isError: isPaymentSessionError}] = useGeneratePaymentSession();
+    const [showPrevOrder           , {data: prevOrderData, isLoading : isPrevOrderLoading     , isError: isPrevOrderError     }] = useShowPrevOrder();
+    const [getShippingByAddress    , {data: shippingList , isLoading : isShippingLoading      , isError: isShippingError , isUninitialized : isShippingUninitialized}] = useGetMatchingShippingList();
+    const [refreshShippingByAddress                                                                                            ] = useRefreshMatchingShippingList();
+    const [generatePaymentSession  , {                     isLoading : isPaymentSessionLoading, isError: isPaymentSessionError}] = useGeneratePaymentSession();
     
     
     
     const [realTotalShippingCost, setRealTotalShippingCost] = useState<number|null|undefined>(undefined);
-    useIsomorphicLayoutEffect((): void => {
+    // re-calculate shippingCost when totalWeight changed -or- available shippingList changed -or- selected shippingProvider changed:
+    useIsomorphicLayoutEffect(() => {
         // conditions:
         if (totalProductWeight === undefined) { // unable to calculate due to incomplete loading of related data => nothing to calculate
             setRealTotalShippingCost(undefined);
@@ -737,6 +740,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             setRealTotalShippingCost(undefined);
             return;
         } // if
+        
         const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
         if (!selectedShipping) {                // no valid selected shippingProvider => nothing to calculate
             setRealTotalShippingCost(undefined);
@@ -748,7 +752,55 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
         const shippingCost = calculateShippingCost(selectedShipping, totalProductWeight);
         setRealTotalShippingCost(shippingCost);
-    }, [totalProductWeight, shippingList, shippingProvider]);
+    }, [shippingList, shippingProvider, totalProductWeight]);
+    // refresh shippingList when totalWeight changed:
+    const prevTotalProductWeightStepped = useRef<number|null|undefined>(totalProductWeightStepped);
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (prevTotalProductWeightStepped.current === totalProductWeightStepped) {
+            return; // no totalWeight changes => ignore
+        }
+        else {
+            prevTotalProductWeightStepped.current = totalProductWeightStepped; // track the changes
+        } // if
+        
+        if ((checkoutStep === 'info') || (checkoutStep === 'pending') || (checkoutStep === 'paid')) return;
+        if (!isShippingAddressRequired) return;
+        if (!shippingAddress) return;
+        
+        if (totalProductWeightStepped === undefined) { // unable to calculate due to incomplete loading of related data => nothing to calculate
+            setRealTotalShippingCost(undefined);
+            return;
+        } // if
+        if (totalProductWeightStepped === null) {      // non physical product => no shipping required
+            setRealTotalShippingCost(null);
+            return;
+        }
+        if (!shippingList) {                    // the shippingList data is not available yet => nothing to calculate
+            setRealTotalShippingCost(undefined);
+            return;
+        } // if
+        
+        const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
+        if (!selectedShipping) {                // no valid selected shippingProvider => nothing to calculate
+            setRealTotalShippingCost(undefined);
+            return;
+        } // if
+        if (Array.isArray(selectedShipping.rates)) return; // a dynamic shippingRates is selected => no need to refresh the staticRates
+        
+        
+        
+        // actions:
+        try {
+            refreshShippingByAddress({
+                ...shippingAddress,
+                totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
+            }).unwrap();
+        }
+        catch {
+            // TODO: handle error
+        } // try
+    }, [checkoutStep, shippingList, shippingProvider, totalProductWeightStepped, shippingAddress]);
     const totalShippingCost              = finishedOrderState ? finishedOrderState?.totalShippingCost : realTotalShippingCost;
     
     const isShippingAddressRequired      = finishedOrderState ? finishedOrderState.isShippingAddressRequired : (
