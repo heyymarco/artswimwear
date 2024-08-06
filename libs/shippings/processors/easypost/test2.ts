@@ -68,5 +68,6 @@ if (shippingOrigin && shippingProviders.length) {
             lastName  : 'Smith',
             phone     : '415-123-4567',
         },
+        totalProductWeight : 1,
     });
 }

@@ -57,15 +57,21 @@ const friendlyNameShipping = new Map<string, string>([
 
 
 export interface GetAllRatesOptions {
-    origin      : DefaultShippingOriginDetail,
-    destination : ShippingAddressDetail
+    origin             : DefaultShippingOriginDetail,
+    destination        : ShippingAddressDetail
+    totalProductWeight : number
 }
 export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'|'name'>[], options: GetAllRatesOptions): Promise<MatchingShipping[]> => {
     // options:
     const {
         origin,
         destination,
+        totalProductWeight,
     } = options;
+    const totalProductWeightStepped = (
+        Math.round(totalProductWeight / 0.25)
+        * 0.25
+    );
     
     
     
@@ -114,7 +120,9 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
             phone     : destination.phone     || undefined,
         },
         parcel: {
-            weight: Math.max(16, 0.16),
+            weight: Math.max(0.16, // min 0.16 oz
+                totalProductWeightStepped * 35.274 // converts kg to oz
+            ),
         },
         // carrier_accounts : [
         //     // 'ca_dfa4ef16f792459684684fe4adb9d15a', // USPS: GroundAdvantage, Express, Priority

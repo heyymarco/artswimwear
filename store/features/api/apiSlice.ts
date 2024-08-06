@@ -284,7 +284,7 @@ export const apiSlice = createApi({
                                 );
                                 const combinedRates = [
                                     ...currentDynamicRates,
-                                    ...(Object.values(mutatedEntities) as MatchingShipping[])
+                                    ...(Object.values(mutatedEntities.entities) as MatchingShipping[])
                                 ];
                                 const newData = shippingListAdapter.addMany(shippingListAdapter.getInitialState(), combinedRates);
                                 return newData;

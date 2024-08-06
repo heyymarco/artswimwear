@@ -42,11 +42,9 @@ export const fetchCache = 'force-no-store';
 
 
 // routers:
-export const POST = async (req: Request): Promise<Response> => {
-    /* required for displaying products page */
-    
-    
-    
+export const POST           = async (req: Request): Promise<Response> => handleResponse(req, true);
+export const PATCH          = async (req: Request): Promise<Response> => handleResponse(req, false);
+export const handleResponse = async (req: Request, includingInternalShippings = true): Promise<Response> => {
     //#region parsing request
     const {
         country,
@@ -58,6 +56,9 @@ export const POST = async (req: Request): Promise<Response> => {
         firstName,
         lastName,
         phone,
+        
+        
+        totalProductWeight,
     } = await req.json();
     //#endregion parsing request
     
@@ -65,15 +66,17 @@ export const POST = async (req: Request): Promise<Response> => {
     
     //#region validating request
     if (
-           !country               || (typeof(country)   !== 'string') || (country.length   < 2) || (country.length   >  3)
-        || !state                 || (typeof(state)     !== 'string') || (state.length     < 3) || (state.length     > 50)
-        || !city                  || (typeof(city)      !== 'string') || (city.length      < 3) || (city.length      > 50)
-        || (!zip && (zip !== '')) || (typeof(zip)       !== 'string') || (zip.length       < 2) || (zip.length       > 11)
-        || !address               || (typeof(address)   !== 'string') || (address.length   < 5) || (address.length   > 90)
+           !country               || (typeof(country)            !== 'string') || (country.length   < 2) || (country.length   >  3)
+        || !state                 || (typeof(state)              !== 'string') || (state.length     < 3) || (state.length     > 50)
+        || !city                  || (typeof(city)               !== 'string') || (city.length      < 3) || (city.length      > 50)
+        || (!zip && (zip !== '')) || (typeof(zip)                !== 'string') || (zip.length       < 2) || (zip.length       > 11)
+        || !address               || (typeof(address)            !== 'string') || (address.length   < 5) || (address.length   > 90)
         
-        || !firstName             || (typeof(firstName) !== 'string') || (firstName.length < 2) || (firstName.length > 30)
-        || !lastName              || (typeof(lastName)  !== 'string') || (lastName.length  < 1) || (lastName.length  > 30)
-        || !phone                 || (typeof(phone)     !== 'string') || (phone.length     < 5) || (phone.length     > 15)
+        || !firstName             || (typeof(firstName)          !== 'string') || (firstName.length < 2) || (firstName.length > 30)
+        || !lastName              || (typeof(lastName)           !== 'string') || (lastName.length  < 1) || (lastName.length  > 30)
+        || !phone                 || (typeof(phone)              !== 'string') || (phone.length     < 5) || (phone.length     > 15)
+        
+        ||                           (typeof(totalProductWeight) !== 'number') || !isFinite(totalProductWeight)
     ) {
         return Response.json({
             error: 'Invalid parameter(s).',
@@ -146,7 +149,7 @@ export const POST = async (req: Request): Promise<Response> => {
     
     
     // easypost's shipping rates:
-    const systemShippingRatesPromise = (async (): Promise<MatchingShipping[]> => {
+    const externalShippingRatesPromise = (async (): Promise<MatchingShipping[]> => {
         const [shippingOrigin, shippingProviders] = await Promise.all([
             shippingOriginPromise,
             shippingProvidersPromise,
@@ -168,10 +171,12 @@ export const POST = async (req: Request): Promise<Response> => {
                 lastName,
                 phone,
             },
+            totalProductWeight,
         });
     })();
     
     const rajaongkirUpdatedPromise = (async (): Promise<boolean> => {
+        if (!includingInternalShippings) return false;
         if (!process.env.RAJAONGKIR_SECRET) return false;
         const shippingOrigin = await shippingOriginPromise;
         if (!shippingOrigin) return false;
@@ -214,6 +219,10 @@ export const POST = async (req: Request): Promise<Response> => {
     });
     
     const internalShippingRatesPromise = (async (): Promise<MatchingShipping[]> => {
+        if (!includingInternalShippings) return [];
+        
+        
+        
         await rajaongkirUpdatedPromise;
         
         
@@ -248,9 +257,9 @@ export const POST = async (req: Request): Promise<Response> => {
         return matchingShippings;
     })();
     
-    const [systemShippingRates, internalShippingRates] = await Promise.all([
+    const [externalShippingRates, internalShippingRates] = await Promise.all([
         // easypost's shipping rates:
-        systemShippingRatesPromise,
+        externalShippingRatesPromise,
         
         
         
@@ -262,6 +271,6 @@ export const POST = async (req: Request): Promise<Response> => {
     
     return Response.json([
         ...internalShippingRates,
-        ...systemShippingRates,
+        ...externalShippingRates,
     ]); // handled with success
 }
