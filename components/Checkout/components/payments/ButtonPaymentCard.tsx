@@ -603,6 +603,11 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
     
     // states:
     const {
+        // shipping data:
+        totalShippingCostStatus,
+        
+        
+        
         // actions:
         startTransaction,
     } = useCheckoutState();
@@ -680,6 +685,11 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     
                     // classes:
                     className='payButton'
+                    
+                    
+                    
+                    // states:
+                    enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
                     
                     
                     

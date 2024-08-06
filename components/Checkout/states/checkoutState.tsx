@@ -61,6 +61,7 @@ import {
     type BillingAddressDetail,
     
     type CheckoutStep,
+    type TotalShippingCostStatus,
     type PaymentMethod,
     
     type FinishedOrderState,
@@ -315,6 +316,7 @@ export interface CheckoutStateBase {
     setShippingProvider          : (shippingProvider: string) => void
     
     totalShippingCost            : number|null|undefined // undefined: not selected yet; null: no shipping required (non physical product)
+    totalShippingCostStatus      : TotalShippingCostStatus
     
     
     
@@ -475,6 +477,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     setShippingProvider          : noopCallback,
     
     totalShippingCost            : undefined,
+    totalShippingCostStatus      : 'ready',
     
     
     
@@ -572,6 +575,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         const searchParams = new URLSearchParams(window.location.search);
         return searchParams.get('orderId') || undefined;
     });
+    const isMounted                                   = useMountedFlag();
     
     
     
@@ -724,9 +728,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
-    const [realTotalShippingCost, setRealTotalShippingCost] = useState<number|null|undefined>(undefined);
+    const [realTotalShippingCost  , setRealTotalShippingCost  ] = useState<number|null|undefined>(undefined);
+    const [totalShippingCostStatus, setTotalShippingCostStatus] = useState<TotalShippingCostStatus>('ready');
+    
     // re-calculate shippingCost when totalWeight changed -or- available shippingList changed -or- selected shippingProvider changed:
     useIsomorphicLayoutEffect(() => {
+        setTotalShippingCostStatus('ready');
+        
+        
+        
         // conditions:
         if (totalProductWeight === undefined) { // unable to calculate due to incomplete loading of related data => nothing to calculate
             setRealTotalShippingCost(undefined);
@@ -753,6 +763,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         const shippingCost = calculateShippingCost(selectedShipping, totalProductWeight);
         setRealTotalShippingCost(shippingCost);
     }, [shippingList, shippingProvider, totalProductWeight]);
+    
     // refresh shippingList when totalWeight changed:
     const prevTotalProductWeightStepped = useRef<number|null|undefined>(totalProductWeightStepped);
     useIsomorphicLayoutEffect(() => {
@@ -791,16 +802,24 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        try {
-            refreshShippingByAddress({
-                ...shippingAddress,
-                totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
-            }).unwrap();
-        }
-        catch {
-            // TODO: handle error
-        } // try
+        (async (): Promise<void> => {
+            try {
+                setTotalShippingCostStatus('loading');
+                
+                
+                
+                await refreshShippingByAddress({
+                    ...shippingAddress,
+                    totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
+                }).unwrap();
+            }
+            catch {
+                if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
+                setTotalShippingCostStatus('obsolete');
+            } // try
+        })();
     }, [checkoutStep, shippingList, shippingProvider, totalProductWeightStepped, shippingAddress]);
+    
     const totalShippingCost              = finishedOrderState ? finishedOrderState?.totalShippingCost : realTotalShippingCost;
     
     const isShippingAddressRequired      = finishedOrderState ? finishedOrderState.isShippingAddressRequired : (
@@ -1110,7 +1129,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         &&
         !!process.env.NEXT_PUBLIC_PAYPAL_ID
     );
-    const isMounted                                   = useMountedFlag();
     const schedulingRefreshPaymentSessionRef          = useRef<ReturnType<typeof setTimeout>|null>(null);
     const scheduleRefreshPaymentSession               = useEvent(async (): Promise<void> => {
         // conditions:
@@ -1949,6 +1967,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         setShippingProvider,          // stable ref
         
         totalShippingCost,
+        totalShippingCostStatus,
         
         
         
@@ -2057,6 +2076,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // setShippingProvider        // stable ref
         
         totalShippingCost,
+        totalShippingCostStatus,
         
         
         

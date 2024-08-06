@@ -5,6 +5,8 @@ import {
     keyframes,
     descendants,
     children,
+    states,
+    fallback,
     style,
     scope,
 }                           from '@cssfn/core'                  // writes css in javascript
@@ -33,12 +35,18 @@ import {
     
     // groups a list of UIs into a single UI:
     usesGroupable,
+    
+    
+    
+    // a capability of UI to be disabled:
+    ifDisable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
     // base-components:
     basics,
+    controls,
     
     
     
@@ -178,23 +186,101 @@ export const usesExpressCheckoutLayout = () => {
             // sizes:
             justifySelf  : 'stretch',
             alignSelf    : 'stretch',
-            
-            
-            
-            // children:
-            ...children('.paypalButton', {
-                display: 'grid',
-                justifyItems: 'center',
-                ...children('div', {
-                    maxInlineSize: '750px',
-                }),
-            }),
         }),
         
         
         
         // states:
         ...usesHiddenableLayout(),
+    });
+};
+export const usesButtonWrapperLayout = () => {
+    return style({
+        // layout:
+        display: 'grid',
+        justifyItems: 'center',
+    });
+};
+export const usesButtonIndicatorLayout = () => {
+    // features:
+    const {borderVars} = usesBorder();
+    const {paddingVars} = usesPadding();
+    
+    
+    
+    return style({
+        // layout:
+        display: 'grid',
+        
+        
+        
+        // sizes:
+        width : 'fill-available',
+        ...fallback({
+            width : '-webkit-fill-available',  // Mozilla-based browsers will ignore this
+        }),
+        ...fallback({
+            width : '-moz-available',          //  WebKit-based browsers will ignore this
+        }),
+        ...fallback({
+            width : 'unset',
+        }),
+        
+        ...rule('.paypal', {
+            maxInlineSize: '750px',
+        }),
+        blockSize: 'fit-content', // fix PayPal Button bottom spacing
+        
+        
+        
+        // borders:
+        
+        // kill borders surrounding List:
+        [borderVars.borderWidth           ] : '0px',
+        
+        // remove rounded corners on top:
+        [borderVars.borderStartStartRadius] : '0px',
+        [borderVars.borderStartEndRadius  ] : '0px',
+        // remove rounded corners on bottom:
+        [borderVars.borderEndStartRadius  ] : '0px',
+        [borderVars.borderEndEndRadius    ] : '0px',
+        
+        
+        
+        // spacings:
+        [paddingVars.paddingInline] : '0px',
+        [paddingVars.paddingBlock ] : '0px',
+    });
+};
+export const usesButtonIndicatorStates = () => {
+    return style({
+        // states:
+        ...states([
+            ifDisable({
+                // accessibilities:
+                cursor            : controls.cursorDisable,
+                ...children('*', {
+                    pointerEvents : 'none',
+                }),
+            }),
+        ]),
+    });
+};
+export const usesPaypalButtonLayout = () => {
+    return style({
+        // layouts:
+        // display: 'grid',
+        // justifyItems: 'center',
+        ...children('div', {
+            maxInlineSize: '750px',
+        }),
+        backgroundColor: 'pink',
+        display: 'contents',
+        
+        
+        
+        // sizes:
+        blockSize: 'fit-content', // fix PayPal Button bottom spacing
     });
 };
 
@@ -314,6 +400,16 @@ export default () => [
     
     scope('expressCheckout', {
         ...usesExpressCheckoutLayout(),
+    }),
+    scope('buttonWrapper', {
+        ...usesButtonWrapperLayout(),
+    }),
+    scope('buttonIndicator', {
+        ...usesButtonIndicatorLayout(),
+        ...usesButtonIndicatorStates(),
+    }),
+    scope('paypalButton', {
+        ...usesPaypalButtonLayout(),
     }),
     
     scope('loading', {

@@ -6,6 +6,12 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui components:
+import {
+    // status-components:
+    Busy,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
 // internal components:
 import {
     CurrencyDisplay,
@@ -31,6 +37,7 @@ const ViewShippingCart = (): JSX.Element|null => {
         isShippingAddressRequired,
         shippingProvider,
         totalShippingCost,
+        totalShippingCostStatus,
     } = useCheckoutState();
     
     
@@ -43,16 +50,21 @@ const ViewShippingCart = (): JSX.Element|null => {
             <span>Shipping</span>
             
             <span className='currency'>
-                {
-                    (shippingProvider !== undefined) /* physical_product && have selected shippingProvider */
-                    
-                    // not_physical_product : never displayed
-                    // physical_product     : displays the selected shippingCost
-                    ? <CurrencyDisplay amount={totalShippingCost} />
-                    
-                    // physical_product: requires selected shippingProvider to display the shippingCost:
-                    : 'calculated at next step'
-                }
+                {(totalShippingCostStatus === 'loading') && <Busy />}
+                {(totalShippingCostStatus === 'obsolete') && <span className='txt-sec'>unknown</span>}
+                
+                {(totalShippingCostStatus === 'ready') && <>
+                    {
+                        (shippingProvider !== undefined) /* physical_product && have selected shippingProvider */
+                        
+                        // not_physical_product : never displayed
+                        // physical_product     : displays the selected shippingCost
+                        ? <CurrencyDisplay amount={totalShippingCost} />
+                        
+                        // physical_product: requires selected shippingProvider to display the shippingCost:
+                        : 'calculated at next step'
+                    }
+                </>}
             </span>
         </p>
     );

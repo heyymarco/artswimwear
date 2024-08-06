@@ -22,6 +22,11 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Indicator,
+    
+    
+    
     // base-content-components:
     Content,
     
@@ -153,6 +158,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         
         // shipping data:
         shippingAddress,
+        totalShippingCostStatus,
         
         
         
@@ -518,28 +524,37 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                     Click the {walletName} button below. You will be redirected to the {websiteName}&apos;s website to complete the payment.
                 </p>
                 
-                <ExpressCheckoutElement
-                    // identifiers:
-                    key={generation}
+                <Indicator
+                    className={styleSheet.buttonIndicator}
                     
                     
                     
-                    // options:
-                    options={options}
-                    
-                    
-                    
-                    // handlers:
-                    onReady={handleLoaded}
-                    onLoadError={handleErrored}
-                    
-                    onClick={handlePaymentInterfaceStart}
-                    // onShippingAddressChange={undefined} // never called because we configured it to use own shippingAddress
-                    // onShippingRateChange={undefined}    // never called because we configured it to use own shippingAddress
-                    onCancel={handlePaymentInterfaceAbort}
-                    onEscape={undefined}
-                    onConfirm={handlePaymentInterfaceApproved}
-                />
+                    // states:
+                    enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
+                >
+                    <ExpressCheckoutElement
+                        // identifiers:
+                        key={generation}
+                        
+                        
+                        
+                        // options:
+                        options={options}
+                        
+                        
+                        
+                        // handlers:
+                        onReady={handleLoaded}
+                        onLoadError={handleErrored}
+                        
+                        onClick={handlePaymentInterfaceStart}
+                        // onShippingAddressChange={undefined} // never called because we configured it to use own shippingAddress
+                        // onShippingRateChange={undefined}    // never called because we configured it to use own shippingAddress
+                        onCancel={handlePaymentInterfaceAbort}
+                        onEscape={undefined}
+                        onConfirm={handlePaymentInterfaceApproved}
+                    />
+                </Indicator>
             </div>
             
             <p className={`${styleSheet.notAvailable} ${isNotAvailable ? '' : 'hidden'}`}>

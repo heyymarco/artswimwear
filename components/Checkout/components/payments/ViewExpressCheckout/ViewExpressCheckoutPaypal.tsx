@@ -21,6 +21,11 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Indicator,
+    
+    
+    
     // base-content-components:
     Content,
     
@@ -92,6 +97,11 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     const {
         // states:
         isBusy,
+        
+        
+        
+        // shipping data:
+        totalShippingCostStatus,
         
         
         
@@ -326,27 +336,38 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     Click the PayPal button below. You will be redirected to the PayPal&apos;s website to complete the payment.
                 </p>
                 
-                <PayPalButtons
-                    // identifiers:
-                    key={generation}
-                    
-                    
-                    
-                    // classes:
-                    className='paypalButton'
-                    style={paypalButtonStyle}
-                    
-                    
-                    
-                    // handlers:
-                    onInit={handleLoaded}
-                    onError={handleErrored}
-                    
-                    createOrder={handlePaymentInterfaceStart}
-                    onCancel={handlePaymentInterfaceAbort}
-                    onApprove={handlePaymentInterfaceApproved}
-                    onShippingChange={handleShippingChange}
-                />
+                <div className={styleSheet.buttonWrapper}>
+                    <Indicator
+                        className={`${styleSheet.buttonIndicator} paypal`}
+                        
+                        
+                        
+                        // states:
+                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
+                    >
+                        <PayPalButtons
+                            // identifiers:
+                            key={generation}
+                            
+                            
+                            
+                            // classes:
+                            className={styleSheet.paypalButton}
+                            style={paypalButtonStyle}
+                            
+                            
+                            
+                            // handlers:
+                            onInit={handleLoaded}
+                            onError={handleErrored}
+                            
+                            createOrder={handlePaymentInterfaceStart}
+                            onCancel={handlePaymentInterfaceAbort}
+                            onApprove={handlePaymentInterfaceApproved}
+                            onShippingChange={handleShippingChange}
+                        />
+                    </Indicator>
+                </div>
             </div>
             
             <Content theme='danger' className={`${styleSheet.error} ${isErrored ? '' : 'hidden'}`}>

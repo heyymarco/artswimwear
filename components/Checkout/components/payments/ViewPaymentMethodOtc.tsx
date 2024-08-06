@@ -55,6 +55,11 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
     
     // states:
     const {
+        // shipping data:
+        totalShippingCostStatus,
+        
+        
+        
         // actions:
         doTransaction,
         doPlaceOrder,
@@ -117,6 +122,11 @@ const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|nul
                         
                         // variants:
                         gradient={true}
+                        
+                        
+                        
+                        // states:
+                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
                         
                         
                         

@@ -6,6 +6,12 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui components:
+import {
+    // status-components:
+    Busy,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
 // internal components:
 import {
     CurrencyDisplay,
@@ -44,6 +50,7 @@ const ViewTotalCart = (): JSX.Element|null => {
         isShippingAddressRequired,
         shippingProvider,
         totalShippingCost,
+        totalShippingCostStatus,
     } = useCheckoutState();
     
     
@@ -55,20 +62,25 @@ const ViewTotalCart = (): JSX.Element|null => {
             <span>Total</span>
             
             <span className='currency'>
-                {
-                    (!isShippingAddressRequired /* not_physical_product */ || (shippingProvider !== undefined) /* physical_product && have selected shippingProvider */)
-                    
-                    // not_physical_product : displays the subTotal + null shippingCost
-                    // physical_product     : displays the subTotal + selected shippingCost
-                    ? <>
-                        <CurrencyDisplay amount={(productPriceParts === undefined) ? undefined : [...productPriceParts, totalShippingCost]} />
-                        {' '}
-                        <span>{currency}</span>
-                    </>
-                    
-                    // physical_product: requires selected shippingProvider to display the (subTotal + shippingCost):
-                    : 'calculated at next step'
-                }
+                {(totalShippingCostStatus === 'loading') && <Busy />}
+                {(totalShippingCostStatus === 'obsolete') && <span className='txt-sec'>unknown</span>}
+                
+                {(totalShippingCostStatus === 'ready') && <>
+                    {
+                        (!isShippingAddressRequired /* not_physical_product */ || (shippingProvider !== undefined) /* physical_product && have selected shippingProvider */)
+                        
+                        // not_physical_product : displays the subTotal + null shippingCost
+                        // physical_product     : displays the subTotal + selected shippingCost
+                        ? <>
+                            <CurrencyDisplay amount={(productPriceParts === undefined) ? undefined : [...productPriceParts, totalShippingCost]} />
+                            {' '}
+                            <span>{currency}</span>
+                        </>
+                        
+                        // physical_product: requires selected shippingProvider to display the (subTotal + shippingCost):
+                        : 'calculated at next step'
+                    }
+                </>}
             </span>
         </p>
     );

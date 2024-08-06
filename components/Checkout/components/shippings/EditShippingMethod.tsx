@@ -13,6 +13,11 @@ import {
 
 // reusable-ui components:
 import {
+    // status-components:
+    Busy,
+    
+    
+    
     // layout-components:
     ListItem,
     List,
@@ -60,6 +65,7 @@ const EditShippingMethod = (): JSX.Element|null => {
         // shipping data:
         shippingProvider,
         setShippingProvider,
+        totalShippingCostStatus,
         
         
         
@@ -96,6 +102,7 @@ const EditShippingMethod = (): JSX.Element|null => {
                     .sort(({previewShippingCost: a}, {previewShippingCost: b}) => (a - b))
                     .map(({previewShippingCost, ...shippingEntry}) => {
                         const isActive = `${shippingEntry.id}` === shippingProvider;
+                        const isServerCalculated = !Array.isArray(shippingEntry.rates);
                         
                         
                         
@@ -130,8 +137,11 @@ const EditShippingMethod = (): JSX.Element|null => {
                                     (estimate: {shippingEntry.eta.min}{(shippingEntry.eta.max > shippingEntry.eta.min) ? <>-{shippingEntry.eta.max}</> : null} day{(shippingEntry.eta.min > 1) ? 's' : ''})
                                 </span>}
                                 
-                                <span className='cost'>
-                                    <CurrencyDisplay amount={previewShippingCost} />
+                                <span className={`cost ${(!isServerCalculated || (totalShippingCostStatus === 'ready')) ? 'ready' : ''}`}>
+                                    {(isServerCalculated && (totalShippingCostStatus === 'loading')) && <Busy outlined={isActive ? false : undefined} />}
+                                    {(isServerCalculated && (totalShippingCostStatus === 'obsolete')) && <span className='txt-sec'>unknown</span>}
+                                    
+                                    {(!isServerCalculated || (totalShippingCostStatus === 'ready')) && <CurrencyDisplay amount={previewShippingCost} />}
                                 </span>
                             </ListItem>
                         );

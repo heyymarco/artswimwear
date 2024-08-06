@@ -461,17 +461,21 @@ export default () => {
                         
                         
                         // layouts:
-                        display             : 'grid',
-                        gridTemplateColumns : 'subgrid',
-                        ...children('.currencySign', {
-                            // customize:
-                            ...usesCssProps(secondaries),
+                        ...rule('.ready', {
+                            display             : 'grid',
+                            gridTemplateColumns : 'subgrid',
+                            ...children('.currencySign', {
+                                // customize:
+                                ...usesCssProps(secondaries),
+                            }),
                         }),
                         
                         
                         
                         // spacings:
-                        gap                 : 'inherit',
+                        ...rule('.ready', {
+                            gap                 : 'inherit',
+                        }),
                         
                         
                         

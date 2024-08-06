@@ -42,6 +42,11 @@ import {
 const ViewPaymentMethodManual = (): JSX.Element|null => {
     // states:
     const {
+        // shipping data:
+        totalShippingCostStatus,
+        
+        
+        
         // actions:
         doTransaction,
         doPlaceOrder,
@@ -104,6 +109,11 @@ const ViewPaymentMethodManual = (): JSX.Element|null => {
                         
                         // variants:
                         gradient={true}
+                        
+                        
+                        
+                        // states:
+                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
                         
                         
                         

@@ -52,6 +52,11 @@ import type {
 const ViewPaymentMethodQris = (): JSX.Element|null => {
     // states:
     const {
+        // shipping data:
+        totalShippingCostStatus,
+        
+        
+        
         // actions:
         gotoFinished,
         
@@ -180,6 +185,11 @@ const ViewPaymentMethodQris = (): JSX.Element|null => {
                         
                         // variants:
                         gradient={true}
+                        
+                        
+                        
+                        // states:
+                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
                         
                         
                         

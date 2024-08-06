@@ -30,6 +30,7 @@ export type CheckoutStep =
     |'payment'
     |'pending'
     |'paid'
+
 export type PaymentMethod =
     |''
     |'card'
@@ -40,6 +41,11 @@ export type PaymentMethod =
     |'indomaret'
     |'alfamart'
     |'manual'
+
+export type TotalShippingCostStatus =
+    |'ready'
+    |'loading'
+    |'obsolete'
 
 
 

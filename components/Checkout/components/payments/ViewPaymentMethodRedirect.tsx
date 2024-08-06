@@ -65,6 +65,11 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
     
     // states:
     const {
+        // shipping data:
+        totalShippingCostStatus,
+        
+        
+        
         // actions:
         gotoFinished,
         
@@ -189,6 +194,11 @@ const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.E
                         
                         // variants:
                         gradient={true}
+                        
+                        
+                        
+                        // states:
+                        enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
                         
                         
                         
