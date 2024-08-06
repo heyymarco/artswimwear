@@ -591,6 +591,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // cart data:
         cartItems : globalCartItems,
         totalProductWeight,
+        totalProductWeightStepped,
         
         
         
@@ -966,7 +967,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         console.log('recovering shippingList...');
         getShippingByAddress({
             ...shippingAddress,
-            totalProductWeight : totalProductWeight ?? 0, // the totalProductWeight should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
+            totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
         });
     }, [isNeedsRecoverShippingList, shippingAddress, totalProductWeight]);
     
@@ -1269,7 +1270,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 try {
                     const shippingList = !shippingAddress ? undefined : await getShippingByAddress({
                         ...shippingAddress,
-                        totalProductWeight : totalProductWeight ?? 0, // the totalProductWeight should be number, because of `isShippingAddressRequired` condition
+                        totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isShippingAddressRequired` condition
                     }).unwrap();
                     
                     

@@ -124,46 +124,47 @@ export type {
 // contexts:
 export interface CartStateBase {
     // states:
-    isCartShown           : boolean
+    isCartShown               : boolean
     
-    isCartEmpty           : boolean
-    isCartLoading         : boolean
-    isCartError           : boolean
-    isCartReady           : boolean
+    isCartEmpty               : boolean
+    isCartLoading             : boolean
+    isCartError               : boolean
+    isCartReady               : boolean
     
     
     
     // accessibilities:
-    currency              : string
-    setCurrency           : (currency: string|undefined) => void
+    currency                  : string
+    setCurrency               : (currency: string|undefined) => void
     
     
     
     // cart data:
-    cartItems             : CartEntry[]
-    totalProductQuantity  : number
-    totalProductWeight    : number|null        | undefined
-    productPriceParts     : ProductPricePart[] | undefined
-    hasPhysicalProduct    : boolean            | undefined
+    cartItems                 : CartEntry[]
+    totalProductQuantity      : number
+    totalProductWeight        : number|null        | undefined
+    totalProductWeightStepped : number|null        | undefined
+    productPriceParts         : ProductPricePart[] | undefined
+    hasPhysicalProduct        : boolean            | undefined
     
     
     
     // relation data:
-    productList           : EntityState<ProductPreview> | undefined
+    productList               : EntityState<ProductPreview> | undefined
     
     
     
     // actions:
-    addProductToCart      : (productId: string, variantIds: string[], quantity?: number) => void
-    deleteProductFromCart : (productId: string, variantIds: string[], options?: { showConfirm?: boolean }) => Promise<void>
-    changeProductFromCart : (productId: string, variantIds: string[], quantity: number, options?: { showConfirm?: boolean }) => Promise<void>
-    clearProductsFromCart : () => void
-    trimProductsFromCart  : (limitedStockItems: LimitedStockItem[], options?: { showConfirm?: boolean, showPaymentCanceled?: boolean }) => Promise<void>
+    addProductToCart          : (productId: string, variantIds: string[], quantity?: number) => void
+    deleteProductFromCart     : (productId: string, variantIds: string[], options?: { showConfirm?: boolean }) => Promise<void>
+    changeProductFromCart     : (productId: string, variantIds: string[], quantity: number, options?: { showConfirm?: boolean }) => Promise<void>
+    clearProductsFromCart     : () => void
+    trimProductsFromCart      : (limitedStockItems: LimitedStockItem[], options?: { showConfirm?: boolean, showPaymentCanceled?: boolean }) => Promise<void>
     
-    showCart              : () => void
-    hideCart              : () => void
+    showCart                  : () => void
+    hideCart                  : () => void
     
-    refetchCart           : () => void
+    refetchCart               : () => void
 }
 
 export type PickAlways<T, K extends keyof T, V> = {
@@ -216,46 +217,47 @@ const noopCallback      = (): void => {};
 const noopCallbackAsync = async (): Promise<void> => {};
 const CartStateContext = createContext<CartState>({
     // states:
-    isCartShown           : false,
+    isCartShown               : false,
     
-    isCartEmpty           : true,
-    isCartLoading         : false,
-    isCartError           : false,
-    isCartReady           : false,
+    isCartEmpty               : true,
+    isCartLoading             : false,
+    isCartError               : false,
+    isCartReady               : false,
     
     
     
     // accessibilities:
-    currency              : '',
-    setCurrency           : noopCallback,
+    currency                  : '',
+    setCurrency               : noopCallback,
     
     
     
     // cart data:
-    cartItems             : [],
-    totalProductQuantity  : 0,
-    totalProductWeight    : undefined,
-    productPriceParts     : undefined,
-    hasPhysicalProduct    : undefined,
+    cartItems                 : [],
+    totalProductQuantity      : 0,
+    totalProductWeight        : undefined,
+    totalProductWeightStepped : undefined,
+    productPriceParts         : undefined,
+    hasPhysicalProduct        : undefined,
     
     
     
     // relation data:
-    productList           : undefined,
+    productList               : undefined,
     
     
     
     // actions:
-    addProductToCart      : noopCallback,
-    deleteProductFromCart : noopCallbackAsync,
-    changeProductFromCart : noopCallbackAsync,
-    clearProductsFromCart : noopCallback,
-    trimProductsFromCart  : noopCallbackAsync,
+    addProductToCart          : noopCallback,
+    deleteProductFromCart     : noopCallbackAsync,
+    changeProductFromCart     : noopCallbackAsync,
+    clearProductsFromCart     : noopCallback,
+    trimProductsFromCart      : noopCallbackAsync,
     
-    showCart              : noopCallback,
-    hideCart              : noopCallback,
+    showCart                  : noopCallback,
+    hideCart                  : noopCallback,
     
-    refetchCart           : noopCallback,
+    refetchCart               : noopCallback,
 });
 CartStateContext.displayName  = 'CartState';
 
@@ -428,6 +430,14 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             totalProductWeight,
         };
     }, [cartItems, productList]);
+    
+    const totalProductWeightStepped = useMemo(() => {
+        if ((totalProductWeight === undefined) || (totalProductWeight === null)) return totalProductWeight;
+        return (
+            Math.round(totalProductWeight / 0.25)
+            * 0.25
+        );
+    }, [totalProductWeight]);
     
     const hasPhysicalProduct : boolean|undefined = (
         (totalProductWeight === undefined)
@@ -625,6 +635,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         cartItems,
         totalProductQuantity,
         totalProductWeight,
+        totalProductWeightStepped,
         productPriceParts,
         hasPhysicalProduct,
         
@@ -667,6 +678,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         cartItems,
         totalProductQuantity,
         totalProductWeight,
+        totalProductWeightStepped,
         productPriceParts,
         hasPhysicalProduct,
         
