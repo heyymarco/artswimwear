@@ -29,6 +29,7 @@ const ViewShippingCart = (): JSX.Element|null => {
     // contexts:
     const {
         // states:
+        checkoutStep,
         isCheckoutReady,
         
         
@@ -45,25 +46,30 @@ const ViewShippingCart = (): JSX.Element|null => {
     // jsx:
     if (!isCheckoutReady)           return null;
     if (!isShippingAddressRequired) return null; // not_physical_product => no need to display the selected shippingCost
+    
+    const hasValidSelectedShippingIfAny = (
+        (shippingProvider !== undefined) // physical_product && have selected shippingProvider
+        &&
+        (checkoutStep !== 'info')        // when in `info` page, ignore the selected shippingProvider
+    );
+    
     return (
         <p className='currencyBlock'>
             <span>Shipping</span>
             
             <span className='currency'>
-                {(totalShippingCostStatus === 'loading') && <Busy />}
-                {(totalShippingCostStatus === 'obsolete') && <span className='txt-sec'>unknown</span>}
+                {!hasValidSelectedShippingIfAny && <>
+                    {/* physical_product: requires selected shippingProvider to display the shippingCost */}
+                    calculated at next step
+                </>}
                 
-                {(totalShippingCostStatus === 'ready') && <>
-                    {
-                        (shippingProvider !== undefined) /* physical_product && have selected shippingProvider */
-                        
-                        // not_physical_product : never displayed
-                        // physical_product     : displays the selected shippingCost
-                        ? <CurrencyDisplay amount={totalShippingCost} />
-                        
-                        // physical_product: requires selected shippingProvider to display the shippingCost:
-                        : 'calculated at next step'
-                    }
+                {hasValidSelectedShippingIfAny && <>
+                    {(totalShippingCostStatus === 'loading' ) && <Busy />}
+                    {(totalShippingCostStatus === 'obsolete') && <span className='txt-sec'>unknown</span>}
+                    
+                    {/* not_physical_product : never happened */}
+                    {/* physical_product     : displays the selected shippingCost */}
+                    {(totalShippingCostStatus === 'ready'   ) && <CurrencyDisplay amount={totalShippingCost} />}
                 </>}
             </span>
         </p>
