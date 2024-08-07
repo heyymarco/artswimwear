@@ -770,7 +770,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [shippingList, shippingProvider, totalProductWeight]);
     
     // refresh shippingList when totalWeight changed:
-    const prevTotalProductWeightSteppedRef = useRef<number|null|undefined>(totalProductWeightStepped);
+    const prevTotalProductWeightSteppedRef  = useRef<number|null|undefined>(totalProductWeightStepped);
+    const prevRefreshShippingByAddressIdRef = useRef<string|undefined>(undefined);
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (prevTotalProductWeightSteppedRef.current === totalProductWeightStepped) {
@@ -792,35 +793,45 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             setRealTotalShippingCost(null);
             return;
         }
-        if (!shippingList) {                    // the shippingList data is not available yet => nothing to calculate
+        if (!shippingList) {                           // the shippingList data is not available yet => nothing to calculate
             setRealTotalShippingCost(undefined);
             return;
         } // if
         
         const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
-        if (!selectedShipping) {                // no valid selected shippingProvider => nothing to calculate
+        if (!selectedShipping) {                       // no valid selected shippingProvider => nothing to calculate
             setRealTotalShippingCost(undefined);
             return;
         } // if
-        if (Array.isArray(selectedShipping.rates)) return; // a dynamic shippingRates is selected => no need to refresh the staticRates
+        if (Array.isArray(selectedShipping.rates) && (checkoutStep !== 'shipping')) return; // a dynamic shippingRates is selected => no need to refresh the staticRates, except when on shipping step: always refresh the shippingList rates
         
         
         
         // actions:
+        let refreshShippingByAddressPromise : ReturnType<typeof refreshShippingByAddress>|undefined = undefined;
         const performRefresh = async (): Promise<void> => {
             try {
                 setTotalShippingCostStatus('loading');
                 
                 
                 
-                await refreshShippingByAddress({
+                refreshShippingByAddressPromise = refreshShippingByAddress({
                     ...shippingAddress,
                     totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
-                }).unwrap();
+                });
+                prevRefreshShippingByAddressIdRef.current = refreshShippingByAddressPromise.requestId;
+                await refreshShippingByAddressPromise.unwrap();
             }
-            catch {
+            catch (error: any) {
                 if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
-                setTotalShippingCostStatus('obsolete');
+                if (refreshShippingByAddressPromise && (prevRefreshShippingByAddressIdRef.current === refreshShippingByAddressPromise.requestId)) {
+                    prevRefreshShippingByAddressIdRef.current = undefined;
+                    setTotalShippingCostStatus('obsolete');
+                } // if
+                
+                
+                
+                if (error.name === 'AbortError') return;
                 
                 
                 
@@ -850,6 +861,13 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             } // try
         };
         performRefresh();
+        
+        
+        
+        // cleanups:
+        return () => {
+            refreshShippingByAddressPromise?.abort();
+        };
     }, [checkoutStep, shippingList, shippingProvider, totalProductWeightStepped, shippingAddress]);
     
     // if the selected shipping method lost due to shippingList update => warn to the user that the selection is no longer available:
