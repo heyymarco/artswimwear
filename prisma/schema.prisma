@@ -166,6 +166,8 @@ model ShippingProvider {
     
     orders                          Order[]                         @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnShipping") // one ShippingProvider may have some related DraftOrder(s)  // one  to many
+    
+    easypostRateCacheItems          EasypostRateCacheItem[]         // one ShippingProvider may have some related Order(s) // one  to many
 }
 model CoverageCountry {
     // records:
@@ -345,6 +347,46 @@ model CoverageCityRate {
     // relations:
     parentId                        String
     parent                          CoverageCity                    @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CoverageCityRate(s) if the CoverageCity deleted
+}
+
+model EasypostRateCache {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    updatedAt                       DateTime                        @updatedAt
+    
+    // data:
+    key                             String                          @unique
+    
+    // relations:
+    items                           EasypostRateCacheItem[]         // a EasypostRateCache may have some related EasypostRateCacheItem(s) // one  to many
+}
+model EasypostRateCacheItem {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    eta                             EasypostRateCacheItemEta?
+    rate                            Float
+    currency                        String
+    
+    // relations:
+    parentId                        String
+    parent                          EasypostRateCache               @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related EasypostRateCacheItem(s) if the EasypostRateCache deleted
+    
+    shippingProviderId              String
+    shippingProvider                ShippingProvider                @relation(fields: [shippingProviderId] , references: [id], onDelete: Cascade) // delete the related EasypostRateCacheItem(s) if the ShippingProvider deleted
+}
+model EasypostRateCacheItemEta {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    min                             Float                           // min: 0, max: 999
+    max                             Float                           // min: `min`, max: 999
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          EasypostRateCacheItem           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related EasypostRateCacheItemEta if the EasypostRateCacheItem deleted
 }
 
 
