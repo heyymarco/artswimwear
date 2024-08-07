@@ -188,32 +188,38 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     
     if (prisma) {
         try {
-            const cached = await prisma.easypostRateCache.findUnique({
-                where  : {
-                    key : cacheKey,
-                    updatedAt : { gt: new Date(Date.now() - (3 * 30 * 24 * 60 * 60 * 1000)) } // prevents for searching cache older than 3 months ago
-                },
-                select : {
-                    items : {
-                        select : {
-                            eta              : {
-                                select : {
-                                    min      : true,
-                                    max      : true,
+            const [, cached] = await prisma.$transaction([
+                prisma.easypostRateCache.deleteMany({
+                    where  : {
+                        updatedAt : { lt: new Date(Date.now() - (3 * 30 * 24 * 60 * 60 * 1000)) } // delete caches older than 3 months ago
+                    },
+                }),
+                prisma.easypostRateCache.findUnique({
+                    where  : {
+                        key : cacheKey,
+                    },
+                    select : {
+                        items : {
+                            select : {
+                                eta              : {
+                                    select : {
+                                        min      : true,
+                                        max      : true,
+                                    },
                                 },
-                            },
-                            rate             : true,
-                            currency         : true,
-                            shippingProvider : {
-                                select : {
-                                    id       : true,
-                                    name     : true,
+                                rate             : true,
+                                currency         : true,
+                                shippingProvider : {
+                                    select : {
+                                        id       : true,
+                                        name     : true,
+                                    },
                                 },
                             },
                         },
                     },
-                },
-            });
+                }),
+            ]);
             
             if (cached) {
                 const matchingShippings : MatchingShipping[] = (
