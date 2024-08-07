@@ -771,7 +771,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // refresh shippingList when totalWeight changed:
     const prevTotalProductWeightSteppedRef  = useRef<number|null|undefined>(totalProductWeightStepped);
-    const prevRefreshShippingByAddressIdRef = useRef<string|undefined>(undefined);
+    const prevRefreshShippingByAddressIdRef = useRef<number>(0);
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (prevTotalProductWeightSteppedRef.current === totalProductWeightStepped) {
@@ -810,6 +810,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // actions:
         let refreshShippingByAddressPromise : ReturnType<typeof refreshShippingByAddress>|undefined = undefined;
         const performRefresh = async (): Promise<void> => {
+            const prevRefreshShippingByAddressId = (++prevRefreshShippingByAddressIdRef.current);
             try {
                 setTotalShippingCostStatus('loading');
                 
@@ -819,13 +820,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     ...shippingAddress,
                     totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
                 });
-                prevRefreshShippingByAddressIdRef.current = refreshShippingByAddressPromise.requestId;
                 await refreshShippingByAddressPromise.unwrap();
             }
             catch (error: any) {
                 if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
-                if (refreshShippingByAddressPromise && (prevRefreshShippingByAddressIdRef.current === refreshShippingByAddressPromise.requestId)) {
-                    prevRefreshShippingByAddressIdRef.current = undefined;
+                if (prevRefreshShippingByAddressIdRef.current === prevRefreshShippingByAddressId) {
                     setTotalShippingCostStatus('obsolete');
                 } // if
                 
