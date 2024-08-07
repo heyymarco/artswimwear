@@ -172,6 +172,7 @@ const handleResponse = async (req: Request, includingInternalShippings = true): 
                 phone,
             },
             totalProductWeight,
+            prisma,
         });
     })();
     
