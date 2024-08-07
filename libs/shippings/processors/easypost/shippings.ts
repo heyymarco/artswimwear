@@ -124,12 +124,12 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     
     
     
-    const originCountry          = origin.country;
+    const originCountry          = origin.country.trim();
     const originCountryCode      = (
         (originCountry.length === 2)
         ? originCountry.toUpperCase()
         : ((): string|undefined => {
-            const originCountryLowercase = origin.country.toLowerCase();
+            const originCountryLowercase = originCountry.toLowerCase();
             return Country.getAllCountries().find(({name}) => (name.toLowerCase() === originCountryLowercase))?.isoCode;
         })()
     );
@@ -153,12 +153,12 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     );
     const originZip              = origin.zip?.toUpperCase();
     
-    const destinationCountry     = destination.country;
+    const destinationCountry     = destination.country.trim();
     const destinationCountryCode = (
         (destinationCountry.length === 2)
         ? destinationCountry.toUpperCase()
         : ((): string|undefined => {
-            const destinationCountryLowercase = destination.country.toLowerCase();
+            const destinationCountryLowercase = destinationCountry.toLowerCase();
             return Country.getAllCountries().find(({name}) => (name.toLowerCase() === destinationCountryLowercase))?.isoCode;
         })()
     );
