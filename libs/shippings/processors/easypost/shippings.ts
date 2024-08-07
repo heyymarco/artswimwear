@@ -257,7 +257,7 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
             country   : originCountryCode ?? originCountry,
             state     : originStateCode ?? originState,
             city      : originCityCode ?? originCity,
-            zip       : originZip,
+            zip       : originZip || undefined, // maybe optional (empty string => undefined)
             street1   : origin.address,
             
             company   : origin.company   || undefined, // maybe optional (empty string => undefined)
@@ -269,7 +269,7 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
             country   : destinationCountryCode ?? destinationCountry,
             state     : destinationStateCode ?? destinationState,
             city      : destinationCityCode ?? destinationCity,
-            zip       : destinationZip,
+            zip       : destinationZip || undefined, // maybe optional (empty string => undefined)
             street1   : destination.address,
             
             firstName : destination.firstName,
