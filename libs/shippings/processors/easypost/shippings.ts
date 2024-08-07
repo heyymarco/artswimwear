@@ -124,10 +124,10 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     
     
     
-    const originCountry          = origin.country.toUpperCase();
+    const originCountry          = origin.country;
     const originCountryCode      = (
         (originCountry.length === 2)
-        ? originCountry
+        ? originCountry.toUpperCase()
         : ((): string|undefined => {
             const originCountryLowercase = origin.country.toLowerCase();
             return Country.getAllCountries().find(({name}) => (name.toLowerCase() === originCountryLowercase))?.isoCode;
@@ -153,10 +153,10 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     );
     const originZip              = origin.zip?.toUpperCase();
     
-    const destinationCountry     = destination.country.toUpperCase();
+    const destinationCountry     = destination.country;
     const destinationCountryCode = (
         (destinationCountry.length === 2)
-        ? destinationCountry
+        ? destinationCountry.toUpperCase()
         : ((): string|undefined => {
             const destinationCountryLowercase = destination.country.toLowerCase();
             return Country.getAllCountries().find(({name}) => (name.toLowerCase() === destinationCountryLowercase))?.isoCode;
@@ -333,7 +333,7 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     
     
     
-    if (prisma && matchingShippingWithExtras.length) {
+    if (prisma) {
         try {
             const items = (
                 matchingShippingWithExtras
