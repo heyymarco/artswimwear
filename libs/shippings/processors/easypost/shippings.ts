@@ -142,16 +142,16 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
             return State.getStatesOfCountry(originCountryCode).find(({name}) => (name.toLowerCase() === originStateLowercase))?.isoCode;
         })()
     );
-    const originCity             = origin.city;
+    const originCity             = origin.city.trim();
     const originCityCode         = (
         (!originCountryCode || !originStateCode)
         ? undefined
         : ((): string|undefined => {
-            const originCityLowercase = origin.city.toLowerCase();
+            const originCityLowercase = originCity.toLowerCase();
             return City.getCitiesOfState(originCountryCode, originStateCode).find(({name}) => (name.toLowerCase() === originCityLowercase))?.name
         })()
     );
-    const originZip              = origin.zip?.toUpperCase();
+    const originZip              = origin.zip?.trim().toUpperCase();
     
     const destinationCountry     = destination.country.trim();
     const destinationCountryCode = (
@@ -171,16 +171,16 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
             return State.getStatesOfCountry(destinationCountryCode).find(({name}) => (name.toLowerCase() === destinationStateLowercase))?.isoCode;
         })()
     );
-    const destinationCity        = destination.city;
+    const destinationCity        = destination.city.trim();
     const destinationCityCode    = (
         (!destinationCountryCode || !destinationStateCode)
         ? undefined
         : ((): string|undefined => {
-            const destinationCityLowercase = destination.city.toLowerCase();
+            const destinationCityLowercase = destinationCity.toLowerCase();
             return City.getCitiesOfState(destinationCountryCode, destinationStateCode).find(({name}) => (name.toLowerCase() === destinationCityLowercase))?.name
         })()
     );
-    const destinationZip         = destination.zip?.toUpperCase();
+    const destinationZip         = destination.zip?.trim().toUpperCase();
     
     const cacheKey               = `${originCountryCode ?? originCountry}::${originStateCode ?? originState}::${originCityCode ?? originCity}::${originZip}::${destinationCountryCode ?? destinationCountry}::${destinationStateCode ?? destinationState}::${destinationCityCode ?? destinationCity}::${destinationZip}::${totalProductWeightInOzStepped}`.toLowerCase();
     
