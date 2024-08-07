@@ -831,7 +831,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 
-                if (error.name === 'AbortError') return;
+                if (error?.name === 'AbortError') return;
                 
                 
                 
