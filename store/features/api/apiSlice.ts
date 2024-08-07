@@ -116,13 +116,13 @@ const axiosBaseQuery = (
     unknown,
     unknown
 > => {
-    return async ({ url, body, data, abortSignal, signal, ...restAxiosRequestConfig }) => {
+    return async ({ url, body, data, abortSignal, signal, ...restAxiosRequestConfig }, api) => {
         try {
             const result = await axios({
                 ...restAxiosRequestConfig,
                 url    : `${baseUrl}/${url}`,
                 data   : data ?? body,
-                signal : signal ?? abortSignal,
+                signal : signal ?? abortSignal ?? api.signal,
             });
             
             return {
