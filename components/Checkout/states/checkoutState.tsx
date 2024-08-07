@@ -1356,7 +1356,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     const gotoStepShipping     = useEvent(async (): Promise<boolean> => {
         const goForward = (checkoutStep === 'info');
-        if (goForward) { // go forward from 'info' => do validate shipping agencies
+        if (goForward) { // go forward from 'info' => do validate shipping carriers
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             dispatch(reduxSetCustomerValidation(true)); // enable customerAccount validation
@@ -1393,17 +1393,20 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     
                     if (!shippingList?.ids.length) {
                         showMessageError({
-                            title : <h1>No Shipping Agency</h1>,
+                            title : <h1>No Shipping Method</h1>,
                             error : <>
                                 <p>
-                                    We&apos;re sorry. There are <strong>no shipping agencies available</strong> for delivery to your shipping address.
+                                    We&apos;re sorry. There are <strong>no shipping method available</strong> for delivery to your shipping address.
                                 </p>
                                 <p>
-                                    Please contact us for further assistance.
+                                    Please verify that the <strong>country</strong>, <strong>state</strong>, <strong>city</strong>, and <strong>zip code</strong> are typed correctly, and then try again.
+                                </p>
+                                <p>
+                                    If the problem persists, please contact us for further assistance.
                                 </p>
                             </>,
                         });
-                        return false; // transaction failed due to no_shipping_agency
+                        return false; // transaction failed due to no_shipping_carriers
                     } // if
                 }
                 catch (error: any) {
