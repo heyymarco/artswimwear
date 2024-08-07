@@ -130,7 +130,7 @@ import {
     sumReducer,
 }                           from '@/libs/numbers'
 import {
-    getMatchingShipping,
+    testMatchingShipping,
     calculateShippingCost,
 }                           from '@/libs/shippings/shippings'
 import {
@@ -797,7 +797,7 @@ router
             
             const matchingShipping = (
                 (!simulateOrder && hasShippingAddress && !!selectedShipping)
-                ? await getMatchingShipping(prismaTransaction, selectedShipping, shippingAddress)
+                ? await testMatchingShipping(prismaTransaction, selectedShipping, shippingAddress)
                 : null
             );
             if (!simulateOrder && hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';

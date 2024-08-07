@@ -10,7 +10,7 @@ import {
 
 // utilities:
 import {
-    getMatchingShipping,
+    testMatchingShipping,
 }                           from '@/libs/shippings/shippings'
 
 // templates:
@@ -300,7 +300,7 @@ export const convertOrderDataToOrderAndData = async (prismaTransaction: Paramete
         })),
         shippingProvider : (
             (shippingProviderData && shippingAddressData)
-            ? await getMatchingShipping(prismaTransaction, shippingProviderData, shippingAddressData)
+            ? await testMatchingShipping(prismaTransaction, shippingProviderData, shippingAddressData)
             : null
         ),
         customerOrGuest : (

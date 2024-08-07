@@ -75,7 +75,7 @@ export interface MatchingShipping
     rates : ShippingDetail['rates'] | number // required for matching_shipping algorithm
 }
 
-export const getMatchingShipping = async <TGetMatchingShippingData extends GetMatchingShippingData>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], shippingProvider: TGetMatchingShippingData, shippingAddress: MatchingAddress): Promise<(MatchingShipping & Omit<TGetMatchingShippingData, 'useZones'>)|null> => {
+export const testMatchingShipping = async <TGetMatchingShippingData extends GetMatchingShippingData>(prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0], shippingProvider: TGetMatchingShippingData, shippingAddress: MatchingAddress): Promise<(MatchingShipping & Omit<TGetMatchingShippingData, 'useZones'>)|null> => {
     let {
         eta,
         rates,
