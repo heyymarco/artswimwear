@@ -49,6 +49,11 @@ import {
 
 // reusable-ui components:
 import {
+    // simple-components:
+    ButtonIcon,
+    
+    
+    
     // utility-components:
     WindowResizeCallback,
     useWindowResizeObserver,
@@ -802,7 +807,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        (async (): Promise<void> => {
+        const performRefresh = async (): Promise<void> => {
             try {
                 setTotalShippingCostStatus('loading');
                 
@@ -816,8 +821,35 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             catch {
                 if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
                 setTotalShippingCostStatus('obsolete');
+                
+                
+                
+                const answer = await showMessageError<'retry'|'cancel'>({
+                    error : <>
+                        <p>
+                            Unable to recalculate the shipping cost.
+                        </p>
+                        <p>
+                            We were unable to retrieve data from the server.
+                        </p>
+                    </>,
+                    options : {
+                        retry  : <ButtonIcon theme='success' icon='refresh' autoFocus={true}>Retry</ButtonIcon>,
+                        cancel : <ButtonIcon theme='secondary' icon='cancel'>Cancel</ButtonIcon>,
+                    },
+                });
+                switch (answer) {
+                    case 'retry':
+                        performRefresh();
+                        break;
+                    
+                    default :
+                        gotoStepInformation(/* focusTo: */'shippingAddress');
+                        break;
+                } // switch
             } // try
-        })();
+        };
+        performRefresh();
     }, [checkoutStep, shippingList, shippingProvider, totalProductWeightStepped, shippingAddress]);
     
     const totalShippingCost              = finishedOrderState ? finishedOrderState?.totalShippingCost : realTotalShippingCost;
