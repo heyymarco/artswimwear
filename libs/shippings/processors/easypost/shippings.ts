@@ -133,12 +133,12 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
             return Country.getAllCountries().find(({name}) => (name.toLowerCase() === originCountryLowercase))?.isoCode;
         })()
     );
-    const originState            = origin.state;
+    const originState            = origin.state.trim();
     const originStateCode        = (
         !originCountryCode
         ? undefined
         : ((): string|undefined => {
-            const originStateLowercase = origin.state.toLowerCase();
+            const originStateLowercase = originState.toLowerCase();
             return State.getStatesOfCountry(originCountryCode).find(({name}) => (name.toLowerCase() === originStateLowercase))?.isoCode;
         })()
     );
@@ -162,12 +162,12 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
             return Country.getAllCountries().find(({name}) => (name.toLowerCase() === destinationCountryLowercase))?.isoCode;
         })()
     );
-    const destinationState       = destination.state;
+    const destinationState       = destination.state.trim();
     const destinationStateCode   = (
         !destinationCountryCode
         ? undefined
         : ((): string|undefined => {
-            const destinationStateLowercase = destination.state.toLowerCase();
+            const destinationStateLowercase = destinationState.toLowerCase();
             return State.getStatesOfCountry(destinationCountryCode).find(({name}) => (name.toLowerCase() === destinationStateLowercase))?.isoCode;
         })()
     );
