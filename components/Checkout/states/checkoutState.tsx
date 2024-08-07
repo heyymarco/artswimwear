@@ -809,10 +809,39 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // actions:
         let refreshShippingByAddressPromise : ReturnType<typeof refreshShippingByAddress>|undefined = undefined;
+        let resolveWait: ((value: boolean) => void)|undefined = undefined;
         const performRefresh = async (): Promise<void> => {
             const prevRefreshShippingByAddressId = (++prevRefreshShippingByAddressIdRef.current);
             try {
                 setTotalShippingCostStatus('loading');
+                
+                
+                
+                //#region wait for 1 second before performing `refreshShippingByAddress()`
+                let promiseWait: Promise<boolean>;
+                ({promise: promiseWait , resolve: resolveWait} = ((): Omit<ReturnType<typeof Promise.withResolvers<boolean>>, 'reject'> => { // Promise.withResolvers<boolean>();
+                    let resolve : ReturnType<typeof Promise.withResolvers<boolean>>['resolve'];
+                    const promise = new Promise<boolean>((res, rej) => {
+                        resolve = res;
+                    });
+                    return { promise, resolve: resolve! };
+                })());
+                
+                setTimeout(() => {
+                    resolveWait?.(true);
+                }, 1000);
+                
+                if (!(await promiseWait)) {
+                    if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
+                    if (prevRefreshShippingByAddressIdRef.current === prevRefreshShippingByAddressId) {
+                        setTotalShippingCostStatus('obsolete');
+                    } // if
+                    
+                    
+                    
+                    return;
+                } // if
+                //#endregion wait for 1 second before performing `refreshShippingByAddress()`
                 
                 
                 
@@ -865,6 +894,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // cleanups:
         return () => {
+            resolveWait?.(false);
             refreshShippingByAddressPromise?.abort();
         };
     }, [checkoutStep, shippingList, shippingProvider, totalProductWeightStepped, shippingAddress]);
