@@ -66,11 +66,25 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     const {
         origin,
         destination,
-        totalProductWeight,
+        totalProductWeight: totalProductWeightInKg,
     } = options;
-    const totalProductWeightStepped = (
-        Math.round(totalProductWeight / 0.25)
+    const totalProductWeightInKgStepped = (
+        Math.round(totalProductWeightInKg / 0.25)
         * 0.25
+    );
+    const totalProductWeightInOzInteger = Math.max(1, // min 1 oz
+        Math.round( // round to nearest integer of oz
+            totalProductWeightInKgStepped * 35.274 // converts kg to oz
+        )
+    );
+    const totalProductWeightInOzStepped = (
+        (totalProductWeightInOzInteger < 16)
+        ? totalProductWeightInOzInteger
+        : (
+            Math.ceil(totalProductWeightInOzInteger / 16)
+            *
+            16
+        )
     );
     
     
@@ -120,9 +134,7 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
             phone     : destination.phone     || undefined,
         },
         parcel: {
-            weight: Math.max(0.16, // min 0.16 oz
-                totalProductWeightStepped * 35.274 // converts kg to oz
-            ),
+            weight: totalProductWeightInOzStepped,
         },
         // carrier_accounts : [
         //     // 'ca_dfa4ef16f792459684684fe4adb9d15a', // USPS: GroundAdvantage, Express, Priority
