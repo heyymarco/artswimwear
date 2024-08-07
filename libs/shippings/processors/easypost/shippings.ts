@@ -201,20 +201,17 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
                     select : {
                         items : {
                             select : {
-                                eta              : {
+                                carrier     : true,
+                                service     : true,
+                                
+                                eta         : {
                                     select : {
-                                        min      : true,
-                                        max      : true,
+                                        min : true,
+                                        max : true,
                                     },
                                 },
-                                rate             : true,
-                                currency         : true,
-                                shippingProvider : {
-                                    select : {
-                                        id       : true,
-                                        name     : true,
-                                    },
-                                },
+                                rate        : true,
+                                currency    : true,
                             },
                         },
                     },
@@ -225,15 +222,30 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
                 const matchingShippings : MatchingShipping[] = (
                     (await Promise.all(
                         cached.items
-                        .map(async ({eta, rate: amount, currency, shippingProvider}) => ({
-                            id         : shippingProvider.id,
-                            name       : shippingProvider.name,
+                        .map(async ({carrier, service, eta, rate: amount, currency}) => {
+                            const carrierNameRaw   = carrier;
+                            const carrierName      = friendlyNameCarriers.get(carrierNameRaw) ?? carrierNameRaw;
+                            const serviceNameRaw   = service;
+                            const combinedNameRaw  = `${carrierName} ${serviceNameRaw}`;
+                            const combinedName     = friendlyNameShipping.get(combinedNameRaw) ?? combinedNameRaw;
+                            console.log(combinedName);
                             
-                            weightStep : 0,
-                            eta        : eta,
-                            rates      : await convertForeignToSystemCurrencyIfRequired(amount, currency),
-                        } satisfies MatchingShipping))
+                            const shippingProvider = shippingProviders.find(({name}) => name.toLowerCase() === combinedName.toLocaleLowerCase());
+                            if (!shippingProvider) return undefined;
+                            
+                            
+                            
+                            return {
+                                id         : shippingProvider.id,
+                                name       : shippingProvider.name,
+                                
+                                weightStep : 0,
+                                eta        : eta,
+                                rates      : await convertForeignToSystemCurrencyIfRequired(amount, currency),
+                            } satisfies MatchingShipping;
+                        })
                     ))
+                    .filter((matchingShipping): matchingShipping is Exclude<typeof matchingShipping, undefined> => (matchingShipping !== undefined))
                 );
                 console.log('cache hit: ', JSON.stringify(matchingShippings, undefined, 3));
                 return matchingShippings;
@@ -286,8 +298,11 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     });
     const rates = shipment.rates;
     interface MatchingShippingWithExtra extends MatchingShipping {
-        rate     : number,
-        currency : string,
+        // extra:
+        carrier  : string
+        service  : string
+        rate     : number
+        currency : string
     }
     const matchingShippingWithExtras : MatchingShippingWithExtra[] = (
         (await Promise.all(
@@ -295,11 +310,12 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
             .map(async (rate): Promise<MatchingShippingWithExtra|undefined> => {
                 const carrierNameRaw   = rate.carrier;
                 const carrierName      = friendlyNameCarriers.get(carrierNameRaw) ?? carrierNameRaw;
-                const shippingNameRaw  = `${carrierName} ${rate.service}`;
-                const shippingName     = friendlyNameShipping.get(shippingNameRaw) ?? shippingNameRaw;
-                console.log(shippingName);
+                const serviceNameRaw   = rate.service;
+                const combinedNameRaw  = `${carrierName} ${serviceNameRaw}`;
+                const combinedName     = friendlyNameShipping.get(combinedNameRaw) ?? combinedNameRaw;
+                console.log(combinedName);
                 
-                const shippingProvider = shippingProviders.find(({name}) => name.toLowerCase() === shippingName.toLocaleLowerCase());
+                const shippingProvider = shippingProviders.find(({name}) => name.toLowerCase() === combinedName.toLocaleLowerCase());
                 if (!shippingProvider) return undefined;
                 
                 
@@ -323,6 +339,8 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
                     rates      : await convertForeignToSystemCurrencyIfRequired(amount, rate.currency),
                     
                     // extra:
+                    carrier    : carrierNameRaw,
+                    service    : serviceNameRaw,
                     rate       : amount,
                     currency   : rate.currency,
                 } satisfies MatchingShippingWithExtra;
@@ -337,16 +355,19 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
         try {
             const items = (
                 matchingShippingWithExtras
-                .map(({id, eta, rate, currency}) => ({
+                .map(({eta, carrier, service, rate, currency}) => ({
                     eta                : !eta ? undefined : {
                         create :  {
                             min        : eta.min,
                             max        : eta.max,
                         },
                     },
+                    
+                    // extra:
+                    carrier            : carrier,
+                    service            : service,
                     rate               : rate,
                     currency           : currency,
-                    shippingProviderId : id,
                 }))
             ) satisfies Prisma.EasypostRateCacheItemUpdateInput[];
             
@@ -362,9 +383,12 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
                 },
                 update : {
                     items : {
-                        // append: if the id(s) are NOT in items => preserve, otherwise delete them, then we create all items
+                        // append: if the (carrier+service)(s) are NOT in items => preserve, otherwise delete them, then we create all items
                         deleteMany : {
-                            id : { in : items.map(({shippingProviderId}) => shippingProviderId) },
+                            OR : items.map(({carrier, service}) => ({
+                                carrier : { equals : carrier, mode: 'insensitive' },
+                                service : { equals : service, mode: 'insensitive' },
+                            })),
                         },
                         create : items,
                     },
@@ -384,7 +408,7 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     
     const matchingShippings : MatchingShipping[] = (
         matchingShippingWithExtras
-        .map(({rate: _rate, currency: _currency, ...matchingShipping}) =>
+        .map(({carrier: _carrier, service: _service, rate: _rate, currency: _currency, ...matchingShipping}) =>
             matchingShipping
         )
     );

@@ -166,8 +166,6 @@ model ShippingProvider {
     
     orders                          Order[]                         @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnShipping") // one ShippingProvider may have some related DraftOrder(s)  // one  to many
-    
-    easypostRateCacheItems          EasypostRateCacheItem[]         // one ShippingProvider may have some related Order(s) // one  to many
 }
 model CoverageCountry {
     // records:
@@ -365,6 +363,9 @@ model EasypostRateCacheItem {
     id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
+    carrier                         String
+    service                         String
+    
     eta                             EasypostRateCacheItemEta?
     rate                            Float
     currency                        String
@@ -372,9 +373,6 @@ model EasypostRateCacheItem {
     // relations:
     parentId                        String
     parent                          EasypostRateCache               @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related EasypostRateCacheItem(s) if the EasypostRateCache deleted
-    
-    shippingProviderId              String
-    shippingProvider                ShippingProvider                @relation(fields: [shippingProviderId] , references: [id], onDelete: Cascade) // delete the related EasypostRateCacheItem(s) if the ShippingProvider deleted
 }
 model EasypostRateCacheItemEta {
     // records:
