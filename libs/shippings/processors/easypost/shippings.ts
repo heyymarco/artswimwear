@@ -297,7 +297,11 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
         // ],
     });
     const rates = shipment.rates;
-    interface MatchingShippingWithExtra extends MatchingShipping {
+    interface MatchingShippingWithExtra
+        extends
+            Omit<MatchingShipping, 'id'|'name'>,
+            Partial<Pick<MatchingShipping, 'id'|'name'>>
+    {
         // extra:
         carrier  : string
         service  : string
@@ -316,20 +320,19 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
                 console.log(combinedName);
                 
                 const shippingProvider = shippingProviders.find(({name}) => name.toLowerCase() === combinedName.toLocaleLowerCase());
-                if (!shippingProvider) return undefined;
                 
                 
                 
                 const amountRaw = rate.rate;
-                if (!amountRaw) return undefined;
+                if (!amountRaw) return undefined; // invalid data
                 const amount = Number.parseFloat(amountRaw);
-                if (!isFinite(amount)) return undefined;
+                if (!isFinite(amount)) return undefined; // invalid data
                 
                 
                 
                 return {
-                    id         : shippingProvider.id,
-                    name       : shippingProvider.name,
+                    id         : shippingProvider?.id,
+                    name       : shippingProvider?.name,
                     
                     weightStep : 0,
                     eta        : (rate.delivery_days <= 0) ? undefined : {
@@ -408,6 +411,7 @@ export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'
     
     const matchingShippings : MatchingShipping[] = (
         matchingShippingWithExtras
+        .filter((matchingShippingWithExtra): matchingShippingWithExtra is (MatchingShippingWithExtra & MatchingShipping) => (matchingShippingWithExtra.id !== undefined) && (matchingShippingWithExtra.name !== undefined))
         .map(({carrier: _carrier, service: _service, rate: _rate, currency: _currency, ...matchingShipping}) =>
             matchingShipping
         )
