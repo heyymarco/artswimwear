@@ -770,14 +770,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [shippingList, shippingProvider, totalProductWeight]);
     
     // refresh shippingList when totalWeight changed:
-    const prevTotalProductWeightStepped = useRef<number|null|undefined>(totalProductWeightStepped);
+    const prevTotalProductWeightSteppedRef = useRef<number|null|undefined>(totalProductWeightStepped);
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (prevTotalProductWeightStepped.current === totalProductWeightStepped) {
+        if (prevTotalProductWeightSteppedRef.current === totalProductWeightStepped) {
             return; // no totalWeight changes => ignore
         }
         else {
-            prevTotalProductWeightStepped.current = totalProductWeightStepped; // track the changes
+            prevTotalProductWeightSteppedRef.current = totalProductWeightStepped; // track the changes
         } // if
         
         if ((checkoutStep === 'info') || (checkoutStep === 'pending') || (checkoutStep === 'paid')) return;
@@ -844,13 +844,55 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         break;
                     
                     default :
-                        gotoStepInformation(/* focusTo: */'shippingAddress');
+                        /* if (checkoutStep !== 'info') */ gotoStepInformation(/* focusTo: */'shippingAddress');
                         break;
                 } // switch
             } // try
         };
         performRefresh();
     }, [checkoutStep, shippingList, shippingProvider, totalProductWeightStepped, shippingAddress]);
+    
+    // if the selected shipping method lost due to shippingList update => warn to the user that the selection is no longer available:
+    const prevSelectedShippingProviderRef = useRef<MatchingShipping|undefined>(undefined);
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        const prevSelectedShippingProvider = prevSelectedShippingProviderRef.current;
+        const selectedShipping = shippingProvider ? shippingList?.entities?.[shippingProvider] : undefined;
+        if (prevSelectedShippingProviderRef.current === selectedShipping) {
+            return; // no selected shippingProvider changes => ignore
+        }
+        else {
+            prevSelectedShippingProviderRef.current = selectedShipping; // track the changes
+        } // if
+        
+        if (checkoutStep === 'info') return;       // on the first step => nothing to go back => ignore
+        if (selectedShipping) return;              // still have a VALID SELECTED shippingProvider => ignore
+        if (!prevSelectedShippingProvider) return; // not having prev selected shippingProvider => NOTHING TO LOSE => ignore
+        
+        
+        
+        // actions:
+        showMessageError({ // fire & forget
+            theme : 'warning',
+            error : <>
+                <p>
+                    The shipping method you selected: <strong>{prevSelectedShippingProvider.name}</strong> is no longer available.
+                </p>
+                <p>
+                    Please select another one.
+                </p>
+            </>,
+        });
+        
+        
+        
+        if (!shippingList?.ids?.length) { // there's NO shippingMethod available => go back to the first step
+            /* if (checkoutStep !== 'info') */ gotoStepInformation(/* focusTo: */'shippingAddress');
+        }
+        else { // there's SOME shippingMethod available => go back to the second step
+            gotoStepShipping();
+        } // if
+    }, [checkoutStep, shippingList, shippingProvider]);
     
     const totalShippingCost              = finishedOrderState ? finishedOrderState?.totalShippingCost : realTotalShippingCost;
     
