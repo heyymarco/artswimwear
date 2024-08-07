@@ -42,9 +42,9 @@ export const fetchCache = 'force-no-store';
 
 
 // routers:
-export const POST           = async (req: Request): Promise<Response> => handleResponse(req, true);
-export const PATCH          = async (req: Request): Promise<Response> => handleResponse(req, false);
-export const handleResponse = async (req: Request, includingInternalShippings = true): Promise<Response> => {
+export const POST    = async (req: Request): Promise<Response> => handleResponse(req, true);
+export const PATCH   = async (req: Request): Promise<Response> => handleResponse(req, false);
+const handleResponse = async (req: Request, includingInternalShippings = true): Promise<Response> => {
     //#region parsing request
     const {
         country,
