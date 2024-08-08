@@ -106,23 +106,25 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
     
     
     
+    // test:
+    // origin.country        = 'US';
+    // origin.state          = 'California';
+    // origin.city           = 'San Francisco';
+    // origin.zip            = '94104';
+    // 
+    // destination.country   = 'US';
+    // destination.state     = 'California';
+    // destination.city      = 'Redondo Beach';
+    // destination.zip       = '90277';
+    // destination.address   = '179 N Harbor Dr';
+    // 
+    // destination.firstName = 'Steve Brule';
+    // destination.lastName  = 'Brule';
+    // destination.phone     = '4155559999';
+    
+    
+    
     // normalize some origin & destination properties to produce shareable cache's key:
-    origin.country        = 'US';
-    origin.state          = 'California';
-    origin.city           = 'San Francisco';
-    origin.zip            = '94104';
-    
-    destination.country   = 'US';
-    destination.state     = 'California';
-    destination.city      = 'Redondo Beach';
-    destination.zip       = '90277';
-    destination.address   = '179 N Harbor Dr';
-    
-    destination.firstName = 'Steve Brule';
-    destination.lastName  = 'Brule';
-    destination.phone     = '4155559999';
-    
-    
     
     const originCountry          = origin.country.trim();
     const originCountryCode      = (
