@@ -164,9 +164,20 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                                 const order = await findOrderById(prismaTransaction, {
                                     orderId     : orderId,
                                     
-                                    orderSelect : commitOrderSelect,
+                                    orderSelect : {
+                                        ...commitOrderSelect,
+                                        payment : {
+                                            select : {
+                                                type : true,
+                                            },
+                                        },
+                                    },
                                 });
                                 if (!order) return null;
+                                if (order?.payment?.type !== 'MANUAL') {
+                                    console.log('The Order is already paid: ', order);
+                                    return null; // already paid => ignore
+                                } // if
                                 
                                 
                                 
@@ -188,11 +199,7 @@ export async function POST(req: Request, res: Response): Promise<Response> {
                     
                     
                     // send email confirmation:
-                    if (
-                        order
-                        &&
-                        (order.payment?.type !== 'CARD') // a payment_card is already notified by `/api/checkout/PATCH`
-                    ) {
+                    if (order) {
                         await Promise.all([
                             // notify that the payment has been received:
                             await sendConfirmationEmail({
