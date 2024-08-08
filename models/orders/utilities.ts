@@ -8,11 +8,6 @@ import {
     type prisma,
 }                           from '@/libs/prisma.server'
 
-// utilities:
-import {
-    testMatchingShipping,
-}                           from '@/libs/shippings/shippings'
-
 // templates:
 import type {
     // types:
@@ -299,8 +294,8 @@ export const convertOrderDataToOrderAndData = async (prismaTransaction: Paramete
             } : null,
         })),
         shippingProvider : (
-            (shippingProviderData && shippingAddressData)
-            ? await testMatchingShipping(prismaTransaction, shippingProviderData, shippingAddressData)
+            (shippingAddressData && shippingProviderData)
+            ? shippingProviderData
             : null
         ),
         customerOrGuest : (
