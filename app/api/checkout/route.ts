@@ -45,6 +45,8 @@ import {
     
     isAuthorizedFundData,
     isPaymentDetail,
+    
+    defaultShippingOriginSelect,
 }                           from '@/models'
 import {
     Prisma,
@@ -116,6 +118,9 @@ import {
     midtransCaptureFund,
     midtransCancelOrder,
 }                           from './paymentProcessors.midtrans'
+import {
+    getMatchingShippings,
+}                           from '@/libs/shippings/processors/easypost'
 
 // utilities:
 import {
@@ -130,6 +135,7 @@ import {
     sumReducer,
 }                           from '@/libs/numbers'
 import {
+    type MatchingShipping,
     testMatchingShipping,
     calculateShippingCost,
 }                           from '@/libs/shippings/shippings'
@@ -792,19 +798,6 @@ router
             
             
             
-            //#region validate shipping
-            if (!simulateOrder && hasShippingAddress && !selectedShipping) throw 'BAD_SHIPPING';
-            
-            const matchingShipping = (
-                (!simulateOrder && hasShippingAddress && !!selectedShipping)
-                ? await testMatchingShipping(prismaTransaction, selectedShipping, shippingAddress)
-                : null
-            );
-            if (!simulateOrder && hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';
-            //#endregion validate shipping
-            
-            
-            
             //#region validate cart items: check existing products => check product quantities => create detailed items
             const detailedItems    : DetailedItem[] = [];
             /**
@@ -1001,6 +994,9 @@ router
                         totalProductWeight       = trimNumber(totalProductWeight);         // decimalize accumulated numbers to avoid producing ugly_fractional_decimal
                     } // if
                 } // for
+                
+                
+                
                 if (limitedStockItems.length) throw new OutOfStockError(limitedStockItems);
                 if (simulateOrder) return {
                     orderId                   : '', // empty string => simulateOrder
@@ -1009,13 +1005,104 @@ router
                     newOrder                  : undefined,
                 };
             }
-            if ((totalProductWeight != null) !== hasShippingAddress) throw 'BAD_SHIPPING'; // must have shipping address if contains at least 1 PHYSICAL_GOODS -or- must not_have shipping address if all DIGITAL_GOODS
+            if (!hasShippingAddress) {
+                if (totalProductWeight !== null) throw 'BAD_SHIPPING'; // if NO  shippingAddress => should have NO PHYSICAL_GOODS
+            }
+            else {
+                if (totalProductWeight === null) throw 'BAD_SHIPPING'; // if HAS shippingAddress => should HAVE PHYSICAL_GOODS
+            } // if
+            //#endregion validate cart items: check existing products => check product quantities => create detailed items
+            
+            
+            
+            //#region validate shipping
+            if (!simulateOrder && hasShippingAddress && !selectedShipping) throw 'BAD_SHIPPING';
+            
+            const matchingShipping = (
+                (!simulateOrder && hasShippingAddress && !!selectedShipping)
+                ? (
+                    await testMatchingShipping(prismaTransaction, selectedShipping, shippingAddress)
+                    ??
+                    await (async (): Promise<MatchingShipping|null> => {
+                        const [shippingOrigin, shippingProviders] = await prisma.$transaction([
+                            prisma.defaultShippingOrigin.findFirst({
+                                select : defaultShippingOriginSelect,
+                            }),
+                            
+                            prisma.shippingProvider.findMany({
+                                where  : {
+                                    visibility : { not: 'DRAFT' }, // allows access to ShippingProvider with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                                },
+                                select : {
+                                    // records:
+                                    id         : true, // required for identifier
+                                    
+                                    
+                                    
+                                    // data:
+                                    name       : true, // required for identifier
+                                    
+                                    weightStep : true, // required for calculate_shipping_cost algorithm
+                                    eta        : {     // optional for matching_shipping algorithm
+                                        select : {
+                                            // data:
+                                            min : true,
+                                            max : true,
+                                        },
+                                    },
+                                    rates      : {     // required for calculate_shipping_cost algorithm
+                                        select : {
+                                            // data:
+                                            start : true,
+                                            rate  : true,
+                                        },
+                                    },
+                                    
+                                    useZones   : true, // required for matching_shipping algorithm
+                                },
+                            }),
+                        ]);
+                        if (!shippingOrigin) return null;
+                        if (!shippingProviders.length) return null;
+                        
+                        
+                        
+                        const externalShippingRates = await getMatchingShippings(shippingProviders, {
+                            origin      : shippingOrigin,
+                            destination : {
+                                country   : shippingAddress.country,
+                                state     : shippingAddress.state,
+                                city      : shippingAddress.city,
+                                zip       : shippingAddress.zip,
+                                address   : shippingAddress.address,
+                                
+                                firstName : shippingAddress.firstName,
+                                lastName  : shippingAddress.lastName,
+                                phone     : shippingAddress.phone,
+                            },
+                            totalProductWeight : totalProductWeight ?? 0,
+                            prisma,
+                        });
+                        return (
+                            externalShippingRates
+                            .find(({id}) => (id === selectedShipping.id))
+                            ??
+                            null
+                        );
+                    })()
+                )
+                : null
+            );
+            if (!simulateOrder && hasShippingAddress && !matchingShipping) throw 'BAD_SHIPPING';
+            
+            
+            
             const totalShippingCost          = matchingShipping ? calculateShippingCost(matchingShipping, totalProductWeight) : null;
             const totalShippingCostConverted = await convertCustomerCurrencyIfRequired(totalShippingCost, currency);
             const totalCostConverted         = trimNumber(                                 // decimalize summed numbers to avoid producing ugly_fractional_decimal
                 totalProductPriceConverted + (totalShippingCostConverted ?? 0)             // may produces ugly_fractional_decimal
             );
-            //#endregion validate cart items: check existing products => check product quantities => create detailed items
+            //#endregion validate shipping
             
             
             
