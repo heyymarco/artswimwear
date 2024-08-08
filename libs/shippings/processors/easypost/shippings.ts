@@ -69,14 +69,14 @@ const friendlyNameShipping = new Map<string, string>([
 
 
 
-export interface GetAllRatesOptions {
+export interface GetMatchingShippingsOptions {
     origin              : DefaultShippingOriginDetail,
     destination         : ShippingAddressDetail
     totalProductWeight  : number
     
     prisma             ?: typeof prisma
 }
-export const getAllRates = async (shippingProviders: Pick<ShippingProvider, 'id'|'name'>[], options: GetAllRatesOptions): Promise<MatchingShipping[]> => {
+export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvider, 'id'|'name'>[], options: GetMatchingShippingsOptions): Promise<MatchingShipping[]> => {
     // options:
     const {
         origin,

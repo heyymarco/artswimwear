@@ -30,7 +30,7 @@ import {
     updateShippingProviders,
 }                           from '@/libs/shippings/processors/rajaongkir'
 import {
-    getAllRates,
+    getMatchingShippings,
 }                           from '@/libs/shippings/processors/easypost'
 
 
@@ -158,7 +158,7 @@ const handleResponse = async (req: Request, includingInternalShippings = true): 
         
         
         
-        return getAllRates(shippingProviders, {
+        return getMatchingShippings(shippingProviders, {
             origin      : shippingOrigin,
             destination : {
                 country,

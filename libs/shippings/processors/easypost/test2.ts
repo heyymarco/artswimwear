@@ -1,7 +1,7 @@
 import {
     prisma,
 }                           from '@/libs/prisma.server'
-import {getAllRates} from './shippings'
+import {getMatchingShippings} from './shippings'
 import {
     // utilities:
     defaultShippingOriginSelect,
@@ -48,7 +48,7 @@ const [shippingOrigin, shippingProviders] = await prisma.$transaction([
     }),
 ]);
 if (shippingOrigin && shippingProviders.length) {
-    await getAllRates(shippingProviders, {
+    await getMatchingShippings(shippingProviders, {
         origin      : {
             ...shippingOrigin,
             country : 'US',
