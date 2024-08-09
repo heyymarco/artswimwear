@@ -38,9 +38,12 @@ import {
 // utilities:
 const friendlyNameCarriers = new Map<string, string>([
     ['USPS'        , 'USPS'],
+    
     ['FedExDefault', 'FedEx'],
+    
     ['DHL'         , 'DHL'],
     ['DHLExpress'  , 'DHL'],
+    
     ['CanadaPost'  , 'Canada Post'],
 ]);
 const friendlyNameShipping = new Map<string, string>([
