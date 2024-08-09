@@ -44,6 +44,8 @@ const friendlyNameCarriers = new Map<string, string>([
     ['DHL'         , 'DHL'],
     ['DHLExpress'  , 'DHL'],
     
+    ['UPS'         , 'UPS'],
+    
     ['CanadaPost'  , 'Canada Post'],
     
     ['LSO'         , 'LSO'],
@@ -137,6 +139,22 @@ const friendlyNameShipping = new Map<string, string>([
     ['DHL SameDay'                      ,'DHL Same Day'],
     ['DHL SecureLine'                   ,'DHL Secure Line'],
     ['DHL SprintLine'                   ,'DHL Sprint Line'],
+    
+    
+    
+    // UPS:
+    ['UPS Ground'               , 'UPS Ground'],
+    ['UPS UPSStandard'          , 'UPS Standard'],
+    ['UPS UPSSaver'             , 'UPS Saver'],
+    ['UPS Express'              , 'UPS Express'],
+    ['UPS ExpressPlus'          , 'UPS Express Plus'],
+    ['UPS Expedited'            , 'UPS Expedited'],
+    ['UPS NextDayAir'           , 'UPS Next Day Air'],
+    ['UPS NextDayAirSaver'      , 'UPS Next Day Air Saver'],
+    ['UPS NextDayAirEarlyAM'    , 'UPS Next Day Air Early AM'],
+    ['UPS 2ndDayAir'            , 'UPS 2nd Day Air'],
+    ['UPS 2ndDayAirAM'          , 'UPS 2nd Day Air AM'],
+    ['UPS 3DaySelect'           , 'UPS 3Day Select'],
     
     
     
