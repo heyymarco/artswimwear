@@ -63,20 +63,37 @@ const friendlyNameShipping = new Map<string, string>([
     
     // FedEx:
     
-    // generals:
-    ['FedEx FEDEX_GROUND'        , 'FedEx Ground'],
+    // US:
+    ['FedEx FEDEX_2_DAY'                      , 'FedEx 2 Day'],
+    ['FedEx FEDEX_2_DAY_AM'                   , 'FedEx 2 Day AM'],
+    ['FedEx FEDEX_EXPRESS_SAVER'              , 'FedEx Express Saver'],
+    ['FedEx FEDEX_GROUND'                     , 'FedEx Ground'],
+    ['FedEx FEDEX_FIRST_OVERNIGHT'            , 'FedEx First Overnight'],
+    ['FedEx FEDEX_GROUND_HOME_DELIVERY'       , 'FedEx Ground Home Delivery'],
+    ['FedEx FEDEX_PRIORITY_OVERNIGHT'         , 'FedEx Priority Overnight'],
+    ['FedEx FEDEX_SMART_POST'                 , 'FedEx Smart Post'],
+    ['FedEx FEDEX_STANDARD_OVERNIGHT'         , 'FedEx Standard Overnight'],
+    // Aliases:
+    ['FedEx 2_DAY'                            , 'FedEx 2 Day'],
+    ['FedEx 2_DAY_AM'                         , 'FedEx 2 Day AM'],
+    ['FedEx EXPRESS_SAVER'                    , 'FedEx Express Saver'],
+    ['FedEx GROUND'                           , 'FedEx Ground'],
+    ['FedEx FIRST_OVERNIGHT'                  , 'FedEx First Overnight'],
+    ['FedEx GROUND_HOME_DELIVERY'             , 'FedEx Ground Home Delivery'],
+    ['FedEx PRIORITY_OVERNIGHT'               , 'FedEx Priority Overnight'],
+    ['FedEx SMART_POST'                       , 'FedEx Smart Post'],
+    ['FedEx STANDARD_OVERNIGHT'               , 'FedEx Standard Overnight'],
     
-    // overnight delivery:
-    ['FedEx FIRST_OVERNIGHT'     , 'FedEx First Overnight'],
-    ['FedEx PRIORITY_OVERNIGHT'  , 'FedEx Priority Overnight'],
-    ['FedEx STANDARD_OVERNIGHT'  , 'FedEx Standard Overnight'],
-    
-    // 2 day delivery:
-    ['FedEx FEDEX_2_DAY'         , 'FedEx 2Day'],
-    ['FedEx FEDEX_2_DAY_AM'      , 'FedEx 2Day AM'],
-    
-    // 3 day delivery:
-    ['FedEx FEDEX_EXPRESS_SAVER' , 'FedEx Express Saver'],
+    // International:
+    ['FedEx FEDEX_INTERNATIONAL_CONNECT_PLUS' , 'FedEx International Connect Plus'],
+    ['FedEx FEDEX_INTERNATIONAL_ECONOMY'      , 'FedEx International Economy'],
+    ['FedEx FEDEX_INTERNATIONAL_FIRST'        , 'FedEx International First'],
+    ['FedEx FEDEX_INTERNATIONAL_PRIORITY'     , 'FedEx International Priority'],
+    // Aliases:
+    ['FedEx INTERNATIONAL_CONNECT_PLUS'       , 'FedEx International Connect Plus'],
+    ['FedEx INTERNATIONAL_ECONOMY'            , 'FedEx International Economy'],
+    ['FedEx INTERNATIONAL_FIRST'              , 'FedEx International First'],
+    ['FedEx INTERNATIONAL_PRIORITY'           , 'FedEx International Priority'],
     
     
     
