@@ -40,6 +40,7 @@ const friendlyNameCarriers = new Map<string, string>([
     ['USPS'        , 'USPS'],
     ['FedExDefault', 'FedEx'],
     ['DHL'         , 'DHL'],
+    ['DHLExpress'  , 'DHL'],
     ['CanadaPost'  , 'Canada Post'],
 ]);
 const friendlyNameShipping = new Map<string, string>([
@@ -98,7 +99,7 @@ const friendlyNameShipping = new Map<string, string>([
     
     
     
-    // DHL:
+    // DHL Express:
     ['DHL BreakBulkEconomy'             ,'DHL Break Bulk Economy'],
     ['DHL BreakBulkExpress'             ,'DHL Break Bulk Express'],
     ['DHL DomesticEconomySelect'        ,'DHL Domestic Economy Select'],
@@ -340,6 +341,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
                         })
                     ))
                     .filter((matchingShipping): matchingShipping is Exclude<typeof matchingShipping, undefined> => (matchingShipping !== undefined))
+                    .toSorted((a, b) => (!a.name || !b.name) ? 0 : (a.name < b.name) ? -1 : 1)
                 );
                 console.log('cache hit: ', JSON.stringify(matchingShippings, undefined, 3));
                 return matchingShippings;
@@ -444,6 +446,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
             })
         ))
         .filter((rate): rate is Exclude<typeof rate, undefined> => (rate !== undefined))
+        .toSorted((a, b) => (!a.name || !b.name) ? 0 : (a.name < b.name) ? -1 : 1)
     );
     
     
