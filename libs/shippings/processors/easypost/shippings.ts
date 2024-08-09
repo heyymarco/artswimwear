@@ -45,6 +45,8 @@ const friendlyNameCarriers = new Map<string, string>([
     ['DHLExpress'  , 'DHL'],
     
     ['CanadaPost'  , 'Canada Post'],
+    
+    ['LSO'         , 'LSO'],
 ]);
 const friendlyNameShipping = new Map<string, string>([
     // USPS:
@@ -161,6 +163,16 @@ const friendlyNameShipping = new Map<string, string>([
     ['Canada Post SmallPacketInternationalSurface'  , 'Canada Post Small Packet International Surface'],
     ['Canada Post TrackedPacketInternational'       , 'Canada Post Tracked Packet International'],
     ['Canada Post ExpeditedParcelPlus'              , 'Canada Post Expedited Parcel Plus'],
+    
+    
+    
+    // LSO:
+    ['LSO PriorityEarly'    , 'LSO Priority Early'],
+    ['LSO PriorityBasic'    , 'LSO Priority Basic'],
+    ['LSO Priority2ndDay'   , 'LSO Priority 2nd Day'],
+    ['LSO GroundEarly'      , 'LSO Ground Early'],
+    ['LSO GroundBasic'      , 'LSO Ground Basic'],
+    ['LSO ECommerce'        , 'LSO Ecommerce'],
 ]);
 
 
