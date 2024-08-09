@@ -636,6 +636,7 @@ model ShippingTracking {
     
     // data:
     token                           String                          @unique
+    trackerId                       String?                         @unique
     
     shippingCarrier                 String?                         // minLength: 1, maxLength: 50
     shippingNumber                  String?                         // minLength: 1, maxLength: 50
