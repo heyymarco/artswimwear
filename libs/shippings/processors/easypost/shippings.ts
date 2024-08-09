@@ -365,7 +365,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
                     name       : shippingProvider?.name,
                     
                     weightStep : 0,
-                    eta        : ((typeof(rate.delivery_days) === 'number') && (rate.delivery_days <= 0)) ? undefined : {
+                    eta        : ((typeof(rate.delivery_days) !== 'number') || (rate.delivery_days <= 0)) ? undefined : {
                         min    : rate.delivery_days,
                         max    : rate.delivery_days,
                     },
