@@ -44,10 +44,20 @@ const friendlyNameCarriers = new Map<string, string>([
 const friendlyNameShipping = new Map<string, string>([
     // USPS:
     
-    // generals:
-    ['USPS GroundAdvantage'       , 'USPS Ground'],
-    ['USPS Priority Mail'         , 'USPS Priority'],
-    ['USPS Priority Mail Express' , 'USPS Express'],
+    // US:
+    ['USPS First'                                , 'USPS First'],
+    ['USPS Priority'                             , 'USPS Priority'],
+    ['USPS Express'                              , 'USPS Express'],
+    
+    ['USPS GroundAdvantage'                      , 'USPS Ground Advantage'],
+    ['USPS LibraryMail'                          , 'USPS Library Mail'],
+    ['USPS MediaMail'                            , 'USPS Media Mail'],
+    
+    // International:
+    ['USPS FirstClassMailInternational'          , 'USPS First Class Mail International'],
+    ['USPS FirstClassPackageInternationalService', 'USPS First Class Package International Service'],
+    ['USPS PriorityMailInternational'            , 'USPS Priority Mail International'],
+    ['USPS ExpressMailInternational'             , 'USPS Express Mail International'],
     
     
     

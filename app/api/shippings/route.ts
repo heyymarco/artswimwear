@@ -252,7 +252,7 @@ const handleResponse = async (req: Request, includingInternalShippings = true): 
                     shippings
                     .map((shippingProvider) => testMatchingShipping(prismaTransaction, shippingProvider, shippingAddress))
                 );
-            }))
+            }, { timeout: 15000 })) // give a longer timeout for `testMatchingShipping`
             .filter((shippingProvider): shippingProvider is Exclude<typeof shippingProvider, null|undefined> => !!shippingProvider)
         );
         return matchingShippings;
