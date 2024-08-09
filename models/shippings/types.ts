@@ -240,3 +240,39 @@ export interface CountryPreview
         >
 {
 }
+
+
+
+export type ShippingCarrier =
+    |'Australia Post'
+    |'Better Trucks'
+    |'Canada Post'
+    |'Canpar'
+    |'Cirro E-Commerce'
+    |'CS Logistics'
+    |'Deliver-IT'
+    |'DHL eCommerce'
+    |'DHL Express'
+    |'Estafeta'
+    |'FedEx'
+    |'FirstMile'
+    |'Flexport Parcel'
+    |'GIO Express'
+    |'Hailify'
+    |'Jitsu'
+    |'Loomis Express'
+    |'LSO'
+    |'OnTrac'
+    |'Optima'
+    |'OSM'
+    |'Quick Courier'
+    |'Royal Mail'
+    |'Sendle'
+    |'SmartKargo'
+    |'Sonic'
+    |'Swyft'
+    |'TForce Logistics'
+    |'UPS'
+    |'USPS'
+    |'Veho'
+    | & (string & {})
