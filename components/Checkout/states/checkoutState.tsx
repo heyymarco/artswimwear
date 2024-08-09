@@ -1171,7 +1171,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // initialize shippingList:
         console.log('recovering shippingList...');
-        getShippingByAddress({
+        getShippingByAddress({ // fire and forget
             ...shippingAddress,
             totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
         });
@@ -2041,7 +2041,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const refetchCheckout      = useEvent((): void => {
         refetchCart();
+        
         if (prevOrderId) showPrevOrder({orderId: prevOrderId});
+        
+        if (isShippingAddressRequired && isShippingError && !isShippingLoading && shippingAddress) {
+            getShippingByAddress({ // fire and forget
+                ...shippingAddress,
+                totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
+            });
+        } // if
     });
     
     
