@@ -37,7 +37,9 @@ import {
 
 // utilities:
 const friendlyNameCarriers = new Map<string, string>([
+    ['USPS'        , 'USPS'],
     ['FedExDefault', 'FedEx'],
+    ['CanadaPost'  , 'Canada Post'],
 ]);
 const friendlyNameShipping = new Map<string, string>([
     // USPS:
@@ -65,6 +67,32 @@ const friendlyNameShipping = new Map<string, string>([
     
     // 3 day delivery:
     ['FedEx FEDEX_EXPRESS_SAVER' , 'FedEx Express Saver'],
+    
+    
+    
+    // Canada Post:
+    
+    // Canada:
+    ['Canada Post RegularParcel'                    , 'Canada Post Regular Parcel'],
+    ['Canada Post ExpeditedParcel'                  , 'Canada Post Expedited Parcel'],
+    ['Canada Post Xpresspost'                       , 'Canada Post Xpresspost'],
+    ['Canada Post Priority'                         , 'Canada Post Priority'],
+    
+    // US:
+    ['Canada Post ExpeditedParcelUSA'               , 'Canada Post Expedited Parcel USA'],
+    ['Canada Post SmallPacketUSAAir'                , 'Canada Post Small Packet USA Air'],
+    ['Canada Post TrackedPacketUSA'                 , 'Canada Post Tracked Packet USA'],
+    ['Canada Post TrackedPacketUSALVM'              , 'Canada Post Tracked Packet USA LVM'],
+    ['Canada Post XpresspostUSA'                    , 'Canada Post Xpresspost USA'],
+    
+    // International:
+    ['Canada Post XpresspostInternational'          , 'Canada Post Xpresspost International'],
+    ['Canada Post InternationalParcelAir'           , 'Canada Post International Parcel Air'],
+    ['Canada Post InternationalParcelSurface'       , 'Canada Post International Parcel Surface'],
+    ['Canada Post SmallPacketInternationalAir'      , 'Canada Post Small Packet International Air'],
+    ['Canada Post SmallPacketInternationalSurface'  , 'Canada Post Small Packet International Surface'],
+    ['Canada Post TrackedPacketInternational'       , 'Canada Post Tracked Packet International'],
+    ['Canada Post ExpeditedParcelPlus'              , 'Canada Post Expedited Parcel Plus'],
 ]);
 
 
@@ -337,7 +365,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
                     name       : shippingProvider?.name,
                     
                     weightStep : 0,
-                    eta        : (rate.delivery_days <= 0) ? undefined : {
+                    eta        : ((typeof(rate.delivery_days) === 'number') && (rate.delivery_days <= 0)) ? undefined : {
                         min    : rate.delivery_days,
                         max    : rate.delivery_days,
                     },
