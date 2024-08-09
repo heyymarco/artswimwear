@@ -70,11 +70,9 @@ export const getCurrencyRate = async (targetCurrency: string): Promise<number> =
  * from app's default currency to `targetCurrency`.
  */
 const getCurrencyConverter   = async (targetCurrency: string): Promise<{rate: number, fractionUnit: number}> => {
-    const currencyConfig = checkoutConfigShared.intl.currencies[targetCurrency];
-    if (currencyConfig === undefined) throw Error('Unsupported currency');
     return {
         rate         : await getCurrencyRate(targetCurrency),
-        fractionUnit : currencyConfig.fractionUnit,
+        fractionUnit : checkoutConfigShared.intl.currencies[targetCurrency]?.fractionUnit ?? 0.001,
     };
 }
 
@@ -96,14 +94,10 @@ export const convertCustomerCurrencyIfRequired = async <TNumber extends number|n
     const {rate, fractionUnit} = (
         (typeof(customerCurrency) === 'string')
         ? await getCurrencyConverter(customerCurrency)
-        : (() => {
-            const currencyConfig = checkoutConfigShared.intl.currencies[customerCurrency.currency];
-            if (currencyConfig === undefined) throw Error('Unsupported currency');
-            return {
-                rate         : customerCurrency.rate,
-                fractionUnit : currencyConfig.fractionUnit
-            };
-        })()
+        : {
+            rate         : customerCurrency.rate,
+            fractionUnit : checkoutConfigShared.intl.currencies[customerCurrency.currency]?.fractionUnit ?? 0.001,
+        }
     );
     const rawConverted         = fromAmount * rate;
     const rounding     = {
@@ -128,9 +122,7 @@ export const convertForeignToSystemCurrencyIfRequired = async <TNumber extends n
     
     
     
-    const currencyConfig = checkoutConfigShared.intl.currencies[checkoutConfigShared.intl.defaultCurrency];
-    if (currencyConfig === undefined) throw Error('Unsupported currency');
-    const fractionUnit = currencyConfig.fractionUnit;
+    const fractionUnit = checkoutConfigShared.intl.currencies[checkoutConfigShared.intl.defaultCurrency]?.fractionUnit ?? 0.001;
     const {rate} = await getCurrencyConverter(foreignCurrency);
     const rawConverted = fromAmount / rate;
     const rounding     = {
