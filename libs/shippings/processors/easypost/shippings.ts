@@ -39,6 +39,7 @@ import {
 const friendlyNameCarriers = new Map<string, string>([
     ['USPS'        , 'USPS'],
     ['FedExDefault', 'FedEx'],
+    ['DHL'         , 'DHL'],
     ['CanadaPost'  , 'Canada Post'],
 ]);
 const friendlyNameShipping = new Map<string, string>([
@@ -94,6 +95,42 @@ const friendlyNameShipping = new Map<string, string>([
     ['FedEx INTERNATIONAL_ECONOMY'            , 'FedEx International Economy'],
     ['FedEx INTERNATIONAL_FIRST'              , 'FedEx International First'],
     ['FedEx INTERNATIONAL_PRIORITY'           , 'FedEx International Priority'],
+    
+    
+    
+    // DHL:
+    ['DHL BreakBulkEconomy'             ,'DHL Break Bulk Economy'],
+    ['DHL BreakBulkExpress'             ,'DHL Break Bulk Express'],
+    ['DHL DomesticEconomySelect'        ,'DHL Domestic Economy Select'],
+    ['DHL DomesticExpress'              ,'DHL Domestic Express'],
+    ['DHL DomesticExpress1030'          ,'DHL Domestic Express 1030'],
+    ['DHL DomesticExpress1200'          ,'DHL Domestic Express 1200'],
+    ['DHL EconomySelect'                ,'DHL Economy Select'],
+    ['DHL EconomySelectNonDoc'          ,'DHL Economy Select Non Doc'],
+    ['DHL EuroPack'                     ,'DHL Europack'],
+    ['DHL EuropackNonDoc'               ,'DHL Europack Non Doc'],
+    ['DHL Express1030'                  ,'DHL Express 1030'],
+    ['DHL Express1030NonDoc'            ,'DHL Express 1030 Non Doc'],
+    ['DHL Express1200NonDoc'            ,'DHL Express 1200 Non Doc'],
+    ['DHL Express1200'                  ,'DHL Express 1200'],
+    ['DHL Express900'                   ,'DHL Express 900'],
+    ['DHL Express900NonDoc'             ,'DHL Express 900 Non Doc'],
+    ['DHL ExpressEasy'                  ,'DHL Express Easy'],
+    ['DHL ExpressEasyNonDoc'            ,'DHL Express Easy Non Doc'],
+    ['DHL ExpressEnvelope'              ,'DHL Express Envelope'],
+    ['DHL ExpressWorldwide'             ,'DHL Express Worldwide'],
+    ['DHL ExpressWorldwideB2C'          ,'DHL Express Worldwide B2C'],
+    ['DHL ExpressWorldwideB2CNonDoc'    ,'DHL Express Worldwide B2C Non Doc'],
+    ['DHL ExpressWorldwideECX'          ,'DHL Express Worldwide ECX'],
+    ['DHL ExpressWorldwideNonDoc'       ,'DHL Express Worldwide Non Doc'],
+    ['DHL FreightWorldwide'             ,'DHL Freight Worldwide'],
+    ['DHL GlobalmailBusiness'           ,'DHL Global Mail Business'],
+    ['DHL JetLine'                      ,'DHL Jet Line'],
+    ['DHL JumboBox'                     ,'DHL Jumbo Box'],
+    ['DHL LogisticsServices'            ,'DHL Logistics Services'],
+    ['DHL SameDay'                      ,'DHL Same Day'],
+    ['DHL SecureLine'                   ,'DHL Secure Line'],
+    ['DHL SprintLine'                   ,'DHL Sprint Line'],
     
     
     
