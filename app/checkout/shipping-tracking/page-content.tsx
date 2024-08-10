@@ -120,7 +120,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
     
     
     // apis:
-    const [doShippingTracking, {data: shippingTrackingData, isLoading: isShippingTrackingLoading, isError: isShippingTrackingError, error: shippingTrackingError}] = useShippingTracking();
+    const [getShippingTracking, {data: shippingTrackingData, isLoading: isShippingTrackingLoading, isError: isShippingTrackingError, error: shippingTrackingError}] = useShippingTracking();
     
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
     
@@ -157,7 +157,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
         
         // actions:
         try {
-            const shippingTrackingDetail = await doShippingTracking({
+            const shippingTrackingDetail = await getShippingTracking({
                 shippingTracking : {
                     token,
                 },
@@ -195,11 +195,11 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
         
         // update server setting:
         try {
-            await doShippingTracking({
+            await getShippingTracking({
                 shippingTracking   : {
                     token             : token,
                     
-                    preferredTimezone : newPreferredTimezone,
+                    preferredTimezone : newPreferredTimezone, // acutally this is a POST action, but since changing the `preferredTimezone` is not a significant mutation, we decided to treat it as a GET action
                 },
             }).unwrap();
         }

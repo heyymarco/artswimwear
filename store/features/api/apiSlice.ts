@@ -324,7 +324,7 @@ export const apiSlice = createApi({
                 body   : paymentConfirmationDetail,
             }),
         }),
-        shippingTracking            : builder.mutation<ShippingTrackingDetail, ShippingTrackingRequest>({
+        shippingTracking            : builder.query<ShippingTrackingDetail, ShippingTrackingRequest>({
             query : (shippingTrackingRequest) => ({
                 url    : 'checkout',
                 method : 'PATCH',
@@ -410,7 +410,7 @@ export const {
     // usePlaceOrderMutation                  : usePlaceOrder,
     // useMakePaymentMutation                 : useMakePayment,
     usePaymentConfirmationMutation         : usePaymentConfirmation,
-    useShippingTrackingMutation            : useShippingTracking,
+    useLazyShippingTrackingQuery           : useShippingTracking,
     useShowPrevOrderMutation               : useShowPrevOrder,
     
     useUpdateCustomerMutation              : useUpdateCustomer,
