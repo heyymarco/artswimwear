@@ -14,13 +14,8 @@ import {
     
     
     
-    // a responsive management system:
-    ifScreenWidthAtLeast,
-    
-    
-    
-    // removes browser's default stylesheet:
-    stripoutTextbox,
+    // a typography management system:
+    typos,
     
     
     
@@ -124,6 +119,20 @@ const usesTableInfoLayout = () => {
     return style({
         // positions:
         gridArea    : 'info',
+        
+        
+        
+        // children:
+        ...children('tbody', {
+            ...children('tr', {
+                ...children('th', {
+                    fontWeight : typos.fontWeightLight,
+                }),
+                ...children('td', {
+                    fontWeight : typos.fontWeightSemibold,
+                }),
+            }),
+        }),
     });
 };
 
@@ -143,6 +152,22 @@ const usesTableLogLayout = () => {
     return style({
         // positions:
         gridArea    : 'logs',
+        
+        
+        
+        // children:
+        ...children('tbody', {
+            ...children('tr', {
+                ...children('th', {
+                    fontWeight : typos.fontWeightLight,
+                }),
+                ...rule(':not(:first-child)', {
+                    ...children('td', {
+                        fontWeight : typos.fontWeightSemibold,
+                    }),
+                }),
+            }),
+        }),
     });
 };
 
