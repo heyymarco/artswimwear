@@ -34,9 +34,15 @@ export const fetchCache = 'force-no-store';
 
 
 export const POST = async (req: Request): Promise<Response> => {
+    //#region parsing request
     const {
         paymentConfirmation,
     } = await req.json();
+    //#endregion parsing request
+    
+    
+    
+    //#region validating request
     if ((typeof(paymentConfirmation) !== 'object')) {
         return Response.json({
             error: 'Invalid data.',
@@ -98,6 +104,7 @@ export const POST = async (req: Request): Promise<Response> => {
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
+    //#endregion validating request
     
     
     

@@ -31,13 +31,15 @@ export const fetchCache = 'force-no-store';
 
 
 export const POST = async (req: Request): Promise<Response> => {
+    //#region parsing request
     const {
         shippingTracking,
     } = await req.json();
+    //#endregion parsing request
     
     
     
-    //#region parsing request
+    //#region validating request
     if ((typeof(shippingTracking) !== 'object')) {
         return Response.json({
             error: 'Invalid data.',
@@ -60,7 +62,7 @@ export const POST = async (req: Request): Promise<Response> => {
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    //#endregion parsing request
+    //#endregion validating request
     
     
     
