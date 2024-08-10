@@ -86,7 +86,7 @@ import {
     createOrder,
     commitDraftOrder,
     revertDraftOrder,
-}                           from './order-utilities'
+}                           from '@/libs/order-utilities'
 import {
     sendConfirmationEmail,
 }                           from '@/libs/email-utilities'

@@ -39,7 +39,7 @@ import {
     cancelOrder,
     
     commitOrder,
-}                           from '../../../checkout/order-utilities'
+}                           from '@/libs/order-utilities'
 import {
     sendConfirmationEmail,
 }                           from '@/libs/email-utilities'
