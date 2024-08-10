@@ -323,7 +323,7 @@ export const apiSlice = createApi({
         }),
         shippingTracking            : builder.query<ShippingTrackingDetail, ShippingTrackingRequest>({
             query : (shippingTrackingRequest) => ({
-                url    : 'checkout/shipping-trackings',
+                url    : 'checkout/shipping-tracking',
                 method : 'POST',
                 body   : shippingTrackingRequest,
             }),
