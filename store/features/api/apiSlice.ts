@@ -23,6 +23,9 @@ import {
     type FinishedOrderState,
     type CountryPreview,
     type CustomerDetail,
+    
+    ShippingTrackingRequest,
+    ShippingTrackingDetail,
 }                           from '@/models'
 export type {
     PaymentDetail,
@@ -56,9 +59,6 @@ import type {
     PaymentConfirmationRequest,
     PaymentConfirmationDetail,
     
-    ShippingTrackingRequest,
-    ShippingTrackingDetail,
-    
     ShowOrderRequest,
 }                               from '@/app/api/checkout/route'
 export type {
@@ -73,9 +73,6 @@ export type {
     
     PaymentConfirmationRequest,
     PaymentConfirmationDetail,
-    
-    ShippingTrackingRequest,
-    ShippingTrackingDetail,
     
     ShowOrderRequest,
     
@@ -326,8 +323,8 @@ export const apiSlice = createApi({
         }),
         shippingTracking            : builder.query<ShippingTrackingDetail, ShippingTrackingRequest>({
             query : (shippingTrackingRequest) => ({
-                url    : 'checkout',
-                method : 'PATCH',
+                url    : 'checkout/shipping-trackings',
+                method : 'POST',
                 body   : shippingTrackingRequest,
             }),
         }),

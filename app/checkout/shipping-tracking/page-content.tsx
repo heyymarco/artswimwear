@@ -80,10 +80,14 @@ import {
     DateTimeDisplay,
 }                           from '@/components/DateTimeDisplay'
 
+// models:
+import {
+    type ShippingTrackingDetail,
+}                           from '@/models'
+
 // stores:
 import {
     // hooks:
-    ShippingTrackingDetail,
     useShippingTracking,
 }                           from '@/store/features/api/apiSlice'
 

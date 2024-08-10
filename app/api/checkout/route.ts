@@ -25,8 +25,6 @@ import {
     type PaymentConfirmation,
     type OrderCurrencyDetail,
     type DraftOrdersOnProducts,
-    type ShippingTracking,
-    type ShippingTrackingLog,
     
     type ShippingAddressDetail,
     type BillingAddressDetail,
@@ -39,7 +37,6 @@ import {
     type FinishedOrderState,
     
     paymentConfirmationDetailSelect,
-    shippingTrackingDetailSelect,
     commitDraftOrderSelect,
     revertDraftOrderSelect,
     
@@ -300,22 +297,6 @@ export interface PaymentConfirmationDetail
 {
     preferredTimezone : number
     currency          : string
-}
-
-export interface ShippingTrackingRequest {
-    shippingTracking : Partial<Pick<ShippingTrackingDetail, 'preferredTimezone'>> & {
-        token : string
-    }
-}
-export interface ShippingTrackingDetail
-    extends
-        Pick<ShippingTracking,
-            |'shippingCarrier'
-            |'shippingNumber'
-        >
-{
-    preferredTimezone    : number
-    shippingTrackingLogs : Omit<ShippingTrackingLog, 'id'|'shippingTrackingId'>[]
 }
 
 export interface ShowOrderRequest
@@ -1925,158 +1906,6 @@ Updating the confirmation is not required.`,
             currency : orderData.currency?.currency ?? checkoutConfigServer.intl.defaultCurrency,
             preferredTimezone : orderData.customer?.preference?.timezone ?? orderData.guest?.preference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
         } satisfies PaymentConfirmationDetail); // handled with success
-    } // if
-    
-    
-    
-    const shippingTracking = paymentData.shippingTracking;
-    if (shippingTracking !== undefined) {
-        if ((typeof(shippingTracking) !== 'object')) {
-            return NextResponse.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
-        } // if
-        const shippingTrackingToken = shippingTracking.token;
-        if (!shippingTrackingToken || (typeof(shippingTrackingToken) !== 'string')) {
-            return NextResponse.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
-        } // if
-        
-        
-        
-        const {
-            preferredTimezone,
-        } = shippingTracking;
-        if ((preferredTimezone !== undefined) && (preferredTimezone !== null) && (typeof(preferredTimezone) !== 'number') && !isFinite(preferredTimezone) && !possibleTimezoneValues.includes(preferredTimezone)) {
-            return NextResponse.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
-        } // if
-        
-        
-        
-        const shippingTrackingDetailData = (
-            (preferredTimezone === undefined)
-            ? await prisma.shippingTracking.findUnique({
-                where  : {
-                    token : shippingTrackingToken,
-                },
-                select : shippingTrackingDetailSelect,
-            })
-            : await prisma.$transaction(async (prismaTransaction) => {
-                const shippingTrackingData = await prismaTransaction.shippingTracking.findUnique({
-                    where  : {
-                        token : shippingTrackingToken,
-                    },
-                    select : {
-                        // records:
-                        id               : true,
-                        
-                        // relations:
-                        order : {
-                            select : {
-                                customer : {
-                                    select : {
-                                        preference : {
-                                            select : {
-                                                id : true,
-                                            },
-                                        },
-                                    },
-                                },
-                                guest    : {
-                                    select : {
-                                        preference : {
-                                            select : {
-                                                id : true,
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                });
-                if (!shippingTrackingData) return null;
-                
-                
-                
-                const {
-                    id    : shippingTrackingId,
-                    order : orderData,
-                } = shippingTrackingData;
-                const customerPreferenceId = orderData.customer?.preference?.id;
-                const guestPreferenceId    = orderData.guest?.preference?.id;
-                return await prismaTransaction.shippingTracking.update({
-                    where  : {
-                        id : shippingTrackingId,
-                    },
-                    data   : {
-                        order : (
-                            (!customerPreferenceId && !guestPreferenceId)
-                            ? undefined
-                            : (
-                                customerPreferenceId
-                                ? {
-                                    update : {
-                                        customer : {
-                                            update : {
-                                                preference : {
-                                                    update : {
-                                                        timezone : preferredTimezone,
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    },
-                                }
-                                : {
-                                    update : {
-                                        guest : {
-                                            update : {
-                                                preference : {
-                                                    update : {
-                                                        timezone : preferredTimezone,
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    },
-                                }
-                            )
-                        ),
-                    },
-                    select : shippingTrackingDetailSelect,
-                });
-            })
-        );
-        if (!shippingTrackingDetailData) {
-            return NextResponse.json({
-                error: 'Invalid shipping tracking token.',
-            }, { status: 400 }); // handled with error
-        } // if
-        
-        // sort the log by reported date:
-        const {
-            // relations:
-            order : orderData,
-            
-            
-            
-            // data:
-            ...restshippingTrackingDetail
-        } = shippingTrackingDetailData;
-        const shippingTrackingDetail : ShippingTrackingDetail = {
-            ...restshippingTrackingDetail,
-            preferredTimezone : orderData.customer?.preference?.timezone ?? orderData.guest?.preference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
-        };
-        shippingTrackingDetail.shippingTrackingLogs.sort(({reportedAt: a}, {reportedAt: b}) => {
-            if ((a === null) || (b === null)) return 0;
-            return a.valueOf() - b.valueOf();
-        });
-        
-        return NextResponse.json(shippingTrackingDetail); // handled with success
     } // if
     
     
