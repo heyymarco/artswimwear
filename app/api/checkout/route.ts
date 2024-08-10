@@ -89,7 +89,7 @@ import {
 }                           from './order-utilities'
 import {
     sendConfirmationEmail,
-}                           from './email-utilities'
+}                           from '@/libs/email-utilities'
 import {
     // types:
     PaypalPaymentSession,

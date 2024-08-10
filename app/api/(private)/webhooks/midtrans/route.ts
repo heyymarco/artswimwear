@@ -42,7 +42,7 @@ import {
 }                           from '../../../checkout/order-utilities'
 import {
     sendConfirmationEmail,
-}                           from '../../../checkout/email-utilities'
+}                           from '@/libs/email-utilities'
 
 // utilities:
 import {
