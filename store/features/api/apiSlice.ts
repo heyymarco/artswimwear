@@ -24,8 +24,11 @@ import {
     type CountryPreview,
     type CustomerDetail,
     
-    ShippingTrackingRequest,
-    ShippingTrackingDetail,
+    type ShippingTrackingRequest,
+    type ShippingTrackingDetail,
+    
+    type PaymentConfirmationRequest,
+    type PaymentConfirmationDetail,
 }                           from '@/models'
 export type {
     PaymentDetail,
@@ -56,9 +59,6 @@ import type {
     // MakePaymentOptions,
     MakePaymentData,
     
-    PaymentConfirmationRequest,
-    PaymentConfirmationDetail,
-    
     ShowOrderRequest,
 }                               from '@/app/api/checkout/route'
 export type {
@@ -70,9 +70,6 @@ export type {
     
     MakePaymentOptions,
     MakePaymentData,
-    
-    PaymentConfirmationRequest,
-    PaymentConfirmationDetail,
     
     ShowOrderRequest,
     
@@ -316,8 +313,8 @@ export const apiSlice = createApi({
         }),
         paymentConfirmation         : builder.mutation<PaymentConfirmationDetail, PaymentConfirmationRequest>({
             query : (paymentConfirmationDetail) => ({
-                url    : 'checkout',
-                method : 'PATCH',
+                url    : 'checkout/payment-confirmation',
+                method : 'POST',
                 body   : paymentConfirmationDetail,
             }),
         }),
