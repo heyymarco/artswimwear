@@ -26,7 +26,7 @@ import type {
 // internals:
 import {
     midtransTranslateData,
-}                           from '../../../checkout/paymentProcessors.midtrans'
+}                           from '@/libs/payments/processors/midtrans'
 import {
     // utilities:
     findDraftOrderById,

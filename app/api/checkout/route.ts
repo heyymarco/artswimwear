@@ -100,13 +100,13 @@ import {
     paypalCreatePaymentSession,
     paypalCreateOrder,
     paypalCaptureFund,
-}                           from './paymentProcessors.paypal'
+}                           from '@/libs/payments/processors/paypal'
 import {
     stripeCreateOrder,
     
     stripeCaptureFund,
     stripeCancelOrder,
-}                           from './paymentProcessors.stripe'
+}                           from '@/libs/payments/processors/stripe'
 import {
     midtransCreateOrderWithCard,
     midtransCreateOrderWithQris,
@@ -117,7 +117,7 @@ import {
     
     midtransCaptureFund,
     midtransCancelOrder,
-}                           from './paymentProcessors.midtrans'
+}                           from '@/libs/payments/processors/midtrans'
 import {
     getMatchingShippings,
 }                           from '@/libs/shippings/processors/easypost'

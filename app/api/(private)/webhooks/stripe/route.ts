@@ -27,7 +27,7 @@ import type {
 import {
     stripeTranslateData,
     stripeGetPaymentFee,
-}                           from '../../../checkout/paymentProcessors.stripe'
+}                           from '@/libs/payments/processors/stripe'
 import {
     // utilities:
     findDraftOrderById,
