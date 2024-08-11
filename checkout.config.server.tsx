@@ -68,6 +68,14 @@ import {
     // react components:
     IfNotPhysicalProduct,
 }                           from '@/components/Checkout/templates/IfNotPhysicalProduct'
+import {
+    // react components:
+    IfShippingMethodChanged,
+}                           from '@/components/Checkout/templates/IfShippingMethodChanged'
+import {
+    // react components:
+    IfNotShippingMethodChanged,
+}                           from '@/components/Checkout/templates/IfNotShippingMethodChanged'
 
 // configs:
 import type {
@@ -1536,7 +1544,12 @@ export const checkoutConfigServer   : CheckoutConfigServer = {
             
             from                    : process.env.EMAIL_SHIPPING_FROM ?? '',
             subject                 : <>
-                A Shipping Confirmation of Your Order at <Business.Name />
+                <IfNotShippingMethodChanged>
+                    A Shipping Confirmation of Your Order at <Business.Name />
+                </IfNotShippingMethodChanged>
+                <IfShippingMethodChanged>
+                    Shipping Method Change Notification of Your Order at <Business.Name />
+                </IfShippingMethodChanged>
             </>,
             message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
@@ -1566,18 +1579,42 @@ export const checkoutConfigServer   : CheckoutConfigServer = {
                     }}
                 >
                     <h1 style={styles.heading1}>
-                        Your Order Is on the Way!
+                        <IfNotShippingMethodChanged>
+                            Your Order Is on the Way!
+                        </IfNotShippingMethodChanged>
+                        <IfShippingMethodChanged>
+                            Shipping Method Change Notification
+                        </IfShippingMethodChanged>
                     </h1>
                     
                     <p style={styles.paragraph}>
                         Dear <Customer.Name />,
                     </p>
                     
-                    <p style={styles.paragraph}>
-                        Thank you for placing an order at <strong><Business.Name /></strong>.
-                        <br />
-                        We are pleased to confirm that your order is <strong>on its way</strong>.
-                    </p>
+                    <IfNotShippingMethodChanged>
+                        <p style={styles.paragraph}>
+                            Thank you for placing an order at <strong><Business.Name /></strong>.
+                            <br />
+                            We are pleased to confirm that your order is <strong>on its way</strong>.
+                        </p>
+                    </IfNotShippingMethodChanged>
+                    <IfShippingMethodChanged>
+                        <p style={styles.paragraph}>
+                            We have revised the <strong>shipping tracking number</strong> on your order with a <strong>new one</strong>.
+                        </p>
+                        <p style={styles.paragraph}>
+                            Please ignore the shipping tracking number previously informed. It is no longer valid.
+                        </p>
+                        <p>
+                            Correct shipping tracking number:
+                            <br />
+                            <strong>
+                                <Shipping.Number />
+                            </strong>
+                            <br />
+                            (<Shipping.Method />)
+                        </p>
+                    </IfShippingMethodChanged>
                     <p style={styles.paragraphLast}>
                         Please use the link below to track shipping status:
                         <br />
@@ -3228,7 +3265,12 @@ export const checkoutConfigServer   : CheckoutConfigServer = {
             
             from                    : process.env.EMAIL_ADMIN_SHIPPING_FROM ?? '',
             subject                 : <>
-                A Shipping Confirmation at <Business.Name />
+                <IfNotShippingMethodChanged>
+                    A Shipping Confirmation at <Business.Name />
+                </IfNotShippingMethodChanged>
+                <IfShippingMethodChanged>
+                    Shipping Method Change Notification at <Business.Name />
+                </IfShippingMethodChanged>
             </>,
             message                 : <article style={styles.article}>
                 <div style={styles.sectionDummy}></div>
@@ -3258,16 +3300,37 @@ export const checkoutConfigServer   : CheckoutConfigServer = {
                     }}
                 >
                     <h1 style={styles.heading1}>
-                        An Order Is Being Shipped!
+                        <IfNotShippingMethodChanged>
+                            An Order Is Being Shipped!
+                        </IfNotShippingMethodChanged>
+                        <IfShippingMethodChanged>
+                            Shipping Method Change Notification
+                        </IfShippingMethodChanged>
                     </h1>
                     
                     <p style={styles.paragraph}>
                         Dear <Admin.Name />,
                     </p>
                     
-                    <p style={styles.paragraph}>
-                        An order of <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> is <strong>being shipped</strong>.
-                    </p>
+                    <IfNotShippingMethodChanged>
+                        <p style={styles.paragraph}>
+                            An order of <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span> is <strong>being shipped</strong>.
+                        </p>
+                    </IfNotShippingMethodChanged>
+                    <IfShippingMethodChanged>
+                        <p style={styles.paragraph}>
+                            A revision of <strong>shipping tracking number</strong> of <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span>.
+                        </p>
+                        <p>
+                            Correct shipping tracking number:
+                            <br />
+                            <strong>
+                                <Shipping.Number />
+                            </strong>
+                            <br />
+                            (<Shipping.Method />)
+                        </p>
+                    </IfShippingMethodChanged>
                     <p style={styles.paragraphLast}>
                         Please use the link below to track shipping status:
                         <br />
