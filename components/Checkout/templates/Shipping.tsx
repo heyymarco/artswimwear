@@ -121,6 +121,7 @@ const ShippingNumber = (): React.ReactNode => {
     
     // jsx:
     if (!shippingTracking) return null; // not already shipped => ignore
+    if (!shippingTracking.shippingNumber) return null; // shipped but no shipping tracking number => ignore
     
     return (
         <>
