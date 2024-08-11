@@ -83,13 +83,13 @@ const getCountryList = async (): Promise<EntityState<CountryPreview>> => {
     return countryList;
 }
 
-export interface SendEmailConfirmationOptions {
+export interface SendConfirmationEmailOptions {
     order                    : OrderAndData
     
     isPaid                   : boolean
     paymentConfirmationToken : string|null
 }
-export const sendConfirmationEmail = async (options: SendEmailConfirmationOptions): Promise<boolean|null> => {
+export const sendConfirmationEmail = async (options: SendConfirmationEmailOptions): Promise<boolean|null> => {
     // options:
     const {
         order,
