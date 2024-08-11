@@ -640,12 +640,25 @@ model ShippingTracking {
     
     shippingCarrier                 String?                         // minLength: 1, maxLength: 50
     shippingNumber                  String?                         // minLength: 1, maxLength: 50
+    shippingEta                     ShippingTrackingEta?
     
     // relations:
     orderId                         String                          @unique
     order                           Order                           @relation(fields: [orderId], references: [id], onDelete: Cascade)  // delete the related ShippingTracking if the Order deleted
     
     shippingTrackingLogs            ShippingTrackingLog[]           // a ShippingTracking may have some related ShippingTrackingLog(s) // one  to many
+}
+model ShippingTrackingEta {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    min                             Float                           // min: 0, max: 999
+    max                             Float                           // min: `min`, max: 999
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          ShippingTracking                @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShippingTrackingEta if the ShippingTracking deleted
 }
 model ShippingTrackingLog {
     // records:
