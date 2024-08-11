@@ -23,12 +23,13 @@ import type {
 
 
 // contexts:
-export interface ShippingApi {
-    // data:
-    model : ShippingConfig|undefined
+export interface ShippingApi
+    extends
+    ShippingContextProviderProps
+{
 }
 const ShippingContext = createContext<ShippingApi>({
-    model : undefined,
+    model : undefined as any,
 });
 
 
@@ -44,6 +45,10 @@ export const useShippingContext = () => {
 export interface ShippingContextProviderProps {
     // data:
     model : ShippingConfig
+    
+    // shipping carrier changes:
+    prevShippingCarrier ?: string
+    prevShippingNumber  ?: string
 }
 export const ShippingContextProvider = (props: React.PropsWithChildren<ShippingContextProviderProps>): JSX.Element|null => {
     // jsx:

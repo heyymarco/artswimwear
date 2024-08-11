@@ -71,7 +71,10 @@ const ShippingMethod = (): React.ReactNode => {
         order : {
             shippingProvider,
         },
+        shippingTracking,
     } = useOrderDataContext();
+    const isShipped = !!shippingTracking;
+    const shippingCarrier = isShipped ? shippingTracking.shippingCarrier : shippingProvider?.name;
     
     
     
@@ -92,7 +95,7 @@ const ShippingMethod = (): React.ReactNode => {
                     columnGap : '0.5em',
                 }}
             >
-                {shippingProvider.name}
+                {shippingCarrier}
                 
                 {!!shippingProvider.eta && <span style={styles.textSmall}>
                     (estimate: {shippingProvider.eta.min}{(shippingProvider.eta.max > shippingProvider.eta.min) ? <>-{shippingProvider.eta.max}</> : null} day{(shippingProvider.eta.min > 1) ? 's' : ''} after dispatched from our warehouse)
@@ -142,7 +145,7 @@ const ShippingTrackingUrl = (): string|null => {
     
     
     const baseUrl                      = business?.url;
-    const relativeTrackingUrl          = model?.trackingUrl;
+    const relativeTrackingUrl          = model.trackingUrl;
     const absoluteTrackingUrl          = `${relativeTrackingUrl?.startsWith('/') ? baseUrl : ''}${relativeTrackingUrl}`;
     const absoluteTrackingUrlWithToken = `${absoluteTrackingUrl}?token=${encodeURIComponent(shippingTrackingToken ?? '')}`;
     
