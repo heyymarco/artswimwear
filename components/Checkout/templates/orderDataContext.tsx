@@ -17,6 +17,8 @@ import type {
     
     CustomerOrGuest,
     CustomerOrGuestPreference,
+    
+    ShippingTrackingPreview,
 }                           from '@/models'
 import type {
     Product,
@@ -92,18 +94,10 @@ export interface OrderAndData
     shippingProvider     : MatchingShipping|null
     customerOrGuest      : CustomerOrGuestData|null
 }
-export interface OrderDataApi {
-    // data:
-    order                : OrderAndData
-    customerOrGuest      : CustomerOrGuestData|null
-    paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'orderId'>|null
-    isPaid               : boolean
-    shippingTracking     : Pick<ShippingTracking, 'token'|'shippingCarrier'|'shippingNumber'>|null
-    
-    
-    
-    // relation data:
-    countryList          : EntityState<CountryPreview>|undefined
+export interface OrderDataApi
+    extends
+        OrderDataContextProviderProps
+{
 }
 const OrderDataContext = createContext<OrderDataApi>({
     order                : undefined as any,
@@ -134,7 +128,7 @@ export interface OrderDataContextProviderProps {
     customerOrGuest      : CustomerOrGuestData|null
     paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'orderId'>|null
     isPaid               : boolean
-    shippingTracking     : Pick<ShippingTracking, 'token'|'shippingCarrier'|'shippingNumber'>|null
+    shippingTracking     : (ShippingTrackingPreview & Pick<ShippingTracking, 'token'>)|null
     
     
     

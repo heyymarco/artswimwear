@@ -1,8 +1,24 @@
 // models:
 import {
     type ShippingTracking,
+    type ShippingTrackingEta,
     type ShippingTrackingLog,
 }                           from '@prisma/client'
+
+
+
+export interface ShippingTrackingPreview
+    extends
+        Pick<ShippingTracking,
+            |'shippingCarrier'
+            |'shippingNumber'
+        >
+{
+    shippingEta : Pick<ShippingTrackingEta,
+        |'min'
+        |'max'
+    >|null
+}
 
 
 

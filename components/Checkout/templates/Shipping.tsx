@@ -73,13 +73,14 @@ const ShippingMethod = (): React.ReactNode => {
         },
         shippingTracking,
     } = useOrderDataContext();
-    const isShipped = !!shippingTracking;
-    const shippingCarrier = isShipped ? shippingTracking.shippingCarrier : shippingProvider?.name;
     
     
     
     // jsx:
     if (!shippingProvider) return null;
+    const isShipped       = !!shippingTracking;
+    const shippingCarrier = isShipped ? shippingTracking.shippingCarrier : shippingProvider.name;
+    const shippingEta     = isShipped ? shippingTracking.shippingEta     : shippingProvider.eta;
     return (
         <>
             <p
@@ -97,8 +98,8 @@ const ShippingMethod = (): React.ReactNode => {
             >
                 {shippingCarrier}
                 
-                {!!shippingProvider.eta && <span style={styles.textSmall}>
-                    (estimate: {shippingProvider.eta.min}{(shippingProvider.eta.max > shippingProvider.eta.min) ? <>-{shippingProvider.eta.max}</> : null} day{(shippingProvider.eta.min > 1) ? 's' : ''} after dispatched from our warehouse)
+                {!!shippingEta && <span style={styles.textSmall}>
+                    (estimate: {shippingEta.min}{(shippingEta.max > shippingEta.min) ? <>-{shippingEta.max}</> : null} day{(shippingEta.min > 1) ? 's' : ''} after dispatched from our warehouse)
                 </span>}
             </p>
         </>

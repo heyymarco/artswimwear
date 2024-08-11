@@ -4,6 +4,11 @@ import {
     default as React,
 }                           from 'react'
 
+// models:
+import {
+    type ShippingTrackingPreview,
+}                           from '@/models'
+
 // internals:
 import {
     // contexts:
@@ -47,8 +52,7 @@ export interface ShippingContextProviderProps {
     model : ShippingConfig
     
     // shipping carrier changes:
-    prevShippingCarrier ?: string
-    prevShippingNumber  ?: string
+    prevShippingTracking ?: ShippingTrackingPreview
 }
 export const ShippingContextProvider = (props: React.PropsWithChildren<ShippingContextProviderProps>): JSX.Element|null => {
     // jsx:
