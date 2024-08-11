@@ -215,7 +215,7 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
     // jsx:
     if (!shippingAddress) return null; // no shipping address => non_physical_product => ignore
     
-    const isShipped       = !!shippingTracking; // determine if already shipped
+    const isShipped = !!shippingTracking && !!shippingTracking.shippingNumber; // determine if already shipped
     
     return (
         <table
