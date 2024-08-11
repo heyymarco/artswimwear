@@ -11,7 +11,7 @@ import type {
 
 // private components:
 import {
-    ShippingTrackingPageContent,
+    ShipmentPageContent,
 }                           from './page-content'
 
 // configs:
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
 
 
 // react components:
-export default function ShippingTrackingPage(): JSX.Element|null {
+export default function ShipmentPage(): JSX.Element|null {
     // jsx:
     return (
-        <ShippingTrackingPageContent />
+        <ShipmentPageContent />
     );
 }

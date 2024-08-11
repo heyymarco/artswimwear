@@ -24,8 +24,8 @@ import {
     type CountryPreview,
     type CustomerDetail,
     
-    type ShippingTrackingRequest,
-    type ShippingTrackingDetail,
+    type ShipmentRequest,
+    type ShipmentDetail,
     
     type PaymentConfirmationRequest,
     type PaymentConfirmationDetail,
@@ -318,11 +318,11 @@ export const apiSlice = createApi({
                 body   : paymentConfirmationDetail,
             }),
         }),
-        shippingTracking            : builder.query<ShippingTrackingDetail, ShippingTrackingRequest>({
-            query : (shippingTrackingRequest) => ({
-                url    : 'checkout/shipping-tracking',
+        shipment                    : builder.query<ShipmentDetail, ShipmentRequest>({
+            query : (shipmentRequest) => ({
+                url    : 'checkout/shipment',
                 method : 'POST',
-                body   : shippingTrackingRequest,
+                body   : shipmentRequest,
             }),
         }),
         showPrevOrder               : builder.mutation<FinishedOrderState, ShowOrderRequest>({
@@ -404,7 +404,7 @@ export const {
     // usePlaceOrderMutation                  : usePlaceOrder,
     // useMakePaymentMutation                 : useMakePayment,
     usePaymentConfirmationMutation         : usePaymentConfirmation,
-    useLazyShippingTrackingQuery           : useShippingTracking,
+    useLazyShipmentQuery                   : useShipment,
     useShowPrevOrderMutation               : useShowPrevOrder,
     
     useUpdateCustomerMutation              : useUpdateCustomer,

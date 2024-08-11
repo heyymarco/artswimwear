@@ -5,10 +5,10 @@ import {
 
 
 
-export const shippingTrackingDetailSelect = {
-    shippingCarrier      : true,
-    shippingNumber       : true,
-    shippingTrackingLogs : {
+export const shipmentDetailSelect = {
+    carrier            : true,
+    number             : true,
+    logs               : {
         select : {
             reportedAt : true,
             log        : true,
@@ -16,7 +16,7 @@ export const shippingTrackingDetailSelect = {
     },
     
     // relations:
-    order : {
+    parent : {
         select : {
             currency : {
                 select : {
@@ -45,4 +45,4 @@ export const shippingTrackingDetailSelect = {
             },
         },
     },
-} satisfies Prisma.ShippingTrackingSelect;
+} satisfies Prisma.ShipmentSelect;

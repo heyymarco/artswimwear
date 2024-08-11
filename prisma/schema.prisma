@@ -451,7 +451,7 @@ model Order {
     
     paymentConfirmation             PaymentConfirmation?            // an Order may have one related PaymentConfirmation // one to one
     
-    shippingTracking                ShippingTracking?               // an Order may have one related ShippingTracking // one to one
+    shipment                        Shipment?                       // an Order may have one related Shipment // one to one
 }
 model DraftOrderCurrency {
     // records:
@@ -630,7 +630,7 @@ model PaymentConfirmation {
     orderId                         String                          @unique
     order                           Order                           @relation(fields: [orderId], references: [id], onDelete: Cascade) // delete the related PaymentConfirmation if the Order deleted
 }
-model ShippingTracking {
+model Shipment {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
     
@@ -638,17 +638,17 @@ model ShippingTracking {
     token                           String                          @unique
     trackerId                       String?                         @unique
     
-    shippingCarrier                 String?                         // minLength: 1, maxLength: 50
-    shippingNumber                  String?                         // minLength: 1, maxLength: 50
-    shippingEta                     ShippingTrackingEta?
+    carrier                         String?                         // minLength: 1, maxLength: 50
+    number                          String?                         // minLength: 1, maxLength: 50
+    eta                             ShipmentEta?
     
     // relations:
-    orderId                         String                          @unique
-    order                           Order                           @relation(fields: [orderId], references: [id], onDelete: Cascade)  // delete the related ShippingTracking if the Order deleted
+    parentId                        String                          @unique
+    parent                          Order                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related Shipment if the Order deleted
     
-    shippingTrackingLogs            ShippingTrackingLog[]           // a ShippingTracking may have some related ShippingTrackingLog(s) // one  to many
+    logs                            ShipmentLog[]                   // a Shipment may have some related ShipmentLog(s) // one  to many
 }
-model ShippingTrackingEta {
+model ShipmentEta {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
     
@@ -658,9 +658,9 @@ model ShippingTrackingEta {
     
     // relations:
     parentId                        String                          @unique
-    parent                          ShippingTracking                @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShippingTrackingEta if the ShippingTracking deleted
+    parent                          Shipment                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShipmentEta if the Shipment deleted
 }
-model ShippingTrackingLog {
+model ShipmentLog {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
     reportedAt                      DateTime?                       // manually set
@@ -669,8 +669,8 @@ model ShippingTrackingLog {
     log                             String
     
     // relations:
-    shippingTrackingId              String
-    shippingTracking                ShippingTracking                @relation(fields: [shippingTrackingId], references: [id], onDelete: Cascade) // delete the related ShippingTrackingLog(s) if the ShippingTracking deleted
+    parentId                        String
+    parent                          Shipment                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShipmentLog(s) if the Shipment deleted
 }
 
 

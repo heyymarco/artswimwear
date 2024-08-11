@@ -163,7 +163,7 @@ export const checkoutConfigServer   : CheckoutConfigServer = {
         },
     },
     shipping                        : {
-        trackingUrl                 : '/checkout/shipping-tracking',
+        trackingUrl                 : '/checkout/shipment',
     },
     customerEmails                  : {
         checkout                    : {
@@ -1618,7 +1618,7 @@ export const checkoutConfigServer   : CheckoutConfigServer = {
                     <p style={styles.paragraphLast}>
                         Please use the link below to track shipping status:
                         <br />
-                        <Shipping.TrackingLink />
+                        <Shipping.ShipmentLink />
                     </p>
                 </section>
                 
@@ -3334,7 +3334,7 @@ export const checkoutConfigServer   : CheckoutConfigServer = {
                     <p style={styles.paragraphLast}>
                         Please use the link below to track shipping status:
                         <br />
-                        <Shipping.TrackingLink />
+                        <Shipping.ShipmentLink />
                     </p>
                 </section>
                 

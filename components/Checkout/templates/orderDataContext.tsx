@@ -18,14 +18,14 @@ import type {
     CustomerOrGuest,
     CustomerOrGuestPreference,
     
-    ShippingTrackingPreview,
+    ShipmentPreview,
 }                           from '@/models'
 import type {
     Product,
     Variant,
     PaymentConfirmation,
     OrdersOnProducts,
-    ShippingTracking,
+    Shipment,
 }                           from '@prisma/client'
 
 // internals:
@@ -87,7 +87,7 @@ export interface OrderAndData
             
             |'paymentConfirmation'
             
-            |'shippingTracking'
+            |'shipment'
         >
 {
     items                : OrderItemsAndData[]
@@ -104,7 +104,7 @@ const OrderDataContext = createContext<OrderDataApi>({
     customerOrGuest      : null,
     paymentConfirmation  : null,
     isPaid               : false,
-    shippingTracking     : null,
+    shipment             : null,
     
     
     
@@ -128,7 +128,7 @@ export interface OrderDataContextProviderProps {
     customerOrGuest      : CustomerOrGuestData|null
     paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'orderId'>|null
     isPaid               : boolean
-    shippingTracking     : (ShippingTrackingPreview & Pick<ShippingTracking, 'token'>)|null
+    shipment             : (ShipmentPreview & Pick<Shipment, 'token'>)|null
     
     
     

@@ -6,7 +6,7 @@ import {
 
 // models:
 import {
-    type ShippingTrackingPreview,
+    type ShipmentPreview,
 }                           from '@/models'
 
 // internals:
@@ -52,7 +52,7 @@ export interface ShippingContextProviderProps {
     model : ShippingConfig
     
     // shipping carrier changes:
-    prevShippingTracking ?: ShippingTrackingPreview
+    prevShipment ?: ShipmentPreview
 }
 export const ShippingContextProvider = (props: React.PropsWithChildren<ShippingContextProviderProps>): JSX.Element|null => {
     // jsx:

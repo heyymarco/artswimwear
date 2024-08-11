@@ -37,7 +37,7 @@ import {
 
 
 // styles:
-const usesShippingTrackingLayout = () => {
+const usesShipmentLayout = () => {
     return style({
         // layouts:
         display : 'grid',
@@ -203,8 +203,8 @@ export default () => [
         }),
     }),
     
-    scope('shippingTracking', {
-        ...usesShippingTrackingLayout(),
+    scope('shipment', {
+        ...usesShipmentLayout(),
     }),
     scope('title', {
         ...usesTitleLayout(),

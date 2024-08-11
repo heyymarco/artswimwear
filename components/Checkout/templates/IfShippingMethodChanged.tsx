@@ -21,7 +21,7 @@ export const IfShippingMethodChanged = (props: React.PropsWithChildren<{}>): Rea
     // contexts:
     const {
         // data:
-        prevShippingTracking,
+        prevShipment,
     } = useShippingContext();
     
     const {
@@ -29,21 +29,21 @@ export const IfShippingMethodChanged = (props: React.PropsWithChildren<{}>): Rea
         order : {
             shippingAddress,
         },
-        shippingTracking,
+        shipment,
     } = useOrderDataContext();
     
     
     
     // jsx:
     if (!shippingAddress) return null; // no shipping address => non_physical_product => ignore
-    if (!shippingTracking) return null; // not already shipped => ignore
+    if (!shipment) return null; // not already shipped => ignore
     
     const isShippingMethodChanged : boolean = (
-        (prevShippingTracking !== undefined) // do not detect changes if `prevShippingTracking` not provider for comparison
+        (prevShipment !== undefined) // do not detect changes if `prevShipment` not provider for comparison
         &&
-        (prevShippingTracking.shippingCarrier?.trim().toLowerCase() !== shippingTracking.shippingCarrier?.trim().toLowerCase()) // detect shipping carrier name changes
+        (prevShipment.carrier?.trim().toLowerCase() !== shipment.carrier?.trim().toLowerCase()) // detect shipping carrier name changes
         &&
-        (prevShippingTracking.shippingNumber?.trim() !== shippingTracking.shippingNumber?.trim()) // detect shipping tracking number changes
+        (prevShipment.number?.trim() !== shipment.number?.trim()) // detect shipping tracking number changes
     );
     
     if (!isShippingMethodChanged) return null; // not changed => ignore

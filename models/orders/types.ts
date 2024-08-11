@@ -20,7 +20,6 @@ import type {
     BillingAddress,
     OrdersOnProducts,
     DraftOrdersOnProducts,
-    ShippingTracking,
 }                           from '@prisma/client'
 
 // templates:

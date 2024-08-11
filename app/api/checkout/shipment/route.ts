@@ -1,10 +1,10 @@
 // models:
 import {
-    type ShippingTrackingDetail,
+    type ShipmentDetail,
     
     
     
-    shippingTrackingDetailSelect,
+    shipmentDetailSelect,
 }                           from '@/models'
 
 // ORMs:
@@ -33,20 +33,20 @@ export const fetchCache = 'force-no-store';
 export const POST = async (req: Request): Promise<Response> => {
     //#region parsing request
     const {
-        shippingTracking,
+        shipment,
     } = await req.json();
     //#endregion parsing request
     
     
     
     //#region validating request
-    if ((typeof(shippingTracking) !== 'object')) {
+    if ((typeof(shipment) !== 'object')) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
-    const shippingTrackingToken = shippingTracking.token;
-    if (!shippingTrackingToken || (typeof(shippingTrackingToken) !== 'string')) {
+    const shipmentToken = shipment.token;
+    if (!shipmentToken || (typeof(shipmentToken) !== 'string')) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -56,7 +56,7 @@ export const POST = async (req: Request): Promise<Response> => {
     
     const {
         preferredTimezone,
-    } = shippingTracking;
+    } = shipment;
     if ((preferredTimezone !== undefined) && (preferredTimezone !== null) && (typeof(preferredTimezone) !== 'number') && !isFinite(preferredTimezone) && !possibleTimezoneValues.includes(preferredTimezone)) {
         return Response.json({
             error: 'Invalid data.',
@@ -66,25 +66,25 @@ export const POST = async (req: Request): Promise<Response> => {
     
     
     
-    const shippingTrackingDetailData = (
+    const shipmentDetailData = (
         (preferredTimezone === undefined)
-        ? await prisma.shippingTracking.findUnique({
+        ? await prisma.shipment.findUnique({
             where  : {
-                token : shippingTrackingToken,
+                token : shipmentToken,
             },
-            select : shippingTrackingDetailSelect,
+            select : shipmentDetailSelect,
         })
         : await prisma.$transaction(async (prismaTransaction) => {
-            const shippingTrackingData = await prismaTransaction.shippingTracking.findUnique({
+            const shipmentData = await prismaTransaction.shipment.findUnique({
                 where  : {
-                    token : shippingTrackingToken,
+                    token : shipmentToken,
                 },
                 select : {
                     // records:
                     id               : true,
                     
                     // relations:
-                    order : {
+                    parent : {
                         select : {
                             customer : {
                                 select : {
@@ -108,22 +108,22 @@ export const POST = async (req: Request): Promise<Response> => {
                     },
                 },
             });
-            if (!shippingTrackingData) return null;
+            if (!shipmentData) return null;
             
             
             
             const {
-                id    : shippingTrackingId,
-                order : orderData,
-            } = shippingTrackingData;
+                id     : shipmentId,
+                parent : orderData,
+            } = shipmentData;
             const customerPreferenceId = orderData.customer?.preference?.id;
             const guestPreferenceId    = orderData.guest?.preference?.id;
-            return await prismaTransaction.shippingTracking.update({
+            return await prismaTransaction.shipment.update({
                 where  : {
-                    id : shippingTrackingId,
+                    id : shipmentId,
                 },
                 data   : {
-                    order : (
+                    parent : (
                         (!customerPreferenceId && !guestPreferenceId)
                         ? undefined
                         : (
@@ -157,11 +157,11 @@ export const POST = async (req: Request): Promise<Response> => {
                         )
                     ),
                 },
-                select : shippingTrackingDetailSelect,
+                select : shipmentDetailSelect,
             });
         })
     );
-    if (!shippingTrackingDetailData) {
+    if (!shipmentDetailData) {
         return Response.json({
             error: 'Invalid shipping tracking token.',
         }, { status: 400 }); // handled with error
@@ -170,21 +170,21 @@ export const POST = async (req: Request): Promise<Response> => {
     // sort the log by reported date:
     const {
         // relations:
-        order : orderData,
+        parent : orderData,
         
         
         
         // data:
-        ...restshippingTrackingDetail
-    } = shippingTrackingDetailData;
-    const shippingTrackingDetail : ShippingTrackingDetail = {
-        ...restshippingTrackingDetail,
+        ...restShipmentDetail
+    } = shipmentDetailData;
+    const shipmentDetail : ShipmentDetail = {
+        ...restShipmentDetail,
         preferredTimezone : orderData.customer?.preference?.timezone ?? orderData.guest?.preference?.timezone ?? checkoutConfigServer.intl.defaultTimezone,
     };
-    shippingTrackingDetail.shippingTrackingLogs.sort(({reportedAt: a}, {reportedAt: b}) => {
+    shipmentDetail.logs.sort(({reportedAt: a}, {reportedAt: b}) => {
         if ((a === null) || (b === null)) return 0;
         return a.valueOf() - b.valueOf();
     });
     
-    return Response.json(shippingTrackingDetail); // handled with success
+    return Response.json(shipmentDetail); // handled with success
 }

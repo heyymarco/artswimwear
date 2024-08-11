@@ -74,7 +74,7 @@ const ShippingMethod = (): React.ReactNode => {
             shippingAddress,
             shippingProvider,
         },
-        shippingTracking,
+        shipment,
     } = useOrderDataContext();
     
     
@@ -82,9 +82,9 @@ const ShippingMethod = (): React.ReactNode => {
     // jsx:
     if (!shippingAddress) return null; // no shipping address => non_physical_product => ignore
     
-    const isShipped       = !!shippingTracking; // determine if already shipped
-    const shippingCarrier = isShipped ? shippingTracking.shippingCarrier : shippingProvider?.name;
-    const shippingEta     = isShipped ? shippingTracking.shippingEta     : shippingProvider?.eta;
+    const isShipped = !!shipment; // determine if already shipped
+    const carrier   = isShipped ? shipment.carrier : shippingProvider?.name;
+    const eta       = isShipped ? shipment.eta     : shippingProvider?.eta;
     
     return (
         <>
@@ -101,10 +101,10 @@ const ShippingMethod = (): React.ReactNode => {
                     columnGap : '0.5em',
                 }}
             >
-                {shippingCarrier || null}
+                {carrier || null}
                 
-                {!!shippingEta && <span style={styles.textSmall}>
-                    (estimate: {shippingEta.min}{(shippingEta.max > shippingEta.min) ? <>-{shippingEta.max}</> : null} day{(shippingEta.min > 1) ? 's' : ''} after dispatched from our warehouse)
+                {!!eta && <span style={styles.textSmall}>
+                    (estimate: {eta.min}{(eta.max > eta.min) ? <>-{eta.max}</> : null} day{(eta.min > 1) ? 's' : ''} after dispatched from our warehouse)
                 </span>}
             </p>
         </>
@@ -114,24 +114,24 @@ const ShippingNumber = (): React.ReactNode => {
     // contexts:
     const {
         // data:
-        shippingTracking,
+        shipment,
     } = useOrderDataContext();
     
     
     
     // jsx:
-    if (!shippingTracking) return null; // not already shipped => ignore
-    if (!shippingTracking.shippingNumber) return null; // shipped but no shipping tracking number => ignore
+    if (!shipment) return null; // not already shipped => ignore
+    if (!shipment.number) return null; // shipped but no shipping tracking number => ignore
     
     return (
         <>
             <p style={styles.paragraphBase}>
-                {shippingTracking.shippingNumber}
+                {shipment.number}
             </p>
         </>
     );
 };
-const ShippingTrackingUrl = (): string|null => {
+const ShipmentUrl = (): string|null => {
     // contexts:
     const {
         // data:
@@ -145,25 +145,25 @@ const ShippingTrackingUrl = (): string|null => {
     
     const {
         // data:
-        shippingTracking,
+        shipment,
     } = useOrderDataContext();
     
     
     
     // jsx:
-    if (!shippingTracking) return null; // not already shipped => ignore
+    if (!shipment) return null; // not already shipped => ignore
     
     const baseUrl                      = business?.url;
     const relativeTrackingUrl          = model.trackingUrl;
     const absoluteTrackingUrl          = `${relativeTrackingUrl?.startsWith('/') ? baseUrl : ''}${relativeTrackingUrl}`;
-    const absoluteTrackingUrlWithToken = `${absoluteTrackingUrl}?token=${encodeURIComponent(shippingTracking.token)}`;
+    const absoluteTrackingUrlWithToken = `${absoluteTrackingUrl}?token=${encodeURIComponent(shipment.token)}`;
     
     return (
         absoluteTrackingUrlWithToken
     );
 };
-const ShippingTrackingLink = (): React.ReactNode => {
-    const url = ShippingTrackingUrl();
+const ShipmentLink = (): React.ReactNode => {
+    const url = ShipmentUrl();
     
     
     
@@ -207,7 +207,7 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
         order : {
             shippingAddress,
         },
-        shippingTracking,
+        shipment,
     } = useOrderDataContext();
     
     
@@ -215,7 +215,7 @@ const ShippingInfo = (props: ShippingInfoProps): React.ReactNode => {
     // jsx:
     if (!shippingAddress) return null; // no shipping address => non_physical_product => ignore
     
-    const isShipped = !!shippingTracking && !!shippingTracking.shippingNumber; // determine if already shipped
+    const isShipped = !!shipment && !!shipment.number; // determine if already shipped
     
     return (
         <table
@@ -286,6 +286,6 @@ export const Shipping = {
     Method       : ShippingMethod,
     Info         : ShippingInfo,
     Number       : ShippingNumber,
-    TrackingUrl  : ShippingTrackingUrl,
-    TrackingLink : ShippingTrackingLink,
+    ShipmentUrl  : ShipmentUrl,
+    ShipmentLink : ShipmentLink,
 };

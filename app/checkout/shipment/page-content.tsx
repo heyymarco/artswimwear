@@ -82,13 +82,13 @@ import {
 
 // models:
 import {
-    type ShippingTrackingDetail,
+    type ShipmentDetail,
 }                           from '@/models'
 
 // stores:
 import {
     // hooks:
-    useShippingTracking,
+    useShipment,
 }                           from '@/store/features/api/apiSlice'
 
 // configs:
@@ -99,7 +99,7 @@ import {
 
 
 // styles:
-const useShippingTrackingPageStyleSheet = dynamicStyleSheets(
+const useShipmentPageStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'./page-styles')
 , { id: 'aq8up5vk1o' });
 import './page-styles';
@@ -107,9 +107,9 @@ import './page-styles';
 
 
 // react components:
-export function ShippingTrackingPageContent(): JSX.Element|null {
+export function ShipmentPageContent(): JSX.Element|null {
     // styles:
-    const styleSheet = useShippingTrackingPageStyleSheet();
+    const styleSheet = useShipmentPageStyleSheet();
     
     
     
@@ -124,22 +124,22 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
     
     
     // apis:
-    const [getShippingTracking, {data: shippingTrackingData, isLoading: isShippingTrackingLoading, isError: isShippingTrackingError, error: shippingTrackingError}] = useShippingTracking();
+    const [getShipment, {data: shipmentData, isLoading: isShipmentLoading, isError: isShipmentError, error: shipmentError}] = useShipment();
     
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
     
-    const isPageLoading = isShippingTrackingLoading && !isLoaded;
-    const hasData       = (!!shippingTrackingData);
-    const isPageError   = ((!isPageLoading && (isShippingTrackingError)) || (!hasData && !!token)) && !isLoaded; /* considered as error if no data but has token*/ /* consider no error if isLoaded */
+    const isPageLoading = isShipmentLoading && !isLoaded;
+    const hasData       = (!!shipmentData);
+    const isPageError   = ((!isPageLoading && (isShipmentError)) || (!hasData && !!token)) && !isLoaded; /* considered as error if no data but has token*/ /* consider no error if isLoaded */
     const isPageReady   = !isPageLoading && !isPageError && !!token;
     
     
     
     // states:
-    const [shippingCarrier     , setShippingCarrier     ] = useState<string|null>(shippingTrackingData?.shippingCarrier || null);
-    const [shippingNumber      , setShippingNumber      ] = useState<string|null>(shippingTrackingData?.shippingNumber || null);
-    const [preferredTimezone   , setPreferredTimezone   ] = useState<number>(checkoutConfigShared.intl.defaultTimezone);
-    const [shippingTrackingLogs, setShippingTrackingLogs] = useState<ShippingTrackingDetail['shippingTrackingLogs']>([]);
+    const [carrier          , setCarrier          ] = useState<string|null>(shipmentData?.carrier || null);
+    const [number           , setNumber           ] = useState<string|null>(shipmentData?.number || null);
+    const [preferredTimezone, setPreferredTimezone] = useState<number>(checkoutConfigShared.intl.defaultTimezone);
+    const [logs             , setLogs             ] = useState<ShipmentDetail['logs']>([]);
     
     
     
@@ -161,8 +161,8 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
         
         // actions:
         try {
-            const shippingTrackingDetail = await getShippingTracking({
-                shippingTracking : {
+            const shipmentDetail = await getShipment({
+                shipment : {
                     token,
                 },
             }).unwrap();
@@ -170,18 +170,18 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
             
             
             const {
-                shippingCarrier,
-                shippingNumber,
+                carrier,
+                number,
                 preferredTimezone,
-                shippingTrackingLogs,
-            } = shippingTrackingDetail;
+                logs,
+            } = shipmentDetail;
             
             
             
-            setShippingCarrier(shippingCarrier);
-            setShippingNumber(shippingNumber);
+            setCarrier(carrier);
+            setNumber(number);
             if (preferredTimezone !== null) setPreferredTimezone(preferredTimezone);
-            setShippingTrackingLogs(shippingTrackingLogs);
+            setLogs(logs);
             
             
             
@@ -199,8 +199,8 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
         
         // update server setting:
         try {
-            await getShippingTracking({
-                shippingTracking   : {
+            await getShipment({
+                shipment   : {
                     token             : token,
                     
                     preferredTimezone : newPreferredTimezone, // acutally this is a POST action, but since changing the `preferredTimezone` is not a significant mutation, we decided to treat it as a GET action
@@ -208,7 +208,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
             }).unwrap();
         }
         catch (fetchError: any) {
-            showMessageFetchError({ fetchError, context: 'shippingTracking' });
+            showMessageFetchError({ fetchError, context: 'shipment' });
             
             return false; // failed to save
         } // try
@@ -242,7 +242,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
             key='busy' // avoids re-creating a similar dom during loading transition in different components
         />
     );
-    if (isPageError && ((shippingTrackingError as any)?.status !== 400)) return ( // display error other than 400 (bad payment confirmation token)
+    if (isPageError && ((shipmentError as any)?.status !== 400)) return ( // display error other than 400 (bad payment confirmation token)
         <ErrorBlankPage
             // handlers:
             onRetry={handleGetConfirmationStatus}
@@ -278,7 +278,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                     </p>
                 </Alert>}
                 
-                {!!isPageReady && <div className={styleSheet.shippingTracking}>
+                {!!isPageReady && <div className={styleSheet.shipment}>
                     <h1 className={styleSheet.title}>
                         Delivery Tracking
                     </h1>
@@ -289,18 +289,18 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                                 // accessibilities:
                                 label='Ship By'
                             >
-                                {shippingCarrier}
+                                {carrier}
                             </DataTableItem>
                             <DataTableItem
                                 // accessibilities:
                                 label='Shipping Tracking Number'
                             >
-                                {shippingNumber}
+                                {number}
                             </DataTableItem>
                         </DataTableBody>
                     </DataTable>
                     
-                    {!shippingTrackingLogs?.length && <Content className={styleSheet.logsEmpty} theme='warning' mild={true}>
+                    {!logs?.length && <Content className={styleSheet.logsEmpty} theme='warning' mild={true}>
                         <p>
                             <Icon icon='timer' theme='primary' size='xl' />
                         </p>
@@ -312,7 +312,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                         </p>
                     </Content>}
                     
-                    {!!shippingTrackingLogs?.length && <>
+                    {!!logs?.length && <>
                         <DataTable breakpoint='sm' className={styleSheet.tableLogs}>
                             <DataTableBody>
                                 <DataTableItem
@@ -336,7 +336,7 @@ export function ShippingTrackingPageContent(): JSX.Element|null {
                                         onChange={handleUpdatePreferredTimezone}
                                     />
                                 </DataTableItem>
-                                {shippingTrackingLogs.map(({reportedAt, log}, index) =>
+                                {logs.map(({reportedAt, log}, index) =>
                                     <DataTableItem
                                         // identifiers:
                                         key={index}
