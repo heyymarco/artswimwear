@@ -70,7 +70,12 @@ export interface OrderDetail
     payment         : PaymentDetail|null
 }
 
-export type OrderDetailWithOptions = OrderDetail & { sendConfirmationEmail?: boolean }
+export interface OrderDetailWithOptions
+    extends
+        OrderDetail
+{
+    sendConfirmationEmail?: boolean
+}
 
 
 
