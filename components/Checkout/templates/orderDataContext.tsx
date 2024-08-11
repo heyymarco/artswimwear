@@ -98,7 +98,7 @@ export interface OrderDataApi {
     customerOrGuest      : CustomerOrGuestData|null
     paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'orderId'>|null
     isPaid               : boolean
-    shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null
+    shippingTracking     : Pick<ShippingTracking, 'token'|'shippingCarrier'|'shippingNumber'>|null
     
     
     
@@ -134,7 +134,7 @@ export interface OrderDataContextProviderProps {
     customerOrGuest      : CustomerOrGuestData|null
     paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'orderId'>|null
     isPaid               : boolean
-    shippingTracking     : Pick<ShippingTracking, 'token'|'shippingNumber'>|null
+    shippingTracking     : Pick<ShippingTracking, 'token'|'shippingCarrier'|'shippingNumber'>|null
     
     
     

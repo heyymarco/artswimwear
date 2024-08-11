@@ -186,7 +186,7 @@ export const sendConfirmationEmail = async (options: SendConfirmationEmailOption
                 rejectionReason  : null, // not yet set
             },
             isPaid               : isPaid,
-            shippingTracking     : null,
+            shippingTracking     : null, // nothing to ship yet
             
             
             
