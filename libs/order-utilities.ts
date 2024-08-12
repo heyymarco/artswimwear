@@ -369,7 +369,7 @@ export const revertDraftOrder = async (prismaTransaction: Parameters<Parameters<
             ? undefined
             : prismaTransaction.stock.updateMany({
                 where  : {
-                    productId  : productId,
+                    parentId   : productId,
                     value      : { not      : null       },
                     variantIds : { hasEvery : variantIds },
                 },
@@ -472,7 +472,7 @@ export const cancelOrder = async <TSelect extends Prisma.OrderSelect>(prismaTran
                 ? undefined
                 : prismaTransaction.stock.updateMany({
                     where  : {
-                        productId  : productId,
+                        parentId   : productId,
                         value      : { not      : null       },
                         variantIds : { hasEvery : variantIds },
                     },

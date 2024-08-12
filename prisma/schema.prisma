@@ -43,12 +43,13 @@ model Product {
     
     images                          String[]
     
+    stocks                          Stock[]
+    
     // relations:
     orders                          OrdersOnProducts[]              // some Product(s) may have some related Order(s)      // many to many
     draftOrders                     DraftOrdersOnProducts[]         // some Product(s) may have some related DraftOrder(s) // many to many
     
     variantGroups                   VariantGroup[]                  // a Product may have some related VariantGroup(s)     // one  to many
-    stocks                          Stock[]                         // a Product may have some related Stock(s)            // one  to many
 }
 model VariantGroup {
     // records:
@@ -135,8 +136,8 @@ model Stock {
     value                           Int?                            // min: 0
     
     // relations:
-    productId                       String
-    product                         Product                         @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related Stock(s) if the Product deleted
+    parentId                        String
+    parent                          Product                         @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related Stock(s) if the Product deleted
     
     variantIds                      String[]                        // manual relation foreign key(s)
 }
