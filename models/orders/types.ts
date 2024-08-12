@@ -12,7 +12,6 @@ import type {
     Guest,
     GuestPreference,
     Payment,
-    PaymentConfirmation,
     DraftOrder,
     Order,
     OrderCurrency,

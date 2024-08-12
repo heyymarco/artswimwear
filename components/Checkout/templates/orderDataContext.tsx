@@ -126,7 +126,7 @@ export interface OrderDataContextProviderProps {
     // data:
     order                : OrderAndData
     customerOrGuest      : CustomerOrGuestData|null
-    paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'orderId'>|null
+    paymentConfirmation  : Omit<PaymentConfirmation, 'id'|'parentId'>|null
     isPaid               : boolean
     shipment             : (ShipmentPreview & Pick<Shipment, 'token'>)|null
     

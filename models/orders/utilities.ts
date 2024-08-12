@@ -30,7 +30,7 @@ export const paymentConfirmationDetailSelect = {
     rejectionReason : true,
     
     // relations:
-    order : {
+    parent : {
         select : {
             currency : {
                 select : {

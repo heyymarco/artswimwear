@@ -136,7 +136,7 @@ export const POST = async (req: Request): Promise<Response> => {
                             id               : true,
                             
                             // relations:
-                            order : {
+                            parent : {
                                 select : {
                                     customer : {
                                         select : {
@@ -165,8 +165,8 @@ export const POST = async (req: Request): Promise<Response> => {
                     
                     
                     const {
-                        id    : paymentConfirmationId,
-                        order : orderData,
+                        id     : paymentConfirmationId,
+                        parent : orderData,
                     } = paymentConfirmationData;
                     const customerPreferenceId = orderData.customer?.preference?.id;
                     const guestPreferenceId    = orderData.guest?.preference?.id;
@@ -187,7 +187,7 @@ export const POST = async (req: Request): Promise<Response> => {
                             
                             rejectionReason : Prisma.DbNull, // reset for next review
                             
-                            order : (
+                            parent : (
                                 (!customerPreferenceId && !guestPreferenceId)
                                 ? undefined
                                 : (
@@ -266,7 +266,7 @@ Updating the confirmation is not required.`,
     
     const {
         // relations:
-        order : orderData,
+        parent : orderData,
         
         
         

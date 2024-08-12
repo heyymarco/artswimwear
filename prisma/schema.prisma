@@ -436,6 +436,9 @@ model Order {
     cancelationReason               Json?
     
     payment                         Payment?
+    paymentConfirmation             PaymentConfirmation?
+    
+    shipment                        Shipment?
     
     // relations:
     items                           OrdersOnProducts[]              // some Product(s) may have some related Order(s)  // many to many
@@ -448,10 +451,6 @@ model Order {
     
     shippingProviderId              String?
     shippingProvider                ShippingProvider?               @relation(fields: [shippingProviderId] , references: [id], "OrdersOnShipping", onDelete: SetNull) // preserve the related Order(s) if the ShippingProvider deleted
-    
-    paymentConfirmation             PaymentConfirmation?            // an Order may have one related PaymentConfirmation // one to one
-    
-    shipment                        Shipment?                       // an Order may have one related Shipment // one to one
 }
 model DraftOrderCurrency {
     // records:
@@ -570,44 +569,6 @@ enum PaymentType {
     MANUAL
     MANUAL_PAID
 }
-model DraftOrdersOnProducts {
-    // records:
-    // @@id([productId, draftOrderId])
-    id                              String                          @id @default(cuid()) // @map("_id")
-    
-    // data:
-    price                           Float                           // min: 0
-    shippingWeight                  Float?                          // min: 0
-    quantity                        Int                             // min: 1
-    
-    // relations:
-    draftOrderId                    String
-    draftOrder                      DraftOrder                      @relation(fields: [draftOrderId], references: [id], onDelete: Cascade) // delete the related DraftOrdersOnProducts(s) if the DraftOrder deleted
-    
-    productId                       String?
-    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
-    
-    variantIds                      String[]                        // manual relation foreign key(s)
-}
-model OrdersOnProducts {
-    // records:
-    // @@id([productId, orderId])
-    id                              String                          @id @default(cuid()) // @map("_id")
-    
-    // data:
-    price                           Float                           // min: 0
-    shippingWeight                  Float?                          // min: 0
-    quantity                        Int                             // min: 1
-    
-    // relations:
-    orderId                         String
-    order                           Order                           @relation(fields: [orderId]     , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
-    
-    productId                       String?
-    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
-    
-    variantIds                      String[]                        // manual relation foreign key(s)
-}
 model PaymentConfirmation {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
@@ -627,8 +588,8 @@ model PaymentConfirmation {
     rejectionReason                 Json?
     
     // relations:
-    orderId                         String                          @unique
-    order                           Order                           @relation(fields: [orderId], references: [id], onDelete: Cascade) // delete the related PaymentConfirmation if the Order deleted
+    parentId                        String                          @unique
+    parent                          Order                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related PaymentConfirmation if the Order deleted
 }
 model Shipment {
     // records:
@@ -671,6 +632,44 @@ model ShipmentLog {
     // relations:
     parentId                        String
     parent                          Shipment                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShipmentLog(s) if the Shipment deleted
+}
+model DraftOrdersOnProducts {
+    // records:
+    // @@id([productId, draftOrderId])
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    price                           Float                           // min: 0
+    shippingWeight                  Float?                          // min: 0
+    quantity                        Int                             // min: 1
+    
+    // relations:
+    draftOrderId                    String
+    draftOrder                      DraftOrder                      @relation(fields: [draftOrderId], references: [id], onDelete: Cascade) // delete the related DraftOrdersOnProducts(s) if the DraftOrder deleted
+    
+    productId                       String?
+    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
+    
+    variantIds                      String[]                        // manual relation foreign key(s)
+}
+model OrdersOnProducts {
+    // records:
+    // @@id([productId, orderId])
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    price                           Float                           // min: 0
+    shippingWeight                  Float?                          // min: 0
+    quantity                        Int                             // min: 1
+    
+    // relations:
+    orderId                         String
+    order                           Order                           @relation(fields: [orderId]     , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
+    
+    productId                       String?
+    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
+    
+    variantIds                      String[]                        // manual relation foreign key(s)
 }
 
 
