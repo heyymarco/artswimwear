@@ -3,7 +3,6 @@ import type {
     Variant,
     VariantGroup,
     Product,
-    Stock,
 }                           from '@prisma/client'
 
 
