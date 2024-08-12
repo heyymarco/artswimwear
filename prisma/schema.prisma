@@ -43,9 +43,9 @@ model Product {
     
     images                          String[]
     
-    stocks                          Stock[]
-    
     variantGroups                   VariantGroup[]
+    
+    stocks                          Stock[]
     
     // relations:
     orders                          OrdersOnProducts[]              // some Product(s) may have some related Order(s)      // many to many
@@ -68,10 +68,6 @@ model VariantGroup {
     // relations:
     parentId                        String
     parent                          Product                         @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related VariantGroup(s) if the Product deleted
-}
-enum VariantVisibility {
-    PUBLISHED
-    DRAFT
 }
 model Variant {
     // records:
@@ -127,6 +123,10 @@ model TemplateVariant {
     // relations:
     templateVariantGroupId          String
     templateVariantGroup            TemplateVariantGroup            @relation(fields: [templateVariantGroupId], references: [id], onDelete: Cascade) // delete the related TemplateVariant(s) if the TemplateVariantGroup deleted
+}
+enum VariantVisibility {
+    PUBLISHED
+    DRAFT
 }
 model Stock {
     // records:
