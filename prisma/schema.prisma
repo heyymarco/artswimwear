@@ -642,11 +642,11 @@ model Shipment {
     number                          String?                         // minLength: 1, maxLength: 50
     eta                             ShipmentEta?
     
+    logs                            ShipmentLog[]
+    
     // relations:
     parentId                        String                          @unique
     parent                          Order                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related Shipment if the Order deleted
-    
-    logs                            ShipmentLog[]                   // a Shipment may have some related ShipmentLog(s) // one  to many
 }
 model ShipmentEta {
     // records:

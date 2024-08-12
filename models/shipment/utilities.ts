@@ -5,7 +5,18 @@ import {
 
 
 
+const timezoneSelect = {
+    select : {
+        preference : {
+            select : {
+                timezone : true,
+            },
+        },
+    },
+} satisfies (Prisma.Order$guestArgs & Prisma.Order$customerArgs);
+
 export const shipmentDetailSelect = {
+    // data:
     carrier            : true,
     number             : true,
     logs               : {
@@ -18,31 +29,8 @@ export const shipmentDetailSelect = {
     // relations:
     parent : {
         select : {
-            currency : {
-                select : {
-                    currency : true,
-                    rate     : true,
-                },
-            },
-            
-            customer : {
-                select : {
-                    preference : {
-                        select : {
-                            timezone : true,
-                        },
-                    },
-                },
-            },
-            guest : {
-                select : {
-                    preference : {
-                        select : {
-                            timezone : true,
-                        },
-                    },
-                },
-            },
+            guest    : timezoneSelect,
+            customer : timezoneSelect,
         },
     },
 } satisfies Prisma.ShipmentSelect;
