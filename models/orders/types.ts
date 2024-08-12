@@ -150,8 +150,7 @@ export type CustomerOrGuestPreferenceDetail = Omit<CustomerOrGuestPreference,
     |'id'
     
     // relations:
-    |'customerId'
-    |'guestId'
+    |'parentId'
 >
 
 

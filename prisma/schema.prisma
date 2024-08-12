@@ -692,21 +692,6 @@ model Country {
 
 
 
-model Guest {
-    // records:
-    id                              String                          @id @default(cuid()) // @map("_id")
-    createdAt                       DateTime                        @default(now())
-    updatedAt                       DateTime                        @updatedAt
-    
-    // data:
-    name                            String                          // minLength: 2, maxLength: 30
-    email                           String                          // minLength: 5, maxLength: 50
-    
-    // relations:
-    orders                          Order[]                         @relation("OrdersOnGuest")      // one Guest may have some related Order(s)        // one  to many
-    draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnGuest") // one Guest may have some related DraftOrder(s)   // one  to many
-    preference                      GuestPreference?                                                // one Guest may have one  related GuestPreference // one  to one
-}
 model Customer {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
@@ -720,10 +705,11 @@ model Customer {
     emailVerified                   DateTime?
     image                           String?
     
+    preference                      CustomerPreference?
+    
     // relations:
     orders                          Order[]                         @relation("OrdersOnCustomer")      // one Customer may have some related Order(s)       // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnCustomer") // one Customer may have some related DraftOrder(s)  // one  to many
-    preference                      CustomerPreference?             // a Customer may have one related CustomerPreference                                   // one  to one
     
     customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                                  // one  to many
     customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                                  // one  to many
@@ -731,17 +717,21 @@ model Customer {
     customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken                          // one  to one
     customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken                      // one  to one
 }
-model GuestPreference {
+model Guest {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
+    createdAt                       DateTime                        @default(now())
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
-    marketingOpt                    Boolean?
-    timezone                        Float?
+    name                            String                          // minLength: 2, maxLength: 30
+    email                           String                          // minLength: 5, maxLength: 50
+    
+    preference                      GuestPreference?
     
     // relations:
-    guestId                         String                          @unique
-    guest                           Guest                           @relation(fields: [guestId], references: [id], onDelete: Cascade) // delete the related GuestPreference if the Guest deleted
+    orders                          Order[]                         @relation("OrdersOnGuest")      // one Guest may have some related Order(s)        // one  to many
+    draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnGuest") // one Guest may have some related DraftOrder(s)   // one  to many
 }
 model CustomerPreference {
     // records:
@@ -752,8 +742,20 @@ model CustomerPreference {
     timezone                        Float?
     
     // relations:
-    customerId                      String                          @unique
-    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPreference if the Customer deleted
+    parentId                        String                          @unique
+    parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CustomerPreference if the Customer deleted
+}
+model GuestPreference {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    marketingOpt                    Boolean?
+    timezone                        Float?
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          Guest                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related GuestPreference if the Guest deleted
 }
 
 

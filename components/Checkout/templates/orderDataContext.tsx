@@ -16,7 +16,7 @@ import type {
     CountryPreview,
     
     CustomerOrGuest,
-    CustomerOrGuestPreference,
+    CustomerOrGuestPreferenceDetail,
     
     ShipmentPreview,
 }                           from '@/models'
@@ -68,14 +68,6 @@ export type CustomerOrGuestData = Omit<CustomerOrGuest,
 > & {
     preference : CustomerOrGuestPreferenceDetail|null
 }
-export type CustomerOrGuestPreferenceDetail = Omit<CustomerOrGuestPreference,
-    // records:
-    |'id'
-    
-    // relations:
-    |'customerId'
-    |'guestId'
->
 export interface OrderAndData
     extends
         Omit<OrderDetail,
