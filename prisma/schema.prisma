@@ -45,11 +45,11 @@ model Product {
     
     stocks                          Stock[]
     
+    variantGroups                   VariantGroup[]
+    
     // relations:
     orders                          OrdersOnProducts[]              // some Product(s) may have some related Order(s)      // many to many
     draftOrders                     DraftOrdersOnProducts[]         // some Product(s) may have some related DraftOrder(s) // many to many
-    
-    variantGroups                   VariantGroup[]                  // a Product may have some related VariantGroup(s)     // one  to many
 }
 model VariantGroup {
     // records:
@@ -66,8 +66,8 @@ model VariantGroup {
     variants                        Variant[]
     
     // relations:
-    productId                       String
-    product                         Product                         @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related VariantGroup(s) if the Product deleted
+    parentId                        String
+    parent                          Product                         @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related VariantGroup(s) if the Product deleted
 }
 enum VariantVisibility {
     PUBLISHED
