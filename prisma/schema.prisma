@@ -63,9 +63,9 @@ model VariantGroup {
     name                            String
     hasDedicatedStocks              Boolean
     
-    // relations:
-    variants                        Variant[]                       // a VariantGroup may have some related Variant(s) // one  to many
+    variants                        Variant[]
     
+    // relations:
     productId                       String
     product                         Product                         @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related VariantGroup(s) if the Product deleted
 }
@@ -91,8 +91,8 @@ model Variant {
     images                          String[]
     
     // relations:
-    variantGroupId                  String
-    variantGroup                    VariantGroup                    @relation(fields: [variantGroupId], references: [id], onDelete: Cascade) // delete the related Variant(s) if the VariantGroup deleted
+    parentId                        String
+    parent                          VariantGroup                    @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related Variant(s) if the VariantGroup deleted
 }
 model TemplateVariantGroup {
     // records:
