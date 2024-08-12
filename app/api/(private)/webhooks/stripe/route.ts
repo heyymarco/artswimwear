@@ -256,11 +256,13 @@ export async function POST(req: Request, res: Response): Promise<Response> {
             if (fee !== undefined) {
                 const updated = await prisma.payment.updateMany({
                     where : {
+                        // relations:
                         parent : {
                             orderId : orderId, // unique, guarantees only update one or zero
                         },
                     },
                     data  : {
+                        // data:
                         fee : fee,
                     },
                 });
