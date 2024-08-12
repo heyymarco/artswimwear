@@ -100,8 +100,7 @@ model TemplateVariantGroup {
     name                            String
     hasDedicatedStocks              Boolean
     
-    // relations:
-    templateVariants                TemplateVariant[]               // a TemplateVariantGroup may have some related TemplateVariant(s) // one  to many
+    templateVariants                TemplateVariant[]
 }
 model TemplateVariant {
     // records:
@@ -121,8 +120,8 @@ model TemplateVariant {
     images                          String[]
     
     // relations:
-    templateVariantGroupId          String
-    templateVariantGroup            TemplateVariantGroup            @relation(fields: [templateVariantGroupId], references: [id], onDelete: Cascade) // delete the related TemplateVariant(s) if the TemplateVariantGroup deleted
+    parentId                        String
+    parent                          TemplateVariantGroup            @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related TemplateVariant(s) if the TemplateVariantGroup deleted
 }
 enum VariantVisibility {
     PUBLISHED
