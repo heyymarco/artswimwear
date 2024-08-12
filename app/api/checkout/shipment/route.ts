@@ -70,13 +70,15 @@ export const POST = async (req: Request): Promise<Response> => {
         (preferredTimezone === undefined)
         ? await prisma.shipment.findUnique({
             where  : {
+                // data:
                 token : shipmentToken,
             },
             select : shipmentDetailSelect,
         })
         : await prisma.$transaction(async (prismaTransaction) => {
-            const shipmentData = await prismaTransaction.shipment.findUnique({
+            const relatedShipment = await prismaTransaction.shipment.findUnique({
                 where  : {
+                    // data:
                     token : shipmentToken,
                 },
                 select : {
@@ -86,7 +88,7 @@ export const POST = async (req: Request): Promise<Response> => {
                     // relations:
                     parent : {
                         select : {
-                            customer : {
+                            guest    : {
                                 select : {
                                     preference : {
                                         select : {
@@ -95,7 +97,7 @@ export const POST = async (req: Request): Promise<Response> => {
                                     },
                                 },
                             },
-                            guest    : {
+                            customer : {
                                 select : {
                                     preference : {
                                         select : {
@@ -108,29 +110,30 @@ export const POST = async (req: Request): Promise<Response> => {
                     },
                 },
             });
-            if (!shipmentData) return null;
+            if (!relatedShipment) return null;
             
             
             
             const {
                 id     : shipmentId,
                 parent : orderData,
-            } = shipmentData;
-            const customerPreferenceId = orderData.customer?.preference?.id;
+            } = relatedShipment;
             const guestPreferenceId    = orderData.guest?.preference?.id;
+            const customerPreferenceId = orderData.customer?.preference?.id;
             return await prismaTransaction.shipment.update({
                 where  : {
+                    // records:
                     id : shipmentId,
                 },
                 data   : {
                     parent : (
-                        (!customerPreferenceId && !guestPreferenceId)
+                        (!guestPreferenceId && !customerPreferenceId)
                         ? undefined
                         : (
-                            customerPreferenceId
+                            guestPreferenceId
                             ? {
                                 update : {
-                                    customer : {
+                                    guest : {
                                         update : {
                                             preference : {
                                                 update : {
@@ -143,7 +146,7 @@ export const POST = async (req: Request): Promise<Response> => {
                             }
                             : {
                                 update : {
-                                    guest : {
+                                    customer : {
                                         update : {
                                             preference : {
                                                 update : {
