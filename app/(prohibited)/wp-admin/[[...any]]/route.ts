@@ -1,5 +1,5 @@
 // configs:
-export const dynamic = 'force-static';
+// export const dynamic = 'force-static'; // causes an error for non GET request
 
 
 
