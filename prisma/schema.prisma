@@ -863,9 +863,9 @@ model Admin {
     emailVerified                   DateTime?
     image                           String?
     
-    // relations:
-    adminPreference                 AdminPreference?                // an Admin may have one  related AdminPreference             // one  to one
+    preference                      AdminPreference?
     
+    // relations:
     adminAccounts                   AdminAccount[]                  // an Admin may have some related AdminAccount(s)             // one  to many
     adminSessions                   AdminSession[]                  // an Admin may have some related AdminSession(s)             // one  to many
     adminCredentials                AdminCredentials?               // an Admin may have one  related AdminCredentials            // one  to one
@@ -891,8 +891,8 @@ model AdminPreference {
     emailOrderCompleted             Boolean?
     
     // relations:
-    adminId                         String                          @unique
-    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminPreference if the Admin deleted
+    parentId                        String                          @unique
+    parent                          Admin                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related AdminPreference if the Admin deleted
 }
 
 
