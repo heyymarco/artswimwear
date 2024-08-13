@@ -29,6 +29,7 @@ const authRouteHandler = createAuthRouteHandler({
         passwordResetToken            : 'customerPasswordResetToken',
         emailConfirmationToken        : 'customerEmailConfirmationToken',
         
+        userRefRole                   : null,
         accountRefUser                : 'parentId',
         sessionRefUser                : 'parentId',
         credentialsRefUser            : 'parentId',
