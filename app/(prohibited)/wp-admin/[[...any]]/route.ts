@@ -4,7 +4,7 @@ export const dynamic = 'force-static';
 
 
 // routers:
-const handler = (req: Request) => {
+const handler = async () => {
     return new Response(undefined, {
         status : 404,
     });
