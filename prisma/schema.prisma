@@ -15,11 +15,6 @@ datasource db {
 
 
 
-enum ProductVisibility {
-    PUBLISHED
-    HIDDEN
-    DRAFT
-}
 model Product {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
@@ -50,6 +45,11 @@ model Product {
     // relations:
     orders                          OrdersOnProducts[]              // some Product(s) may have some related Order(s)      // many to many
     draftOrders                     DraftOrdersOnProducts[]         // some Product(s) may have some related DraftOrder(s) // many to many
+}
+enum ProductVisibility {
+    PUBLISHED
+    HIDDEN
+    DRAFT
 }
 model VariantGroup {
     // records:
