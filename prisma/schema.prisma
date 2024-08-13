@@ -160,10 +160,10 @@ model ShippingProvider {
     eta                             ShippingProviderEta?
     rates                           ShippingProviderRate[]
     
-    // relations:
     useZones                        Boolean
-    zones                           CoverageCountry[]               // a ShippingProvider may have some related CoverageCountry(s)                                  // one  to many
+    zones                           CoverageCountry[]
     
+    // relations:
     orders                          Order[]                         @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnShipping") // one ShippingProvider may have some related DraftOrder(s)  // one  to many
 }
@@ -179,12 +179,12 @@ model CoverageCountry {
     eta                             CoverageCountryEta?
     rates                           CoverageCountryRate[]
     
+    useZones                        Boolean
+    zones                           CoverageState[]
+    
     // relations:
     parentId                        String
     parent                          ShippingProvider                @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CoverageCountry(s) if the ShippingProvider deleted
-    
-    useZones                        Boolean
-    zones                           CoverageState[]                 // a CoverageCountry may have some related CoverageState(s)                                     // one  to many
 }
 model CoverageState {
     // records:
@@ -198,12 +198,12 @@ model CoverageState {
     eta                             CoverageStateEta?
     rates                           CoverageStateRate[]
     
+    useZones                        Boolean
+    zones                           CoverageCity[]
+    
     // relations:
     parentId                        String
     parent                          CoverageCountry                 @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CoverageState(s) if the CoverageCountry deleted
-    
-    useZones                        Boolean
-    zones                           CoverageCity[]                  // a CoverageState may have some related CoverageCity(s)                                        // one  to many
 }
 model CoverageCity {
     // records:
@@ -354,9 +354,7 @@ model EasypostRateCache {
     
     // data:
     key                             String                          @unique
-    
-    // relations:
-    items                           EasypostRateCacheItem[]         // a EasypostRateCache may have some related EasypostRateCacheItem(s) // one  to many
+    items                           EasypostRateCacheItem[]
 }
 model EasypostRateCacheItem {
     // records:
