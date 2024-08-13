@@ -707,15 +707,15 @@ model Customer {
     
     preference                      CustomerPreference?
     
+    customerAccounts                CustomerAccount[]
+    customerSessions                CustomerSession[]
+    customerCredentials             CustomerCredentials?
+    customerPasswordResetToken      CustomerPasswordResetToken?
+    customerEmailConfirmationToken  CustomerEmailConfirmationToken?
+    
     // relations:
     orders                          Order[]                         @relation("OrdersOnCustomer")      // one Customer may have some related Order(s)       // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnCustomer") // one Customer may have some related DraftOrder(s)  // one  to many
-    
-    customerAccounts                CustomerAccount[]               // a Customer may have some related CustomerAccount(s)                                  // one  to many
-    customerSessions                CustomerSession[]               // a Customer may have some related CustomerSession(s)                                  // one  to many
-    customerCredentials             CustomerCredentials?            // a Customer may have one  related CustomerCredentials                                 // one  to one
-    customerPasswordResetToken      CustomerPasswordResetToken?     // a Customer may have one  related CustomerPasswordResetToken                          // one  to one
-    customerEmailConfirmationToken  CustomerEmailConfirmationToken? // a Customer may have one  related CustomerEmailConfirmationToken                      // one  to one
 }
 model Guest {
     // records:
@@ -786,8 +786,8 @@ model CustomerAccount {
     session_state                   String?
     
     // relations:
-    customerId                      String
-    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerAccount(s) if the Customer deleted
+    parentId                        String
+    parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CustomerAccount(s) if the Customer deleted
 }
 
 model CustomerSession {
@@ -799,8 +799,8 @@ model CustomerSession {
     sessionToken                    String                          @unique
     
     // relations:
-    customerId                      String
-    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerSession(s) if the Customer deleted
+    parentId                        String
+    parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CustomerSession(s) if the Customer deleted
 }
 
 model CustomerCredentials {
@@ -814,8 +814,8 @@ model CustomerCredentials {
     password                        String?
     
     // relations:
-    customerId                      String                          @unique
-    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerCredentials if the Customer deleted
+    parentId                        String                          @unique
+    parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CustomerCredentials if the Customer deleted
 }
 
 model CustomerPasswordResetToken {
@@ -828,8 +828,8 @@ model CustomerPasswordResetToken {
     token                           String                          @unique
     
     // relations:
-    customerId                      String                          @unique
-    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerPasswordResetToken if the Customer deleted
+    parentId                        String                          @unique
+    parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CustomerPasswordResetToken if the Customer deleted
 }
 
 model CustomerEmailConfirmationToken {
@@ -840,8 +840,8 @@ model CustomerEmailConfirmationToken {
     token                           String                          @unique
     
     // relations:
-    customerId                      String                          @unique
-    customer                        Customer                        @relation(fields: [customerId], references: [id], onDelete: Cascade) // delete the related CustomerEmailConfirmationToken if the Customer deleted
+    parentId                        String                          @unique
+    parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CustomerEmailConfirmationToken if the Customer deleted
 }
 
 
@@ -865,13 +865,13 @@ model Admin {
     
     preference                      AdminPreference?
     
-    // relations:
-    adminAccounts                   AdminAccount[]                  // an Admin may have some related AdminAccount(s)             // one  to many
-    adminSessions                   AdminSession[]                  // an Admin may have some related AdminSession(s)             // one  to many
-    adminCredentials                AdminCredentials?               // an Admin may have one  related AdminCredentials            // one  to one
-    adminPasswordResetToken         AdminPasswordResetToken?        // an Admin may have one  related AdminPasswordResetToken     // one  to one
-    adminEmailConfirmationToken     AdminEmailConfirmationToken?    // an Admin may have one  related AdminEmailConfirmationToken // one  to one
+    adminAccounts                   AdminAccount[]
+    adminSessions                   AdminSession[]
+    adminCredentials                AdminCredentials?
+    adminPasswordResetToken         AdminPasswordResetToken?
+    adminEmailConfirmationToken     AdminEmailConfirmationToken?
     
+    // relations:
     adminRoleId                     String?
     adminRole                       AdminRole?                      @relation(fields: [adminRoleId], references: [id], onDelete: SetNull) // preserve the related Admin(s) if the AdminRole deleted
 }
@@ -923,8 +923,8 @@ model AdminAccount {
     session_state                   String?
     
     // relations:
-    adminId                         String
-    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminAccount(s) if the Admin deleted
+    parentId                        String
+    parent                          Admin                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related AdminAccount(s) if the Admin deleted
 }
 
 model AdminSession {
@@ -936,8 +936,8 @@ model AdminSession {
     sessionToken                    String                          @unique
     
     // relations:
-    adminId                         String
-    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminSession(s) if the Admin deleted
+    parentId                        String
+    parent                          Admin                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related AdminSession(s) if the Admin deleted
 }
 
 model AdminCredentials {
@@ -951,8 +951,8 @@ model AdminCredentials {
     password                        String?
     
     // relations:
-    adminId                         String                          @unique
-    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminCredentials if the Admin deleted
+    parentId                        String                          @unique
+    parent                          Admin                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related AdminCredentials if the Admin deleted
 }
 
 model AdminPasswordResetToken {
@@ -965,8 +965,8 @@ model AdminPasswordResetToken {
     token                           String                          @unique
     
     // relations:
-    adminId                         String                          @unique
-    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminPasswordResetToken if the Admin deleted
+    parentId                        String                          @unique
+    parent                          Admin                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related AdminPasswordResetToken if the Admin deleted
 }
 
 model AdminEmailConfirmationToken {
@@ -977,8 +977,8 @@ model AdminEmailConfirmationToken {
     token                           String                          @unique
     
     // relations:
-    adminId                         String                          @unique
-    admin                           Admin                           @relation(fields: [adminId], references: [id], onDelete: Cascade) // delete the related AdminEmailConfirmationToken if the Admin deleted
+    parentId                        String                          @unique
+    parent                          Admin                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related AdminEmailConfirmationToken if the Admin deleted
 }
 
 model AdminRole {
