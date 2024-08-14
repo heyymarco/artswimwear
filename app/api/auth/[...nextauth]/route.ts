@@ -20,21 +20,21 @@ import {
 
 
 const authRouteHandler = createAuthRouteHandler({
-    adapter                           : PrismaAdapterWithCredentials(prisma, {
-        user                          : 'customer',
-        role                          : null,
-        account                       : 'customerAccount',
-        session                       : 'customerSession',
-        credentials                   : 'customerCredentials',
-        passwordResetToken            : 'customerPasswordResetToken',
-        emailConfirmationToken        : 'customerEmailConfirmationToken',
+    adapter                                  : PrismaAdapterWithCredentials(prisma, {
+        modelUser                            : 'customer',
+        modelRole                            : null,
+        modelAccount                         : 'customerAccount',
+        modelSession                         : 'customerSession',
+        modelCredentials                     : 'customerCredentials',
+        modelPasswordResetToken              : 'customerPasswordResetToken',
+        modelEmailConfirmationToken          : 'customerEmailConfirmationToken',
         
-        userRefRole                   : null,
-        accountRefUser                : 'parentId',
-        sessionRefUser                : 'parentId',
-        credentialsRefUser            : 'parentId',
-        passwordResetTokenRefUser     : 'parentId',
-        emailConfirmationTokenRefUser : 'parentId',
+        modelUserRefRoleId                   : null,
+        modelAccountRefUserId                : 'parentId',
+        modelSessionRefUserId                : 'parentId',
+        modelCredentialsRefUserId            : 'parentId',
+        modelPasswordResetTokenRefUserId     : 'parentId',
+        modelEmailConfirmationTokenRefUserId : 'parentId',
     }),
     authConfigServer           : authConfigServer,
     credentialsConfigServer    : credentialsConfigServer,
