@@ -16,6 +16,7 @@ import {
 
 // models:
 import {
+    type Prisma,
     type CustomerDetail,
 }                           from '@/models'
 
@@ -122,25 +123,25 @@ router
             image,
         };
         const select = {
-            id               : true,
+            id          : true,
             
-            name             : true,
-            email            : true,
-            image            : true,
+            name        : true,
+            email       : true,
+            image       : true,
             
-            customerCredentials : {
+            credentials : {
                 select : {
                     username : true,
                 },
             },
-        };
-        const {customerCredentials, ...restCustomer} = await prisma.customer.update({
+        } satisfies Prisma.CustomerSelect;
+        const {credentials, ...restCustomer} = await prisma.customer.update({
             where  : {
                 id : id,
             },
             data   : {
                 ...data,
-                customerCredentials : (username !== undefined) ? {
+                credentials : (username !== undefined) ? {
                     upsert : {
                         update : {
                             username,
@@ -155,7 +156,7 @@ router
         });
         const customerDetail : CustomerDetail = {
             ...restCustomer,
-            username : customerCredentials?.username ?? null,
+            username : credentials?.username ?? null,
         };
         return NextResponse.json(customerDetail); // handled with success
     }

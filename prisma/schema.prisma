@@ -705,11 +705,11 @@ model Customer {
     
     preference                      CustomerPreference?
     
-    customerAccounts                CustomerAccount[]
-    customerSessions                CustomerSession[]
-    customerCredentials             CustomerCredentials?
-    customerPasswordResetToken      CustomerPasswordResetToken?
-    customerEmailConfirmationToken  CustomerEmailConfirmationToken?
+    accounts                        CustomerAccount[]
+    sessions                        CustomerSession[]
+    credentials                     CustomerCredentials?
+    passwordResetToken              CustomerPasswordResetToken?
+    emailConfirmationToken          CustomerEmailConfirmationToken?
     
     // relations:
     orders                          Order[]                         @relation("OrdersOnCustomer")      // one Customer may have some related Order(s)       // one  to many
@@ -863,11 +863,11 @@ model Admin {
     
     preference                      AdminPreference?
     
-    adminAccounts                   AdminAccount[]
-    adminSessions                   AdminSession[]
-    adminCredentials                AdminCredentials?
-    adminPasswordResetToken         AdminPasswordResetToken?
-    adminEmailConfirmationToken     AdminEmailConfirmationToken?
+    accounts                        AdminAccount[]
+    sessions                        AdminSession[]
+    credentials                     AdminCredentials?
+    passwordResetToken              AdminPasswordResetToken?
+    emailConfirmationToken          AdminEmailConfirmationToken?
     
     // relations:
     adminRoleId                     String?
