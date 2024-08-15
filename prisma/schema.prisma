@@ -100,7 +100,7 @@ model TemplateVariantGroup {
     name                            String
     hasDedicatedStocks              Boolean
     
-    templateVariants                TemplateVariant[]
+    variants                        TemplateVariant[]
 }
 model TemplateVariant {
     // records:
