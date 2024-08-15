@@ -402,9 +402,9 @@ model DraftOrder {
     shippingAddress                 DraftShippingAddress?
     shippingCost                    Float?                          // min: 0
     
-    // relations:
-    items                           DraftOrdersOnProducts[]         // some Product(s) may have some related DraftOrder(s)  // many to many
+    items                           DraftOrdersOnProducts[]
     
+    // relations:
     customerId                      String?
     customer                        Customer?                       @relation(fields: [customerId]         , references: [id], "DraftOrdersOnCustomer", onDelete: SetNull) // preserve the related DraftOrder(s) if the Customer deleted
     
@@ -438,9 +438,9 @@ model Order {
     
     shipment                        Shipment?
     
-    // relations:
-    items                           OrdersOnProducts[]              // some Product(s) may have some related Order(s)  // many to many
+    items                           OrdersOnProducts[]
     
+    // relations:
     customerId                      String?
     customer                        Customer?                       @relation(fields: [customerId]         , references: [id], "OrdersOnCustomer", onDelete: SetNull) // preserve the related Order(s) if the Customer deleted
     
@@ -642,11 +642,11 @@ model DraftOrdersOnProducts {
     quantity                        Int                             // min: 1
     
     // relations:
-    draftOrderId                    String
-    draftOrder                      DraftOrder                      @relation(fields: [draftOrderId], references: [id], onDelete: Cascade) // delete the related DraftOrdersOnProducts(s) if the DraftOrder deleted
+    parentId                        String
+    parent                          DraftOrder                      @relation(fields: [parentId]  , references: [id], onDelete: Cascade) // delete the related DraftOrdersOnProducts(s) if the DraftOrder deleted
     
     productId                       String?
-    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
+    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
     
     variantIds                      String[]                        // manual relation foreign key(s)
 }
@@ -661,11 +661,11 @@ model OrdersOnProducts {
     quantity                        Int                             // min: 1
     
     // relations:
-    orderId                         String
-    order                           Order                           @relation(fields: [orderId]     , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
+    parentId                        String
+    parent                          Order                           @relation(fields: [parentId]  , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
     
     productId                       String?
-    product                         Product?                        @relation(fields: [productId]   , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
+    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
     
     variantIds                      String[]                        // manual relation foreign key(s)
 }

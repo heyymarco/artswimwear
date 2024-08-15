@@ -921,11 +921,15 @@ router
                     
                     
                     detailedItems.push({
+                        // relations:
                         productId      : productId,
                         variantIds     : selectedVariantIds,
+                        
+                        // readable:
                         productName    : product.name,
                         variantNames   : selectedVariants.map(({name}) => name),
                         
+                        // data:
                         priceConverted : unitPriceConverted,
                         shippingWeight : unitWeight,
                         quantity       : quantity,

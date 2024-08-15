@@ -49,9 +49,26 @@ export type TotalShippingCostStatus =
 
 
 
-export type DetailedItem =
-    &Omit<DraftOrdersOnProducts, 'id'|'draftOrderId'|'price'>
-    &{ productName: string, variantNames: string[], priceConverted: DraftOrdersOnProducts['price'] }
+export interface DetailedItem
+    extends
+        Omit<DraftOrdersOnProducts,
+            // records:
+            |'id'
+            
+            // data:
+            |'price' // renamed to priceConverted
+            
+            // relations:
+            |'parentId'
+        >
+{
+    // readable:
+    productName    : string
+    variantNames   : string[]
+    
+    // data:
+    priceConverted : DraftOrdersOnProducts['price'] // renamed to priceConverted
+}
 
 export interface CreateOrderOptions {
     currency                    : string

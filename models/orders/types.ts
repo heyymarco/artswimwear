@@ -220,7 +220,7 @@ export interface CreateOrderDataBasic {
         |'id'
         
         // relations:
-        |'orderId'
+        |'parentId'
     >[]
     currency                 : OrderCurrencyDetail|null
     shippingAddress          : ShippingAddressDetail|null
@@ -262,7 +262,7 @@ export type CommitDraftOrder = Omit<DraftOrderDetail,
         |'id'
         
         // relations:
-        |'draftOrderId'
+        |'parentId'
     >[]
 }
 export interface CommitDraftOrderData {
@@ -315,10 +315,12 @@ export type CancelOrder = Pick<OrderDetail,
         |'type'
     >|null
     items : Pick<OrdersOnProducts,
+        // data:
+        |'quantity'
+        
+        // relations:
         |'productId'
         |'variantIds'
-        
-        |'quantity'
     >[]
 }
 
