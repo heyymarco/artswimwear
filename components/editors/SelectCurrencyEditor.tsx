@@ -28,7 +28,12 @@ const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(prop
     // default props:
     const {
         // values:
-        valueOptions = Object.keys(checkoutConfigShared.intl.currencies), // defaults to currencies in config
+        valueOptions      = Object.keys(checkoutConfigShared.intl.currencies), // defaults to currencies in config
+        
+        
+        
+        // floatable:
+        floatingPlacement = 'bottom',
         
         
         
@@ -52,7 +57,7 @@ const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(prop
             
             
             // floatable:
-            floatingPlacement='bottom'
+            floatingPlacement={floatingPlacement}
         />
     );
 };
