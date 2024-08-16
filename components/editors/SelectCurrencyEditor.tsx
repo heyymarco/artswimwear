@@ -48,6 +48,11 @@ const SelectCurrencyEditor = <TElement extends Element = HTMLButtonElement>(prop
             
             // values:
             valueOptions={valueOptions}
+            
+            
+            
+            // floatable:
+            floatingPlacement='bottom'
         />
     );
 };
