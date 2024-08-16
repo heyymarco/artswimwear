@@ -870,8 +870,8 @@ model Admin {
     emailConfirmationToken          AdminEmailConfirmationToken?
     
     // relations:
-    adminRoleId                     String?
-    adminRole                       AdminRole?                      @relation(fields: [adminRoleId], references: [id], onDelete: SetNull) // preserve the related Admin(s) if the AdminRole deleted
+    roleId                          String?
+    role                            AdminRole?                      @relation(fields: [roleId], references: [id], onDelete: SetNull) // preserve the related Admin(s) if the AdminRole deleted
 }
 model AdminPreference {
     // records:
