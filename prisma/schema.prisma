@@ -600,6 +600,7 @@ model Shipment {
     carrier                         String?                         // minLength: 1, maxLength: 50
     number                          String?                         // minLength: 1, maxLength: 50
     eta                             ShipmentEta?
+    cost                            Float?
     
     logs                            ShipmentLog[]
     
