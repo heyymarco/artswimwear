@@ -1605,7 +1605,7 @@ export const checkoutConfigServer   : CheckoutConfigServer = {
                         <p style={styles.paragraph}>
                             Please ignore the shipping tracking number previously informed. It is no longer valid.
                         </p>
-                        <p>
+                        <p style={styles.paragraph}>
                             Correct shipping tracking number:
                             <br />
                             <strong>
@@ -3321,7 +3321,7 @@ export const checkoutConfigServer   : CheckoutConfigServer = {
                         <p style={styles.paragraph}>
                             A revision of <strong>shipping tracking number</strong> of <strong><Customer.Name /></strong> <span style={styles.textSmall}>(<Customer.Email />)</span>.
                         </p>
-                        <p>
+                        <p style={styles.paragraph}>
                             Correct shipping tracking number:
                             <br />
                             <strong>
