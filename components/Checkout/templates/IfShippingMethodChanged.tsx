@@ -41,9 +41,11 @@ export const IfShippingMethodChanged = (props: React.PropsWithChildren<{}>): Rea
     const isShippingMethodChanged : boolean = (
         (prevShipment !== undefined) // do not detect changes if `prevShipment` not provider for comparison
         &&
-        (prevShipment.carrier?.trim().toLowerCase() !== shipment.carrier?.trim().toLowerCase()) // detect shipping carrier name changes
-        &&
-        (prevShipment.number?.trim() !== shipment.number?.trim()) // detect shipping tracking number changes
+        (
+            (prevShipment.carrier?.trim().toLowerCase() !== shipment.carrier?.trim().toLowerCase()) // detect shipping carrier name changes
+            ||
+            (prevShipment.number?.trim() !== shipment.number?.trim()) // detect shipping tracking number changes
+        )
     );
     
     if (!isShippingMethodChanged) return null; // not changed => ignore
