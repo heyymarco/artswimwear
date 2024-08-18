@@ -212,7 +212,7 @@ const CheckoutInternal = (): JSX.Element|null => {
             
             
             // classes:
-            className={`${styleSheet.layout} ${checkoutStep}`}
+            className={styleSheet.layout}
         >
             <Section
                 // semantics:

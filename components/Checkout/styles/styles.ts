@@ -187,8 +187,7 @@ export default () => {
         scope('currentStepLayout', {
             gridArea: 'currentStep',
             
-            display: 'flex',
-            flexDirection: 'column',
+            display: 'grid',
             gapBlock: containers.paddingBlock,
             
             ...children(['section', 'aside'], {
@@ -328,8 +327,7 @@ export default () => {
         }, {specificityWeight: 2}),
         
         scope('checkout', {
-            display: 'flex',
-            flexDirection: 'column',
+            display: 'grid',
             
             // decrease indent on sub section(s):
             ...children('article', {
