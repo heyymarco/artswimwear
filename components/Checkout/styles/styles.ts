@@ -757,6 +757,7 @@ export default () => {
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 alignItems: 'stretch',
+                flexWrap: 'nowrap',
                 gap: '1rem',
                 // back & next are stacked horizontally:
                 ...ifScreenWidthAtLeast('sm', {
