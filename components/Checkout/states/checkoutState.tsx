@@ -39,6 +39,7 @@ import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
     useEvent,
+    EventHandler,
     useMountedFlag,
     
     
@@ -186,12 +187,6 @@ import type {
 import {
     calculateShippingCost,
 }                           from '@/libs/shippings/shippings'
-import {
-    // hooks:
-    FieldSetter,
-    FieldHandlers,
-    useFieldState,
-}                           from '../hooks/fieldState'
 
 // configs:
 import {
@@ -296,17 +291,17 @@ export interface CheckoutStateBase {
     
     // extra data:
     marketingOpt                 : boolean
-    setMarketingOpt              : FieldSetter<'marketingOpt'>
+    setMarketingOpt              : EventHandler<boolean>
     
     
     
     // customer data:
     customerValidation           : boolean
     customerName                 : string
-    setCustomerName              : FieldSetter<'customerName'>
+    setCustomerName              : EventHandler<string>
     
     customerEmail                : string
-    setCustomerEmail             : FieldSetter<'customerEmail'>
+    setCustomerEmail             : EventHandler<string>
     
     
     
@@ -435,7 +430,7 @@ export type CheckoutState =
         )
     )
 
-const noopSetter   : FieldSetter<any> = () => {};
+const noopSetter   : EventHandler<unknown> = () => {};
 const noopCallback = () => {};
 const CheckoutStateContext = createContext<CheckoutState>({
     // states:
@@ -704,23 +699,33 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // extra data:
-    const [, setMarketingOpt       ] = useFieldState({ state: localCheckoutState, get: 'marketingOpt'     , set: reduxSetMarketingOpt      });
+    const setMarketingOpt    = useEvent<CheckoutState['setMarketingOpt']>((newValue) => {
+        dispatch(reduxSetMarketingOpt(newValue));
+    });
     
     
     
     // customer data:
-    const [, setCustomerName       ] = useFieldState({ state: localCheckoutState, get: 'customerName'     , set: reduxSetCustomerName      });
-    const [, setCustomerEmail      ] = useFieldState({ state: localCheckoutState, get: 'customerEmail'    , set: reduxSetCustomerEmail     });
+    const setCustomerName    = useEvent<CheckoutState['setCustomerName']>((newValue) => {
+        dispatch(reduxSetCustomerName(newValue));
+    });
+    const setCustomerEmail   = useEvent<CheckoutState['setCustomerEmail']>((newValue) => {
+        dispatch(reduxSetCustomerEmail(newValue));
+    });
     
     
     
     // shipping data:
-    const [, setShippingAddress    ] = useFieldState({ state: localCheckoutState, get: 'shippingAddress'  , set: reduxSetShippingAddress   });
+    const setShippingAddress = useEvent<CheckoutState['setShippingAddress']>((newValue) => {
+        dispatch(reduxSetShippingAddress(newValue));
+    });
     
     
     
     // billing data:
-    const [, setBillingAddress     ] = useFieldState({ state: localCheckoutState, get: 'billingAddress'   , set: reduxSetBillingAddress    });
+    const setBillingAddress  = useEvent<CheckoutState['setBillingAddress']>((newValue) => {
+        dispatch(reduxSetBillingAddress(newValue));
+    });
     
     
     
