@@ -110,7 +110,7 @@ export default () => {
             gridTemplate: [[
                 '"progressCheckout" auto',
                 '"orderSummary    " auto',
-                '"currentStep     " auto',
+                '"currentStep     " 1fr', // the biggest part
                 '"navCheckout     " auto',
                 '/',
                 '1fr'
@@ -118,7 +118,7 @@ export default () => {
             ...ifScreenWidthAtLeast('lg', {
                 gridTemplate: [[
                     '"progressCheckout vertLine orderSummary" auto',
-                    '"currentStep      vertLine orderSummary" auto',
+                    '"currentStep      vertLine orderSummary" 1fr', // the biggest part
                     '"navCheckout      vertLine orderSummary" auto',
                     '"...........      vertLine orderSummary" auto',
                     '/',
