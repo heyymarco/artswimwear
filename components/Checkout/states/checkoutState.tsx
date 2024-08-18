@@ -296,7 +296,7 @@ export interface CheckoutStateBase {
     
     // extra data:
     marketingOpt                 : boolean
-    marketingOptHandlers         : FieldHandlers<HTMLInputElement>
+    setMarketingOpt              : FieldSetter<'marketingOpt'>
     
     
     
@@ -435,7 +435,6 @@ export type CheckoutState =
         )
     )
 
-const noopHandler  : FieldHandlers<HTMLInputElement> = { onChange: () => {} };
 const noopSetter   : FieldSetter<any> = () => {};
 const noopCallback = () => {};
 const CheckoutStateContext = createContext<CheckoutState>({
@@ -457,7 +456,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     // extra data:
     marketingOpt                 : true,
-    marketingOptHandlers         : noopHandler,
+    setMarketingOpt              : noopSetter,
     
     
     
@@ -705,7 +704,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // extra data:
-    const [, , marketingOptHandlers] = useFieldState({ state: localCheckoutState, get: 'marketingOpt'     , set: reduxSetMarketingOpt      });
+    const [, setMarketingOpt       ] = useFieldState({ state: localCheckoutState, get: 'marketingOpt'     , set: reduxSetMarketingOpt      });
     
     
     
@@ -2074,7 +2073,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // extra data:
         marketingOpt,
-        marketingOptHandlers,         // stable ref
+        setMarketingOpt,              // stable ref
         
         
         
@@ -2182,7 +2181,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // extra data:
         marketingOpt,
-        // marketingOptHandlers,      // stable ref
+        // setMarketingOpt,           // stable ref
         
         
         
