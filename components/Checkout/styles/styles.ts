@@ -163,19 +163,22 @@ export default () => {
         scope('progressCheckout', {
             gridArea: 'progressCheckout',
             
+            // take over <parent> margin and restore <parent> padding when the screen below 'lg':
             ...ifScreenWidthSmallerThan('lg', {
-                marginInline       : `calc(0px - ${containers.paddingInline})`,
-                marginBlockStart   : `calc(0px - ${containers.paddingBlock})`,
-                marginBlockEnd     : `calc(0px - ${containers.paddingBlockMd})`,
+                marginInline       : `calc(0px - ${containers.paddingInline})`,  // cancel out parent's padding with negative margin
+                marginBlockStart   : `calc(0px - ${containers.paddingBlock})`,   // cancel out parent's padding with negative margin
+                marginBlockEnd     : `calc(0px - ${containers.paddingBlockMd})`, // an adjustment between `progressCheckout` and `currentStepLayout`
                 ...ifScreenWidthSmallerThan('sm', {
-                    marginBlockEnd : `calc(0px - ${containers.paddingBlockSm})`,
+                    marginBlockEnd : `calc(0px - ${containers.paddingBlockSm})`, // an adjustment between `progressCheckout` and `currentStepLayout`
                 }),
-                paddingInline      : containers.paddingInline,
-                paddingBlock       : containers.paddingBlock,
+                paddingInline      : containers.paddingInline,                   // restore parent's padding with positive margin
+                paddingBlock       : containers.paddingBlock,                    // restore parent's padding with positive margin
                 ...ifScreenWidthSmallerThan('sm', {
-                    paddingBlock   : containers.paddingBlockSm,
+                    paddingBlock   : containers.paddingBlockSm,                  // an adjustment of vertical padding
                 }),
             }),
+            
+            // remove <section>'s and <article>'s padding to follow <container>'s padding:
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
@@ -743,30 +746,34 @@ export default () => {
         scope('navCheckout', {
             gridArea: 'navCheckout',
             
-            paddingBlockEnd : containers.paddingBlockMd,
+            paddingBlockEnd : containers.paddingBlockMd, // add a gap between `navCheckout` and <footer>
             
+            // remove <section>'s and <article>'s padding to follow <container>'s padding:
             ...children(['&', 'article'], {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
             
             ...children('article', {
+                // back & next are stacked vertically, with back on the bottom:
                 display: 'flex',
                 flexDirection: 'column-reverse',
                 alignItems: 'stretch',
                 gap: '1rem',
-                
+                // back & next are stacked horizontally:
                 ...ifScreenWidthAtLeast('sm', {
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                 }),
+                // back & next are stacked vertically, with back on the bottom:
                 ...ifScreenWidthBetween('lg', 'lg', {
                     flexDirection: 'column-reverse',
                     alignItems: 'stretch',
                     gap: '1rem',
                 }),
                 
+                // center the help message:
                 ...children('p', {
                     margin: 0,
                     textAlign: 'center',
