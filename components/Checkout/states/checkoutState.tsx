@@ -41,6 +41,8 @@ import {
     useEvent,
     EventHandler,
     useMountedFlag,
+    type TimerPromise,
+    useSetTimeout,
     
     
     
@@ -578,6 +580,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
+    // utilities:
+    const setTimeoutAsync = useSetTimeout();
+    
+    
+    
     // contexts:
     const {
         // states:
@@ -813,7 +820,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // actions:
         let refreshShippingByAddressPromise : ReturnType<typeof refreshShippingByAddress>|undefined = undefined;
-        let resolveWait: ((value: boolean) => void)|undefined = undefined;
         const performRefresh = async (): Promise<void> => {
             const prevRefreshShippingByAddressId = (++prevRefreshShippingByAddressIdRef.current);
             try {
@@ -821,31 +827,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 
-                //#region wait for 1 second before performing `refreshShippingByAddress()`
-                let promiseWait: Promise<boolean>;
-                ({promise: promiseWait , resolve: resolveWait} = ((): Omit<ReturnType<typeof Promise.withResolvers<boolean>>, 'reject'> => { // Promise.withResolvers<boolean>();
-                    let resolve : ReturnType<typeof Promise.withResolvers<boolean>>['resolve'];
-                    const promise = new Promise<boolean>((res, rej) => {
-                        resolve = res;
-                    });
-                    return { promise, resolve: resolve! };
-                })());
-                
-                setTimeout(() => {
-                    resolveWait?.(true);
-                }, 1000);
-                
-                if (!(await promiseWait)) {
-                    if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
-                    if (prevRefreshShippingByAddressIdRef.current === prevRefreshShippingByAddressId) {
-                        setTotalShippingCostStatus('obsolete');
-                    } // if
-                    
-                    
-                    
-                    return;
-                } // if
-                //#endregion wait for 1 second before performing `refreshShippingByAddress()`
+                // wait for 1 second before performing `refreshShippingByAddress()`:
+                if (!(await setTimeoutAsync(1000))) return; // the component was unloaded before the timer runs => do nothing
                 
                 
                 
@@ -898,7 +881,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // cleanups:
         return () => {
-            resolveWait?.(false);
             refreshShippingByAddressPromise?.abort();
         };
     }, [checkoutStep, shippingList, shippingProvider, totalProductWeightStepped, shippingAddress]);
@@ -1254,7 +1236,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         &&
         !!process.env.NEXT_PUBLIC_PAYPAL_ID
     );
-    const schedulingRefreshPaymentSessionRef          = useRef<ReturnType<typeof setTimeout>|null>(null);
+    const schedulingRefreshPaymentSessionRef          = useRef<TimerPromise<boolean>|null>(null);
     const scheduleRefreshPaymentSession               = useEvent(async (): Promise<void> => {
         // conditions:
         if (!isPaymentSessionRequired) return; // no paymentSession required => do nothing
@@ -1306,15 +1288,25 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // re-schedule:
-        if (schedulingRefreshPaymentSessionRef.current) clearTimeout(schedulingRefreshPaymentSessionRef.current); // abort prev schedule (if any)
+        if (schedulingRefreshPaymentSessionRef.current) { // abort prev schedule (if any)
+            schedulingRefreshPaymentSessionRef.current.abort();
+            schedulingRefreshPaymentSessionRef.current = null;
+        } // if
         
         console.log(`schedule refresh paymentSession in ${nextRefreshDuration/1000} seconds`);
-        schedulingRefreshPaymentSessionRef.current = setTimeout(() => {
+        const schedulingRefreshPaymentSession = setTimeoutAsync(nextRefreshDuration);
+        schedulingRefreshPaymentSession.then((isDone) => {
+            // conditions:
+            if (!isDone) return; // the component was unloaded before the timer runs => do nothing
+            
+            
+            
             scheduleRefreshPaymentSession()
             .then(() => {
                 console.log('schedule refresh paymentSession PERFORMED');
             });
-        }, nextRefreshDuration);
+        });
+        schedulingRefreshPaymentSessionRef.current = schedulingRefreshPaymentSession;
     });
     
     const isScheduleRefreshPaymentSessionTriggeredRef = useRef<boolean>(false);
@@ -1335,7 +1327,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // cleanups:
         return () => {
-            if (schedulingRefreshPaymentSessionRef.current) clearTimeout(schedulingRefreshPaymentSessionRef.current); // abort prev schedule (if any)
+            if (schedulingRefreshPaymentSessionRef.current) { // abort prev schedule (if any)
+                schedulingRefreshPaymentSessionRef.current.abort();
+                schedulingRefreshPaymentSessionRef.current = null;
+            } // if
         };
     }, [isPaymentSessionRequired, isPaymentStep, paymentSession, isPaymentSessionValid]);
     
@@ -1361,7 +1356,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // actions:
         let schedulingAborted     = false;
-        let schedulingVerifyStock : ReturnType<typeof setTimeout>|undefined = undefined;
         const scheduleVerifyStock = async (): Promise<void> => {
             // conditions:
             if (schedulingAborted) return;
@@ -1379,7 +1373,16 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             // re-schedule:
-            schedulingVerifyStock = setTimeout(scheduleVerifyStock, 60 * 1000); // pooling every a minute
+            setTimeoutAsync(60 * 1000) // pooling every a minute
+            .then((isDone) => {
+                // conditions:
+                if (!isDone) return; // the component was unloaded before the timer runs => do nothing
+                
+                
+                
+                // actions:
+                scheduleVerifyStock();
+            });
         };
         // first-schedule & avoids double re-run in StrictMode:
         Promise.resolve().then(scheduleVerifyStock);
@@ -1389,7 +1392,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // cleanups:
         return () => {
             schedulingAborted = true;
-            if (schedulingVerifyStock) clearTimeout(schedulingVerifyStock);
         };
     }, [checkoutStep]);
     
@@ -1435,7 +1437,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         if (focusTo) {
             const focusInputRef = (focusTo === 'contactInfo') ? contactEmailInputRef : shippingAddressInputRef;
-            setTimeout(() => {
+            
+            setTimeoutAsync(200)
+            .then((isDone) => {
+                // conditions:
+                if (!isDone) return; // the component was unloaded before the timer runs => do nothing
+                
+                
+                
+                // actions:
                 const focusInputElm = focusInputRef.current;
                 if (focusInputElm) {
                     focusInputElm.scrollIntoView({
@@ -1444,7 +1454,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     });
                     focusInputElm.focus({ preventScroll: true });
                 } // if
-            }, 200);
+            });
         } // if
     });
     const gotoStepShipping     = useEvent(async (): Promise<boolean> => {
@@ -1454,13 +1464,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             dispatch(reduxSetCustomerValidation(true)); // enable customerAccount validation
             dispatch(reduxSetShippingValidation(true)); // enable shippingAddress validation
-            await new Promise<void>((resolve) => { // wait for a validation state applied
-                setTimeout(() => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 0);
-                }, 0);
-            });
+            
+            // wait for a validation state applied:
+            if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
+            if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
             const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
             if (fieldErrors?.length) { // there is an/some invalid field
                 showMessageFieldError(fieldErrors);
@@ -1547,7 +1554,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 
                 // focus to shipping method:
-                setTimeout(() => {
+                setTimeoutAsync(200)
+                .then((isDone) => {
+                    // conditions:
+                    if (!isDone) return; // the component was unloaded before the timer runs => do nothing
+                    
+                    
+                    
+                    // actions:
                     const focusInputElm = shippingMethodOptionRef.current;
                     if (focusInputElm) {
                         focusInputElm.scrollIntoView({
@@ -1556,7 +1570,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         });
                         focusInputElm.focus({ preventScroll: true });
                     } // if
-                }, 200);
+                });
             } // if
         } // if
         
@@ -1571,13 +1585,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             dispatch(reduxSetCustomerValidation(true)); // enable customerAccount validation
             // dispatch(reduxSetShippingValidation(true)); // enable shippingAddress validation // NO shippingAddress validation required, because NOT have physical product(s)
-            await new Promise<void>((resolve) => { // wait for a validation state applied
-                setTimeout(() => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 0);
-                }, 0);
-            });
+            
+            // wait for a validation state applied:
+            if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
+            if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
             const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
             if (fieldErrors?.length) { // there is an/some invalid field
                 showMessageFieldError(fieldErrors);
@@ -1770,13 +1781,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 dispatch(reduxSetBillingValidation(true)); // enable billingAddress validation
             } // if
             dispatch(reduxSetPaymentValidation(true)); // enable paymentForm validation
-            await new Promise<void>((resolve) => { // wait for a validation state applied
-                setTimeout(() => {
-                    setTimeout(() => {
-                        resolve();
-                    }, 0);
-                }, 0);
-            });
+            
+            // wait for a validation state applied:
+            if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
+            if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
             const fieldErrors = [
                 // card fields:
                 ...(
@@ -1904,9 +1912,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 const waitFor = (10 * 1000) - lastRequestDuration;
                 if (waitFor > 0) {
                     console.log('waitFor: ',  waitFor / 1000);
-                    await new Promise<void>((resolved) => {
-                        setTimeout(resolved, waitFor);
-                    });
+                    if (!(await setTimeoutAsync(waitFor))) return false; // the component was unloaded before the timer runs => do nothing
                     console.log('ready');
                 } // if
             } // if
