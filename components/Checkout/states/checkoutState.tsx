@@ -1002,9 +1002,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             (
                 isShippingAddressRequired     // IGNORE shippingLoading if no shipping required
                 &&
-                isShippingLoading
+                (isBusy !== 'checkShipping')  // IGNORE shippingLoading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
                 &&
-                (isBusy !== 'checkShipping')  // silently shipping loading if the business is triggered by next_button (the busy indicator belong to the next_button's icon)
+                isShippingLoading
             )
             ||
             (
@@ -1039,7 +1039,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             isPrevOrderError
             ||
             (
-                isShippingAddressRequired // IGNORE shippingLoading if no shipping required
+                isShippingAddressRequired // IGNORE shippingError if no shipping required
+                &&
+                (checkoutStep !== 'info') // IGNORE shippingError if on the info step (the `shippingList` data is NOT YET required)
                 &&
                 isShippingError
             )
