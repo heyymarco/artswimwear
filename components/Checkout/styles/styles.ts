@@ -391,10 +391,10 @@ export default () => {
             display                         : 'grid',
             
             // narrow screen: without eta:
-            gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] max-content [label-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
+            gridTemplateColumns             : '[decor-start] max-content [decor-end label-start] 1fr [label-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
             ...ifScreenWidthAtLeast('sm', {
                 // wide screen: with eta:
-                gridTemplateColumns         : '[decor-start] max-content [decor-end label-start] max-content [label-end eta-start] max-content [eta-end space-start] 1fr [space-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
+                gridTemplateColumns         : '[decor-start] max-content [decor-end label-start] 1fr [label-end eta-start] max-content [eta-end currency-start] max-content [currency-end amount-start] max-content [amount-end]',
             }),
             
             
@@ -417,7 +417,7 @@ export default () => {
                 }),
                 ...children([':first-child'], { // <ListItem>
                     // layouts:
-                    gridTemplateRows        : '[row1-start] 1fr [row1-end row2-start] 1fr [row2-end]',
+                    gridTemplateRows        : '[row1-start] max-content [row1-end row2-start] max-content [row2-end]',
                     
                     
                     
