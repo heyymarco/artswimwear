@@ -159,8 +159,8 @@ const handleResponse = async (req: Request, includingInternalShippings = true): 
         
         
         return getMatchingShippings(shippingProviders, {
-            origin      : shippingOrigin,
-            destination : {
+            originAddress   : shippingOrigin,
+            shippingAddress : {
                 country,
                 state,
                 city,

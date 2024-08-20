@@ -1023,8 +1023,8 @@ router
                         
                         
                         const externalShippingRates = await getMatchingShippings(shippingProviders, {
-                            origin      : shippingOrigin,
-                            destination : {
+                            originAddress      : shippingOrigin,
+                            shippingAddress    : {
                                 country   : shippingAddress.country,
                                 state     : shippingAddress.state,
                                 city      : shippingAddress.city,

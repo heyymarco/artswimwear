@@ -49,7 +49,7 @@ const [shippingOrigin, shippingProviders] = await prisma.$transaction([
 ]);
 if (shippingOrigin && shippingProviders.length) {
     await getMatchingShippings(shippingProviders, {
-        origin      : {
+        originAddress      : {
             ...shippingOrigin,
             country : 'US',
             state   : 'CA',
@@ -57,7 +57,7 @@ if (shippingOrigin && shippingProviders.length) {
             zip     : '90277',
             address : '179 N Harbor Dr',
         },
-        destination : {
+        shippingAddress    : {
             country   : 'US',
             state     : 'CA',
             city      : 'San Francisco',

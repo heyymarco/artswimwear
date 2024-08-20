@@ -39,8 +39,8 @@ import {
 
 
 export interface GetMatchingShippingsOptions {
-    origin              : DefaultShippingOriginDetail,
-    destination         : ShippingAddressDetail
+    originAddress       : DefaultShippingOriginDetail,
+    shippingAddress     : ShippingAddressDetail
     totalProductWeight  : number
     
     prisma             ?: typeof prisma
@@ -48,8 +48,8 @@ export interface GetMatchingShippingsOptions {
 export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvider, 'id'|'name'>[], options: GetMatchingShippingsOptions): Promise<MatchingShipping[]> => {
     // options:
     const {
-        origin,
-        destination,
+        originAddress,
+        shippingAddress,
         totalProductWeight: totalProductWeightInKg,
         
         prisma,
@@ -76,26 +76,26 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
     
     
     // test:
-    // origin.country        = 'US';
-    // origin.state          = 'California';
-    // origin.city           = 'San Francisco';
-    // origin.zip            = '94104';
+    // originAddress.country     = 'US';
+    // originAddress.state       = 'California';
+    // originAddress.city        = 'San Francisco';
+    // originAddress.zip         = '94104';
     // 
-    // destination.country   = 'US';
-    // destination.state     = 'California';
-    // destination.city      = 'Redondo Beach';
-    // destination.zip       = '90277';
-    // destination.address   = '179 N Harbor Dr';
+    // shippingAddress.country   = 'US';
+    // shippingAddress.state     = 'California';
+    // shippingAddress.city      = 'Redondo Beach';
+    // shippingAddress.zip       = '90277';
+    // shippingAddress.address   = '179 N Harbor Dr';
     // 
-    // destination.firstName = 'Steve Brule';
-    // destination.lastName  = 'Brule';
-    // destination.phone     = '4155559999';
+    // shippingAddress.firstName = 'Steve Brule';
+    // shippingAddress.lastName  = 'Brule';
+    // shippingAddress.phone     = '4155559999';
     
     
     
     // normalize some origin & destination properties to produce shareable cache's key:
     
-    const originCountry          = origin.country.trim();
+    const originCountry          = originAddress.country.trim();
     const originCountryCode      = (
         (originCountry.length === 2)
         ? originCountry.toUpperCase()
@@ -104,7 +104,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
             return Country.getAllCountries().find(({name}) => (name.toLowerCase() === originCountryLowercase))?.isoCode;
         })()
     );
-    const originState            = origin.state.trim();
+    const originState            = originAddress.state.trim();
     const originStateCode        = (
         !originCountryCode
         ? undefined
@@ -113,7 +113,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
             return State.getStatesOfCountry(originCountryCode).find(({name}) => (name.toLowerCase() === originStateLowercase))?.isoCode;
         })()
     );
-    const originCity             = origin.city.trim();
+    const originCity             = originAddress.city.trim();
     const originCityCode         = (
         (!originCountryCode || !originStateCode)
         ? undefined
@@ -122,9 +122,9 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
             return City.getCitiesOfState(originCountryCode, originStateCode).find(({name}) => (name.toLowerCase() === originCityLowercase))?.name
         })()
     );
-    const originZip              = origin.zip?.trim().toUpperCase();
+    const originZip              = originAddress.zip?.trim().toUpperCase();
     
-    const destinationCountry     = destination.country.trim();
+    const destinationCountry     = shippingAddress.country.trim();
     const destinationCountryCode = (
         (destinationCountry.length === 2)
         ? destinationCountry.toUpperCase()
@@ -133,7 +133,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
             return Country.getAllCountries().find(({name}) => (name.toLowerCase() === destinationCountryLowercase))?.isoCode;
         })()
     );
-    const destinationState       = destination.state.trim();
+    const destinationState       = shippingAddress.state.trim();
     const destinationStateCode   = (
         !destinationCountryCode
         ? undefined
@@ -142,7 +142,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
             return State.getStatesOfCountry(destinationCountryCode).find(({name}) => (name.toLowerCase() === destinationStateLowercase))?.isoCode;
         })()
     );
-    const destinationCity        = destination.city.trim();
+    const destinationCity        = shippingAddress.city.trim();
     const destinationCityCode    = (
         (!destinationCountryCode || !destinationStateCode)
         ? undefined
@@ -151,7 +151,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
             return City.getCitiesOfState(destinationCountryCode, destinationStateCode).find(({name}) => (name.toLowerCase() === destinationCityLowercase))?.name
         })()
     );
-    const destinationZip         = destination.zip?.trim().toUpperCase();
+    const destinationZip         = shippingAddress.zip?.trim().toUpperCase();
     
     const cacheKey               = `${originCountryCode ?? originCountry}::${originStateCode ?? originState}::${originCityCode ?? originCity}::${originZip}::${destinationCountryCode ?? destinationCountry}::${destinationStateCode ?? destinationState}::${destinationCityCode ?? destinationCity}::${destinationZip}::${totalProductWeightInOzStepped}`.toLowerCase();
     
@@ -237,23 +237,23 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
             state     : originStateCode ?? originState,
             city      : originCityCode ?? originCity,
             zip       : originZip || undefined, // maybe optional (empty string => undefined)
-            street1   : origin.address,
+            street1   : originAddress.address,
             
-            company   : origin.company   || undefined, // maybe optional (empty string => undefined)
-            firstName : origin.firstName || undefined, // maybe optional (empty string => undefined)
-            lastName  : origin.lastName  || undefined, // maybe optional (empty string => undefined)
-            phone     : origin.phone     || undefined, // maybe optional (empty string => undefined)
+            company   : originAddress.company   || undefined, // maybe optional (empty string => undefined)
+            firstName : originAddress.firstName || undefined, // maybe optional (empty string => undefined)
+            lastName  : originAddress.lastName  || undefined, // maybe optional (empty string => undefined)
+            phone     : originAddress.phone     || undefined, // maybe optional (empty string => undefined)
         },
         to_address: {
             country   : destinationCountryCode ?? destinationCountry,
             state     : destinationStateCode ?? destinationState,
             city      : destinationCityCode ?? destinationCity,
             zip       : destinationZip || undefined, // maybe optional (empty string => undefined)
-            street1   : destination.address,
+            street1   : shippingAddress.address,
             
-            firstName : destination.firstName,
-            lastName  : destination.lastName,
-            phone     : destination.phone,
+            firstName : shippingAddress.firstName,
+            lastName  : shippingAddress.lastName,
+            phone     : shippingAddress.phone,
         },
         parcel: {
             weight: totalProductWeightInOzStepped,
