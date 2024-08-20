@@ -1478,7 +1478,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             if (!isShippingAddressRequired) { // if only digital products => no shipping required
                 // jump forward to payment method:
-                setCheckoutStep('payment');
+                await gotoPayment();
             }
             else { // if contain a/some physical product => requires shipping
                 // check for suitable shippingProvider(s) for given address:
