@@ -486,7 +486,7 @@ export default () => {
                     }),
                 }),
             }),
-        }, {specificityWeight: 2}),
+        }, {specificityWeight: 3}),
         scope('selectBilling', {
             // layouts:
             display                         : 'grid',
