@@ -989,6 +989,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         /* isOther2Empty */
         /* isOther3Empty */
     );
+    const isPaymentSessionRequired       = (
+        !!checkoutConfigClient.payment.processors.paypal.enabled
+        &&
+        !!process.env.NEXT_PUBLIC_PAYPAL_ID
+    );
     const isCheckoutLoading              = (
         !isCheckoutEmpty // has cartItem(s) to display, if no cartItem(s) => nothing to load
         &&
@@ -1008,6 +1013,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             )
             ||
             (
+                isPaymentSessionRequired      // IGNORE paymentSession loading if no paymentSession required
+                &&
                 isPaymentSessionLoading       // paymentSession is loading
                 &&
                 !isPaymentSessionValid        // silently paymentSession loading if still have valid oldPaymentSession (has backup)
@@ -1047,6 +1054,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             )
             ||
             (
+                isPaymentSessionRequired  // IGNORE paymentSession error if no paymentSession required
+                &&
                 isPaymentSessionError     // paymentSession is error
                 &&
                 !isPaymentSessionValid    // oldPaymentSession is also invalid (no backup)
@@ -1233,11 +1242,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [checkoutStep]);
     
     // auto renew paymentSession:
-    const isPaymentSessionRequired                    = (
-        !!checkoutConfigClient.payment.processors.paypal.enabled
-        &&
-        !!process.env.NEXT_PUBLIC_PAYPAL_ID
-    );
     const schedulingRefreshPaymentSessionRef          = useRef<TimerPromise<boolean>|null>(null);
     const scheduleRefreshPaymentSession               = useEvent(async (): Promise<void> => {
         // conditions:
@@ -2054,13 +2058,19 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const refetchCheckout      = useEvent((): void => {
         refetchCart();
         
-        if (prevOrderId) showPrevOrder({orderId: prevOrderId});
+        if (isPrevOrderError && !isPrevOrderLoading && prevOrderId) {
+            showPrevOrder({orderId: prevOrderId});
+        } // if
         
-        if (isShippingAddressRequired && isShippingError && !isShippingLoading && shippingAddress) {
+        if (isShippingError && !isShippingLoading && isShippingAddressRequired && shippingAddress) {
             getShippingByAddress({ // fire and forget
                 ...shippingAddress,
                 totalProductWeight : totalProductWeightStepped ?? 0, // the `totalProductWeightStepped` should be number, because of `isNeedsRecoverShippingList` condition => `isShippingAddressRequired` condition
             });
+        } // if
+        
+        if (isPaymentSessionError && !isPaymentSessionLoading && isPaymentSessionRequired && !isPaymentSessionValid /* (no backup) */) {
+            scheduleRefreshPaymentSession(); // fire & forget
         } // if
     });
     
