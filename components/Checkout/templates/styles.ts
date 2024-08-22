@@ -49,10 +49,11 @@ import Color                from 'color'                        // color utiliti
 export const theme = (themeName: ThemeName, gradient: boolean = true) => {
     return {
         // backgrounds:
-        ...(gradient ? {
-            background          : (basicValues.backgGrad as any)?.[0]?.[0],
-            backgroundBlendMode : `${basicValues.backgroundBlendMode}`,
-        } : undefined),
+        // not supported yet:
+        // ...(gradient ? {
+        //     background          : (basicValues.backgGrad as any)?.[0]?.[0],
+        //     backgroundBlendMode : `${basicValues.backgroundBlendMode}`,
+        // } : undefined),
         backgroundColor         : colorValues[themeName as keyof typeof colorValues].mix(Color('#ffffff'), 0.5).toString().toLowerCase(),
         
         
