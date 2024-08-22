@@ -236,7 +236,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             
             
             // behaviors:
-            actionCtrl={props.actionCtrl ?? isFullySignedOut}
+            actionCtrl={props.actionCtrl ?? (isFullySignedOut || isFullySignedIn)}
             
             
             
