@@ -5,6 +5,12 @@ import {
     style,
 }                           from '@cssfn/core'                  // writes css in javascript
 
+// reusable-ui core:
+import {
+    // a responsive management system:
+    breakpoints,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 
 
 // styles:
@@ -17,12 +23,20 @@ export const usesSignInPageLayout = () => {
         ...children('section>article', {
             // layouts:
             display        : 'grid',
-            justifyContent : 'stretch',
-            alignContent   : 'center',
+            gridTemplate   : [[
+                '"... ..... ..." auto',
+                '"... login ..." max-content',
+                '"... ..... ..." auto',
+                '/',
+                `1fr minmax(max-content, ${breakpoints.md}px) 1fr`
+            ]],
             
             
             
             // children:
+            ...children('*', {
+                gridArea: 'login',
+            }),
             ...children('*>*', {
                 // positions:
                 /* begin: a trick for centering `<SignIn> > <TabBody>` which is implemented `container-type: inline-size` */

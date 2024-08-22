@@ -6,11 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
-// cssfn:
+// styles:
 import {
     // style sheets:
-    dynamicStyleSheet,
-}                           from '@cssfn/cssfn-react'               // writes css in react hook
+    useSignInPageStyleSheet,
+}                           from './styles/loader'
 
 // heymarco components:
 import {
@@ -33,13 +33,6 @@ import {
 import {
     loginProviders,
 }                           from './loginProviders'
-
-
-
-// styles:
-const useSignInPageStyleSheet = dynamicStyleSheet(
-    () => import(/* webpackPrefetch: true */ './page-styles')
-, { id: 'kpwsaj27dr' }); // a unique salt for SSR support, ensures the server-side & client-side have the same generated class names
 
 
 
