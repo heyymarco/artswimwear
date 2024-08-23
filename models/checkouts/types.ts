@@ -1,7 +1,9 @@
 // models:
 import {
-    type Checkout,
     type DraftOrdersOnProducts,
+    
+    type Checkout,
+    type CheckoutPaymentSession,
 }                           from '@prisma/client'
 
 // contexts:
@@ -57,6 +59,22 @@ export type PaymentMethod =
     |'alfamart'
     
     |'manual'
+
+
+
+export interface CheckoutPaymentSessionDetail
+    extends
+        Omit<CheckoutPaymentSession,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >
+{
+}
+
+
 
 export type TotalShippingCostStatus =
     |'ready'

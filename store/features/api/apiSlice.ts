@@ -29,9 +29,11 @@ import {
     
     type PaymentConfirmationRequest,
     type PaymentConfirmationDetail,
+    
+    type CheckoutPaymentSessionDetail,
 }                           from '@/models'
-export type {
-    PaymentDetail,
+export {
+    type PaymentDetail,
 }                           from '@/models'
 
 // apis:
@@ -50,8 +52,6 @@ export type {
     ProductPricePart,
 }                               from '@/app/api/products/route'
 import type {
-    PaymentSession,
-    
     // PlaceOrderOptions,
     PlaceOrderData,
     DraftOrderDetail,
@@ -62,8 +62,6 @@ import type {
     ShowOrderRequest,
 }                               from '@/app/api/checkout/route'
 export type {
-    PaymentSession,
-    
     PlaceOrderOptions,
     PlaceOrderData,
     DraftOrderDetail,
@@ -291,7 +289,7 @@ export const apiSlice = createApi({
         
         
         
-        generatePaymentSession      : builder.query<PaymentSession, void>({
+        generatePaymentSession      : builder.query<CheckoutPaymentSessionDetail, void>({
             query : () => ({
                 url    : 'checkout',
                 method : 'GET',

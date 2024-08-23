@@ -37,6 +37,8 @@ import {
     
     type CartDetail,
     
+    type CheckoutPaymentSessionDetail,
+    
     commitDraftOrderSelect,
     revertDraftOrderSelect,
     
@@ -85,11 +87,6 @@ import {
     sendConfirmationEmail,
 }                           from '@/libs/email-utilities'
 import {
-    // types:
-    PaypalPaymentSession,
-    
-    
-    
     // utilities:
     paypalCreatePaymentSession,
     paypalCreateOrder,
@@ -149,8 +146,6 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 
 
 // types:
-export interface PaymentSession extends PaypalPaymentSession {}
-
 export interface ExtraData {
     // extra data:
     marketingOpt       : boolean
@@ -298,7 +293,7 @@ router
  * intialize paymentSession
  */
 .get(async (req) => {
-    const paymentSession : PaypalPaymentSession = await paypalCreatePaymentSession();
+    const paymentSession : CheckoutPaymentSessionDetail = await paypalCreatePaymentSession();
     return NextResponse.json(paymentSession); // handled with success
 })
 

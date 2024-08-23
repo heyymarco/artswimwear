@@ -22,17 +22,17 @@ import {
     IsInPayPalScriptProviderContextProvider,
 }                           from './states/isInPayPalScriptProvider'
 
+// models:
+import {
+    type CheckoutPaymentSessionDetail,
+}                           from '@/models'
+
 // internals:
 import {
     // states:
     useCartState,
 }                           from '@/components/Cart'
 import {
-    // types:
-    type PaymentSession,
-    
-    
-    
     // states:
     useCheckoutState,
 }                           from '../../../states/checkoutState'
@@ -94,7 +94,7 @@ const ConditionalPayPalScriptProvider = ({children}: React.PropsWithChildren) =>
 interface ImplementedPayPalScriptProviderProps {
     // options:
     clientId       : string
-    paymentSession : PaymentSession
+    paymentSession : CheckoutPaymentSessionDetail
     currency       : string
     
     
@@ -121,7 +121,7 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
     // options:
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
         'client-id'         : clientId,
-        'data-client-token' : paymentSession.token,
+        'data-client-token' : paymentSession.paypalSession,
         currency            :  currency.toUpperCase(),
         intent              : 'capture',
         components          : 'hosted-fields,buttons',

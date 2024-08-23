@@ -16,20 +16,17 @@ import {
     type BillingAddressDetail,
     type CheckoutStep,
     type PaymentMethod,
+    type CheckoutPaymentSessionDetail,
 }                           from '@/models'
 
 // apis:
-import type {
-    PaymentSession,
-    
-    ExtraData,
-    CustomerData,
-    ShippingData,
-    BillingData,
+import {
+    type ExtraData,
+    type CustomerData,
+    type ShippingData,
+    type BillingData,
 }                           from '@/app/api/checkout/route'
 export type {
-    PaymentSession,
-    
     ExtraData,
     CustomerData,
     ShippingData,
@@ -76,7 +73,7 @@ export interface CheckoutState
     
     paymentMethod      : PaymentMethod|null
     
-    paymentSession    ?: PaymentSession
+    paymentSession    ?: CheckoutPaymentSessionDetail
 }
 
 const initialState : CheckoutState = {
@@ -201,7 +198,7 @@ export const checkoutSlice = createSlice({
             state.paymentMethod = value;
         },
         
-        setPaymentSession     : (state, {payload: value}: PayloadAction<PaymentSession|undefined>) => {
+        setPaymentSession     : (state, {payload: value}: PayloadAction<CheckoutPaymentSessionDetail|undefined>) => {
             state.paymentSession = value;
         },
         

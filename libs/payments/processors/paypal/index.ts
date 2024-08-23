@@ -1,23 +1,16 @@
 // models:
-import type {
-    CreateOrderOptions,
-    AuthorizedFundData,
-    PaymentDetail,
+import {
+    type CreateOrderOptions,
+    type AuthorizedFundData,
+    type PaymentDetail,
+    
+    type CheckoutPaymentSessionDetail,
 }                           from '@/models'
 
 // configs:
 import {
     checkoutConfigServer,
 }                           from '@/checkout.config.server'
-
-
-
-// types:
-export interface PaypalPaymentSession {
-    token      : string
-    expiresAt  : number
-    refreshAt  : number
-}
 
 
 
@@ -66,7 +59,7 @@ const paypalPaymentSessionExpiresThreshold = 0.5;
  * Uniquely identifies each payer.
  * Expires in a few minutes because it's meant to be used during checkout. Generate new sessions if the current sessions expire.
  */
-export const paypalCreatePaymentSession = async (): Promise<PaypalPaymentSession> => {
+export const paypalCreatePaymentSession = async (): Promise<CheckoutPaymentSessionDetail> => {
     const response    = await fetch(`${paypalUrl}/v1/identity/generate-token`, {
         method  : 'POST',
         headers : {
@@ -90,10 +83,10 @@ export const paypalCreatePaymentSession = async (): Promise<PaypalPaymentSession
     
     const expiresIn = (paymentSessionData.expires_in ?? 3600) * 1000;
     return {
-        token     : paymentSessionData.client_token,
-        expiresAt : Date.now() +  expiresIn,
-        refreshAt : Date.now() + (expiresIn * paypalPaymentSessionExpiresThreshold),
-    };
+        paypalSession : paymentSessionData.client_token,
+        expiresAt     : Date.now() +  expiresIn,
+        refreshAt     : Date.now() + (expiresIn * paypalPaymentSessionExpiresThreshold),
+    } satisfies CheckoutPaymentSessionDetail;
 }
 
 const paypalHandleResponse       = async (response: Response) => {

@@ -861,11 +861,11 @@ model CheckoutBillingAddress {
 model CheckoutPaymentSession {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
-    expiresAt                       DateTime
-    refreshAt                       DateTime
     
     // data:
     paypalSession                   String
+    expiresAt                       Int // use Int instead of DateTime for easier fetch transport
+    refreshAt                       Int // use Int instead of DateTime for easier fetch transport
     
     // relations:
     parentId                        String                          @unique

@@ -79,12 +79,13 @@ import {
     
     type CountryPreview,
     
+    type CheckoutPaymentSessionDetail,
+    
     calculateCheckoutProgress,
 }                           from '@/models'
 // stores:
 import {
     // types:
-    PaymentSession,
     CheckoutState         as ReduxCheckoutState,
     
     
@@ -196,7 +197,6 @@ import {
 export type {
     CheckoutStep,
     PaymentMethod,
-    PaymentSession,
     
     ProductPreview,
     PaymentDetail,
@@ -335,7 +335,7 @@ export interface CheckoutStateBase {
     paymentMethod                : PaymentMethod|null
     setPaymentMethod             : (paymentMethod: PaymentMethod|null) => void
     
-    paymentSession               : PaymentSession|undefined
+    paymentSession               : CheckoutPaymentSessionDetail|undefined
     
     paymentType                  : string|undefined
     paymentBrand                 : string|null|undefined
@@ -1763,7 +1763,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     });
                 }
                 else if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'payment' /* context: 'order' */ });
-                // TODO: re-generate PaypalPaymentSession
+                // TODO: re-generate CheckoutPaymentSessionDetail
             } // try
         });
     });
