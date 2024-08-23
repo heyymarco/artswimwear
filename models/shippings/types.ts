@@ -15,11 +15,40 @@ import {
     type CoverageCityRate,
     
     type Country,
+    
+    type ShippingAddress,
+    type BillingAddress,
 }                           from '@prisma/client'
 
 
 
 // types:
+export interface ShippingAddressDetail
+    extends
+        Omit<ShippingAddress,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >
+{
+}
+
+export interface BillingAddressDetail
+    extends
+        Omit<BillingAddress,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >
+{
+}
+
+
+
 export interface ShippingPreview
     extends
         Pick<ShippingProvider,
