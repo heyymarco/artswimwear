@@ -73,7 +73,7 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
         // payment data:
         paymentMethod,
     } = useCheckoutState();
-    const isPaid = !((['manual', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) as (PaymentMethod|null)[]).includes(paymentMethod);
+    const isPaid = (paymentMethod !== null) && !((['manual', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) as PaymentMethod[]).includes(paymentMethod);
     
     
     

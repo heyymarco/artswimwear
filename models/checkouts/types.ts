@@ -1,6 +1,7 @@
 // models:
-import type {
-    DraftOrdersOnProducts,
+import {
+    type Checkout,
+    type DraftOrdersOnProducts,
 }                           from '@prisma/client'
 
 // contexts:
@@ -24,15 +25,37 @@ import type {
 
 
 
+export interface CheckoutDetail
+    extends
+        Omit<Checkout,
+            // records:
+            |'id'
+            |'updatedAt'
+            
+            // relations:
+            |'parentId'
+        >
+{
+    paymentMethod : PaymentMethod|null
+}
+
+
+
 export type PaymentMethod =
-    |''
     |'card'
     |'paypal'
+    
+    |'googlePay'
+    |'applePay'
+    |'amazonPay'
+    |'link'
+    
     |'qris'
     |'gopay'
     |'shopeepay'
     |'indomaret'
     |'alfamart'
+    
     |'manual'
 
 export type TotalShippingCostStatus =

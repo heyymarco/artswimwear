@@ -162,7 +162,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
         new Set([ // remove duplicate(s)
             ...((isPayUsingPaypal || isPayUsingStripe || isPayUsingMidtrans) ? ['card'] satisfies PaymentMethod[] : []),
             ...(isPayUsingPaypal   ? (['paypal'] satisfies PaymentMethod[]) : []),
-            ...(isPayUsingStripe   ? (['googlePay' as any, 'applePay' as any, 'amazonPay' as any, 'link' as any] satisfies PaymentMethod[]) : []),
+            ...(isPayUsingStripe   ? (['googlePay', 'applePay', 'amazonPay', 'link'] satisfies PaymentMethod[]) : []),
             ...(isPayUsingMidtrans ? (['qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
             ...(canPayUsingBank    ? (['manual'] satisfies PaymentMethod[]) : []),
         ])
@@ -297,7 +297,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'googlePay' as any) && <ViewExpressCheckout type='googlePay' walletName='Google Pay' websiteName='Google' />}
+                    {(paymentMethod === 'googlePay') && <ViewExpressCheckout type='googlePay' walletName='Google Pay' websiteName='Google' />}
                 </AccordionItem>}
                 
                 {isPayUsingStripe && <AccordionItem
@@ -325,7 +325,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'applePay' as any) && <ViewExpressCheckout type='applePay' walletName='Apple Pay' websiteName='Apple' />}
+                    {(paymentMethod === 'applePay') && <ViewExpressCheckout type='applePay' walletName='Apple Pay' websiteName='Apple' />}
                 </AccordionItem>}
                 
                 {isPayUsingStripe && <AccordionItem
@@ -353,7 +353,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'amazonPay' as any) && <ViewExpressCheckout type='amazonPay' walletName='Amazon Pay' websiteName='Amazon' />}
+                    {(paymentMethod === 'amazonPay') && <ViewExpressCheckout type='amazonPay' walletName='Amazon Pay' websiteName='Amazon' />}
                 </AccordionItem>}
                 
                 {isPayUsingStripe && <AccordionItem
@@ -381,7 +381,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                         />
                     }
                 >
-                    {(paymentMethod === 'link' as any) && <ViewExpressCheckout type='link' walletName='Link' websiteName='Link' />}
+                    {(paymentMethod === 'link') && <ViewExpressCheckout type='link' walletName='Link' websiteName='Link' />}
                 </AccordionItem>}
                 
                 {isPayUsingMidtrans && <AccordionItem
