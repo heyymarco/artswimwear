@@ -42,7 +42,7 @@ export interface CartState
 
 const initialState : CartState = {
     // version control:
-    version   : 4,
+    version   : 5,
     
     
     
@@ -65,7 +65,7 @@ export const cartSlice = createSlice({
     reducers: {
         // version control:
         resetIfInvalid        : (state) => {
-            if ((state.version === 4) && (!state.items.length || Array.isArray(state.items[0].variantIds))) return state; // valid   => ignore
+            if ((state.version === 5) && (!state.items.length || Array.isArray(state.items[0].variantIds))) return state; // valid   => ignore
             return initialState; // invalid => reset
         },
         

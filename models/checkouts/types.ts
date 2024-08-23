@@ -24,13 +24,6 @@ import type {
 
 
 
-export type CheckoutStep =
-    |'info'
-    |'shipping'
-    |'payment'
-    |'pending'
-    |'paid'
-
 export type PaymentMethod =
     |''
     |'card'

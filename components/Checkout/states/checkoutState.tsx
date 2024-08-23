@@ -429,7 +429,7 @@ const noopSetter   : EventHandler<unknown> = () => {};
 const noopCallback = () => {};
 const CheckoutStateContext = createContext<CheckoutState>({
     // states:
-    checkoutStep                 : 'info',
+    checkoutStep                 : 'INFO',
     checkoutProgress             : 0,
     
     isBusy                       : false,
@@ -785,7 +785,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             prevTotalProductWeightSteppedRef.current = totalProductWeightStepped; // track the changes
         } // if
         
-        if ((checkoutStep === 'info') || (checkoutStep === 'pending') || (checkoutStep === 'paid')) return;
+        if ((checkoutStep === 'INFO') || (checkoutStep === 'PENDING') || (checkoutStep === 'PAID')) return;
         if (!isShippingAddressRequired) return;
         if (!shippingAddress) return;
         
@@ -807,7 +807,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             setRealTotalShippingCost(undefined);
             return;
         } // if
-        if (Array.isArray(selectedShipping.rates) && (checkoutStep !== 'shipping')) return; // a dynamic shippingRates is selected => no need to refresh the staticRates, except when on shipping step: always refresh the shippingList rates
+        if (Array.isArray(selectedShipping.rates) && (checkoutStep !== 'SHIPPING')) return; // a dynamic shippingRates is selected => no need to refresh the staticRates, except when on shipping step: always refresh the shippingList rates
         
         
         
@@ -863,7 +863,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                         break;
                     
                     default :
-                        /* if (checkoutStep !== 'info') */ gotoStepInformation(/* focusTo: */'shippingAddress');
+                        /* if (checkoutStep !== 'INFO') */ gotoStepInformation(/* focusTo: */'shippingAddress');
                         break;
                 } // switch
             } // try
@@ -891,7 +891,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             prevSelectedShippingProviderRef.current = selectedShipping; // track the changes
         } // if
         
-        if (checkoutStep === 'info') return;       // on the first step => nothing to go back => ignore
+        if (checkoutStep === 'INFO') return;       // on the first step => nothing to go back => ignore
         if (selectedShipping) return;              // still have a VALID SELECTED shippingProvider => ignore
         if (!prevSelectedShippingProvider) return; // not having prev selected shippingProvider => NOTHING TO LOSE => ignore
         
@@ -913,7 +913,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         if (!shippingList?.ids?.length) { // there's NO shippingMethod available => go back to the first step
-            /* if (checkoutStep !== 'info') */ gotoStepInformation(/* focusTo: */'shippingAddress');
+            /* if (checkoutStep !== 'INFO') */ gotoStepInformation(/* focusTo: */'shippingAddress');
         }
         else { // there's SOME shippingMethod available => go back to the second step
             gotoStepShipping();
@@ -924,7 +924,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const isShippingAddressRequired      = finishedOrderState ? finishedOrderState.isShippingAddressRequired : (
         (totalProductWeight === undefined)
-        ? false                         // undefined => unknown_kind_product due to incomplete loading of related data => assumes as non physical product (prevents reset shippingProvider => go back to 'info'|'shipping' page)
+        ? false                         // undefined => unknown_kind_product due to incomplete loading of related data => assumes as non physical product (prevents reset shippingProvider => go back to 'INFO'|'SHIPPING' page)
         : (totalProductWeight !== null) // null => non physical product; ; number (not null) => has physical product
     );
     const shippingValidation             = (
@@ -936,14 +936,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const isNeedsRecoverShippingList     = (
         isShippingUninitialized     // never recovered, just run ONCE
         &&
-        (checkoutStep !== 'info')   // not at the_first_step (cannot go back any further)
+        (checkoutStep !== 'INFO')   // not at the_first_step (cannot go back any further)
         &&
         isShippingAddressRequired   // has physical product to ship
         &&
         !shippingList               // there is NO shippingList data
     );
     const isNeedsResetShippingProvider   = (
-        (checkoutStep !== 'info')   // not at the_first_step (cannot go back any further)
+        (checkoutStep !== 'INFO')   // not at the_first_step (cannot go back any further)
         &&
         isShippingAddressRequired   // has physical product to ship
         &&
@@ -972,8 +972,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
-    const isPaymentStep                  = (checkoutStep === 'payment');
-    const isLastCheckoutStep             = (checkoutStep === 'pending') || (checkoutStep === 'paid');
+    const isPaymentStep                  = (checkoutStep === 'PAYMENT');
+    const isLastCheckoutStep             = (checkoutStep === 'PENDING') || (checkoutStep === 'PAID');
     const isCheckoutEmpty                = (
         // isCartEmpty     // do NOT rely on `isCartEmpty`
         !cartItems.length  // instead use own `cartItems.length`, because when the order is finished, the cartItem(s) will be GONE, we need to see the LAST state stored in `finishedOrderState`
@@ -1041,7 +1041,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             (
                 isShippingAddressRequired // IGNORE shippingError if no shipping required
                 &&
-                (checkoutStep !== 'info') // IGNORE shippingError if on the info step (the `shippingList` data is NOT YET required)
+                (checkoutStep !== 'INFO') // IGNORE shippingError if on the info step (the `shippingList` data is NOT YET required)
                 &&
                 isShippingError
             )
@@ -1149,7 +1149,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             !shippingAddress.phone
         ) {
             // no shippingList => go back to information page:
-            setCheckoutStep('info');
+            setCheckoutStep('INFO');
             
             
             
@@ -1177,18 +1177,18 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         console.log('resetting selected shippingProvider...');
         if (shippingList?.ids?.length) {
             // NOT HAVING VALID selected matching shippingProvider -AND- HAVE shippingList to select => go back to shipping page:
-            setCheckoutStep('shipping');
+            setCheckoutStep('SHIPPING');
         }
         else {
             // NOT HAVING VALID selected matching shippingProvider -AND- NO   shippingList to select => go back to information page:
-            setCheckoutStep('info');
+            setCheckoutStep('INFO');
         } // if
     }, [isNeedsResetShippingProvider, shippingList]);
     
     // if no selected shipping method => auto select the cheapest one:
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (checkoutStep !== 'shipping') return; // only auto select when at shipping step
+        if (checkoutStep !== 'SHIPPING') return; // only auto select when at shipping step
         if (!shippingList)               return; // the shippingList data is not available yet => nothing to select
         const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
         if (selectedShipping)            return; // already have valid selection => abort to auto_select
@@ -1349,7 +1349,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // pooling for available stocks:
     useIsomorphicLayoutEffect((): (() => void)|undefined => {
         // conditions:
-        if ((checkoutStep === 'pending') || (checkoutStep === 'paid')) return; // no pooling when state is 'pending' or 'paid'
+        if ((checkoutStep === 'PENDING') || (checkoutStep === 'PAID')) return; // no pooling when state is 'PENDING' or 'PAID'
         
         
         
@@ -1430,7 +1430,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     
     const gotoStepInformation  = useEvent((focusTo?: 'contactInfo'|'shippingAddress'): void => {
-        setCheckoutStep('info');
+        setCheckoutStep('INFO');
         
         
         
@@ -1457,8 +1457,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         } // if
     });
     const gotoStepShipping     = useEvent(async (): Promise<boolean> => {
-        const goForward = (checkoutStep === 'info');
-        if (goForward) { // go forward from 'info' => do validate shipping carriers
+        const goForward = (checkoutStep === 'INFO');
+        if (goForward) { // go forward from 'INFO' => do validate shipping carriers
             // validate:
             // enable validation and *wait* until the next re-render of validation_enabled before we're going to `querySelectorAll()`:
             dispatch(reduxSetCustomerValidation(true)); // enable customerAccount validation
@@ -1535,20 +1535,20 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 // there is/are shippingProvider(s) available for given address => continue to select the shippingProvider(s)
                 // go forward to shipping method:
-                setCheckoutStep('shipping');
+                setCheckoutStep('SHIPPING');
             } // if
         } // if
         
         
         
-        if (!goForward) { // go back from 'shipping'|'payment' => focus to shipping method option control
+        if (!goForward) { // go back from 'SHIPPING'|'PAYMENT' => focus to shipping method option control
             if (!isShippingAddressRequired) { // if only digital products => no shipping required
                 // jump backward to info:
-                setCheckoutStep('info');
+                setCheckoutStep('INFO');
             }
             else {
                 // go backward to shipping method:
-                setCheckoutStep('shipping');
+                setCheckoutStep('SHIPPING');
                 
                 
                 
@@ -1614,7 +1614,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        setCheckoutStep('payment');
+        setCheckoutStep('PAYMENT');
         
         
         
@@ -2008,7 +2008,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     const gotoFinished         = useEvent((paymentDetail: PaymentDetail, paid: boolean): void => {
         // save the finished order states:
-        // setCheckoutStep(paid ? 'paid' : 'pending'); // not needed this code, already handled by `setFinishedOrderState` below:
+        // setCheckoutStep(paid ? 'PAID' : 'PENDING'); // not needed this code, already handled by `setFinishedOrderState` below:
         const soldProductIds = new Set<string|number>(
             cartItems
             .map(({productId}) => productId)
@@ -2027,7 +2027,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             checkoutState : {
                 ...localCheckoutState,
-                checkoutStep : (paid ? 'paid' : 'pending'),
+                checkoutStep : (paid ? 'PAID' : 'PENDING'),
             },
             totalShippingCost,
             paymentDetail,

@@ -45,6 +45,7 @@ model Product {
     // relations:
     orders                          OrdersOnProducts[]              // some Product(s) may have some related Order(s)      // many to many
     draftOrders                     DraftOrdersOnProducts[]         // some Product(s) may have some related DraftOrder(s) // many to many
+    cartItems                       CartItem[]                      // some Product(s) may have some related CartItem(s)       // many to many
 }
 enum ProductVisibility {
     PUBLISHED
@@ -166,6 +167,7 @@ model ShippingProvider {
     // relations:
     orders                          Order[]                         @relation("OrdersOnShipping")      // one ShippingProvider may have some related Order(s)       // one  to many
     draftOrders                     DraftOrder[]                    @relation("DraftOrdersOnShipping") // one ShippingProvider may have some related DraftOrder(s)  // one  to many
+    checkout                        Checkout[]                      @relation("CheckoutsOnShipping")   // one ShippingProvider may have some related Checkout(s)    // one  to many
 }
 model CoverageCountry {
     // records:
@@ -634,7 +636,6 @@ model ShipmentLog {
 }
 model DraftOrdersOnProducts {
     // records:
-    // @@id([productId, draftOrderId])
     id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
@@ -647,13 +648,12 @@ model DraftOrdersOnProducts {
     parent                          DraftOrder                      @relation(fields: [parentId]  , references: [id], onDelete: Cascade) // delete the related DraftOrdersOnProducts(s) if the DraftOrder deleted
     
     productId                       String?
-    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related DraftOrder(s) if the Product deleted
+    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related DraftOrdersOnProducts(s) if the Product deleted
     
     variantIds                      String[]                        // manual relation foreign key(s)
 }
 model OrdersOnProducts {
     // records:
-    // @@id([productId, orderId])
     id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
@@ -666,7 +666,7 @@ model OrdersOnProducts {
     parent                          Order                           @relation(fields: [parentId]  , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
     
     productId                       String?
-    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related Order(s) if the Product deleted
+    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related OrdersOnProducts(s) if the Product deleted
     
     variantIds                      String[]                        // manual relation foreign key(s)
 }
@@ -705,6 +705,9 @@ model Customer {
     image                           String?
     
     preference                      CustomerPreference?
+    
+    cart                            Cart?
+    checkout                        Checkout?
     
     accounts                        CustomerAccount[]
     sessions                        CustomerSession[]
@@ -755,6 +758,118 @@ model GuestPreference {
     // relations:
     parentId                        String                          @unique
     parent                          Guest                           @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related GuestPreference if the Guest deleted
+}
+
+
+
+model Cart {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    currency                        String                          // minLength: 3, maxLength: 3
+    items                           CartItem[]
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related Cart if the Customer deleted
+}
+model CartItem {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    quantity                        Int                             // min: 1
+    
+    // relations:
+    parentId                        String
+    parent                          Cart                            @relation(fields: [parentId]  , references: [id], onDelete: Cascade) // delete the related CartItem(s) if the Cart deleted
+    
+    productId                       String
+    product                         Product                         @relation(fields: [productId] , references: [id], onDelete: Cascade) // delete the related CartItem(s) if the Product deleted
+    
+    variantIds                      String[]                        // manual relation foreign key(s)
+}
+
+
+
+model Checkout {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    updatedAt                       DateTime                        @updatedAt
+    
+    // data:
+    checkoutStep                    CheckoutStep                    @default(INFO)
+    shippingAddress                 CheckoutShippingAddress?
+    billingAsShipping               Boolean                         @default(true)
+    billingAddress                  CheckoutBillingAddress?
+    paymentMethod                   String?
+    paymentSession                  CheckoutPaymentSession?
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related Checkout if the Customer deleted
+    
+    shippingProviderId              String?
+    shippingProvider                ShippingProvider?               @relation(fields: [shippingProviderId] , references: [id], "CheckoutsOnShipping", onDelete: SetNull) // preserve the related Checkout(s) if the ShippingProvider deleted
+}
+enum CheckoutStep {
+    INFO
+    SHIPPING
+    PAYMENT
+    PENDING
+    PAID
+}
+model CheckoutShippingAddress {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    country                         String                          // minLength: 2 , maxLength:  3
+    state                           String                          // minLength: 2 , maxLength: 50
+    city                            String                          // minLength: 2 , maxLength: 50
+    zip                             String?                         // minLength: 2 , maxLength: 11
+    address                         String                          // minLength: 5 , maxLength: 90
+    
+    firstName                       String                          // minLength: 2 , maxLength: 30
+    lastName                        String                          // minLength: 1 , maxLength: 30
+    phone                           String                          // minLength: 5 , maxLength: 15
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          Checkout                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CheckoutShippingAddress(s) if the Checkout deleted
+}
+model CheckoutBillingAddress {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    country                         String                          // minLength: 2 , maxLength:  3
+    state                           String                          // minLength: 2 , maxLength: 50
+    city                            String                          // minLength: 2 , maxLength: 50
+    zip                             String?                         // minLength: 2 , maxLength: 11
+    address                         String                          // minLength: 5 , maxLength: 90
+    
+    firstName                       String                          // minLength: 2 , maxLength: 30
+    lastName                        String                          // minLength: 1 , maxLength: 30
+    phone                           String                          // minLength: 5 , maxLength: 15
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          Checkout                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CheckoutBillingAddress(s) if the Checkout deleted
+}
+model CheckoutPaymentSession {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    expiresAt                       DateTime
+    refreshAt                       DateTime
+    
+    // data:
+    paypalSession                   String
+    
+    // relations:
+    parentId                        String                          @unique
+    parent                          Checkout                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CheckoutPaymentSession(s) if the Checkout deleted
 }
 
 

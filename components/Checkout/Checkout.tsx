@@ -151,27 +151,27 @@ const CheckoutInternal = (): JSX.Element|null => {
         const titleElm = document.head.querySelector('title')                    ?? document.head.appendChild(document.createElement('title'));
         const metaElm  = document.head.querySelector('meta[name="description"]') ?? document.head.appendChild((() => { const meta = document.createElement('meta'); meta.setAttribute('name', 'description'); return meta; })());
         switch(checkoutStep) {
-            case 'info'     :
+            case 'INFO'     :
                 titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_INFO_TITLE);
                 metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_INFO_DESCRIPTION));
             break;
             
-            case 'shipping' :
+            case 'SHIPPING' :
                 titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_SHIPPING_TITLE);
                 metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_SHIPPING_DESCRIPTION));
             break;
             
-            case 'payment'  :
+            case 'PAYMENT'  :
                 titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAYMENT_TITLE);
                 metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAYMENT_DESCRIPTION));
             break;
             
-            case 'pending'  :
+            case 'PENDING'  :
                 titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PENDING_TITLE);
                 metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PENDING_DESCRIPTION));
             break;
             
-            case 'paid'     :
+            case 'PAID'     :
                 titleElm.textContent = PAGE_CHECKOUT_TITLE.replace('{{TheCurrentStepTitle}}', PAGE_CHECKOUT_STEP_PAID_TITLE);
                 metaElm.setAttribute('description', PAGE_CHECKOUT_DESCRIPTION.replace('{{TheCurrentStepDescription}}', PAGE_CHECKOUT_STEP_PAID_DESCRIPTION));
             break;
@@ -265,7 +265,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                 // classes:
                 className={styleSheet.currentStepLayout}
             >
-                {((checkoutStep === 'shipping') || (checkoutStep === 'payment')) && <Section
+                {((checkoutStep === 'SHIPPING') || (checkoutStep === 'PAYMENT')) && <Section
                     // semantics:
                     tag='aside'
                     
@@ -281,7 +281,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                 
                 
                 
-                {(checkoutStep === 'info'    ) && <Section
+                {(checkoutStep === 'INFO'    ) && <Section
                     // refs:
                     elmRef={currentStepSectionRef}
                     
@@ -330,7 +330,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     </Section>
                 </Section>}
                 
-                {(checkoutStep === 'shipping') && <Section
+                {(checkoutStep === 'SHIPPING') && <Section
                     // refs:
                     elmRef={currentStepSectionRef}
                     
@@ -342,7 +342,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     <EditShippingMethod />
                 </Section>}
                 
-                {(checkoutStep === 'payment' ) && <Section
+                {(checkoutStep === 'PAYMENT' ) && <Section
                     // refs:
                     elmRef={currentStepSectionRef}
                     
@@ -354,7 +354,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     <EditPaymentMethod />
                 </Section>}
                 
-                {((checkoutStep === 'pending') || (checkoutStep === 'paid')) && <Section
+                {((checkoutStep === 'PENDING') || (checkoutStep === 'PAID')) && <Section
                     // refs:
                     elmRef={currentStepSectionRef}
                     
@@ -370,7 +370,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                 >
                     <ViewOrderFinished
                         // data:
-                        paid={(checkoutStep === 'paid')}
+                        paid={(checkoutStep === 'PAID')}
                     />
                 </Section>}
             </div>

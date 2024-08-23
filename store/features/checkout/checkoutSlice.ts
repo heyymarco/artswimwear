@@ -81,12 +81,12 @@ export interface CheckoutState
 
 const initialState : CheckoutState = {
     // version control:
-    version            : 3,
+    version            : 4,
     
     
     
     // states:
-    checkoutStep       : 'info',
+    checkoutStep       : 'INFO',
     
     
     
@@ -130,7 +130,7 @@ export const checkoutSlice = createSlice({
     reducers: {
         // version control:
         resetIfInvalid        : (state) => {
-            if (state.version === 3) return state; // valid   => ignore
+            if (state.version === 4) return state; // valid   => ignore
             return initialState;                   // invalid => reset
         },
         

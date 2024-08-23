@@ -2148,7 +2148,7 @@ router
     const billingAddress = paymentDetail?.billingAddress ?? null;
     
     const isPaid       = (!!paymentDetail && (paymentDetail.type !== 'MANUAL'));
-    const checkoutStep = isPaid ? 'paid' : 'pending';
+    const checkoutStep = isPaid ? 'PAID' : 'PENDING';
     
     const productListAdapter = createEntityAdapter<ProductPreview>({
         selectId : (productPreview) => productPreview.id,

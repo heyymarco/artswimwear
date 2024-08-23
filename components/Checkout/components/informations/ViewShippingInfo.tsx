@@ -126,7 +126,7 @@ const ViewShippingInfo = (props: ViewShippingInfoProps): JSX.Element|null => {
                     <ViewShippingAddress />
                 </DataTableItem>
                 
-                {(checkoutStep !== 'shipping') && <DataTableItem
+                {(checkoutStep !== 'SHIPPING') && <DataTableItem
                     // accessibilities:
                     label='Ship By'
                     

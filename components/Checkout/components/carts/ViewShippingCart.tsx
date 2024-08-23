@@ -50,7 +50,7 @@ const ViewShippingCart = (): JSX.Element|null => {
     const hasValidSelectedShippingIfAny = (
         (shippingProvider !== undefined) // physical_product && have selected shippingProvider
         &&
-        (checkoutStep !== 'info')        // when in `info` page, ignore the selected shippingProvider
+        (checkoutStep !== 'INFO')        // when in `info` page, ignore the selected shippingProvider
     );
     
     return (
