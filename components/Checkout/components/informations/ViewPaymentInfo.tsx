@@ -29,6 +29,11 @@ import {
     ViewBillingAddress,
 }                           from '../informations/ViewBillingAddress'
 
+// models:
+import {
+    type PaymentMethod,
+}                           from '@/models'
+
 // internals:
 import {
     useCheckoutStyleSheet,
@@ -68,7 +73,7 @@ const ViewPaymentInfo = (props: ViewPaymentInfoProps): JSX.Element|null => {
         // payment data:
         paymentMethod,
     } = useCheckoutState();
-    const isPaid = !['manual', 'indomaret', 'alfamart'].includes(paymentMethod);
+    const isPaid = !((['manual', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) as (PaymentMethod|null)[]).includes(paymentMethod);
     
     
     

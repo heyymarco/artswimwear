@@ -332,8 +332,8 @@ export interface CheckoutStateBase {
     
     paymentValidation            : boolean
     
-    paymentMethod                : PaymentMethod
-    setPaymentMethod             : (paymentMethod: PaymentMethod) => void
+    paymentMethod                : PaymentMethod|null
+    setPaymentMethod             : (paymentMethod: PaymentMethod|null) => void
     
     paymentSession               : PaymentSession|undefined
     
@@ -492,7 +492,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     paymentValidation            : false,
     
-    paymentMethod                : '',
+    paymentMethod                : null,
     setPaymentMethod             : noopCallback,
     
     paymentSession               : undefined,
@@ -658,7 +658,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // payment data:
         paymentValidation,
         
-        paymentMethod = '',
+        paymentMethod,
     } = localCheckoutState;
     
     const {
@@ -1624,7 +1624,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const setShippingProvider  = useEvent((shippingProvider: string): void => {
         dispatch(reduxSetShippingProvider(shippingProvider));
     });
-    const setPaymentMethod     = useEvent((paymentMethod: PaymentMethod): void => {
+    const setPaymentMethod     = useEvent((paymentMethod: PaymentMethod|null): void => {
         dispatch(reduxSetPaymentMethod(paymentMethod));
         
         // reset:

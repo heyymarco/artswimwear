@@ -2231,8 +2231,8 @@ router
             
             // payment data:
             paymentValidation  : true,
-            paymentMethod      : '' as any,
-            paymentSession     : '' as any,
+            paymentMethod      : null,
+            paymentSession     : undefined,
         },
         totalShippingCost         : shippingCost,
         paymentDetail             : paymentDetail,
