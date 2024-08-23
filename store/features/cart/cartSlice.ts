@@ -17,7 +17,7 @@ import type {
 // models:
 import {
     type CartDetail,
-    type CartItem,
+    type CartItemPreview,
 }                           from '@/models'
 
 // configs:
@@ -79,7 +79,7 @@ export const cartSlice = createSlice({
         
         
         // cart data:
-        addProductToCart      : ({items}, {payload: {productId, variantIds, quantity = 1}}: PayloadAction<CartItem>) => {
+        addProductToCart      : ({items}, {payload: {productId, variantIds, quantity = 1}}: PayloadAction<CartItemPreview>) => {
             const existingCartItem = items.find((cartItem) =>
                 (cartItem.productId === productId)
                 &&
@@ -100,7 +100,7 @@ export const cartSlice = createSlice({
                 existingCartItem.quantity += quantity;
             } // if
         },
-        deleteProductFromCart : ({items}, {payload: {productId, variantIds}}: PayloadAction<Pick<CartItem, 'productId'|'variantIds'>>) => {
+        deleteProductFromCart : ({items}, {payload: {productId, variantIds}}: PayloadAction<Pick<CartItemPreview, 'productId'|'variantIds'>>) => {
             const itemIndex = items.findIndex((cartItem) =>
                 (cartItem.productId === productId)
                 &&
@@ -110,7 +110,7 @@ export const cartSlice = createSlice({
             );
             if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
         },
-        changeProductFromCart : ({items}, {payload: {productId, variantIds, quantity}}: PayloadAction<CartItem>) => {
+        changeProductFromCart : ({items}, {payload: {productId, variantIds, quantity}}: PayloadAction<CartItemPreview>) => {
             const existingCartItem = items.find((cartItem) =>
                 (cartItem.productId === productId)
                 &&

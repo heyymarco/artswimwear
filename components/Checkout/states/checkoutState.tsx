@@ -79,8 +79,6 @@ import {
     
     type CountryPreview,
     
-    type CartItem,
-    
     calculateCheckoutProgress,
 }                           from '@/models'
 // stores:

@@ -57,7 +57,7 @@ import {
 
 // models:
 import {
-    type CartItem,
+    type CartItemPreview,
 }                           from '@/models'
 
 // utilities:
@@ -91,7 +91,7 @@ export interface EditCartItemProps
         >
 {
     // data:
-    cartItem  : CartItem
+    cartItem  : CartItemPreview
     
     
     

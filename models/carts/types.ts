@@ -1,10 +1,31 @@
-export interface CartDetail {
-    // cart data:
-    currency           : string
-    items              : CartItem[]
+// models:
+import {
+    type Cart,
+    type CartItem,
+}                           from '@prisma/client'
+
+
+
+export interface CartDetail
+    extends
+        Omit<Cart,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >
+{
+    items : CartItemPreview[]
 }
-export interface CartItem {
-    productId   : string
-    variantIds  : string[]
-    quantity    : number
+export interface CartItemPreview
+    extends
+        Omit<CartItem,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >
+{
 }

@@ -54,7 +54,7 @@ import {
 
 // models:
 import {
-    type CartItem,
+    type CartItemPreview,
 }                           from '@/models'
 
 // stores:
@@ -132,7 +132,7 @@ export interface CartStateBase {
     
     
     // cart data:
-    cartItems                 : CartItem[]
+    cartItems                 : CartItemPreview[]
     totalProductQuantity      : number
     totalProductWeight        : number|null        | undefined
     totalProductWeightStepped : number|null        | undefined
