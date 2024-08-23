@@ -29,6 +29,11 @@ import {
     VariantIndicator,
 }                           from '@/components/VariantIndicator'
 
+// models:
+import {
+    type ProductPreview,
+}                           from '@/models'
+
 // stores:
 import type {
     // types:
@@ -40,11 +45,6 @@ import {
     useCartStyleSheet,
 }                           from '../../styles/loader'
 import {
-    // types:
-    ProductPreview,
-    
-    
-    
     // hooks:
     useCartState,
 }                           from '../../states/cartState'

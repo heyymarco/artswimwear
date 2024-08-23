@@ -55,11 +55,10 @@ import {
     CurrencyDisplay,
 }                           from '@/components/CurrencyDisplay'
 
-// stores:
-import type {
-    // types:
-    CartEntry,
-}                           from '@/store/features/cart/cartSlice'
+// models:
+import {
+    type CartItem,
+}                           from '@/models'
 
 // utilities:
 import {
@@ -92,7 +91,7 @@ export interface EditCartItemProps
         >
 {
     // data:
-    cartEntry : CartEntry
+    cartItem  : CartItem
     
     
     
@@ -109,7 +108,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     // rest props:
     const {
         // data:
-        cartEntry : {
+        cartItem : {
             productId,
             variantIds,
             quantity,

@@ -141,15 +141,15 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
             // classes:
             className={`orderList ${styleSheet.editCart}`}
         >
-            {cartItems.map((cartEntry, itemIndex) =>
+            {cartItems.map((cartItem, itemIndex) =>
                 <EditCartItem
                     // identifiers:
-                    key={`${cartEntry.productId}/${cartEntry.variantIds.join('/')}` || itemIndex}
+                    key={`${cartItem.productId}/${cartItem.variantIds.join('/')}` || itemIndex}
                     
                     
                     
                     // data:
-                    cartEntry={cartEntry}
+                    cartItem={cartItem}
                     
                     
                     

@@ -65,6 +65,8 @@ import {
 
 // models:
 import {
+    type ProductPreview,
+    
     type ShippingAddressDetail,
     type BillingAddressDetail,
     
@@ -76,6 +78,8 @@ import {
     type BusyState,
     
     type CountryPreview,
+    
+    type CartItem,
     
     calculateCheckoutProgress,
 }                           from '@/models'
@@ -160,13 +164,6 @@ import {
 
 // contexts:
 import {
-    // types:
-    CartEntry,
-    ProductPreview,
-    CartState,
-    
-    
-    
     // hooks:
     useCartState,
     
@@ -199,8 +196,6 @@ import {
 
 // types:
 export type {
-    CartEntry,
-    
     CheckoutStep,
     PaymentMethod,
     PaymentSession,
@@ -1929,7 +1924,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             try {
                 await dispatch(placeOrder({
                     // currency options:
-                    // currency, // no need to inform the currency, we just check for the available stocks
+                    currency,
                     
                     
                     

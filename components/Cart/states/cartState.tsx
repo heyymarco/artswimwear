@@ -52,13 +52,13 @@ import {
     trimNumber,
 }                           from '@/libs/formatters'
 
+// models:
+import {
+    type CartItem,
+}                           from '@/models'
+
 // stores:
 import {
-    // types:
-    CartEntry,
-    
-    
-    
     // version control:
     resetIfInvalid        as reduxResetIfInvalid,
     
@@ -107,14 +107,6 @@ import {
 
 
 
-// types:
-export type {
-    CartEntry,
-    ProductPreview,
-}
-
-
-
 // hooks:
 
 // states:
@@ -140,7 +132,7 @@ export interface CartStateBase {
     
     
     // cart data:
-    cartItems                 : CartEntry[]
+    cartItems                 : CartItem[]
     totalProductQuantity      : number
     totalProductWeight        : number|null        | undefined
     totalProductWeightStepped : number|null        | undefined

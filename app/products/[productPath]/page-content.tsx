@@ -77,16 +77,14 @@ import {
 }                           from '@/components/Cart/states/cartState'
 
 // models:
-import type {
-    ProductDetail,
-    VariantDetail,
+import {
+    type ProductDetail,
+    type VariantDetail,
+    
+    type CartItem,
 }                           from '@/models'
 
 // stores:
-import type {
-    // types:
-    CartEntry,
-}                           from '@/store/features/cart/cartSlice'
 import {
     useGetProductDetail,
 }                           from '@/store/features/api/apiSlice'
@@ -103,7 +101,7 @@ type VariantsState = (VariantDetail['id']|null)[];
 type SetVariant  = { type: 'set' , payload: { groupIndex: number, variantId: VariantDetail['id']|null } }
 interface InitVariantArg {
     productDetail : ProductDetail|undefined
-    cartItems     : CartEntry[]
+    cartItems     : CartItem[]
 }
 type InitVariant = { type: 'init', payload: InitVariantArg }
 const selectedVariantsReducer : ImmerReducer<VariantsState|undefined, InitVariant|SetVariant> = (draftState, action) => {
@@ -212,7 +210,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
         )
         : undefined
     );
-    const prevExistingItemInCart = useRef<CartEntry|undefined>(existingItemInCart);
+    const prevExistingItemInCart = useRef<CartItem|undefined>(existingItemInCart);
     if (prevExistingItemInCart.current !== existingItemInCart) {
         prevExistingItemInCart.current = existingItemInCart; // track changes
         

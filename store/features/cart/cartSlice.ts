@@ -14,15 +14,11 @@ import type {
     LimitedStockItem,
 }                           from '@/store/features/api/apiSlice'
 
-// apis:
-import type {
-    CartEntry,
-    CartData,
-}                           from '@/app/api/checkout/route'
-export type {
-    CartEntry,
-    CartData,
-}                           from '@/app/api/checkout/route'
+// models:
+import {
+    type CartDetail,
+    type CartItem,
+}                           from '@/models'
 
 // configs:
 import {
@@ -33,15 +29,10 @@ import {
 
 export interface CartState
     extends
-        CartData
+        CartDetail
 {
     // version control:
     version  ?: number,
-    
-    
-    
-    // accessibilities:
-    currency  : string
     
     
     
@@ -88,15 +79,15 @@ export const cartSlice = createSlice({
         
         
         // cart data:
-        addProductToCart      : ({items}, {payload: {productId, variantIds, quantity = 1}}: PayloadAction<CartEntry>) => {
-            const existingEntry = items.find((entry) =>
-                (entry.productId === productId)
+        addProductToCart      : ({items}, {payload: {productId, variantIds, quantity = 1}}: PayloadAction<CartItem>) => {
+            const existingCartItem = items.find((cartItem) =>
+                (cartItem.productId === productId)
                 &&
-                (entry.variantIds.length === variantIds.length)
+                (cartItem.variantIds.length === variantIds.length)
                 &&
-                entry.variantIds.every((variantId) => variantIds.includes(variantId))
+                cartItem.variantIds.every((variantId) => variantIds.includes(variantId))
             );
-            if (!existingEntry) {
+            if (!existingCartItem) {
                 if (quantity > 0) {
                     items.push({  // add new
                         productId,
@@ -106,28 +97,28 @@ export const cartSlice = createSlice({
                 } // if
             }
             else {
-                existingEntry.quantity += quantity;
+                existingCartItem.quantity += quantity;
             } // if
         },
-        deleteProductFromCart : ({items}, {payload: {productId, variantIds}}: PayloadAction<Pick<CartEntry, 'productId'|'variantIds'>>) => {
-            const itemIndex = items.findIndex((entry) =>
-                (entry.productId === productId)
+        deleteProductFromCart : ({items}, {payload: {productId, variantIds}}: PayloadAction<Pick<CartItem, 'productId'|'variantIds'>>) => {
+            const itemIndex = items.findIndex((cartItem) =>
+                (cartItem.productId === productId)
                 &&
-                (entry.variantIds.length === variantIds.length)
+                (cartItem.variantIds.length === variantIds.length)
                 &&
-                entry.variantIds.every((variantId) => variantIds.includes(variantId))
+                cartItem.variantIds.every((variantId) => variantIds.includes(variantId))
             );
             if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
         },
-        changeProductFromCart : ({items}, {payload: {productId, variantIds, quantity}}: PayloadAction<CartEntry>) => {
-            const existingEntry = items.find((entry) =>
-                (entry.productId === productId)
+        changeProductFromCart : ({items}, {payload: {productId, variantIds, quantity}}: PayloadAction<CartItem>) => {
+            const existingCartItem = items.find((cartItem) =>
+                (cartItem.productId === productId)
                 &&
-                (entry.variantIds.length === variantIds.length)
+                (cartItem.variantIds.length === variantIds.length)
                 &&
-                entry.variantIds.every((variantId) => variantIds.includes(variantId))
+                cartItem.variantIds.every((variantId) => variantIds.includes(variantId))
             );
-            if (!existingEntry) {
+            if (!existingCartItem) {
                 if (quantity > 0) {
                     items.push({  // add new
                         productId,
@@ -138,10 +129,10 @@ export const cartSlice = createSlice({
             }
             else {
                 if (quantity > 0) {
-                    existingEntry.quantity = quantity;
+                    existingCartItem.quantity = quantity;
                 }
                 else {
-                    const itemIndex = items.findIndex((entry) => (entry === existingEntry));
+                    const itemIndex = items.findIndex((cartItem) => (cartItem === existingCartItem));
                     if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
                 } // if
             } // if
@@ -157,23 +148,23 @@ export const cartSlice = createSlice({
             
             // update cart:
             for (const {productId, variantIds, stock} of limitedStockItems) {
-                const existingEntry = items.find((entry) =>
-                    (entry.productId === productId)
+                const existingCartItem = items.find((cartItem) =>
+                    (cartItem.productId === productId)
                     &&
-                    (entry.variantIds.length === variantIds.length)
+                    (cartItem.variantIds.length === variantIds.length)
                     &&
-                    entry.variantIds.every((variantId) => variantIds.includes(variantId))
+                    cartItem.variantIds.every((variantId) => variantIds.includes(variantId))
                 );
-                if (!existingEntry) continue;
+                if (!existingCartItem) continue;
                 
                 
                 
-                const quantity = Math.min(existingEntry.quantity, Math.max(0, stock));
+                const quantity = Math.min(existingCartItem.quantity, Math.max(0, stock));
                 if (quantity > 0) {
-                    existingEntry.quantity = quantity;
+                    existingCartItem.quantity = quantity;
                 }
                 else {
-                    const itemIndex = items.findIndex((entry) => (entry === existingEntry));
+                    const itemIndex = items.findIndex((cartItem) => (cartItem === existingCartItem));
                     if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
                 } // if
             } // for

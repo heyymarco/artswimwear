@@ -35,6 +35,8 @@ import {
     
     type FinishedOrderState,
     
+    type CartDetail,
+    
     commitDraftOrderSelect,
     revertDraftOrderSelect,
     
@@ -43,9 +45,6 @@ import {
     
     defaultShippingOriginSelect,
 }                           from '@/models'
-import {
-    Prisma,
-}                           from '@prisma/client'
 import type {
     ProductPreview,
 }                           from '@/store/features/api/apiSlice'
@@ -152,15 +151,6 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 // types:
 export interface PaymentSession extends PaypalPaymentSession {}
 
-export interface CartEntry {
-    productId   : string
-    variantIds  : string[]
-    quantity    : number
-}
-export interface CartData {
-    // cart data:
-    items              : CartEntry[]
-}
 export interface ExtraData {
     // extra data:
     marketingOpt       : boolean
@@ -199,18 +189,14 @@ export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'payme
     simulateOrder ?: boolean
     captcha       ?: string
 }
-export interface CurrencyOptions {
-    currency ?: OrderCurrencyDetail['currency']
-}
 export interface PlaceOrderDataBasic
     extends
-        CartData,              // cart item(s)
+        CartDetail,            // cart item(s)
         
         Partial<ExtraData>,    // extra data    // conditionally required if no simulateOrder
         Partial<CustomerData>, // customer data // conditionally required if no simulateOrder
         
-        PlaceOrderOptions,     // options: pay manually | paymentSource
-        CurrencyOptions        // options: currency
+        PlaceOrderOptions      // options: pay manually | paymentSource
 {
 }
 export interface PlaceOrderDataWithShippingAddress
@@ -1997,7 +1983,7 @@ router
         select : {
             items : {
                 select : {
-                    // for CartEntry[]:
+                    // for CartItem[]:
                     productId  : true,
                     variantIds : true,
                     quantity   : true,
