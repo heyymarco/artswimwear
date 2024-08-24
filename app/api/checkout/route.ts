@@ -21,8 +21,6 @@ import {
     type VariantGroup,
     type Stock,
     
-    type CustomerOrGuestPreview,
-    
     type CreateOrderDataBasic,
     type OrderCurrencyDetail,
     type DraftOrdersOnProducts,
@@ -36,8 +34,6 @@ import {
     type PaymentDetail,
     
     type FinishedOrderState,
-    
-    type CartDetail,
     
     type CheckoutPaymentSessionDetail,
     
@@ -64,11 +60,6 @@ import type {
     CustomerOrGuestData,
     OrderAndData,
 }                           from '@/components/Checkout/templates/orderDataContext'
-
-// paypal:
-import type {
-    CreateOrderData as PaypalCreateOrderData,
-}                           from '@paypal/paypal-js'
 
 // others:
 import {
@@ -148,73 +139,6 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 
 
 // types:
-export interface ExtraData {
-    // extra data:
-    marketingOpt       : boolean
-}
-export interface CustomerData {
-    // customer data:
-    customer           : CustomerOrGuestPreview|undefined
-}
-export interface ShippingData {
-    // shipping data:
-    shippingAddress    : ShippingAddressDetail|null
-    shippingProviderId : string|null
-}
-export interface BillingData {
-    // billing data:
-    billingAddress     : BillingAddressDetail|null
-}
-
-export interface PlaceOrderOptions
-    extends
-        Omit<Partial<PaypalCreateOrderData>, 'paymentSource'>
-{
-    paymentSource ?:
-        // manual:
-        |'manual'
-        
-        // paypal:
-        |Partial<PaypalCreateOrderData>['paymentSource']
-        
-        // stripe:
-        |'stripeCard'
-        |'stripeExpress'
-        
-        // midtrans:
-        |'midtransCard'|'midtransQris'|'gopay'|'shopeepay'|'indomaret'|'alfamart'
-    
-    cardToken     ?: string
-    simulateOrder ?: boolean
-    captcha       ?: string
-}
-export interface PlaceOrderDataBasic
-    extends
-        CartDetail,            // cart item(s)
-        
-        Partial<ExtraData>,    // extra data    // conditionally required if no simulateOrder
-        Partial<CustomerData>, // customer data // conditionally required if no simulateOrder
-        
-        PlaceOrderOptions      // options: pay manually | paymentSource
-{
-}
-export interface PlaceOrderDataWithShippingAddress
-    extends
-        PlaceOrderDataBasic,
-        ShippingData // shippings
-{
-}
-export interface PlaceOrderDataWithBillingAddress
-    extends
-        PlaceOrderDataBasic,
-        BillingData // billings
-{
-}
-export type PlaceOrderData =
-    |PlaceOrderDataBasic
-    |PlaceOrderDataWithShippingAddress
-    |PlaceOrderDataWithBillingAddress
-    |(PlaceOrderDataWithShippingAddress & PlaceOrderDataWithBillingAddress)
 export interface DraftOrderDetail
     extends
         Pick<AuthorizedFundData,
@@ -236,9 +160,10 @@ export interface MakePaymentDataBasic
 }
 export interface MakePaymentDataWithBillingAddress
     extends
-        MakePaymentDataBasic,
-        BillingData  // billing data
+        MakePaymentDataBasic
 {
+    // billing data:
+    billingAddress      : BillingAddressDetail|null
 }
 export interface MakePaymentDataWithCancelation
     extends
@@ -2066,7 +1991,7 @@ router
             
             
             
-            // for ShippingData:
+            // shipping data:
             shippingAddress    : {
                 select : {
                     country   : true,
@@ -2081,8 +2006,6 @@ router
                 },
             },
             shippingProviderId : true,
-            
-            // for totalShippingCost:
             shippingCost       : true,
             
             

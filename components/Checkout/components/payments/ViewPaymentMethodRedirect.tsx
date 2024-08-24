@@ -28,6 +28,11 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// models:
+import {
+    type PlaceOrderRequestOptions,
+}                           from '@/models'
+
 // internal components:
 import {
     ButtonWithBusy,
@@ -38,7 +43,6 @@ import {
 
 // internals:
 import {
-    PlaceOrderOptions,
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -51,7 +55,7 @@ import type {
 
 // react components:
 export interface ViewPaymentMethodRedirectProps {
-    paymentSource : PlaceOrderOptions['paymentSource']
+    paymentSource : PlaceOrderRequestOptions['paymentSource']
     appName       : string
 }
 const ViewPaymentMethodRedirect = (props: ViewPaymentMethodRedirectProps): JSX.Element|null => {

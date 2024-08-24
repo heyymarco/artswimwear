@@ -69,6 +69,8 @@ import {
     
     type CustomerOrGuestPreview,
     
+    type PlaceOrderRequestOptions,
+    
     type ShippingAddressDetail,
     type BillingAddressDetail,
     
@@ -136,7 +138,6 @@ import {
     // types:
     DraftOrderDetail,
     PaymentDetail,
-    PlaceOrderOptions,
     
     MakePaymentOptions,
     LimitedStockItem,
@@ -202,7 +203,6 @@ export type {
     
     ProductPreview,
     PaymentDetail,
-    PlaceOrderOptions,
     
     MakePaymentOptions,
     
@@ -371,7 +371,7 @@ export interface CheckoutStateBase {
     
     startTransaction             : (arg: StartTransactionArg) => Promise<boolean>
     doTransaction                : (transaction: (() => Promise<void>)) => Promise<boolean>
-    doPlaceOrder                 : (options?: PlaceOrderOptions) => Promise<DraftOrderDetail|true>
+    doPlaceOrder                 : (options?: PlaceOrderRequestOptions) => Promise<DraftOrderDetail|true>
     doMakePayment                : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
     
     refetchCheckout              : () => void
@@ -1824,7 +1824,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const doPlaceOrder         = useEvent(async (options?: PlaceOrderOptions): Promise<DraftOrderDetail|true> => {
+    const doPlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<DraftOrderDetail|true> => {
         try {
             const draftOrderDetailOrPaymentDetail = await dispatch(placeOrder({
                 // currency options:

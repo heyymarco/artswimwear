@@ -21,6 +21,9 @@ import {
 import {
     type CartDetail,
 }                           from '../carts'
+import {
+    type CustomerOrGuestPreview,
+}                           from '../customers'
 
 // templates:
 import {
@@ -59,23 +62,30 @@ export interface PlaceOrderRequestOptions
     captcha       ?: string
 }
 export interface PlaceOrderRequestBasic
-//    extends
-//        CartDetail,            // cart item(s)
-//        
-//        Partial<ExtraData>,    // extra data    // conditionally required if no simulateOrder
-//        Partial<CustomerData>, // customer data // conditionally required if no simulateOrder
-//        
-//        PlaceOrderOptions      // options: pay manually | paymentSource
+    extends
+        CartDetail,              // cart item(s)
+        
+        PlaceOrderRequestOptions // options: pay manually | paymentSource
 {
+    // extra data:
+    marketingOpt       ?: boolean // conditionally required if no simulateOrder
+    
+    
+    
+    // customer data:
+    customer           ?: CustomerOrGuestPreview|undefined // conditionally required if no simulateOrder
 }
 export interface PlaceOrderRequestWithShippingAddress {
-
+    // shipping data:
+    shippingAddress     : ShippingAddressDetail|null
+    shippingProviderId  : string|null
 }
 export interface PlaceOrderRequestWithBillingAddress {
-
+    // billing data:
+    billingAddress      : BillingAddressDetail|null
 }
 export type PlaceOrderRequest =
-    |PlaceOrderRequestBasic                                                        // non_physical_product, without_credit_card
+    |PlaceOrderRequestBasic                                                       // non_physical_product, without_credit_card
     |PlaceOrderRequestWithShippingAddress                                         //     physical_product, without_credit_card
     |PlaceOrderRequestWithBillingAddress                                          // non_physical_product,    with_credit_card
     |(PlaceOrderRequestWithShippingAddress & PlaceOrderRequestWithBillingAddress) //     physical_product,    with_credit_card

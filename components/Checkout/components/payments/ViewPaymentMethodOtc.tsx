@@ -31,9 +31,13 @@ import {
     CaptchaDialog,
 }                           from '@/components/dialogs/CaptchaDialog'
 
+// models:
+import {
+    type PlaceOrderRequestOptions,
+}                           from '@/models'
+
 // internals:
 import {
-    PlaceOrderOptions,
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -41,7 +45,7 @@ import {
 
 // react components:
 export interface ViewPaymentMethodOtcProps {
-    paymentSource : PlaceOrderOptions['paymentSource']
+    paymentSource : PlaceOrderRequestOptions['paymentSource']
     storeName     : string
 }
 const ViewPaymentMethodOtc = (props: ViewPaymentMethodOtcProps): JSX.Element|null => {

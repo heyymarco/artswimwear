@@ -12,6 +12,8 @@ import {
 
 // models:
 import {
+    type PlaceOrderRequest,
+    
     type ShippingAddressDetail,
     type PaymentDetail,
     type FinishedOrderState,
@@ -46,8 +48,6 @@ export type {
     ProductPricePart,
 }                               from '@/app/api/products/route'
 import type {
-    // PlaceOrderOptions,
-    PlaceOrderData,
     DraftOrderDetail,
     
     // MakePaymentOptions,
@@ -56,8 +56,6 @@ import type {
     ShowOrderRequest,
 }                               from '@/app/api/checkout/route'
 export type {
-    PlaceOrderOptions,
-    PlaceOrderData,
     DraftOrderDetail,
     
     MakePaymentOptions,
@@ -289,7 +287,7 @@ export const apiSlice = createApi({
                 method : 'GET',
             }),
         }),
-        placeOrder                  : builder.mutation<DraftOrderDetail|PaymentDetail, PlaceOrderData>({
+        placeOrder                  : builder.mutation<DraftOrderDetail|PaymentDetail, PlaceOrderRequest>({
             query : (orderData) => ({
                 url    : 'checkout',
                 method : 'POST',

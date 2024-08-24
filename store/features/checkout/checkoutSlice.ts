@@ -12,6 +12,8 @@ import type {
 
 // models:
 import {
+    type CustomerOrGuestPreview,
+    
     type ShippingAddressDetail,
     type BillingAddressDetail,
     type CheckoutStep,
@@ -19,29 +21,9 @@ import {
     type CheckoutPaymentSessionDetail,
 }                           from '@/models'
 
-// apis:
-import {
-    type ExtraData,
-    type CustomerData,
-    type ShippingData,
-    type BillingData,
-}                           from '@/app/api/checkout/route'
-export type {
-    ExtraData,
-    CustomerData,
-    ShippingData,
-    BillingData,
-}                           from '@/app/api/checkout/route'
 
 
-
-export interface CheckoutState
-    extends
-        ExtraData,
-        CustomerData,
-        ShippingData,
-        BillingData
-{
+export interface CheckoutState {
     // version control:
     version           ?: number,
     
@@ -52,19 +34,31 @@ export interface CheckoutState
     
     
     
+    // extra data:
+    marketingOpt       : boolean
+    
+    
+    
     // customer data:
     customerValidation : boolean
+    
+    customer           : CustomerOrGuestPreview|undefined
     
     
     
     // shipping data:
     shippingValidation : boolean
     
+    shippingAddress    : ShippingAddressDetail|null
+    shippingProviderId : string|null
+    
     
     
     // billing data:
     billingValidation  : boolean
     billingAsShipping  : boolean
+    
+    billingAddress     : BillingAddressDetail|null
     
     
     
