@@ -9,7 +9,7 @@ import {
 
 
 // types:
-export type CustomerOrGuest =
+export type CustomerOrGuestDetail =
     &Pick<CustomerDetail, keyof CustomerDetail & keyof GuestDetail>
     &Pick<GuestDetail   , keyof CustomerDetail & keyof GuestDetail>
 export type CustomerOrGuestPreference =

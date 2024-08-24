@@ -15,7 +15,7 @@ import type {
     
     CountryPreview,
     
-    CustomerOrGuest,
+    CustomerOrGuestDetail,
     CustomerOrGuestPreferenceDetail,
     
     ShipmentPreview,
@@ -57,7 +57,7 @@ export type ProductData = Pick<Product, 'name'> & {
 export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'|'variantIds'> & {
     product : ProductData|null
 }
-export type CustomerOrGuestData = Omit<CustomerOrGuest,
+export type CustomerOrGuestData = Omit<CustomerOrGuestDetail,
     // records:
     |'id'
     |'createdAt'
