@@ -9,6 +9,22 @@ import {
 
 
 // types:
+export interface NewGuestDetail
+    extends
+        Omit<Guest,
+            // records:
+            |'id'
+            |'createdAt'
+            |'updatedAt'
+            
+            // data:
+            |'emailVerified'
+        >
+{
+}
+
+
+
 export type CustomerOrGuestDetail =
     &Pick<CustomerDetail, keyof CustomerDetail & keyof GuestDetail>
     &Pick<GuestDetail   , keyof CustomerDetail & keyof GuestDetail>
@@ -28,9 +44,11 @@ export type CustomerOrGuestPreferenceDetail = Omit<CustomerOrGuestPreference,
 export interface CustomerDetail
     extends
         Omit<Customer,
+            // records:
             |'createdAt'
             |'updatedAt'
             
+            // data:
             |'emailVerified'
         >
 {
@@ -41,12 +59,9 @@ export interface CustomerDetail
 export interface GuestDetail
     extends
         Omit<Guest,
+            // records:
             |'createdAt'
             |'updatedAt'
-            
-            |'emailVerified'
         >
 {
-    // data:
-    username : string|null
 }
