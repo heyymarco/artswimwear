@@ -89,11 +89,6 @@ import {
 }                           from '@/models'
 // stores:
 import {
-    // types:
-    CheckoutState         as ReduxCheckoutState,
-    
-    
-    
     // version control:
     resetIfInvalid        as reduxResetIfInvalid,
     
