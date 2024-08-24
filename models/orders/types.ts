@@ -19,11 +19,14 @@ import {
     type BillingAddressDetail,
 }                           from '../shippings'
 import {
+    type CustomerOrGuestPreview,
+}                           from '../customers'
+import {
     type CartDetail,
 }                           from '../carts'
 import {
-    type CustomerOrGuestPreview,
-}                           from '../customers'
+    type CheckoutDetail,
+}                           from '../checkouts'
 
 // templates:
 import {

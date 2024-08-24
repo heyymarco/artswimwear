@@ -1,12 +1,15 @@
 export      * from './utilities'
 
 export type * from '@prisma/client'
+
 export      * from './products'
-export      * from './customers'
-export      * from './orders'
 export      * from './shippings'
-export      * from './checkouts'
-export      * from './emails'
-export      * from './shipment'
+
+export      * from './orders'
 export      * from './payment-confirmation'
+export      * from './shipment'
+export      * from './emails'
+
+export      * from './customers'
 export      * from './carts'
+export      * from './checkouts'

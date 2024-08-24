@@ -16,8 +16,10 @@ import type {
 import {
     type ShippingAddressDetail,
     type BillingAddressDetail,
+}                           from '../shippings'
+import {
     type PaymentDetail,
-}                           from '@/models'
+}                           from '../orders'
 
 // stores:
 import type {
@@ -38,7 +40,11 @@ export interface CheckoutDetail
             |'parentId'
         >
 {
-    paymentMethod : PaymentMethod|null
+    // data:
+    shippingAddress : ShippingAddressDetail|null
+    billingAddress  : BillingAddressDetail|null
+    paymentMethod   : PaymentMethod|null
+    paymentSession  : CheckoutPaymentSessionDetail|null
 }
 
 
