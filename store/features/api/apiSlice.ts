@@ -3,17 +3,11 @@ import type { PrefetchOptions }                                     from '@redux
 import { BaseQueryFn, createApi, fetchBaseQuery }                   from '@reduxjs/toolkit/query/react'
 import type { QuerySubState }                                       from '@reduxjs/toolkit/dist/query/core/apiState'
 import type { BaseEndpointDefinition, MutationCacheLifecycleApi }   from '@reduxjs/toolkit/dist/query/endpointDefinitions'
-import type { CartState }                                           from '../cart/cartSlice'
-import type { CheckoutState }                                       from '../checkout/checkoutSlice'
-import type { CreateOrderData }                                     from '@paypal/paypal-js'
 import type { MatchingShipping }                                    from '@/libs/shippings/shippings'
 
 // types:
-import type {
-    PaginationArgs,
-    Pagination,
-    
-    MutationArgs,
+import {
+    type MutationArgs,
 }                           from '@/libs/types'
 
 // models:

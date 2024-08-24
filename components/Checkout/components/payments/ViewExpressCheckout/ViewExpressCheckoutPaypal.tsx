@@ -52,7 +52,7 @@ import {
 
 // paypal:
 import type {
-    CreateOrderData,
+    CreateOrderData as PaypalCreateOrderData,
     CreateOrderActions,
     OnCancelledActions,
     OnApproveActions,
@@ -151,7 +151,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     });
     
     const signalAuthenticatedRef         = useRef<((authenticatedResult: AuthenticatedResult) => void)|undefined>(undefined);
-    const handlePaymentInterfaceStart    = useEvent(async (data: CreateOrderData, actions: CreateOrderActions): Promise<string> => {
+    const handlePaymentInterfaceStart    = useEvent(async (data: PaypalCreateOrderData, actions: CreateOrderActions): Promise<string> => {
         const {promise: promisePaypalOrderId, resolve: resolvePaypalOrderId, reject: rejectPaypalOrderId} = ((): ReturnType<typeof Promise.withResolvers<string>> => { // Promise.withResolvers<string>();
             let resolve : ReturnType<typeof Promise.withResolvers<string>>['resolve'];
             let reject  : ReturnType<typeof Promise.withResolvers<string>>['reject' ];

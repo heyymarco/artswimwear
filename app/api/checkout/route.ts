@@ -65,7 +65,7 @@ import type {
 
 // paypal:
 import type {
-    CreateOrderData,
+    CreateOrderData as PaypalCreateOrderData,
 }                           from '@paypal/paypal-js'
 
 // others:
@@ -165,13 +165,16 @@ export interface BillingData {
     billingAddress     : BillingAddressDetail|null
 }
 
-export interface PlaceOrderOptions extends Omit<Partial<CreateOrderData>, 'paymentSource'> {
+export interface PlaceOrderOptions
+    extends
+        Omit<Partial<PaypalCreateOrderData>, 'paymentSource'>
+{
     paymentSource ?:
         // manual:
         |'manual'
         
         // paypal:
-        |Partial<CreateOrderData>['paymentSource']
+        |Partial<PaypalCreateOrderData>['paymentSource']
         
         // stripe:
         |'stripeCard'

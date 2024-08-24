@@ -7,10 +7,6 @@ import {
 import {
     type Prisma,
     
-    type Customer,
-    type CustomerPreference,
-    type Guest,
-    type GuestPreference,
     type Payment,
     type DraftOrder,
     type Order,
@@ -22,16 +18,70 @@ import {
     type ShippingAddressDetail,
     type BillingAddressDetail,
 }                           from '../shippings'
+import {
+    type CartDetail,
+}                           from '../carts'
 
 // templates:
-import type {
+import {
     // types:
-    CustomerOrGuestData,
+    type CustomerOrGuestData,
 }                           from '@/components/Checkout/templates/orderDataContext'
+
+// paypal:
+import {
+    type CreateOrderData as PaypalCreateOrderData,
+}                           from '@paypal/paypal-js'
 
 
 
 // types:
+export interface PlaceOrderRequestOptions
+    extends
+        Omit<Partial<PaypalCreateOrderData>, 'paymentSource'>
+{
+    paymentSource ?:
+        // manual:
+        |'manual'
+        
+        // paypal:
+        |Partial<PaypalCreateOrderData>['paymentSource']
+        
+        // stripe:
+        |'stripeCard'
+        |'stripeExpress'
+        
+        // midtrans:
+        |'midtransCard'|'midtransQris'|'gopay'|'shopeepay'|'indomaret'|'alfamart'
+    
+    cardToken     ?: string
+    simulateOrder ?: boolean
+    captcha       ?: string
+}
+export interface PlaceOrderRequestBasic
+//    extends
+//        CartDetail,            // cart item(s)
+//        
+//        Partial<ExtraData>,    // extra data    // conditionally required if no simulateOrder
+//        Partial<CustomerData>, // customer data // conditionally required if no simulateOrder
+//        
+//        PlaceOrderOptions      // options: pay manually | paymentSource
+{
+}
+export interface PlaceOrderRequestWithShippingAddress {
+
+}
+export interface PlaceOrderRequestWithBillingAddress {
+
+}
+export type PlaceOrderRequest =
+    |PlaceOrderRequestBasic                                                        // non_physical_product, without_credit_card
+    |PlaceOrderRequestWithShippingAddress                                         //     physical_product, without_credit_card
+    |PlaceOrderRequestWithBillingAddress                                          // non_physical_product,    with_credit_card
+    |(PlaceOrderRequestWithShippingAddress & PlaceOrderRequestWithBillingAddress) //     physical_product,    with_credit_card
+
+
+
 export interface DraftOrderDetail
     extends
         Omit<DraftOrder,
@@ -111,50 +161,6 @@ export interface PaymentDetail
     billingAddress ?: BillingAddressDetail|null
     
     paymentId      ?: string // an optional token for make manual_payment
-}
-
-
-
-export type CustomerOrGuest =
-    &Pick<CustomerDetail, keyof CustomerDetail & keyof GuestDetail>
-    &Pick<GuestDetail   , keyof CustomerDetail & keyof GuestDetail>
-export type CustomerOrGuestPreference =
-    &Pick<CustomerPreference, keyof CustomerPreference & keyof GuestPreference>
-    &Pick<GuestPreference   , keyof CustomerPreference & keyof GuestPreference>
-export type CustomerOrGuestPreferenceDetail = Omit<CustomerOrGuestPreference,
-    // records:
-    |'id'
-    
-    // relations:
-    |'parentId'
->
-
-
-
-export interface CustomerDetail
-    extends
-        Omit<Customer,
-            |'createdAt'
-            |'updatedAt'
-            
-            |'emailVerified'
-        >
-{
-    // data:
-    username : string|null
-}
-
-export interface GuestDetail
-    extends
-        Omit<Guest,
-            |'createdAt'
-            |'updatedAt'
-            
-            |'emailVerified'
-        >
-{
-    // data:
-    username : string|null
 }
 
 
