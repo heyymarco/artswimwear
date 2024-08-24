@@ -20,14 +20,14 @@ const ViewShippingMethod = (): JSX.Element|null => {
         // shipping data:
         isShippingAddressRequired,
         
-        shippingProvider,
+        shippingProviderId,
         
         
         
         // relation data:
         shippingList,
     } = useCheckoutState();
-    const selectedShipping = shippingList?.entities?.[shippingProvider ?? ''];
+    const selectedShipping = shippingList?.entities?.[shippingProviderId ?? ''];
     
     
     

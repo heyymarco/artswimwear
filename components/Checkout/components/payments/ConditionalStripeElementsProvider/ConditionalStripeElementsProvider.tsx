@@ -86,7 +86,7 @@ const ConditionalStripeElementsProvider = ({children}: React.PropsWithChildren) 
     const {
         // shipping data:
         isShippingAddressRequired,
-        shippingProvider,
+        shippingProviderId,
         totalShippingCost,
     } = useCheckoutState();
     
@@ -139,7 +139,7 @@ const ConditionalStripeElementsProvider = ({children}: React.PropsWithChildren) 
         ||
         !checkoutConfigClient.payment.processors.stripe.supportedCurrencies.includes(currency) // the selected currency is not supported
         ||
-        (isShippingAddressRequired && !shippingProvider) // physical_product => requires shippingProvider BUT NO shippingProvider selected
+        (isShippingAddressRequired && (shippingProviderId === null)) // physical_product => requires shippingProvider BUT NO shippingProvider selected
         ||
         (convertedAmount === undefined) // the conversion is not yet ready
         ||

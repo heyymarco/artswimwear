@@ -158,7 +158,7 @@ export interface CustomerData {
 export interface ShippingData {
     // shipping data:
     shippingAddress    : ShippingAddressDetail|null
-    shippingProvider  ?: string
+    shippingProviderId : string|null
 }
 export interface BillingData {
     // billing data:
@@ -469,7 +469,7 @@ router
         // shippings:
         shippingAddress,
         
-        shippingProvider : shippingProviderId,
+        shippingProviderId,
     } = placeOrderData;
     const hasShippingAddress = !!shippingAddress;
     if (hasShippingAddress) {
@@ -2189,7 +2189,7 @@ router
             
             // shipping data:
             shippingAddress    : shippingAddress,
-            shippingProvider   : shippingProviderId ?? undefined,
+            shippingProviderId : shippingProviderId,
             
             
             

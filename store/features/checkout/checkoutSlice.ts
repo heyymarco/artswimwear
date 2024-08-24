@@ -103,7 +103,7 @@ const initialState : CheckoutState = {
     // shipping data:
     shippingValidation : false,
     shippingAddress    : null,
-    shippingProvider   : undefined,
+    shippingProviderId : null,
     
     
     
@@ -168,8 +168,8 @@ export const checkoutSlice = createSlice({
         setShippingAddress    : (state, {payload: value}: PayloadAction<ShippingAddressDetail|null>) => {
             state.shippingAddress = value;
         },
-        setShippingProvider   : (state, {payload: value}: PayloadAction<string>) => {
-            state.shippingProvider = value;
+        setShippingProviderId : (state, {payload: value}: PayloadAction<string|null>) => {
+            state.shippingProviderId = value;
         },
         
         
@@ -241,7 +241,7 @@ export const {
     // shipping data:
     setShippingValidation,
     setShippingAddress,
-    setShippingProvider,
+    setShippingProviderId,
     
     
     

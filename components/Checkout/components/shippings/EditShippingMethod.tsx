@@ -63,8 +63,8 @@ const EditShippingMethod = (): JSX.Element|null => {
     
     const {
         // shipping data:
-        shippingProvider,
-        setShippingProvider,
+        shippingProviderId,
+        setShippingProviderId,
         totalShippingCostStatus,
         
         
@@ -101,7 +101,7 @@ const EditShippingMethod = (): JSX.Element|null => {
                     }))
                     .sort(({previewShippingCost: a}, {previewShippingCost: b}) => (a - b))
                     .map(({previewShippingCost, ...shippingEntry}) => {
-                        const isActive = `${shippingEntry.id}` === shippingProvider;
+                        const isActive = `${shippingEntry.id}` === shippingProviderId;
                         const isServerCalculated = !Array.isArray(shippingEntry.rates);
                         
                         
@@ -125,7 +125,7 @@ const EditShippingMethod = (): JSX.Element|null => {
                                 
                                 
                                 // handlers:
-                                onClick={() => setShippingProvider(`${shippingEntry.id}`)}
+                                onClick={() => setShippingProviderId(shippingEntry.id)}
                             >
                                 <RadioDecorator />
                                 

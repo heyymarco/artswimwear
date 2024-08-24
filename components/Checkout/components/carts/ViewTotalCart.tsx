@@ -49,7 +49,7 @@ const ViewTotalCart = (): JSX.Element|null => {
         
         // shipping data:
         isShippingAddressRequired,
-        shippingProvider,
+        shippingProviderId,
         totalShippingCost,
         totalShippingCostStatus,
     } = useCheckoutState();
@@ -61,12 +61,12 @@ const ViewTotalCart = (): JSX.Element|null => {
     
     const hasValidSelectedShippingIfAny = (
         (
-            !isShippingAddressRequired       // not_physical_product
+            !isShippingAddressRequired    // not_physical_product
             ||
-            (shippingProvider !== undefined) // physical_product && have selected shippingProvider
+            (shippingProviderId !== null) // physical_product && have selected shippingProvider
         )
         &&
-        (checkoutStep !== 'INFO')            // when in `info` page, ignore the selected shippingProvider
+        (checkoutStep !== 'INFO')         // when in `info` page, ignore the selected shippingProvider
     );
     
     return (

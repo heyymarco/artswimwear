@@ -110,7 +110,7 @@ import {
     // shipping data:
     setShippingValidation as reduxSetShippingValidation,
     setShippingAddress    as reduxSetShippingAddress,
-    setShippingProvider   as reduxSetShippingProvider,
+    setShippingProviderId as reduxSetShippingProviderId,
     
     // billing data:
     setBillingValidation  as reduxSetBillingValidation,
@@ -307,8 +307,8 @@ export interface CheckoutStateBase {
     shippingAddress              : ShippingAddressDetail|null
     setShippingAddress           : (address: ShippingAddressDetail|null) => void
     
-    shippingProvider             : string | undefined
-    setShippingProvider          : (shippingProvider: string) => void
+    shippingProviderId           : string|null
+    setShippingProviderId        : (shippingProviderId: string|null) => void
     
     totalShippingCost            : number|null|undefined // undefined: not selected yet; null: no shipping required (non physical product)
     totalShippingCostStatus      : TotalShippingCostStatus
@@ -467,8 +467,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     shippingAddress              : null,
     setShippingAddress           : noopCallback,
     
-    shippingProvider             : undefined,
-    setShippingProvider          : noopCallback,
+    shippingProviderId           : null,
+    setShippingProviderId        : noopCallback,
     
     totalShippingCost            : undefined,
     totalShippingCostStatus      : 'ready',
@@ -643,7 +643,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         shippingAddress,
         
-        shippingProvider,
+        shippingProviderId,
         
         
         
@@ -760,7 +760,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             return;
         } // if
         
-        const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
+        const selectedShipping = shippingProviderId ? shippingList.entities?.[shippingProviderId] : undefined;
         if (!selectedShipping) {                // no valid selected shippingProvider => nothing to calculate
             setRealTotalShippingCost(undefined);
             return;
@@ -771,7 +771,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // calculate the shipping cost based on the totalProductWeight and the selected shipping provider:
         const shippingCost = calculateShippingCost(selectedShipping, totalProductWeight);
         setRealTotalShippingCost(shippingCost);
-    }, [shippingList, shippingProvider, totalProductWeight]);
+    }, [shippingList, shippingProviderId, totalProductWeight]);
     
     // refresh shippingList when totalWeight changed:
     const prevTotalProductWeightSteppedRef  = useRef<number|null|undefined>(totalProductWeightStepped);
@@ -802,7 +802,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             return;
         } // if
         
-        const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
+        const selectedShipping = shippingProviderId ? shippingList.entities?.[shippingProviderId] : undefined;
         if (!selectedShipping) {                       // no valid selected shippingProvider => nothing to calculate
             setRealTotalShippingCost(undefined);
             return;
@@ -876,14 +876,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return () => {
             refreshShippingByAddressPromise?.abort();
         };
-    }, [checkoutStep, shippingList, shippingProvider, totalProductWeightStepped, shippingAddress]);
+    }, [checkoutStep, shippingList, shippingProviderId, totalProductWeightStepped, shippingAddress]);
     
     // if the selected shipping method lost due to shippingList update => warn to the user that the selection is no longer available:
     const prevSelectedShippingProviderRef = useRef<MatchingShipping|undefined>(undefined);
     useIsomorphicLayoutEffect(() => {
         // conditions:
         const prevSelectedShippingProvider = prevSelectedShippingProviderRef.current;
-        const selectedShipping = shippingProvider ? shippingList?.entities?.[shippingProvider] : undefined;
+        const selectedShipping = shippingProviderId ? shippingList?.entities?.[shippingProviderId] : undefined;
         if (prevSelectedShippingProviderRef.current === selectedShipping) {
             return; // no selected shippingProvider changes => ignore
         }
@@ -918,7 +918,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         else { // there's SOME shippingMethod available => go back to the second step
             gotoStepShipping();
         } // if
-    }, [checkoutStep, shippingList, shippingProvider]);
+    }, [checkoutStep, shippingList, shippingProviderId]);
     
     const totalShippingCost              = finishedOrderState ? finishedOrderState?.totalShippingCost : realTotalShippingCost;
     
@@ -953,7 +953,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         &&
         !isShippingError            // the matching shippingList is not error
         &&
-        !shippingList?.entities?.[shippingProvider ?? ''] // no longer having a valid matching shippingProvider
+        !shippingList?.entities?.[shippingProviderId ?? ''] // no longer having a valid matching shippingProvider
     );
     
     const isBillingAddressRequired       = (paymentMethod === 'card'); // the billingAddress is REQUIRED for 'card'
@@ -1190,7 +1190,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // conditions:
         if (checkoutStep !== 'SHIPPING') return; // only auto select when at shipping step
         if (!shippingList)               return; // the shippingList data is not available yet => nothing to select
-        const selectedShipping = shippingProvider ? shippingList.entities?.[shippingProvider] : undefined;
+        const selectedShipping = shippingProviderId ? shippingList.entities?.[shippingProviderId] : undefined;
         if (selectedShipping)            return; // already have valid selection => abort to auto_select
         
         
@@ -1207,9 +1207,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         );
         
         if (orderedConstAscending && orderedConstAscending.length >= 1) {
-            setShippingProvider(orderedConstAscending[0].id);
+            setShippingProviderId(orderedConstAscending[0].id);
         } // if
-    }, [checkoutStep, shippingList, shippingProvider, totalProductWeight]);
+    }, [checkoutStep, shippingList, shippingProviderId, totalProductWeight]);
     
     // auto scroll to top on checkoutStep changed:
     const isSubsequentStep = useRef<boolean>(false);
@@ -1621,8 +1621,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return true; // transaction completed
     });
     
-    const setShippingProvider  = useEvent((shippingProvider: string): void => {
-        dispatch(reduxSetShippingProvider(shippingProvider));
+    const setShippingProviderId = useEvent((shippingProviderId: string|null): void => {
+        dispatch(reduxSetShippingProviderId(shippingProviderId));
     });
     const setPaymentMethod     = useEvent((paymentMethod: PaymentMethod|null): void => {
         dispatch(reduxSetPaymentMethod(paymentMethod));
@@ -1857,7 +1857,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 ...((!options?.simulateOrder && isShippingAddressRequired) ? {
                     shippingAddress,
                     
-                    shippingProvider,
+                    shippingProviderId,
                 } : undefined),
                 
                 
@@ -2110,8 +2110,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         shippingAddress,
         setShippingAddress,           // stable ref
         
-        shippingProvider,
-        setShippingProvider,          // stable ref
+        shippingProviderId,
+        setShippingProviderId,        // stable ref
         
         totalShippingCost,
         totalShippingCostStatus,
@@ -2219,8 +2219,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         shippingAddress,
         // setShippingAddress,        // stable ref
         
-        shippingProvider,
-        // setShippingProvider        // stable ref
+        shippingProviderId,
+        // setShippingProviderId      // stable ref
         
         totalShippingCost,
         totalShippingCostStatus,
