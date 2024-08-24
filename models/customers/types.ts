@@ -9,16 +9,26 @@ import {
 
 
 // types:
-export interface NewGuestDetail
+export type CustomerOrGuestPreview =
+    &Pick<CustomerPreview, keyof CustomerPreview & keyof GuestPreview>
+    &Pick<GuestPreview   , keyof CustomerPreview & keyof GuestPreview>
+
+export interface CustomerPreview
     extends
-        Omit<Guest,
-            // records:
-            |'id'
-            |'createdAt'
-            |'updatedAt'
-            
+        Pick<Customer,
             // data:
-            |'emailVerified'
+            |'name'
+            |'email'
+        >
+{
+}
+
+export interface GuestPreview
+    extends
+        Pick<Guest,
+            // data:
+            |'name'
+            |'email'
         >
 {
 }
@@ -28,18 +38,6 @@ export interface NewGuestDetail
 export type CustomerOrGuestDetail =
     &Pick<CustomerDetail, keyof CustomerDetail & keyof GuestDetail>
     &Pick<GuestDetail   , keyof CustomerDetail & keyof GuestDetail>
-export type CustomerOrGuestPreference =
-    &Pick<CustomerPreference, keyof CustomerPreference & keyof GuestPreference>
-    &Pick<GuestPreference   , keyof CustomerPreference & keyof GuestPreference>
-export type CustomerOrGuestPreferenceDetail = Omit<CustomerOrGuestPreference,
-    // records:
-    |'id'
-    
-    // relations:
-    |'parentId'
->
-
-
 
 export interface CustomerDetail
     extends
@@ -62,6 +60,36 @@ export interface GuestDetail
             // records:
             |'createdAt'
             |'updatedAt'
+        >
+{
+}
+
+
+
+export type CustomerOrGuestPreferenceDetail =
+    &Pick<CustomerPreferenceDetail, keyof CustomerPreferenceDetail & keyof GuestPreferenceDetail>
+    &Pick<GuestPreferenceDetail   , keyof CustomerPreferenceDetail & keyof GuestPreferenceDetail>
+
+export interface CustomerPreferenceDetail
+    extends
+        Omit<CustomerPreference,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
+        >
+{
+}
+
+export interface GuestPreferenceDetail
+    extends
+        Omit<GuestPreference,
+            // records:
+            |'id'
+            
+            // relations:
+            |'parentId'
         >
 {
 }
