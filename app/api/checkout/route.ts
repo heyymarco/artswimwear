@@ -21,6 +21,8 @@ import {
     type VariantGroup,
     type Stock,
     
+    type CustomerOrGuestPreview,
+    
     type CreateOrderDataBasic,
     type OrderCurrencyDetail,
     type DraftOrdersOnProducts,
@@ -152,8 +154,7 @@ export interface ExtraData {
 }
 export interface CustomerData {
     // customer data:
-    customerName       : string
-    customerEmail      : string
+    customer           : CustomerOrGuestPreview|undefined
 }
 export interface ShippingData {
     // shipping data:
@@ -402,15 +403,13 @@ router
         
         
         // customers:
-        customerName,
-        customerEmail,
+        customer,
     } = placeOrderData;
     if (!simulateOrder) {
         if (
             ((marketingOpt !== undefined) && (typeof(marketingOpt) !== 'boolean'))
             
-            || !customerName || (typeof(customerName) !== 'string')
-            || !customerEmail    || (typeof(customerEmail) !== 'string') // TODO: validate email
+            || !customer || (typeof(customer) !== 'object')
         ) {
             return NextResponse.json({
                 error: 'Invalid data.',
@@ -1373,8 +1372,7 @@ router
             );
             
             const customerOrGuest : CustomerOrGuestData = {
-                name                 : customerName,
-                email                : customerEmail,
+                ...customer,
                 preference           : {
                     marketingOpt     : marketingOpt,
                     timezone         : checkoutConfigServer.intl.defaultTimezone, // TODO: detect customer's|guest's timezone based on browser detection `(0 - (new Date()).getTimezoneOffset())`
@@ -2185,8 +2183,10 @@ router
             
             
             // customer data:
-            customerName       : customer?.name  ?? guest?.name  ?? '',
-            customerEmail      : customer?.email ?? guest?.email ?? '',
+            customer           : (customer || guest) ? {
+                name  : customer?.name  ?? guest?.name  ?? '',
+                email : customer?.email ?? guest?.email ?? '',
+            } : undefined,
             
             
             

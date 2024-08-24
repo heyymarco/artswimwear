@@ -70,8 +70,7 @@ const ViewOrderFinished = (props: ViewOrderFinishedProps): JSX.Element|null => {
         
         
         // customer data:
-        customerName,
-        customerEmail,
+        customer,
     } = useCheckoutState();
     
     
@@ -81,7 +80,7 @@ const ViewOrderFinished = (props: ViewOrderFinishedProps): JSX.Element|null => {
         <>
             <Section>
                 <p>
-                    Dear {customerName},
+                    Dear {customer?.name},
                 </p>
                 
                 <p>
@@ -108,10 +107,10 @@ const ViewOrderFinished = (props: ViewOrderFinishedProps): JSX.Element|null => {
                         {paid && <>
                             We have sent an order confirmation to your email:
                             <br />
-                            <strong className={styleSheet.data}>{customerEmail}</strong>
+                            <strong className={styleSheet.data}>{customer?.email}</strong>
                         </>}
                         {!paid && <>
-                            Please <strong>follow the payment instructions</strong> sent to your email: <strong className={styleSheet.data}>{customerEmail}</strong>.
+                            Please <strong>follow the payment instructions</strong> sent to your email: <strong className={styleSheet.data}>{customer?.email}</strong>.
                         </>}
                         <br />
                         If the email has not been received, please wait a few more moments.

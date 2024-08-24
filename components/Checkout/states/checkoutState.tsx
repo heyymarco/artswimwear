@@ -67,6 +67,8 @@ import {
 import {
     type ProductPreview,
     
+    type CustomerOrGuestPreview,
+    
     type ShippingAddressDetail,
     type BillingAddressDetail,
     
@@ -292,10 +294,8 @@ export interface CheckoutStateBase {
     
     // customer data:
     customerValidation           : boolean
-    customerName                 : string
+    customer                     : CustomerOrGuestPreview|undefined
     setCustomerName              : EventHandler<string>
-    
-    customerEmail                : string
     setCustomerEmail             : EventHandler<string>
     
     
@@ -452,10 +452,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     // customer data:
     customerValidation           : false,
-    customerName                 : '',
+    customer                     : undefined,
     setCustomerName              : noopSetter,
-    
-    customerEmail                : '',
     setCustomerEmail             : noopSetter,
     
     
@@ -633,8 +631,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // customer data:
         customerValidation,
         
-        customerName,
-        customerEmail,
+        customer,
         
         
         
@@ -1847,8 +1844,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     
                     
                     // customer data:
-                    customerName,
-                    customerEmail,
+                    customer,
                 } : undefined),
                 
                 
@@ -2095,10 +2091,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // customer data:
         customerValidation,
-        customerName,
+        customer,
         setCustomerName,              // stable ref
-        
-        customerEmail,
         setCustomerEmail,             // stable ref
         
         
@@ -2204,10 +2198,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // customer data:
         customerValidation,
         
-        customerName,
+        customer,
         // setCustomerName,           // stable ref
-        
-        customerEmail,
         // setCustomerEmail,          // stable ref
         
         
