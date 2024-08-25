@@ -1258,18 +1258,21 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         console.log(`schedule refresh paymentSession in ${nextRefreshDuration/1000} seconds`);
         const schedulingRefreshPaymentSession = setTimeoutAsync(nextRefreshDuration);
-        schedulingRefreshPaymentSession.then((isDone) => {
+        const refreshPerformedPromise = schedulingRefreshPaymentSession.then(async (isDone): Promise<void> => {
             // conditions:
             if (!isDone) return; // the component was unloaded before the timer runs => do nothing
             
             
             
-            scheduleRefreshPaymentSession()
-            .then(() => {
-                console.log('schedule refresh paymentSession PERFORMED');
-            });
+            await (
+                scheduleRefreshPaymentSession()
+                .then(async (): Promise<void> => {
+                    console.log('schedule refresh paymentSession PERFORMED');
+                })
+            );
         });
         schedulingRefreshPaymentSessionRef.current = schedulingRefreshPaymentSession;
+        await refreshPerformedPromise;
     });
     
     useIsomorphicLayoutEffect(() => {
