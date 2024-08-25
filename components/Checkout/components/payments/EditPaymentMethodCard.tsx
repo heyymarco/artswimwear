@@ -139,7 +139,6 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
         // payment data:
         appropriatePaymentProcessors,
         paymentValidation,
-        paymentSession,
         
         
         

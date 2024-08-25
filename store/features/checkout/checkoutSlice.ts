@@ -12,58 +12,16 @@ import type {
 
 // models:
 import {
-    type CustomerOrGuestPreview,
-    
     type ShippingAddressDetail,
     type BillingAddressDetail,
+    
     type CheckoutStep,
     type PaymentMethod,
     type CheckoutPaymentSessionDetail,
+    type CheckoutSession,
 }                           from '@/models'
 
 
-
-export interface CheckoutSession {
-    // version control:
-    version           ?: number,
-    
-    
-    
-    // states:
-    checkoutStep       : CheckoutStep
-    
-    
-    
-    // extra data:
-    marketingOpt       : boolean
-    
-    
-    
-    // customer data:
-    customerValidation : boolean
-    customer           : CustomerOrGuestPreview|undefined
-    
-    
-    
-    // shipping data:
-    shippingValidation : boolean
-    shippingAddress    : ShippingAddressDetail|null
-    shippingProviderId : string|null
-    
-    
-    
-    // billing data:
-    billingValidation  : boolean
-    billingAsShipping  : boolean
-    billingAddress     : BillingAddressDetail|null
-    
-    
-    
-    // payment data:
-    paymentValidation  : boolean
-    paymentMethod      : PaymentMethod|null
-    paymentSession    ?: CheckoutPaymentSessionDetail
-}
 
 const initialState : CheckoutSession = {
     // version control:
@@ -104,7 +62,7 @@ const initialState : CheckoutSession = {
     // payment data:
     paymentValidation  : false,
     paymentMethod      : null,
-    paymentSession     : undefined,
+    paymentSession     : null,
 };
 export const checkoutSlice = createSlice({
     name: 'checkout',
@@ -180,7 +138,7 @@ export const checkoutSlice = createSlice({
         setPaymentMethod      : (state, {payload: value}: PayloadAction<PaymentMethod|null>) => {
             state.paymentMethod = value;
         },
-        setPaymentSession     : (state, {payload: value}: PayloadAction<CheckoutPaymentSessionDetail|undefined>) => {
+        setPaymentSession     : (state, {payload: value}: PayloadAction<CheckoutPaymentSessionDetail|null>) => {
             state.paymentSession = value;
         },
         

@@ -20,12 +20,9 @@ import {
 import {
     type PaymentDetail,
 }                           from '../orders'
-
-// stores:
-import type {
-    // types:
-    CheckoutSession,
-}                           from '@/store/features/checkout/checkoutSlice'
+import {
+    type CustomerOrGuestPreview,
+}                           from '../customers'
 
 
 
@@ -78,6 +75,42 @@ export interface CheckoutPaymentSessionDetail
             |'parentId'
         >
 {
+}
+
+
+
+export interface CheckoutSession
+    extends
+        CheckoutDetail
+{
+    // version control:
+    version           ?: number,
+    
+    
+    
+    // extra data:
+    marketingOpt       : boolean
+    
+    
+    
+    // customer data:
+    customerValidation : boolean
+    customer           : CustomerOrGuestPreview|undefined
+    
+    
+    
+    // shipping data:
+    shippingValidation : boolean
+    
+    
+    
+    // billing data:
+    billingValidation  : boolean
+    
+    
+    
+    // payment data:
+    paymentValidation  : boolean
 }
 
 

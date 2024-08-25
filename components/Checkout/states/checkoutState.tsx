@@ -330,7 +330,7 @@ export interface CheckoutStateBase {
     paymentMethod                : PaymentMethod|null
     setPaymentMethod             : (paymentMethod: PaymentMethod|null) => void
     
-    paymentSession               : CheckoutPaymentSessionDetail|undefined
+    paymentSession               : CheckoutPaymentSessionDetail|null
     
     paymentType                  : string|undefined
     paymentBrand                 : string|null|undefined
@@ -409,14 +409,14 @@ export type CheckoutState =
     )
     &(
         |(
-            &PickAlways<CheckoutStateBase, 'isCheckoutReady'   , true        > // if   the checkout is  ready
-            &PickAlways<CheckoutStateBase, 'isCheckoutFinished', boolean     > // then the checkout is  maybe finished
-            &PickAlways<CheckoutStateBase, 'paymentSession'    , {}          > // then the checkout is  always having_data
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady'   , true   > // if   the checkout is  ready
+            &PickAlways<CheckoutStateBase, 'isCheckoutFinished', boolean> // then the checkout is  maybe finished
+            &PickAlways<CheckoutStateBase, 'paymentSession'    , {}     > // then the checkout is  always having_data
         )
         |(
-            &PickAlways<CheckoutStateBase, 'isCheckoutReady'   , false       > // if   the checkout not ready
-            &PickAlways<CheckoutStateBase, 'isCheckoutFinished', false       > // then the checkout is  never finished
-            &PickAlways<CheckoutStateBase, 'paymentSession'    , {}|undefined> // then the checkout is  maybe  having_data
+            &PickAlways<CheckoutStateBase, 'isCheckoutReady'   , false  > // if   the checkout not ready
+            &PickAlways<CheckoutStateBase, 'isCheckoutFinished', false  > // then the checkout is  never finished
+            &PickAlways<CheckoutStateBase, 'paymentSession'    , {}|null> // then the checkout is  maybe  having_data
         )
     )
 
@@ -488,7 +488,7 @@ const CheckoutStateContext = createContext<CheckoutState>({
     paymentMethod                : null,
     setPaymentMethod             : noopCallback,
     
-    paymentSession               : undefined,
+    paymentSession               : null,
     
     paymentType                  : undefined,
     paymentBrand                 : undefined,
@@ -2030,7 +2030,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // discard used paymentSession:
-        dispatch(reduxSetPaymentSession(undefined));
+        dispatch(reduxSetPaymentSession(null));
         
         
         

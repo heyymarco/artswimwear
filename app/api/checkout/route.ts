@@ -2153,7 +2153,7 @@ router
             // payment data:
             paymentValidation  : true,
             paymentMethod      : null,
-            paymentSession     : undefined,
+            paymentSession     : null,
         },
         totalShippingCost         : shippingCost,
         paymentDetail             : paymentDetail,
