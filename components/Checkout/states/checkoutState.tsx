@@ -140,8 +140,6 @@ import {
     useGetMatchingShippingList,
     useRefreshMatchingShippingList,
     useGeneratePaymentSession,
-    // usePlaceOrder,
-    // useMakePayment,
     useShowPrevOrder,
     
     
@@ -1366,12 +1364,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     const contactEmailInputRef      = useRef<HTMLInputElement|null>(null);
     const shippingAddressInputRef   = useRef<HTMLInputElement|null>(null);
-    
-    
-    
-    // // apis:
-    // const [placeOrder ] = usePlaceOrder();
-    // const [makePayment] = useMakePayment();
     
     
     
