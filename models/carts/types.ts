@@ -37,7 +37,7 @@ export interface CartSession
         CartDetail
 {
     // version control:
-    version  ?: number,
+    version  ?: number
     
     
     
