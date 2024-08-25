@@ -132,7 +132,7 @@ export interface CartStateBase {
     
     
     // cart data:
-    cartItems                 : CartItemPreview[]
+    items                     : CartItemPreview[]
     totalProductQuantity      : number
     totalProductWeight        : number|null        | undefined
     totalProductWeightStepped : number|null        | undefined
@@ -225,7 +225,7 @@ const CartStateContext = createContext<CartState>({
     
     
     // cart data:
-    cartItems                 : [],
+    items                     : [],
     totalProductQuantity      : 0,
     totalProductWeight        : undefined,
     totalProductWeightStepped : undefined,
@@ -262,14 +262,14 @@ export const useCartState = (): CartState => {
 // react components:
 export interface CartStateProps {
     // mocks:
-    mockCartItems   ?: CartState['cartItems'  ]
+    mockItems       ?: CartState['items'      ]
     mockProductList ?: CartState['productList']
 }
 const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // rest props:
     const {
         // mocks:
-        mockCartItems,
+        mockItems,
         mockProductList,
         
         
@@ -281,14 +281,14 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stores:
-    const currency      = useAppSelector(selectCurrency);
+    const currency    = useAppSelector(selectCurrency);
     
-    const realCartItems = useAppSelector(selectCartItems);
-    const cartItems     = mockCartItems ?? realCartItems;
+    const realItems   = useAppSelector(selectCartItems);
+    const items       = mockItems ?? realItems;
     
-    const isCartShown   = useAppSelector(selectIsCartShown);
+    const isCartShown = useAppSelector(selectIsCartShown);
     
-    const dispatch      = useAppDispatch();
+    const dispatch    = useAppDispatch();
     
     
     
@@ -300,7 +300,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const refetchCart      = mockProductList ? noopCallback : realRefetchCart;
     
     const isCartEmpty   = (
-        !cartItems.length
+        !items.length
         /* isOther1Empty */
         /* isOther2Empty */
         /* isOther3Empty */
@@ -342,16 +342,16 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // cart data:
     const totalProductQuantity = useMemo<number>(() => {
         let totalProductQuantity : number = 0;
-        for (const {quantity} of cartItems) {
+        for (const {quantity} of items) {
             totalProductQuantity += quantity;
         } // for
         return totalProductQuantity;
-    }, [cartItems]);
+    }, [items]);
     
     const {productPriceParts, totalProductWeight} = useMemo<{productPriceParts: ProductPricePart[]|undefined, totalProductWeight: number|null|undefined}>(() => {
         const productPriceParts  : ProductPricePart[] = [];
         let   totalProductWeight : number|null        = null;
-        for (const {productId, variantIds, quantity} of cartItems) {
+        for (const {productId, variantIds, quantity} of items) {
             const product = productList?.entities?.[productId];
             if (!product) {
                 return {
@@ -421,7 +421,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             productPriceParts,
             totalProductWeight,
         };
-    }, [cartItems, productList]);
+    }, [items, productList]);
     
     const totalProductWeightStepped = useMemo(() => {
         if ((totalProductWeight === undefined) || (totalProductWeight === null)) return totalProductWeight;
@@ -448,14 +448,14 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (!isCartReady)      return; // do not clean up when the related data is still loading
-        if (!cartItems.length) return; // no item(s) in the cart => nothing to clean up
-        if (!productList)      return; // the productList is not yet loaded => do not clean up now
+        if (!isCartReady)  return; // do not clean up when the related data is still loading
+        if (!items.length) return; // no item(s) in the cart => nothing to clean up
+        if (!productList)  return; // the productList is not yet loaded => do not clean up now
         
         
         
         // clean up invalid productId(s):
-        const invalidProducts = cartItems.filter(({productId, variantIds}) => {
+        const invalidProducts = items.filter(({productId, variantIds}) => {
             const validProductIds = productList.ids;
             if (!validProductIds.includes(productId)) return true; // invalid
             
@@ -476,7 +476,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 }))
             );
         } // if
-    }, [isCartReady, cartItems, productList]);
+    }, [isCartReady, items, productList]);
     
     
     
@@ -624,7 +624,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // cart data:
-        cartItems,
+        items,
         totalProductQuantity,
         totalProductWeight,
         totalProductWeightStepped,
@@ -667,7 +667,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // cart data:
-        cartItems,
+        items,
         totalProductQuantity,
         totalProductWeight,
         totalProductWeightStepped,

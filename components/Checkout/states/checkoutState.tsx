@@ -586,7 +586,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // cart data:
-        cartItems : globalCartItems,
+        items : globalCartItems,
         totalProductWeight,
         totalProductWeightStepped,
         
@@ -2283,7 +2283,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         finishedOrderState
         ? <CartStateProvider
             // mocks
-            mockCartItems   = {cartItems}
+            mockItems       = {cartItems}
             mockProductList = {productList}
         >
             {children}

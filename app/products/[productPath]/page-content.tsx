@@ -169,7 +169,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
     // states:
     const {
         // cart data:
-        cartItems,
+        items: cartItems,
         
         
         

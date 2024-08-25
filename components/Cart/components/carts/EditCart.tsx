@@ -70,7 +70,7 @@ const EditCart = (props: EditCartProps): JSX.Element|null => {
         
         
         // cart data:
-        cartItems,
+        items: cartItems,
         
         
         

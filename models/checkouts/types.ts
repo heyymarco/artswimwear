@@ -114,6 +114,19 @@ export interface CheckoutSession
 
 
 
+export interface FinishedOrderState {
+    cartItems                 : CartState['items'      ]
+    productList               : CartState['productList']
+    
+    checkoutSession           : CheckoutSession
+    totalShippingCost         : number|null|undefined
+    paymentDetail             : PaymentDetail|null
+    
+    isShippingAddressRequired : boolean
+}
+
+
+
 export type TotalShippingCostStatus =
     |'ready'
     |'loading'
@@ -161,19 +174,6 @@ export interface AuthorizedFundData {
     paymentCode  ?: string
     redirectData ?: string
     expires      ?: Date
-}
-
-
-
-export interface FinishedOrderState {
-    cartItems                 : CartState['cartItems'  ]
-    productList               : CartState['productList']
-    
-    checkoutSession           : CheckoutSession
-    totalShippingCost         : number|null|undefined
-    paymentDetail             : PaymentDetail|null
-    
-    isShippingAddressRequired : boolean
 }
 
 
