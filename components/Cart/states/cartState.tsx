@@ -15,7 +15,6 @@ import {
     // hooks:
     useContext,
     useMemo,
-    useState,
 }                           from 'react'
 
 // redux:
@@ -54,7 +53,6 @@ import {
 
 // models:
 import {
-    type CartItemPreview,
     type CartSession,
 }                           from '@/models'
 
@@ -114,10 +112,14 @@ import {
 //#region checkoutState
 
 // contexts:
-export interface CartStateBase {
+export interface CartStateBase
+    extends
+        Omit<CartSession,
+            // version control:
+            |'version'
+        >
+{
     // states:
-    isCartShown               : boolean
-    
     isCartEmpty               : boolean
     isCartLoading             : boolean
     isCartError               : boolean
@@ -126,13 +128,11 @@ export interface CartStateBase {
     
     
     // accessibilities:
-    currency                  : string
     setCurrency               : (currency: string|undefined) => void
     
     
     
     // cart data:
-    items                     : CartItemPreview[]
     totalProductQuantity      : number
     totalProductWeight        : number|null        | undefined
     totalProductWeightStepped : number|null        | undefined
