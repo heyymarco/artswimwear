@@ -84,7 +84,7 @@ export const checkoutSlice = createSlice({
         
         
         // extra data:
-        setMarketingOpt       : (state, {payload: value}: PayloadAction<boolean>) => {
+        setMarketingOpt       : (state, {payload: value}: PayloadAction<boolean|null>) => {
             state.marketingOpt = value;
         },
         

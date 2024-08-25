@@ -22,6 +22,7 @@ import {
 }                           from '../orders'
 import {
     type CustomerOrGuestPreview,
+    type CustomerOrGuestPreferenceDetail,
 }                           from '../customers'
 
 
@@ -81,15 +82,13 @@ export interface CheckoutPaymentSessionDetail
 
 export interface CheckoutSession
     extends
-        CheckoutDetail
+        CheckoutDetail,
+        Pick<CustomerOrGuestPreferenceDetail,
+            |'marketingOpt'
+        >
 {
     // version control:
-    version           ?: number,
-    
-    
-    
-    // extra data:
-    marketingOpt       : boolean
+    version           ?: number
     
     
     

@@ -176,7 +176,7 @@ const EditCustomerAccount = (): JSX.Element|null => {
                 
                 
                 // values:
-                active={marketingOpt}
+                active={marketingOpt ?? true}
                 onActiveChange={handleMarketingOptChange}
                 
                 

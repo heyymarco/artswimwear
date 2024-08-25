@@ -282,8 +282,8 @@ export interface CheckoutStateBase {
     
     
     // extra data:
-    marketingOpt                 : boolean
-    setMarketingOpt              : EventHandler<boolean>
+    marketingOpt                 : boolean|null
+    setMarketingOpt              : EventHandler<boolean|null>
     
     
     
