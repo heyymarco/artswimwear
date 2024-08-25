@@ -1264,7 +1264,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             
-            const isRefreshPerformed = await scheduleRefreshPaymentSession();
+            const isRefreshPerformed = await scheduleRefreshPaymentSession(); // await timer => recursive await => await timer => recursive await => ... => abort => return false
             console.log('schedule refresh paymentSession PERFORMED: ', isRefreshPerformed);
             return isRefreshPerformed;
         });
@@ -1281,7 +1281,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // setups:
         // trigger to start schedule:
-        scheduleRefreshPaymentSession();
+        scheduleRefreshPaymentSession(); // fire & forget
         
         
         
@@ -1564,7 +1564,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // update and wait for paymentSession to avoid whole_page_spinning_busy:
         setIsBusy('preparePayment');
         try {
-            await scheduleRefreshPaymentSession();
+            await scheduleRefreshPaymentSession(); // fire & await
         }
         catch {
             // ignore any error => just display whole_page_error
