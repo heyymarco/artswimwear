@@ -27,7 +27,7 @@ import {
 
 
 
-export interface CartState
+export interface CartSession
     extends
         CartDetail
 {
@@ -40,7 +40,7 @@ export interface CartState
     showCart  : boolean
 }
 
-const initialState : CartState = {
+const initialState : CartSession = {
     // version control:
     version   : 5,
     
