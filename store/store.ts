@@ -34,6 +34,8 @@ export const store = configureStore({
                     channel   : checkoutConfigClient.business.url,
                     predicate(action) {
                         const actionType = action.type;
+                        if (typeof(actionType) !== 'string')        return false;
+                        
                         // blacklist:
                         if (actionType.startsWith('cart/showCart')) return false;
                         if (actionType.startsWith('cart/hideCart')) return false;
@@ -45,7 +47,7 @@ export const store = configureStore({
                         
                         
                         // defaults to blacklist:
-                        console.log('predicate: ', actionType);
+                        // console.log('predicate: ', actionType);
                         return false;
                     },
                 })
