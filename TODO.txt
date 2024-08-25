@@ -8,8 +8,6 @@
 [high prior] verify breaking change <UpdateStatePlugin> .__first
 TODO: fix table layout to use subgrid
 move checkoutState to local if guess mode
-[high prior] verify the migrated api code in app dir
-[high prior] create a random value of @unique nullable data of DraftOrder::paymentId & Credentials::username
 [low  prior] make the Order sorting order matches to shopping cart sorting order
 [low  prior] update DateTimeEditor to have polyfill dropdown calendar
 [low  prior] prefer to use Request|Response instead of NextRequest|NextResponse
