@@ -37,10 +37,10 @@ export interface CartSession
         CartDetail
 {
     // version control:
-    version  ?: number
+    version     ?: number
     
     
     
     // cart dialogs:
-    showCart  : boolean
+    isCartShown  : boolean
 }

@@ -29,22 +29,22 @@ import {
 
 const initialState : CartSession = {
     // version control:
-    version   : 5,
+    version      : 5,
     
     
     
     // accessibilities:
-    currency  : checkoutConfigClient.payment.defaultCurrency,
+    currency     : checkoutConfigClient.payment.defaultCurrency,
     
     
     
     // cart data:
-    items     : [],
+    items        : [],
     
     
     
     // cart dialogs:
-    showCart  : false,
+    isCartShown  : false,
 };
 export const cartSlice = createSlice({
     name: 'cart',
@@ -160,8 +160,11 @@ export const cartSlice = createSlice({
         
         
         // cart dialogs:
-        setShowCart           : (state, {payload: setShown}: PayloadAction<boolean>) => {
-            state.showCart = setShown;
+        showCart              : (state) => {
+            state.isCartShown = true;
+        },
+        hideCart              : (state) => {
+            state.isCartShown = false;
         },
     },
 });
@@ -190,7 +193,8 @@ export const {
     
     
     // cart dialogs:
-    setShowCart,
+    showCart,
+    hideCart,
 } = cartSlice.actions;
 
 
@@ -203,5 +207,5 @@ export const selectCartItems   = (state: RootState) => {
     return state.cart.items;
 };
 export const selectIsCartShown = (state: RootState) => {
-    return state.cart.showCart;
+    return state.cart.isCartShown;
 };

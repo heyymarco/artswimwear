@@ -79,7 +79,8 @@ import {
     
     
     // cart dialogs:
-    setShowCart           as reduxSetShowCart,
+    showCart              as reduxShowCart,
+    hideCart              as reduxHideCart,
     
     
     
@@ -596,11 +597,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     const showCart              = useEvent((): void => {
         // actions:
-        dispatch(reduxSetShowCart(true));
+        dispatch(reduxShowCart());
     });
     const hideCart              = useEvent((): void => {
         // actions:
-        dispatch(reduxSetShowCart(false));
+        dispatch(reduxHideCart());
     });
     
     
