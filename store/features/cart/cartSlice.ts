@@ -16,8 +16,8 @@ import type {
 
 // models:
 import {
-    type CartDetail,
     type CartItemPreview,
+    type CartSession,
 }                           from '@/models'
 
 // configs:
@@ -26,19 +26,6 @@ import {
 }                           from '@/checkout.config.client'
 
 
-
-export interface CartSession
-    extends
-        CartDetail
-{
-    // version control:
-    version  ?: number,
-    
-    
-    
-    // cart dialogs:
-    showCart  : boolean
-}
 
 const initialState : CartSession = {
     // version control:

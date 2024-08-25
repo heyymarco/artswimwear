@@ -29,3 +29,18 @@ export interface CartItemPreview
         >
 {
 }
+
+
+
+export interface CartSession
+    extends
+        CartDetail
+{
+    // version control:
+    version  ?: number,
+    
+    
+    
+    // cart dialogs:
+    showCart  : boolean
+}
