@@ -27,16 +27,10 @@ import {
     ButtonWithBusy,
 }                           from '../ButtonWithBusy'
 
-// stores:
+// contexts:
 import {
-    showCart,
-}                           from '@/store/features/cart/cartSlice'
-import {
-    // hooks:
-    useAppDispatch,
-}                           from '@/store/hooks'
-
-// internals:
+    useCartState,
+}                           from '@/components/Cart/states/cartState'
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
@@ -46,6 +40,10 @@ import {
 // react components:
 const NavCheckout = (): JSX.Element|null => {
     // states:
+    const {
+        showCart,
+    } = useCartState();
+    
     const {
         // states:
         checkoutProgress,
@@ -67,17 +65,12 @@ const NavCheckout = (): JSX.Element|null => {
     
     
     
-    // stores:
-    const dispatch = useAppDispatch();
-    
-    
-    
     // utilities:
     const [prevAction, nextAction] = useMemo(() => {
         const prevAction = [
-            { text: 'Return to Cart'       , action: () => dispatch(showCart(true)) },
-            { text: 'Return to Information', action: () => gotoStepInformation()    },
-            { text: 'Return to Shipping'   , action: gotoStepShipping               },
+            { text: 'Return to Cart'       , action: () => showCart()            },
+            { text: 'Return to Information', action: () => gotoStepInformation() },
+            { text: 'Return to Shipping'   , action: gotoStepShipping            },
         ][Math.max(0, checkoutProgress - (isShippingAddressRequired ? 0 : 1))];
         
         const nextAction = [

@@ -160,10 +160,7 @@ export const cartSlice = createSlice({
         
         
         // cart dialogs:
-        toggleCart            : (state) => {
-            state.showCart = !state.showCart;
-        },
-        showCart              : (state, {payload: setShown}: PayloadAction<boolean>) => {
+        setShowCart           : (state, {payload: setShown}: PayloadAction<boolean>) => {
             state.showCart = setShown;
         },
     },
@@ -193,8 +190,7 @@ export const {
     
     
     // cart dialogs:
-    toggleCart,
-    showCart,
+    setShowCart,
 } = cartSlice.actions;
 
 
