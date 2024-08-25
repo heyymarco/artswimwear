@@ -67,8 +67,6 @@ import {
 import {
     type ProductPreview,
     
-    type CustomerOrGuestPreview,
-    
     type PlaceOrderRequestOptions,
     
     type ShippingAddressDetail,
@@ -83,7 +81,7 @@ import {
     
     type CountryPreview,
     
-    type CheckoutPaymentSessionDetail,
+    type CheckoutSession,
     
     calculateCheckoutProgress,
 }                           from '@/models'
@@ -135,7 +133,6 @@ import {
     PaymentDetail,
     
     MakePaymentOptions,
-    LimitedStockItem,
     
     
     
@@ -188,23 +185,6 @@ import {
 import {
     checkoutConfigClient,
 }                           from '@/checkout.config.client'
-
-
-
-// types:
-export type {
-    CheckoutStep,
-    PaymentMethod,
-    
-    ProductPreview,
-    PaymentDetail,
-    
-    MakePaymentOptions,
-    
-    CountryPreview,
-    
-    MatchingShipping,
-}
 
 
 
@@ -264,9 +244,14 @@ export interface StartTransactionArg {
 }
 
 // contexts:
-export interface CheckoutStateBase {
+export interface CheckoutStateBase
+    extends
+        Omit<CheckoutSession,
+            // version control:
+            |'version'
+        >
+{
     // states:
-    checkoutStep                 : CheckoutStep
     checkoutProgress             : number
     
     isBusy                       : BusyState,
@@ -282,14 +267,11 @@ export interface CheckoutStateBase {
     
     
     // extra data:
-    marketingOpt                 : boolean|null
     setMarketingOpt              : EventHandler<boolean|null>
     
     
     
     // customer data:
-    customerValidation           : boolean
-    customer                     : CustomerOrGuestPreview|undefined
     setCustomerName              : EventHandler<string>
     setCustomerEmail             : EventHandler<string>
     
@@ -297,12 +279,9 @@ export interface CheckoutStateBase {
     
     // shipping data:
     isShippingAddressRequired    : boolean
-    shippingValidation           : boolean
     
-    shippingAddress              : ShippingAddressDetail|null
     setShippingAddress           : (address: ShippingAddressDetail|null) => void
     
-    shippingProviderId           : string|null
     setShippingProviderId        : (shippingProviderId: string|null) => void
     
     totalShippingCost            : number|null|undefined // undefined: not selected yet; null: no shipping required (non physical product)
@@ -312,12 +291,9 @@ export interface CheckoutStateBase {
     
     // billing data:
     isBillingAddressRequired     : boolean
-    billingValidation            : boolean
     
-    billingAsShipping            : boolean
     setBillingAsShipping         : (billingAsShipping: boolean) => void
     
-    billingAddress               : BillingAddressDetail|null
     setBillingAddress            : (address: BillingAddressDetail|null) => void
     
     
@@ -325,12 +301,7 @@ export interface CheckoutStateBase {
     // payment data:
     appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
     
-    paymentValidation            : boolean
-    
-    paymentMethod                : PaymentMethod|null
     setPaymentMethod             : (paymentMethod: PaymentMethod|null) => void
-    
-    paymentSession               : CheckoutPaymentSessionDetail|null
     
     paymentType                  : string|undefined
     paymentBrand                 : string|null|undefined
