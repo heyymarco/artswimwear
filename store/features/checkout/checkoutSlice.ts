@@ -41,14 +41,12 @@ export interface CheckoutState {
     
     // customer data:
     customerValidation : boolean
-    
     customer           : CustomerOrGuestPreview|undefined
     
     
     
     // shipping data:
     shippingValidation : boolean
-    
     shippingAddress    : ShippingAddressDetail|null
     shippingProviderId : string|null
     
@@ -57,16 +55,13 @@ export interface CheckoutState {
     // billing data:
     billingValidation  : boolean
     billingAsShipping  : boolean
-    
     billingAddress     : BillingAddressDetail|null
     
     
     
     // payment data:
     paymentValidation  : boolean
-    
     paymentMethod      : PaymentMethod|null
-    
     paymentSession    ?: CheckoutPaymentSessionDetail
 }
 
@@ -88,7 +83,6 @@ const initialState : CheckoutState = {
     
     // customer data:
     customerValidation : false,
-    
     customer           : undefined,
     
     
@@ -109,9 +103,7 @@ const initialState : CheckoutState = {
     
     // payment data:
     paymentValidation  : false,
-    
     paymentMethod      : null,
-    
     paymentSession     : undefined,
 };
 export const checkoutSlice = createSlice({
@@ -144,7 +136,6 @@ export const checkoutSlice = createSlice({
         setCustomerValidation : (state, {payload: value}: PayloadAction<boolean>) => {
             state.customerValidation = value;
         },
-        
         setCustomerName       : (state, {payload: value}: PayloadAction<string>) => {
             state.customer ??= { name: '', email: '' };
             state.customer.name = value;
@@ -173,11 +164,9 @@ export const checkoutSlice = createSlice({
         setBillingValidation  : (state, {payload: value}: PayloadAction<boolean>) => {
             state.billingValidation = value;
         },
-        
         setBillingAsShipping  : (state, {payload: value}: PayloadAction<boolean>) => {
             state.billingAsShipping = value;
         },
-        
         setBillingAddress     : (state, {payload: value}: PayloadAction<BillingAddressDetail|null>) => {
             state.billingAddress = value;
         },
@@ -188,11 +177,9 @@ export const checkoutSlice = createSlice({
         setPaymentValidation  : (state, {payload: value}: PayloadAction<boolean>) => {
             state.paymentValidation = value;
         },
-        
         setPaymentMethod      : (state, {payload: value}: PayloadAction<PaymentMethod|null>) => {
             state.paymentMethod = value;
         },
-        
         setPaymentSession     : (state, {payload: value}: PayloadAction<CheckoutPaymentSessionDetail|undefined>) => {
             state.paymentSession = value;
         },
@@ -227,7 +214,6 @@ export const {
     
     // customer data:
     setCustomerValidation,
-    
     setCustomerName,
     setCustomerEmail,
     
@@ -249,9 +235,7 @@ export const {
     
     // payment data:
     setPaymentValidation,
-    
     setPaymentMethod,
-    
     setPaymentSession,
     
     
