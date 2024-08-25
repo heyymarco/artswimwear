@@ -4,7 +4,12 @@ import cartReducer from './features/cart/cartSlice'
 import checkoutReducer from './features/checkout/checkoutSlice'
 import { persistReducer, persistStore } from 'redux-persist'
 import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
-import storage from 'redux-persist/lib/storage'
+import storage from 'redux-persist/lib/storage/session'
+import { createStateSyncMiddleware, initMessageListener } from 'redux-state-sync'
+// configs:
+import {
+    checkoutConfigClient,
+}                           from '@/checkout.config.client'
 
 
 
@@ -24,11 +29,33 @@ export const store = configureStore({
             .concat(
                 apiSlice.middleware,
             )
+            .concat(
+                createStateSyncMiddleware({
+                    channel   : checkoutConfigClient.business.url,
+                    predicate(action) {
+                        const actionType = action.type;
+                        // blacklist:
+                        if (actionType.startsWith('cart/showCart')) return false;
+                        if (actionType.startsWith('cart/hideCart')) return false;
+                        
+                        // whitelist:
+                        if (actionType.startsWith('cart/'))         return true;
+                        if (actionType.startsWith('checkout/'))     return true;
+                        
+                        
+                        
+                        // defaults to blacklist:
+                        console.log('predicate: ', actionType);
+                        return false;
+                    },
+                })
+            )
         );
     },
     devTools   : true,
 });
 export const persistor = persistStore(store);
+initMessageListener(store);
 
 
 

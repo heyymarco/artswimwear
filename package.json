@@ -76,6 +76,7 @@
     "react-google-recaptcha": "^3.1.0",
     "react-redux": "^8.0.5",
     "redux-persist": "^6.0.0",
+    "redux-state-sync": "^3.1.4",
     "sass": "^1.58.3",
     "sharp": "0.32.6",
     "stripe": "^16.2.0",
@@ -88,6 +89,7 @@
     "@types/mime-types": "^2.1.4",
     "@types/qrcode": "^1.5.5",
     "@types/react-google-recaptcha": "^2.1.8",
+    "@types/redux-state-sync": "^3.1.10",
     "prisma": "^5.16.1"
   }
 }
