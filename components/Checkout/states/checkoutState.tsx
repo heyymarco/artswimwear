@@ -572,6 +572,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // contexts:
+    const cartState = useCartState();
     const {
         // states:
         // isCartEmpty, // do NOT rely on `isCartEmpty`, instead use own `cartItems.length`, because when the order is finished, the cartItem(s) will be GONE, we need to see the LAST state stored in `finishedOrderState`
@@ -602,7 +603,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         trimProductsFromCart,
         
         refetchCart,
-    } = useCartState();
+    } = cartState;
     const cartItems             = finishedOrderState ? finishedOrderState.cartItems     : globalCartItems;
     
     const productList           = finishedOrderState ? finishedOrderState.productList   : globalProductList;
@@ -2283,7 +2284,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         finishedOrderState
         ? <CartStateProvider
             // mocks
-            mockItems       = {cartItems}
+            mockCartState   = {cartState}
             mockProductList = {productList}
         >
             {children}

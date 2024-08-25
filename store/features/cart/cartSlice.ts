@@ -200,12 +200,12 @@ export const {
 
 
 // selectors:
-export const selectCurrency    = (state: RootState) => {
-    return state.cart.currency;
-};
-export const selectCartItems   = (state: RootState) => {
-    return state.cart.items;
-};
-export const selectIsCartShown = (state: RootState) => {
-    return state.cart.isCartShown;
+export const selectCartSession = (state: RootState): CartSession => {
+    const {
+        // @ts-ignore
+        _persist, // remove
+        ...restCartSession
+    } = state.cart;
+    
+    return restCartSession;
 };

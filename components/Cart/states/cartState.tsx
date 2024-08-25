@@ -55,6 +55,7 @@ import {
 // models:
 import {
     type CartItemPreview,
+    type CartSession,
 }                           from '@/models'
 
 // stores:
@@ -85,9 +86,7 @@ import {
     
     
     // selectors:
-    selectCurrency,
-    selectCartItems,
-    selectIsCartShown,
+    selectCartSession,
 }                           from '@/store/features/cart/cartSlice'
 import {
     // types:
@@ -263,14 +262,14 @@ export const useCartState = (): CartState => {
 // react components:
 export interface CartStateProps {
     // mocks:
-    mockItems       ?: CartState['items'      ]
+    mockCartState   ?: CartState
     mockProductList ?: CartState['productList']
 }
 const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // rest props:
     const {
         // mocks:
-        mockItems,
+        mockCartState,
         mockProductList,
         
         
@@ -282,14 +281,28 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // stores:
-    const currency    = useAppSelector(selectCurrency);
+    const globalCartSession = useAppSelector(selectCartSession);
+    const localCartSession  = (
+        mockCartState
+        ? ((mockCartState satisfies CartSession) as CartSession)
+        : globalCartSession
+    );
+    const {
+        // accessibilities:
+        currency,
+        
+        
+        
+        // cart data:
+        items,
+        
+        
+        
+        // cart dialogs:
+        isCartShown,
+    } = localCartSession;
     
-    const realItems   = useAppSelector(selectCartItems);
-    const items       = mockItems ?? realItems;
-    
-    const isCartShown = useAppSelector(selectIsCartShown);
-    
-    const dispatch    = useAppDispatch();
+    const dispatch          = useAppDispatch();
     
     
     
