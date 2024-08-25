@@ -127,7 +127,7 @@ import {
     
     
     // selectors:
-    selectCheckoutState,
+    selectCheckoutSession,
 }                           from '@/store/features/checkout/checkoutSlice'
 import {
     // types:
@@ -603,15 +603,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         refetchCart,
     } = useCartState();
-    const cartItems           = finishedOrderState ? finishedOrderState.cartItems     : globalCartItems;
+    const cartItems             = finishedOrderState ? finishedOrderState.cartItems     : globalCartItems;
     
-    const productList         = finishedOrderState ? finishedOrderState.productList   : globalProductList;
+    const productList           = finishedOrderState ? finishedOrderState.productList   : globalProductList;
     
     
     
     // stores:
-    const globalCheckoutState = useAppSelector(selectCheckoutState);
-    const localCheckoutState  = finishedOrderState ? finishedOrderState.checkoutState : globalCheckoutState;
+    const globalCheckoutSession = useAppSelector(selectCheckoutSession);
+    const localCheckoutSession  = finishedOrderState ? finishedOrderState.checkoutSession : globalCheckoutSession;
     const {
         // states:
         checkoutStep,
@@ -651,11 +651,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentValidation,
         
         paymentMethod,
-    } = localCheckoutState;
+    } = localCheckoutSession;
     
     const {
         paymentSession,
-    } = globalCheckoutState;
+    } = globalCheckoutSession;
     
     const appropriatePaymentProcessors = useMemo((): CheckoutState['appropriatePaymentProcessors'] => {
         return (
@@ -2016,8 +2016,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 ),
             },
             
-            checkoutState : {
-                ...localCheckoutState,
+            checkoutSession : {
+                ...localCheckoutSession,
                 checkoutStep : (paid ? 'PAID' : 'PENDING'),
             },
             totalShippingCost,

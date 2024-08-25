@@ -2099,7 +2099,7 @@ router
                 };
             })
         ),
-        checkoutState             : {
+        checkoutSession           : {
             // extra data:
             marketingOpt       : customer?.preference?.marketingOpt ?? guest?.preference?.marketingOpt ?? true,
             

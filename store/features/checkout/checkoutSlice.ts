@@ -23,7 +23,7 @@ import {
 
 
 
-export interface CheckoutState {
+export interface CheckoutSession {
     // version control:
     version           ?: number,
     
@@ -65,7 +65,7 @@ export interface CheckoutState {
     paymentSession    ?: CheckoutPaymentSessionDetail
 }
 
-const initialState : CheckoutState = {
+const initialState : CheckoutSession = {
     // version control:
     version            : 4,
     
@@ -247,11 +247,12 @@ export const {
 
 
 // selectors:
-export const selectCheckoutState = (state: RootState): CheckoutState => {
+export const selectCheckoutSession = (state: RootState): CheckoutSession => {
     const {
         // @ts-ignore
         _persist, // remove
-    ...restCheckoutState} = state.checkout;
+        ...restCheckoutSession
+    } = state.checkout;
     
-    return restCheckoutState;
+    return restCheckoutSession;
 };

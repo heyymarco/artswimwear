@@ -24,7 +24,7 @@ import {
 // stores:
 import type {
     // types:
-    CheckoutState as ReduxCheckoutState,
+    CheckoutSession,
 }                           from '@/store/features/checkout/checkoutSlice'
 
 
@@ -137,7 +137,7 @@ export interface FinishedOrderState {
     cartItems                 : CartState['cartItems'  ]
     productList               : CartState['productList']
     
-    checkoutState             : ReduxCheckoutState
+    checkoutSession           : CheckoutSession
     totalShippingCost         : number|null|undefined
     paymentDetail             : PaymentDetail|null
     
