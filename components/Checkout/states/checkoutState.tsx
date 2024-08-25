@@ -1272,13 +1272,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         schedulingRefreshPaymentSessionRef.current = schedulingRefreshPaymentSession;
     });
     
-    const isScheduleRefreshPaymentSessionTriggeredRef = useRef<boolean>(false);
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!isPaymentSessionRequired) return; // no paymentSession required => ignore
-        if (!isPaymentStep) return; // no paymentSession renewal when NOT at_payment_step
-        if (isScheduleRefreshPaymentSessionTriggeredRef.current) return; // already triggered => ignore
-        isScheduleRefreshPaymentSessionTriggeredRef.current = true;      // mark as triggered
+        if (!isPaymentStep)            return; // no paymentSession renewal when NOT at_payment_step
         
         
         
