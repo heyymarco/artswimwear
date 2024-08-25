@@ -41,6 +41,6 @@ export interface CartSession
     
     
     
-    // cart dialogs:
+    // states:
     isCartShown  : boolean
 }

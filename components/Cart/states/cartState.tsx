@@ -79,7 +79,7 @@ import {
     
     
     
-    // cart dialogs:
+    // states:
     showCart              as reduxShowCart,
     hideCart              as reduxHideCart,
     
@@ -298,7 +298,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         
-        // cart dialogs:
+        // states:
         isCartShown,
     } = localCartSession;
     

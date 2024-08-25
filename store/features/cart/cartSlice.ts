@@ -43,7 +43,7 @@ const initialState : CartSession = {
     
     
     
-    // cart dialogs:
+    // states:
     isCartShown  : false,
 };
 export const cartSlice = createSlice({
@@ -159,7 +159,7 @@ export const cartSlice = createSlice({
         
         
         
-        // cart dialogs:
+        // states:
         showCart              : (state) => {
             state.isCartShown = true;
         },
@@ -192,7 +192,7 @@ export const {
     
     
     
-    // cart dialogs:
+    // states:
     showCart,
     hideCart,
 } = cartSlice.actions;
