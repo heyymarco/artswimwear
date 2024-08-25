@@ -1200,10 +1200,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // auto renew paymentSession:
     const schedulingRefreshPaymentSessionRef          = useRef<TimerPromise<boolean>|null>(null);
-    const scheduleRefreshPaymentSession               = useEvent(async (): Promise<void> => {
+    const scheduleRefreshPaymentSession               = useEvent(async (): Promise<boolean> => {
         // conditions:
-        if (!isPaymentSessionRequired) return; // no paymentSession required => do nothing
-        if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
+        if (!isPaymentSessionRequired) return false; // no paymentSession required => do nothing
+        if (!isMounted.current)        return false; // the component was unloaded before schedule performed => do nothing
         
         
         
@@ -1246,7 +1246,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // conditions:
-        if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+        if (!isMounted.current) return false; // the component was unloaded before awaiting returned => do nothing
         
         
         
@@ -1258,21 +1258,18 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         console.log(`schedule refresh paymentSession in ${nextRefreshDuration/1000} seconds`);
         const schedulingRefreshPaymentSession = setTimeoutAsync(nextRefreshDuration);
-        const refreshPerformedPromise = schedulingRefreshPaymentSession.then(async (isDone): Promise<void> => {
+        const refreshPerformedPromise = schedulingRefreshPaymentSession.then(async (isDone): Promise<boolean> => {
             // conditions:
-            if (!isDone) return; // the component was unloaded before the timer runs => do nothing
+            if (!isDone) return false; // the component was unloaded before the timer runs => do nothing
             
             
             
-            await (
-                scheduleRefreshPaymentSession()
-                .then(async (): Promise<void> => {
-                    console.log('schedule refresh paymentSession PERFORMED');
-                })
-            );
+            const isRefreshPerformed = await scheduleRefreshPaymentSession();
+            console.log('schedule refresh paymentSession PERFORMED: ', isRefreshPerformed);
+            return isRefreshPerformed;
         });
         schedulingRefreshPaymentSessionRef.current = schedulingRefreshPaymentSession;
-        await refreshPerformedPromise;
+        return await refreshPerformedPromise;
     });
     
     useIsomorphicLayoutEffect(() => {
