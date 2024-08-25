@@ -2283,7 +2283,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const conditionalChildren = (
         finishedOrderState
         ? <CartStateProvider
-            // mocks
+            // mocks:
             mockCartState   = {cartState}
             mockProductList = {productList}
         >
