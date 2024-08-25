@@ -288,6 +288,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         : globalCartSession
     );
     const {
+        // states:
+        isCartShown,
+        
+        
+        
         // accessibilities:
         currency,
         
@@ -295,11 +300,6 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // cart data:
         items,
-        
-        
-        
-        // states:
-        isCartShown,
     } = localCartSession;
     
     const dispatch          = useAppDispatch();

@@ -33,6 +33,11 @@ const initialState : CartSession = {
     
     
     
+    // states:
+    isCartShown  : false,
+    
+    
+    
     // accessibilities:
     currency     : checkoutConfigClient.payment.defaultCurrency,
     
@@ -40,11 +45,6 @@ const initialState : CartSession = {
     
     // cart data:
     items        : [],
-    
-    
-    
-    // states:
-    isCartShown  : false,
 };
 export const cartSlice = createSlice({
     name: 'cart',
@@ -54,6 +54,16 @@ export const cartSlice = createSlice({
         resetIfInvalid        : (state) => {
             if ((state.version === 5) && (!state.items.length || Array.isArray(state.items[0].variantIds))) return state; // valid   => ignore
             return initialState; // invalid => reset
+        },
+        
+        
+        
+        // states:
+        showCart              : (state) => {
+            state.isCartShown = true;
+        },
+        hideCart              : (state) => {
+            state.isCartShown = false;
         },
         
         
@@ -155,16 +165,6 @@ export const cartSlice = createSlice({
                     if (itemIndex >= 0) items.splice(itemIndex, 1); // remove at a specified index
                 } // if
             } // for
-        },
-        
-        
-        
-        // states:
-        showCart              : (state) => {
-            state.isCartShown = true;
-        },
-        hideCart              : (state) => {
-            state.isCartShown = false;
         },
     },
 });
