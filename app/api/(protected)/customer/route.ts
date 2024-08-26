@@ -32,6 +32,12 @@ import {
 
 
 
+// configs:
+export const dynamic    = 'force-dynamic';
+export const fetchCache = 'force-no-store';
+
+
+
 // routers:
 interface RequestContext {
     params: {
