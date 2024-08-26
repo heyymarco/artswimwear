@@ -1,3 +1,8 @@
+// zod:
+import {
+    z,
+}                           from 'zod'
+
 // models:
 import {
     type CheckoutStep,
@@ -11,11 +16,6 @@ import {
     ShippingAddressDetailSchema,
     BillingAddressDetailSchema,
 }                           from '../shippings'
-
-// zod:
-import {
-    z,
-}                           from 'zod'
 
 
 

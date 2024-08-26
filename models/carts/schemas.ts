@@ -1,3 +1,8 @@
+// zod:
+import {
+    z,
+}                           from 'zod'
+
 // models:
 import {
     type CartDetail,
@@ -9,11 +14,6 @@ import {
 import {
     CheckoutDetailSchema,
 }                           from '../checkouts'
-
-// zod:
-import {
-    z,
-}                           from 'zod'
 
 
 

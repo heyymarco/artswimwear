@@ -1,3 +1,8 @@
+// zod:
+import {
+    z,
+}                           from 'zod'
+
 // models:
 import {
     type ShippingAddressDetail,
@@ -6,11 +11,6 @@ import {
 import {
     CountrySchema,
 }                           from '../commons'
-
-// zod:
-import {
-    z,
-}                           from 'zod'
 
 
 
