@@ -804,7 +804,7 @@ model Checkout {
     billingAsShipping               Boolean                         @default(true)
     billingAddress                  CheckoutBillingAddress?
     paymentMethod                   String?
-    paymentSession                  CheckoutPaymentSession?
+    // paymentSession                  CheckoutPaymentSession?
     
     // relations:
     parentId                        String                          @unique
@@ -858,19 +858,19 @@ model CheckoutBillingAddress {
     parentId                        String                          @unique
     parent                          Checkout                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CheckoutBillingAddress(s) if the Checkout deleted
 }
-model CheckoutPaymentSession {
-    // records:
-    id                              String                          @id @default(cuid()) // @map("_id")
-    
-    // data:
-    paypalSession                   String
-    expiresAt                       Int // use Int instead of DateTime for easier fetch transport
-    refreshAt                       Int // use Int instead of DateTime for easier fetch transport
-    
-    // relations:
-    parentId                        String                          @unique
-    parent                          Checkout                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CheckoutPaymentSession(s) if the Checkout deleted
-}
+// model CheckoutPaymentSession {
+//     // records:
+//     id                              String                          @id @default(cuid()) // @map("_id")
+//     
+//     // data:
+//     paypalSession                   String
+//     expiresAt                       Int // use Int instead of DateTime for easier fetch transport
+//     refreshAt                       Int // use Int instead of DateTime for easier fetch transport
+//     
+//     // relations:
+//     parentId                        String                          @unique
+//     parent                          Checkout                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CheckoutPaymentSession(s) if the Checkout deleted
+// }
 
 
 

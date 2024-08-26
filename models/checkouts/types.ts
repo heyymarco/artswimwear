@@ -3,7 +3,7 @@ import {
     type DraftOrdersOnProducts,
     
     type Checkout,
-    type CheckoutPaymentSession,
+    // type CheckoutPaymentSession,
 }                           from '@prisma/client'
 
 // contexts:
@@ -66,6 +66,12 @@ export type PaymentMethod =
 
 
 
+export interface CheckoutPaymentSession { // a mock of Prisma's `CheckoutPaymentSession` model
+    // data:
+    paypalSession : string
+    expiresAt     : number // use number instead of DateTime for easier fetch transport
+    refreshAt     : number // use number instead of DateTime for easier fetch transport
+}
 export interface CheckoutPaymentSessionDetail
     extends
         Omit<CheckoutPaymentSession,
