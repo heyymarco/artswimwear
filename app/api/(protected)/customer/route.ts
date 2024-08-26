@@ -9,6 +9,11 @@ import {
     getServerSession,
 }                           from 'next-auth'
 
+// heymarco:
+import type {
+    Session,
+}                           from '@heymarco/next-auth/server'
+
 // next-connect:
 import {
     createEdgeRouter,
@@ -82,8 +87,6 @@ router
     
     //#region parsing request
     const {
-        id,
-        
         name,
         email,
         password,
@@ -97,9 +100,6 @@ router
     
     //#region validating request
     if (
-        // (typeof(id) !== 'string') || (id.length < 1)
-        ((typeof(id) !== 'string') || !id)
-        ||
         ((name !== undefined) && ((typeof(name) !== 'string') || (name.length < 1)))
         ||
         ((email !== undefined) && ((typeof(email) !== 'string') || (email.length < 5)))
@@ -117,6 +117,16 @@ router
         }, { status: 400 }); // handled with error
     } // if
     //#endregion validating request
+    
+    
+    
+    //#region validating privileges
+    const session = (req as any).session as Session;
+    const customerId = session.user?.id;
+    if (!customerId) {
+        return NextResponse.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+    } // if
+    //#endregion validating privileges
     
     
     
@@ -143,7 +153,7 @@ router
         } satisfies Prisma.CustomerSelect;
         const {credentials, ...restCustomer} = await prisma.customer.update({
             where  : {
-                id : id,
+                id : customerId,
             },
             data   : {
                 ...data,
