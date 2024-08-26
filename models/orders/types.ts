@@ -70,12 +70,14 @@ export interface PlaceOrderRequestOptions
 }
 export interface PlaceOrderRequestBasic
     extends
-        CartDetail,              // cart item(s)
+        Omit<CartDetail,          // cart item(s)
+            |'checkout'
+        >,
         
         PlaceOrderRequestOptions, // options: pay manually | paymentSource
         
         Partial<Pick<CustomerOrGuestPreferenceDetail,
-            |'marketingOpt' // conditionally required if no simulateOrder
+            |'marketingOpt'       // conditionally required if no simulateOrder
         >>
 {
     // customer data:

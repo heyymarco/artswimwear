@@ -707,7 +707,6 @@ model Customer {
     preference                      CustomerPreference?
     
     cart                            Cart?
-    checkout                        Checkout?
     
     accounts                        CustomerAccount[]
     sessions                        CustomerSession[]
@@ -770,6 +769,8 @@ model Cart {
     currency                        String                          // minLength: 3, maxLength: 3
     items                           CartItem[]
     
+    checkout                        Checkout?
+    
     // relations:
     parentId                        String                          @unique
     parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related Cart if the Customer deleted
@@ -808,7 +809,7 @@ model Checkout {
     
     // relations:
     parentId                        String                          @unique
-    parent                          Customer                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related Checkout if the Customer deleted
+    parent                          Cart                            @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related Checkout if the Cart deleted
     
     shippingProviderId              String?
     shippingProvider                ShippingProvider?               @relation(fields: [shippingProviderId] , references: [id], "CheckoutsOnShipping", onDelete: SetNull) // preserve the related Checkout(s) if the ShippingProvider deleted

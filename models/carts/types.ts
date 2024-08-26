@@ -3,6 +3,9 @@ import {
     type Cart,
     type CartItem,
 }                           from '@prisma/client'
+import {
+    type CheckoutDetail,
+}                           from '../checkouts'
 
 
 
@@ -16,7 +19,8 @@ export interface CartDetail
             |'parentId'
         >
 {
-    items : CartItemPreview[]
+    items    : CartItemPreview[]
+    checkout : CheckoutDetail|null
 }
 export interface CartItemPreview
     extends
@@ -34,7 +38,9 @@ export interface CartItemPreview
 
 export interface CartSession
     extends
-        CartDetail
+        Omit<CartDetail,
+            |'checkout'
+        >
 {
     // version control:
     version     ?: number
