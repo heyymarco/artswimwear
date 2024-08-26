@@ -20,7 +20,7 @@ export interface CartDetail
         >
 {
     items    : CartItemPreview[]
-    checkout : CheckoutDetail|null
+    checkout : Omit<CheckoutDetail, 'paymentSession'>|null
 }
 export interface CartItemPreview
     extends
