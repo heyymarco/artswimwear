@@ -1243,31 +1243,43 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         
-        // conditions:
-        if (!isMounted.current) return false; // the component was unloaded before awaiting returned => do nothing
+        /* now the new paymentSession has been generated (if the old one is expired) */
         
         
         
-        // re-schedule:
-        if (schedulingRefreshPaymentSessionRef.current) { // abort prev schedule (if any)
-            schedulingRefreshPaymentSessionRef.current.abort();
-            schedulingRefreshPaymentSessionRef.current = null;
-        } // if
-        
-        console.log(`schedule refresh paymentSession in ${nextRefreshDuration/1000} seconds`);
-        const schedulingRefreshPaymentSession = setTimeoutAsync(nextRefreshDuration);
-        const refreshPerformedPromise = schedulingRefreshPaymentSession.then(async (isDone): Promise<boolean> => {
-            // conditions:
-            if (!isDone) return false; // the component was unloaded before the timer runs => do nothing
-            
-            
-            
-            const isRefreshPerformed = await scheduleRefreshPaymentSession(); // await timer => recursive await => await timer => recursive await => ... => abort => return false
-            console.log('schedule refresh paymentSession PERFORMED: ', isRefreshPerformed);
-            return isRefreshPerformed;
-        });
-        schedulingRefreshPaymentSessionRef.current = schedulingRefreshPaymentSession;
-        return await refreshPerformedPromise;
+        try {
+            return true; // success
+        }
+        finally {
+            // runs aside task:
+            ((): void => { // re-schedule (if needed):
+                // conditions:
+                if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
+                
+                
+                
+                // re-schedule:
+                if (schedulingRefreshPaymentSessionRef.current) { // abort prev schedule (if any)
+                    schedulingRefreshPaymentSessionRef.current.abort();
+                    schedulingRefreshPaymentSessionRef.current = null;
+                } // if
+                
+                console.log(`schedule refresh paymentSession in ${nextRefreshDuration/1000} seconds`);
+                const schedulingRefreshPaymentSession = setTimeoutAsync(nextRefreshDuration);
+                schedulingRefreshPaymentSession.then((isDone): void => {
+                    // conditions:
+                    if (!isDone) return; // the component was unloaded before the timer runs => do nothing
+                    
+                    
+                    
+                    scheduleRefreshPaymentSession()
+                    .then(() => {
+                        console.log('schedule refresh paymentSession PERFORMED: ');
+                    });
+                });
+                schedulingRefreshPaymentSessionRef.current = schedulingRefreshPaymentSession;
+            })();
+        } // try
     });
     
     useIsomorphicLayoutEffect(() => {
