@@ -19,6 +19,7 @@ export interface CartDetail
             |'parentId'
         >
 {
+    // data:
     items    : CartItemPreview[]
     checkout : Omit<CheckoutDetail, 'paymentSession'>|null
 }
