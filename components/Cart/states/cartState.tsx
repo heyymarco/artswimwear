@@ -69,6 +69,11 @@ import {
     
     
     
+    // auth:
+    setHasLoggedIn        as reduxSetHasLoggedIn,
+    
+    
+    
     // states:
     showCart              as reduxShowCart,
     hideCart              as reduxHideCart,
@@ -131,6 +136,9 @@ export interface CartStateBase
         Omit<CartSession,
             // version control:
             |'version'
+            
+            // auth:
+            |'hasLoggedIn'
         >
 {
     // states:
@@ -307,6 +315,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         : globalCartSession
     );
     const {
+        // auth:
+        hasLoggedIn = false,
+        
+        
+        
         // states:
         isCartShown,
         
@@ -479,6 +492,29 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     useIsomorphicLayoutEffect(() => {
         dispatch(reduxResetIfInvalid());
     }, []);
+    
+    // auto reset the cart session when the customer loggedOut:
+    useIsomorphicLayoutEffect(() => { // 1st priority: detect the loggedOut event by seeing the delay value of `hasLoggedIn` compared to `isLoggedIn`
+        // conditions:
+        if (sessionStatus !== 'unauthenticated') return; // only interested on IS  loggedOut state
+        if (!hasLoggedIn)                        return; // only interested on WAS loggedIn  state
+        
+        
+        
+        // actions:
+        dispatch(reduxResetCart());
+    }, [sessionStatus]);
+    useIsomorphicLayoutEffect(() => { // 2nd priority: sync the `hasLoggedIn` <===> `isLoggedIn`
+        // conditions:
+        if (sessionStatus === 'loading') return; // only interested on FULLY loggedIn|loggedOut, ignore the loading (transition) state
+        const isLoggedIn = (sessionStatus === 'authenticated');
+        if (hasLoggedIn === isLoggedIn)  return; // already the same => ignore
+        
+        
+        
+        // actions:
+        dispatch(reduxSetHasLoggedIn(isLoggedIn));
+    }, [hasLoggedIn, sessionStatus]);
     
     // auto restore the cart session when the customer loggedIn:
     const isLoggedIn = sessionStatus === 'authenticated';

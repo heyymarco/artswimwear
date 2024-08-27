@@ -34,6 +34,11 @@ const initialState : CartSession = {
     
     
     
+    // auth:
+    hasLoggedIn  : false,
+    
+    
+    
     // states:
     isCartShown  : false,
     
@@ -55,6 +60,13 @@ export const cartSlice = createSlice({
         resetIfInvalid        : (state) => {
             if ((state.version === 5) && (!state.items.length || Array.isArray(state.items[0].variantIds))) return state; // valid   => ignore
             return initialState; // invalid => reset
+        },
+        
+        
+        
+        // auth:
+        setHasLoggedIn        : (state, {payload: hasLoggedIn}: PayloadAction<boolean>) => {
+            state.hasLoggedIn = hasLoggedIn;
         },
         
         
@@ -186,6 +198,11 @@ export default cartSlice.reducer;
 export const {
     // version control:
     resetIfInvalid,
+    
+    
+    
+    // auth:
+    setHasLoggedIn,
     
     
     

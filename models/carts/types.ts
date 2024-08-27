@@ -48,6 +48,11 @@ export interface CartSession
     
     
     
+    // auth:
+    hasLoggedIn ?: boolean,
+    
+    
+    
     // states:
     isCartShown  : boolean
 }
