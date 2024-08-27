@@ -88,7 +88,7 @@ import {
 // stores:
 import {
     // hooks:
-    useShipment,
+    useGetShipment,
 }                           from '@/store/features/api/apiSlice'
 
 // configs:
@@ -124,7 +124,7 @@ export function ShipmentPageContent(): JSX.Element|null {
     
     
     // apis:
-    const [getShipment, {data: shipmentData, isLoading: isShipmentLoading, isError: isShipmentError, error: shipmentError}] = useShipment();
+    const [getShipment, {data: shipmentData, isLoading: isShipmentLoading, isError: isShipmentError, error: shipmentError}] = useGetShipment();
     
     const [isLoaded, setIsLoaded] = useState<boolean>(false);
     

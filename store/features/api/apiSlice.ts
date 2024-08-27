@@ -308,7 +308,7 @@ export const apiSlice = createApi({
                 body   : paymentConfirmationDetail,
             }),
         }),
-        shipment                    : builder.query<ShipmentDetail, ShipmentRequest>({
+        getShipment                 : builder.query<ShipmentDetail, ShipmentRequest>({
             query : (shipmentRequest) => ({
                 url    : 'checkout/shipment',
                 method : 'POST',
@@ -394,7 +394,7 @@ export const {
     // usePlaceOrderMutation                  : usePlaceOrder,
     // useMakePaymentMutation                 : useMakePayment,
     usePaymentConfirmationMutation         : usePaymentConfirmation,
-    useLazyShipmentQuery                   : useShipment,
+    useLazyGetShipmentQuery                : useGetShipment,
     useShowPrevOrderMutation               : useShowPrevOrder,
     
     useUpdateCustomerMutation              : useUpdateCustomer,
