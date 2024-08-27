@@ -11,3 +11,4 @@ move checkoutState to local if guess mode
 [low  prior] make the Order sorting order matches to shopping cart sorting order
 [low  prior] update DateTimeEditor to have polyfill dropdown calendar
 [low  prior] prefer to use Request|Response instead of NextRequest|NextResponse
+[low  prior] standardize coding style of // compound_like relation // array_like relation => similar to (artswimwear) app/api/(protected)/cart/route.ts
