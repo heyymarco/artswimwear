@@ -352,6 +352,9 @@ router
                     },
                     update : updateCartData,
                     create : createCartData,
+                    select : {
+                        id : true,
+                    },
                 };
                 
                 return prisma.cart.upsert(upsertCartData);
