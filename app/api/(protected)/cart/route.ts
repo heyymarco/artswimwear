@@ -183,6 +183,14 @@ router
                 
                 
                 
+                const deleteShippingAddressData : Prisma.CheckoutShippingAddressWhereInput|undefined = (
+                    !checkout || ((checkout.shippingAddress !== null) /* do NOT delete if NOT null */ || !hasShippingAddress /* do NOT delete if NOTHING to delete */)
+                    ? undefined
+                    : {
+                        // do DELETE
+                        // no condition needed because one to one relation
+                    }
+                );
                 const createShippingAddressData : Omit<Prisma.CheckoutShippingAddressCreateInput, 'parent'>|undefined = (
                     !checkout || (checkout.shippingAddress === null) /* do NOT update if null */
                     ? undefined
@@ -194,6 +202,14 @@ router
                     : checkout.shippingAddress
                 );
                 
+                const deleteBillingAddressData  : Prisma.CheckoutBillingAddressWhereInput|undefined = (
+                    !checkout || ((checkout.billingAddress !== null) /* do NOT delete if NOT null */ || !hasBillingAddress /* do NOT delete if NOTHING to delete */)
+                    ? undefined
+                    : {
+                        // do DELETE
+                        // no condition needed because one to one relation
+                    }
+                );
                 const createBillingAddressData  : Omit<Prisma.CheckoutBillingAddressCreateInput, 'parent'>|undefined = (
                     !checkout || (checkout.billingAddress === null) /* do NOT update if null */
                     ? undefined
@@ -205,6 +221,14 @@ router
                     : checkout.billingAddress
                 );
                 
+                const deleteCheckoutData        : Prisma.CheckoutWhereInput|undefined = (
+                    ((checkout !== null) /* do NOT delete if NOT null */ || !hasCheckout /* do NOT delete if NOTHING to delete */)
+                    ? undefined
+                    : {
+                        // do DELETE
+                        // no condition needed because one to one relation
+                    }
+                );
                 const createCheckoutData        : Omit<Prisma.CheckoutCreateInput, 'parent'>|undefined = (
                     (checkout === null) /* do NOT update if null */
                     ? undefined
@@ -231,10 +255,7 @@ router
                         ...checkout,
                         shippingAddress : { // compound_like relation
                             // nested_delete if set to null:
-                            delete : ((checkout.shippingAddress !== null) /* do NOT delete if NOT null */ || !hasShippingAddress /* do NOT delete if NOTHING to delete */) ? undefined : {
-                                // do DELETE
-                                // no condition needed because one to one relation
-                            },
+                            delete : deleteShippingAddressData,
                             
                             // moved to create prop:
                             // one_conditional nested_update if create:
@@ -248,10 +269,7 @@ router
                         },
                         billingAddress  : { // compound_like relation
                             // nested_delete if set to null:
-                            delete : ((checkout.billingAddress !== null) /* do NOT delete if NOT null */ || !hasBillingAddress /* do NOT delete if NOTHING to delete */) ? undefined : {
-                                // do DELETE
-                                // no condition needed because one to one relation
-                            },
+                            delete : deleteBillingAddressData,
                             
                             // moved to create prop:
                             // one_conditional nested_update if create:
@@ -289,10 +307,7 @@ router
                     ...cartDetail,
                     checkout : { // compound_like relation
                         // nested_delete if set to null:
-                        delete : ((checkout !== null) /* do NOT delete if NOT null */ || !hasCheckout /* do NOT delete if NOTHING to delete */) ? undefined : {
-                            // do DELETE
-                            // no condition needed because one to one relation
-                        },
+                        delete : deleteCheckoutData,
                         
                         // moved to createCartData:
                         // one_conditional nested_update if create:
