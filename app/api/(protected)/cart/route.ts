@@ -183,7 +183,29 @@ router
                 
                 
                 
-                const createCheckoutData : Omit<Prisma.CheckoutCreateInput, 'parent'>|undefined = (
+                const createShippingAddressData : Omit<Prisma.CheckoutShippingAddressCreateInput, 'parent'>|undefined = (
+                    !checkout || (checkout.shippingAddress === null) /* do NOT update if null */
+                    ? undefined
+                    : checkout.shippingAddress
+                );
+                const updateShippingAddressData : Prisma.CheckoutShippingAddressUpdateInput|undefined = (
+                    !checkout || (checkout.shippingAddress === null) /* do NOT update if null */
+                    ? undefined
+                    : checkout.shippingAddress
+                );
+                
+                const createBillingAddressData  : Omit<Prisma.CheckoutBillingAddressCreateInput, 'parent'>|undefined = (
+                    !checkout || (checkout.billingAddress === null) /* do NOT update if null */
+                    ? undefined
+                    : checkout.billingAddress
+                );
+                const updateBillingAddressData  : Prisma.CheckoutBillingAddressUpdateInput|undefined = (
+                    !checkout || (checkout.billingAddress === null) /* do NOT update if null */
+                    ? undefined
+                    : checkout.billingAddress
+                );
+                
+                const createCheckoutData        : Omit<Prisma.CheckoutCreateInput, 'parent'>|undefined = (
                     (checkout === null) /* do NOT update if null */
                     ? undefined
                     : {
@@ -192,16 +214,16 @@ router
                         shippingAddress : { // compound_like relation
                             // moved to create prop:
                             // one_conditional nested_update if create:
-                            create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
+                            create : createShippingAddressData,
                         },
                         billingAddress  : { // compound_like relation
                             // moved to create prop:
                             // one_conditional nested_update if create:
-                            create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
+                            create : createBillingAddressData,
                         },
                     }
                 );
-                const updateCheckoutData : Prisma.CheckoutUpdateInput|undefined = (
+                const updateCheckoutData        : Prisma.CheckoutUpdateInput|undefined = (
                     (checkout === null) /* do NOT update if null */
                     ? undefined
                     : {
@@ -216,12 +238,12 @@ router
                             
                             // moved to create prop:
                             // one_conditional nested_update if create:
-                         // create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
+                         // create : createShippingAddressData,
                             
                             // two_conditional nested_update if update:
                             upsert : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : {
-                                update : checkout.shippingAddress, // prefer   to `update` if already exist
-                                create : checkout.shippingAddress, // fallback to `create` if not     exist
+                                update : updateShippingAddressData!, // prefer   to `update` if already exist
+                                create : createShippingAddressData!, // fallback to `create` if not     exist
                             },
                         },
                         billingAddress  : { // compound_like relation
@@ -233,18 +255,18 @@ router
                             
                             // moved to create prop:
                             // one_conditional nested_update if create:
-                         // create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
+                         // create : createBillingAddressData,
                             
                             // two_conditional nested_update if update:
                             upsert : (checkout.billingAddress === null) /* do NOT update if null */ ? undefined : {
-                                update : checkout.billingAddress, // prefer   to `update` if already exist
-                                create : checkout.billingAddress, // fallback to `create` if not     exist
+                                update : updateBillingAddressData!, // prefer   to `update` if already exist
+                                create : createBillingAddressData!, // fallback to `create` if not     exist
                             },
                         },
                     }
                 );
                 
-                const createCartData     : Prisma.XOR<Prisma.CartCreateInput, Prisma.CartUncheckedCreateInput> = {
+                const createCartData            : Prisma.XOR<Prisma.CartCreateInput, Prisma.CartUncheckedCreateInput> = {
                     // data:
                     ...cartDetail,
                     checkout : { // compound_like relation
@@ -262,7 +284,7 @@ router
                     // relations:
                     parentId : customerId,
                 };
-                const updateCartData     : Prisma.CartUpdateInput = {
+                const updateCartData            : Prisma.CartUpdateInput = {
                     // data:
                     ...cartDetail,
                     checkout : { // compound_like relation
