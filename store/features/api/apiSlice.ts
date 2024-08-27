@@ -301,6 +301,12 @@ export const apiSlice = createApi({
                 body   : paymentData,
             }),
         }),
+        showPrevOrder               : builder.mutation<FinishedOrderState, ShowOrderRequest>({
+            query : ({orderId}) => ({
+                url    : `checkout?orderId=${encodeURIComponent(orderId)}`,
+                method : 'PUT',
+            }),
+        }),
         paymentConfirmation         : builder.mutation<PaymentConfirmationDetail, PaymentConfirmationRequest>({
             query : (paymentConfirmationDetail) => ({
                 url    : 'checkout/payment-confirmation',
@@ -313,12 +319,6 @@ export const apiSlice = createApi({
                 url    : 'checkout/shipment',
                 method : 'POST',
                 body   : shipmentRequest,
-            }),
-        }),
-        showPrevOrder               : builder.mutation<FinishedOrderState, ShowOrderRequest>({
-            query : ({orderId}) => ({
-                url    : `checkout?orderId=${encodeURIComponent(orderId)}`,
-                method : 'PUT',
             }),
         }),
         
@@ -393,9 +393,9 @@ export const {
     useLazyGeneratePaymentSessionQuery     : useGeneratePaymentSession,
     // usePlaceOrderMutation                  : usePlaceOrder,
     // useMakePaymentMutation                 : useMakePayment,
+    useShowPrevOrderMutation               : useShowPrevOrder,
     usePaymentConfirmationMutation         : usePaymentConfirmation,
     useLazyGetShipmentQuery                : useGetShipment,
-    useShowPrevOrderMutation               : useShowPrevOrder,
     
     useUpdateCustomerMutation              : useUpdateCustomer,
     useLazyAvailableUsernameQuery          : useAvailableUsername,
