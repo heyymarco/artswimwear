@@ -15,6 +15,7 @@ import {
 
 // models:
 import {
+    type Prisma,
     type CartDetail,
     
     
@@ -182,126 +183,124 @@ router
                 
                 
                 
-                return prisma.cart.upsert({
-                    where  : {
-                        // relations:
-                        parentId : customerId,
-                    },
-                    update : {
+                const createCheckoutData : Omit<Prisma.CheckoutCreateInput, 'parent'>|undefined = (
+                    (checkout === null) /* do NOT update if null */
+                    ? undefined
+                    : {
                         // data:
-                        ...cartDetail,
-                        checkout : { // compound_like relation
+                        ...checkout,
+                        shippingAddress : { // compound_like relation
+                            // moved to create prop:
+                            // one_conditional nested_update if create:
+                            create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
+                        },
+                        billingAddress  : { // compound_like relation
+                            // moved to create prop:
+                            // one_conditional nested_update if create:
+                            create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
+                        },
+                    }
+                );
+                const updateCheckoutData : Prisma.CheckoutUpdateInput|undefined = (
+                    (checkout === null) /* do NOT update if null */
+                    ? undefined
+                    : {
+                        // data:
+                        ...checkout,
+                        shippingAddress : { // compound_like relation
                             // nested_delete if set to null:
-                            delete : ((checkout !== null) /* do NOT delete if NOT null */ || !hasCheckout /* do NOT delete if NOTHING to delete */) ? undefined : {
+                            delete : ((checkout.shippingAddress !== null) /* do NOT delete if NOT null */ || !hasShippingAddress /* do NOT delete if NOTHING to delete */) ? undefined : {
                                 // do DELETE
                                 // no condition needed because one to one relation
                             },
                             
                             // moved to create prop:
                             // one_conditional nested_update if create:
-                         // create : (checkout === null) /* do NOT update if null */ ? undefined : {
-                         //     ...checkout,
-                         //     shippingAddress : { // compound_like relation
-                         //         // one_conditional nested_update if create:
-                         //         create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
-                         //     },
-                         //     billingAddress  : { // compound_like relation
-                         //         // one_conditional nested_update if create:
-                         //         create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
-                         //     },
-                         // },
+                         // create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
                             
                             // two_conditional nested_update if update:
-                            upsert : (checkout === null) /* do NOT update if null */ ? undefined : {
-                                update : { // prefer   to `update` if already exist
-                                    ...checkout,
-                                    shippingAddress : { // compound_like relation
-                                        // nested_delete if set to null:
-                                        delete : ((checkout.shippingAddress !== null) /* do NOT delete if NOT null */ || !hasShippingAddress /* do NOT delete if NOTHING to delete */) ? undefined : {
-                                            // do DELETE
-                                            // no condition needed because one to one relation
-                                        },
-                                        
-                                        // moved to create prop:
-                                        // one_conditional nested_update if create:
-                                     // create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
-                                        
-                                        // two_conditional nested_update if update:
-                                        upsert : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : {
-                                            update : checkout.shippingAddress, // prefer   to `update` if already exist
-                                            create : checkout.shippingAddress, // fallback to `create` if not     exist
-                                        },
-                                    },
-                                    billingAddress  : { // compound_like relation
-                                        // nested_delete if set to null:
-                                        delete : ((checkout.billingAddress !== null) /* do NOT delete if NOT null */ || !hasBillingAddress /* do NOT delete if NOTHING to delete */) ? undefined : {
-                                            // do DELETE
-                                            // no condition needed because one to one relation
-                                        },
-                                        
-                                        // moved to create prop:
-                                        // one_conditional nested_update if create:
-                                     // create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
-                                        
-                                        // two_conditional nested_update if update:
-                                        upsert : (checkout.billingAddress === null) /* do NOT update if null */ ? undefined : {
-                                            update : checkout.billingAddress, // prefer   to `update` if already exist
-                                            create : checkout.billingAddress, // fallback to `create` if not     exist
-                                        },
-                                    },
-                                },
-                                create : { // fallback to `create` if not     exist
-                                    ...checkout,
-                                    shippingAddress : { // compound_like relation
-                                        // one_conditional nested_update if create:
-                                        create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
-                                    },
-                                    billingAddress  : { // compound_like relation
-                                        // one_conditional nested_update if create:
-                                        create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
-                                    },
-                                },
+                            upsert : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : {
+                                update : checkout.shippingAddress, // prefer   to `update` if already exist
+                                create : checkout.shippingAddress, // fallback to `create` if not     exist
                             },
                         },
-                        items : { // array_like relation
-                            // clear the existing item(s), if any:
-                            deleteMany : {
-                                // do DELETE ALL related item(s)
-                                // no condition is needed because we want to delete all related item(s)
+                        billingAddress  : { // compound_like relation
+                            // nested_delete if set to null:
+                            delete : ((checkout.billingAddress !== null) /* do NOT delete if NOT null */ || !hasBillingAddress /* do NOT delete if NOTHING to delete */) ? undefined : {
+                                // do DELETE
+                                // no condition needed because one to one relation
                             },
                             
-                            // create all item(s):
-                            create : items, // the `items` is guaranteed not_empty because of the conditional `!items.length`
-                        },
-                    },
-                    create : {
-                        // data:
-                        ...cartDetail,
-                        checkout : { // compound_like relation
                             // moved to create prop:
                             // one_conditional nested_update if create:
-                            create : (checkout === null) /* do NOT update if null */ ? undefined : {
-                                ...checkout,
-                                shippingAddress : { // compound_like relation
-                                    // one_conditional nested_update if create:
-                                    create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
-                                },
-                                billingAddress  : { // compound_like relation
-                                    // one_conditional nested_update if create:
-                                    create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
-                                },
+                         // create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
+                            
+                            // two_conditional nested_update if update:
+                            upsert : (checkout.billingAddress === null) /* do NOT update if null */ ? undefined : {
+                                update : checkout.billingAddress, // prefer   to `update` if already exist
+                                create : checkout.billingAddress, // fallback to `create` if not     exist
                             },
                         },
-                        items : { // array_like relation
-                            // create all item(s):
-                            create : items, // the `items` is guaranteed not_empty because of the conditional `!items.length`
+                    }
+                );
+                
+                const createCartData     : Prisma.XOR<Prisma.CartCreateInput, Prisma.CartUncheckedCreateInput> = {
+                    // data:
+                    ...cartDetail,
+                    checkout : { // compound_like relation
+                        // moved to createCartData:
+                        // one_conditional nested_update if create:
+                        create : createCheckoutData,
+                    },
+                    items : { // array_like relation
+                        // create all item(s):
+                        create : items, // the `items` is guaranteed not_empty because of the conditional `!items.length`
+                    },
+                    
+                    
+                    
+                    // relations:
+                    parentId : customerId,
+                };
+                const updateCartData     : Prisma.CartUpdateInput = {
+                    // data:
+                    ...cartDetail,
+                    checkout : { // compound_like relation
+                        // nested_delete if set to null:
+                        delete : ((checkout !== null) /* do NOT delete if NOT null */ || !hasCheckout /* do NOT delete if NOTHING to delete */) ? undefined : {
+                            // do DELETE
+                            // no condition needed because one to one relation
                         },
                         
+                        // moved to createCartData:
+                        // one_conditional nested_update if create:
+                     // create : createCheckoutData,
                         
+                        // two_conditional nested_update if update:
+                        upsert : (checkout === null) /* do NOT update if null */ ? undefined : {
+                            update : updateCheckoutData!, // prefer   to `update` if already exist
+                            create : createCheckoutData!, // fallback to `create` if not     exist
+                        },
+                    },
+                    items : { // array_like relation
+                        // clear the existing item(s), if any:
+                        deleteMany : {
+                            // do DELETE ALL related item(s)
+                            // no condition is needed because we want to delete all related item(s)
+                        },
                         
+                        // create all item(s):
+                        create : items, // the `items` is guaranteed not_empty because of the conditional `!items.length`
+                    },
+                };
+                
+                return prisma.cart.upsert({
+                    where  : {
                         // relations:
                         parentId : customerId,
                     },
+                    update : updateCartData,
+                    create : createCartData,
                 })
             })
         );
