@@ -252,12 +252,12 @@ router
                         // data:
                         ...checkout,
                         shippingAddress : { // compound_like relation
-                            // moved to create prop:
+                            // moved to createCheckoutData:
                             // one_conditional nested_update if create:
                             create : createShippingAddressData,
                         },
                         billingAddress  : { // compound_like relation
-                            // moved to create prop:
+                            // moved to createCheckoutData:
                             // one_conditional nested_update if create:
                             create : createBillingAddressData,
                         },
@@ -273,7 +273,7 @@ router
                             // nested_delete if set to null:
                             delete : deleteShippingAddressData,
                             
-                            // moved to create prop:
+                            // moved to createCheckoutData:
                             // one_conditional nested_update if create:
                          // create : createShippingAddressData,
                             
@@ -284,7 +284,7 @@ router
                             // nested_delete if set to null:
                             delete : deleteBillingAddressData,
                             
-                            // moved to create prop:
+                            // moved to createCheckoutData:
                             // one_conditional nested_update if create:
                          // create : createBillingAddressData,
                             
