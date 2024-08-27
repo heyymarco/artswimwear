@@ -86,6 +86,7 @@ import {
     changeProductFromCart as reduxChangeProductFromCart,
     clearProductsFromCart as reduxClearProductsFromCart,
     trimProductsFromCart  as reduxTrimProductsFromCart,
+    resetCart             as reduxResetCart,
     restoreCart           as reduxRestoreCart,
     
     
@@ -479,7 +480,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         dispatch(reduxResetIfInvalid());
     }, []);
     
-    // auto restore the cart and checkout session when the customer loggedIn:
+    // auto restore the cart session when the customer loggedIn:
     const isLoggedIn = sessionStatus === 'authenticated';
     useIsomorphicLayoutEffect(() => {
         // conditions:

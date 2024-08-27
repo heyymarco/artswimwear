@@ -167,13 +167,16 @@ export const cartSlice = createSlice({
                 } // if
             } // for
         },
+        resetCart             : (state) => {
+            return initialState; // invalid => reset
+        },
         restoreCart           : (state, {payload: {currency, items}}: PayloadAction<Omit<CartDetail, 'checkout'>>) => {
             return {
                 ...initialState,
                 currency,
                 items,
             };
-        }
+        },
     },
 });
 
@@ -203,6 +206,7 @@ export const {
     changeProductFromCart,
     clearProductsFromCart,
     trimProductsFromCart,
+    resetCart,
     restoreCart,
 } = cartSlice.actions;
 
