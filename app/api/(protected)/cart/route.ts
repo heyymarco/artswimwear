@@ -201,6 +201,14 @@ router
                     ? undefined
                     : checkout.shippingAddress
                 );
+                const upsertShippingAddressData : Prisma.CheckoutShippingAddressUpsertWithoutParentInput|undefined = (
+                    !checkout || (checkout.shippingAddress === null) /* do NOT update if null */
+                    ? undefined
+                    : {
+                        update : updateShippingAddressData!, // prefer   to `update` if already exist
+                        create : createShippingAddressData!, // fallback to `create` if not     exist
+                    }
+                );
                 
                 const deleteBillingAddressData  : Prisma.CheckoutBillingAddressWhereInput|undefined = (
                     !checkout || ((checkout.billingAddress !== null) /* do NOT delete if NOT null */ || !hasBillingAddress /* do NOT delete if NOTHING to delete */)
@@ -219,6 +227,14 @@ router
                     !checkout || (checkout.billingAddress === null) /* do NOT update if null */
                     ? undefined
                     : checkout.billingAddress
+                );
+                const upsertBillingAddressData  : Prisma.CheckoutBillingAddressUpsertWithoutParentInput|undefined = (
+                    !checkout || (checkout.billingAddress === null) /* do NOT update if null */
+                    ? undefined
+                    : {
+                        update : updateBillingAddressData!, // prefer   to `update` if already exist
+                        create : createBillingAddressData!, // fallback to `create` if not     exist
+                    }
                 );
                 
                 const deleteCheckoutData        : Prisma.CheckoutWhereInput|undefined = (
@@ -262,10 +278,7 @@ router
                          // create : createShippingAddressData,
                             
                             // two_conditional nested_update if update:
-                            upsert : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : {
-                                update : updateShippingAddressData!, // prefer   to `update` if already exist
-                                create : createShippingAddressData!, // fallback to `create` if not     exist
-                            },
+                            upsert : upsertShippingAddressData,
                         },
                         billingAddress  : { // compound_like relation
                             // nested_delete if set to null:
@@ -276,11 +289,16 @@ router
                          // create : createBillingAddressData,
                             
                             // two_conditional nested_update if update:
-                            upsert : (checkout.billingAddress === null) /* do NOT update if null */ ? undefined : {
-                                update : updateBillingAddressData!, // prefer   to `update` if already exist
-                                create : createBillingAddressData!, // fallback to `create` if not     exist
-                            },
+                            upsert : upsertBillingAddressData,
                         },
+                    }
+                );
+                const upsertCheckoutData        : Prisma.CheckoutUpsertWithoutParentInput|undefined = (
+                    (checkout === null) /* do NOT update if null */
+                    ? undefined
+                    : {
+                        update : updateCheckoutData!, // prefer   to `update` if already exist
+                        create : createCheckoutData!, // fallback to `create` if not     exist
                     }
                 );
                 
@@ -314,10 +332,7 @@ router
                      // create : createCheckoutData,
                         
                         // two_conditional nested_update if update:
-                        upsert : (checkout === null) /* do NOT update if null */ ? undefined : {
-                            update : updateCheckoutData!, // prefer   to `update` if already exist
-                            create : createCheckoutData!, // fallback to `create` if not     exist
-                        },
+                        upsert : upsertCheckoutData,
                     },
                     items : { // array_like relation
                         // clear the existing item(s), if any:
@@ -330,15 +345,16 @@ router
                         create : items, // the `items` is guaranteed not_empty because of the conditional `!items.length`
                     },
                 };
-                
-                return prisma.cart.upsert({
+                const upsertCartData            : Prisma.CartUpsertArgs = {
                     where  : {
                         // relations:
                         parentId : customerId,
                     },
                     update : updateCartData,
                     create : createCartData,
-                })
+                };
+                
+                return prisma.cart.upsert(upsertCartData)
             })
         );
         return Response.json({ ok: 'updated' }); // handled with success
