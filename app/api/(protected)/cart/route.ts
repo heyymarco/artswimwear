@@ -197,8 +197,22 @@ router
                                 // no condition needed because one to one relation
                             },
                             
-                            // two_conditional nested_update:
-                            upsert : ((checkout === null) /* do NOT update if null */) ? undefined : {
+                            // moved to create prop:
+                            // one_conditional nested_update if create:
+                         // create : (checkout === null) /* do NOT update if null */ ? undefined : {
+                         //     ...checkout,
+                         //     shippingAddress : { // compound_like relation
+                         //         // one_conditional nested_update if create:
+                         //         create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
+                         //     },
+                         //     billingAddress  : { // compound_like relation
+                         //         // one_conditional nested_update if create:
+                         //         create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
+                         //     },
+                         // },
+                            
+                            // two_conditional nested_update if update:
+                            upsert : (checkout === null) /* do NOT update if null */ ? undefined : {
                                 update : { // prefer   to `update` if already exist
                                     ...checkout,
                                     shippingAddress : { // compound_like relation
@@ -208,8 +222,12 @@ router
                                             // no condition needed because one to one relation
                                         },
                                         
-                                        // two_conditional nested_update:
-                                        upsert : ((checkout.shippingAddress === null) /* do NOT update if null */) ? undefined : {
+                                        // moved to create prop:
+                                        // one_conditional nested_update if create:
+                                     // create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
+                                        
+                                        // two_conditional nested_update if update:
+                                        upsert : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : {
                                             update : checkout.shippingAddress, // prefer   to `update` if already exist
                                             create : checkout.shippingAddress, // fallback to `create` if not     exist
                                         },
@@ -221,8 +239,12 @@ router
                                             // no condition needed because one to one relation
                                         },
                                         
-                                        // two_conditional nested_update:
-                                        upsert : ((checkout.billingAddress === null) /* do NOT update if null */) ? undefined : {
+                                        // moved to create prop:
+                                        // one_conditional nested_update if create:
+                                     // create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
+                                        
+                                        // two_conditional nested_update if update:
+                                        upsert : (checkout.billingAddress === null) /* do NOT update if null */ ? undefined : {
                                             update : checkout.billingAddress, // prefer   to `update` if already exist
                                             create : checkout.billingAddress, // fallback to `create` if not     exist
                                         },
@@ -230,20 +252,23 @@ router
                                 },
                                 create : { // fallback to `create` if not     exist
                                     ...checkout,
-                                    shippingAddress : (checkout.shippingAddress === null) ? undefined : { // compound_like relation
-                                        // one_conditional nested_update:
-                                        create : checkout.shippingAddress,
+                                    shippingAddress : { // compound_like relation
+                                        // one_conditional nested_update if create:
+                                        create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
                                     },
-                                    billingAddress  : (checkout.billingAddress  === null) ? undefined : { // compound_like relation
-                                        // one_conditional nested_update:
-                                        create : checkout.billingAddress,
+                                    billingAddress  : { // compound_like relation
+                                        // one_conditional nested_update if create:
+                                        create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
                                     },
                                 },
                             },
                         },
                         items : { // array_like relation
                             // clear the existing item(s), if any:
-                            deleteMany : {},
+                            deleteMany : {
+                                // do DELETE ALL related item(s)
+                                // no condition is needed because we want to delete all related item(s)
+                            },
                             
                             // create all item(s):
                             create : items, // the `items` is guaranteed not_empty because of the conditional `!items.length`
@@ -252,21 +277,23 @@ router
                     create : {
                         // data:
                         ...cartDetail,
-                        checkout : (checkout === null) ? undefined : { // compound_like relation
-                            create : {
+                        checkout : { // compound_like relation
+                            // moved to create prop:
+                            // one_conditional nested_update if create:
+                            create : (checkout === null) /* do NOT update if null */ ? undefined : {
                                 ...checkout,
-                                shippingAddress : (checkout.shippingAddress === null) ? undefined : { // compound_like relation
-                                    // one_conditional nested_update:
-                                    create : checkout.shippingAddress,
+                                shippingAddress : { // compound_like relation
+                                    // one_conditional nested_update if create:
+                                    create : (checkout.shippingAddress === null) /* do NOT update if null */ ? undefined : checkout.shippingAddress,
                                 },
-                                billingAddress  : (checkout.billingAddress  === null) ? undefined : { // compound_like relation
-                                    // one_conditional nested_update:
-                                    create : checkout.billingAddress,
+                                billingAddress  : { // compound_like relation
+                                    // one_conditional nested_update if create:
+                                    create : (checkout.billingAddress  === null) /* do NOT update if null */ ? undefined : checkout.billingAddress,
                                 },
                             },
                         },
                         items : { // array_like relation
-                            // one_conditional nested_update:
+                            // create all item(s):
                             create : items, // the `items` is guaranteed not_empty because of the conditional `!items.length`
                         },
                         

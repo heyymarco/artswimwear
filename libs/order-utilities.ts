@@ -537,10 +537,10 @@ export const commitOrder = async (prismaTransaction: Parameters<Parameters<typeo
                         
                         // moved to createCityData:
                         // one_conditional nested_update if create:
-                     // create : (billingAddressData === null) ? undefined /* do NOT update if null */ : billingAddressData,
+                     // create : (billingAddressData === null) /* do NOT update if null */ ? undefined : billingAddressData,
                         
                         // two_conditional nested_update if update:
-                        upsert : (billingAddressData === null) ? undefined /* do NOT update if null */ : {
+                        upsert : (billingAddressData === null) /* do NOT update if null */ ? undefined : {
                             update : billingAddressData, // prefer   to `update` if already exist
                             create : billingAddressData, // fallback to `create` if not     exist
                         },

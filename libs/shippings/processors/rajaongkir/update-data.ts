@@ -370,7 +370,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     eta            : (newCityEta === undefined) /* do NOT modify if undefined */ ? undefined : { // compound_like relation
                         // moved to createCityData:
                         // one_conditional nested_update if create:
-                        create : (newCityEta === null) ? undefined /* do NOT update if null */ : newCityEta,
+                        create : (newCityEta === null) /* do NOT update if null */ ? undefined : newCityEta,
                     },
                     rates          : (newCityRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
                         // create all item(s) with sequential order:
@@ -400,10 +400,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             
                             // moved to createCityData:
                             // one_conditional nested_update if create:
-                         // create : (newCityEta === null) ? undefined /* do NOT update if null */ : newCityEta,
+                         // create : (newCityEta === null) /* do NOT update if null */ ? undefined : newCityEta,
                             
                             // two_conditional nested_update if update:
-                            upsert : (newCityEta === null) ? undefined /* do NOT update if null */ : {
+                            upsert : (newCityEta === null) /* do NOT update if null */ ? undefined : {
                                 update : newCityEta, // prefer   to `update` if already exist
                                 create : newCityEta, // fallback to `create` if not     exist
                             },
@@ -434,7 +434,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     eta            : (newStateEta === undefined) /* do NOT modify if undefined */ ? undefined : { // compound_like relation
                         // moved to createStateData:
                         // one_conditional nested_update if create:
-                        create : (newStateEta === null) ? undefined /* do NOT update if null */ : newStateEta,
+                        create : (newStateEta === null) /* do NOT update if null */ ? undefined : newStateEta,
                     },
                     rates          : (newStateRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
                         // create all item(s) with sequential order:
@@ -467,10 +467,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             
                             // moved to createStateData:
                             // one_conditional nested_update if create:
-                         // create : (newStateEta === null) ? undefined /* do NOT update if null */ : newStateEta,
+                         // create : (newStateEta === null) /* do NOT update if null */ ? undefined : newStateEta,
                             
                             // two_conditional nested_update if update:
-                            upsert : (newStateEta === null) ? undefined /* do NOT update if null */ : {
+                            upsert : (newStateEta === null) /* do NOT update if null */ ? undefined : {
                                 update : newStateEta, // prefer   to `update` if already exist
                                 create : newStateEta, // fallback to `create` if not     exist
                             },
@@ -507,7 +507,7 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                     eta            : (newCountryEta === undefined) /* do NOT modify if undefined */ ? undefined : { // compound_like relation
                         // moved to createCountryData:
                         // one_conditional nested_update if create:
-                        create : (newCountryEta === null) ? undefined /* do NOT update if null */ : newCountryEta,
+                        create : (newCountryEta === null) /* do NOT update if null */ ? undefined : newCountryEta,
                     },
                     rates          : (newCountryRates === undefined) /* do NOT modify if undefined */ ? undefined : { // array_like relation
                         // create all item(s) with sequential order:
@@ -540,10 +540,10 @@ export const updateShippingProviders = async (prismaTransaction: Parameters<Para
                             
                             // moved to createCountryData:
                             // one_conditional nested_update if create:
-                         // create : (newCountryEta === null) ? undefined /* do NOT update if null */ : newCountryEta,
+                         // create : (newCountryEta === null) /* do NOT update if null */ ? undefined : newCountryEta,
                             
                             // two_conditional nested_update if update:
-                            upsert : (newCountryEta === null) ? undefined /* do NOT update if null */ : {
+                            upsert : (newCountryEta === null) /* do NOT update if null */ ? undefined : {
                                 update : newCountryEta, // prefer   to `update` if already exist
                                 create : newCountryEta, // fallback to `create` if not     exist
                             },
