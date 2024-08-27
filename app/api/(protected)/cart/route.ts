@@ -354,7 +354,7 @@ router
                     create : createCartData,
                 };
                 
-                return prisma.cart.upsert(upsertCartData)
+                return prisma.cart.upsert(upsertCartData);
             })
         );
         return Response.json({ ok: 'updated' }); // handled with success
