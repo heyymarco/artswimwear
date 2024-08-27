@@ -479,8 +479,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         dispatch(reduxResetIfInvalid());
     }, []);
     
-    // auto restore the cart and checkout session:
-    const isLoggedIn     = sessionStatus === 'authenticated';
+    // auto restore the cart and checkout session when the customer loggedIn:
+    const isLoggedIn = sessionStatus === 'authenticated';
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!isLoggedIn) return; // only interested for loggedIn state
