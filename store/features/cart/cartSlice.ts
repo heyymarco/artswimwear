@@ -16,6 +16,7 @@ import type {
 
 // models:
 import {
+    type CartDetail,
     type CartItemPreview,
     type CartSession,
 }                           from '@/models'
@@ -166,6 +167,13 @@ export const cartSlice = createSlice({
                 } // if
             } // for
         },
+        restoreCart           : (state, {payload: {currency, items}}: PayloadAction<Omit<CartDetail, 'checkout'>>) => {
+            return {
+                ...initialState,
+                currency,
+                items,
+            };
+        }
     },
 });
 
@@ -175,6 +183,12 @@ export default cartSlice.reducer;
 export const {
     // version control:
     resetIfInvalid,
+    
+    
+    
+    // states:
+    showCart,
+    hideCart,
     
     
     
@@ -189,12 +203,7 @@ export const {
     changeProductFromCart,
     clearProductsFromCart,
     trimProductsFromCart,
-    
-    
-    
-    // states:
-    showCart,
-    hideCart,
+    restoreCart,
 } = cartSlice.actions;
 
 

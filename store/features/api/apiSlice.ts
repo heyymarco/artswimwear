@@ -26,6 +26,8 @@ import {
     type PaymentConfirmationRequest,
     type PaymentConfirmationDetail,
     
+    type CartDetail,
+    type CartUpdateRequest,
     type CheckoutPaymentSessionDetail,
 }                           from '@/models'
 export {
@@ -281,6 +283,67 @@ export const apiSlice = createApi({
         
         
         
+        restoreCart                 : builder.query<CartDetail|null, void>({
+            query : () => ({
+                url    : 'cart',
+                method : 'GET',
+            }),
+        }),
+        backupCart                  : builder.mutation<void, CartUpdateRequest>({
+            query : (cartRequest) => ({
+                url    : 'cart',
+                method : 'PATCH',
+                body   : cartRequest,
+            }),
+            
+            async onCacheEntryAdded(arg, api) {
+                // find related TEntry data(s):
+                const state          = api.getState();
+                const allQueryCaches = state.api.queries;
+                const endpointName   = 'restoreCart';
+                const queryCaches    = (
+                    Object.values(allQueryCaches)
+                    .filter((allQueryCache): allQueryCache is QuerySubState<BaseEndpointDefinition<ShippingAddressDetail, BaseQueryFn<AxiosRequestConfig<any>>, EntityState<MatchingShipping>>> =>
+                        !!allQueryCache
+                        &&
+                        (allQueryCache.endpointName === endpointName)
+                    )
+                );
+                
+                
+                
+                const currentQueryCaches = (
+                    queryCaches
+                    // assumes there's only ONE kind call of `restoreCart(no_arg)`, so we not need to `filter()`
+                );
+                
+                // reconstructuring the mutated pagination, so the invalidatesTag can be avoided:
+                if (currentQueryCaches.length) {
+                    for (const currentQueryCache of currentQueryCaches) {
+                        // update cache:
+                        api.dispatch(
+                            apiSlice.util.updateQueryData(endpointName, currentQueryCache.originalArgs as any, (currentQueryCacheData) => {
+                                const {
+                                    checkout = (currentQueryCacheData?.checkout ?? null),
+                                    ...restBackupData
+                                } = arg;
+                                
+                                
+                                
+                                const newRestore : CartDetail = {
+                                    checkout,
+                                    ...restBackupData,
+                                };
+                                return newRestore;
+                            })
+                        );
+                    } // for
+                } // if
+            },
+        }),
+        
+        
+        
         generatePaymentSession      : builder.query<CheckoutPaymentSessionDetail, void>({
             query : () => ({
                 url    : 'checkout',
@@ -390,6 +453,8 @@ export const {
     useLazyGetMatchingShippingListQuery    : useGetMatchingShippingList,
     useRefreshMatchingShippingListMutation : useRefreshMatchingShippingList,
     
+    useLazyRestoreCartQuery                : useRestoreCart,
+    // useBackupCartMutation                  : useBackupCart,
     useLazyGeneratePaymentSessionQuery     : useGeneratePaymentSession,
     // usePlaceOrderMutation                  : usePlaceOrder,
     // useMakePaymentMutation                 : useMakePayment,
@@ -407,6 +472,7 @@ export const {
 } = apiSlice;
 
 export const {
+    backupCart     : { initiate : backupCart     },
     placeOrder     : { initiate : placeOrder     },
     makePayment    : { initiate : makePayment    },
     

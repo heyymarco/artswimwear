@@ -15,12 +15,18 @@ import {
     // hooks:
     useContext,
     useMemo,
+    useRef,
 }                           from 'react'
 
 // redux:
 import type {
     EntityState
 }                           from '@reduxjs/toolkit'
+
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
 
 // reusable-ui core:
 import {
@@ -63,6 +69,12 @@ import {
     
     
     
+    // states:
+    showCart              as reduxShowCart,
+    hideCart              as reduxHideCart,
+    
+    
+    
     // accessibilities:
     setCurrency           as reduxSetCurrency,
     
@@ -74,12 +86,7 @@ import {
     changeProductFromCart as reduxChangeProductFromCart,
     clearProductsFromCart as reduxClearProductsFromCart,
     trimProductsFromCart  as reduxTrimProductsFromCart,
-    
-    
-    
-    // states:
-    showCart              as reduxShowCart,
-    hideCart              as reduxHideCart,
+    restoreCart           as reduxRestoreCart,
     
     
     
@@ -96,6 +103,12 @@ import {
     
     // hooks:
     useGetProductList,
+    useRestoreCart,
+    
+    
+    
+    // apis:
+    backupCart,
 }                           from '@/store/features/api/apiSlice'
 import {
     // hooks:
@@ -280,6 +293,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     
+    // sessions:
+    const { status: sessionStatus } = useSession();
+    
+    
+    
     // stores:
     const globalCartSession = useAppSelector(selectCartSession);
     const localCartSession  = (
@@ -307,11 +325,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // apis:
-    const {data: realProductList, isFetching: realIsProductLoading, isError: realIsProductError, refetch: realRefetchCart} = useGetProductList();
+    const               {data: realProductList , isFetching: realIsProductLoading, isError: realIsProductError, refetch: realRefetchCart}  = useGetProductList();
+    const [restoreCart, {data: restoredCartData, isFetching: isRestoreCartLoading, isError: isRestoreCartError                          }] = useRestoreCart();
     const productList      = mockProductList        ??        realProductList;
     const isProductLoading = mockProductList ?    false     : realIsProductLoading;
     const isProductError   = mockProductList ?    false     : realIsProductError;
-    const refetchCart      = mockProductList ? noopCallback : realRefetchCart;
     
     const isCartEmpty   = (
         !items.length
@@ -456,10 +474,49 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // dom effects:
     const isMounted = useMountedFlag();
     
+    // auto reset reduct state if was invalid:
     useIsomorphicLayoutEffect(() => {
         dispatch(reduxResetIfInvalid());
     }, []);
     
+    // auto restore the cart and checkout session:
+    const isLoggedIn     = sessionStatus === 'authenticated';
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (!isLoggedIn) return; // only interested for loggedIn state
+        
+        
+        
+        // actions:
+        const restoreCartPromise = restoreCart(undefined, /* preferCacheValue: */false);
+        
+        
+        
+        // cleanups:
+        return () => {
+            restoreCartPromise.abort();
+        };
+    }, [isLoggedIn]);
+    const performRestoreCart = useEvent((): void => {
+        // conditions:
+        if (!restoredCartData) return; // no restored data => ignore
+        
+        
+        
+        // actions:
+        dispatch(reduxRestoreCart(restoredCartData));
+    });
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (!restoredCartData) return; // no restored data => ignore
+        
+        
+        
+        // actions:
+        performRestoreCart();
+    }, [restoredCartData]);
+    
+    // auto trim product quantities if less than the stocks:
     useIsomorphicLayoutEffect(() => {
         // conditions:
         if (!isCartReady)  return; // do not clean up when the related data is still loading
@@ -615,6 +672,12 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const hideCart              = useEvent((): void => {
         // actions:
         dispatch(reduxHideCart());
+    });
+    
+    const refetchCart           = useEvent((): void => {
+        if (realIsProductError && !realIsProductLoading && !mockProductList) realRefetchCart();
+        
+        if (isRestoreCartError && !isRestoreCartLoading) restoreCart(undefined, /* preferCacheValue: */false);
     });
     
     

@@ -7,6 +7,7 @@ import {
 import {
     type CartDetail,
     type CartItemPreview,
+    type CartUpdateRequest,
 }                           from './types'
 import {
     CurrencySchema,
@@ -33,3 +34,19 @@ export const CartDetailSchema = z.object({
     items    : z.array(CartItemPreviewSchema),
     checkout : CheckoutDetailSchema.omit({ paymentSession: true }).nullable(),
 }) satisfies z.Schema<CartDetail>;
+
+
+
+export const CartUpdateRequestSchema = (
+    CartDetailSchema.omit({
+        // data:
+        checkout : true,
+    })
+    .merge(
+        CartDetailSchema.pick({
+            // data:
+            checkout : true,
+        })
+        .partial()
+    )
+) satisfies z.Schema<CartUpdateRequest>;

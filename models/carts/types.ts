@@ -51,3 +51,18 @@ export interface CartSession
     // states:
     isCartShown  : boolean
 }
+
+
+
+export interface CartUpdateRequest
+    extends
+        Omit<CartDetail,
+            // data:
+            'checkout' // convert to optional
+        >,
+        Partial<Pick<CartDetail,
+            // data:
+            'checkout' // convert to optional
+        >>
+{
+}
