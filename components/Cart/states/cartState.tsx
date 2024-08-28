@@ -24,7 +24,9 @@ import {
 }                           from '@reduxjs/toolkit'
 import {
     type QueryDefinition,
+    type MutationDefinition,
     type QueryActionCreatorResult,
+    type MutationActionCreatorResult,
 }                           from '@reduxjs/toolkit/query'
 
 // next-auth:
@@ -38,6 +40,7 @@ import {
     useIsomorphicLayoutEffect,
     useEvent,
     useMountedFlag,
+    useSetTimeout,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -65,6 +68,7 @@ import {
 import {
     type CartDetail,
     type CartSession,
+    type CartUpdateRequest,
 }                           from '@/models'
 
 // stores:
@@ -307,6 +311,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     
+    // utilities:
+    const setTimeoutAsync = useSetTimeout();
+    
+    
+    
     // sessions:
     const { status: sessionStatus } = useSession();
     
@@ -540,7 +549,10 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         if (isLoggedIn) {
             // changes from `loggedIn` to `loggedOut`:
             const performRestore = async (): Promise<void> => {
-                const restoreCartPromise = dispatch(restoreCart(undefined, {forceRefetch: true, subscribe: false}));
+                const restoreCartPromise = dispatch(restoreCart(undefined, {
+                    forceRefetch : true, // do not take from cached result in order to get the latest state
+                    subscribe    : true, // must be true in order to get the response result
+                }));
                 prevRestoreCartPromiseRef.current = restoreCartPromise;
                 
                 
@@ -606,6 +618,47 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         //     restoreCartPromise = null;
         // };
     }, [hasLoggedIn, sessionStatus]);
+    
+    // auto backup the cart session when the global currency|items changed:
+    const prevCurrencyRef = useRef<typeof globalCartSession.currency>(globalCartSession.currency);
+    const prevItemsRef    = useRef<typeof globalCartSession.items>(globalCartSession.items);
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (
+            (prevCurrencyRef.current === globalCartSession.currency)
+            &&
+            (prevItemsRef.current === globalCartSession.items)
+        ) return;                                             // already the same => ignore
+        prevCurrencyRef.current = globalCartSession.currency; // sync
+        prevItemsRef.current = globalCartSession.items;       // sync
+        
+        
+        
+        // actions:
+        let backupCartPromise : MutationActionCreatorResult<MutationDefinition<CartUpdateRequest, any, never, unknown, 'api'>>|undefined|null = undefined;
+        (async (): Promise<void> => {
+            // wait for 1 second before performing `refreshShippingByAddress()`:
+            if (!(await setTimeoutAsync(1000))) return; // the component was unloaded before the timer runs => do nothing
+            if (backupCartPromise === null) return; // marked as aborted => do nothing
+            
+            
+            
+            backupCartPromise = dispatch(backupCart({
+                currency : globalCartSession.currency,
+                items    : globalCartSession.items,
+            } satisfies CartUpdateRequest, {
+                track: true, // must be true in order to get the response result for updating the `restoreCart()`'s cache
+            }));
+        })();
+        
+        
+        
+        // cleanups:
+        return () => {
+            backupCartPromise?.abort();
+            backupCartPromise = null; // mark as aborted
+        };
+    }, [globalCartSession]);
     
     // auto trim product quantities if less than the stocks:
     useIsomorphicLayoutEffect(() => {

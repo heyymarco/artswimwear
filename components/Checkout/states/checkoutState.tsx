@@ -520,6 +520,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
+    // utilities:
+    const setTimeoutAsync = useSetTimeout();
+    
+    
+    
     // states:
     const [isBusy            , setIsBusyInternal    ] = useState<BusyState>(false);
     const [finishedOrderState, setFinishedOrderState] = useState<FinishedOrderState|undefined>(undefined);
@@ -534,11 +539,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return searchParams.get('orderId') || undefined;
     });
     const isMounted                                   = useMountedFlag();
-    
-    
-    
-    // utilities:
-    const setTimeoutAsync = useSetTimeout();
     
     
     
@@ -776,7 +776,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        let refreshShippingByAddressPromise : ReturnType<typeof refreshShippingByAddress>|undefined = undefined;
+        let refreshShippingByAddressPromise : ReturnType<typeof refreshShippingByAddress>|undefined|null = undefined;
         const performRefresh = async (): Promise<void> => {
             const prevRefreshShippingByAddressId = (++prevRefreshShippingByAddressIdRef.current);
             try {
@@ -786,6 +786,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 
                 // wait for 1 second before performing `refreshShippingByAddress()`:
                 if (!(await setTimeoutAsync(1000))) return; // the component was unloaded before the timer runs => do nothing
+                if (refreshShippingByAddressPromise === null) return; // marked as aborted => do nothing
                 
                 
                 
@@ -838,6 +839,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // cleanups:
         return () => {
             refreshShippingByAddressPromise?.abort();
+            refreshShippingByAddressPromise = null; // mark as aborted
         };
     }, [checkoutStep, shippingList, shippingProviderId, totalProductWeightStepped, shippingAddress]);
     
