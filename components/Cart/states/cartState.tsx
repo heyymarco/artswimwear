@@ -627,10 +627,10 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         if (
             (prevCurrencyRef.current === globalCartSession.currency)
             &&
-            (prevItemsRef.current === globalCartSession.items)
+            (prevItemsRef.current    === globalCartSession.items)
         ) return;                                             // already the same => ignore
         prevCurrencyRef.current = globalCartSession.currency; // sync
-        prevItemsRef.current = globalCartSession.items;       // sync
+        prevItemsRef.current    = globalCartSession.items;    // sync
         
         
         
