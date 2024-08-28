@@ -16,6 +16,7 @@ import {
     useContext,
     useMemo,
     useRef,
+    useState,
 }                           from 'react'
 
 // redux:
@@ -39,6 +40,7 @@ import {
     // react helper hooks:
     useIsomorphicLayoutEffect,
     useEvent,
+    type EventHandler,
     useMountedFlag,
     useSetTimeout,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -100,6 +102,10 @@ import {
     changeProductFromCart as reduxChangeProductFromCart,
     clearProductsFromCart as reduxClearProductsFromCart,
     trimProductsFromCart  as reduxTrimProductsFromCart,
+    
+    
+    
+    // backups:
     resetCart             as reduxResetCart,
     restoreCart           as reduxRestoreCart,
     
@@ -188,6 +194,13 @@ export interface CartStateBase
     hideCart                  : () => void
     
     refetchCart               : () => void
+    
+    resetCart                 : () => void
+    
+    
+    
+    // events:
+    restoredCartEventHandlers : Set<EventHandler<CartDetail>>
 }
 
 export type PickAlways<T, K extends keyof T, V> = {
@@ -281,11 +294,40 @@ const CartStateContext = createContext<CartState>({
     hideCart                  : noopCallback,
     
     refetchCart               : noopCallback,
+    
+    resetCart                 : noopCallback,
+    
+    
+    
+    // events:
+    restoredCartEventHandlers : undefined as any
 });
 CartStateContext.displayName  = 'CartState';
 
 export const useCartState = (): CartState => {
     return useContext(CartStateContext);
+};
+export const useRestoredCartEvent = (eventHandler: EventHandler<CartDetail>): void => {
+    // contexts:
+    const {
+        // events:
+        restoredCartEventHandlers,
+    } = useCartState();
+    
+    
+    
+    // effects:
+    useIsomorphicLayoutEffect(() => {
+        // setups:
+        restoredCartEventHandlers.add(eventHandler);
+        
+        
+        
+        // cleanups:
+        return () => {
+            restoredCartEventHandlers.delete(eventHandler);
+        };
+    }, []);
 };
 
 
@@ -313,6 +355,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     // utilities:
     const setTimeoutAsync = useSetTimeout();
+    
+    
+    
+    // states:
+    const [restoredCartEventHandlers] = useState<Set<EventHandler<CartDetail>>>(() => new Set<EventHandler<CartDetail>>());
     
     
     
@@ -568,7 +615,13 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     
                     
                     // actions:
-                    if (restoredCartDetail !== null) dispatch(reduxRestoreCart(restoredCartDetail));
+                    if (restoredCartDetail !== null) {
+                        dispatch(reduxRestoreCart(restoredCartDetail));
+                        
+                        for (const restoredEventHandler of restoredCartEventHandlers) {
+                            restoredEventHandler(restoredCartDetail);
+                        } // for
+                    };
                 }
                 catch (error: any) {
                     // conditions:
@@ -821,6 +874,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const refetchCart           = useEvent((): void => {
         if (realIsProductError && !realIsProductLoading && !mockProductList) realRefetchCart();
     });
+    const resetCart             = useEvent((): void => {
+        dispatch(reduxResetCart());
+    });
     
     
     
@@ -838,7 +894,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // accessibilities:
         currency,
-        setCurrency,           // stable ref
+        setCurrency,                  // stable ref
         
         
         
@@ -858,16 +914,23 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // actions:
-        addProductToCart,      // stable ref
-        deleteProductFromCart, // stable ref
-        changeProductFromCart, // stable ref
-        clearProductsFromCart, // stable ref
-        trimProductsFromCart,  // stable ref
+        addProductToCart,             // stable ref
+        deleteProductFromCart,        // stable ref
+        changeProductFromCart,        // stable ref
+        clearProductsFromCart,        // stable ref
+        trimProductsFromCart,         // stable ref
         
-        showCart,              // stable ref
-        hideCart,              // stable ref
+        showCart,                     // stable ref
+        hideCart,                     // stable ref
         
-        refetchCart,           // stable ref
+        refetchCart,                  // stable ref
+        
+        resetCart,                    // stable ref
+        
+        
+        
+        // events:
+        restoredCartEventHandlers,    // stable ref
     }), [
         // states:
         isCartShown,
@@ -881,7 +944,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // accessibilities:
         currency,
-        // setCurrency,           // stable ref
+        // setCurrency,               // stable ref
         
         
         
@@ -901,16 +964,23 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // actions:
-        // addProductToCart,      // stable ref
-        // deleteProductFromCart, // stable ref
-        // changeProductFromCart, // stable ref
-        // clearProductsFromCart, // stable ref
-        // trimProductsFromCart,  // stable ref
+        // addProductToCart,          // stable ref
+        // deleteProductFromCart,     // stable ref
+        // changeProductFromCart,     // stable ref
+        // clearProductsFromCart,     // stable ref
+        // trimProductsFromCart,      // stable ref
         
-        // showCart,              // stable ref
-        // hideCart,              // stable ref
+        // showCart,                  // stable ref
+        // hideCart,                  // stable ref
         
-        refetchCart,              // stable ref
+        // refetchCart,               // stable ref
+        
+        // resetCart,                 // stable ref
+        
+        
+        
+        // events:
+        // restoredCartEventHandlers, // stable ref
     ]);
     
     

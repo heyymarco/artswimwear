@@ -15,6 +15,7 @@ import {
     type ShippingAddressDetail,
     type BillingAddressDetail,
     
+    type CheckoutDetail,
     type CheckoutStep,
     type PaymentMethod,
     type CheckoutPaymentSessionDetail,
@@ -144,9 +145,20 @@ export const checkoutSlice = createSlice({
         
         
         
-        // actions:
-        resetCheckoutData     : (state) => {
-            Object.assign(state, initialState);
+        // backups:
+        resetCheckout         : (state) => {
+            return initialState; // reset
+        },
+        restoreCheckout       : (state, {payload: checkoutDetail}: PayloadAction<Omit<CheckoutDetail, 'paymentSession'>>) => {
+            return {
+                ...initialState,
+                checkoutStep       : checkoutDetail.checkoutStep,
+                shippingAddress    : checkoutDetail.shippingAddress,
+                shippingProviderId : checkoutDetail.shippingProviderId,
+                billingAsShipping  : checkoutDetail.billingAsShipping,
+                billingAddress     : checkoutDetail.billingAddress,
+                paymentMethod      : checkoutDetail.paymentMethod,
+            };
         },
     },
 });
@@ -198,19 +210,14 @@ export const {
     
     
     
-    // actions:
-    resetCheckoutData,
+    // backups:
+    resetCheckout,
+    restoreCheckout,
 } = checkoutSlice.actions;
 
 
 
 // selectors:
 export const selectCheckoutSession = (state: RootState): CheckoutSession => {
-    const {
-        // @ts-ignore
-        _persist, // remove
-        ...restCheckoutSession
-    } = state.checkout;
-    
-    return restCheckoutSession;
+    return state.checkout;
 };

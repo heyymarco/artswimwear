@@ -79,8 +79,7 @@ import {
     type FinishedOrderState,
     type BusyState,
     
-    type CountryPreview,
-    
+    type CartDetail,
     type CheckoutSession,
     
     calculateCheckoutProgress,
@@ -119,8 +118,9 @@ import {
     setPaymentMethod      as reduxSetPaymentMethod,
     setPaymentSession     as reduxSetPaymentSession,
     
-    // actions:
-    resetCheckoutData     as reduxResetCheckoutData,
+    // backups:
+    resetCheckout         as reduxResetCheckout,
+    restoreCheckout       as reduxRestoreCheckout,
     
     
     
@@ -160,6 +160,7 @@ import {
 import {
     // hooks:
     useCartState,
+    useRestoredCartEvent,
     
     
     
@@ -570,10 +571,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // actions:
-        clearProductsFromCart,
         trimProductsFromCart,
         
         refetchCart,
+        
+        resetCart,
     } = cartState;
     const cartItems             = finishedOrderState ? finishedOrderState.cartItems     : globalCartItems;
     
@@ -585,6 +587,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     const globalCheckoutSession = useAppSelector(selectCheckoutSession);
     const localCheckoutSession  = finishedOrderState ? finishedOrderState.checkoutSession : globalCheckoutSession;
     const {
+        // @ts-ignore
+        _persist, // remove
+        
+        
+        
         // states:
         checkoutStep,
         
@@ -1083,6 +1090,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     useIsomorphicLayoutEffect(() => {
         dispatch(reduxResetIfInvalid());
     }, []);
+    
+    // auto restore the cart session when the customer loggedIn:
+    const handleCartRestored    = useEvent<EventHandler<CartDetail>>((restoredCartDetail) => {
+        const restoredCheckoutDetail = restoredCartDetail.checkout;
+        if (!restoredCheckoutDetail) return;
+        dispatch(reduxRestoreCheckout(restoredCheckoutDetail));
+    });
+    useRestoredCartEvent(handleCartRestored);
     
     // try to recover shippingList on page_refresh:
     useIsomorphicLayoutEffect(() => {
@@ -2011,8 +2026,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // clear the cart & checkout states in redux:
-        clearProductsFromCart();
-        dispatch(reduxResetCheckoutData());
+        resetCart();
+        dispatch(reduxResetCheckout());
     });
     
     const refetchCheckout      = useEvent((): void => {

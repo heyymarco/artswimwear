@@ -58,8 +58,8 @@ export const cartSlice = createSlice({
     reducers: {
         // version control:
         resetIfInvalid        : (state) => {
-            if ((state.version === 5) && (!state.items.length || Array.isArray(state.items[0].variantIds))) return state; // valid   => ignore
-            return initialState; // invalid => reset
+            if (state.version === 5) return state; // valid   => ignore
+            return initialState;                   // invalid => reset
         },
         
         
@@ -179,15 +179,19 @@ export const cartSlice = createSlice({
                 } // if
             } // for
         },
+        
+        
+        
+        // backups:
         resetCart             : (state) => {
-            return initialState; // invalid => reset
+            return initialState; // reset
         },
-        restoreCart           : (state, {payload: {currency, items}}: PayloadAction<Omit<CartDetail, 'checkout'>>) => {
+        restoreCart           : (state, {payload: cartDetail}: PayloadAction<Omit<CartDetail, 'checkout'>>) => {
             return {
                 ...initialState,
                 hasLoggedIn : state.hasLoggedIn,
-                currency,
-                items,
+                currency    : cartDetail.currency,
+                items       : cartDetail.items,
             };
         },
     },
@@ -224,6 +228,10 @@ export const {
     changeProductFromCart,
     clearProductsFromCart,
     trimProductsFromCart,
+    
+    
+    
+    // backups:
     resetCart,
     restoreCart,
 } = cartSlice.actions;
