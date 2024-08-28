@@ -1091,6 +1091,21 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         dispatch(reduxResetIfInvalid());
     }, []);
     
+    // auto reset the checkout session when the cart is empty:
+    const prevIsCheckoutEmptyRef = useRef<boolean>(isCheckoutEmpty);
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (prevIsCheckoutEmptyRef.current === isCheckoutEmpty) return; // already the same => ignore
+        prevIsCheckoutEmptyRef.current = isCheckoutEmpty;               // sync
+        
+        if (!isCheckoutEmpty) return; // only interested of empty checkout state
+        
+        
+        
+        // actions:
+        dispatch(reduxResetCheckout());
+    }, [isCheckoutEmpty]);
+    
     // auto restore the cart session when the customer loggedIn:
     const handleCartRestored    = useEvent<EventHandler<CartDetail>>((restoredCartDetail) => {
         const restoredCheckoutDetail = restoredCartDetail.checkout;
