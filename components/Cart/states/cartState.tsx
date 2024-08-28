@@ -538,12 +538,15 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // actions:
         if (isLoggedIn) {
-            const performRestore = async () => {
-                const restoreCartPromise = dispatch(restoreCart(undefined, {forceRefetch: true}));
+            // changes from `loggedIn` to `loggedOut`:
+            const performRestore = async (): Promise<void> => {
+                const restoreCartPromise = dispatch(restoreCart(undefined, {forceRefetch: true, subscribe: false}));
                 prevRestoreCartPromiseRef.current = restoreCartPromise;
                 
+                
+                
                 try {
-                    const restoredCartData = await restoreCartPromise.unwrap();
+                    const restoredCartDetail = await restoreCartPromise.unwrap();
                     
                     
                     
@@ -553,7 +556,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     
                     
                     // actions:
-                    if (restoredCartData !== null) dispatch(reduxRestoreCart(restoredCartData));
+                    if (restoredCartDetail !== null) dispatch(reduxRestoreCart(restoredCartDetail));
                 }
                 catch (error: any) {
                     // conditions:
@@ -565,7 +568,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     const answer = await showMessageError<'retry'|'cancel'>({
                         error : <>
                             <p>
-                                Unable to restore <strong>your last cart</strong>.
+                                Unable to restore <strong>your last shopping cart</strong>.
                             </p>
                             <p>
                                 We were unable to retrieve data from the server.
@@ -590,6 +593,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             performRestore(); // fire and forget
         }
         else {
+            // changes from `loggedIn` to `loggedOut`:
             dispatch(reduxResetCart());
         } // if
         
