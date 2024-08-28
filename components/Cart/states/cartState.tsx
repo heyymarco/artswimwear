@@ -565,7 +565,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     const answer = await showMessageError<'retry'|'cancel'>({
                         error : <>
                             <p>
-                                Unable to restore your last cart.
+                                Unable to restore <strong>your last cart</strong>.
                             </p>
                             <p>
                                 We were unable to retrieve data from the server.
