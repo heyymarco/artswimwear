@@ -19,9 +19,13 @@ import {
 }                           from 'react'
 
 // redux:
-import type {
-    EntityState
+import {
+    type EntityState
 }                           from '@reduxjs/toolkit'
+import {
+    type QueryDefinition,
+    type QueryActionCreatorResult,
+}                           from '@reduxjs/toolkit/query'
 
 // next-auth:
 import {
@@ -59,6 +63,7 @@ import {
 
 // models:
 import {
+    type CartDetail,
     type CartSession,
 }                           from '@/models'
 
@@ -109,11 +114,11 @@ import {
     
     // hooks:
     useGetProductList,
-    useRestoreCart,
     
     
     
     // apis:
+    restoreCart,
     backupCart,
 }                           from '@/store/features/api/apiSlice'
 import {
@@ -315,6 +320,11 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         : globalCartSession
     );
     const {
+        // @ts-ignore
+        _persist, // remove
+        
+        
+        
         // auth:
         hasLoggedIn = false,
         
@@ -339,8 +349,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // apis:
-    const               {data: realProductList , isFetching: realIsProductLoading, isError: realIsProductError, refetch: realRefetchCart}  = useGetProductList();
-    const [restoreCart, {data: restoredCartData, isFetching: isRestoreCartLoading, isError: isRestoreCartError                          }] = useRestoreCart();
+    const {data: realProductList , isFetching: realIsProductLoading, isError: realIsProductError, refetch: realRefetchCart}  = useGetProductList();
     const productList      = mockProductList        ??        realProductList;
     const isProductLoading = mockProductList ?    false     : realIsProductLoading;
     const isProductError   = mockProductList ?    false     : realIsProductError;
@@ -485,6 +494,13 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     
+    // dialogs:
+    const {
+        showMessageError,
+    } = useDialogMessage();
+    
+    
+    
     // dom effects:
     const isMounted = useMountedFlag();
     
@@ -493,65 +509,98 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         dispatch(reduxResetIfInvalid());
     }, []);
     
-    // auto reset the cart session when the customer loggedOut:
-    useIsomorphicLayoutEffect(() => { // 1st priority: detect the loggedOut event by seeing the delay value of `hasLoggedIn` compared to `isLoggedIn`
-        // conditions:
-        if (sessionStatus !== 'unauthenticated') return; // only interested on IS  loggedOut state
-        if (!hasLoggedIn)                        return; // only interested on WAS loggedIn  state
-        
-        
-        
-        // actions:
-        dispatch(reduxResetCart());
-    }, [sessionStatus]);
-    useIsomorphicLayoutEffect(() => { // 2nd priority: sync the `hasLoggedIn` <===> `isLoggedIn`
-        // conditions:
-        if (sessionStatus === 'loading') return; // only interested on FULLY loggedIn|loggedOut, ignore the loading (transition) state
-        const isLoggedIn = (sessionStatus === 'authenticated');
-        if (hasLoggedIn === isLoggedIn)  return; // already the same => ignore
-        
-        
-        
-        // actions:
-        dispatch(reduxSetHasLoggedIn(isLoggedIn));
-    }, [hasLoggedIn, sessionStatus]);
-    
     // auto restore the cart session when the customer loggedIn:
-    const isLoggedIn = sessionStatus === 'authenticated';
+    // auto reset   the cart session when the customer loggedOut:
+    const prevSessionStatusRef      = useRef<typeof sessionStatus>(sessionStatus);
+    const prevRestoreCartPromiseRef = useRef<QueryActionCreatorResult<QueryDefinition<void, any, never, CartDetail|null, 'api'>>|undefined>(undefined);
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (!isLoggedIn) return; // only interested for loggedIn state
+        
+        // workaround for double re-render:
+        if (prevSessionStatusRef.current === sessionStatus) return; // already the same => ignore
+        prevSessionStatusRef.current = sessionStatus;               // sync
+        
+        if (sessionStatus === 'loading') return;   // only interested on FULLY loggedIn|loggedOut, ignore the loading (transition) state
+        
+        // workaround for detecting loggedIn status change (suffers from page refresh/redirect caused by next-auth):
+        const isLoggedIn = (sessionStatus === 'authenticated');
+        if (hasLoggedIn === isLoggedIn)  return;   // already the same => ignore
+        dispatch(reduxSetHasLoggedIn(isLoggedIn)); // sync
+        
+        
+        
+        // manual cleanups:
+        prevRestoreCartPromiseRef.current?.abort();
+        prevRestoreCartPromiseRef.current = undefined;
         
         
         
         // actions:
-        const restoreCartPromise = restoreCart(undefined, /* preferCacheValue: */false);
+        if (isLoggedIn) {
+            const performRestore = async () => {
+                const restoreCartPromise = dispatch(restoreCart(undefined, {forceRefetch: true}));
+                prevRestoreCartPromiseRef.current = restoreCartPromise;
+                
+                try {
+                    const restoredCartData = await restoreCartPromise.unwrap();
+                    
+                    
+                    
+                    // conditions:
+                    if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
+                    
+                    
+                    
+                    // actions:
+                    if (restoredCartData !== null) dispatch(reduxRestoreCart(restoredCartData));
+                }
+                catch (error: any) {
+                    // conditions:
+                    if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
+                    if (error?.name === 'AbortError') return;
+                    
+                    
+                    
+                    const answer = await showMessageError<'retry'|'cancel'>({
+                        error : <>
+                            <p>
+                                Unable to restore your last cart.
+                            </p>
+                            <p>
+                                We were unable to retrieve data from the server.
+                            </p>
+                        </>,
+                        options : {
+                            retry  : <ButtonIcon theme='success' icon='refresh' autoFocus={true}>Retry</ButtonIcon>,
+                            cancel : <ButtonIcon theme='secondary' icon='cancel'>Cancel</ButtonIcon>,
+                        },
+                    });
+                    switch (answer) {
+                        case 'retry':
+                            performRestore();
+                            break;
+                        
+                        default :
+                            // nothing to do
+                            break;
+                    } // switch
+                } // try
+            };
+            performRestore(); // fire and forget
+        }
+        else {
+            dispatch(reduxResetCart());
+        } // if
         
         
         
-        // cleanups:
-        return () => {
-            restoreCartPromise.abort();
-        };
-    }, [isLoggedIn]);
-    const performRestoreCart = useEvent((): void => {
-        // conditions:
-        if (!restoredCartData) return; // no restored data => ignore
-        
-        
-        
-        // actions:
-        dispatch(reduxRestoreCart(restoredCartData));
-    });
-    useIsomorphicLayoutEffect(() => {
-        // conditions:
-        if (!restoredCartData) return; // no restored data => ignore
-        
-        
-        
-        // actions:
-        performRestoreCart();
-    }, [restoredCartData]);
+        // // cleanups:
+        // problematic of double re-render, we use `manual cleanups` above
+        // return () => {
+        //     restoreCartPromise?.abort();
+        //     restoreCartPromise = null;
+        // };
+    }, [hasLoggedIn, sessionStatus]);
     
     // auto trim product quantities if less than the stocks:
     useIsomorphicLayoutEffect(() => {
@@ -713,8 +762,6 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     const refetchCart           = useEvent((): void => {
         if (realIsProductError && !realIsProductLoading && !mockProductList) realRefetchCart();
-        
-        if (isRestoreCartError && !isRestoreCartLoading) restoreCart(undefined, /* preferCacheValue: */false);
     });
     
     

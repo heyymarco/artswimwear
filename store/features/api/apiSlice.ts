@@ -453,7 +453,7 @@ export const {
     useLazyGetMatchingShippingListQuery    : useGetMatchingShippingList,
     useRefreshMatchingShippingListMutation : useRefreshMatchingShippingList,
     
-    useLazyRestoreCartQuery                : useRestoreCart,
+    // useLazyRestoreCartQuery                : useRestoreCart,
     // useBackupCartMutation                  : useBackupCart,
     useLazyGeneratePaymentSessionQuery     : useGeneratePaymentSession,
     // usePlaceOrderMutation                  : usePlaceOrder,
@@ -472,6 +472,7 @@ export const {
 } = apiSlice;
 
 export const {
+    restoreCart    : { initiate : restoreCart    },
     backupCart     : { initiate : backupCart     },
     placeOrder     : { initiate : placeOrder     },
     makePayment    : { initiate : makePayment    },

@@ -185,6 +185,7 @@ export const cartSlice = createSlice({
         restoreCart           : (state, {payload: {currency, items}}: PayloadAction<Omit<CartDetail, 'checkout'>>) => {
             return {
                 ...initialState,
+                hasLoggedIn : state.hasLoggedIn,
                 currency,
                 items,
             };
@@ -231,11 +232,5 @@ export const {
 
 // selectors:
 export const selectCartSession = (state: RootState): CartSession => {
-    const {
-        // @ts-ignore
-        _persist, // remove
-        ...restCartSession
-    } = state.cart;
-    
-    return restCartSession;
+    return state.cart;
 };

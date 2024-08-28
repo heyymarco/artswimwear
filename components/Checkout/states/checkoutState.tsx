@@ -139,13 +139,13 @@ import {
     // hooks:
     useGetMatchingShippingList,
     useRefreshMatchingShippingList,
-    useRestoreCart,
     useGeneratePaymentSession,
     useShowPrevOrder,
     
     
     
     // apis:
+    restoreCart,
     backupCart,
     placeOrder,
     makePayment,
@@ -796,12 +796,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 await refreshShippingByAddressPromise.unwrap();
             }
             catch (error: any) {
+                // conditions:
                 if (!isMounted.current) return; // the component was unloaded before schedule performed => do nothing
                 if (prevRefreshShippingByAddressIdRef.current === prevRefreshShippingByAddressId) {
                     setTotalShippingCostStatus('obsolete');
                 } // if
-                
-                
                 
                 if (error?.name === 'AbortError') return;
                 
