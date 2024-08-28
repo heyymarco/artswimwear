@@ -200,7 +200,8 @@ export interface CartStateBase
     
     
     // events:
-    restoredCartEventHandlers : Set<EventHandler<CartDetail>>
+    lastRestoredCartDetailRef : React.MutableRefObject<CartDetail|null|undefined>
+    restoredCartEventHandlers : Set<EventHandler<CartDetail|null>>
 }
 
 export type PickAlways<T, K extends keyof T, V> = {
@@ -300,6 +301,7 @@ const CartStateContext = createContext<CartState>({
     
     
     // events:
+    lastRestoredCartDetailRef : undefined as any,
     restoredCartEventHandlers : undefined as any
 });
 CartStateContext.displayName  = 'CartState';
@@ -307,10 +309,11 @@ CartStateContext.displayName  = 'CartState';
 export const useCartState = (): CartState => {
     return useContext(CartStateContext);
 };
-export const useRestoredCartEvent = (eventHandler: EventHandler<CartDetail>): void => {
+export const useRestoredCartEvent = (eventHandler: EventHandler<CartDetail|null>): void => {
     // contexts:
     const {
         // events:
+        lastRestoredCartDetailRef,
         restoredCartEventHandlers,
     } = useCartState();
     
@@ -320,6 +323,10 @@ export const useRestoredCartEvent = (eventHandler: EventHandler<CartDetail>): vo
     useIsomorphicLayoutEffect(() => {
         // setups:
         restoredCartEventHandlers.add(eventHandler);
+        const lastRestoredCartDetail = lastRestoredCartDetailRef.current;
+        if (lastRestoredCartDetail !== undefined) {
+            eventHandler(lastRestoredCartDetail);
+        } // if
         
         
         
@@ -359,7 +366,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // states:
-    const [restoredCartEventHandlers] = useState<Set<EventHandler<CartDetail>>>(() => new Set<EventHandler<CartDetail>>());
+    const lastRestoredCartDetailRef   = useRef<CartDetail|null|undefined>(undefined);
+    const [restoredCartEventHandlers] = useState<Set<EventHandler<CartDetail|null>>>(() => new Set<EventHandler<CartDetail|null>>());
     
     
     
@@ -606,6 +614,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 
                 try {
                     const restoredCartDetail = await restoreCartPromise.unwrap();
+                    lastRestoredCartDetailRef.current = restoredCartDetail;
                     
                     
                     
@@ -662,6 +671,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             performRestore(); // fire and forget
         }
         else {
+            lastRestoredCartDetailRef.current = undefined;
+            
             // changes from `loggedIn` to `loggedOut`:
             dispatch(reduxResetCart());
         } // if
@@ -879,6 +890,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         if (realIsProductError && !realIsProductLoading && !mockProductList) realRefetchCart();
     });
     const resetCart             = useEvent((): void => {
+        lastRestoredCartDetailRef.current = undefined;
+        
         dispatch(reduxResetCart());
     });
     
@@ -934,6 +947,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // events:
+        lastRestoredCartDetailRef,    // stable ref
         restoredCartEventHandlers,    // stable ref
     }), [
         // states:
@@ -984,6 +998,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // events:
+        // lastRestoredCartDetailRef, // stable ref
         // restoredCartEventHandlers, // stable ref
     ]);
     

@@ -221,3 +221,10 @@ export const {
 export const selectCheckoutSession = (state: RootState): CheckoutSession => {
     return state.checkout;
 };
+export const selectIsInitialCheckoutState = (state: RootState): boolean => {
+    const checkoutState = state.checkout;
+    for (const [key, value] of Object.entries(initialState)) {
+        if (checkoutState[key as keyof CheckoutSession] !== value) return false;
+    } // for
+    return true;
+};

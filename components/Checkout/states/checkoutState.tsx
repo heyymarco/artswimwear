@@ -126,6 +126,7 @@ import {
     
     // selectors:
     selectCheckoutSession,
+    selectIsInitialCheckoutState,
 }                           from '@/store/features/checkout/checkoutSlice'
 import {
     // types:
@@ -584,8 +585,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // stores:
-    const globalCheckoutSession = useAppSelector(selectCheckoutSession);
-    const localCheckoutSession  = finishedOrderState ? finishedOrderState.checkoutSession : globalCheckoutSession;
+    const isInitialCheckoutState = useAppSelector(selectIsInitialCheckoutState);
+    const globalCheckoutSession  = useAppSelector(selectCheckoutSession);
+    const localCheckoutSession   = finishedOrderState ? finishedOrderState.checkoutSession : globalCheckoutSession;
     const {
         // @ts-ignore
         _persist, // remove
@@ -1107,8 +1109,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [isCheckoutEmpty]);
     
     // auto restore the cart session when the customer loggedIn:
-    const handleCartRestored    = useEvent<EventHandler<CartDetail>>((restoredCartDetail) => {
-        const restoredCheckoutDetail = restoredCartDetail.checkout;
+    const handleCartRestored    = useEvent<EventHandler<CartDetail|null>>((restoredCartDetail) => {
+        if (!isInitialCheckoutState) return; // do not restore the state if already been modified
+        const restoredCheckoutDetail = restoredCartDetail?.checkout;
         if (!restoredCheckoutDetail) return;
         dispatch(reduxRestoreCheckout(restoredCheckoutDetail));
     });
