@@ -530,6 +530,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // manual cleanups:
+        // workaround for DOUBLE re-render => DOUBLE cleanups
         prevRestoreCartPromiseRef.current?.abort();
         prevRestoreCartPromiseRef.current = undefined;
         
@@ -595,7 +596,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // // cleanups:
-        // problematic of double re-render, we use `manual cleanups` above
+        // problematic of DOUBLE re-render => DOUBLE cleanups, we use `manual cleanups` above
         // return () => {
         //     restoreCartPromise?.abort();
         //     restoreCartPromise = null;
