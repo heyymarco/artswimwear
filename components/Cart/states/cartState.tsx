@@ -618,6 +618,10 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     if (restoredCartDetail !== null) {
                         dispatch(reduxRestoreCart(restoredCartDetail));
                         
+                        // restoring the cart state causing the `globalCartSession` mutated, we need to re-track the last `currency` and `items` to avoid __wrong_change_detection__
+                        prevCurrencyRef.current = restoredCartDetail.currency;
+                        prevItemsRef.current    = restoredCartDetail.items;
+                        
                         for (const restoredEventHandler of restoredCartEventHandlers) {
                             restoredEventHandler(restoredCartDetail);
                         } // for
