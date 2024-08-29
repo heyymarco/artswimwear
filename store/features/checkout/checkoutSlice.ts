@@ -224,6 +224,7 @@ export const selectCheckoutSession = (state: RootState): CheckoutSession => {
 export const selectIsInitialCheckoutState = (state: RootState): boolean => {
     const checkoutState = state.checkout;
     for (const [key, value] of Object.entries(initialState)) {
+        if (key === 'paymentSession') continue; // ignore the payment session because it's not a value controlled by the user
         if (checkoutState[key as keyof CheckoutSession] !== value) return false;
     } // for
     return true;
