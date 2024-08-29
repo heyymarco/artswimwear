@@ -324,7 +324,8 @@ export interface CheckoutStateBase
     
     
     // sections:
-    regularCheckoutSectionRef    : React.MutableRefObject<HTMLElement|null>      | undefined
+    customerInfoSectionRef       : React.MutableRefObject<HTMLElement|null>      | undefined
+    shippingAddressSectionRef    : React.MutableRefObject<HTMLElement|null>      | undefined
     shippingMethodOptionRef      : React.MutableRefObject<HTMLElement|null>      | undefined
     billingAddressSectionRef     : React.MutableRefObject<HTMLElement|null>      | undefined
     paymentCardSectionRef        : React.MutableRefObject<HTMLFormElement|null>  | undefined
@@ -482,7 +483,8 @@ const CheckoutStateContext = createContext<CheckoutState>({
     
     
     // sections:
-    regularCheckoutSectionRef    : undefined,
+    customerInfoSectionRef       : undefined,
+    shippingAddressSectionRef    : undefined,
     shippingMethodOptionRef      : undefined,
     billingAddressSectionRef     : undefined,
     paymentCardSectionRef        : undefined,
@@ -1480,7 +1482,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // refs:
-    const regularCheckoutSectionRef = useRef<HTMLElement|null>(null);
+    const customerInfoSectionRef    = useRef<HTMLElement|null>(null);
+    const shippingAddressSectionRef = useRef<HTMLElement|null>(null);
     const shippingMethodOptionRef   = useRef<HTMLElement|null>(null);
     const billingAddressSectionRef  = useRef<HTMLElement|null>(null);
     const paymentCardSectionRef     = useRef<HTMLFormElement|null>(null);
@@ -1544,7 +1547,21 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // wait for a validation state applied:
             if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
             if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
-            const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
+            const fieldErrors = [
+                // customer info fields:
+                ...(
+                    customerInfoSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                    ??
+                    []
+                ),
+                
+                // shipping address fields:
+                ...(
+                    shippingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                    ??
+                    []
+                ),
+            ];
             if (fieldErrors?.length) { // there is an/some invalid field
                 showMessageFieldError(fieldErrors);
                 return false; // transaction aborted due to validation error
@@ -1665,7 +1682,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             // wait for a validation state applied:
             if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
             if (!(await setTimeoutAsync(0))) return false; // the component was unloaded before the timer runs => do nothing
-            const fieldErrors = regularCheckoutSectionRef?.current?.querySelectorAll?.(invalidSelector);
+            const fieldErrors = shippingAddressSectionRef?.current?.querySelectorAll?.(invalidSelector);
             if (fieldErrors?.length) { // there is an/some invalid field
                 showMessageFieldError(fieldErrors);
                 return false; // transaction aborted due to validation error
@@ -1873,7 +1890,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     []
                 ),
                 
-                // billing fields:
+                // billing address fields:
                 ...(
                     (
                         !billingAsShipping
@@ -2226,7 +2243,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // sections:
-        regularCheckoutSectionRef,    // stable ref
+        customerInfoSectionRef,       // stable ref
+        shippingAddressSectionRef,    // stable ref
         shippingMethodOptionRef,      // stable ref
         billingAddressSectionRef,     // stable ref
         paymentCardSectionRef,        // stable ref
@@ -2333,7 +2351,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // sections:
-        // regularCheckoutSectionRef, // stable ref
+        // customerInfoSectionRef,    // stable ref
+        // shippingAddressSectionRef, // stable ref
         // shippingMethodOptionRef,   // stable ref
         // billingAddressSectionRef,  // stable ref
         // paymentCardSectionRef,     // stable ref

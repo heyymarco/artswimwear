@@ -21,9 +21,6 @@ import {
 
 // internals:
 import {
-    useCheckoutStyleSheet,
-}                           from '../../styles/loader'
-import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
@@ -31,15 +28,16 @@ import {
 
 // react components:
 const EditRegularCheckout = (): JSX.Element|null => {
-    // styles:
-    const styleSheet = useCheckoutStyleSheet();
-    
-    
-    
     // states:
     const {
         // shipping data:
         isShippingAddressRequired,
+        
+        
+        
+        // sections:
+        customerInfoSectionRef,
+        shippingAddressSectionRef,
     } = useCheckoutState();
     
     
@@ -48,6 +46,11 @@ const EditRegularCheckout = (): JSX.Element|null => {
     return (
         <>
             <Section
+                // refs:
+                elmRef={customerInfoSectionRef}
+                
+                
+                
                 // classes:
                 className='contact'
                 
@@ -60,6 +63,11 @@ const EditRegularCheckout = (): JSX.Element|null => {
             </Section>
             
             {isShippingAddressRequired && <Section
+                // refs:
+                elmRef={shippingAddressSectionRef}
+                
+                
+                
                 // accessibilities:
                 title='Shipping Address'
             >

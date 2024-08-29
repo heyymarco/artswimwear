@@ -135,7 +135,6 @@ const CheckoutInternal = (): JSX.Element|null => {
         
         
         // sections:
-        regularCheckoutSectionRef,
         currentStepSectionRef,
         
         
@@ -290,34 +289,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                     // classes:
                     className={styleSheet.checkout}
                 >
-                    {/* TODO: activate */}
-                    {/* <Section
-                        // classes:
-                        className={styles.expressCheckout}
-                        
-                        
-                        
-                        // accessibilities:
-                        title='Express Checkout'
-                    >
-                        // TODO: express checkout
-                    </Section>
-                    
-                    <div
-                        // classes:
-                        className={styles.checkoutAlt}
-                    >
-                        <hr />
-                        <span>OR</span>
-                        <hr />
-                    </div> */}
-                    
                     <Section
-                        // refs:
-                        elmRef={regularCheckoutSectionRef}
-                        
-                        
-                        
                         // classes:
                         className={styleSheet.regularCheckout}
                         
