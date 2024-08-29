@@ -43,7 +43,6 @@ export const checkoutConfigShared   : CheckoutConfigShared = {
                 enabled             : true,
                 supportedCurrencies : [
                     'IDR',
-                    'USD',
                 ],
             },
             paypal                  : {
