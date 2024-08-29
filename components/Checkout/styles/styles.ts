@@ -326,66 +326,11 @@ export default () => {
             }),
         }, {specificityWeight: 2}),
         
-        scope('checkout', {
-            display: 'grid',
-            
-            // decrease indent on sub section(s):
-            ...children('article', {
-                ...children('section', {
-                    ...children('article', {
-                        ...children('section', {
-                            ...children(['&', 'article'], {
-                                [paddingVars.paddingInline] : `calc(${containers.paddingInline} / 2)`,
-                                [paddingVars.paddingBlock ] : `calc(${containers.paddingBlock } / 2)`,
-                            }),
-                        }),
-                    }),
-                }),
-            }),
-        }, {specificityWeight: 2}),
-        scope('expressCheckout', { // TODO: implement
-            ...children(['&', 'article'], {
-                [paddingVars.paddingInline] : '0px',
-                [paddingVars.paddingBlock ] : '0px',
-            }),
-        }, {specificityWeight: 2}),
-        scope('checkoutAlt', { // TODO: implement
+        scope('editCustomerAccount', {
             display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'center',
+            flexDirection: 'column',
             gap: '1rem',
-            ...children('hr', {
-                flex: [[1, 1]],
-            }),
-            ...children('span', {
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }),
         }),
-        scope('regularCheckout', {
-            ...children(['&', 'article'], {
-                [paddingVars.paddingInline] : '0px',
-                [paddingVars.paddingBlock ] : '0px',
-            }),
-            ...children('article', {
-                // decrease indent:
-                // ...children('section', {
-                //     ...children(['&', 'article'], {
-                //         [paddingVars.paddingInline] : `calc(${containers.paddingInline} / 2)`,
-                //         [paddingVars.paddingBlock ] : `calc(${containers.paddingBlock } / 2)`,
-                //     }),
-                // }),
-                
-                ...children('.contact', {
-                    ...children('article', {
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '1rem',
-                    }),
-                }),
-            }),
-        }, {specificityWeight: 2}),
         scope('selectShipping', {
             // layouts:
             display                         : 'grid',

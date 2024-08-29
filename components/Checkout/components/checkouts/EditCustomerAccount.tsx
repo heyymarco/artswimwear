@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// cssfn:
+import {
+    useCheckoutStyleSheet,
+}                           from '../../styles/loader'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -51,6 +56,11 @@ import {
 
 // react components:
 const EditCustomerAccount = (): JSX.Element|null => {
+    // styles:
+    const styleSheet = useCheckoutStyleSheet();
+    
+    
+    
     // states:
     const {
         // extra data:
@@ -87,106 +97,111 @@ const EditCustomerAccount = (): JSX.Element|null => {
             // validations:
             enableValidation={customerValidation}
         >
-            <InputWithLabel
-                // appearances:
-                icon='chat'
-                
-                
-                
+            <div
                 // classes:
-                className='name'
-                
-                
-                
-                // components:
-                inputComponent={
-                    <NameEditor
-                        // accessibilities:
-                        aria-label='Your Nick Name'
-                        placeholder='Your Nick Name'
-                        
-                        
-                        
-                        // values:
-                        value={customer?.name ?? ''}
-                        onChange={setCustomerName}
-                        
-                        
-                        
-                        // validations:
-                        required={true}
-                        minLength={2}
-                        maxLength={30}
-                        
-                        
-                        
-                        // formats:
-                        autoComplete='nickname'
-                        autoCapitalize='words'
-                    />
-                }
-            />
-            <InputWithLabel
-                // appearances:
-                icon='email'
-                
-                
-                
-                // classes:
-                className='email'
-                
-                
-                
-                // components:
-                inputComponent={
-                    <EmailEditor
-                        // refs:
-                        elmRef={contactEmailInputRef}
-                        
-                        
-                        
-                        // accessibilities:
-                        aria-label='Your Email'
-                        placeholder='Your Email'
-                        
-                        
-                        
-                        // values:
-                        value={customer?.email ?? ''}
-                        onChange={setCustomerEmail}
-                        
-                        
-                        
-                        // validations:
-                        required={true}
-                        minLength={5}
-                        maxLength={50}
-                        
-                        
-                        
-                        // formats:
-                        autoComplete='email'
-                    />
-                }
-            />
-            <Check
-                // classes:
-                className='marketingOpt'
-                
-                
-                
-                // values:
-                active={marketingOpt ?? true}
-                onActiveChange={handleMarketingOptChange}
-                
-                
-                
-                // validations:
-                required={false}
-                enableValidation={false}
+                className={styleSheet.editCustomerAccount}
             >
-                Email me with news and offers
-            </Check>
+                <InputWithLabel
+                    // appearances:
+                    icon='chat'
+                    
+                    
+                    
+                    // classes:
+                    className='name'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <NameEditor
+                            // accessibilities:
+                            aria-label='Your Nick Name'
+                            placeholder='Your Nick Name'
+                            
+                            
+                            
+                            // values:
+                            value={customer?.name ?? ''}
+                            onChange={setCustomerName}
+                            
+                            
+                            
+                            // validations:
+                            required={true}
+                            minLength={2}
+                            maxLength={30}
+                            
+                            
+                            
+                            // formats:
+                            autoComplete='nickname'
+                            autoCapitalize='words'
+                        />
+                    }
+                />
+                <InputWithLabel
+                    // appearances:
+                    icon='email'
+                    
+                    
+                    
+                    // classes:
+                    className='email'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <EmailEditor
+                            // refs:
+                            elmRef={contactEmailInputRef}
+                            
+                            
+                            
+                            // accessibilities:
+                            aria-label='Your Email'
+                            placeholder='Your Email'
+                            
+                            
+                            
+                            // values:
+                            value={customer?.email ?? ''}
+                            onChange={setCustomerEmail}
+                            
+                            
+                            
+                            // validations:
+                            required={true}
+                            minLength={5}
+                            maxLength={50}
+                            
+                            
+                            
+                            // formats:
+                            autoComplete='email'
+                        />
+                    }
+                />
+                <Check
+                    // classes:
+                    className='marketingOpt'
+                    
+                    
+                    
+                    // values:
+                    active={marketingOpt ?? true}
+                    onActiveChange={handleMarketingOptChange}
+                    
+                    
+                    
+                    // validations:
+                    required={false}
+                    enableValidation={false}
+                >
+                    Email me with news and offers
+                </Check>
+            </div>
         </ValidationProvider>
     );
 };;

@@ -53,14 +53,17 @@ import {
     ViewTotalCart,
 }                           from './components/carts/ViewTotalCart'
 import {
-    EditRegularCheckout,
-}                           from './components/checkouts/EditRegularCheckout'
-import {
     ViewCustomerInfo,
 }                           from './components/informations/ViewCustomerInfo'
 import {
     ViewShippingInfo,
 }                           from './components/informations/ViewShippingInfo'
+import {
+    EditCustomerAccount,
+}                           from './components/checkouts/EditCustomerAccount'
+import {
+    EditShippingAddress,
+}                           from './components/checkouts/EditShippingAddress'
 import {
     EditShippingMethod,
 }                           from './components/shippings/EditShippingMethod'
@@ -135,6 +138,8 @@ const CheckoutInternal = (): JSX.Element|null => {
         
         
         // sections:
+        customerInfoSectionRef,
+        shippingAddressSectionRef,
         currentStepSectionRef,
         
         
@@ -280,27 +285,31 @@ const CheckoutInternal = (): JSX.Element|null => {
                 
                 
                 
-                {(checkoutStep === 'INFO'    ) && <Section
-                    // refs:
-                    elmRef={currentStepSectionRef}
-                    
-                    
-                    
-                    // classes:
-                    className={styleSheet.checkout}
-                >
+                {(checkoutStep === 'INFO'    ) && <>
                     <Section
-                        // classes:
-                        className={styleSheet.regularCheckout}
+                        // refs:
+                        elmRef={customerInfoSectionRef}
                         
                         
                         
                         // accessibilities:
-                        title='Regular Checkout'
+                        title='Contact Information'
                     >
-                        <EditRegularCheckout />
+                        <EditCustomerAccount />
                     </Section>
-                </Section>}
+                    
+                    {isShippingAddressRequired && <Section
+                        // refs:
+                        elmRef={shippingAddressSectionRef}
+                        
+                        
+                        
+                        // accessibilities:
+                        title='Shipping Address'
+                    >
+                        <EditShippingAddress />
+                    </Section>}
+                </>}
                 
                 {(checkoutStep === 'SHIPPING') && <Section
                     // refs:
