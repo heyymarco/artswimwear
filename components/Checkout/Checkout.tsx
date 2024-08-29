@@ -344,7 +344,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                                 </ButtonIcon>
                             </p>
                             <p className={styleSheet.signUpText}>
-                                Don't have an account?
+                                Don&apos;t have an account?
                                 <ButtonIcon
                                     // appearances:
                                     icon='account_box'
