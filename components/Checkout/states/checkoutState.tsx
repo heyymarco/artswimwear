@@ -20,9 +20,15 @@ import {
 }                           from 'react'
 
 // redux:
-import type {
-    EntityState
+import {
+    type EntityState
 }                           from '@reduxjs/toolkit'
+import {
+    type QueryDefinition,
+    type MutationDefinition,
+    type QueryActionCreatorResult,
+    type MutationActionCreatorResult,
+}                           from '@reduxjs/toolkit/query'
 
 // reusable-ui core:
 import {
@@ -80,6 +86,7 @@ import {
     type BusyState,
     
     type CartDetail,
+    type CartUpdateRequest,
     type CheckoutSession,
     
     calculateCheckoutProgress,
@@ -1110,12 +1117,81 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // auto restore the cart session when the customer loggedIn:
     const handleCartRestored    = useEvent<EventHandler<CartDetail|null>>((restoredCartDetail) => {
+        // conditions:
         if (!isInitialCheckoutState) return; // do not restore the state if already been modified
         const restoredCheckoutDetail = restoredCartDetail?.checkout;
-        if (!restoredCheckoutDetail) return;
+        if (!restoredCheckoutDetail) return; // no data to restore => use initial state => ignore
+        
+        
+        
+        // actions:
+        // restore the checkout state:
         dispatch(reduxRestoreCheckout(restoredCheckoutDetail));
+        
+        // restoring the checkout state causing the `globalCheckoutSession` mutated, we need to re-sync the last checkoutStep|shippingMethod|paymentMethod to avoid __wrong_change_detection__:
+        prevCheckoutStepRef.current       = restoredCheckoutDetail.checkoutStep;       // sync
+        prevShippingProviderIdRef.current = restoredCheckoutDetail.shippingProviderId; // sync
+        prevPaymentMethodRef.current      = restoredCheckoutDetail.paymentMethod;      // sync
     });
     useRestoredCartEvent(handleCartRestored);
+    
+    // auto backup the checkout session when the global checkoutStep|shippingMethod|paymentMethod changed:
+    const prevCheckoutStepRef       = useRef<typeof globalCheckoutSession.checkoutStep>(globalCheckoutSession.checkoutStep);
+    const prevShippingProviderIdRef = useRef<typeof globalCheckoutSession.shippingProviderId>(globalCheckoutSession.shippingProviderId);
+    const prevPaymentMethodRef      = useRef<typeof globalCheckoutSession.paymentMethod>(globalCheckoutSession.paymentMethod);
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (
+            (prevCheckoutStepRef.current       === globalCheckoutSession.checkoutStep)
+            &&
+            (prevShippingProviderIdRef.current === globalCheckoutSession.shippingProviderId)
+            &&
+            (prevPaymentMethodRef.current      === globalCheckoutSession.paymentMethod)
+        ) return;                                                                     // already the same => ignore
+        prevCheckoutStepRef.current       = globalCheckoutSession.checkoutStep;       // sync
+        prevShippingProviderIdRef.current = globalCheckoutSession.shippingProviderId; // sync
+        prevPaymentMethodRef.current      = globalCheckoutSession.paymentMethod;      // sync
+        
+        
+        
+        // do not backoup the last checkout step, since it's not useful to restore:
+        if ((globalCheckoutSession.checkoutStep === 'PENDING') || (globalCheckoutSession.checkoutStep === 'PAID')) return;
+        
+        
+        
+        // actions:
+        let backupCartPromise : MutationActionCreatorResult<MutationDefinition<CartUpdateRequest, any, never, unknown, 'api'>>|undefined|null = undefined;
+        (async (): Promise<void> => {
+            // wait for 1 second before performing `refreshShippingByAddress()`:
+            if (!(await setTimeoutAsync(1000))) return; // the component was unloaded before the timer runs => do nothing
+            if (backupCartPromise === null) return; // marked as aborted => do nothing
+            
+            
+            
+            backupCartPromise = dispatch(backupCart({
+                currency : cartState.currency,
+                items    : cartState.items,
+                checkout : {
+                    checkoutStep       : globalCheckoutSession.checkoutStep,
+                    shippingAddress    : globalCheckoutSession.shippingAddress,
+                    shippingProviderId : globalCheckoutSession.shippingProviderId,
+                    billingAsShipping  : globalCheckoutSession.billingAsShipping,
+                    billingAddress     : globalCheckoutSession.billingAddress,
+                    paymentMethod      : globalCheckoutSession.paymentMethod,
+                },
+            } satisfies CartUpdateRequest, {
+                track: true, // must be true in order to get the response result for updating the `restoreCart()`'s cache
+            }));
+        })();
+        
+        
+        
+        // cleanups:
+        return () => {
+            backupCartPromise?.abort();
+            backupCartPromise = null; // mark as aborted
+        };
+    }, [globalCheckoutSession, cartState]);
     
     // try to recover shippingList on page_refresh:
     useIsomorphicLayoutEffect(() => {
