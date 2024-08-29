@@ -20,6 +20,11 @@ import {
 import {
     // base-content-components:
     Container,
+    
+    
+    
+    // simple-components:
+    ButtonIcon,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // heymarco components:
@@ -27,6 +32,9 @@ import {
     Article,
     Section,
 }                           from '@heymarco/section'
+import {
+    AlternateSeparator,
+}                           from '@heymarco/alternate-separator'
 
 // internal components:
 import {
@@ -59,8 +67,8 @@ import {
     ViewShippingInfo,
 }                           from './components/informations/ViewShippingInfo'
 import {
-    EditCustomerAccount,
-}                           from './components/checkouts/EditCustomerAccount'
+    EditGuestAccount,
+}                           from './components/checkouts/EditGuestAccount'
 import {
     EditShippingAddress,
 }                           from './components/checkouts/EditShippingAddress'
@@ -283,8 +291,6 @@ const CheckoutInternal = (): JSX.Element|null => {
                     <ViewShippingInfo />
                 </Section>}
                 
-                
-                
                 {(checkoutStep === 'INFO'    ) && <>
                     <Section
                         // refs:
@@ -295,7 +301,65 @@ const CheckoutInternal = (): JSX.Element|null => {
                         // accessibilities:
                         title='Contact Information'
                     >
-                        <EditCustomerAccount />
+                        <Section
+                            // classes:
+                            className={styleSheet.accountSection}
+                            
+                            
+                            
+                            // accessibilities:
+                            title={
+                                <>
+                                    <span className='txt-sec'>Sign In as a</span> Guest
+                                </>
+                            }
+                        >
+                            <EditGuestAccount />
+                        </Section>
+                        
+                        <AlternateSeparator />
+                        
+                        <Section
+                            // classes:
+                            className={styleSheet.accountSection}
+                            
+                            
+                            
+                            // accessibilities:
+                            title={
+                                <>
+                                    <span className='txt-sec'>Sign In as a</span> Customer
+                                </>
+                            }
+                        >
+                            <p className={styleSheet.signInText}>
+                                <span>
+                                    Already have an account?
+                                </span>
+                                <ButtonIcon
+                                    // appearances:
+                                    icon='login'
+                                >
+                                    Sign In
+                                </ButtonIcon>
+                            </p>
+                            <p className={styleSheet.signUpText}>
+                                Don't have an account?
+                                <ButtonIcon
+                                    // appearances:
+                                    icon='account_box'
+                                    iconPosition='end'
+                                    
+                                    
+                                    
+                                    // variants:
+                                    buttonStyle='link'
+                                    size='sm'
+                                >
+                                    Sign Up
+                                </ButtonIcon>
+                            </p>
+                        </Section>
                     </Section>
                     
                     {isShippingAddressRequired && <Section

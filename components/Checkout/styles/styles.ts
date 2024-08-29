@@ -326,7 +326,26 @@ export default () => {
             }),
         }, {specificityWeight: 2}),
         
-        scope('editCustomerAccount', {
+        scope('accountSection', {
+            [paddingVars.paddingInline] : spacers.lg,
+            [paddingVars.paddingBlock ] : spacers.md,
+            ...children('article', {
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
+            }),
+        }),
+        scope('signInText', {
+            display  : 'grid',
+            justifyContent: 'center',
+            gapBlock : spacers.sm,
+        }),
+        scope('signUpText', {
+            display  : 'flex',
+            flexWrap : 'wrap',
+            justifyContent: 'center',
+            gapInline : spacers.sm,
+        }),
+        scope('editGuestAccount', {
             display: 'flex',
             flexDirection: 'column',
             gap: '1rem',

@@ -55,7 +55,7 @@ import {
 
 
 // react components:
-const EditCustomerAccount = (): JSX.Element|null => {
+const EditGuestAccount = (): JSX.Element|null => {
     // styles:
     const styleSheet = useCheckoutStyleSheet();
     
@@ -99,7 +99,7 @@ const EditCustomerAccount = (): JSX.Element|null => {
         >
             <div
                 // classes:
-                className={styleSheet.editCustomerAccount}
+                className={styleSheet.editGuestAccount}
             >
                 <InputWithLabel
                     // appearances:
@@ -206,6 +206,6 @@ const EditCustomerAccount = (): JSX.Element|null => {
     );
 };;
 export {
-    EditCustomerAccount,
-    EditCustomerAccount as default,
+    EditGuestAccount,
+    EditGuestAccount as default,
 };
