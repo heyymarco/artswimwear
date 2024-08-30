@@ -3,10 +3,10 @@ import {
     type Metadata,
 }                           from 'next'
 
-// private components:
+// internal components:
 import {
-    SwitchSignInTabContent,
-}                           from '../../tab-content'
+    SignInSwitch,
+}                           from '@/components/SignIn'
 
 // configs:
 import {
@@ -27,6 +27,6 @@ export const metadata: Metadata = {
 export default function RecoverIntercep(): JSX.Element|null {
     // jsx:
     return (
-        <SwitchSignInTabContent section='signUp' />
+        <SignInSwitch section='signUp' />
     );
 }

@@ -1,7 +1,7 @@
-// private components:
+// internal components:
 import {
-    SwitchSignInTabContent,
-}                           from '../tab-content'
+    SignInSwitch,
+}                           from '@/components/SignIn'
 
 
 
@@ -11,7 +11,7 @@ export default function SignInIntercep(): JSX.Element|null {
     return (
         <>
             {/* SOFT NAVIGATION of `/signin` => switch the login tab to 'signIn': */}
-            <SwitchSignInTabContent ifPathname='/signin' section='signIn' />
+            <SignInSwitch ifPathname='/signin' section='signIn' />
             
             {/* otherwise HARD NAVIGATION of `/signin/any_path` => do not switch the login tab, rely on `<SignInPageContent defaultSection='foo'>` */}
         </>
