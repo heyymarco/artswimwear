@@ -42,7 +42,7 @@ const SignInCustomerAccount = (): JSX.Element|null => {
                     // appearances:
                     icon='login'
                 >
-                    <Link href='/signin'>
+                    <Link href='/signin' scroll={false}>
                         Sign In
                     </Link>
                 </ButtonIcon>

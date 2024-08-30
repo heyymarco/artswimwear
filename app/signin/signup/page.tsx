@@ -12,7 +12,7 @@ import type {
 // private components:
 import {
     SignInPageContent,
-}                           from './page-content'
+}                           from '../page-content'
 
 // configs:
 import {
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
 
 
 // react components:
-export default function SignInPage(): JSX.Element|null {
+export default function SignUpPage(): JSX.Element|null {
     // jsx:
     return (
-        <SignInPageContent defaultSection='signIn' />
+        <SignInPageContent defaultSection='signUp' />
     );
 }

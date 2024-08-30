@@ -30,7 +30,7 @@ import {
 
 
 // react components:
-export default function SignInDialogPage(): JSX.Element|null {
+export default function SignInIntercep(): JSX.Element|null {
     // dialogs:
     const {
         showDialog,
@@ -64,5 +64,5 @@ export default function SignInDialogPage(): JSX.Element|null {
     
     
     // jsx:
-    return <></>;
+    return null;
 }
