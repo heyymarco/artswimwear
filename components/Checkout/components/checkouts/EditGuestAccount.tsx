@@ -204,7 +204,7 @@ const EditGuestAccount = (): JSX.Element|null => {
             </div>
         </ValidationProvider>
     );
-};;
+};
 export {
     EditGuestAccount,
     EditGuestAccount as default,

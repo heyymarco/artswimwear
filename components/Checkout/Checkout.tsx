@@ -20,11 +20,6 @@ import {
 import {
     // base-content-components:
     Container,
-    
-    
-    
-    // simple-components:
-    ButtonIcon,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // heymarco components:
@@ -69,6 +64,9 @@ import {
 import {
     EditGuestAccount,
 }                           from './components/checkouts/EditGuestAccount'
+import {
+    SignInCustomerAccount,
+}                           from './components/checkouts/SignInCustomerAccount'
 import {
     EditShippingAddress,
 }                           from './components/checkouts/EditShippingAddress'
@@ -332,33 +330,7 @@ const CheckoutInternal = (): JSX.Element|null => {
                                 </>
                             }
                         >
-                            <p className={styleSheet.signInText}>
-                                <span>
-                                    Already have an account?
-                                </span>
-                                <ButtonIcon
-                                    // appearances:
-                                    icon='login'
-                                >
-                                    Sign In
-                                </ButtonIcon>
-                            </p>
-                            <p className={styleSheet.signUpText}>
-                                Don&apos;t have an account?
-                                <ButtonIcon
-                                    // appearances:
-                                    icon='account_box'
-                                    iconPosition='end'
-                                    
-                                    
-                                    
-                                    // variants:
-                                    buttonStyle='link'
-                                    size='sm'
-                                >
-                                    Sign Up
-                                </ButtonIcon>
-                            </p>
+                            <SignInCustomerAccount />
                         </Section>
                     </Section>
                     
