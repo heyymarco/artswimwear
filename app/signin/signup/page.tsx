@@ -33,6 +33,6 @@ export const metadata: Metadata = {
 export default function SignUpPage(): JSX.Element|null {
     // jsx:
     return (
-        <SignInPageContent defaultSection='signUp' />
+        <SignInPageContent />
     );
 }

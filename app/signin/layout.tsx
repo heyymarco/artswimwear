@@ -1,8 +1,15 @@
+'use client'
+
 // react:
 import {
     // react:
     default as React,
 }                           from 'react'
+
+// internal components:
+import {
+    SigninTabStateProvider,
+}                           from '@/components/SignIn'
 
 
 
@@ -16,9 +23,9 @@ export default function SignInLayout({
 }): JSX.Element|null {
     // jsx:
     return (
-        <>
+        <SigninTabStateProvider>
             {children}
             {signin_tab}
-        </>
+        </SigninTabStateProvider>
     );
 }
