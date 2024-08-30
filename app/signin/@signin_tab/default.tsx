@@ -1,5 +1,10 @@
 'use client'
 
+// next-js:
+import {
+    usePathname,
+}                           from 'next/navigation'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -23,9 +28,19 @@ export default function SignInIntercep(): JSX.Element|null {
     
     
     
+    const pathname = usePathname();
+    
+    
+    
     // effects:
     useIsomorphicLayoutEffect(() => {
-        setSection('signIn');
+        if (pathname === '/signin') {
+            // SOFT NAVIGATION of `/signin` => switch the login tab to 'signIn':
+            setSection('signIn');
+        }
+        else {
+            // HARD NAVIGATION of `/signin/any_path` => do not switch the login tab, rely on `<SignInPageContent defaultSection='foo'>`
+        } // if
     }, []);
     
     

@@ -43,4 +43,8 @@ export const PAGE_CHECKOUT_SHIPPING_TRACKING_TITLE       = `Delivery Tracking - 
 export const PAGE_CHECKOUT_SHIPPING_TRACKING_DESCRIPTION = 'Track your order delivery.'
 
 export const PAGE_SIGNIN_TITLE                           = `Sign In - ${WEBSITE_TITLE}`
-export const PAGE_SIGNIN_DESCRIPTION                     = 'Customer login.'
+export const PAGE_SIGNIN_DESCRIPTION                     = 'Customer Login.'
+export const PAGE_SIGNUP_TITLE                           = `Sign Up - ${WEBSITE_TITLE}`
+export const PAGE_SIGNUP_DESCRIPTION                     = 'Customer Registration.'
+export const PAGE_RECOVER_TITLE                          = `Reset Password - ${WEBSITE_TITLE}`
+export const PAGE_RECOVER_DESCRIPTION                    = 'Reset Your Password.'

@@ -16,23 +16,23 @@ import {
 
 // configs:
 import {
-    PAGE_SIGNUP_TITLE,
-    PAGE_SIGNUP_DESCRIPTION,
+    PAGE_RECOVER_TITLE,
+    PAGE_RECOVER_DESCRIPTION,
 }                           from '@/website.config'
 
 
 
 export const metadata: Metadata = {
-    title       : PAGE_SIGNUP_TITLE,
-    description : PAGE_SIGNUP_DESCRIPTION,
+    title       : PAGE_RECOVER_TITLE,
+    description : PAGE_RECOVER_DESCRIPTION,
 }
 
 
 
 // react components:
-export default function SignUpPage(): JSX.Element|null {
+export default function RecoverPage(): JSX.Element|null {
     // jsx:
     return (
-        <SignInPageContent defaultSection='signUp' />
+        <SignInPageContent defaultSection='recover' />
     );
 }

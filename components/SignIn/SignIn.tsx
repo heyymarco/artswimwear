@@ -97,8 +97,7 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
     
     // handlers:
     const handleNavigateSignIn  = useEvent((): void => {
-        // router.push(pathNavigateSignIn,  { scroll: false });
-        router.back();
+        router.push(pathNavigateSignIn,  { scroll: false });
     });
     const handleNavigateSignUp  = useEvent((): void => {
         router.push(pathNavigateSignUp,  { scroll: false });

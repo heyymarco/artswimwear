@@ -47,10 +47,9 @@ export interface SigninTabState
     setSection : (section: ControllableSignInSection) => void
 }
 
-const noopCallback = (): void => {};
 const SigninTabStateContext = createContext<SigninTabState>({
     // states:
-    setSection : noopCallback,
+    setSection : () => { throw Error('not in <SigninTabStateProvider>') },
 });
 SigninTabStateContext.displayName  = 'SigninTabState';
 
