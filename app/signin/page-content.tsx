@@ -43,7 +43,7 @@ export interface SignInPageContentProps
         >
 {
 }
-export function SignInPageContent(props: SignInPageContentProps) {
+export function SignInPageContent(props: SignInPageContentProps): JSX.Element|null {
     // props:
     const {
         defaultSection = 'signIn',

@@ -1,35 +1,32 @@
-'use client'
-
-// reusable-ui core:
+// next-js:
 import {
-    // react helper hooks:
-    useIsomorphicLayoutEffect,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+    type Metadata,
+}                           from 'next'
 
-// internal components:
+// private components:
 import {
-    useSigninTabState,
-}                           from '@/components/SignIn'
+    SwitchSignInTabContent,
+}                           from '../../tab-content'
+
+// configs:
+import {
+    PAGE_SIGNUP_TITLE,
+    PAGE_SIGNUP_DESCRIPTION,
+}                           from '@/website.config'
+
+
+
+export const metadata: Metadata = {
+    title       : PAGE_SIGNUP_TITLE,
+    description : PAGE_SIGNUP_DESCRIPTION,
+}
 
 
 
 // react components:
-export default function SignUpIntercep(): JSX.Element|null {
-    // states:
-    const {
-        // states:
-        setSection,
-    } = useSigninTabState();
-    
-    
-    
-    // effects:
-    useIsomorphicLayoutEffect(() => {
-        setSection('signUp');
-    }, []);
-    
-    
-    
+export default function RecoverIntercep(): JSX.Element|null {
     // jsx:
-    return null;
+    return (
+        <SwitchSignInTabContent section='signUp' />
+    );
 }

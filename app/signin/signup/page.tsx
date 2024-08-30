@@ -5,8 +5,8 @@ import {
 }                           from 'react'
 
 // next-js:
-import type {
-    Metadata,
+import {
+    type Metadata,
 }                           from 'next'
 
 // private components:
