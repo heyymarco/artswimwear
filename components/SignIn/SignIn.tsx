@@ -70,13 +70,6 @@ export interface SignInProps<TElement extends Element = HTMLElement>
             |'authConfigClient'
             |'credentialsConfigClient'
             |'providers'
-            
-            // components:
-            |'switchSignInButtonComponent'
-            |'switchSignUpButtonComponent'
-            |'gotoSignInButtonComponent'
-            |'gotoRecoverButtonComponent'
-            |'gotoHomeButtonComponent'
         >
 {
 }
@@ -120,6 +113,45 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
         
         // pages:
         defaultCallbackUrl = '/',
+        
+        
+        
+        // components:
+        switchSignInButtonComponent = (
+            <ButtonIcon icon='account_box' buttonStyle='link' size='sm' iconPosition='end' onClick={handleNavigateSignIn}>
+                <Link href={pathNavigateSignIn}  scroll={false}>
+                    Already have an account? <strong>Sign In</strong>
+                </Link>
+            </ButtonIcon>
+        ),
+        switchSignUpButtonComponent = (
+            <ButtonIcon icon='account_box' buttonStyle='link' size='sm' iconPosition='end' onClick={handleNavigateSignUp}>
+                <Link href={pathNavigateSignUp}  scroll={false}>
+                    Don&apos;t have an account? <strong>Sign Up</strong>
+                </Link>
+            </ButtonIcon>
+        ),
+        gotoSignInButtonComponent   = (
+            <ButtonIcon icon='arrow_back'  buttonStyle='link' size='sm' onClick={handleNavigateSignIn}>
+                <Link href={pathNavigateSignIn}  scroll={false}>
+                    Back to Sign In
+                </Link>
+            </ButtonIcon>
+        ),
+        gotoRecoverButtonComponent  = (
+            <ButtonIcon icon='help_center' buttonStyle='link' size='sm' onClick={handleNavigateRecover}>
+                <Link href={pathNavigateRecover} scroll={false}>
+                    Forgot Password?
+                </Link>
+            </ButtonIcon>
+        ),
+        gotoHomeButtonComponent     = (
+            <ButtonIcon icon='home'        buttonStyle='link' size='sm' onClick={handleNavigateHome}>
+                <Link href={pathNavigateHome}    scroll={false}>
+                    Back to Home
+                </Link>
+            </ButtonIcon>
+        ),
     } = props;
     
     
@@ -156,41 +188,11 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
             
             
             // components:
-            switchSignInButtonComponent={
-                <ButtonIcon icon='account_box' buttonStyle='link' size='sm' iconPosition='end' onClick={handleNavigateSignIn}>
-                    <Link href={pathNavigateSignIn}  scroll={false}>
-                        Already have an account? <strong>Sign In</strong>
-                    </Link>
-                </ButtonIcon>
-            }
-            switchSignUpButtonComponent={
-                <ButtonIcon icon='account_box' buttonStyle='link' size='sm' iconPosition='end' onClick={handleNavigateSignUp}>
-                    <Link href={pathNavigateSignUp}  scroll={false}>
-                        Don&apos;t have an account? <strong>Sign Up</strong>
-                    </Link>
-                </ButtonIcon>
-            }
-            gotoSignInButtonComponent={
-                <ButtonIcon icon='arrow_back'  buttonStyle='link' size='sm' onClick={handleNavigateSignIn}>
-                    <Link href={pathNavigateSignIn}  scroll={false}>
-                        Back to Sign In
-                    </Link>
-                </ButtonIcon>
-            }
-            gotoRecoverButtonComponent={
-                <ButtonIcon icon='help_center' buttonStyle='link' size='sm' onClick={handleNavigateRecover}>
-                    <Link href={pathNavigateRecover} scroll={false}>
-                        Forgot Password?
-                    </Link>
-                </ButtonIcon>
-            }
-            gotoHomeButtonComponent={
-                <ButtonIcon icon='home'        buttonStyle='link' size='sm' onClick={handleNavigateHome}>
-                    <Link href={pathNavigateHome}    scroll={false}>
-                        Back to Home
-                    </Link>
-                </ButtonIcon>
-            }
+            switchSignInButtonComponent = {switchSignInButtonComponent}
+            switchSignUpButtonComponent = {switchSignUpButtonComponent}
+            gotoSignInButtonComponent   = {gotoSignInButtonComponent  }
+            gotoRecoverButtonComponent  = {gotoRecoverButtonComponent }
+            gotoHomeButtonComponent     = {gotoHomeButtonComponent    }
         />
     )
 };

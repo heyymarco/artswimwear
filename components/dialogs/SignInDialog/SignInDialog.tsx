@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// styles:
+import {
+    useSignInDialogStyleSheet,
+}                           from './styles/loader'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -32,6 +37,11 @@ import {
     ModalCardProps,
     ModalCard,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
+// internal components:
+import {
+    SignIn,
+}                           from '@/components/SignIn'
 
 
 
@@ -61,6 +71,11 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     
     
     
+    // styles:
+    const styleSheet = useSignInDialogStyleSheet();
+    
+    
+    
     // handlers:
     const handleCloseDialog        = useEvent((): void => {
         // actions:
@@ -79,6 +94,8 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
         theme          = 'primary',
         backdropStyle  = 'regular',
         modalCardStyle = 'scrollable',
+        horzAlign      = 'stretch',
+        vertAlign      = 'stretch',
     } = restSignInDialogProps;
     
     
@@ -95,15 +112,28 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
             theme          = {theme}
             backdropStyle  = {backdropStyle}
             modalCardStyle = {modalCardStyle}
+            horzAlign      = {horzAlign}
+            vertAlign      = {vertAlign}
+            
+            
+            
+            // classes:
+            className={styleSheet.dialog}
         >
             <CardHeader>
                 {!!title && <h1>{title}</h1>}
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
-            <CardBody>
-                <p>
-                    Test hello world
-                </p>
+            <CardBody className={styleSheet.layout}>
+                <SignIn
+                    // variants:
+                    nude={true}
+                    
+                    
+                    
+                    // components:
+                    gotoHomeButtonComponent={null}
+                />
             </CardBody>
             <CardFooter>
                 <ButtonIcon className='btnCancel' icon='cancel' theme='danger' onClick={handleCloseDialog}>Cancel</ButtonIcon>
