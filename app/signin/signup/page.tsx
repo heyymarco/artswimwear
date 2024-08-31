@@ -31,6 +31,13 @@ export const metadata: Metadata = {
 
 // react components:
 export default function SignUpPage(): JSX.Element|null {
+    /*
+        handles:
+        * HARD navigation of `/signin/signup` => SHOW <SignIn> with 'signUp' tab.
+    */
+    
+    
+    
     // jsx:
     return (
         <SignInPageContent defaultSection='signUp' />
