@@ -26,7 +26,7 @@ import {
 // internal auth:
 import {
     authOptions,
-}                           from '@/app/api/auth/[...nextauth]/route'
+}                           from '@/libs/auth.server'
 
 
 

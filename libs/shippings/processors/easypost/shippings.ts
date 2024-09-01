@@ -226,7 +226,7 @@ export const getMatchingShippings = async (shippingProviders: Pick<ShippingProvi
     
     
     
-    const easyPost = getEasyPostInstance();
+    const easyPost = await getEasyPostInstance();
     if (!easyPost) return [];
     
     
