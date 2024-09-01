@@ -1,5 +1,5 @@
 // react components:
-export default function CheckoutIntercep(): JSX.Element|null {
+export default function CheckoutIntercept(): JSX.Element|null {
     /*
         handles:
         * HARD|SOFT navigation of `/checkout`          => NOTHING to do, just preventing a 404 error from happening.

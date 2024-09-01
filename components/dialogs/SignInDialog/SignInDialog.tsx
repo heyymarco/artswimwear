@@ -96,6 +96,11 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
         modalCardStyle = 'scrollable',
         horzAlign      = 'stretch',
         vertAlign      = 'stretch',
+        
+        
+        
+        // other props:
+        ...restModalCardProps
     } = restSignInDialogProps;
     
     
@@ -104,7 +109,7 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     return (
         <ModalCard<TElement, TModalExpandedChangeEvent>
             // other props:
-            {...restSignInDialogProps}
+            {...restModalCardProps}
             
             
             

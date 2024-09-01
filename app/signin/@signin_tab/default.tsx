@@ -6,7 +6,7 @@ import {
 
 
 // react components:
-export default function SignInIntercep(): JSX.Element|null {
+export default function SignInIntercept(): JSX.Element|null {
     /*
         handles:
         * HARD|SOFT navigation of `/signin`          => SWITCH  to 'signIn' tab.

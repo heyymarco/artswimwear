@@ -2208,7 +2208,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     const setSignInDialogCollapseStart = useEvent<EventHandler<void>>(() => {
         const currentSignInDialogState = signInDialogState;
-        if (currentSignInDialogState) currentSignInDialogState.signalCollapseEnd(); // signal that the modal is starting_to_close
+        if (currentSignInDialogState) currentSignInDialogState.signalCollapseStart(); // signal that the modal is starting_to_close
     });
     const setSignInDialogCollapseEnd   = useEvent<EventHandler<void>>(() => {
         const currentSignInDialogState = signInDialogState;
