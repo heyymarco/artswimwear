@@ -22,12 +22,33 @@ import {
     ButtonIcon,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
+// internal components:
+import {
+    SignInDialog,
+}                           from '@/components/dialogs/SignInDialog'
+
+// internals:
+import {
+    useCheckoutState,
+}                           from '../../states/checkoutState'
+
 
 
 // react components:
 const SignInCustomerAccount = (): JSX.Element|null => {
     // styles:
     const styleSheet = useCheckoutStyleSheet();
+    
+    
+    
+    // states:
+    const {
+        // dialogs:
+        signInDialogExpanded,
+        setSignInDialogExpanded,
+        setSignInDialogCollapseStart,
+        setSignInDialogCollapseEnd,
+    } = useCheckoutState();
     
     
     
@@ -63,6 +84,14 @@ const SignInCustomerAccount = (): JSX.Element|null => {
                     Sign Up
                 </ButtonIcon>
             </p>
+            
+            <SignInDialog
+                // states:
+                expanded={signInDialogExpanded}
+                onExpandedChange={setSignInDialogExpanded}
+                onCollapseStart={setSignInDialogCollapseStart}
+                onCollapseEnd={setSignInDialogCollapseEnd}
+            />
         </>
     );
 };

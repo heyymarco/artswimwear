@@ -82,7 +82,6 @@ import {
 
 // contexts:
 import {
-    CheckoutStateProvider,
     useCheckoutState,
 }                           from './states/checkoutState'
 
@@ -111,14 +110,6 @@ import {
 
 // react components:
 const Checkout = (): JSX.Element|null => {
-    // jsx:
-    return (
-        <CheckoutStateProvider>
-            <CheckoutInternal />
-        </CheckoutStateProvider>
-    );
-};
-const CheckoutInternal = (): JSX.Element|null => {
     // styles:
     const styleSheet = useCheckoutStyleSheet();
     
