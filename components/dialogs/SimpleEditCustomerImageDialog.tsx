@@ -10,6 +10,7 @@ import {
     // hooks:
     useRef,
     useState,
+    useMemo,
 }                           from 'react'
 
 // reusable-ui core:
@@ -78,7 +79,7 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
     // states:
     const [image, setImage   ] = useState<string|null>(props.model?.image ?? null); // optional field
     const initialImageRef      = useRef  <string|null>(props.model?.image ?? null); // optional field
-    const [draftDeletedImages] = useState<Map<string, boolean|null>>(() => new Map<string, boolean|null>());
+    const draftDeletedImages   = useMemo<Map<string, boolean|null>>(() => new Map<string, boolean|null>(), []);
     
     
     
