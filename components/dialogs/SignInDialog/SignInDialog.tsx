@@ -19,6 +19,11 @@ import {
 
 // reusable-ui components:
 import {
+    // base-content-components:
+    Content,
+    
+    
+    
     // simple-components:
     ButtonIcon,
     CloseButton,
@@ -129,10 +134,9 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
                 {!!title && <h1>{title}</h1>}
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
-            <CardBody className={styleSheet.layout}>
+            <CardBody className={styleSheet.cardBody}>
                 <SignIn
-                    // variants:
-                    nude={true}
+                    className={styleSheet.signInUi}
                     
                     
                     
