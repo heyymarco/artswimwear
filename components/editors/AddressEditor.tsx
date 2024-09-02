@@ -110,50 +110,45 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
         };
     }, [mountedSignal]);
     
-    const countryOptionsPromise = useMemo(() => {
-        return mountedPromise.then(async (isMounted) => {
-            // conditions:
-            if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
-            
-            
-            
-            // actions:
-            return (
-                Array.from(
-                    Object.values(
-                        (await dispatch(getCountryList()).unwrap())
-                        .entities
-                    )
+    const countryOptionsPromise = useMemo<Promise<string[]>>(async (): Promise<string[]> => {
+        // conditions:
+        const isMounted = await mountedPromise;
+        if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
+        
+        
+        
+        // actions:
+        return (
+            Array.from(
+                Object.values(
+                    (await dispatch(getCountryList()).unwrap())
+                    .entities
                 )
-                .filter((entity): entity is Exclude<typeof entity, undefined> => (entity !== undefined))
-                .map(({name}) => name)
-            );
-        });
+            )
+            .filter((entity): entity is Exclude<typeof entity, undefined> => (entity !== undefined))
+            .map(({name}) => name)
+        );
     }, [mountedPromise]);
-    const stateOptionsPromise = useMemo(() => {
+    const stateOptionsPromise = useMemo<Promise<string[]>>(async (): Promise<string[]> => {
         if (!country) return [];
-        return mountedPromise.then((isMounted) => {
-            // conditions:
-            if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
-            
-            
-            
-            // actions:
-            return dispatch(getStateList({ countryCode: country })).unwrap();
-        });
+        const isMounted = await mountedPromise;
+        if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
+        
+        
+        
+        // actions:
+        return dispatch(getStateList({ countryCode: country })).unwrap();
     }, [mountedPromise, country]);
-    const cityOptionsPromise = useMemo(() => {
+    const cityOptionsPromise = useMemo<Promise<string[]>>(async (): Promise<string[]> => {
         if (!country) return [];
-        if (!state) return [];
-        return mountedPromise.then((isMounted) => {
-            // conditions:
-            if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
-            
-            
-            
-            // actions:
-            return dispatch(getCityList({ countryCode: country, state: state })).unwrap();
-        });
+        if (!state  ) return [];
+        const isMounted = await mountedPromise;
+        if (!isMounted) return []; // the component was unmounted before waiting for fully_mounted => return empty
+        
+        
+        
+        // actions:
+        return dispatch(getCityList({ countryCode: country, state: state })).unwrap();
     }, [mountedPromise, country, state]);
     
     
