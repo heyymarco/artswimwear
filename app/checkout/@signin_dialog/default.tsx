@@ -1,3 +1,7 @@
+'use client' // everything should be QUICKLY done in client, NOTHING to DO nor RENDER on server
+
+
+
 // react components:
 export default function CheckoutIntercept(): JSX.Element|null {
     /*

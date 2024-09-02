@@ -267,105 +267,107 @@ export interface CheckoutStateBase
         >
 {
     // states:
-    checkoutProgress             : number
+    checkoutProgress                 : number
     
-    isBusy                       : BusyState,
+    isBusy                           : BusyState,
     
-    isCheckoutEmpty              : boolean
-    isCheckoutLoading            : boolean
-    isCheckoutError              : boolean
-    isCheckoutReady              : boolean
-    isCheckoutFinished           : boolean
+    isCheckoutEmpty                  : boolean
+    isCheckoutLoading                : boolean
+    isCheckoutError                  : boolean
+    isCheckoutReady                  : boolean
+    isCheckoutFinished               : boolean
     
-    isDesktop                    : boolean
+    isDesktop                        : boolean
     
     
     
     // extra data:
-    setMarketingOpt              : EventHandler<boolean|null>
+    setMarketingOpt                  : EventHandler<boolean|null>
     
     
     
     // customer data:
-    setCustomerName              : EventHandler<string>
-    setCustomerEmail             : EventHandler<string>
+    setCustomerName                  : EventHandler<string>
+    setCustomerEmail                 : EventHandler<string>
     
     
     
     // shipping data:
-    isShippingAddressRequired    : boolean
+    isShippingAddressRequired        : boolean
     
-    setShippingAddress           : (address: ShippingAddressDetail|null) => void
+    setShippingAddress               : (address: ShippingAddressDetail|null) => void
     
-    setShippingProviderId        : (shippingProviderId: string|null) => void
+    setShippingProviderId            : (shippingProviderId: string|null) => void
     
-    totalShippingCost            : number|null|undefined // undefined: not selected yet; null: no shipping required (non physical product)
-    totalShippingCostStatus      : TotalShippingCostStatus
+    totalShippingCost                : number|null|undefined // undefined: not selected yet; null: no shipping required (non physical product)
+    totalShippingCostStatus          : TotalShippingCostStatus
     
     
     
     // billing data:
-    isBillingAddressRequired     : boolean
+    isBillingAddressRequired         : boolean
     
-    setBillingAsShipping         : (billingAsShipping: boolean) => void
+    setBillingAsShipping             : (billingAsShipping: boolean) => void
     
-    setBillingAddress            : (address: BillingAddressDetail|null) => void
+    setBillingAddress                : (address: BillingAddressDetail|null) => void
     
     
     
     // payment data:
-    appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
+    appropriatePaymentProcessors     : (typeof checkoutConfigClient.payment.preferredProcessors)
     
-    setPaymentMethod             : (paymentMethod: PaymentMethod|null) => void
+    setPaymentMethod                 : (paymentMethod: PaymentMethod|null) => void
     
-    paymentType                  : string|undefined
-    paymentBrand                 : string|null|undefined
-    paymentIdentifier            : string|null|undefined
+    paymentType                      : string|undefined
+    paymentBrand                     : string|null|undefined
+    paymentIdentifier                : string|null|undefined
     
     
     
     // relation data:
-    shippingList                 : EntityState<MatchingShipping> | undefined
+    shippingList                     : EntityState<MatchingShipping> | undefined
     
     
     
     // sections:
-    customerInfoSectionRef       : React.MutableRefObject<HTMLElement|null>      | undefined
-    shippingAddressSectionRef    : React.MutableRefObject<HTMLElement|null>      | undefined
-    shippingMethodOptionRef      : React.MutableRefObject<HTMLElement|null>      | undefined
-    billingAddressSectionRef     : React.MutableRefObject<HTMLElement|null>      | undefined
-    paymentCardSectionRef        : React.MutableRefObject<HTMLFormElement|null>  | undefined
-    currentStepSectionRef        : React.MutableRefObject<HTMLElement|null>      | undefined
+    customerInfoSectionRef           : React.MutableRefObject<HTMLElement|null>      | undefined
+    shippingAddressSectionRef        : React.MutableRefObject<HTMLElement|null>      | undefined
+    shippingMethodOptionRef          : React.MutableRefObject<HTMLElement|null>      | undefined
+    billingAddressSectionRef         : React.MutableRefObject<HTMLElement|null>      | undefined
+    paymentCardSectionRef            : React.MutableRefObject<HTMLFormElement|null>  | undefined
+    currentStepSectionRef            : React.MutableRefObject<HTMLElement|null>      | undefined
     
     
     
     // fields:
-    contactEmailInputRef         : React.MutableRefObject<HTMLInputElement|null> | undefined
-    shippingAddressInputRef      : React.MutableRefObject<HTMLInputElement|null> | undefined
+    contactEmailInputRef             : React.MutableRefObject<HTMLInputElement|null> | undefined
+    shippingAddressInputRef          : React.MutableRefObject<HTMLInputElement|null> | undefined
     
     
     
     // actions:
-    gotoStepInformation          : (focusTo?: 'contactInfo'|'shippingAddress') => void
-    gotoStepShipping             : () => Promise<boolean>
-    gotoPayment                  : () => Promise<boolean>
-    gotoFinished                 : (paymentDetail: PaymentDetail, paid: boolean) => void
+    gotoStepInformation              : (focusTo?: 'contactInfo'|'shippingAddress') => void
+    gotoStepShipping                 : () => Promise<boolean>
+    gotoPayment                      : () => Promise<boolean>
+    gotoFinished                     : (paymentDetail: PaymentDetail, paid: boolean) => void
     
-    startTransaction             : (arg: StartTransactionArg) => Promise<boolean>
-    doTransaction                : (transaction: (() => Promise<void>)) => Promise<boolean>
-    doPlaceOrder                 : (options?: PlaceOrderRequestOptions) => Promise<DraftOrderDetail|true>
-    doMakePayment                : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
+    startTransaction                 : (arg: StartTransactionArg) => Promise<boolean>
+    doTransaction                    : (transaction: (() => Promise<void>)) => Promise<boolean>
+    doPlaceOrder                     : (options?: PlaceOrderRequestOptions) => Promise<DraftOrderDetail|true>
+    doMakePayment                    : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
     
-    refetchCheckout              : () => void
+    refetchCheckout                  : () => void
     
     
     
     // dialogs:
-    signInDialogExpanded         : boolean
-    setSignInDialogExpanded      : EventHandler<ModalExpandedChangeEvent<boolean>>
-    setSignInDialogCollapseStart : EventHandler<void>
-    setSignInDialogCollapseEnd   : EventHandler<void>
-    showSignInDialog             : () => PromiseDialog<boolean>
+    signInDialogExpanded             : boolean
+    setSignInDialogExpanded          : EventHandler<ModalExpandedChangeEvent<boolean>>
+    setSignInDialogCollapseStart     : EventHandler<void>
+    setSignInDialogCollapseEnd       : EventHandler<void>
+    showSignInDialog()               : PromiseDialog<boolean>
+    showSignInDialog(setShow: true ) : PromiseDialog<boolean>
+    showSignInDialog(setShow: false) : Promise<null|false>
 }
 
 export type PickAlways<T, K extends keyof T, V> = {
@@ -2188,10 +2190,14 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     // dialogs:
     interface DialogState<TData extends unknown = unknown> {
-        lastExpandedEvent   : ModalExpandedChangeEvent<TData>|undefined
-        expanded            : boolean
-        signalCollapseStart : () => void
-        signalCollapseEnd   : () => void
+        lastExpandedEvent    : ModalExpandedChangeEvent<TData>|undefined
+        expanded             : boolean
+        
+        promiseCollapseStart : Promise<void>
+        promiseCollapseEnd   : Promise<void>
+        
+        signalCollapseStart  : () => void
+        signalCollapseEnd    : () => void
     }
     const [signInDialogState, setSignInDialogState] = useState<Omit<DialogState<boolean>, 'dialogComponent'>|null>(null);
     const signInDialogExpanded         = signInDialogState?.expanded ?? false;
@@ -2204,7 +2210,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // actions:
         signInDialogState.lastExpandedEvent = event;
         signInDialogState.expanded          = event.expanded;
-        setSignInDialogState({...signInDialogState}); // force to re-render
+        setSignInDialogState({...signInDialogState}); // the dialog state is mutated => force to re-render
     });
     const setSignInDialogCollapseStart = useEvent<EventHandler<void>>(() => {
         const currentSignInDialogState = signInDialogState;
@@ -2212,25 +2218,59 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     const setSignInDialogCollapseEnd   = useEvent<EventHandler<void>>(() => {
         const currentSignInDialogState = signInDialogState;
-        setSignInDialogState(null);
+        setSignInDialogState(null); // the dialog is closed => unregister the dialog state
         if (currentSignInDialogState) currentSignInDialogState.signalCollapseEnd(); // signal that the modal is fully_closed
     });
-    const showSignInDialog             = useEvent((): PromiseDialog<boolean> => {
-        const { promise: promiseCollapseStart, resolve: signalCollapseStart } = Promise.withResolvers<void>();
-        const { promise: promiseCollapseEnd  , resolve: signalCollapseEnd   } = Promise.withResolvers<void>();
-        const dialogState : DialogState<boolean> = {
-            lastExpandedEvent   : undefined,
-            expanded            : true,
-            signalCollapseStart : signalCollapseStart,
-            signalCollapseEnd   : signalCollapseEnd,
-        };
-        setSignInDialogState(dialogState);
+    const showSignInDialog             = useEvent((setShow: boolean = true): PromiseDialog<boolean>|Promise<false>|null => {
+        if (!setShow) {
+            // conditions:
+            const currentSignInDialogState = signInDialogState;
+            if (!currentSignInDialogState)          return null; // no dialog was shown => nothing to do
+            if (!currentSignInDialogState.expanded) return null; // already closed => nothing to do
+            
+            
+            
+            // actions:
+            setSignInDialogExpanded({ // simulate a close event
+                actionType : 'ui',
+                expanded   : false,
+                data       : undefined,
+            });
+            const fullyClosedResult = currentSignInDialogState.promiseCollapseEnd.then((): false => false);
+            return fullyClosedResult;
+        } // if
         
         
         
-        // return dialogState.lastExpandedEvent?.data;
-        return new PromiseDialog<boolean>((resolve, reject) => {
-                promiseCollapseEnd
+        const dialogState : DialogState<boolean> = (
+            // use prev dialog state if already opened:
+            signInDialogState
+            
+            ??
+            
+            // create a new dialog state:
+            (() : DialogState<boolean> => {
+                const { promise: promiseCollapseStart, resolve: signalCollapseStart } = Promise.withResolvers<void>();
+                const { promise: promiseCollapseEnd  , resolve: signalCollapseEnd   } = Promise.withResolvers<void>();
+                const newDialogState : DialogState<boolean> = {
+                    lastExpandedEvent    : undefined,
+                    expanded             : true,
+                    
+                    promiseCollapseStart : promiseCollapseStart,
+                    promiseCollapseEnd   : promiseCollapseEnd,
+                    
+                    signalCollapseStart  : signalCollapseStart,
+                    signalCollapseEnd    : signalCollapseEnd,
+                };
+                setSignInDialogState(newDialogState); // register the new dialog state
+                return newDialogState;
+            })()
+        );
+        
+        
+        
+        return new PromiseDialog<boolean>((resolve, reject): void => {
+                dialogState.promiseCollapseEnd
                 .then(() =>                             // wait until `lastExpandedEvent` is updated
                     dialogState.lastExpandedEvent?.data // now get `lastExpandedEvent` and get `data`
                 )
@@ -2241,25 +2281,25 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 onCloseDialog        : (data, actionType): void => {
                     // conditions:
                     const currentSignInDialogState = signInDialogState;
-                    if (!currentSignInDialogState) return; // no dialog is shown
-                    if (!currentSignInDialogState.expanded) return; // already closed => noting to do
+                    if (!currentSignInDialogState)          return; // no dialog was shown => nothing to do
+                    if (!currentSignInDialogState.expanded) return; // already closed => nothing to do
                     
                     
                     
                     // actions:
-                    setSignInDialogExpanded({
+                    setSignInDialogExpanded({ // simulate a close event
                         actionType : actionType ?? '',
                         expanded   : false,
                         data       : data,
                     });
                 },
                 onCollapseStartEvent : async (): Promise<ModalExpandedChangeEvent<boolean>> => {
-                    await promiseCollapseStart;            // wait until `lastExpandedEvent` is updated
-                    return dialogState.lastExpandedEvent!; // now get `lastExpandedEvent`
+                    await dialogState.promiseCollapseStart; // wait until `lastExpandedEvent` is updated
+                    return dialogState.lastExpandedEvent!;  // now get `lastExpandedEvent`
                 },
                 onCollapseEndEvent   : async (): Promise<ModalExpandedChangeEvent<boolean>> => {
-                    await promiseCollapseEnd;              // wait until `lastExpandedEvent` is updated
-                    return dialogState.lastExpandedEvent!; // now get `lastExpandedEvent`
+                    await dialogState.promiseCollapseEnd;   // wait until `lastExpandedEvent` is updated
+                    return dialogState.lastExpandedEvent!;  // now get `lastExpandedEvent`
                 },
             }
         );
@@ -2293,15 +2333,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // extra data:
         marketingOpt,
-        setMarketingOpt,                 // stable ref
+        setMarketingOpt,                           // stable ref
         
         
         
         // customer data:
         customerValidation,
         customer,
-        setCustomerName,                 // stable ref
-        setCustomerEmail,                // stable ref
+        setCustomerName,                           // stable ref
+        setCustomerEmail,                          // stable ref
         
         
         
@@ -2310,10 +2350,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         shippingValidation,
         
         shippingAddress,
-        setShippingAddress,              // stable ref
+        setShippingAddress,                        // stable ref
         
         shippingProviderId,
-        setShippingProviderId,           // stable ref
+        setShippingProviderId,                     // stable ref
         
         totalShippingCost,
         totalShippingCostStatus,
@@ -2325,10 +2365,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         billingValidation,
         
         billingAsShipping,
-        setBillingAsShipping,            // stable ref
+        setBillingAsShipping,                      // stable ref
         
         billingAddress,
-        setBillingAddress,               // stable ref
+        setBillingAddress,                         // stable ref
         
         
         
@@ -2338,7 +2378,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentValidation,
         
         paymentMethod,
-        setPaymentMethod,                // stable ref
+        setPaymentMethod,                          // stable ref
         
         paymentSession,
         
@@ -2354,42 +2394,42 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // sections:
-        customerInfoSectionRef,          // stable ref
-        shippingAddressSectionRef,       // stable ref
-        shippingMethodOptionRef,         // stable ref
-        billingAddressSectionRef,        // stable ref
-        paymentCardSectionRef,           // stable ref
-        currentStepSectionRef,           // stable ref
+        customerInfoSectionRef,                    // stable ref
+        shippingAddressSectionRef,                 // stable ref
+        shippingMethodOptionRef,                   // stable ref
+        billingAddressSectionRef,                  // stable ref
+        paymentCardSectionRef,                     // stable ref
+        currentStepSectionRef,                     // stable ref
         
         
         
         // fields:
-        contactEmailInputRef,            // stable ref
-        shippingAddressInputRef,         // stable ref
+        contactEmailInputRef,                      // stable ref
+        shippingAddressInputRef,                   // stable ref
         
         
         
         // actions:
-        gotoStepInformation,             // stable ref
-        gotoStepShipping,                // stable ref
-        gotoPayment,                     // stable ref
-        gotoFinished,                    // stable ref
+        gotoStepInformation,                       // stable ref
+        gotoStepShipping,                          // stable ref
+        gotoPayment,                               // stable ref
+        gotoFinished,                              // stable ref
         
-        startTransaction,                // stable ref
-        doTransaction,                   // stable ref
-        doPlaceOrder,                    // stable ref
-        doMakePayment,                   // stable ref
+        startTransaction,                          // stable ref
+        doTransaction,                             // stable ref
+        doPlaceOrder,                              // stable ref
+        doMakePayment,                             // stable ref
         
-        refetchCheckout,                 // stable ref
+        refetchCheckout,                           // stable ref
         
         
         
         // dialogs:
         signInDialogExpanded,
-        setSignInDialogExpanded,         // stable ref
-        setSignInDialogCollapseStart,    // stable ref
-        setSignInDialogCollapseEnd,      // stable ref
-        showSignInDialog,                // stable ref
+        setSignInDialogExpanded,                   // stable ref
+        setSignInDialogCollapseStart,              // stable ref
+        setSignInDialogCollapseEnd,                // stable ref
+        showSignInDialog: showSignInDialog as any, // stable ref
     }), [
         // states:
         checkoutStep,
@@ -2409,7 +2449,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // extra data:
         marketingOpt,
-        // setMarketingOpt,              // stable ref
+        // setMarketingOpt,                        // stable ref
         
         
         
@@ -2417,8 +2457,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         customerValidation,
         
         customer,
-        // setCustomerName,              // stable ref
-        // setCustomerEmail,             // stable ref
+        // setCustomerName,                        // stable ref
+        // setCustomerEmail,                       // stable ref
         
         
         
@@ -2427,10 +2467,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         shippingValidation,
         
         shippingAddress,
-        // setShippingAddress,           // stable ref
+        // setShippingAddress,                     // stable ref
         
         shippingProviderId,
-        // setShippingProviderId         // stable ref
+        // setShippingProviderId                   // stable ref
         
         totalShippingCost,
         totalShippingCostStatus,
@@ -2442,10 +2482,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         billingValidation,
         
         billingAsShipping,
-        // setBillingAsShipping,         // stable ref
+        // setBillingAsShipping,                   // stable ref
         
         billingAddress,
-        // setBillingAddress,            // stable ref
+        // setBillingAddress,                      // stable ref
         
         
         
@@ -2455,7 +2495,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         paymentValidation,
         
         paymentMethod,
-        // setPaymentMethod,             // stable ref
+        // setPaymentMethod,                       // stable ref
         
         paymentSession,
         
@@ -2471,29 +2511,29 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // sections:
-        // customerInfoSectionRef,       // stable ref
-        // shippingAddressSectionRef,    // stable ref
-        // shippingMethodOptionRef,      // stable ref
-        // billingAddressSectionRef,     // stable ref
-        // paymentCardSectionRef,        // stable ref
-        // currentStepSectionRef,        // stable ref
+        // customerInfoSectionRef,                 // stable ref
+        // shippingAddressSectionRef,              // stable ref
+        // shippingMethodOptionRef,                // stable ref
+        // billingAddressSectionRef,               // stable ref
+        // paymentCardSectionRef,                  // stable ref
+        // currentStepSectionRef,                  // stable ref
         
         
         
         // fields:
-        // contactEmailInputRef,         // stable ref
-        // shippingAddressInputRef,      // stable ref
+        // contactEmailInputRef,                   // stable ref
+        // shippingAddressInputRef,                // stable ref
         
         
         
         // actions:
-        // gotoStepInformation,          // stable ref
-        // gotoStepShipping,             // stable ref
-        // gotoPayment,                  // stable ref
-        // gotoFinished,                 // stable ref
+        // gotoStepInformation,                    // stable ref
+        // gotoStepShipping,                       // stable ref
+        // gotoPayment,                            // stable ref
+        // gotoFinished,                           // stable ref
         
-        // startTransaction,             // stable ref
-        // doTransaction,                // stable ref
+        // startTransaction,                       // stable ref
+        // doTransaction,                          // stable ref
         // doPlaceOrder,                 // stable ref
         // doMakePayment,                // stable ref
         

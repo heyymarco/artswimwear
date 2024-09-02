@@ -1,34 +1,15 @@
+'use client' // everything should be QUICKLY done in client, NOTHING to DO nor RENDER on server
+
 // react:
 import {
     // react:
     default as React,
 }                           from 'react'
 
-// next-js:
-import {
-    type Metadata,
-}                           from 'next'
-
 // internal components:
 import {
     SignInSwitch,
 }                           from '@/components/SignIn'
-import {
-    SignInShow,
-}                           from '@/components/Checkout'
-
-// configs:
-import {
-    PAGE_SIGNIN_TITLE,
-    PAGE_SIGNIN_DESCRIPTION,
-}                           from '@/website.config'
-
-
-
-export const metadata: Metadata = {
-    title       : PAGE_SIGNIN_TITLE,
-    description : PAGE_SIGNIN_DESCRIPTION,
-}
 
 
 
@@ -42,10 +23,5 @@ export default function SignInIntercept(): JSX.Element|null {
     
     
     // jsx:
-    return (
-        <>
-            <SignInShow backPathname='/checkout' />
-            <SignInSwitch section='signIn' />
-        </>
-    );
+    return <SignInSwitch section='signIn' />;
 }

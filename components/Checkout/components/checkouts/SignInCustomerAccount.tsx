@@ -6,21 +6,31 @@ import {
     default as React,
 }                           from 'react'
 
-// reusable-ui components:
+// next-js:
 import {
-    Link,
-}                           from '@reusable-ui/next-compat-link'
+    usePathname,
+    useRouter,
+}                           from 'next/navigation'
 
 // cssfn:
 import {
     useCheckoutStyleSheet,
 }                           from '../../styles/loader'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
 import {
     // simple-components:
     ButtonIcon,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // internal components:
 import {
@@ -48,7 +58,25 @@ const SignInCustomerAccount = (): JSX.Element|null => {
         setSignInDialogExpanded,
         setSignInDialogCollapseStart,
         setSignInDialogCollapseEnd,
+        showSignInDialog,
     } = useCheckoutState();
+    
+    
+    
+    // hooks:
+    const pathName = usePathname();
+    const router   = useRouter();
+    
+    
+    
+    // handlers:
+    const handleSignInLinkClick = useEvent((): void => {
+        const backPathname      = pathName;
+        showSignInDialog()
+        .then(() => { // on fully closed:
+            router.push(backPathname, { scroll: false });
+        });
+    });
     
     
     
@@ -62,6 +90,11 @@ const SignInCustomerAccount = (): JSX.Element|null => {
                 <ButtonIcon
                     // appearances:
                     icon='login'
+                    
+                    
+                    
+                    // handlers:
+                    onClick={handleSignInLinkClick}
                 >
                     <Link href='/signin' scroll={false}>
                         Sign In
@@ -80,7 +113,15 @@ const SignInCustomerAccount = (): JSX.Element|null => {
                     // variants:
                     buttonStyle='link'
                     size='sm'
+                    
+                    
+                    
+                    // handlers:
+                    onClick={handleSignInLinkClick}
                 >
+                    <Link href='/signin/signup' scroll={false}>
+                        Sign Up
+                    </Link>
                     Sign Up
                 </ButtonIcon>
             </p>

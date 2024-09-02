@@ -1,25 +1,9 @@
-// next-js:
-import {
-    type Metadata,
-}                           from 'next'
+'use client' // everything should be QUICKLY done in client, NOTHING to DO nor RENDER on server
 
 // internal components:
 import {
     SignInSwitch,
 }                           from '@/components/SignIn'
-
-// configs:
-import {
-    PAGE_SIGNUP_TITLE,
-    PAGE_SIGNUP_DESCRIPTION,
-}                           from '@/website.config'
-
-
-
-export const metadata: Metadata = {
-    title       : PAGE_SIGNUP_TITLE,
-    description : PAGE_SIGNUP_DESCRIPTION,
-}
 
 
 
