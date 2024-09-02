@@ -9,7 +9,6 @@ import {
     useState,
     useMemo,
     useEffect,
-    useRef,
 }                           from 'react'
 
 // heymarco components:
@@ -95,25 +94,21 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
     // stores:
     const dispatch = useAppDispatch();
     
-    const mountedSignalRef = useRef<((isMounted: boolean) => void)|null>(null);
-    const [mountedPromise] = useState<Promise<boolean>>(() =>
-        new Promise<boolean>((resolve) => {
-            mountedSignalRef.current = resolve;
-        })
-    );
+    const [mountedPromise, mountedSignal] = useMemo<[Promise<boolean>, (value: boolean) => void]>(() => {
+        const { promise, resolve } = Promise.withResolvers<boolean>();
+        return [promise, resolve];
+    }, []);
     useEffect(() => {
         // setups:
-        mountedSignalRef.current?.(true); // signal that the component is mounted;
-        mountedSignalRef.current = null;  // no more signaling in the future
+        mountedSignal(true); // signal that the component is mounted
         
         
         
         // cleanups:
         return () => {
-            mountedSignalRef.current?.(false); // signal that the component is never mounted;
-            mountedSignalRef.current = null;  // no more signaling in the future
+            mountedSignal(false); // signal that the component is never mounted
         };
-    }, []);
+    }, [mountedSignal]);
     
     const countryOptionsPromise = useMemo(() => {
         return mountedPromise.then(async (isMounted) => {
@@ -134,7 +129,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
                 .map(({name}) => name)
             );
         });
-    }, []);
+    }, [mountedPromise]);
     const stateOptionsPromise = useMemo(() => {
         if (!country) return [];
         return mountedPromise.then((isMounted) => {
@@ -146,7 +141,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
             // actions:
             return dispatch(getStateList({ countryCode: country })).unwrap();
         });
-    }, [country]);
+    }, [mountedPromise, country]);
     const cityOptionsPromise = useMemo(() => {
         if (!country) return [];
         if (!state) return [];
@@ -159,7 +154,7 @@ const AddressEditor = <TElement extends Element = HTMLFormElement>(props: Addres
             // actions:
             return dispatch(getCityList({ countryCode: country, state: state })).unwrap();
         });
-    }, [country, state]);
+    }, [mountedPromise, country, state]);
     
     
     
