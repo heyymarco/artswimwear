@@ -120,7 +120,7 @@ export function ShipmentPageContent(): JSX.Element|null {
     
     
     // states:
-    const token = useMemo(() => searchParams.get('token') ?? '', []);
+    const token = useMemo<string>(() => searchParams.get('token') ?? '', []);
     
     
     
