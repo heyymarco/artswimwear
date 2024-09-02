@@ -542,7 +542,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         };
     }, [items, productList]);
     
-    const totalProductWeightStepped = useMemo(() => {
+    const totalProductWeightStepped = useMemo<number|null|undefined>(() => {
         if ((totalProductWeight === undefined) || (totalProductWeight === null)) return totalProductWeight;
         return (
             Math.round(totalProductWeight / 0.25)
