@@ -8,7 +8,6 @@ import {
     
     
     // hooks:
-    useRef,
     useState,
     useMemo,
 }                           from 'react'
@@ -17,9 +16,6 @@ import {
 import {
     // react helper hooks:
     useEvent,
-    EventHandler,
-    useMergeEvents,
-    useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // internal components:
@@ -36,7 +32,6 @@ import {
     // types:
     ValueOfModel,
     UpdateModelApi,
-    SimpleEditModelDialogExpandedChangeEvent,
     
     
     
@@ -78,7 +73,7 @@ export interface SimpleEditCustomerImageDialogProps
 export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDialogProps) => {
     // states:
     const [image, setImage   ] = useState<string|null>(props.model?.image ?? null); // optional field
-    const initialImageRef      = useRef  <string|null>(props.model?.image ?? null); // optional field
+    const initialImage         = useMemo<string|null>(() => props.model?.image ?? null, []); // optional field
     const draftDeletedImages   = useMemo<Map<string, boolean|null>>(() => new Map<string, boolean|null>(), []);
     
     
@@ -99,9 +94,9 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
     });
     const handleSideSave   = useEvent(async (commitImages : boolean) => {
         // initial_image have been replaced with new image:
-        if (commitImages && initialImageRef.current && (initialImageRef.current !== image)) {
+        if (commitImages && initialImage && (initialImage !== image)) {
             // register to actual_delete the initial_image when committed:
-            draftDeletedImages.set(initialImageRef.current, true /* true: delete when committed, noop when reverted */);
+            draftDeletedImages.set(initialImage, true /* true: delete when committed, noop when reverted */);
         } // if
         
         
