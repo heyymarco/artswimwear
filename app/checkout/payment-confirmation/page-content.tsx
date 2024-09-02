@@ -10,6 +10,7 @@ import {
     // hooks:
     useState,
     useRef,
+    useMemo,
 }                           from 'react'
 
 // next-js:
@@ -148,7 +149,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
     
     
     // states:
-    const [token] = useState<string>(() => searchParams.get('token') ?? '');
+    const token = useMemo<string>(() => searchParams.get('token') ?? '', []);
     
     
     
