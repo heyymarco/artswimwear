@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
 // next-js:
 import {
     usePathname,
@@ -36,6 +41,9 @@ import {
 import {
     SignInDialog,
 }                           from '@/components/dialogs/SignInDialog'
+import {
+    SignInInfo,
+}                           from '@/components/SignInInfo'
 
 // internals:
 import {
@@ -48,6 +56,11 @@ import {
 const SignInCustomerAccount = (): JSX.Element|null => {
     // styles:
     const styleSheet = useCheckoutStyleSheet();
+    
+    
+    
+    // sessions:
+    const { data: session } = useSession();
     
     
     
@@ -83,6 +96,7 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     // jsx:
     return (
         <>
+            {!!session && <SignInInfo theme='success' />}
             <p className={styleSheet.signInText}>
                 <span>
                     Already have an account?
