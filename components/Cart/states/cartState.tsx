@@ -366,8 +366,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // states:
-    const lastRestoredCartDetailRef = useRef<CartDetail|null|undefined>(undefined);
-    const restoredCartEventHandlers = useMemo<Set<EventHandler<CartDetail|null>>>(() => new Set<EventHandler<CartDetail|null>>() , []);
+    const lastRestoredCartDetailRef   = useRef<CartDetail|null|undefined>(undefined);
+    const [restoredCartEventHandlers] = useState<Set<EventHandler<CartDetail|null>>>(() => new Set<EventHandler<CartDetail|null>>());
     
     
     

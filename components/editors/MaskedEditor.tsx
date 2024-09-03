@@ -8,7 +8,7 @@ import {
     // hooks:
     useEffect,
     useRef,
-    useMemo,
+    useState,
 }                           from 'react'
 
 // reusable-ui core:
@@ -95,7 +95,7 @@ const MaskedEditor = <TElement extends Element = HTMLSpanElement>(props: MaskedE
     // effects:
     
     // proxied `onInput` event listeners:
-    const proxiedOnInputEventListeners = useMemo<Set<((this: HTMLInputElement, ev: HTMLElementEventMap['input']) => any)>>(() => new Set<((this: HTMLInputElement, ev: HTMLElementEventMap['input']) => any)>(), []);
+    const [proxiedOnInputEventListeners] = useState<Set<((this: HTMLInputElement, ev: HTMLElementEventMap['input']) => any)>>(() => new Set<((this: HTMLInputElement, ev: HTMLElementEventMap['input']) => any)>());
     useEffect(() => {
         // conditions:
         const inputElm = inputRefInternal.current;

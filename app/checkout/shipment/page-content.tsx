@@ -10,7 +10,6 @@ import {
     // hooks:
     useState,
     useRef,
-    useMemo,
 }                           from 'react'
 
 // next-js:
@@ -120,7 +119,7 @@ export function ShipmentPageContent(): JSX.Element|null {
     
     
     // states:
-    const token = useMemo<string>(() => searchParams.get('token') ?? '', []);
+    const [token] = useState<string>(() => searchParams.get('token') ?? '');
     
     
     

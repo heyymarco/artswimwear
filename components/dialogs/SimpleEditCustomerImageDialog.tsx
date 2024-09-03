@@ -9,7 +9,6 @@ import {
     
     // hooks:
     useState,
-    useMemo,
 }                           from 'react'
 
 // reusable-ui core:
@@ -73,8 +72,8 @@ export interface SimpleEditCustomerImageDialogProps
 export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDialogProps) => {
     // states:
     const [image, setImage   ] = useState<string|null>(props.model?.image ?? null); // optional field
-    const initialImage         = useMemo<string|null>(() => props.model?.image ?? null, []); // optional field
-    const draftDeletedImages   = useMemo<Map<string, boolean|null>>(() => new Map<string, boolean|null>(), []);
+    const [initialImage]       = useState<string|null>(() => props.model?.image ?? null); // optional field
+    const [draftDeletedImages] = useState<Map<string, boolean|null>>(() => new Map<string, boolean|null>());
     
     
     

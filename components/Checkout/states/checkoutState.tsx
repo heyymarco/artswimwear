@@ -565,7 +565,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     // states:
     const [isBusy            , setIsBusyInternal    ] = useState<BusyState>(false);
     const [finishedOrderState, setFinishedOrderState] = useState<FinishedOrderState|undefined>(undefined);
-    const prevOrderId                                 = useMemo<string|undefined>(() => {
+    const [prevOrderId]                               = useState<string|undefined>(() => {
         // conditions:
         if (!isClientSide) return undefined;
         
@@ -574,7 +574,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         // actions:
         const searchParams = new URLSearchParams(window.location.search);
         return searchParams.get('orderId') || undefined;
-    }, []);
+    });
     const isMounted                                   = useMountedFlag();
     
     
