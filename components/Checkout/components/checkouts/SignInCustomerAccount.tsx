@@ -122,7 +122,6 @@ const SignInCustomerAccount = (): JSX.Element|null => {
                     <Link href='/signin/signup' scroll={false}>
                         Sign Up
                     </Link>
-                    Sign Up
                 </ButtonIcon>
             </p>
             
