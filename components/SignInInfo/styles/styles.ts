@@ -19,7 +19,7 @@ import {
 
 
 // styles:
-export const usesSignInInfoLayout = () => {
+export const usesLayout = () => {
     return style({
         // layouts:
         display      : 'grid',
@@ -68,5 +68,5 @@ export const usesSignInInfoLayout = () => {
 
 export default () => style({
     // layouts:
-    ...usesSignInInfoLayout(),
+    ...usesLayout(),
 });
