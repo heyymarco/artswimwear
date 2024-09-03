@@ -334,17 +334,6 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px',
             }),
         }),
-        scope('signInText', {
-            display  : 'grid',
-            justifyContent: 'center',
-            gapBlock : spacers.sm,
-        }),
-        scope('signUpText', {
-            display  : 'flex',
-            flexWrap : 'wrap',
-            justifyContent: 'center',
-            gapInline : spacers.sm,
-        }),
         scope('editGuestAccount', {
             display: 'flex',
             flexDirection: 'column',

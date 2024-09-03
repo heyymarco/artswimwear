@@ -44,6 +44,9 @@ import {
 import {
     SignInInfo,
 }                           from '@/components/SignInInfo'
+import {
+    SignInGate,
+}                           from '@/components/SignInGate'
 
 // internals:
 import {
@@ -97,47 +100,11 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     return (
         <>
             {!!session && <SignInInfo theme='success' />}
-            <p className={styleSheet.signInText}>
-                <span>
-                    Already have an account?
-                </span>
-                <ButtonIcon
-                    // appearances:
-                    icon='login'
-                    
-                    
-                    
-                    // handlers:
-                    onClick={handleSignInLinkClick}
-                >
-                    <Link href='/signin' scroll={false}>
-                        Sign In
-                    </Link>
-                </ButtonIcon>
-            </p>
-            <p className={styleSheet.signUpText}>
-                Don&apos;t have an account?
-                <ButtonIcon
-                    // appearances:
-                    icon='account_box'
-                    iconPosition='end'
-                    
-                    
-                    
-                    // variants:
-                    buttonStyle='link'
-                    size='sm'
-                    
-                    
-                    
-                    // handlers:
-                    onClick={handleSignInLinkClick}
-                >
-                    <Link href='/signin/signup' scroll={false}>
-                        Sign Up
-                    </Link>
-                </ButtonIcon>
-            </p>
+            <SignInGate
+                // handlers:
+                onSignIn={handleSignInLinkClick}
+                onSignUp={handleSignInLinkClick}
+            />
             
             <SignInDialog
                 // states:
