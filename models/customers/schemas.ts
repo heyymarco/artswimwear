@@ -21,7 +21,7 @@ export const CustomerDetailSchema = z.object({
     // data:
     name     : HumanFullNameSchema,
     email    : EmailSchema,
-    image    : ImageUrlSchema,
+    image    : ImageUrlSchema.nullable(),
 }) satisfies z.Schema<Omit<CustomerDetail, 'id'|'username'>>;
 
 
