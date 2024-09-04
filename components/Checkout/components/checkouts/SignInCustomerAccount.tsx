@@ -28,15 +28,6 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// reusable-ui components:
-import {
-    // simple-components:
-    ButtonIcon,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-import {
-    Link,
-}                           from '@reusable-ui/next-compat-link'
-
 // internal components:
 import {
     SignInDialog,
