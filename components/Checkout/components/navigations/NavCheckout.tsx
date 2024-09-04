@@ -147,7 +147,7 @@ const NavCheckout = (): JSX.Element|null => {
                             enabled={
                                 (checkoutStep !== 'INFO')
                                 ||
-                                (sessionStatus !== 'loading') // when on INFO step, disables the next button if the auth is still loading, because it's ambigous between using guest or customer account
+                                (sessionStatus !== 'loading') // when on INFO step, disables the next button if the auth is still loading, because it's ambigous between login as guest or login as customer
                             }
                             
                             

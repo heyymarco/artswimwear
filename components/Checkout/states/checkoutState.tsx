@@ -19,6 +19,11 @@ import {
     useState,
 }                           from 'react'
 
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
 // redux:
 import {
     type EntityState
@@ -576,6 +581,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return searchParams.get('orderId') || undefined;
     });
     const isMounted                                   = useMountedFlag();
+    
+    
+    
+    // sessions:
+    const { status: sessionStatus } = useSession();
     
     
     
@@ -1576,7 +1586,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             const fieldErrors = [
                 // customer info fields:
                 ...(
-                    customerInfoSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                    (
+                        (sessionStatus === 'unauthenticated')
+                        
+                        // sign in as guest:
+                        ? customerInfoSectionRef?.current?.querySelectorAll?.(invalidSelector)
+                        
+                        // sign in as customer:
+                        : undefined // nothing to validate
+                    )
                     ??
                     []
                 ),
