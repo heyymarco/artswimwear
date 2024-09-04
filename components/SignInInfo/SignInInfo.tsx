@@ -16,15 +16,23 @@ import {
     useSignInInfoStyleSheet,
 }                           from './styles/loader'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    type EventHandler,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
 import {
     // base-content-components:
-    type ContentProps,
-    Content,
-    useContentStyleSheet,
+    type BasicProps,
+    Basic,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // internal components:
+import {
+    EditButton,
+}                           from '@/components/EditButton'
 import {
     ProfileImage,
 }                           from '@/components/ProfileImage'
@@ -40,12 +48,19 @@ import {
 export interface SignInInfoProps<TElement extends Element = HTMLElement>
     extends
         // bases:
-        ContentProps<TElement>
+        BasicProps<TElement>
 {
+    // handlers:
+    onEdit ?: EventHandler<unknown>
 }
 const SignInInfo = <TElement extends Element = HTMLElement>(props: SignInInfoProps<TElement>): JSX.Element|null => {
     // props:
     const {
+        // handlers:
+        onEdit,
+        
+        
+        
         // other props:
         ...restSignInInfoProps
     } = props;
@@ -53,8 +68,7 @@ const SignInInfo = <TElement extends Element = HTMLElement>(props: SignInInfoPro
     
     
     // styles:
-    const contentStyleSheet = useContentStyleSheet();
-    const styleSheet        = useSignInInfoStyleSheet();
+    const styleSheet = useSignInInfoStyleSheet();
     
     
     
@@ -65,8 +79,13 @@ const SignInInfo = <TElement extends Element = HTMLElement>(props: SignInInfoPro
     
     // default props:
     const {
+        // variants:
+        mild      = true,
+        
+        
+        
         // classes:
-        mainClass = `${contentStyleSheet.main} ${styleSheet.main}`,
+        mainClass = styleSheet.main,
         
         
         
@@ -80,9 +99,14 @@ const SignInInfo = <TElement extends Element = HTMLElement>(props: SignInInfoPro
     if (!session) return null;
     const { name: customerName, email: customerEmail, image: customerImage } = session.user ?? {};
     return (
-        <Content<TElement>
+        <Basic<TElement>
             // other props:
             {...restContentProps}
+            
+            
+            
+            // variants:
+            mild={mild}
             
             
             
@@ -103,19 +127,33 @@ const SignInInfo = <TElement extends Element = HTMLElement>(props: SignInInfoPro
                 // classes:
                 className='image'
             />
+            
             <span
                 // classes:
                 className='name'
             >
                 {customerName}
             </span>
+            
             <span
                 // classes:
                 className='email'
             >
                 {customerEmail}
             </span>
-        </Content>
+            
+            {!!onEdit &&<EditButton
+                // classes:
+                className='edit'
+                
+                
+                
+                // handlers:
+                onClick={onEdit}
+            >
+                Edit Profile
+            </EditButton>}
+        </Basic>
     );
 };
 export {

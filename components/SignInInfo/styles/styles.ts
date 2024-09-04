@@ -66,7 +66,7 @@ export const usesSignInInfoLayout = memoizeStyle(() => {
                 '"image  ...." 1fr',
                 '"image  name" auto',
                 '"image email" auto',
-                '"image  ...." 1fr',
+                '"image  edit" 1fr',
                 '/',
                 'max-content 1fr',
             ]],
@@ -115,6 +115,15 @@ export const usesSignInInfoLayout = memoizeStyle(() => {
                 
                 // customize:
                 ...usesCssProps(usesPrefixedProps(signInInfos, 'email')), // apply config's cssProps starting with email***
+            }),
+            ...children('.edit', {
+                // positions:
+                gridArea    : 'edit',
+                
+                
+                
+                // customize:
+                ...usesCssProps(usesPrefixedProps(signInInfos, 'edit')), // apply config's cssProps starting with edit***
             }),
             
             
