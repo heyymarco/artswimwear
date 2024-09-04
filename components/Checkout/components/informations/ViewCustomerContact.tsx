@@ -6,6 +6,16 @@ import {
     default as React,
 }                           from 'react'
 
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
+// internal components:
+import {
+    SignInInfo,
+}                           from '@/components/SignInInfo'
+
 // internals:
 import {
     useCheckoutStyleSheet,
@@ -31,7 +41,18 @@ const ViewCustomerContact = (): JSX.Element|null => {
     
     
     
+    // sessions:
+    const { status: sessionStatus } = useSession();
+    
+    
+    
     // jsx:
+    // for sign in as customer => shows customer info:
+    if (sessionStatus === 'authenticated') return (
+        <SignInInfo size='sm' nude={true} />
+    );
+    
+    // for sign in as guest => shows guest info:
     return (
         <>
             <span
