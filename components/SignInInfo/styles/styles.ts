@@ -74,13 +74,6 @@ export const usesSignInInfoLayout = memoizeStyle(() => {
             
             
             
-            // spacings:
-         // padding       : paddingVars.padding,
-            paddingInline : paddingVars.paddingInline,
-            paddingBlock  : paddingVars.paddingBlock,
-            
-            
-            
             // children:
             ...children('.image', {
                 // positions:
@@ -130,6 +123,13 @@ export const usesSignInInfoLayout = memoizeStyle(() => {
             
             // customize:
             ...usesCssProps(signInInfos), // apply config's cssProps
+            
+            
+            
+            // spacings:
+         // padding       : paddingVars.padding,
+            paddingInline : paddingVars.paddingInline,
+            paddingBlock  : paddingVars.paddingBlock,
         }),
         
         

@@ -16,12 +16,6 @@ import {
     useSignInInfoStyleSheet,
 }                           from './styles/loader'
 
-// reusable-ui core:
-import {
-    // react helper hooks:
-    type EventHandler,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
-
 // reusable-ui components:
 import {
     // base-content-components:
@@ -51,7 +45,7 @@ export interface SignInInfoProps<TElement extends Element = HTMLElement>
         BasicProps<TElement>
 {
     // handlers:
-    onEdit ?: EventHandler<unknown>
+    onEdit ?: React.MouseEventHandler<HTMLButtonElement>
 }
 const SignInInfo = <TElement extends Element = HTMLElement>(props: SignInInfoProps<TElement>): JSX.Element|null => {
     // props:
