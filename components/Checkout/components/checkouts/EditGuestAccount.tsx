@@ -99,7 +99,7 @@ const EditGuestAccount = (): JSX.Element|null => {
         >
             <div
                 // classes:
-                className={styleSheet.editGuestAccount}
+                className={styleSheet.editGuestSection}
             >
                 <InputWithLabel
                     // appearances:

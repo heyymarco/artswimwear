@@ -99,12 +99,24 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     // jsx:
     return (
         <>
-            {!!session && <SignInInfo theme='success' />}
-            <SignInGate
-                // handlers:
-                onSignIn={handleSignInLinkClick}
-                onSignUp={handleSignInLinkClick}
-            />
+            <div
+                    // classes:
+                    className={styleSheet.signInCustomerSection}
+            >
+                {!!session && <div className={styleSheet.signInCustomerInfo}>
+                    <div className={styleSheet.signInCustomerInfoText}>
+                        <p>
+                            Signed in As:
+                        </p>
+                    </div>
+                    <SignInInfo theme='success' />
+                </div>}
+                <SignInGate
+                    // handlers:
+                    onSignIn={handleSignInLinkClick}
+                    onSignUp={handleSignInLinkClick}
+                />
+            </div>
             
             <SignInDialog
                 // states:

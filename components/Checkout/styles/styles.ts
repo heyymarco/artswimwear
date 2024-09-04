@@ -334,10 +334,43 @@ export default () => {
                 [paddingVars.paddingBlock ] : '0px',
             }),
         }),
-        scope('editGuestAccount', {
-            display: 'flex',
-            flexDirection: 'column',
+        scope('editGuestSection', {
+            // layouts:
+            display: 'grid',
+            
+            
+            
+            // spacings:
             gap: '1rem',
+        }),
+        scope('signInCustomerSection', {
+            // layouts:
+            display: 'grid',
+            gridAutoFlow: 'row',
+            ...ifScreenWidthAtLeast('md', {
+                gridAutoFlow: 'column',
+            }),
+            justifyItems: 'center', // center items horizontally
+            justifyContent : 'center', // center all items horizontally, add spaces on the left and right
+            
+            
+            
+            // spacings:
+            gapInline : spacers.xl,
+            gapBlock  : spacers.md,
+        }),
+        scope('signInCustomerInfo', {
+            // layouts:
+            display: 'grid',
+            
+            
+            
+            // spacings:
+            gap: spacers.sm,
+        }),
+        scope('signInCustomerInfoText', {
+            // typos:
+            textAlign: 'center',
         }),
         scope('selectShipping', {
             // layouts:
