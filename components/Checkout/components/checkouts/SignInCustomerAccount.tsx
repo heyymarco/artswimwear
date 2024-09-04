@@ -106,7 +106,7 @@ const SignInCustomerAccount = (): JSX.Element|null => {
                 {!!session && <div className={styleSheet.signInCustomerInfo}>
                     <div className={styleSheet.signInCustomerInfoText}>
                         <p>
-                            Signed in As:
+                            Signed in as:
                         </p>
                     </div>
                     <SignInInfo theme='success' />
