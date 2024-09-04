@@ -31,6 +31,7 @@ export const usesLayout = () => {
             '/',
             '60px 1fr',
         ]],
+        alignItems: 'center', // center items vertically
         
         
         
@@ -45,6 +46,11 @@ export const usesLayout = () => {
             // positions:
             gridArea    : 'image',
         }),
+        ...children(['.name', '.email'], {
+            overflow     : 'hidden',
+            textWrap     : 'nowrap',
+            textOverflow : 'ellipsis',
+        }),
         ...children('.name', {
             // positions:
             gridArea    : 'name',
@@ -53,6 +59,7 @@ export const usesLayout = () => {
             
             // typos:
             fontSize    : typos.fontSizeMd,
+            fontWeight  : typos.fontWeightSemibold,
         }),
         ...children('.email', {
             // positions:
