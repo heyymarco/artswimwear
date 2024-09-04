@@ -79,6 +79,9 @@ import {
 import {
     ViewOrderFinished,
 }                           from './components/orders/ViewOrderFinished'
+import {
+    SignInCollapse,
+}                           from '@/components/SignInCollapse'
 
 // contexts:
 import {
@@ -290,23 +293,29 @@ const Checkout = (): JSX.Element|null => {
                         // accessibilities:
                         title='Contact Information'
                     >
-                        <Section
-                            // classes:
-                            className={styleSheet.accountSection}
-                            
-                            
-                            
-                            // accessibilities:
-                            title={
-                                <>
-                                    <span className='txt-sec'>Sign In as a</span> Guest
-                                </>
-                            }
+                        <SignInCollapse
+                            // states:
+                            whenSignedIn='collapse' // hides the guest input when the customer is signed in
+                            whenLoading='expand'    // shows the guest input when the auth is still loading
                         >
-                            <EditGuestAccount />
-                        </Section>
-                        
-                        <AlternateSeparator />
+                            <Section
+                                // classes:
+                                className={styleSheet.accountSection}
+                                
+                                
+                                
+                                // accessibilities:
+                                title={
+                                    <>
+                                        <span className='txt-sec'>Sign In as a</span> Guest
+                                    </>
+                                }
+                            >
+                                <EditGuestAccount />
+                            </Section>
+                            
+                            <AlternateSeparator />
+                        </SignInCollapse>
                         
                         <Section
                             // classes:
