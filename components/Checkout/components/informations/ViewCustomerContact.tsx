@@ -49,7 +49,7 @@ const ViewCustomerContact = (): JSX.Element|null => {
     // jsx:
     // for sign in as customer => shows customer info:
     if (sessionStatus === 'authenticated') return (
-        <SignInInfo size='sm' nude={true} />
+        <SignInInfo nude={true} />
     );
     
     // for sign in as guest => shows guest info:
