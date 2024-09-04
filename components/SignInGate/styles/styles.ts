@@ -23,7 +23,7 @@ import {
 
 
 // styles:
-const usesLayout = () => {
+const usesSignInGateLayout = () => {
     return style({
         // layouts:
         display  : 'grid',
@@ -74,7 +74,7 @@ const usesSignUpTextLayout = () => {
 export default [
     scope('main', {
         // layouts:
-        ...usesLayout(),
+        ...usesSignInGateLayout(),
     }),
     scope('signInSection', {
         // layouts:
