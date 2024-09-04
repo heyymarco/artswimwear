@@ -11,6 +11,11 @@ import {
     useMemo,
 }                           from 'react'
 
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
 // reusable-ui components:
 import {
     // simple-components:
@@ -46,6 +51,7 @@ const NavCheckout = (): JSX.Element|null => {
     
     const {
         // states:
+        checkoutStep,
         checkoutProgress,
         
         isCheckoutFinished,
@@ -62,6 +68,11 @@ const NavCheckout = (): JSX.Element|null => {
         gotoStepShipping,
         gotoPayment,
     } = useCheckoutState();
+    
+    
+    
+    // sessions:
+    const { status: sessionStatus } = useSession();
     
     
     
@@ -129,6 +140,15 @@ const NavCheckout = (): JSX.Element|null => {
                             
                             // classes:
                             className='next'
+                            
+                            
+                            
+                            // states:
+                            enabled={
+                                (checkoutStep !== 'INFO')
+                                ||
+                                (sessionStatus !== 'loading') // when on INFO step, disables the next button if the auth is still loading, because it's ambigous between using guest or customer account
+                            }
                             
                             
                             
