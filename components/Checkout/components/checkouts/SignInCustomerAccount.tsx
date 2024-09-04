@@ -109,7 +109,7 @@ const SignInCustomerAccount = (): JSX.Element|null => {
                             Signed in As:
                         </p>
                     </div>
-                    <SignInInfo theme='success' size='md' />
+                    <SignInInfo theme='success' />
                 </div>}
                 <SignInGate
                     // handlers:
