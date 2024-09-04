@@ -1551,7 +1551,15 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         if (focusTo) {
-            const focusInputRef = (focusTo === 'contactInfo') ? contactEmailInputRef : shippingAddressInputRef;
+            const focusInputRef = (
+                (focusTo === 'contactInfo')
+                ? (
+                    (sessionStatus === 'authenticated')
+                    ? customerInfoSectionRef // for sign in as customer => scroll to 'Contact Information'
+                    : contactEmailInputRef   // for sign in as guest    => scroll and focus to email input
+                )
+                : shippingAddressInputRef
+            );
             
             setTimeoutAsync(200)
             .then((isDone) => {
