@@ -14,11 +14,6 @@ import {
     
     
     
-    // a typography management system:
-    typos,
-    
-    
-    
     // border (stroke) stuff of UI:
     usesBorder,
     
@@ -144,52 +139,7 @@ const usesSignInEditProfileLayout = () => {
     return style({
         // layouts:
         display      : 'grid',
-        gridTemplate : [[
-            '"image  name" auto',
-            '"image email" auto',
-            '"image  edit" 1fr',
-            '/',
-            '100px 1fr',
-        ]],
-        
-        
-        
-        // spacings:
-        gapInline : spacers.default,
-        gapBlock  : 0,
-        padding   : spacers.default,
-        
-        
-        
-        // children:
-        ...children('.image', {
-            // positions:
-            gridArea    : 'image',
-        }),
-        ...children('.name', {
-            // positions:
-            gridArea    : 'name',
-            
-            
-            
-            // typos:
-            fontSize    : typos.fontSizeMd,
-        }),
-        ...children('.email', {
-            // positions:
-            gridArea    : 'email',
-            
-            
-            
-            // typos:
-            fontSize    : `calc((${typos.fontSizeSm} + ${typos.fontSizeMd}) / 2)`,
-        }),
-        ...children('.edit', {
-            // positions:
-            gridArea    : 'edit',
-            justifySelf : 'end', // place to right
-            alignSelf   : 'end', // place to bottom
-        }),
+        gridTemplate : 'unset', // removes `usesSignInDropdownLayout()` style
     });
 };
 

@@ -6,11 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// next-auth:
-import {
-    useSession,
-}                           from 'next-auth/react'
-
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -42,19 +37,13 @@ import {
 
 // internal components:
 import {
-    EditButton,
-}                           from '@/components/EditButton'
-import {
-    ProfileImage,
-}                           from '@/components/ProfileImage'
+    SignInInfo,
+}                           from '@/components/SignInInfo'
 
 // internals:
 import {
     useSignInMenuStyleSheet,
 }                           from '../styles/loader'
-import {
-    resolveMediaUrl,
-}                           from '@/libs/mediaStorage.client'
 
 
 
@@ -86,12 +75,6 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
         // components:
         listComponent = (<List /> as React.ReactComponentElement<any, ListProps>),
     ...restDropdownListProps} = props;
-    
-    
-    
-    // sessions:
-    const { data: session } = useSession();
-    const { name: customerName, email: customerEmail, image: customerImage } = session?.user ?? {};
     
     
     
@@ -136,43 +119,16 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
                 // behaviors:
                 actionCtrl={false}
             >
-                <ProfileImage
-                    // appearances:
-                    src={resolveMediaUrl(customerImage ?? undefined)}
-                    
-                    
-                    
+                <SignInInfo
                     // variants:
-                    profileImageStyle='circle'
-                    
-                    
-                    
-                    // classes:
-                    className='image'
-                />
-                <span
-                    // classes:
-                    className='name'
-                >
-                    {customerName}
-                </span>
-                <span
-                    // classes:
-                    className='email'
-                >
-                    {customerEmail}
-                </span>
-                <EditButton
-                    // classes:
-                    className='edit'
+                    size='lg'
+                    nude={true}
                     
                     
                     
                     // handlers:
-                    onClick={(event) => handleClose(event, 'editProfile')}
-                >
-                    Edit Profile
-                </EditButton>
+                    onEdit={(event) => handleClose(event, 'editProfile')}
+                />
             </ListItem>
             <ListSeparatorItem />
             <ListItem onClick={(event) => handleClose(event, 'signOut')}>
