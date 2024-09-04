@@ -68,6 +68,9 @@ import {
     SignInCustomerAccount,
 }                           from './components/checkouts/SignInCustomerAccount'
 import {
+    EditSubscribeInfo,
+}                           from './components/checkouts/EditSubscribeInfo'
+import {
     EditShippingAddress,
 }                           from './components/checkouts/EditShippingAddress'
 import {
@@ -332,6 +335,26 @@ const Checkout = (): JSX.Element|null => {
                         >
                             <SignInCustomerAccount />
                         </Section>
+                    </Section>
+                    
+                    <Section
+                        // semantics:
+                        tag='aside'
+                        
+                        
+                        
+                        // classes:
+                        className={styleSheet.subscribeSection}
+                        
+                        
+                        
+                        // accessibilities:
+                        title='Subscribe to Our Info'
+                    >
+                        <p>
+                            Wanna to receive information about our product offers and news?
+                        </p>
+                        <EditSubscribeInfo />
                     </Section>
                     
                     {isShippingAddressRequired && <Section

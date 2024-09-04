@@ -372,6 +372,14 @@ export default () => {
             // typos:
             textAlign: 'center',
         }),
+        scope('subscribeSection', {
+            [paddingVars.paddingInline] : spacers.lg,
+            [paddingVars.paddingBlock ] : spacers.md,
+            ...children('article', {
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
+            }),
+        }),
         scope('selectShipping', {
             // layouts:
             display                         : 'grid',

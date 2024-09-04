@@ -13,26 +13,9 @@ import {
 
 // reusable-ui core:
 import {
-    // react helper hooks:
-    useEvent,
-    EventHandler,
-    
-    
-    
     // a validation management system:
     ValidationProvider,
-    
-    
-    
-    // a capability of UI to be highlighted/selected/activated:
-    ActiveChangeEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
-
-// reusable-ui components:
-import {
-    // simple-components:
-    Check,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // heymarco components:
 import {
@@ -63,12 +46,6 @@ const EditGuestAccount = (): JSX.Element|null => {
     
     // states:
     const {
-        // extra data:
-        marketingOpt,
-        setMarketingOpt,
-        
-        
-        
         // customer data:
         customerValidation,
         
@@ -81,13 +58,6 @@ const EditGuestAccount = (): JSX.Element|null => {
         // fields:
         contactEmailInputRef,
     } = useCheckoutState();
-    
-    
-    
-    // handlers:
-    const handleMarketingOptChange = useEvent<EventHandler<ActiveChangeEvent>>(({active}) => {
-        setMarketingOpt(active);
-    });
     
     
     
@@ -183,24 +153,6 @@ const EditGuestAccount = (): JSX.Element|null => {
                         />
                     }
                 />
-                <Check
-                    // classes:
-                    className='marketingOpt'
-                    
-                    
-                    
-                    // values:
-                    active={marketingOpt ?? true}
-                    onActiveChange={handleMarketingOptChange}
-                    
-                    
-                    
-                    // validations:
-                    required={false}
-                    enableValidation={false}
-                >
-                    Email me with news and offers
-                </Check>
             </div>
         </ValidationProvider>
     );
