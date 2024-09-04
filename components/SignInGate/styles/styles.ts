@@ -57,6 +57,7 @@ const usesSignUpSectionLayout = () => {
         display        : 'flex',
         flexWrap       : 'wrap',
         justifyContent : 'center',
+        alignItems     : 'center', // center vertically for text and button
         
         
         
