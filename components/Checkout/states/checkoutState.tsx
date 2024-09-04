@@ -1336,12 +1336,26 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             const currentStepSectionElm = currentStepSectionRef.current;
             window.document.scrollingElement?.scrollTo({
                 top      : 0,
-                behavior : currentStepSectionElm ? 'auto' : 'smooth',
+                behavior : (
+                    currentStepSectionElm
+                    ? 'auto'   // when the currentStepSectionElm exist => first: immediately scroll to top most
+                    : 'smooth' // or smoothly scroll to top most if the currentStepSectionElm doesn't exist
+                ),
             });
-            currentStepSectionElm?.scrollIntoView({
-                block    : 'start',
-                behavior : 'smooth',
-            });
+            if (currentStepSectionElm) { // when the currentStepSectionElm exist => then: smoothly scroll to that section
+                setTimeoutAsync(0).then((isDone) => {
+                    // conditions:
+                    if (!isDone) return; // the component was unloaded before the timer runs => do nothing
+                    
+                    
+                    
+                    // actions:
+                    currentStepSectionElm.scrollIntoView({
+                        block    : 'start',
+                        behavior : 'smooth',
+                    });
+                });
+            } // if
         } // if
         isSubsequentStep.current = true;
     }, [checkoutStep]);
