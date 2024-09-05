@@ -1967,6 +1967,11 @@ router
             // updatedAt : { gt: new Date(Date.now() - (1 * 60 * 60 * 1000)) } // prevents for searching order older than 1 hour ago
         },
         select : {
+            currency : {
+                select : {
+                    currency : true,
+                },
+            },
             items : {
                 select : {
                     // for CartItem[]:
@@ -2113,6 +2118,7 @@ router
     
     
     const {
+        currency,
         items,
         
         customer,
@@ -2139,7 +2145,10 @@ router
     });
     
     const finishedOrderState : FinishedOrderState = {
-        cartItems                 : items.map(({productId, variantIds, quantity}) => ({productId : productId ?? '', variantIds, quantity})),
+        cartState                 : {
+            items    : items.map(({productId, variantIds, quantity}) => ({productId : productId ?? '', variantIds, quantity})),
+            currency : currency?.currency ?? checkoutConfigServer.payment.defaultCurrency,
+        },
         productList               : productListAdapter.addMany(
             productListAdapter.getInitialState(),
             items.map(({product}) => product).filter((product): product is Exclude<typeof product, null> => (product !== null))

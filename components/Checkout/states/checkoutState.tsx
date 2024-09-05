@@ -601,7 +601,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // accessibilities:
-        currency,
+        currency : globalCartCurrency,
         
         
         
@@ -624,9 +624,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         resetCart,
     } = cartState;
-    const cartItems             = finishedOrderState ? finishedOrderState.cartItems     : globalCartItems;
-    
-    const productList           = finishedOrderState ? finishedOrderState.productList   : globalProductList;
+    const currency              = finishedOrderState ? finishedOrderState.cartState.currency : globalCartCurrency;
+    const cartItems             = finishedOrderState ? finishedOrderState.cartState.items    : globalCartItems;
+    const productList           = finishedOrderState ? finishedOrderState.productList        : globalProductList;
     
     
     
@@ -2176,7 +2176,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             .map(({productId}) => productId)
         );
         const finishedOrderState : FinishedOrderState = {
-            cartItems,
+            cartState   : {
+                items    : cartItems,
+                currency : currency,
+            },
             productList : {
                 // the minimal version of `productList`, only contains the sold items:
                 
@@ -2600,8 +2603,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         finishedOrderState
         ? <CartStateProvider
             // mocks:
-            mockCartState   = {cartState}
-            mockProductList = {productList}
+            mockCartState   = {finishedOrderState.cartState}
+            mockProductList = {finishedOrderState.productList}
         >
             {children}
         </CartStateProvider>

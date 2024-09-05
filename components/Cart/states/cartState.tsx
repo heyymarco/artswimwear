@@ -342,7 +342,7 @@ export const useRestoredCartEvent = (eventHandler: EventHandler<CartDetail|null>
 // react components:
 export interface CartStateProps {
     // mocks:
-    mockCartState   ?: CartState
+    mockCartState   ?: Pick<CartState, 'items'|'currency'>
     mockProductList ?: CartState['productList']
 }
 const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
@@ -380,7 +380,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const globalCartSession = useAppSelector(selectCartSession);
     const localCartSession  = (
         mockCartState
-        ? ((mockCartState satisfies CartSession) as CartSession)
+        ? (({ ...mockCartState, isCartShown: false } satisfies CartSession) as CartSession)
         : globalCartSession
     );
     const {

@@ -121,7 +121,7 @@ export interface CheckoutSession
 
 
 export interface FinishedOrderState {
-    cartItems                 : CartState['items'      ]
+    cartState                 : Pick<CartState, 'items'|'currency'>
     productList               : CartState['productList']
     
     checkoutSession           : CheckoutSession
