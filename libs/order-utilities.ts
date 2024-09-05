@@ -95,28 +95,47 @@ export const createDraftOrder = async (prismaTransaction: Parameters<Parameters<
             
             // extended data:
             
-            // TODO: connect to existing customer
-            // customer         : {
-            //     connect      : {
-            //         ...customerOrGuestData,
-            //         preference : {
-            //             ...preferenceData,
-            //         },
-            //     },
-            // },
-            guest               : {
+            //#region customer|guest data from orders route
+            // connect to EXISTING customer:
+            customer         : !('email' in customerOrGuestData) ? {
+                connect      : {
+                    id : customerOrGuestData.id,
+                },
+            } : undefined,
+            
+            // create a NEW guest and create nested guestPreference:
+            guest               : ('email' in customerOrGuestData) ? {
                 create          : {
                     ...customerOrGuestData,
                     preference : !preferenceData ? undefined : {
                         create  : preferenceData,
                     },
                 },
-            },
+            } : undefined,
+            //#endregion customer|guest data from orders route
         },
         select : {
             id : true,
         },
     });
+    
+    // create|update nested customerPreference:
+    if (!('email' in customerOrGuestData) && !!preferenceData) {
+        await prismaTransaction.customer.update({
+            where  : {
+                id : customerOrGuestData.id,
+            },
+            data   : {
+                preference : {
+                    upsert : {
+                        create : preferenceData,
+                        update : preferenceData,
+                    },
+                },
+            },
+        });
+    } // if
+    
     return newDraftOrder.id;
 }
 
@@ -204,31 +223,33 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
             
             ...(() => {
                 if ('customerOrGuest' in createOrderData) {
+                    //#region customer|guest data from orders route
                     const {
                         preference: preferenceData,
                     ...customerOrGuestData} = createOrderData.customerOrGuest;
                     
                     return {
-                        // TODO: connect to existing customer
-                        // customer         : {
-                        //     connect      : {
-                        //         ...customerOrGuestData,
-                        //         preference : {
-                        //             ...preferenceData,
-                        //         },
-                        //     },
-                        // },
-                        guest               : {
+                        // connect to EXISTING customer:
+                        customer         : !('email' in customerOrGuestData) ? {
+                            connect      : {
+                                id : customerOrGuestData.id,
+                            },
+                        } : undefined,
+                        
+                        // create a NEW guest and create nested guestPreference:
+                        guest               : ('email' in customerOrGuestData) ? {
                             create          : {
                                 ...customerOrGuestData,
                                 preference : !preferenceData ? undefined : {
                                     create  : preferenceData,
                                 },
                             },
-                        },
+                        } : undefined,
                     };
+                    //#endregion customer|guest data from orders route
                 }
                 else {
+                    //#region customer|guest data from DraftOrder
                     const {
                         customerId,
                         guestId,
@@ -254,7 +275,8 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
                     else {
                         return {};
                     } // if
-                }
+                    //#endregion customer|guest data from DraftOrder
+                } // if
             })(),
             
             payment             : { // compound_like relation
@@ -275,6 +297,24 @@ export const createOrder = async (prismaTransaction: Parameters<Parameters<typeo
         },
         select : orderAndDataSelect,
     });
+    
+    // create|update nested customerPreference:
+    if (('customerOrGuest' in createOrderData) && !('email' in createOrderData.customerOrGuest) && !!createOrderData.customerOrGuest.preference) {
+        await prismaTransaction.customer.update({
+            where  : {
+                id : createOrderData.customerOrGuest.id,
+            },
+            data   : {
+                preference : {
+                    upsert : {
+                        create : createOrderData.customerOrGuest.preference,
+                        update : createOrderData.customerOrGuest.preference,
+                    },
+                },
+            },
+        });
+    } // if
+    
     return convertOrderDataToOrderAndData(prismaTransaction, orderData);
 }
 

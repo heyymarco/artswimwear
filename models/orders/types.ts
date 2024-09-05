@@ -20,6 +20,7 @@ import {
 }                           from '../shippings'
 import {
     type CustomerOrGuestPreview,
+    type CustomerDetail,
     type CustomerOrGuestPreferenceDetail,
 }                           from '../customers'
 import {
@@ -189,6 +190,20 @@ export interface PaymentDetail
 
 
 
+export interface CustomerData
+    extends
+        Pick<CustomerDetail,
+            // records:
+            |'id'
+        >,
+        Pick<CustomerOrGuestData,
+            |'preference'
+        >
+{
+}
+
+
+
 export interface CreateDraftOrderData
     extends
         // bases:
@@ -203,7 +218,7 @@ export interface CreateDraftOrderData
     paymentId       : string // redefined paymentId as non_undefined
     
     // extended data:
-    customerOrGuest : CustomerOrGuestData
+    customerOrGuest : CustomerData|CustomerOrGuestData // customer|guest data from orders route
 }
 
 
@@ -242,12 +257,12 @@ export type CreateOrderData =
     &(
         |{
             // extended data:
-            customerOrGuest  : CustomerOrGuestData
+            customerOrGuest  : CustomerData|CustomerOrGuestData // customer|guest data from orders route
         }
         |{
             // extended data:
-            customerId       : string|null
-            guestId          : string|null
+            customerId       : string|null // customer|guest data from DraftOrder
+            guestId          : string|null // customer|guest data from DraftOrder
         }
     )
 

@@ -9,12 +9,25 @@ import {
     NextResponse,
 }                           from 'next/server'
 
+// next-auth:
+import {
+    getServerSession,
+}                           from 'next-auth'
+
+// heymarco:
+import type {
+    Session,
+}                           from '@heymarco/next-auth/server'
+
 // next-connect:
 import {
     createEdgeRouter,
 }                           from 'next-connect'
 
 // models:
+import {
+    z,
+}                           from 'zod'
 import {
     type Product,
     type Variant,
@@ -33,9 +46,15 @@ import {
     type AuthorizedFundData,
     type PaymentDetail,
     
+    type CustomerData,
+    
     type FinishedOrderState,
     
     type CheckoutPaymentSessionDetail,
+    
+    type CustomerOrGuestPreferenceDetail,
+    type GuestDetail,
+    GuestDetailSchema,
     
     commitDraftOrderSelect,
     revertDraftOrderSelect,
@@ -123,6 +142,11 @@ import {
     testMatchingShipping,
     calculateShippingCost,
 }                           from '@/libs/shippings/shippings'
+
+// internal auth:
+import {
+    authOptions,
+}                           from '@/libs/auth.server'
 
 // configs:
 import {
@@ -217,6 +241,18 @@ export {
 }
 
 router
+
+
+.use(async (req, ctx, next) => {
+    // conditions:
+    const session = await getServerSession(authOptions);
+    if (session) (req as any).session = session;
+    
+    
+    
+    // not_authenticated|authenticated => next:
+    return await next();
+})
 
 /**
  * intialize paymentSession
@@ -321,27 +357,48 @@ router
     
     
     //#region validate customer data & extra
+    const customerAndExtraData = await (async () => {
+        try {
+            return {
+                marketingOpt : simulateOrder ? true      : z.boolean().parse(placeOrderData?.marketingOpt),
+                guest        : simulateOrder ? undefined : GuestDetailSchema.parse(placeOrderData?.customer),
+            };
+        }
+        catch {
+            return null;
+        } // try
+    })();
+    if (customerAndExtraData === null) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
     const {
-        // marketings:
         marketingOpt,
-        
-        
-        
-        // customers:
-        customer,
-    } = placeOrderData;
-    if (!simulateOrder) {
-        if (
-            ((marketingOpt !== undefined) && (typeof(marketingOpt) !== 'boolean'))
-            
-            || !customer || (typeof(customer) !== 'object')
-        ) {
-            return NextResponse.json({
+        guest,
+    } = customerAndExtraData;
+    //#endregion validate customer data & extra
+    
+    
+    
+    //#region authenticating
+    const session = (req as any).session as Session;
+    const customerId = session.user?.id;
+    if (customerId) {
+        if (guest !== undefined) {
+            return Response.json({
+                error: 'Invalid data.',
+            }, { status: 400 }); // handled with error
+        } // if
+    }
+    else {
+        if (guest) {
+            return Response.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
     } // if
-    //#endregion validate customer data & extra
+    //#endregion authenticating
     
     
     
@@ -1296,13 +1353,21 @@ router
                 : totalShippingCostConverted
             );
             
-            const customerOrGuest : CustomerOrGuestData = {
-                ...customer,
-                preference           : {
-                    marketingOpt     : marketingOpt,
-                    timezone         : checkoutConfigServer.intl.defaultTimezone, // TODO: detect customer's|guest's timezone based on browser detection `(0 - (new Date()).getTimezoneOffset())`
-                },
+            const preference : CustomerOrGuestPreferenceDetail = {
+                marketingOpt     : marketingOpt,
+                timezone         : checkoutConfigServer.intl.defaultTimezone, // TODO: detect customer's|guest's timezone based on browser detection `(0 - (new Date()).getTimezoneOffset())`
             };
+            const customerOrGuest : CustomerData|CustomerOrGuestData = (
+                customerId
+                ? ({
+                    id : customerId,
+                    preference,
+                } satisfies CustomerData)
+                : ({
+                    ...(guest as unknown as GuestDetail),
+                    preference,
+                } satisfies CustomerOrGuestData)
+            );
             const billingAddressData : BillingAddressDetail|null = (
                 !hasBillingAddress
                 ? null

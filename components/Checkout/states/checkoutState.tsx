@@ -2007,7 +2007,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     
                     
                     // customer data:
-                    customer,
+                    ...((sessionStatus === 'unauthenticated') ? {
+                        customer, // provide the guest data if not authenticated (sign in as a guest)
+                    } : undefined),
                 } : undefined),
                 
                 
