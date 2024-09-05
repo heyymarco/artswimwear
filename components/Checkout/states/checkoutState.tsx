@@ -29,9 +29,7 @@ import {
     type EntityState
 }                           from '@reduxjs/toolkit'
 import {
-    type QueryDefinition,
     type MutationDefinition,
-    type QueryActionCreatorResult,
     type MutationActionCreatorResult,
 }                           from '@reduxjs/toolkit/query'
 
@@ -68,17 +66,10 @@ import {
     
     
     
-    // dialog-components:
-    type ModalExpandedChangeEvent,
-    
-    
-    
     // utility-components:
     WindowResizeCallback,
     useWindowResizeObserver,
-    PromiseDialog,
     useDialogMessage,
-    Email,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // models:
@@ -167,7 +158,6 @@ import {
     
     
     // apis:
-    restoreCart,
     backupCart,
     placeOrder,
     makePayment,
