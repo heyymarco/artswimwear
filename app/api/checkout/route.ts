@@ -382,8 +382,8 @@ router
     
     
     //#region authenticating
-    const session = (req as any).session as Session;
-    const customerId = session.user?.id;
+    const session = (req as any).session as Session|undefined;
+    const customerId = session?.user?.id;
     if (customerId) {
         if (guest !== undefined) {
             return Response.json({
