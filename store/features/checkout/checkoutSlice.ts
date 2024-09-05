@@ -149,10 +149,11 @@ export const checkoutSlice = createSlice({
         resetCheckout         : (state) => {
             return initialState; // reset
         },
-        restoreCheckout       : (state, {payload: checkoutDetail}: PayloadAction<Omit<CheckoutDetail, 'paymentSession'>>) => {
+        restoreCheckout       : (state, {payload: checkoutDetail}: PayloadAction<Omit<CheckoutDetail, 'paymentSession'> & Partial<Pick<CheckoutSession, 'marketingOpt'>>>) => {
             return {
                 ...initialState,
                 checkoutStep       : checkoutDetail.checkoutStep,
+                marketingOpt       : checkoutDetail.marketingOpt ?? initialState.marketingOpt,
                 shippingAddress    : checkoutDetail.shippingAddress,
                 shippingProviderId : checkoutDetail.shippingProviderId,
                 billingAsShipping  : checkoutDetail.billingAsShipping,

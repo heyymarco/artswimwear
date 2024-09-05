@@ -5,6 +5,7 @@ import {
 }                           from '@prisma/client'
 import {
     type CheckoutDetail,
+    type CheckoutSession,
 }                           from '../checkouts'
 
 
@@ -63,11 +64,12 @@ export interface CartUpdateRequest
     extends
         Omit<CartDetail,
             // data:
-            'checkout' // convert to optional
+            |'checkout' // convert to optional
         >,
         Partial<Pick<CartDetail,
             // data:
-            'checkout' // convert to optional
-        >>
+            |'checkout' // convert to optional
+        >>,
+        Partial<Pick<CheckoutSession, 'marketingOpt'>>
 {
 }

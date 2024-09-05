@@ -18,6 +18,8 @@ import {
     type Prisma,
     type CartDetail,
     
+    type CustomerPreferenceDetail,
+    
     
     
     CartUpdateRequestSchema,
@@ -87,16 +89,36 @@ router
     
     //#region query result
     try {
-        const cartDetail = await prisma.cart.findFirst({
-            where  : {
-                parentId : customerId,
-            },
-            select : cartDetailSelect,
-        }) as CartDetail|null;
+        const [cartDetail, customer] = await prisma.$transaction([
+            prisma.cart.findFirst({
+                where  : {
+                    // relations:
+                    parentId : customerId,
+                },
+                select : cartDetailSelect,
+            }) as Prisma.PrismaPromise<CartDetail|null>,
+            prisma.customer.findFirst({
+                where  : {
+                    // relations:
+                    id: customerId,
+                },
+                select : {
+                    // data:
+                    preference : {
+                        select : {
+                            marketingOpt : true,
+                        },
+                    },
+                },
+            }),
+        ]);
         
         
         
-        return Response.json(cartDetail); // handled with success
+        return Response.json(!cartDetail ? null : ({
+            ...cartDetail,
+            marketingOpt : customer?.preference?.marketingOpt ?? null,
+        } satisfies CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)); // handled with success
     }
     catch (error: any) {
         console.log('ERROR: ', error);
@@ -110,7 +132,7 @@ router
         try {
             const data = await req.json();
             return {
-                cartDetail : CartUpdateRequestSchema.parse(data),
+                cartDetailAndPreferences : CartUpdateRequestSchema.parse(data),
             };
         }
         catch {
@@ -123,9 +145,10 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        cartDetail : {
+        cartDetailAndPreferences : {
             items,
             checkout,
+            marketingOpt,
             ...cartDetail
         },
     } = requestData;
@@ -357,7 +380,29 @@ router
                     },
                 };
                 
-                return prisma.cart.upsert(upsertCartData);
+                await prisma.cart.upsert(upsertCartData);
+                
+                if (marketingOpt !== undefined) {
+                    await prisma.customer.update({
+                        where  : {
+                            // relations:
+                            id : customerId,
+                        },
+                        data : {
+                            // data:
+                            preference : {
+                                upsert : {
+                                    create : {
+                                        marketingOpt,
+                                    },
+                                    update : {
+                                        marketingOpt,
+                                    },
+                                },
+                            },
+                        },
+                    })
+                } // if
             })
         );
         return Response.json({ ok: 'updated' }); // handled with success

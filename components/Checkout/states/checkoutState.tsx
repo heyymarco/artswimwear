@@ -95,6 +95,8 @@ import {
     type FinishedOrderState,
     type BusyState,
     
+    type CustomerPreferenceDetail,
+    
     type CartDetail,
     type CartUpdateRequest,
     type CheckoutSession,
@@ -1155,7 +1157,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     }, [isCheckoutEmpty]);
     
     // auto restore the cart session when the customer loggedIn:
-    const handleCartRestored    = useEvent<EventHandler<CartDetail|null>>((restoredCartDetail) => {
+    const handleCartRestored    = useEvent<EventHandler<(CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)|null>>((restoredCartDetail) => {
         // conditions:
         if (!isInitialCheckoutState) return; // do not restore the state if already been modified
         const restoredCheckoutDetail = restoredCartDetail?.checkout;
@@ -1165,7 +1167,10 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         // actions:
         // restore the checkout state:
-        dispatch(reduxRestoreCheckout(restoredCheckoutDetail));
+        dispatch(reduxRestoreCheckout({
+            ...restoredCheckoutDetail,
+            marketingOpt : restoredCartDetail.marketingOpt,
+        }));
         
         // restoring the checkout state causing the `globalCheckoutSession` mutated, we need to re-sync the last checkoutStep|shippingMethod|paymentMethod to avoid __wrong_change_detection__:
         prevCheckoutStepRef.current       = restoredCheckoutDetail.checkoutStep;       // sync
@@ -1208,9 +1213,9 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             backupCartPromise = dispatch(backupCart({
-                currency : cartState.currency,
-                items    : cartState.items,
-                checkout : {
+                currency     : cartState.currency,
+                items        : cartState.items,
+                checkout     : {
                     checkoutStep       : globalCheckoutSession.checkoutStep,
                     shippingAddress    : globalCheckoutSession.shippingAddress,
                     shippingProviderId : globalCheckoutSession.shippingProviderId,
@@ -1218,6 +1223,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                     billingAddress     : globalCheckoutSession.billingAddress,
                     paymentMethod      : globalCheckoutSession.paymentMethod,
                 },
+                marketingOpt : marketingOpt,
             } satisfies CartUpdateRequest, {
                 track: true, // must be true in order to get the response result for updating the `restoreCart()`'s cache
             }));

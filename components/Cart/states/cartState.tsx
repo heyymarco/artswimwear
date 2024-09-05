@@ -68,6 +68,8 @@ import {
 
 // models:
 import {
+    type CustomerPreferenceDetail,
+    
     type CartDetail,
     type CartSession,
     type CartUpdateRequest,
@@ -200,8 +202,8 @@ export interface CartStateBase
     
     
     // events:
-    lastRestoredCartDetailRef : React.MutableRefObject<CartDetail|null|undefined>
-    restoredCartEventHandlers : Set<EventHandler<CartDetail|null>>
+    lastRestoredCartDetailRef : React.MutableRefObject<(CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)|null|undefined>
+    restoredCartEventHandlers : Set<EventHandler<(CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)|null>>
 }
 
 export type PickAlways<T, K extends keyof T, V> = {
@@ -309,7 +311,7 @@ CartStateContext.displayName  = 'CartState';
 export const useCartState = (): CartState => {
     return useContext(CartStateContext);
 };
-export const useRestoredCartEvent = (eventHandler: EventHandler<CartDetail|null>): void => {
+export const useRestoredCartEvent = (eventHandler: EventHandler<(CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)|null>): void => {
     // contexts:
     const {
         // events:
@@ -366,8 +368,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // states:
-    const lastRestoredCartDetailRef   = useRef<CartDetail|null|undefined>(undefined);
-    const [restoredCartEventHandlers] = useState<Set<EventHandler<CartDetail|null>>>(() => new Set<EventHandler<CartDetail|null>>());
+    const lastRestoredCartDetailRef   = useRef<(CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)|null|undefined>(undefined);
+    const [restoredCartEventHandlers] = useState<Set<EventHandler<(CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)|null>>>(() => new Set<EventHandler<(CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)|null>>());
     
     
     

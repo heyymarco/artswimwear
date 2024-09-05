@@ -26,6 +26,8 @@ import {
     type PaymentConfirmationRequest,
     type PaymentConfirmationDetail,
     
+    type CustomerPreferenceDetail,
+    
     type CartDetail,
     type CartUpdateRequest,
     type CheckoutPaymentSessionDetail,
@@ -283,7 +285,7 @@ export const apiSlice = createApi({
         
         
         
-        restoreCart                 : builder.query<CartDetail|null, void>({
+        restoreCart                 : builder.query<(CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>)|null, void>({
             query : () => ({
                 url    : 'cart',
                 method : 'GET',
@@ -325,13 +327,15 @@ export const apiSlice = createApi({
                             apiSlice.util.updateQueryData(endpointName, currentQueryCache.originalArgs as any, (currentQueryCacheData) => {
                                 const {
                                     checkout = (currentQueryCacheData?.checkout ?? null),
+                                    marketingOpt,
                                     ...restBackupData
                                 } = arg;
                                 
                                 
                                 
-                                const newRestore : CartDetail = {
+                                const newRestore : (CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>) = {
                                     checkout,
+                                    marketingOpt : marketingOpt ?? null,
                                     ...restBackupData,
                                 };
                                 return newRestore;

@@ -49,4 +49,9 @@ export const CartUpdateRequestSchema = (
         })
         .partial()
     )
+    .merge(
+        z.object({
+            marketingOpt : z.boolean().optional(),
+        })
+    )
 ) satisfies z.Schema<CartUpdateRequest>;
