@@ -29,6 +29,9 @@ export const checkoutConfigShared   : CheckoutConfigShared = {
                 fractionUnit        : 0.01,
             },
         },
+        /**
+         * @deprecated Use `checkoutConfigXXX.payment.defaultCurrency` instead.
+         */
         defaultCurrency             : process.env.NEXT_PUBLIC_INTL_DEFAULT_CURRENCY ?? 'USD',
         currencyConversionRounding  : 'ROUND',
     },
