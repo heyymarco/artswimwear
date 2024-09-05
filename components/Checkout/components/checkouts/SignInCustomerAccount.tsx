@@ -88,8 +88,8 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     // jsx:
     return (
         <div
-                // classes:
-                className={styleSheet.signInCustomerSection}
+            // classes:
+            className={styleSheet.signInCustomerSection}
         >
             {!!session && <div className={styleSheet.signInCustomerInfo}>
                 <div className={styleSheet.signInCustomerInfoText}>
