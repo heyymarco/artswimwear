@@ -361,7 +361,7 @@ router
         try {
             return {
                 marketingOpt : simulateOrder ? true      : z.boolean().parse(placeOrderData?.marketingOpt),
-                guest        : simulateOrder ? undefined : GuestDetailSchema.parse(placeOrderData?.customer),
+                guest        : simulateOrder ? undefined : GuestDetailSchema.optional().parse(placeOrderData?.customer),
             };
         }
         catch {
