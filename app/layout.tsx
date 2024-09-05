@@ -50,6 +50,9 @@ import {
 
 // internal components:
 import {
+    SigninTabStateProvider,
+}                           from '@/components/SignIn'
+import {
     CartStateProvider,
     CartDialog,
 }                           from '@/components/Cart'
@@ -171,22 +174,24 @@ export default function RootLayout({
             </head>
             <body>
                 <NextAuthSessionProvider>
-                    <Provider store={store}><PersistGate persistor={persistor}>
-                        <DialogMessageProvider
-                            fetchErrorTitleDefault={fetchErrorTitleDefault}
-                            fetchErrorMessageDefault={fetchErrorMessageDefault}
-                        >
-                            <CartStateProvider>
-                                <Header />
-                                
-                                {children}
-                                
-                                <Footer />
-                                
-                                <CartDialog />
-                            </CartStateProvider>
-                        </DialogMessageProvider>
-                    </PersistGate></Provider>
+                    <SigninTabStateProvider>
+                        <Provider store={store}><PersistGate persistor={persistor}>
+                            <DialogMessageProvider
+                                fetchErrorTitleDefault={fetchErrorTitleDefault}
+                                fetchErrorMessageDefault={fetchErrorMessageDefault}
+                            >
+                                <CartStateProvider>
+                                    <Header />
+                                    
+                                    {children}
+                                    
+                                    <Footer />
+                                    
+                                    <CartDialog />
+                                </CartStateProvider>
+                            </DialogMessageProvider>
+                        </PersistGate></Provider>
+                    </SigninTabStateProvider>
                 </NextAuthSessionProvider>
             </body>
         </html>

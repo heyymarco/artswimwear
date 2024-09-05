@@ -28,6 +28,12 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// reusable-ui components:
+import {
+    // utility-components:
+    useDialogMessage,
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
 // internal components:
 import {
     SignInDialog,
@@ -38,11 +44,6 @@ import {
 import {
     SignInGate,
 }                           from '@/components/SignInGate'
-
-// internals:
-import {
-    useCheckoutState,
-}                           from '../../states/checkoutState'
 
 
 
@@ -58,15 +59,10 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     
     
     
-    // states:
+    // dialogs:
     const {
-        // dialogs:
-        signInDialogExpanded,
-        setSignInDialogExpanded,
-        setSignInDialogCollapseStart,
-        setSignInDialogCollapseEnd,
-        showSignInDialog,
-    } = useCheckoutState();
+        showDialog,
+    } = useDialogMessage();
     
     
     
@@ -79,7 +75,9 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     // handlers:
     const handleSignInLinkClick = useEvent((): void => {
         const backPathname      = pathName;
-        showSignInDialog()
+        showDialog<boolean>(
+            <SignInDialog />
+        )
         .then(() => { // on fully closed:
             router.push(backPathname, { scroll: false });
         });
@@ -89,34 +87,24 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     
     // jsx:
     return (
-        <>
-            <div
-                    // classes:
-                    className={styleSheet.signInCustomerSection}
-            >
-                {!!session && <div className={styleSheet.signInCustomerInfo}>
-                    <div className={styleSheet.signInCustomerInfoText}>
-                        <p>
-                            Signed in as:
-                        </p>
-                    </div>
-                    <SignInInfo theme='success' />
-                </div>}
-                <SignInGate
-                    // handlers:
-                    onSignIn={handleSignInLinkClick}
-                    onSignUp={handleSignInLinkClick}
-                />
-            </div>
-            
-            <SignInDialog
-                // states:
-                expanded={signInDialogExpanded}
-                onExpandedChange={setSignInDialogExpanded}
-                onCollapseStart={setSignInDialogCollapseStart}
-                onCollapseEnd={setSignInDialogCollapseEnd}
+        <div
+                // classes:
+                className={styleSheet.signInCustomerSection}
+        >
+            {!!session && <div className={styleSheet.signInCustomerInfo}>
+                <div className={styleSheet.signInCustomerInfoText}>
+                    <p>
+                        Signed in as:
+                    </p>
+                </div>
+                <SignInInfo theme='success' />
+            </div>}
+            <SignInGate
+                // handlers:
+                onSignIn={handleSignInLinkClick}
+                onSignUp={handleSignInLinkClick}
             />
-        </>
+        </div>
     );
 };
 export {

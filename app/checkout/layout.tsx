@@ -10,9 +10,6 @@ import {
 import {
     CheckoutStateProvider,
 }                           from '@/components/Checkout'
-import {
-    SigninTabStateProvider,
-}                           from '@/components/SignIn'
 
 
 
@@ -27,10 +24,8 @@ export default function CheckoutLayout({
     // jsx:
     return (
         <CheckoutStateProvider>
-            <SigninTabStateProvider>
-                {children}
-                {signin_dialog}
-            </SigninTabStateProvider>
+            {children}
+            {signin_dialog}
         </CheckoutStateProvider>
     );
 }
