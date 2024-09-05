@@ -9,6 +9,7 @@ import {
     
     // hooks:
     useEffect,
+    useState,
 }                           from 'react'
 
 // cssfn:
@@ -85,6 +86,9 @@ import {
 import {
     SignInCollapse,
 }                           from '@/components/SignInCollapse'
+import {
+    SignInBusyDialog,
+}                           from '@/components/SignInBusyDialog'
 
 // contexts:
 import {
@@ -184,6 +188,11 @@ const Checkout = (): JSX.Element|null => {
             break;
         } // switch
     }, [checkoutStep]);
+    
+    
+    
+    // refs:
+    const [customerInfoSectionOuterRef, setCustomerInfoSectionOuterRef] = useState<HTMLElement|null>(null);
     
     
     
@@ -290,6 +299,7 @@ const Checkout = (): JSX.Element|null => {
                     <Section
                         // refs:
                         elmRef={customerInfoSectionRef}
+                        outerRef={setCustomerInfoSectionOuterRef}
                         
                         
                         
@@ -335,6 +345,7 @@ const Checkout = (): JSX.Element|null => {
                         >
                             <SignInCustomerAccount />
                         </Section>
+                        <SignInBusyDialog viewport={customerInfoSectionOuterRef} />
                     </Section>
                     
                     <Section
