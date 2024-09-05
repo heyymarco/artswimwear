@@ -62,6 +62,9 @@ import {
     ProfileImage,
 }                           from '@/components/ProfileImage'
 import {
+    SignInDialog,
+}                           from '@/components/dialogs/SignInDialog'
+import {
     SignInDropdownResult,
     SignInDropdown,
 }                           from './SignInDropdown'
@@ -154,11 +157,24 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     const router = useRouter();
     const pathname = usePathname();
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        event.preventDefault();  // prevent the `href='/signin'` to HARD|SOFT navigate
         event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
         
         
         
         if (isFullySignedOut) {
+            //#region a fix for signIn page interceptor when on /checkout page
+            if (pathname === '/checkout') {
+                const backPathname = pathname;
+                showDialog<boolean>(
+                    <SignInDialog />
+                )
+                .then(() => { // on fully closed:
+                    router.push(backPathname, { scroll: false });
+                });
+            } // if
+            //#endregion a fix for signIn page interceptor when on /checkout page
+            
             router.push(signInPath);
             toggleList(false); // collapse the <Navbar> manually
         }
@@ -237,6 +253,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             
             // behaviors:
             actionCtrl={props.actionCtrl ?? (isFullySignedOut || isFullySignedIn)}
+            href={isFullySignedOut ? '/signin' : undefined}
             
             
             
