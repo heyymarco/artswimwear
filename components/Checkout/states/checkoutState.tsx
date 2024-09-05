@@ -78,12 +78,11 @@ import {
     useWindowResizeObserver,
     PromiseDialog,
     useDialogMessage,
+    Email,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // models:
 import {
-    type ProductPreview,
-    
     type PlaceOrderRequestOptions,
     
     type ShippingAddressDetail,
@@ -99,6 +98,8 @@ import {
     type CartDetail,
     type CartUpdateRequest,
     type CheckoutSession,
+    
+    type CustomerOrGuestPreview,
     
     calculateCheckoutProgress,
 }                           from '@/models'
@@ -585,7 +586,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     // sessions:
-    const { status: sessionStatus } = useSession();
+    const { data: session, status: sessionStatus } = useSession();
     
     
     
@@ -2188,6 +2189,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             checkoutSession : {
                 ...localCheckoutSession,
+                customer     : session?.user ? ({ name: session.user.name, email: session.user.email } satisfies CustomerOrGuestPreview) : localCheckoutSession.customer,
                 checkoutStep : (paid ? 'PAID' : 'PENDING'),
             },
             totalShippingCost,
