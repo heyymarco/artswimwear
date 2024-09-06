@@ -138,7 +138,7 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
         backdropStyle  = 'regular',
         modalCardStyle = 'scrollable',
         horzAlign      = 'stretch',
-        vertAlign      = 'stretch',
+        vertAlign      = 'center',
         
         
         

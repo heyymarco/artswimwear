@@ -80,7 +80,7 @@ export default () => [
     scope('dialog', {
         boxSizing     : 'border-box',
         maxInlineSize : `${breakpoints.sm}px`,
-        maxBlockSize  : `${breakpoints.sm}px`,
+        // maxBlockSize  : `${breakpoints.sm}px`, // unlimited for max height
     }, {specificityWeight: 4}),
     scope('cardBody', {
         // layouts:
