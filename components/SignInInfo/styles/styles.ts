@@ -68,9 +68,10 @@ export const usesSignInInfoLayout = memoizeStyle(() => {
                 '"image email" auto',
                 '"image  edit" 1fr',
                 '/',
-                'max-content 1fr',
+                'max-content max-content',
             ]],
-            alignItems   : 'center', // center items vertically
+            justifyContent : 'center', // if the container stretched horizontally, the excess space is placed to the left and right
+            alignItems     : 'center', // center items vertically
             
             
             
