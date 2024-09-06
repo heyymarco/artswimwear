@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
 // styles:
 import {
     // style sheets:
@@ -25,6 +30,9 @@ import {
 }                           from '@heymarco/section'
 
 // internal components:
+import {
+    SignInInfo,
+}                           from '@/components/SignInInfo'
 import {
     SigninTabStateProps,
     useSigninTabState,
@@ -52,7 +60,12 @@ export function SignInPageContent(props: SignInPageContentProps): JSX.Element|nu
     
     
     // styles:
-    const styleSheet = useSignInPageStyleSheet();
+    const styleSheets = useSignInPageStyleSheet();
+    
+    
+    
+    // sessions:
+    const { data: session } = useSession();
     
     
     
@@ -73,12 +86,34 @@ export function SignInPageContent(props: SignInPageContentProps): JSX.Element|nu
     
     // jsx:
     return (
-        <Main className={styleSheet.main}>
+        <Main className={styleSheets.main}>
             <Section className='fill-self'>
-                <SignIn
-                    // back to home page after signed in:
-                    defaultCallbackUrl='/'
-                />
+                <div className={styleSheets.content}>
+                    {!!session && <aside className={styleSheets.signInUserInfo}>
+                        <div className={styleSheets.signInUserInfoText}>
+                            <p>
+                                Signed in as:
+                            </p>
+                        </div>
+                        <SignInInfo
+                            // variants:
+                            size='lg'
+                            theme='success'
+                        />
+                    </aside>}
+                    
+                    <div className={styleSheets.signInUiGroup}>
+                        {!!session && <div className={styleSheets.switchUserInfoText}>
+                            <p>
+                                Not you? Please sign in below:
+                            </p>
+                        </div>}
+                        <SignIn
+                            // back to home page after signed in:
+                            defaultCallbackUrl='/'
+                        />
+                    </div>
+                </div>
             </Section>
         </Main>
     );

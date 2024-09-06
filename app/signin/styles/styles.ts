@@ -2,11 +2,16 @@
 import {
     // writes css in javascript:
     children,
-    style,
+    scope,
 }                           from '@cssfn/core'                  // writes css in javascript
 
 // reusable-ui core:
 import {
+    // a spacer (gap) management system:
+    spacers,
+    
+    
+    
     // a responsive management system:
     breakpoints,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -14,8 +19,8 @@ import {
 
 
 // styles:
-export const usesSignInPageLayout = () => {
-    return style({
+export default [
+    scope('main', {
         ...children(['&', 'section'], {
             // layouts:
             display        : 'grid',
@@ -24,33 +29,68 @@ export const usesSignInPageLayout = () => {
             // layouts:
             display        : 'grid',
             gridTemplate   : [[
-                '"... ..... ..." auto',
-                '"... login ..." max-content',
-                '"... ..... ..." auto',
+                '"... ....... ..." auto',
+                '"... content ..." max-content',
+                '"... ....... ..." auto',
                 '/',
-                `1fr minmax(max-content, ${breakpoints.md}px) 1fr`
+                `1fr minmax(max-content, ${breakpoints.sm}px) 1fr`
             ]],
-            
-            
-            
-            // children:
-            ...children('*', {
-                gridArea: 'login',
-            }),
-            ...children('*>*', {
-                // positions:
-                /* begin: a trick for centering `<SignIn> > <TabBody>` which is implemented `container-type: inline-size` */
-                position         : 'relative',
-                insetInlineStart : '50%',
-                translate        : '-50%',
-                transition       : 'none',
-                /* end  : a trick for centering `<SignIn> > <TabBody>` which is implemented `container-type: inline-size` */
-            }),
         }),
-    });
-};
-
-export default () => style({
-    // layouts:
-    ...usesSignInPageLayout(),
-});
+    }),
+    scope('content', {
+        // positions:
+        gridArea: 'content',
+        
+        
+        
+        // layouts:
+        display: 'grid',
+        
+        
+        
+        // spacings:
+        gap : spacers.xl,
+    }),
+    
+    
+    
+    scope('signInUserInfo', {
+        // positions:
+        justifySelf: 'center',
+        
+        
+        
+        // layouts:
+        display: 'grid',
+        
+        
+        
+        // spacings:
+        gap: spacers.sm,
+    }),
+    scope('signInUserInfoText', {
+        // typos:
+        textAlign: 'center',
+    }),
+    scope('switchUserInfoText', {
+        // typos:
+        textAlign: 'center',
+    }),
+    
+    
+    
+    scope('signInUiGroup', {
+        // layouts:
+        display: 'grid',
+        
+        
+        
+        // spacings:
+        gap: spacers.sm,
+        
+        
+        
+        // typos:
+        textAlign: 'center',
+    }),
+];
