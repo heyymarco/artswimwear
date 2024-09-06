@@ -19,10 +19,16 @@ import {
 }                               from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // auth-js:
-import GoogleProvider           from '@auth/core/providers/google'
-import FacebookProvider         from '@auth/core/providers/facebook'
-import InstagramProvider        from '@auth/core/providers/instagram'
-import TwitterProvider          from '@auth/core/providers/twitter'
+// import GoogleProvider       from '@auth/core/providers/google'    // doesn't work
+// import FacebookProvider     from '@auth/core/providers/facebook'  // doesn't work
+// import InstagramProvider    from '@auth/core/providers/instagram' // doesn't work
+// import TwitterProvider      from '@auth/core/providers/twitter'   // doesn't work
+
+// next-auth:
+import GoogleProvider       from 'next-auth/providers/google'        // works
+import FacebookProvider     from 'next-auth/providers/facebook'      // works
+import InstagramProvider    from 'next-auth/providers/instagram'     // works
+import TwitterProvider      from 'next-auth/providers/twitter'       // works
 
 // heymarco:
 import type {
