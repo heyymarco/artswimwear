@@ -107,12 +107,7 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
     // default props:
     const {
         // variants:
-        theme              = 'primary',
-        
-        
-        
-        // pages:
-        defaultCallbackUrl = '/',
+        theme = 'primary',
         
         
         
@@ -179,11 +174,6 @@ const SignIn         = <TElement extends Element = HTMLElement>(props: SignInPro
             authConfigClient={authConfigClient}
             credentialsConfigClient={credentialsConfigClient}
             providers={loginProviders}
-            
-            
-            
-            // pages:
-            defaultCallbackUrl={defaultCallbackUrl}
             
             
             
