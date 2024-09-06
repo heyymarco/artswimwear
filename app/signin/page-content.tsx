@@ -75,7 +75,10 @@ export function SignInPageContent(props: SignInPageContentProps): JSX.Element|nu
     return (
         <Main className={styleSheet.main}>
             <Section className='fill-self'>
-                <SignIn />
+                <SignIn
+                    // back to home page after signed in:
+                    defaultCallbackUrl='/'
+                />
             </Section>
         </Main>
     );

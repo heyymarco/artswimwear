@@ -85,6 +85,7 @@ const SignInCustomerAccount = (): JSX.Element|null => {
                 // components:
                 signInComponent={
                     <SignIn<Element>
+                        // back to current checkout page after signed in:
                         defaultCallbackUrl={backPathname}
                     />
                 }

@@ -70,6 +70,7 @@ import {
 }                           from './SignInDropdown'
 import {
     type Session,
+    SignIn,
 }                           from '@/components/SignIn'
 
 // internals:
@@ -171,7 +172,15 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 const backPathname = pathname;
                 
                 showDialog<false|Session>(
-                    <SignInDialog />
+                    <SignInDialog
+                        // components:
+                        signInComponent={
+                            <SignIn<Element>
+                                // back to current checkout page after signed in:
+                                defaultCallbackUrl={backPathname}
+                            />
+                        }
+                    />
                 )
                 .then(() => { // on fully closed:
                     router.push(backPathname, { scroll: false });
