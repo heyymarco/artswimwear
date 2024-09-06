@@ -4,7 +4,7 @@ import {
     rule,
     descendants,
     children,
-    style,
+    scope,
 }                           from '@cssfn/core'                  // writes css in javascript
 
 // reusable-ui core:
@@ -16,23 +16,13 @@ import {
     
     // a typography management system:
     typos,
-    
-    
-    
-    // border (stroke) stuff of UI:
-    usesBorder,
-    
-    
-    
-    // padding (inner spacing) stuff of UI:
-    usesPadding,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
 
 // styles:
-export const usesProfilePageLayout = () => {
-    return style({
+export default [
+    scope('main', {
         ...children(['&', 'section'], {
             // layouts:
             display        : 'grid',
@@ -116,10 +106,5 @@ export const usesProfilePageLayout = () => {
                 gridArea: 'email',
             }),
         }),
-    });
-};
-
-export default () => style({
-    // layouts:
-    ...usesProfilePageLayout(),
-});
+    }),
+];
