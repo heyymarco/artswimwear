@@ -9,7 +9,6 @@ import {
     
     // hooks:
     useState,
-    useEffect,
     useRef,
 }                           from 'react'
 
@@ -121,27 +120,13 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     
     // sessions:
     const { data: session, status: sessionStatus } = useSession();
-    const [isSigningOut, setIsSigningOut] = useState<boolean>(false);
-    const isFullySignedIn  = !isSigningOut && (sessionStatus === 'authenticated')   && !!session;
-    const isFullySignedOut = !isSigningOut && (sessionStatus === 'unauthenticated') &&  !session;
-    const isBusy           =  isSigningOut || (sessionStatus === 'loading');
+    const isSignedIn  = (sessionStatus === 'authenticated');
+    const isSignedOut = (sessionStatus === 'unauthenticated');
+    const isBusy      = (sessionStatus === 'loading');
     const { name: customerName, email: customerEmail, image: customerImage } = session?.user ?? {};
     const customerNameParts = customerName?.split(/\s+/gi);
     const customerFirstName = customerNameParts?.[0];
     const customerShortRestName = !!customerNameParts && (customerNameParts.length >= 2) ? customerNameParts[customerNameParts.length - 1][0] : undefined;
-    
-    
-    
-    // effects:
-    useEffect(() => {
-        // conditions:
-        if (!isFullySignedIn && !isFullySignedOut) return;
-        
-        
-        
-        // actions:
-        setIsSigningOut(false); // reset signing out
-    }, [isFullySignedIn, isFullySignedOut]);
     
     
     
@@ -162,7 +147,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
         
         
         
-        if (isFullySignedOut) {
+        if (isSignedOut) {
             //#region a fix for signIn page interceptor when on /checkout page
             if (pathname === '/checkout') {
                 const backPathname = pathname;
@@ -178,7 +163,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             router.push(signInPath);
             toggleList(false); // collapse the <Navbar> manually
         }
-        else if (isFullySignedIn) {
+        else if (isSignedIn) {
             if (shownMenu) {
                 shownMenu.closeDialog(undefined);
             }
@@ -216,7 +201,6 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                             break;
                         
                         case 'signOut':
-                            setIsSigningOut(true); // set signing out
                             signOut({ redirect: false, callbackUrl: pathname }); // when signed in back, redirects to current url
                             break;
                     } // switch
@@ -252,8 +236,8 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             
             
             // behaviors:
-            actionCtrl={props.actionCtrl ?? (isFullySignedOut || isFullySignedIn)}
-            href={isFullySignedOut ? '/signin' : undefined}
+            actionCtrl={props.actionCtrl ?? (isSignedOut || isSignedIn)}
+            href={isSignedOut ? '/signin' : undefined}
             
             
             
@@ -273,9 +257,9 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 
                 // states:
                 expandedTabIndex={
-                    isFullySignedOut
+                    isSignedOut
                     ? 0
-                    :   isFullySignedIn
+                    :   isSignedIn
                         ? 2
                         : 1
                 }
