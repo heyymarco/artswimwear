@@ -349,7 +349,9 @@ export default () => {
             gridAutoFlow: 'row',
             ...ifScreenWidthAtLeast('md', {
                 gridAutoFlow: 'column',
-                gridTemplateColumns : '3fr 2fr',
+                ...rule(':has(>:nth-child(2))', {
+                    gridTemplateColumns : '3fr 2fr',
+                }),
             }),
             justifyItems: 'center', // center items horizontally
             ...children(':first-child', {
