@@ -4,7 +4,18 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useRef,
+    useEffect,
 }                           from 'react'
+
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
 
 // styles:
 import {
@@ -19,11 +30,6 @@ import {
 
 // reusable-ui components:
 import {
-    // base-content-components:
-    Content,
-    
-    
-    
     // simple-components:
     ButtonIcon,
     CloseButton,
@@ -45,13 +51,15 @@ import {
 
 // internal components:
 import {
+    type Session,
+    type SignInProps,
     SignIn,
 }                           from '@/components/SignIn'
 
 
 
 // react components:
-export interface SignInDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<boolean> = ModalExpandedChangeEvent<boolean>>
+export interface SignInDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<false|Session> = ModalExpandedChangeEvent<false|Session>>
     extends
         // bases:
         Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
@@ -60,13 +68,23 @@ export interface SignInDialogProps<TElement extends Element = HTMLElement, TModa
         >
 {
     // accessibilities:
-    title ?: string
+    title           ?: string
+    
+    
+    
+    // components:
+    signInComponent ?: React.ReactElement<SignInProps<Element>>
 }
-const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<boolean> = ModalExpandedChangeEvent<boolean>>(props: SignInDialogProps<TElement, TModalExpandedChangeEvent>) => {
+const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<false|Session> = ModalExpandedChangeEvent<false|Session>>(props: SignInDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
     const {
         // accessibilities:
-        title = 'Sign In',
+        title           = 'Sign In',
+        
+        
+        
+        // components:
+        signInComponent = (<SignIn<Element> /> as React.ReactElement<SignInProps<Element>>),
         
         
         
@@ -81,13 +99,33 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     
     
     
-    // handlers:
-    const handleCloseDialog        = useEvent((): void => {
+    // sessions:
+    const { data: session } = useSession();
+    const prevSessionRef = useRef(session);
+    useEffect(() => {
+        // conditions:
+        if (prevSessionRef.current === session) return; // already the same => ignore
+        prevSessionRef.current = session;               // sync
+        
+        
+        
         // actions:
         props.onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
-            data       : undefined,
+            data       : session,
+        } as TModalExpandedChangeEvent);
+    }, [session]);
+    
+    
+    
+    // handlers:
+    const handleCloseDialog = useEvent((): void => {
+        // actions:
+        props.onExpandedChange?.({
+            expanded   : false,
+            actionType : 'ui',
+            data       : false,
         } as TModalExpandedChangeEvent);
     });
     
@@ -135,14 +173,18 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheet.cardBody}>
-                <SignIn
-                    className={styleSheet.signInUi}
-                    
-                    
-                    
-                    // components:
-                    gotoHomeButtonComponent={null}
-                />
+                {React.cloneElement<SignInProps<Element>>(signInComponent,
+                    // props:
+                    {
+                        // classes:
+                        className               : styleSheet.signInUi,
+                        
+                        
+                        
+                        // components:
+                        gotoHomeButtonComponent : null,
+                    }
+                )}
             </CardBody>
             <CardFooter>
                 <ButtonIcon className='btnCancel' icon='cancel' theme='danger' onClick={handleCloseDialog}>Cancel</ButtonIcon>

@@ -68,6 +68,9 @@ import {
     SignInDropdownResult,
     SignInDropdown,
 }                           from './SignInDropdown'
+import {
+    type Session,
+}                           from '@/components/SignIn'
 
 // internals:
 import {
@@ -166,7 +169,8 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             //#region a fix for signIn page interceptor when on /checkout page
             if (pathname === '/checkout') {
                 const backPathname = pathname;
-                showDialog<boolean>(
+                
+                showDialog<false|Session>(
                     <SignInDialog />
                 )
                 .then(() => { // on fully closed:

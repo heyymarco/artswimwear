@@ -44,6 +44,10 @@ import {
 import {
     SignInGate,
 }                           from '@/components/SignInGate'
+import {
+    type Session,
+    SignIn,
+}                           from '@/components/SignIn'
 
 
 
@@ -74,9 +78,17 @@ const SignInCustomerAccount = (): JSX.Element|null => {
     
     // handlers:
     const handleSignInLinkClick = useEvent((): void => {
-        const backPathname      = pathName;
-        showDialog<boolean>(
-            <SignInDialog />
+        const backPathname = pathName;
+        
+        showDialog<false|Session>(
+            <SignInDialog
+                // components:
+                signInComponent={
+                    <SignIn<Element>
+                        defaultCallbackUrl={backPathname}
+                    />
+                }
+            />
         )
         .then(() => { // on fully closed:
             router.push(backPathname, { scroll: false });
