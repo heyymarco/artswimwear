@@ -349,9 +349,12 @@ export default () => {
             gridAutoFlow: 'row',
             ...ifScreenWidthAtLeast('md', {
                 gridAutoFlow: 'column',
+                gridTemplateColumns : '3fr 2fr',
             }),
             justifyItems: 'center', // center items horizontally
-            justifyContent : 'center', // center all items horizontally, add spaces on the left and right
+            ...children(':first-child', {
+                justifySelf: 'stretch',
+            }),
             
             
             
