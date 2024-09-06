@@ -101,11 +101,12 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     
     // sessions:
     const { data: session } = useSession();
-    const prevSessionRef = useRef(session);
+    const sessionUserId  : string|null = session?.user?.id ?? null; // we use userId instead of the whole session object, so when the session is auto refreshed, the equality is preserved
+    const prevSessionRef = useRef<string|null>(sessionUserId);
     useEffect(() => {
         // conditions:
-        if (prevSessionRef.current === session) return; // already the same => ignore
-        prevSessionRef.current = session;               // sync
+        if (prevSessionRef.current === sessionUserId) return; // already the same => ignore
+        prevSessionRef.current = sessionUserId;               // sync
         
         
         
@@ -115,7 +116,7 @@ const SignInDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
             actionType : 'ui',
             data       : session,
         } as TModalExpandedChangeEvent);
-    }, [session]);
+    }, [sessionUserId, session]);
     
     
     
