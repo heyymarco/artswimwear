@@ -26,6 +26,12 @@ import {
     useOrderHistoryPreviewStyleSheet,
 }                           from './styles/loader'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
 import {
     // layout-components:
@@ -35,6 +41,11 @@ import {
     
     // status-components:
     Badge,
+    
+    
+    
+    // utility-components:
+    useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // heymarco components:
@@ -64,6 +75,9 @@ import {
 import {
     EditButton,
 }                           from '@/components/EditButton'
+import {
+    DummyDialog,
+}                           from '@/components/dialogs/DummyDialog'
 
 // models:
 import {
@@ -156,6 +170,43 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
     
     // refs:
     const listItemRef = useRef<HTMLElement|null>(null);
+    
+    
+    
+    // dialogs:
+    const {
+        showDialog,
+    } = useDialogMessage();
+    
+    
+    
+    // handlers:
+    type EditMode = 'full'
+    const handleEdit = useEvent((editMode: EditMode): void => {
+        // just for cosmetic backdrop:
+        const dummyPromise = (
+            ['full', 'full-status', 'full-payment'].includes(editMode)
+            ? showDialog(
+                <DummyDialog
+                    // global stackable:
+                    viewport={listItemRef}
+                />
+            )
+            : undefined
+        );
+        
+        const dialogPromise = showDialog((() => {
+            switch (editMode) {
+                // case 'full' : return (
+                // );
+                default     : throw new Error('app error');
+            } // switch
+        })());
+        
+        if (dummyPromise) {
+            dialogPromise.collapseStartEvent().then(() => dummyPromise.closeDialog(undefined));
+        } // if
+    });
     
     
     
