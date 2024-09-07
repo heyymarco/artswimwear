@@ -87,6 +87,11 @@ import {
     getTotalQuantity,
 }                           from './utilities'
 
+// configs:
+import {
+    checkoutConfigShared,
+}                           from '@/checkout.config.shared'
+
 
 
 // defaults:
@@ -112,7 +117,7 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
         
         id : orderId,
         
-        currency,
+        currency     : preferredCurrency,
         
         shippingCost : totalShippingCosts,
         
@@ -124,6 +129,8 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
         items,
     } = model;
     const paymentType = payment?.type;
+    
+    const currency            = preferredCurrency ?? checkoutConfigShared.intl.defaultCurrency;
     
     const totalProductPrice   = items?.reduce((accum, {price, quantity}) => {
         return accum + (price * quantity);
