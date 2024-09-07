@@ -40,24 +40,26 @@ import {
 
 // react components:
 export interface CurrencyDisplayProps {
+    currency     ?: string
     amount    : number|null|undefined | Array<ProductPricePart|number|null|undefined>
     multiply ?: number
 }
 const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
-    // props:
-    const {
-        amount   : amountRaw,
-        multiply = 1,
-    } = props;
-    
-    
-    
     // states:
     const {
         // accessibilities:
-        currency,
+        currency : cartCurrency,
     } = useCartState();
     const [convertedAmount, setConvertedAmount] = useState<number|null|undefined>(undefined);
+    
+    
+    
+    // props:
+    const {
+        currency = cartCurrency,
+        amount   : amountRaw,
+        multiply = 1,
+    } = props;
     
     
     

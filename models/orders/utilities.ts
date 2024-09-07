@@ -337,6 +337,7 @@ export const publicOrderDetailSelect = {
     items               : {
         select : {
             // data:
+            price       : true,
             quantity    : true,
             
             // relations:

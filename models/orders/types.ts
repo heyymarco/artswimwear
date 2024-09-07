@@ -191,6 +191,7 @@ export interface PublicOrderDetail
     
     items               : Pick<OrdersOnProducts,
         // data:
+        |'price'
         |'quantity'
         
         // relations:

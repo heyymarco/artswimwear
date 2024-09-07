@@ -8,6 +8,12 @@ import {
 }                           from '@cssfn/core'          // writes css in javascript
 
 import {
+    // a border (stroke) management system:
+    borders,
+    borderRadiuses,
+    
+    
+    
     // a spacer (gap) management system:
     spacers,
     
@@ -81,11 +87,16 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
             // layouts:
             display: 'grid',
             gridTemplate: [[
-                '"images createdAt "', 'auto',
-                '"images orderId   "', 'auto',
-                '"images ......... "', 'auto',
+                '"images ... createdAt "', 'auto',
+                '"images ... .........."', spacers.xs,
+                '"images ... orderId   "', 'auto',
+                '"images ... .........."', spacers.md,
+                '"images ... payment   "', 'auto',
+                '"images ... .........."', spacers.md, // the minimum space between payment and fullEditor
+                '"images ... .........."', '1fr',      // the extra rest space (if any) between payment and fullEditor
+                '"images ... fullEditor"', 'auto',
                 '/',
-                `calc(${imageSize}px - ${paddingVars.paddingInline}) 1fr`,
+                `calc(${imageSize}px - ${paddingVars.paddingInline}) ${spacers.md} 1fr`,
             ]],
             
             
@@ -106,9 +117,6 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
          // padding       : paddingVars.padding,
             paddingInline : paddingVars.paddingInline,
             paddingBlock  : paddingVars.paddingBlock,
-            
-            gapInline     : spacers.md,
-            gapBlock      : spacers.xs,
             
             
             
@@ -153,6 +161,59 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                 // typos:
                 fontSize: typos.fontSizeSm,
             }),
+            ...children('.payment', {
+                gridArea: 'payment',
+                
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'start',
+                
+                gap: spacers.sm,
+                
+                ...children('.paymentValue', {
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    justifyContent: 'start',
+                    alignItems    : 'center',
+                    
+                    gap: spacers.sm,
+                    
+                    ...children('.paymentMethod', {
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        
+                        gap: spacers.sm,
+                        
+                        ...children('.paymentProvider', {
+                            // sizes:
+                            width           : 'auto',
+                            height          : '16px',
+                            
+                            
+                            
+                            // backgrounds:
+                            backgroundColor : 'white',
+                            
+                            
+                            
+                            // borders:
+                            border          : borderVars.border,
+                            borderWidth     : borders.defaultWidth,
+                            borderRadius    : borderRadiuses.sm,
+                            
+                            
+                            
+                            // spacings:
+                            padding         : spacers.xs,
+                        }),
+                        ...children('.paymentIdentifier', {
+                            // typos:
+                            fontSize       : typos.fontSizeSm,
+                            fontWeight     : typos.fontWeightNormal,
+                        }),
+                    }),
+                }),
+            }),
             ...children('.images', {
                 // layouts:
                 gridArea    : 'images',
@@ -188,6 +249,9 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                     inlineSize : '100%',
                     blockSize  : '100%',
                 }),
+            }),
+            ...children('.fullEditor', {
+                gridArea: 'fullEditor',
             }),
             ...descendants('[role="dialog"]', {
                 // remove the padding of <Dialog>'s backdrop:
