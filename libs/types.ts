@@ -13,6 +13,9 @@ export interface Pagination<TEntry> {
 export interface Model {
     id : string
 }
+export type PartialModel<TModel extends Model> =
+    Pick<TModel, 'id'>
+    & Partial<Omit<TModel, 'id'>>
 
 
 

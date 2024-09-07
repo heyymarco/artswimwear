@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// next-js:
+import {
+    useRouter,
+}                           from 'next/navigation'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -34,6 +39,9 @@ import {
     DropdownListProps,
     DropdownList,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // internal components:
 import {
@@ -78,10 +86,18 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
     
     
     
+    // navigations:
+    const router = useRouter();
+    
+    
+    
     // handlers:
     const handleClose = useEvent((event: React.MouseEvent<HTMLElement, MouseEvent>, data: SignInDropdownResult): void => {
         props.onExpandedChange?.({ expanded: false, actionType: 'ui', data: data });
         event.preventDefault();
+    });
+    const handleNavigate = useEvent((href: string): void => {
+        router.push(href);
     });
     
     
@@ -131,10 +147,16 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
                 />
             </ListItem>
             <ListSeparatorItem />
+            <ListItem onClick={() => handleNavigate('/order-history')}>
+                <Link href='/order-history'>
+                    My order history
+                </Link>
+            </ListItem>
+            <ListSeparatorItem />
             <ListItem onClick={(event) => handleClose(event, 'signOut')}>
                 <Icon icon='logout' size='md' />
                 <span>
-                    Sign Out
+                    Sign out
                 </span>
             </ListItem>
         </DropdownList>

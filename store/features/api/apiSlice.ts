@@ -7,6 +7,8 @@ import type { MatchingShipping }                                    from '@/libs
 
 // types:
 import {
+    type Pagination,
+    type PaginationArgs,
     type MutationArgs,
 }                           from '@/libs/types'
 
@@ -31,6 +33,8 @@ import {
     type CartDetail,
     type CartUpdateRequest,
     type CheckoutPaymentSessionDetail,
+    
+    type PublicOrderDetail,
 }                           from '@/models'
 export {
     type PaymentDetail,
@@ -411,6 +415,14 @@ export const apiSlice = createApi({
             }),
         }),
         
+        getOrderHistoryPage         : builder.query<Pagination<PublicOrderDetail>, PaginationArgs>({
+            query : (paginationArg) => ({
+                url    : 'order-history',
+                method : 'POST',
+                body   : paginationArg,
+            }),
+        }),
+        
         
         
         postImage                   : builder.mutation<ImageId, { image: File, folder?: string, onUploadProgress?: (percentage: number) => void, abortSignal?: AbortSignal }>({
@@ -470,6 +482,8 @@ export const {
     useLazyAvailableUsernameQuery          : useAvailableUsername,
     useLazyNotProhibitedUsernameQuery      : useNotProhibitedUsername,
     // useLazyAvailableEmailQuery             : useAvailableEmail, // TODO
+    
+    useGetOrderHistoryPageQuery            : useGetOrderHistoryPage,
     
     usePostImageMutation                   : usePostImage,
     useDeleteImageMutation                 : useDeleteImage,

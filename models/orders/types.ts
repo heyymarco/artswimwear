@@ -8,11 +8,14 @@ import {
     type Prisma,
     
     type Payment,
+    type PaymentConfirmation,
     type DraftOrder,
     type Order,
     type OrderCurrency,
     type OrdersOnProducts,
     type DraftOrdersOnProducts,
+    
+    type Shipment,
 }                           from '@prisma/client'
 import {
     type ShippingAddressDetail,
@@ -150,6 +153,50 @@ export interface OrderDetailWithOptions
         OrderDetail
 {
     sendConfirmationEmail?: boolean
+}
+
+
+
+export interface PublicOrderDetail
+    extends
+        Pick<Order,
+            // records:
+            |'id'
+            |'createdAt'
+            
+            // data:
+            |'shippingCost'
+            |'shippingProviderId'
+            
+            |'orderStatus'
+        >
+{
+    currency            : OrderCurrency['currency']
+    
+    shippingAddress     : ShippingAddressDetail|null
+    
+    payment             : Pick<Payment,
+        // data:
+        |'type'
+        |'brand'
+        |'identifier'
+    >|null
+    paymentConfirmation : Pick<PaymentConfirmation,
+        // records:
+        |'reportedAt'
+        |'reviewedAt'
+    >|null
+    
+    shipment            : Shipment['carrier']|null
+    
+    items               : Pick<OrdersOnProducts,
+        // data:
+        |'quantity'
+        
+        // relations:
+        |'productId'
+        |'variantIds'
+    >[]
 }
 
 
