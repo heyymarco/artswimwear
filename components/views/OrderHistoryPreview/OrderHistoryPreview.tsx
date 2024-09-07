@@ -125,9 +125,14 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
     } = model;
     const paymentType = payment?.type;
     
-    const totalProductPrice      = items?.reduce((accum, {price, quantity}) => {
+    const totalProductPrice   = items?.reduce((accum, {price, quantity}) => {
         return accum + (price * quantity);
     }, 0) ?? 0;
+    
+    const isCanceled          = (orderStatus === 'CANCELED');
+    const isExpired           = (orderStatus === 'EXPIRED');
+    const isCanceledOrExpired = isCanceled || isExpired;
+    const isPaid              = !isCanceledOrExpired && (!!payment && payment.type !== 'MANUAL');
     
     
     
@@ -192,9 +197,9 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
                     Payment:
                 </span>
                 
-                {!payment && <span>-</span>}
+                {!isPaid && <span className='noValue'>not paid</span>}
                 
-                {!!payment && <span className='paymentValue'>
+                {isPaid && <span className='paymentValue'>
                     <CurrencyDisplay currency={currency} amount={[totalProductPrice, totalShippingCosts]} />
                     
                     <span className='paymentMethod'>

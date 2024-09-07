@@ -96,7 +96,7 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                 '"images ... .........."', '1fr',      // the extra rest space (if any) between payment and fullEditor
                 '"images ... fullEditor"', 'auto',
                 '/',
-                `calc(${imageSize}px - ${paddingVars.paddingInline}) ${spacers.md} 1fr`,
+                `${imageSize}px ${spacers.md} 1fr`,
             ]],
             
             
@@ -123,6 +123,16 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
             // children:
             ...descendants(['.orderId', 'p'], {
                 margin: 0,
+            }),
+            ...descendants('.noValue', {
+                // appearances:
+                opacity    : 0.5,
+                
+                
+                
+                // typos:
+                fontSize   : basics.fontSizeSm,
+                fontStyle  : 'italic',
             }),
             ...children('.orderId', {
                 // positions:
