@@ -12,20 +12,11 @@ import {
     useState,
 }                           from 'react'
 
-// cssfn:
+// styles:
 import {
     // style sheets:
-    dynamicStyleSheet,
-}                           from '@cssfn/cssfn-react'               // writes css in react hook
-
-// react-redux:
-import type {
-    MutationDefinition,
-    BaseQueryFn,
-}                           from '@reduxjs/toolkit/dist/query'
-import type {
-    MutationTrigger,
-}                           from '@reduxjs/toolkit/dist/query/react/buildHooks'
+    useSimpleEditModelDialogStyleSheet,
+}                           from './styles/loader'
 
 // reusable-ui core:
 import {
@@ -59,7 +50,6 @@ import {
     
     
     // dialog-components:
-    ModalExpandedChangeEvent,
     ModalCardProps,
     ModalCard,
     
@@ -70,48 +60,37 @@ import {
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // internal components:
-import type {
-    EditorChangeEventHandler,
-    EditorProps,
+import {
+    type EditorChangeEventHandler,
+    type EditorProps,
 }                           from '@/components/editors/Editor'
 
 // internals:
-import type {
-    Model,
-    MutationArgs,
+import {
+    type Model,
+    type MutationArgs,
 }                           from '@/libs/types'
-
-
-
-// styles:
-const useSimpleEditModelDialogStyleSheet = dynamicStyleSheet(
-    () => import(/* webpackPrefetch: true */'./SimpleEditModelDialogStyles')
-, { id: 'r1hbagluho', specificityWeight: 3 }); // need 3 degrees to overwrite `.cardClass.body`
+import {
+    type KeyOfModel,
+    type ValueOfModel,
+    type SimpleEditModelDialogResult,
+    type SimpleEditModelDialogExpandedChangeEvent,
+    
+    type InitialValueHandler,
+    type TransformValueHandler,
+    type UpdateModelApi,
+    
+    type AfterUpdateHandler,
+    
+    type UpdateSideHandler,
+    type DeleteSideHandler,
+    
+    type ConfirmUnsavedHandler,
+}                           from './types'
 
 
 
 // react components:
-export type KeyOfModel<TModel extends Model>   = Exclude<keyof TModel, 'id'> // all Model's keys except id
-export type ValueOfModel<TModel extends Model> = TModel[KeyOfModel<TModel>]  // union values of Model's keys except id
-export type SimpleEditModelDialogResult<TModel extends Model> = ValueOfModel<TModel>|undefined // ValueOfModel<TModel>: created|updated; undefined: not created|modified
-export interface SimpleEditModelDialogExpandedChangeEvent<TModel extends Model> extends ModalExpandedChangeEvent<SimpleEditModelDialogResult<TModel>> {}
-
-export type InitialValueHandler  <TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>> = (                             edit: TEdit, model: TModel) => ValueOfModel<TModel>
-export type TransformValueHandler<TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>> = (value: ValueOfModel<TModel>, edit: TEdit, model: TModel) => MutationArgs<TModel>
-export type UpdateModelApi<TModel extends Model> = readonly [
-    MutationTrigger<MutationDefinition<MutationArgs<TModel>, BaseQueryFn<any, unknown, unknown, {}, {}>, string, TModel>>,
-    {
-        isLoading : boolean
-    }
-]
-
-export type AfterUpdateHandler                          = () => Promise<void>
-
-export type UpdateSideHandler                           = () => Promise<void>
-export type DeleteSideHandler                           = () => Promise<void>
-
-export type ConfirmUnsavedHandler<TModel extends Model> = (args: { model: TModel|null }) => { title?: React.ReactNode, message: React.ReactNode }
-
 export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>>
     extends
         // bases:
@@ -125,7 +104,7 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     edit              : TEdit
     initialValue     ?: InitialValueHandler<TModel, TEdit>
     transformValue   ?: TransformValueHandler<TModel, TEdit>
-    updateModelApi    : UpdateModelApi<TModel> | (() => UpdateModelApi<TModel>)
+    updateModelApi   ?: UpdateModelApi<TModel> | (() => UpdateModelApi<TModel>)
     
     
     
@@ -237,7 +216,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
     
     
     // stores:
-    const [updateModel, {isLoading: isCommitingModel}] = (typeof(updateModelApi) === 'function') ? updateModelApi() : updateModelApi;
+    const [updateModel, {isLoading: isCommitingModel}] = (typeof(updateModelApi) === 'function') ? updateModelApi() : (updateModelApi ?? [undefined, {isLoading: false}]);
     const isCommiting = isCommitingExternal || isCommitingModel;
     const isLoading   = isCommiting || isReverting;
     
@@ -276,8 +255,13 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
         
         
         try {
-            const transformed = transformValue(editorValue, edit, model);
-            const updatingModelTask = updateModel(transformed).unwrap();
+            const updatingModelTask : Promise<TModel> = (
+                updateModel
+                ? updateModel(
+                    transformValue(editorValue, edit, model)
+                ).unwrap()
+                : Promise.resolve<TModel>(model)
+            );
             
             const updatingModelAndOthersTask = (
                 updatingModelTask

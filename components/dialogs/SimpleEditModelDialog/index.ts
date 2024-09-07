@@ -1,1 +1,2 @@
-export * from './SimpleEditModelDialog'
+export type * from './types'
+export      * from './SimpleEditModelDialog'
