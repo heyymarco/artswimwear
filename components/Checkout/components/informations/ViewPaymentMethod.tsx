@@ -6,10 +6,10 @@ import {
     default as React,
 }                           from 'react'
 
-// heymarco components:
+// models:
 import {
-    Image,
-}                           from '@heymarco/image'
+    isKnownPaymentBrand,
+}                           from '@/models'
 
 // internals:
 import {
@@ -34,18 +34,7 @@ const ViewPaymentMethod = (): JSX.Element|null => {
     return (
         <>
             {
-                (!!paymentBrand && [
-                    // cards:
-                    'visa', 'mastercard', 'amex', 'discover', 'jcb', 'maestro',
-                    
-                    // wallets:
-                    'paypal',
-                    'googlepay', 'applepay', 'amazonpay', 'link',
-                    'gopay', 'shopeepay', 'dana', 'ovo', 'tcash', 'linkaja',
-                    
-                    // counters:
-                    'indomaret', 'alfamart',
-                ].includes(paymentBrand.toLowerCase()))
+                (!!paymentBrand && isKnownPaymentBrand(paymentBrand))
                 ? <img
                     // appearances:
                     alt={paymentBrand}

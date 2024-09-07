@@ -69,7 +69,10 @@ import {
 import {
     type PublicOrderDetail,
     
+    
+    
     publicOrderStatusTheme,
+    isKnownPaymentBrand,
 }                           from '@/models'
 
 // stores:
@@ -211,18 +214,7 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
                     
                     <span className='paymentMethod'>
                         {
-                            (!!payment.brand && [
-                                // cards:
-                                'visa', 'mastercard', 'amex', 'discover', 'jcb', 'maestro',
-                                
-                                // wallets:
-                                'paypal',
-                                'googlepay', 'applepay', 'amazonpay', 'link',
-                                'gopay', 'shopeepay', 'dana', 'ovo', 'tcash', 'linkaja',
-                                
-                                // counters:
-                                'indomaret', 'alfamart',
-                            ].includes(payment.brand.toLowerCase()))
+                            (!!payment.brand && isKnownPaymentBrand(payment.brand))
                             ? <img
                                 // appearances:
                                 alt={payment.brand}

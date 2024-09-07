@@ -530,3 +530,19 @@ export const publicOrderStatusIcon = (orderStatus : OrderStatus, paymentType?: P
         case 'COMPLETED'  : return 'done';
     } // switch
 };
+
+
+
+export const knownPaymentBrands = [
+    // cards:
+    'visa', 'mastercard', 'amex', 'discover', 'jcb', 'maestro',
+    
+    // wallets:
+    'paypal',
+    'googlepay', 'applepay', 'amazonpay', 'link',
+    'gopay', 'shopeepay', 'dana', 'ovo', 'tcash', 'linkaja',
+    
+    // counters:
+    'indomaret', 'alfamart',
+];
+export const isKnownPaymentBrand = (paymentBrand: string): boolean => knownPaymentBrands.includes(paymentBrand.trim().toLowerCase());
