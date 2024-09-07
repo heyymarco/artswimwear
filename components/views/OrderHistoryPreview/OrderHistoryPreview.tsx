@@ -55,6 +55,9 @@ import {
 import {
     PublicOrderStatusBadge,
 }                           from '@/components/PublicOrderStatusBadge'
+import {
+    DateTimeDisplay,
+}                           from '@/components/DateTimeDisplay'
 
 // models:
 import {
@@ -99,6 +102,8 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
         model,
     ...restListItemProps} = props;
     const {
+        createdAt,
+        
         id : orderId,
         orderStatus,
         
@@ -162,6 +167,10 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
                     className='orderStatus'
                 />
             </h3>
+            
+            <p className='createdAt'>
+                <DateTimeDisplay dateTime={createdAt} timezone={/* TODO: preferredTimezone */undefined} showTimezone={false} />
+            </p>
             
             {/* carousel + total quantity */}
             <CompoundWithBadge

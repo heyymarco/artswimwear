@@ -6,9 +6,40 @@ import {
     style,
     scope,
 }                           from '@cssfn/core'          // writes css in javascript
-import { basics } from '@reusable-ui/components';
-import { typos, usesBorder, usesGroupable, usesPadding } from '@reusable-ui/core';
-import { commerces } from '@/config';
+
+import {
+    // a spacer (gap) management system:
+    spacers,
+    
+    
+    
+    // a typography management system:
+    typos,
+    
+    
+    
+    // border (stroke) stuff of UI:
+    usesBorder,
+    
+    
+    
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
+    
+    
+    
+    // groups a list of UIs into a single UI:
+    usesGroupable,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+import {
+    basics,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
+// configs:
+import {
+    commerces,
+}                           from '@/config'
 
 
 
@@ -50,7 +81,9 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
             // layouts:
             display: 'grid',
             gridTemplate: [[
+                '"images createdAt "', 'auto',
                 '"images orderId   "', 'auto',
+                '"images ......... "', 'auto',
                 '/',
                 `calc(${imageSize}px - ${paddingVars.paddingInline}) 1fr`,
             ]],
@@ -74,8 +107,8 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
             paddingInline : paddingVars.paddingInline,
             paddingBlock  : paddingVars.paddingBlock,
             
-            gapInline     : '1rem',
-            gapBlock      : '0.5rem',
+            gapInline     : spacers.md,
+            gapBlock      : spacers.xs,
             
             
             
@@ -111,6 +144,14 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                     // typos:
                     fontSize: typos.fontSizeSm,
                 }),
+            }),
+            ...children('.createdAt', {
+                gridArea: 'createdAt',
+                
+                
+                
+                // typos:
+                fontSize: typos.fontSizeSm,
             }),
             ...children('.images', {
                 // layouts:
