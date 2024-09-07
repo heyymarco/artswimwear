@@ -38,7 +38,7 @@ import {
 
 
 // react components:
-export interface OrderStatusBadgeProps
+export interface PublicOrderStatusBadgeProps
     extends
         // bases:
         Omit<BadgeProps<HTMLButtonElement>,
@@ -58,7 +58,7 @@ export interface OrderStatusBadgeProps
     // handlers:
     onClick     ?: (params: { orderStatus: OrderStatus, isPaid: boolean }) => void
 }
-const OrderStatusBadge = (props: OrderStatusBadgeProps): JSX.Element|null => {
+const PublicOrderStatusBadge = (props: PublicOrderStatusBadgeProps): JSX.Element|null => {
     // rest props:
     const {
         // data:
@@ -132,6 +132,6 @@ const OrderStatusBadge = (props: OrderStatusBadgeProps): JSX.Element|null => {
     );
 };
 export {
-    OrderStatusBadge,
-    OrderStatusBadge as default,
+    PublicOrderStatusBadge,
+    PublicOrderStatusBadge as default,
 }

@@ -477,7 +477,8 @@ export const publicOrderStatusTheme = (orderStatus : OrderStatus, paymentType?: 
     switch (orderStatus) {
         case 'NEW_ORDER'  :
             if (paymentType === 'MANUAL') return 'secondary';
-            return 'danger';
+            // return 'danger';
+            return 'warning'; // report a new order as being processed
         case 'CANCELED'   :
         case 'EXPIRED'    : return 'secondary';
         // case 'IN_TROUBLE' : return 'danger';
@@ -496,7 +497,8 @@ export const publicOrderStatusText = (orderStatus : OrderStatus, paymentType?: P
     switch (orderStatus) {
         case 'NEW_ORDER'  :
             if (paymentType === 'MANUAL') return 'Waiting for Payment';
-            return 'New Order';
+            // return 'New Order';
+            return 'Being Processed'; // report a new order as being processed
         case 'CANCELED'   : return 'Canceled';
         case 'EXPIRED'    : return 'Expired';
         case 'PROCESSED'  : return 'Being Processed';
@@ -516,7 +518,8 @@ export const publicOrderStatusIcon = (orderStatus : OrderStatus, paymentType?: P
     switch (orderStatus) {
         case 'NEW_ORDER'  :
             if (paymentType === 'MANUAL') return 'timer';
-            return 'shopping_cart';
+            // return 'shopping_cart';
+            return 'directions_run'; // report a new order as being processed
         case 'CANCELED'   : return 'cancel_presentation';
         case 'EXPIRED'    : return 'timer_off';
         case 'PROCESSED'  : return 'directions_run';

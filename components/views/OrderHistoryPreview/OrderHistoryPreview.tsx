@@ -53,8 +53,8 @@ import {
     MiniCarousel,
 }                           from '@/components/MiniCarousel'
 import {
-    OrderStatusBadge,
-}                           from '@/components/OrderStatusBadge'
+    PublicOrderStatusBadge,
+}                           from '@/components/PublicOrderStatusBadge'
 
 // models:
 import {
@@ -148,7 +148,7 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
             <h3 className='orderId'>
                 #ORDER_{orderId}
                 
-                <OrderStatusBadge
+                <PublicOrderStatusBadge
                     // data:
                     orderStatus={orderStatus}
                     paymentType={paymentType}
