@@ -6,17 +6,21 @@ import {
     default as React,
 }                           from 'react'
 
-// reusable-ui core:
+// styles:
 import {
-    // react helper hooks:
-    useEvent,
-}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+    usePublicOrderStatusBadgeStyleSheet,
+}                           from './styles/loader'
 
 // reusable-ui components:
 import {
+    // base-components:
+    Basic,
+    useBasicStyleSheet,
+    
+    
+    
     // simple-components:
     Icon,
-    ButtonIcon,
     
     
     
@@ -52,14 +56,9 @@ export interface PublicOrderStatusBadgeProps
     
     reportedAt  ?: Date|null
     reviewedAt  ?: Date|null
-    
-    
-    
-    // handlers:
-    onClick     ?: (params: { orderStatus: OrderStatus, isPaid: boolean }) => void
 }
 const PublicOrderStatusBadge = (props: PublicOrderStatusBadgeProps): JSX.Element|null => {
-    // rest props:
+    // props:
     const {
         // data:
         orderStatus,
@@ -75,29 +74,38 @@ const PublicOrderStatusBadge = (props: PublicOrderStatusBadgeProps): JSX.Element
         
         
         
-        // handlers:
-        onClick,
-    ...restBadgeProps} = props;
+        // other props:
+        ...restPublicOrderStatusBadge
+    } = props;
     const preferredTheme = publicOrderStatusTheme(orderStatus, paymentType, reportedAt, reviewedAt);
     const hasAlternateTheme = ((preferredTheme === 'warning') || (preferredTheme === 'secondary'));
     
     
     
-    // handlers:
-    const handleClick = useEvent(() => {
-        onClick?.({
-            orderStatus,
-            isPaid : (paymentType !== 'MANUAL'),
-        });
-    });
+    // styles:
+    const basicStyleSheet = useBasicStyleSheet();
+    const styleSheet      = usePublicOrderStatusBadgeStyleSheet();
+    
+    
+    
+    // default props:
+    const {
+        // classes:
+        mainClass = `${basicStyleSheet.main} ${styleSheet.main}`,
+        
+        
+        
+        // other props:
+        ...restBasicProps
+    } = restPublicOrderStatusBadge
     
     
     
     // jsx:
     return (
-        <ButtonIcon
+        <Basic
             // other props:
-            {...restBadgeProps}
+            {...restBasicProps}
             
             
             
@@ -107,28 +115,22 @@ const PublicOrderStatusBadge = (props: PublicOrderStatusBadgeProps): JSX.Element
             
             
             
-            // components:
-            iconComponent={
-                <Icon
-                    // appearances:
-                    icon={publicOrderStatusIcon(orderStatus, paymentType, reportedAt, reviewedAt)}
-                    
-                    
-                    
-                    // variants:
-                    size='sm'
-                    theme={hasAlternateTheme ? 'dark' : preferredTheme}
-                    mild={hasAlternateTheme ? true : undefined}
-                />
-            }
-            
-            
-            
-            // handlers:
-            onClick={handleClick}
+            // classes:
+            mainClass={mainClass}
         >
+            <Icon
+                // appearances:
+                icon={publicOrderStatusIcon(orderStatus, paymentType, reportedAt, reviewedAt)}
+                
+                
+                
+                // variants:
+                size='sm'
+                theme={hasAlternateTheme ? 'dark' : preferredTheme}
+                mild={hasAlternateTheme ? true : undefined}
+            />
             {publicOrderStatusText(orderStatus, paymentType, reportedAt, reviewedAt)}
-        </ButtonIcon>
+        </Basic>
     );
 };
 export {
