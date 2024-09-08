@@ -78,6 +78,9 @@ import {
 import {
     DummyDialog,
 }                           from '@/components/dialogs/DummyDialog'
+import {
+    EditOrderDialog,
+}                           from '@/components/dialogs/EditOrderDialog'
 
 // models:
 import {
@@ -197,8 +200,12 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
         
         const dialogPromise = showDialog((() => {
             switch (editMode) {
-                // case 'full' : return (
-                // );
+                case 'full' : return (
+                    <EditOrderDialog
+                        // data:
+                        model={model} // modify current model
+                    />
+                );
                 default     : throw new Error('app error');
             } // switch
         })());
@@ -289,7 +296,7 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
             </p>
             
             <p className='fullEditor'>
-                <EditButton icon='table_view' title='View the order details' className='fullEditor' buttonStyle='regular' onClick={() => { /* TODO */ }}>
+                <EditButton icon='table_view' title='View the order details' className='fullEditor' buttonStyle='regular' onClick={() => handleEdit('full')}>
                     View Details
                 </EditButton>
             </p>

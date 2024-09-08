@@ -136,11 +136,10 @@ router
         ]);
         const paginationOrderDetail : Pagination<PublicOrderDetail> = {
             total    : total,
-            entities : paged.map(({orderId, currency, shipment, ...page}) => ({
+            entities : paged.map(({orderId, currency, ...page}) => ({
                 ...page,
                 id       : orderId,
                 currency : currency?.currency ?? checkoutConfigServer.payment.defaultCurrency,
-                shipment : shipment?.carrier  ?? null,
             })) satisfies PublicOrderDetail[],
         };
         return Response.json(paginationOrderDetail); // handled with success

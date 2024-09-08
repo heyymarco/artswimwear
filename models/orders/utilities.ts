@@ -281,68 +281,77 @@ export const convertOrderDataToOrderAndData = async (prismaTransaction: Paramete
 
 export const publicOrderDetailSelect = {
     // records:
-    createdAt           : true,
+    createdAt               : true,
     
     // data:
-    orderId             : true,
+    orderId                 : true,
     
-    currency            : {
+    currency                : {
         select : {
-            currency    : true,
+            currency        : true,
         },
     },
     
-    shippingAddress     : {
+    shippingAddress         : {
         select : {
             // data:
-            country     : true,
-            state       : true,
-            city        : true,
-            zip         : true,
-            address     : true,
+            country         : true,
+            state           : true,
+            city            : true,
+            zip             : true,
+            address         : true,
             
-            firstName   : true,
-            lastName    : true,
-            phone       : true,
+            firstName       : true,
+            lastName        : true,
+            phone           : true,
         },
     },
     
-    shippingCost        : true,
-    shippingProviderId  : true,
+    shippingCost            : true,
+    shippingProviderId      : true,
     
-    orderStatus         : true,
+    orderStatus             : true,
     
-    payment             : {
+    payment                 : {
         select : {
             // data:
-            type        : true,
-            brand       : true,
-            identifier  : true,
+            type            : true,
+            brand           : true,
+            identifier      : true,
+            expiresAt       : true,
+            
+            amount          : true,
         },
     },
-    paymentConfirmation : {
+    paymentConfirmation     : {
         select : {
             // data:
-            reportedAt  : true,
-            reviewedAt  : true,
+            reportedAt      : true,
+            reviewedAt      : true,
+            
+            // data:
+            rejectionReason : true,
         },
     },
     
-    shipment            : {
+    shipment                : {
         select : {
-            carrier     : true,
+            token           : true,
+            
+            carrier         : true,
+            number          : true,
         },
     },
     
-    items               : {
+    items                   : {
         select : {
             // data:
-            price       : true,
-            quantity    : true,
+            price           : true,
+            quantity        : true,
             
             // relations:
-            productId   : true,
-            variantIds  : true,
+            productId       : true,
+            variantIds      : true,
         },
     },
 } satisfies Prisma.OrderSelect;
