@@ -21,8 +21,11 @@ import {
 
 // models:
 import {
-    type Prisma,
     type CustomerDetail,
+    
+    
+    
+    customerDetailselect,
 }                           from '@/models'
 
 // ORMs:
@@ -138,19 +141,6 @@ router
             // password : TODO: hashed password,
             image,
         };
-        const select = {
-            id          : true,
-            
-            name        : true,
-            email       : true,
-            image       : true,
-            
-            credentials : {
-                select : {
-                    username : true,
-                },
-            },
-        } satisfies Prisma.CustomerSelect;
         const {credentials, ...restCustomer} = await prisma.customer.update({
             where  : {
                 id : customerId,
@@ -168,7 +158,7 @@ router
                     },
                 } : undefined,
             },
-            select : select,
+            select : customerDetailselect,
         });
         const customerDetail : CustomerDetail = {
             ...restCustomer,
