@@ -756,7 +756,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                         We are sorry, your payment confirmation was <strong>rejected</strong> because the information you submitted was invalid.
                                     </p>
                                     <p>
-                                        But don&apos;t worry, you can <strong>update</strong> it. We will re-check your payment confirmation.
+                                        But don&apos;t worry, you can <strong>update</strong> the payment confirmation. We will check it again and notify you back.
                                     </p>
                                     
                                     <hr />
