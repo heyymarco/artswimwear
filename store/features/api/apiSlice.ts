@@ -28,6 +28,7 @@ import {
     type PaymentConfirmationRequest,
     type PaymentConfirmationDetail,
     
+    type CustomerPreferenceData,
     type CustomerPreferenceDetail,
     
     type CartDetail,
@@ -153,6 +154,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
+    tagTypes  : ['Preferences'],
     endpoints : (builder) => ({
         getProductList              : builder.query<EntityState<ProductPreview>, void>({
             query : () => ({
@@ -437,6 +439,34 @@ export const apiSlice = createApi({
         
         
         
+        getPreference               : builder.query<CustomerPreferenceDetail, void>({
+            query : () => ({
+                url    : 'preferences',
+                method : 'GET',
+            }),
+            providesTags: (result, error, page)  => {
+                return [
+                    {
+                        type : 'Preferences',
+                        id   : 'PREFERENCES',
+                    },
+                ];
+            },
+        }),
+        updatePreference            : builder.mutation<CustomerPreferenceDetail, Partial<CustomerPreferenceData>>({
+            query: (patch) => ({
+                url    : 'preferences',
+                method : 'PATCH',
+                body   : patch
+            }),
+            invalidatesTags: (preference, error, arg) => [
+                {
+                    type : 'Preferences',
+                    id   : 'PREFERENCES',
+                },
+            ],
+        }),
+        
         postImage                   : builder.mutation<ImageId, { image: File, folder?: string, onUploadProgress?: (percentage: number) => void, abortSignal?: AbortSignal }>({
             query: ({ image, folder, onUploadProgress, abortSignal }) => ({
                 url     : 'uploads',
@@ -497,6 +527,9 @@ export const {
     // useLazyAvailableEmailQuery             : useAvailableEmail, // TODO
     
     useGetOrderHistoryPageQuery            : useGetOrderHistoryPage,
+    
+    useGetPreferenceQuery                  : useGetPreference,
+    useUpdatePreferenceMutation            : useUpdatePreference,
     
     usePostImageMutation                   : usePostImage,
     useDeleteImageMutation                 : useDeleteImage,
