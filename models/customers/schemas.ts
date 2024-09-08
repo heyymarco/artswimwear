@@ -7,6 +7,8 @@ import {
 import {
     type CustomerDetail,
     type GuestDetail,
+    
+    type CustomerPreferenceData,
 }                           from './types'
 import {
     HumanFullNameSchema,
@@ -31,3 +33,16 @@ export const GuestDetailSchema = z.object({
     name     : HumanFullNameSchema,
     email    : EmailSchema,
 }) satisfies z.Schema<Omit<GuestDetail, 'id'>>;
+
+
+
+export const CustomerPreferenceDataSchema = z.object({
+    // records:
+    id           : z.string().min(1),
+    
+    
+    
+    // data:
+    marketingOpt : z.boolean(),
+    timezone     : z.number().int().finite().gte(-24).lte(24),
+}) satisfies z.Schema<CustomerPreferenceData>
