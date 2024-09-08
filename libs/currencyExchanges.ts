@@ -140,7 +140,7 @@ export const convertForeignToSystemCurrencyIfRequired = async <TNumber extends n
 
 
 
-export const convertAndSumAmount = async (amount: number|null|undefined | Array<ProductPricePart|number|null|undefined>, customerCurrency: string|OrderCurrencyDetail): Promise<number|null|undefined> => {
+export const convertAndSumAmount = async (amount: number|null|undefined | Array<ProductPricePart|number|null|undefined>, customerCurrency: string|OrderCurrencyDetail, currencyRate?: number): Promise<number|null|undefined> => {
     const amountList = (
         !Array.isArray(amount)
         ? [amount]
@@ -157,7 +157,7 @@ export const convertAndSumAmount = async (amount: number|null|undefined | Array<
     const summedAmount = (
         (await Promise.all(
             amountList
-            .flatMap((amountItem): Promise<number|null|undefined> => {
+            .flatMap((amountItem): number|null|undefined | Promise<number|null|undefined> => {
                 if (amountItem && typeof(amountItem) === 'object') {
                     const {
                         priceParts,
@@ -167,9 +167,13 @@ export const convertAndSumAmount = async (amount: number|null|undefined | Array<
                     return (
                         Promise.all(
                             priceParts
-                            .map((pricePart): Promise<number> =>
-                                convertCustomerCurrencyIfRequired(pricePart, customerCurrency)
-                            )
+                            .map((pricePart): number | Promise<number> => {
+                                return (
+                                    (currencyRate !== undefined)
+                                    ? (pricePart * currencyRate)
+                                    : convertCustomerCurrencyIfRequired(pricePart, customerCurrency)
+                                );
+                            })
                         )
                         .then((priceParts): number =>
                             priceParts
@@ -179,7 +183,13 @@ export const convertAndSumAmount = async (amount: number|null|undefined | Array<
                         )
                     );
                 } else {
-                    return convertCustomerCurrencyIfRequired(amountItem, customerCurrency);
+                    if (typeof(amountItem) !== 'number') return amountItem; // null|undefined    => nothing to convert
+                    
+                    return (
+                        (currencyRate !== undefined)
+                        ? (amountItem * currencyRate)
+                        : convertCustomerCurrencyIfRequired(amountItem, customerCurrency)
+                    );
                 } // if
             })
         ))

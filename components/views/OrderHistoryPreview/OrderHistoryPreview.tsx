@@ -268,7 +268,7 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
                 {!isPaid && <span className='noValue'>not yet paid</span>}
                 
                 {isPaid && <span className='paymentValue'>
-                    <CurrencyDisplay currency={currency} amount={[totalProductPrice, totalShippingCosts]} />
+                    <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={[totalProductPrice, totalShippingCosts]} />
                     
                     <span className='paymentMethod'>
                         {

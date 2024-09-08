@@ -41,8 +41,9 @@ import {
 // react components:
 export interface CurrencyDisplayProps {
     currency     ?: string
-    amount    : number|null|undefined | Array<ProductPricePart|number|null|undefined>
-    multiply ?: number
+    currencyRate ?: number
+    amount        : number|null|undefined | Array<ProductPricePart|number|null|undefined>
+    multiply     ?: number
 }
 const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     // states:
@@ -56,9 +57,10 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
     
     // props:
     const {
-        currency = cartCurrency,
-        amount   : amountRaw,
-        multiply = 1,
+        currency     = cartCurrency,
+        currencyRate = undefined,
+        amount       : amountRaw,
+        multiply     = 1,
     } = props;
     
     
@@ -81,7 +83,7 @@ const CurrencyDisplay = (props: CurrencyDisplayProps): JSX.Element|null => {
         
         // actions:
         (async () => {
-            const summedAmount = await convertAndSumAmount(amountList, currency);
+            const summedAmount = await convertAndSumAmount(amountList, currency, currencyRate);
             if (!isMounted.current) return; // the component was unloaded before awaiting returned => do nothing
             setConvertedAmount(summedAmount);
         })();

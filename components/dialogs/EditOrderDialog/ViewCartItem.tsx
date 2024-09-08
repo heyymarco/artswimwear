@@ -167,7 +167,7 @@ const ViewCartItem = (props: EditCartItemProps): JSX.Element|null => {
                         @
                     </span>
                     <span className='value txt-sec'>
-                        <CurrencyDisplay currency={currency} amount={unitPrice} />
+                        <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={unitPrice} />
                     </span>
             </p>
             
@@ -184,7 +184,7 @@ const ViewCartItem = (props: EditCartItemProps): JSX.Element|null => {
                 {isProductDeleted && <>This product was deleted</>}
                 
                 {!isProductDeleted && <span className='currency'>
-                <CurrencyDisplay currency={currency} amount={unitPrice} multiply={quantity} />
+                <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={unitPrice} multiply={quantity} />
                 </span>}
             </p>
         </ListItem>

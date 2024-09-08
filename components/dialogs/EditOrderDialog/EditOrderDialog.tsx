@@ -419,20 +419,20 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                     <hr />
                     <p className='currencyBlock'>
                         Subtotal <span className='currency'>
-                            <CurrencyDisplay currency={currency} amount={totalProductPrice} />
+                            <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={totalProductPrice} />
                         </span>
                     </p>
                     {!!shippingAddressDetail && <>
                         <p className='currencyBlock'>
                             Shipping <span className='currency'>
-                                <CurrencyDisplay currency={currency} amount={totalShippingCosts} />
+                                <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={totalShippingCosts} />
                             </span>
                         </p>
                     </>}
                     <hr />
                     <p className='currencyBlock totalCost'>
                         Total <span className='currency'>
-                            <CurrencyDisplay currency={currency} amount={[
+                            <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={[
                                 totalProductPrice,
                                 totalShippingCosts,
                             ]} />
@@ -668,7 +668,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     tableDataComponent={<Generic className={styleSheet.tableDataAmount} />}
                                 >
                                     <strong>
-                                        <CurrencyDisplay currency={currency} amount={paymentAmount} />
+                                        <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={paymentAmount} />
                                     </strong>
                                 </DataTableItem>
                             </DataTableBody>
