@@ -180,14 +180,26 @@ export interface PublicOrderDetail
         |'type'
         |'brand'
         |'identifier'
+        |'expiresAt'
+        
+        |'amount'
     >|null
     paymentConfirmation : Pick<PaymentConfirmation,
         // records:
         |'reportedAt'
         |'reviewedAt'
+        
+        // data:
+        |'rejectionReason'
     >|null
     
-    shipment            : Shipment['carrier']|null
+    shipment            : Pick<Shipment,
+        // data:
+        |'token'
+        
+        |'carrier'
+        |'number'
+    >|null
     
     items               : Pick<OrdersOnProducts,
         // data:
