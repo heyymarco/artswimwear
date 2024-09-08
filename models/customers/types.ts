@@ -68,11 +68,12 @@ export interface GuestDetail
 
 export interface CustomerPreferenceData
     extends
-        // the id is mandatory:
-        Pick<CustomerPreference,
-            // records:
-            |'id'
-        >,
+        // no need for id, use id stored in session
+        // // the id is mandatory:
+        // Pick<CustomerPreference,
+        //     // records:
+        //     |'id'
+        // >,
         
         // other than id & parentId are optional:
         Partial<Omit<CustomerPreference,

@@ -37,11 +37,6 @@ export const GuestDetailSchema = z.object({
 
 
 export const CustomerPreferenceDataSchema = z.object({
-    // records:
-    id           : z.string().min(1),
-    
-    
-    
     // data:
     marketingOpt : z.boolean(),
     timezone     : z.number().int().finite().gte(-24).lte(24),
