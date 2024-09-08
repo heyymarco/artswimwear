@@ -201,7 +201,6 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
     
     // sessions:
     const { data: session } = useSession();
-    const role = session?.role;
     
     
     
@@ -676,9 +675,30 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                         
                         {/* unpaid => shows alert, payment confirmation (if any), and action buttons */}
                         {!isPaid && <>
-                            {!hasPaymentConfirmation && <>
-                                {/* TODO: display payment not confirmed */}
-                            </>}
+                            {!hasPaymentConfirmation && <Alert
+                                // variants:
+                                theme='warning'
+                                
+                                
+                                
+                                // classes:
+                                className={styleSheet.paymentConfirmationAlert}
+                                
+                                
+                                
+                                // states:
+                                expanded={true}
+                                
+                                
+                                
+                                // components:
+                                controlComponent={<React.Fragment />}
+                            >
+                                <p>
+                                    Please <strong>follow the payment instructions</strong> sent to your email{!!session?.user?.email && <>: <strong className={styleSheet.data}>{session.user.email}</strong></>}.
+                                </p>
+                                {/* TODO: display payment instructions here, without seeing the email */}
+                            </Alert>}
                             
                             {hasPaymentConfirmation && <>
                                 {/* TODO: display payment is confirmed */}

@@ -766,6 +766,11 @@ const usesCountDownLayout = () => {
 };
 
 export default () => [
+    scope('data', {
+        whiteSpace : 'normal',
+        wordBreak  : 'break-all',
+    }),
+    
     scope('orderShippingTab', {
         ...usesOrderShippingTabLayout(),
     }, { specificityWeight: 3 }),
