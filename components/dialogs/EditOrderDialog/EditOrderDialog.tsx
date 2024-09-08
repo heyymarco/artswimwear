@@ -97,6 +97,11 @@ import {
     EditButton,
 }                           from '@/components/EditButton'
 import {
+    type WysiwygEditorState,
+    
+    WysiwygViewer,
+}                           from '@/components/editors/WysiwygEditor'
+import {
     TimezoneEditor,
 }                           from '@/components/editors/TimezoneEditor'
 import {
@@ -726,6 +731,48 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     <p>
                                         Please wait a moment, we will <strong>verify your payment</strong> soon.
                                     </p>
+                                </Alert>}
+                                
+                                {isPaymentRejected && <Alert
+                                    // variants:
+                                    theme='danger'
+                                    
+                                    
+                                    
+                                    // classes:
+                                    className={styleSheet.paymentConfirmationAlert}
+                                    
+                                    
+                                    
+                                    // states:
+                                    expanded={true}
+                                    
+                                    
+                                    
+                                    // components:
+                                    controlComponent={<React.Fragment />}
+                                >
+                                    <p>
+                                        We are sorry, your payment confirmation was <strong>rejected</strong> because the information you submitted was invalid.
+                                    </p>
+                                    <p>
+                                        But don&apos;t worry, you can <strong>resend</strong> it again. We will check your payment confirmation again.
+                                    </p>
+                                    
+                                    <hr />
+                                    
+                                    <p>
+                                        Rejection reason:
+                                    </p>
+                                    <WysiwygViewer
+                                        // variants:
+                                        nude={true}
+                                        
+                                        
+                                        
+                                        // values:
+                                        value={(paymentConfirmation.rejectionReason ?? null) as WysiwygEditorState|null}
+                                    />
                                 </Alert>}
                                 
                                 {/* TODO: display payment is confirmed */}
