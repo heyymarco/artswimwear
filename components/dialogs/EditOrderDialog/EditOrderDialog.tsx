@@ -701,6 +701,33 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                             </Alert>}
                             
                             {hasPaymentConfirmation && <>
+                                {!isPaymentRejected && <Alert
+                                    // variants:
+                                    theme='success'
+                                    
+                                    
+                                    
+                                    // classes:
+                                    className={styleSheet.paymentConfirmationAlert}
+                                    
+                                    
+                                    
+                                    // states:
+                                    expanded={true}
+                                    
+                                    
+                                    
+                                    // components:
+                                    controlComponent={<React.Fragment />}
+                                >
+                                    <p>
+                                        You have <strong>confirmed your payment</strong>.
+                                    </p>
+                                    <p>
+                                        Please wait a moment, we will <strong>verify your payment</strong> soon.
+                                    </p>
+                                </Alert>}
+                                
                                 {/* TODO: display payment is confirmed */}
                             </>}
                             
