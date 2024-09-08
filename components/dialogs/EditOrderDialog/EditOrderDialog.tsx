@@ -263,13 +263,11 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
         showDialog,
     } = useDialogMessage();
     
-    type EditMode = Exclude<keyof PublicOrderDetail, 'id'>
-    
     
     
     // handlers:
     const handleViewShipment         = useEvent(() => {
-        const token = model.shipment?.token;
+        const token = shipment?.token;
         if (!token) return;
         
         
@@ -434,7 +432,10 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                     <hr />
                     <p className='currencyBlock totalCost'>
                         Total <span className='currency'>
-                            <CurrencyDisplay currency={currency} amount={[totalProductPrice, totalShippingCosts]} />
+                            <CurrencyDisplay currency={currency} amount={[
+                                totalProductPrice,
+                                totalShippingCosts,
+                            ]} />
                         </span>
                     </p>
                 </Section>
