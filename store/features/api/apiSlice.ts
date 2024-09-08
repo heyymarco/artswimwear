@@ -35,6 +35,8 @@ import {
     type CheckoutPaymentSessionDetail,
     
     type PublicOrderDetail,
+    
+    type ShippingPreview,
 }                           from '@/models'
 export {
     type PaymentDetail,
@@ -87,15 +89,16 @@ import {
 
 
 
-const productListAdapter = createEntityAdapter<ProductPreview>({
+const productListAdapter          = createEntityAdapter<ProductPreview>({
     selectId : (productPreview) => productPreview.id,
 });
-
-const countryListAdapter = createEntityAdapter<CountryPreview>({
+const countryListAdapter          = createEntityAdapter<CountryPreview>({
     selectId : (countryEntry) => countryEntry.code,
 });
-
-const shippingListAdapter = createEntityAdapter<MatchingShipping>({
+const shippingListAdapter         = createEntityAdapter<ShippingPreview>({
+    selectId : (shippingPreview) => shippingPreview.id,
+});
+const matchingShippingListAdapter = createEntityAdapter<MatchingShipping>({
     selectId : (shippingEntry) => `${shippingEntry.id}`,
 });
 
@@ -169,6 +172,15 @@ export const apiSlice = createApi({
         
         
         
+        getShippingList             : builder.query<EntityState<ShippingPreview>, void>({
+            query : () => ({
+                url    : 'shippings',
+                method : 'GET',
+            }),
+            transformResponse(response: ShippingPreview[]) {
+                return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
+            },
+        }),
         getCountryList              : builder.query<EntityState<CountryPreview>, void>({
             query : () => ({
                 url    : 'shippings/countries',
@@ -195,22 +207,22 @@ export const apiSlice = createApi({
         
         getMatchingShippingList     : builder.query<EntityState<MatchingShipping>, ShippingAddressDetail & { totalProductWeight: number }>({
             query : (shippingAddressDetail) => ({
-                url    : 'shippings',
+                url    : 'matching-shippings',
                 method : 'POST',
                 body   : shippingAddressDetail,
             }),
             transformResponse(response: MatchingShipping[]) {
-                return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
+                return matchingShippingListAdapter.addMany(matchingShippingListAdapter.getInitialState(), response);
             },
         }),
         refreshMatchingShippingList : builder.mutation<EntityState<MatchingShipping>, ShippingAddressDetail & { totalProductWeight: number }>({
             query : (shippingAddressDetail) => ({
-                url    : 'shippings',
+                url    : 'matching-shippings',
                 method : 'PATCH',
                 body   : shippingAddressDetail,
             }),
             transformResponse(response: MatchingShipping[]) {
-                return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
+                return matchingShippingListAdapter.addMany(matchingShippingListAdapter.getInitialState(), response);
             },
             
             async onCacheEntryAdded(arg, api) {
@@ -278,7 +290,7 @@ export const apiSlice = createApi({
                                     ...currentDynamicRates,
                                     ...(Object.values(mutatedEntities.entities) as MatchingShipping[])
                                 ];
-                                const newData = shippingListAdapter.addMany(shippingListAdapter.getInitialState(), combinedRates);
+                                const newData = matchingShippingListAdapter.addMany(matchingShippingListAdapter.getInitialState(), combinedRates);
                                 return newData;
                             })
                         );
@@ -462,6 +474,7 @@ export const {
     useGetProductListQuery                 : useGetProductList,
     useGetProductDetailQuery               : useGetProductDetail,
     
+    useGetShippingListQuery                : useGetShippingList,
     useGetCountryListQuery                 : useGetCountryList,
     // useLazyGetStateListQuery               : useGetStateList,
     // useLazyGetCityListQuery                : useGetCityList,
