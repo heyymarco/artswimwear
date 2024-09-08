@@ -883,10 +883,6 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                             </>}
                             
                             <div className={styleSheet.paymentConfirmActions}>
-                                {hasPaymentConfirmation && <>
-                                    {isPaymentRejected ? 'Payment Rejected' : 'Reject Payment'}
-                                </>}
-                                
                                 {!!paymentExpiresAt && <CountDown paymentExpiresAt={paymentExpiresAt} />}
                             </div>
                         </>}
