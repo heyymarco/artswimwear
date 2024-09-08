@@ -174,25 +174,26 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
             ...children('.payment', {
                 gridArea: 'payment',
                 
-                display: 'flex',
-                flexWrap: 'wrap',
-                justifyContent: 'start',
+                display        : 'flex',
+                flexWrap       : 'wrap',
+                justifyContent : 'start',
                 
-                gap: spacers.sm,
+                gap : spacers.sm,
                 
                 ...children('.paymentValue', {
-                    display: 'flex',
-                    flexWrap: 'wrap',
-                    justifyContent: 'start',
-                    alignItems    : 'center',
+                    display        : 'flex',
+                    flexWrap       : 'wrap',
+                    justifyContent : 'start',
+                    alignItems     : 'center',
                     
-                    gap: spacers.sm,
+                    gap : spacers.sm,
                     
                     ...children('.paymentMethod', {
-                        display: 'flex',
-                        flexWrap: 'wrap',
+                        display    : 'flex',
+                        flexWrap   : 'wrap',
+                        alignItems : 'center',
                         
-                        gap: spacers.sm,
+                        gap : spacers.sm,
                         
                         ...children('.paymentProvider', {
                             // sizes:
