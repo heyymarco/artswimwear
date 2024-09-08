@@ -190,6 +190,13 @@ export interface PublicOrderDetail
         |'reviewedAt'
         
         // data:
+        |'amount'
+        |'payerName'
+        |'paymentDate'
+        
+        |'originatingBank'
+        |'destinationBank'
+        
         |'rejectionReason'
     >|null
     

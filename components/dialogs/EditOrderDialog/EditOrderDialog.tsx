@@ -775,7 +775,110 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     />
                                 </Alert>}
                                 
-                                {/* TODO: display payment is confirmed */}
+                                <DataTable className={styleSheet.dataTable} breakpoint='sm'>
+                                    <DataTableHeader tableTitleComponent={<Basic />}>
+                                        Payment Confirmation
+                                    </DataTableHeader>
+                                    <DataTableBody>
+                                        <DataTableItem
+                                            // accessibilities:
+                                            label='Reviewed At'
+                                        >
+                                            {
+                                                paymentConfirmation.reviewedAt
+                                                ? <>
+                                                    <span className={styleSheet.dateTime}>
+                                                        <DateTimeDisplay dateTime={paymentConfirmation.reviewedAt} timezone={preferredTimezone} showTimezone={false} />
+                                                    </span>
+                                                    
+                                                    <TimezoneEditor
+                                                        // variants:
+                                                        theme='primary'
+                                                        mild={true}
+                                                        
+                                                        
+                                                        
+                                                        // values:
+                                                        value={preferredTimezone}
+                                                        onChange={setPreferredTimezone}
+                                                    />
+                                                </>
+                                                : <span className='txt-sec'>not yet reviewed</span>
+                                            }
+                                        </DataTableItem>
+                                        <DataTableItem
+                                            // accessibilities:
+                                            label='Reported At'
+                                        >
+                                            {!!paymentConfirmation.reportedAt && <span className={styleSheet.dateTime}>
+                                                <DateTimeDisplay dateTime={paymentConfirmation.reportedAt} timezone={preferredTimezone} showTimezone={false} />
+                                            </span>}
+                                            
+                                            <TimezoneEditor
+                                                // variants:
+                                                theme='primary'
+                                                mild={true}
+                                                
+                                                
+                                                
+                                                // values:
+                                                value={preferredTimezone}
+                                                onChange={setPreferredTimezone}
+                                            />
+                                        </DataTableItem>
+                                        <DataTableItem
+                                            // accessibilities:
+                                            label='Amount'
+                                            
+                                            
+                                            
+                                            // components:
+                                            tableDataComponent={<Generic className={styleSheet.tableDataAmount} />}
+                                        >
+                                            <strong>
+                                                <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={paymentConfirmation.amount} />
+                                            </strong>
+                                        </DataTableItem>
+                                        <DataTableItem
+                                            // accessibilities:
+                                            label='Payer'
+                                        >
+                                            {paymentConfirmation.payerName}
+                                        </DataTableItem>
+                                        <DataTableItem
+                                            // accessibilities:
+                                            label='Payment Date'
+                                        >
+                                            {!!paymentConfirmation.paymentDate && <span className={styleSheet.dateTime}>
+                                                <DateTimeDisplay dateTime={paymentConfirmation.paymentDate} timezone={preferredTimezone} showTimezone={false} />
+                                            </span>}
+                                            
+                                            <TimezoneEditor
+                                                // variants:
+                                                theme='primary'
+                                                mild={true}
+                                                
+                                                
+                                                
+                                                // values:
+                                                value={preferredTimezone}
+                                                onChange={setPreferredTimezone}
+                                            />
+                                        </DataTableItem>
+                                        <DataTableItem
+                                            // accessibilities:
+                                            label='Originating Bank'
+                                        >
+                                            {paymentConfirmation.originatingBank}
+                                        </DataTableItem>
+                                        <DataTableItem
+                                            // accessibilities:
+                                            label='Destination Bank'
+                                        >
+                                            {paymentConfirmation.destinationBank}
+                                        </DataTableItem>
+                                    </DataTableBody>
+                                </DataTable>
                             </>}
                             
                             <div className={styleSheet.paymentConfirmActions}>

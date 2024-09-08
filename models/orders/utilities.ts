@@ -330,6 +330,13 @@ export const publicOrderDetailSelect = {
             reviewedAt      : true,
             
             // data:
+            amount          : true,
+            payerName       : true,
+            paymentDate     : true,
+            
+            originatingBank : true,
+            destinationBank : true,
+            
             rejectionReason : true,
         },
     },
