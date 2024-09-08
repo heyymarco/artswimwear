@@ -22,10 +22,11 @@ export interface ShipmentPreview
 
 
 
-export interface ShipmentRequest {
-    shipment : Partial<Pick<ShipmentDetail, 'preferredTimezone'>> & {
-        token : string
-    }
+export interface ShipmentRequest
+    extends
+        Partial<Pick<ShipmentDetail, 'preferredTimezone'>>
+{
+    token : string
 }
 export interface ShipmentDetail
     extends

@@ -162,9 +162,7 @@ export function ShipmentPageContent(): JSX.Element|null {
         // actions:
         try {
             const shipmentDetail = await getShipment({
-                shipment : {
-                    token,
-                },
+                token,
             }).unwrap();
             
             
@@ -200,11 +198,9 @@ export function ShipmentPageContent(): JSX.Element|null {
         // update server setting:
         try {
             await getShipment({
-                shipment   : {
-                    token             : token,
-                    
-                    preferredTimezone : newPreferredTimezone, // acutally this is a POST action, but since changing the `preferredTimezone` is not a significant mutation, we decided to treat it as a GET action
-                },
+                token             : token,
+                
+                preferredTimezone : newPreferredTimezone, // acutally this is a POST action, but since changing the `preferredTimezone` is not a significant mutation, we decided to treat it as a GET action
             }).unwrap();
         }
         catch (fetchError: any) {

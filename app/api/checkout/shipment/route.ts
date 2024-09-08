@@ -33,20 +33,15 @@ export const fetchCache = 'force-no-store';
 export const POST = async (req: Request): Promise<Response> => {
     //#region parsing request
     const {
-        shipment,
+        token,
+        preferredTimezone,
     } = await req.json();
     //#endregion parsing request
     
     
     
     //#region validating request
-    if ((typeof(shipment) !== 'object')) {
-        return Response.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
-    } // if
-    const shipmentToken = shipment.token;
-    if (!shipmentToken || (typeof(shipmentToken) !== 'string')) {
+    if (!token || (typeof(token) !== 'string')) {
         return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
@@ -54,9 +49,6 @@ export const POST = async (req: Request): Promise<Response> => {
     
     
     
-    const {
-        preferredTimezone,
-    } = shipment;
     if ((preferredTimezone !== undefined) && (preferredTimezone !== null) && (typeof(preferredTimezone) !== 'number') && !isFinite(preferredTimezone) && !possibleTimezoneValues.includes(preferredTimezone)) {
         return Response.json({
             error: 'Invalid data.',
@@ -71,7 +63,7 @@ export const POST = async (req: Request): Promise<Response> => {
         ? await prisma.shipment.findUnique({
             where  : {
                 // data:
-                token : shipmentToken,
+                token : token,
             },
             select : shipmentDetailSelect,
         })
@@ -79,7 +71,7 @@ export const POST = async (req: Request): Promise<Response> => {
             const relatedShipment = await prismaTransaction.shipment.findUnique({
                 where  : {
                     // data:
-                    token : shipmentToken,
+                    token : token,
                 },
                 select : {
                     // records:
