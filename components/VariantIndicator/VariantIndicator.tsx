@@ -9,15 +9,16 @@ import {
 // reusable-ui components:
 import {
     // react components:
-    BasicProps,
-    Basic,
-}                           from '@reusable-ui/basic'       // a base component
+    IndicatorProps,
+    Indicator,
+}                           from '@reusable-ui/indicator'       // a base component
 
-// stores:
-import type {
+// models:
+import {
     // types:
-    VariantPreview,
-}                           from '@/store/features/api/apiSlice'
+    type Variant,
+    type VariantPreview,
+}                           from '@/models'
 
 // styles:
 import {
@@ -30,18 +31,16 @@ import {
 export interface VariantIndicatorProps<TElement extends Element = HTMLElement>
     extends
         // bases:
-        BasicProps<TElement>
+        IndicatorProps<TElement>
 {
     // data:
-    model : VariantPreview
+    model ?: VariantPreview & Partial<Pick<Variant, 'visibility'>>
 }
 const VariantIndicator = <TElement extends Element = HTMLElement>(props: VariantIndicatorProps<TElement>): JSX.Element|null => {
     // props:
     const {
         // data:
-        model : {
-            name,
-        },
+        model,
         
         
         
@@ -73,22 +72,41 @@ const VariantIndicator = <TElement extends Element = HTMLElement>(props: Variant
         
         
         
+        // accessibilities:
+        active    = true,                         // defaults to active
+        enabled   = (
+            !!model
+            ? ((model.visibility === undefined) || (model.visibility === 'PUBLISHED'))
+            : false
+        ),                                        // defaults to if_PUBLISHED
+        title     = (
+            !!model
+            ? undefined
+            : 'Unknown Variant'
+        ),                                        // defaults to undefined -or- 'Unknown Variant'
+        
+        
+        
         // children:
-        children  = name,                         // defaults to name
+        children  = (
+            !!model
+            ? model.name
+            : '?'
+        ),                                        // defaults to name -or- '?'
         
         
         
         // other props:
-        ...restBasicProps
-    } = restVariantIndicatorProps;
+        ...restIndicatorProps
+    } = restVariantIndicatorProps as (typeof restVariantIndicatorProps & Pick<React.HTMLAttributes<TElement>, 'title'>);
     
     
     
     // jsx:
     return (
-        <Basic<TElement>
+        <Indicator<TElement>
             // other props:
-            {...restBasicProps}
+            {...restIndicatorProps}
             
             
             
@@ -104,9 +122,17 @@ const VariantIndicator = <TElement extends Element = HTMLElement>(props: Variant
             
             // classes:
             className={className}
+            
+            
+            
+            // accessibilities:
+            active={active}
+            enabled={enabled}
+            // @ts-expect-error
+            title={title}
         >
             {children}
-        </Basic>
+        </Indicator>
     );
 }
 export {
