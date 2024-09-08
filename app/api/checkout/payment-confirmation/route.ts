@@ -36,28 +36,8 @@ export const fetchCache = 'force-no-store';
 export const POST = async (req: Request): Promise<Response> => {
     //#region parsing request
     const {
-        paymentConfirmation,
-    } = await req.json();
-    //#endregion parsing request
-    
-    
-    
-    //#region validating request
-    if ((typeof(paymentConfirmation) !== 'object')) {
-        return Response.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
-    } // if
-    const paymentConfirmationToken = paymentConfirmation.token;
-    if (!paymentConfirmationToken || (typeof(paymentConfirmationToken) !== 'string')) {
-        return Response.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
-    } // if
-    
-    
-    
-    const {
+        token,
+        
         amount,
         payerName,
         paymentDate,
@@ -65,7 +45,20 @@ export const POST = async (req: Request): Promise<Response> => {
         
         originatingBank,
         destinationBank,
-    } = paymentConfirmation;
+    } = await req.json();
+    //#endregion parsing request
+    
+    
+    
+    //#region validating request
+    if (!token || (typeof(token) !== 'string')) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    
+    
+    
     if ((amount !== undefined) && ((typeof(amount) !== 'number') || (amount < 0) || !isFinite(amount))) {
         return Response.json({
             error: 'Invalid data.',
@@ -112,7 +105,7 @@ export const POST = async (req: Request): Promise<Response> => {
         (amount === undefined)
         ? await prisma.paymentConfirmation.findUnique({
             where  : {
-                token : paymentConfirmationToken,
+                token : token,
             },
             select : paymentConfirmationDetailSelect,
         })
@@ -121,7 +114,7 @@ export const POST = async (req: Request): Promise<Response> => {
                 const paymentConfirmationDetailData = await prisma.$transaction(async (prismaTransaction) => {
                     const paymentConfirmationData = await prismaTransaction.paymentConfirmation.findUnique({
                         where  : {
-                            token : paymentConfirmationToken,
+                            token : token,
                             
                             OR : [
                                 { reviewedAt      : { equals : null          } }, // never approved or rejected
@@ -227,7 +220,7 @@ export const POST = async (req: Request): Promise<Response> => {
                 return paymentConfirmationDetailData;
             }
             catch (error: any) {
-                console.log('ERROR: ', error, {amount, paymentConfirmationToken});
+                console.log('ERROR: ', error, {amount, token});
                 if (error?.code === 'P2025') return 'ALREADY_APPROVED';
                 throw error;
             } // try
@@ -257,7 +250,7 @@ Updating the confirmation is not required.`,
                 'X-Secret' : process.env.APP_SECRET ?? '',
             },
             body    : JSON.stringify({
-                token : paymentConfirmationToken,
+                token : token,
             }),
         });
     } // if

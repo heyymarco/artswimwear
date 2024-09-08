@@ -216,9 +216,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
         // actions:
         try {
             const paymentConfirmationDetail = await doPaymentConfirmation({
-                paymentConfirmation : {
-                    token,
-                },
+                token,
             }).unwrap();
             
             
@@ -285,17 +283,15 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
         setIsBusy(true);
         try {
             await doPaymentConfirmation({
-                paymentConfirmation   : {
-                    token             : token,
-                    
-                    amount            : amount,
-                    payerName         : payerName       || null, // convert empty string to null
-                    paymentDate       : paymentDate,
-                    preferredTimezone : preferredTimezone,
-                    
-                    originatingBank   : originatingBank || null, // convert empty string to null
-                    destinationBank   : destinationBank || null, // convert empty string to null
-                },
+                token             : token,
+                
+                amount            : amount,
+                payerName         : payerName       || null, // convert empty string to null
+                paymentDate       : paymentDate,
+                preferredTimezone : preferredTimezone,
+                
+                originatingBank   : originatingBank || null, // convert empty string to null
+                destinationBank   : destinationBank || null, // convert empty string to null
             }).unwrap();
         }
         catch (fetchError: any) {

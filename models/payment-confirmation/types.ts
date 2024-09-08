@@ -5,10 +5,11 @@ import {
 
 
 
-export interface PaymentConfirmationRequest {
-    paymentConfirmation : Partial<PaymentConfirmationDetail> & {
-        token : string
-    }
+export interface PaymentConfirmationRequest
+    extends
+        Partial<PaymentConfirmationDetail>
+{
+    token : string
 }
 export interface PaymentConfirmationDetail
     extends
