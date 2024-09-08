@@ -16,15 +16,15 @@ import {
 
 // configs:
 import {
-    PAGE_SIGNIN_TITLE,
-    PAGE_SIGNIN_DESCRIPTION,
+    PAGE_ORDER_HISTORY_TITLE,
+    PAGE_ORDER_HISTORY_DESCRIPTION,
 }                           from '@/website.config'
 
 
 
 export const metadata: Metadata = {
-    title       : PAGE_SIGNIN_TITLE,
-    description : PAGE_SIGNIN_DESCRIPTION,
+    title       : PAGE_ORDER_HISTORY_TITLE,
+    description : PAGE_ORDER_HISTORY_DESCRIPTION,
 }
 
 
