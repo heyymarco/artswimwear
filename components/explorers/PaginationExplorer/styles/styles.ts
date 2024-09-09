@@ -237,10 +237,10 @@ export default () => [
     
     scope('createModel', { // the <ListItem> of model add_new
         ...usesCreateModelLayout(),
-    }),
+    }, { specificityWeight: 2 }),
     scope('emptyModel', { // the <ListItem> of model add_new
         ...usesEmptyModelLayout(),
-    }),
+    }, { specificityWeight: 2 }),
     
     scope('loadingBar', {
         // sizes:
