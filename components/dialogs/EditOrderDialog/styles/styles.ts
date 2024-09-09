@@ -31,7 +31,6 @@ import {
     // a typography management system:
     typos,
     horzRules,
-    secondaries,
     
     
     
@@ -832,9 +831,6 @@ export default () => [
     scope('tableDataAmount', {
         ...usesTableDataAmountLayout(),
     }),
-    scope('selectCurrencyDropdown', {
-        ...usesSelectCurrencyDropdownLayout(),
-    }),
     scope('paymentConfirmActions', {
         ...usesPaymentConfirmActionsLayout(),
     }),
@@ -842,26 +838,13 @@ export default () => [
     scope('badge', {
         ...usesBadgeLayout(),
     }, { specificityWeight: 2 }),
-    scope('selectCurrencyBadge', {
-        ...usesSelectCurrencyBadgeLayout(),
-    }, { specificityWeight: 2 }),
     scope('shippingBadge', {
         ...usesShippingBadgeLayout(),
-    }, { specificityWeight: 2 }),
-    scope('progressBadge', {
-        ...usesProgressBadgeLayout(),
     }, { specificityWeight: 2 }),
     
     scope('shippingAddress', {
         ...usesShippingAddressLayout(),
     }),
-    scope('editShippingAddress', {
-        ...usesEditShippingAddressLayout(),
-    }, { specificityWeight: 2 }),
-    
-    scope('printSpacer', {
-        ...usesPrintSpacerLayout(),
-    }, { specificityWeight: 2 }),
     
     scope('noteHeader', {
         ...usesNoteHeaderLayout(),
@@ -874,15 +857,6 @@ export default () => [
     }),
     scope('noteEmpty', {
         ...usesNoteEmptyLayout(),
-    }),
-    scope('noteContentCenter', {
-        ...usesNoteContentCenterLayout(),
-    }),
-    scope('editTrouble', {
-        ...usesEditTroubleLayout(),
-    }, { specificityWeight: 2 }),
-    scope('alternateSeparator', {
-        ...usesAlternateSeparatorLayout(),
     }),
     scope('countDown', {
         ...usesCountDownLayout(),
