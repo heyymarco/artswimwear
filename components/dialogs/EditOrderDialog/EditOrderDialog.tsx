@@ -700,6 +700,9 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                 controlComponent={<React.Fragment />}
                             >
                                 <p>
+                                    You have not made a payment.
+                                </p>
+                                <p>
                                     Please <strong>follow the payment instructions</strong> sent to your email{!!session?.user?.email && <>: <strong className={styleSheet.data}>{session.user.email}</strong></>}.
                                 </p>
                                 {/* TODO: display payment instructions here, without seeing the email */}
