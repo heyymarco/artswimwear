@@ -598,7 +598,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                             </Basic>
                             {isCanceled && <Content
                                 // classes:
-                                className={styleSheet.noteBody}
+                                className={styleSheet.noteBodyFull}
                             >
                                 {!cancelationReason && <span
                                     // classes:
@@ -616,15 +616,22 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     value={(cancelationReason ?? null) as unknown as WysiwygEditorState|undefined}
                                 />}
                             </Content>}
-                            {isExpired && <>
+                            {isExpired && <Basic
+                                // variants:
+                                mild={true}
+                                
+                                
+                                
+                                // classes:
+                                className={styleSheet.noteBodyExpired}
+                            >
                                 {!!paymentExpiresAt && <span className={styleSheet.dateTime}>
                                     <DateTimeDisplay dateTime={paymentExpiresAt} timezone={preferredTimezone} showTimezone={false} />
                                 </span>}
                                 
                                 <TimezoneEditor
                                     // variants:
-                                    theme='primary'
-                                    mild={true}
+                                    theme='danger'
                                     
                                     
                                     
@@ -632,7 +639,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     value={preferredTimezone}
                                     onChange={setPreferredTimezone}
                                 />
-                            </>}
+                            </Basic>}
                         </Group>
                     </>}
                     
