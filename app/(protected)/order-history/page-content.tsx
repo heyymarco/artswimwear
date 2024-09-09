@@ -6,18 +6,10 @@ import {
     default as React,
 }                           from 'react'
 
-// styles:
-import {
-    // style sheets:
-    useOrderHistoryPageStyleSheet,
-}                           from './styles/loader'
-
-// heymarco components:
-import {
-    Main,
-}                           from '@heymarco/section'
-
 // internal components:
+import {
+    SimpleMainPage,
+}                           from '@/components/pages/SimpleMainPage'
 import {
     PageLoading,
 }                           from '@/components/PageLoading'
@@ -59,11 +51,6 @@ export function OrderHistoryPageContent(): JSX.Element|null {
     );
 }
 function OrderHistoryPageContentInternal(): JSX.Element|null {
-    // styles:
-    const styleSheets = useOrderHistoryPageStyleSheet();
-    
-    
-    
     // stores:
     const {
         data,
@@ -79,7 +66,7 @@ function OrderHistoryPageContentInternal(): JSX.Element|null {
     if (isLoadingAndNoData) return <PageLoading />;
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
-        <Main className={styleSheets.main}>
+        <SimpleMainPage>
             <PaginationExplorer<PublicOrderDetail>
                 // components:
                 modelPreviewComponent={
@@ -89,6 +76,6 @@ function OrderHistoryPageContentInternal(): JSX.Element|null {
                     />
                 }
             />
-        </Main>
+        </SimpleMainPage>
     );
 }

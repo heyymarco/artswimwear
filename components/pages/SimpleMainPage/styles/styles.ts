@@ -22,9 +22,9 @@ export default [
         
         
         // children:
-        ...children('section', {
+        ...children('section', { // the section fills the entire page width
             justifyItems: 'center',
-            ...children('article', {
+            ...children('article', { // center the content with limited max width
                 // sizes:
                 maxInlineSize : `${breakpoints.lg}px`,
             }, { specificityWeight: 2 }),
