@@ -167,10 +167,10 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
     
     
     
-    // stores:
-    const {data: shippingList, isLoading: isLoadingShipping  , isError: isErrorShipping   }  = useGetShippingList();
-    const {data: productList , isLoading: isLoadingProduct   , isError: isErrorProduct    }  = useGetProductList();
-    const {data: preference  , isLoading: isLoadingPreference, isError: isErrorPreference }  = useGetPreference();
+    // apis:
+    const {data: productList , isLoading: isLoadingProduct   , isError: isErrorProduct   , refetch: refetchProduct    }  = useGetProductList();
+    const {data: shippingList, isLoading: isLoadingShipping  , isError: isErrorShipping  , refetch: refetchShipping   }  = useGetShippingList();
+    const {data: preference  , isLoading: isLoadingPreference, isError: isErrorPreference, refetch: refetchPreference }  = useGetPreference();
     const {
         orderStatus,
         cancelationReason,
@@ -205,7 +205,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
     
     const [preferredTimezone, setPreferredTimezone] = useState<number>(() => customerOrGuestPreferredTimezone ?? checkoutConfigShared.intl.defaultTimezone);
     
-    const shippingProvider       = shippingList?.entities?.[shippingProviderId ?? ''];
+    const shippingProvider       = !shippingProviderId ? undefined : shippingList?.entities?.[shippingProviderId];
     
     const totalProductPrice      = items?.reduce((accum, {price, quantity}) => {
         return accum + (price * quantity);
@@ -218,6 +218,46 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
     const isManualPaid           = !isCanceledOrExpired && (paymentType === 'MANUAL_PAID') && !paymentBrand /* assumes 'MANUAL_PAID' with 'indomaret'|'alfamart' as auto_payment */;
     const hasPaymentConfirmation = !!paymentConfirmation?.reportedAt;
     const isPaymentRejected      = hasPaymentConfirmation && !!paymentConfirmation.rejectionReason;
+    
+    
+    
+    // statuses:
+    const isLoading = (
+        // have any loading(s):
+        
+        isLoadingProduct
+        ||
+        (
+            !!shippingAddressDetail // IGNORE shippingLoading if no shipping required
+            &&
+            isLoadingShipping
+        )
+        ||
+        isLoadingPreference
+        /* isOther1Loading */
+        /* isOther2Loading */
+        /* isOther3Loading */
+    );
+    const isError   = (
+        !isLoading // while still LOADING => consider as NOT error
+        &&
+        (
+            // have any error(s):
+            
+            isErrorProduct
+            ||
+            (
+                !!shippingAddressDetail // IGNORE shippingError if no shipping required
+                &&
+                isErrorShipping
+            )
+            ||
+            isErrorPreference
+            /* isOther1Error */
+            /* isOther2Error */
+            /* isOther3Error */
+        )
+    );
     
     
     
@@ -241,6 +281,12 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                 token={token}
             />
         );
+    });
+    
+    const refetchModel               = useEvent((): void => {
+        if (isErrorProduct    && !isLoadingProduct   ) refetchProduct();
+        if (isErrorShipping   && !isLoadingShipping  ) refetchShipping();
+        if (isErrorPreference && !isLoadingPreference) refetchPreference();
     });
     
     
@@ -360,13 +406,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                 {!!shippingAddressDetail && <>
                     <Section title='Deliver To' theme='secondary' className={styleSheet.orderDeliverySection}>
                         <Basic tag='strong' className={`${styleSheet.badge} ${styleSheet.shippingBadge}`}>
-                            {
-                                isLoadingShipping
-                                ? <Busy />
-                                : isErrorShipping
-                                    ? 'Error getting shipping data'
-                                    : (shippingProvider?.name ?? 'DELETED SHIPPING PROVIDER')
-                            }
+                            {shippingProvider?.name ?? 'DELETED SHIPPING PROVIDER'}
                             
                             {!!shipment?.number && !!shipment.token && <ButtonIcon
                                 // appearances:
@@ -423,6 +463,13 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
             modelName='Order'
             modelEntryName={`#ORDER_${model?.id}`}
             model={model}
+            
+            
+            
+            // stores:
+            isModelLoading = {isLoading}
+            isModelError   = {isError}
+            onModelRetry   = {refetchModel}
         >
             <TabPanel label={PAGE_ORDER_HISTORY_TAB_ORDER_N_SHIPPING} panelComponent={<Generic className={styleSheet.orderShippingTab} />}>
                 <OrderAndShipping />
