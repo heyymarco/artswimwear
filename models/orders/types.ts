@@ -169,6 +169,7 @@ export interface PublicOrderDetail
             |'shippingProviderId'
             
             |'orderStatus'
+            |'cancelationReason'
         >
 {
     currency            : OrderCurrency['currency']

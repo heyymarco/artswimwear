@@ -215,6 +215,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
     const {data: preference  , isLoading: isLoadingPreference, isError: isErrorPreference }  = useGetPreference();
     const {
         orderStatus,
+        cancelationReason,
         
         currency : preferredCurrency,
         
@@ -599,7 +600,21 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                 // classes:
                                 className={styleSheet.noteBody}
                             >
-                                {/* TODO display cancelation reason */}
+                                {!cancelationReason && <span
+                                    // classes:
+                                    className={`${styleSheet.noteEmpty} txt-sec`}
+                                >
+                                    -- no cancelation reason --
+                                </span>}
+                                {!!cancelationReason && <WysiwygViewer
+                                    // variants:
+                                    nude={true}
+                                    
+                                    
+                                    
+                                    // values:
+                                    value={(cancelationReason ?? null) as unknown as WysiwygEditorState|undefined}
+                                />}
                             </Content>}
                             {isExpired && <>
                                 {!!paymentExpiresAt && <span className={styleSheet.dateTime}>

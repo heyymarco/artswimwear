@@ -311,6 +311,7 @@ export const publicOrderDetailSelect = {
     shippingProviderId      : true,
     
     orderStatus             : true,
+    cancelationReason       : true,
     
     payment                 : {
         select : {
