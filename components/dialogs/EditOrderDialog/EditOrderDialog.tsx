@@ -36,7 +36,6 @@ import {
     
     
     // simple-components:
-    Icon,
     ButtonIcon,
     
     
@@ -247,7 +246,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
     
     
     // jsx:
-    const OrderAndShipping = ({printMode = false}): JSX.Element|null => {
+    const OrderAndShipping = (): JSX.Element|null => {
         // jsx:
         return (
             <>
@@ -259,9 +258,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                     
                     // variants:
                     theme={
-                        printMode
-                        ? 'light'           // a light theme for white_paper friendly prints
-                        : (
+                        (
                             isCanceledOrExpired
                             ? 'danger'      // a danger theme for CANCELED|EXPIRED orders
                             : (
@@ -285,9 +282,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                         
                         // variants:
                         theme={
-                            printMode
-                            ? 'inherit'         // an inherit theme for white_paper friendly prints
-                            : (
+                            (
                                 isCanceledOrExpired
                                 ? 'danger'      // a danger theme for CANCELED|EXPIRED orders
                                 : (
@@ -363,12 +358,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                 </Section>
                 
                 {!!shippingAddressDetail && <>
-                    {printMode && <Content theme='danger' outlined={true} nude={true} className={styleSheet.printSpacer}>
-                        <Icon className='scissors' icon='content_cut' />
-                        <hr className='line' />
-                    </Content>}
-                    
-                    <Section title='Deliver To' theme={printMode ? 'light' : 'secondary'} className={styleSheet.orderDeliverySection}>
+                    <Section title='Deliver To' theme='secondary' className={styleSheet.orderDeliverySection}>
                         <Basic tag='strong' className={`${styleSheet.badge} ${styleSheet.shippingBadge}`}>
                             {
                                 isLoadingShipping
@@ -378,7 +368,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     : (shippingProvider?.name ?? 'DELETED SHIPPING PROVIDER')
                             }
                             
-                            {!printMode && !!shipment?.number && !!shipment.token && <ButtonIcon
+                            {!!shipment?.number && !!shipment.token && <ButtonIcon
                                 // appearances:
                                 icon='my_location'
                                 
@@ -419,11 +409,6 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                         </div>
                     </Section>
                 </>}
-                
-                {printMode && <Content theme='danger' outlined={true} nude={true} className={styleSheet.printSpacer}>
-                    <Icon className='scissors' icon='content_cut' />
-                    <hr className='line' />
-                </Content>}
             </>
         );
     };
