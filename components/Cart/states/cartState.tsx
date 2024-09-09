@@ -420,6 +420,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const isProductLoading = mockProductList ?    false     : realIsProductLoading;
     const isProductError   = mockProductList ?    false     : realIsProductError;
     
+    
+    
+    // statuses:
     const isCartEmpty   = (
         !items.length
         /* isOther1Empty */

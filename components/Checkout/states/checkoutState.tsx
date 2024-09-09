@@ -964,6 +964,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     
     
     
+    // statuses:
     const isPaymentStep                  = (checkoutStep === 'PAYMENT');
     const isLastCheckoutStep             = (checkoutStep === 'PENDING') || (checkoutStep === 'PAID');
     const isCheckoutEmpty                = (
