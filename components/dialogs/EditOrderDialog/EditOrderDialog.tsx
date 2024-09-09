@@ -9,9 +9,6 @@ import {
     
     // hooks:
     useState,
-    useRef,
-    useEffect,
-    useMemo,
 }                           from 'react'
 
 // next-auth:
@@ -23,7 +20,6 @@ import {
 import {
     // react helper hooks:
     useEvent,
-    EventHandler,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -40,7 +36,6 @@ import {
     
     
     // simple-components:
-    IconProps,
     Icon,
     ButtonIcon,
     
@@ -52,23 +47,12 @@ import {
     
     
     // status-components:
-    Badge,
     Busy,
     
     
     
     // notification-components:
     Alert,
-    
-    
-    
-    // menu-components:
-    Collapse,
-    
-    
-    
-    // dialog-components:
-    ModalExpandedChangeEvent,
     
     
     
@@ -94,9 +78,6 @@ import {
     CurrencyDisplay,
 }                           from '@/components/CurrencyDisplay'
 import {
-    EditButton,
-}                           from '@/components/EditButton'
-import {
     type WysiwygEditorState,
     
     WysiwygViewer,
@@ -104,9 +85,6 @@ import {
 import {
     TimezoneEditor,
 }                           from '@/components/editors/TimezoneEditor'
-import {
-    SelectCurrencyEditor,
-}                           from '@/components/editors/SelectCurrencyEditor'
 import {
     // react components:
     ImplementedComplexEditModelDialogProps,
@@ -167,12 +145,8 @@ import {
 export interface EditOrderDialogProps
     extends
         // bases:
-        Omit<ImplementedComplexEditModelDialogProps<PublicOrderDetail>,
-            // auto focusable:
-            |'autoFocusOn'
-        >
+        ImplementedComplexEditModelDialogProps<PublicOrderDetail>
 {
-    autoFocusOn ?: ImplementedComplexEditModelDialogProps<PublicOrderDetail>['autoFocusOn'] | 'OrderStatusButton' | 'ConfirmPaymentButton'
 }
 const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
     // styles:
@@ -184,23 +158,8 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
     const {
         // data:
         model : modelRaw,
-        
-        
-        
-        // auto focusable:
-        autoFocusOn,
-        
-        
-        
-        // states:
-        defaultExpandedTabIndex = (autoFocusOn === 'ConfirmPaymentButton') ? 1 : undefined,
     ...restComplexEditModelDialogProps} = props;
     const model = modelRaw!;
-    
-    
-    
-    // states:
-    const [shouldTriggerAutoFocus, setShouldTriggerAutoFocus] = useState<boolean>(false);
     
     
     
@@ -284,48 +243,6 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
             />
         );
     });
-    
-    const handleExpandedEnd          = useEvent(() => {
-        setShouldTriggerAutoFocus(true);
-    });
-    
-    
-    
-    // refs:
-    const autoFocusRef = useRef<HTMLElement|null>(null);
-    
-    
-    
-    // dom effects:
-    useEffect(() => {
-        // conditions:
-        if (!shouldTriggerAutoFocus) return;
-        if (typeof(autoFocusOn) !== 'string') return;
-        const autoFocusElm = autoFocusRef.current;
-        if (!autoFocusElm) return;
-        
-        
-        
-        // setups:
-        let cancelAutoFocus = setTimeout(() => {
-            autoFocusElm.scrollIntoView({
-                behavior : 'smooth',
-            });
-            cancelAutoFocus = setTimeout(() => {
-                autoFocusElm.focus({
-                    preventScroll : true,
-                });
-                setShouldTriggerAutoFocus(false);
-            }, 500);
-        }, 100);
-        
-        
-        
-        // cleanups:
-        return () => {
-            clearTimeout(cancelAutoFocus);
-        };
-    }, [shouldTriggerAutoFocus, autoFocusOn]);
     
     
     
@@ -521,21 +438,6 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
             modelName='Order'
             modelEntryName={`#ORDER_${model?.id}`}
             model={model}
-            
-            
-            
-            // states:
-            defaultExpandedTabIndex={defaultExpandedTabIndex}
-            
-            
-            
-            // auto focusable:
-            autoFocusOn={(typeof(autoFocusOn) === 'string') ? undefined : autoFocusOn}
-            
-            
-            
-            // handlers:
-            onExpandEnd={handleExpandedEnd}
         >
             <TabPanel label={PAGE_ORDER_HISTORY_TAB_ORDER_N_SHIPPING} panelComponent={<Generic className={styleSheet.orderShippingTab} />}>
                 <OrderAndShipping />
