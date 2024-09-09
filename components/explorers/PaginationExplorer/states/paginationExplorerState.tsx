@@ -39,7 +39,7 @@ import {
 //#region paginationExplorerState
 
 // contexts:
-export interface GetModelPaginationApi<TModel extends Model>
+export interface UseGetModelPage<TModel extends Model>
 {
     // data:
     data       ?: Pagination<TModel>
@@ -52,7 +52,7 @@ export interface GetModelPaginationApi<TModel extends Model>
 export interface PaginationExplorerState<TModel extends Model>
     extends
         // apis:
-        GetModelPaginationApi<TModel>
+        UseGetModelPage<TModel>
 {
     // states:
     page       : number
@@ -97,7 +97,7 @@ export interface PaginationExplorerStateProps<TModel extends Model> {
     
     
     // data:
-    useGetModelPage  : (arg: PaginationArgs) => GetModelPaginationApi<TModel>
+    useGetModelPage  : (arg: PaginationArgs) => UseGetModelPage<TModel>
 }
 const PaginationExplorerStateProvider = <TModel extends Model>(props: React.PropsWithChildren<PaginationExplorerStateProps<TModel>>): JSX.Element|null => {
     // props:
