@@ -66,7 +66,7 @@ export interface SimpleEditCustomerImageDialogProps
     extends
         // bases:
         Omit<ImplementedSimpleEditModelDialogProps<CustomerDetail, 'image'>, 'editorComponent'>,
-        Partial<Pick<SimpleEditModelDialogProps<CustomerDetail, 'image'>, 'editorComponent'|'updateModelApi'>>
+        Partial<Pick<SimpleEditModelDialogProps<CustomerDetail, 'image'>, 'editorComponent'|'useUpdateModel'>>
 {
 }
 export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDialogProps) => {
@@ -140,7 +140,7 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
     }
     const {
         // stores:
-        updateModelApi,
+        useUpdateModel,
         
         
         
@@ -217,7 +217,7 @@ export const SimpleEditCustomerImageDialog = (props: SimpleEditCustomerImageDial
             
             
             // stores:
-            updateModelApi={updateModelApi as (UpdateModelApi<CustomerImageModel> | (() => UpdateModelApi<CustomerImageModel>))}
+            useUpdateModel={useUpdateModel as (UpdateModelApi<CustomerImageModel> | (() => UpdateModelApi<CustomerImageModel>))}
             isCommiting={isLoadingCommitDeleteImage}
             isReverting={isLoadingRevertDeleteImage}
             

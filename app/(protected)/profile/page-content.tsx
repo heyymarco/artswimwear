@@ -133,7 +133,7 @@ export function ProfilePageContent() {
                 
                 
                 // stores:
-                updateModelApi={useUpdateCustomer}
+                useUpdateModel={useUpdateCustomer}
             />
             : <SimpleEditModelDialog<CustomerDetail>
                 // data:
@@ -143,7 +143,7 @@ export function ProfilePageContent() {
                 
                 
                 // stores:
-                updateModelApi={useUpdateCustomer}
+                useUpdateModel={useUpdateCustomer}
                 
                 
                 

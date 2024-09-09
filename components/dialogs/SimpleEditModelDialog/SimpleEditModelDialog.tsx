@@ -106,7 +106,7 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     edit              : TEdit
     initialValue     ?: InitialValueHandler<TModel, TEdit>
     transformValue   ?: TransformValueHandler<TModel, TEdit>
-    updateModelApi   ?: UseUpdateModel<TModel> | UpdateModelApi<TModel>
+    useUpdateModel   ?: UseUpdateModel<TModel> | UpdateModelApi<TModel>
     
     
     
@@ -133,7 +133,7 @@ export type ImplementedSimpleEditModelDialogProps<TModel extends Model, TEdit ex
     // data:
     |'initialValue'
     |'transformValue'
-    |'updateModelApi'
+    |'useUpdateModel'
     
     // stores:
     |'isCommiting'      // already taken over
@@ -161,7 +161,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
             
             [edit] : (value === '') ? (null as typeof value) : value, // auto convert empty string to null
         } as MutationArgs<TModel>),
-        updateModelApi,
+        useUpdateModel : _useUpdateModel,
         
         
         
@@ -218,7 +218,7 @@ const SimpleEditModelDialog = <TModel extends Model>(props: SimpleEditModelDialo
     
     
     // stores:
-    const [updateModel, {isLoading: isCommitingModel}] = (typeof(updateModelApi) === 'function') ? updateModelApi() : (updateModelApi ?? [undefined, {isLoading: false}]);
+    const [updateModel, {isLoading: isCommitingModel}] = (typeof(_useUpdateModel) === 'function') ? _useUpdateModel() : (_useUpdateModel ?? [undefined, {isLoading: false}]);
     const isCommiting = isCommitingExternal || isCommitingModel;
     const isLoading   = isCommiting || isReverting;
     
