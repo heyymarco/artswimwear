@@ -78,6 +78,8 @@ import {
     
     type InitialValueHandler,
     type TransformValueHandler,
+    
+    type UseUpdateModel,
     type UpdateModelApi,
     
     type AfterUpdateHandler,
@@ -104,7 +106,7 @@ export interface SimpleEditModelDialogProps<TModel extends Model, TEdit extends 
     edit              : TEdit
     initialValue     ?: InitialValueHandler<TModel, TEdit>
     transformValue   ?: TransformValueHandler<TModel, TEdit>
-    updateModelApi   ?: UpdateModelApi<TModel> | (() => UpdateModelApi<TModel>)
+    updateModelApi   ?: UseUpdateModel<TModel> | UpdateModelApi<TModel>
     
     
     

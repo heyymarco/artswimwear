@@ -37,6 +37,8 @@ export interface SimpleEditModelDialogExpandedChangeEvent<TModel extends Model> 
 
 export type InitialValueHandler  <TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>> = (                             edit: TEdit, model: TModel) => ValueOfModel<TModel>
 export type TransformValueHandler<TModel extends Model, TEdit extends keyof any = KeyOfModel<TModel>> = (value: ValueOfModel<TModel>, edit: TEdit, model: TModel) => MutationArgs<TModel>
+
+export type UseUpdateModel<TModel extends Model> = () => UpdateModelApi<TModel>
 export type UpdateModelApi<TModel extends Model> = readonly [
     MutationTrigger<MutationDefinition<MutationArgs<TModel>, BaseQueryFn<any, unknown, unknown, {}, {}>, string, TModel>>,
     {
