@@ -40,8 +40,7 @@ import {
 
 // contexts:
 export type UseGetModelPage<TModel extends Model> = (arg: PaginationArgs) => UseGetModelPageApi<TModel>
-export interface UseGetModelPageApi<TModel extends Model>
-{
+export interface UseGetModelPageApi<TModel extends Model> {
     // data:
     data       ?: Pagination<TModel>
     isLoading   : boolean
