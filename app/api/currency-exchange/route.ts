@@ -18,8 +18,7 @@ import {
 
 // configs:
 export const dynamic    = 'force-dynamic';
-export const fetchCache = 'force-cache';
-export const revalidate = 1 * 24 * 3600;
+export const fetchCache = 'force-no-store'; // always in sync with server
 
 
 
@@ -67,7 +66,12 @@ router
         
         
         // fetch https://www.exchangerate-api.com :
-        const exchangeRateResponse = await fetch(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGERATEAPI_KEY}/latest/${checkoutConfigShared.intl.defaultCurrency}`);
+        const exchangeRateResponse = await fetch(`https://v6.exchangerate-api.com/v6/${process.env.EXCHANGERATEAPI_KEY}/latest/${checkoutConfigShared.intl.defaultCurrency}`, {
+            // cache : 'force-cache', // "cache: force-cache" and "revalidate: 86400", only one should be specified
+            next  : {
+                revalidate : 3 * 3600, // set the cache lifetime of a resource (in seconds).
+            },
+        });
         if (exchangeRateResponse.status !== 200) throw Error('api error');
         const data = await exchangeRateResponse.json();
         const apiRates = data?.conversion_rates;
@@ -78,7 +82,7 @@ router
         
         
         
-        currencyExchange.expires = new Date(Date.now() + (1 * 24 * 3600 * 1000));
+        currencyExchange.expires = new Date(Date.now() + (3 * 3600 * 1000));
     } // if
     
     
