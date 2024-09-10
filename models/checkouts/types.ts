@@ -1,6 +1,6 @@
 // models:
 import {
-    type DraftOrdersOnProducts,
+    type DraftOrderItem,
     
     type Checkout,
     // type CheckoutPaymentSession,
@@ -142,7 +142,7 @@ export type TotalShippingCostStatus =
 
 export interface DetailedItem
     extends
-        Omit<DraftOrdersOnProducts,
+        Omit<DraftOrderItem,
             // records:
             |'id'
             
@@ -158,7 +158,7 @@ export interface DetailedItem
     variantNames   : string[]
     
     // data:
-    priceConverted : DraftOrdersOnProducts['price'] // renamed to priceConverted
+    priceConverted : DraftOrderItem['price'] // renamed to priceConverted
 }
 
 export interface CreateOrderOptions {

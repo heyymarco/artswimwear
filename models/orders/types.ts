@@ -13,7 +13,7 @@ import {
     type Order,
     type OrderCurrency,
     type OrdersOnProducts,
-    type DraftOrdersOnProducts,
+    type DraftOrderItem,
     
     type Shipment,
 }                           from '@prisma/client'
@@ -346,7 +346,7 @@ export type CommitDraftOrder = Omit<DraftOrderDetail,
     // records:
     |'createdAt'
 > & {
-    items : Omit<DraftOrdersOnProducts,
+    items : Omit<DraftOrderItem,
         // records:
         |'id'
         
@@ -368,7 +368,7 @@ export type RevertDraftOrder = Pick<DraftOrderDetail,
     // data:
     |'orderId'
 > & {
-    items : Pick<DraftOrdersOnProducts,
+    items : Pick<DraftOrderItem,
         // data:
         |'quantity'
         

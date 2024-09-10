@@ -36,7 +36,7 @@ import {
     
     type CreateOrderDataBasic,
     type OrderCurrencyDetail,
-    type DraftOrdersOnProducts,
+    type DraftOrderItem,
     
     type ShippingAddressDetail,
     type BillingAddressDetail,
@@ -521,7 +521,7 @@ router
     type RequiredNonNullable<T> = {
         [P in keyof T]: NonNullable<T[P]>
     };
-    const validFormattedItems : RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'|'variantIds'|'quantity'>>[] = [];
+    const validFormattedItems : RequiredNonNullable<Pick<DraftOrderItem, 'productId'|'variantIds'|'quantity'>>[] = [];
     for (const item of items) {
         // validations:
         if (!item || (typeof(item) !== 'object'))                               throw 'INVALID_JSON';
@@ -719,7 +719,7 @@ router
             /**
              * Contains non_nullable product stocks to be reduced from current stock
              */
-            const reduceStockItems : (RequiredNonNullable<Pick<DraftOrdersOnProducts, 'productId'>> & { stockId: string, quantity: number })[] = [];
+            const reduceStockItems : (RequiredNonNullable<Pick<DraftOrderItem, 'productId'>> & { stockId: string, quantity: number })[] = [];
             let totalProductPriceConverted = 0, totalProductWeight : number|null = null;
             {
                 const productListAdapter = createEntityAdapter<

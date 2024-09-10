@@ -44,8 +44,8 @@ model Product {
     
     // relations:
     orders                          OrdersOnProducts[]              // some Product(s) may have some related Order(s)      // many to many
-    draftOrders                     DraftOrdersOnProducts[]         // some Product(s) may have some related DraftOrder(s) // many to many
-    cartItems                       CartItem[]                      // some Product(s) may have some related CartItem(s)       // many to many
+    draftOrderItems                 DraftOrderItem[]                // some Product(s) may have some related DraftOrder(s) // many to many
+    cartItems                       CartItem[]                      // some Product(s) may have some related CartItem(s)   // many to many
 }
 enum ProductVisibility {
     PUBLISHED
@@ -404,7 +404,7 @@ model DraftOrder {
     shippingAddress                 DraftShippingAddress?
     shippingCost                    Float?                          // min: 0
     
-    items                           DraftOrdersOnProducts[]
+    items                           DraftOrderItem[]
     
     // relations:
     customerId                      String?
@@ -634,7 +634,7 @@ model ShipmentLog {
     parentId                        String
     parent                          Shipment                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related ShipmentLog(s) if the Shipment deleted
 }
-model DraftOrdersOnProducts {
+model DraftOrderItem {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
     
@@ -645,10 +645,10 @@ model DraftOrdersOnProducts {
     
     // relations:
     parentId                        String
-    parent                          DraftOrder                      @relation(fields: [parentId]  , references: [id], onDelete: Cascade) // delete the related DraftOrdersOnProducts(s) if the DraftOrder deleted
+    parent                          DraftOrder                      @relation(fields: [parentId]  , references: [id], onDelete: Cascade) // delete the related DraftOrderItem(s) if the DraftOrder deleted
     
     productId                       String?
-    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related DraftOrdersOnProducts(s) if the Product deleted
+    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related DraftOrderItem(s) if the Product deleted
     
     variantIds                      String[]                        // manual relation foreign key(s)
 }
