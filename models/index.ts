@@ -15,3 +15,5 @@ export      * from './emails'
 export      * from './customers'
 export      * from './carts'
 export      * from './checkouts'
+
+export      * from './wishlists'
