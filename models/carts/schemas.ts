@@ -10,6 +10,7 @@ import {
     type CartUpdateRequest,
 }                           from './types'
 import {
+    ModelIdSchema,
     CurrencySchema,
 }                           from '../commons'
 import {
@@ -23,8 +24,8 @@ export const CartItemPreviewSchema = z.object({
     quantity   : z.number().int().finite().gte(1),
     
     // relations:
-    productId  : z.string().min(1),
-    variantIds : z.array(z.string().min(1)),
+    productId  : ModelIdSchema,
+    variantIds : z.array(ModelIdSchema),
 }) satisfies z.Schema<CartItemPreview>;
 
 

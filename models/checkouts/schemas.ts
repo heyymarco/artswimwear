@@ -13,6 +13,9 @@ import {
     type CheckoutPaymentSession,
 }                           from './types'
 import {
+    ModelIdSchema,
+}                           from '../commons'
+import {
     ShippingAddressDetailSchema,
     BillingAddressDetailSchema,
 }                           from '../shippings'
@@ -63,7 +66,7 @@ export const CheckoutDetailSchema = z.object({
     // data:
     checkoutStep       : CheckoutStepSchema,
     shippingAddress    : ShippingAddressDetailSchema.nullable(),
-    shippingProviderId : z.string().min(1).nullable(),
+    shippingProviderId : ModelIdSchema.nullable(),
     billingAsShipping  : z.boolean(),
     billingAddress     : BillingAddressDetailSchema.nullable(),
     paymentMethod      : PaymentMethodSchema.nullable(),
