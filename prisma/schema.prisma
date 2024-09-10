@@ -898,6 +898,8 @@ model Wishlist {
     productId                       String
     product                         Product                         @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related Wishlist(s) if the Product deleted
     
+    @@unique([parentId, productId]) // only 1 wish is allowed for each Product for each Customer
+    
     groupId                         String?
     group                           WishlistGroup?                  @relation(fields: [groupId]  , references: [id], onDelete: Cascade) // delete the related Wishlist(s) if the WishlistGroup deleted
 }
