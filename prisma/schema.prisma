@@ -882,7 +882,7 @@ model WishlistGroup {
     id                              String                          @id @default(cuid()) // @map("_id")
     
     // data:
-    name                            String
+    name                            String                          @unique
     
     items                           Wishlist[]
 }
