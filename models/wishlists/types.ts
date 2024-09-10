@@ -40,6 +40,7 @@ export interface CreateWishlistGroupRequest
         >
 {
 }
+
 export interface UpdateWishlistGroupRequest
     extends
         Pick<WishlistGroup,
@@ -53,6 +54,7 @@ export interface UpdateWishlistGroupRequest
         >
 {
 }
+
 export interface DeleteWishlistGroupRequest
     extends
         Pick<WishlistGroup,
