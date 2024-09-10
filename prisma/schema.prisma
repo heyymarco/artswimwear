@@ -43,7 +43,7 @@ model Product {
     stocks                          Stock[]
     
     // relations:
-    orders                          OrdersOnProducts[]              // some Product(s) may have some related Order(s)      // many to many
+    orderItems                      OrderItem[]                     // some Product(s) may have some related Order(s)      // many to many
     draftOrderItems                 DraftOrderItem[]                // some Product(s) may have some related DraftOrder(s) // many to many
     cartItems                       CartItem[]                      // some Product(s) may have some related CartItem(s)   // many to many
 }
@@ -440,7 +440,7 @@ model Order {
     
     shipment                        Shipment?
     
-    items                           OrdersOnProducts[]
+    items                           OrderItem[]
     
     // relations:
     customerId                      String?
@@ -652,7 +652,7 @@ model DraftOrderItem {
     
     variantIds                      String[]                        // manual relation foreign key(s)
 }
-model OrdersOnProducts {
+model OrderItem {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
     
@@ -663,10 +663,10 @@ model OrdersOnProducts {
     
     // relations:
     parentId                        String
-    parent                          Order                           @relation(fields: [parentId]  , references: [id], onDelete: Cascade) // delete the related OrdersOnProducts(s) if the Order deleted
+    parent                          Order                           @relation(fields: [parentId]  , references: [id], onDelete: Cascade) // delete the related OrderItem(s) if the Order deleted
     
     productId                       String?
-    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related OrdersOnProducts(s) if the Product deleted
+    product                         Product?                        @relation(fields: [productId] , references: [id], onDelete: SetNull) // preserve the related OrderItem(s) if the Product deleted
     
     variantIds                      String[]                        // manual relation foreign key(s)
 }

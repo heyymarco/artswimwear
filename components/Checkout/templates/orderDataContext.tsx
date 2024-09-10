@@ -24,7 +24,7 @@ import type {
     Product,
     Variant,
     PaymentConfirmation,
-    OrdersOnProducts,
+    OrderItem,
     Shipment,
 }                           from '@prisma/client'
 
@@ -54,7 +54,7 @@ export type ProductData = Pick<Product, 'name'> & {
     // relations:
     variantGroups : Pick<Variant, 'id'|'name'>[][]
 }
-export type OrderItemsAndData = Pick<OrdersOnProducts, 'price'|'quantity'|'variantIds'> & {
+export type OrderItemsAndData = Pick<OrderItem, 'price'|'quantity'|'variantIds'> & {
     product : ProductData|null
 }
 export type CustomerOrGuestData = Omit<CustomerOrGuestDetail,

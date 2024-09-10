@@ -12,7 +12,7 @@ import {
     type DraftOrder,
     type Order,
     type OrderCurrency,
-    type OrdersOnProducts,
+    type OrderItem,
     type DraftOrderItem,
     
     type Shipment,
@@ -209,7 +209,7 @@ export interface PublicOrderDetail
         |'number'
     >|null
     
-    items               : Pick<OrdersOnProducts,
+    items               : Pick<OrderItem,
         // data:
         |'price'
         |'quantity'
@@ -304,7 +304,7 @@ export interface CreateOrderDataBasic {
     // primary data:
     orderId                  : string
     paymentId                : string|undefined // will be random_auto_generated if undefined
-    items                    : Omit<OrdersOnProducts,
+    items                    : Omit<OrderItem,
         // records:
         |'id'
         
@@ -403,7 +403,7 @@ export type CancelOrder = Pick<OrderDetail,
     payment : Pick<PaymentDetail,
         |'type'
     >|null
-    items : Pick<OrdersOnProducts,
+    items : Pick<OrderItem,
         // data:
         |'quantity'
         
