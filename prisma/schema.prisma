@@ -46,6 +46,7 @@ model Product {
     orderItems                      OrderItem[]                     // some Product(s) may have some related Order(s)      // many to many
     draftOrderItems                 DraftOrderItem[]                // some Product(s) may have some related DraftOrder(s) // many to many
     cartItems                       CartItem[]                      // some Product(s) may have some related CartItem(s)   // many to many
+    wishlists                       Wishlist[]                      // some Product(s) may have some related Wishlist(s)   // many to many
 }
 enum ProductVisibility {
     PUBLISHED
@@ -707,6 +708,7 @@ model Customer {
     preference                      CustomerPreference?
     
     cart                            Cart?
+    wishlists                       Wishlist[]
     
     accounts                        CustomerAccount[]
     sessions                        CustomerSession[]
@@ -872,6 +874,33 @@ model CheckoutBillingAddress {
 //     parentId                        String                          @unique
 //     parent                          Checkout                        @relation(fields: [parentId], references: [id], onDelete: Cascade) // delete the related CheckoutPaymentSession(s) if the Checkout deleted
 // }
+
+
+
+model WishlistGroup {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    
+    // data:
+    name                            String
+    
+    items                           Wishlist[]
+}
+model Wishlist {
+    // records:
+    id                              String                          @id @default(cuid()) // @map("_id")
+    updatedAt                       DateTime                        @updatedAt
+    
+    // relations:
+    parentId                        String
+    parent                          Customer                        @relation(fields: [parentId] , references: [id], onDelete: Cascade) // delete the related Wishlist(s) if the Customer deleted
+    
+    productId                       String
+    product                         Product                         @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related Wishlist(s) if the Product deleted
+    
+    groupId                         String?
+    group                           WishlistGroup?                  @relation(fields: [groupId]  , references: [id], onDelete: Cascade) // delete the related Wishlist(s) if the WishlistGroup deleted
+}
 
 
 
