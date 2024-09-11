@@ -567,10 +567,16 @@ export const apiSlice = createApi({
             transformResponse(response: WishlistDetail['productId'][]) {
                 return wishlistListAdapter.addMany(wishlistListAdapter.getInitialState(), response);
             },
-            providesTags    : (wishlistList, error, arg) => !wishlistList ? [] : wishlistList.ids.map((id) => ({
-                type        : 'Wishlist',
-                id          : `${id}`,
-            })),
+            providesTags    : (wishlistList, error, arg) => !wishlistList ? [] : [
+                ...wishlistList.ids.map((id) => ({
+                    type        : 'Wishlist',
+                    id          : `${id}`,
+                })),
+                {
+                    type : 'Wishlist',
+                    id   : 'LIST',
+                },
+            ] as { type: 'Wishlist', id: string }[],
         }),
         updateWishlist              : builder.mutation<WishlistDetail['productId'], CreateOrUpdateWishlistRequest>({
             query: (arg) => ({
@@ -578,20 +584,32 @@ export const apiSlice = createApi({
                 method      : 'PATCH',
                 body        : arg,
             }),
-            invalidatesTags : (productIds, error, arg) => !productIds ? [] : [{
-                type        : 'Wishlist',
-                id          : productIds,
-            }],
+            invalidatesTags : (productId, error, arg) => !productId ? [] : [
+                {
+                    type        : 'Wishlist',
+                    id          : productId,
+                },
+                {
+                    type : 'Wishlist',
+                    id   : 'LIST',
+                },
+            ],
         }),
         deleteWishlist              : builder.mutation<WishlistDetail['productId'], DeleteWishlistRequest>({
             query: (arg) => ({
-                url         : `wishlists?id=${encodeURIComponent(arg.productId)}`,
+                url         : `wishlists?productId=${encodeURIComponent(arg.productId)}`,
                 method      : 'DELETE',
             }),
-            invalidatesTags : (productIds, error, arg) => !productIds ? [] : [{
-                type        : 'Wishlist',
-                id          : productIds,
-            }],
+            invalidatesTags : (productId, error, arg) => !productId ? [] : [
+                {
+                    type        : 'Wishlist',
+                    id          : productId,
+                },
+                {
+                    type : 'Wishlist',
+                    id   : 'LIST',
+                },
+            ],
         }),
     }),
 });

@@ -83,8 +83,11 @@ export interface CreateOrUpdateWishlistRequest
         Pick<Wishlist,
             // relations:
             |'productId'
+        >,
+        Partial<Pick<Wishlist,
+            // relations:
             |'groupId'
-        >
+        >>
 {
 }
 

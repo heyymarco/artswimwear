@@ -57,6 +57,8 @@ import {
     // hooks:
     usePrefetchProductDetail,
     useGetWishlists,
+    useUpdateWishlist,
+    useDeleteWishlist,
 }                           from '@/store/features/api/apiSlice'
 
 // utilities:
@@ -110,6 +112,8 @@ const ProductCard = (props: ProductCardProps) => {
     const prefetchProductDetail = usePrefetchProductDetail();
     
     const [getWishlists, { data: wishlists }] = useGetWishlists();
+    const [updateWishlist] = useUpdateWishlist();
+    const [deleteWishlist] = useDeleteWishlist();
     const isWishlisted = (!!wishlists && !!wishlists.entities[id]);
     
     
@@ -160,7 +164,17 @@ const ProductCard = (props: ProductCardProps) => {
     
     // handlers:
     const handleWishlistClick = useEvent(() => {
-        // TODO
+        if (!isWishlisted) {
+            updateWishlist({
+                productId : id,
+                groupId   : undefined,
+            });
+        }
+        else {
+            deleteWishlist({
+                productId : id,
+            });
+        } // if
     });
     
     
