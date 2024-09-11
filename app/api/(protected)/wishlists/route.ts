@@ -254,7 +254,6 @@ router
     }
     catch (error: any) {
         console.log('ERROR: ', error);
-        // if (error instanceof RecordNotFound) return Response.json({ error: 'invalid ID' }, { status: 400 }); // handled with error
         return Response.json({ error: error }, { status: 500 }); // handled with error
     } // try
     //#endregion save changes
