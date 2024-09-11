@@ -522,8 +522,8 @@ export const apiSlice = createApi({
                 return wishlistGroupListAdapter.addMany(wishlistGroupListAdapter.getInitialState(), response);
             },
             providesTags    : (wishlistGroupList, error, arg) => !wishlistGroupList ? [] : wishlistGroupList.ids.map((id) => ({
-                type : 'WishlistGroup',
-                id   : `${id}`,
+                type        : 'WishlistGroup',
+                id          : `${id}`,
             })),
         }),
         createWishlistGroup         : builder.mutation<WishlistGroupDetail, CreateWishlistGroupRequest>({
