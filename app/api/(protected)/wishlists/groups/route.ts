@@ -286,7 +286,6 @@ router
             },
             select : wishlistGroupDetailSelect,
         });
-        if (wishlistGroup instanceof Response) return wishlistGroup;
         return Response.json(wishlistGroup); // handled with success
     }
     catch (error: any) {
