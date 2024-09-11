@@ -3,8 +3,26 @@ import {
     // writes css in javascript:
     rule,
     children,
+    style,
     scope,
 }                           from '@cssfn/core'              // writes css in javascript
+
+// reusable-ui core:
+import {
+    // a spacer (gap) management system:
+    spacers,
+    
+    
+    
+    // a border (stroke) management system:
+    borders,
+    borderRadiuses,
+    
+    
+    
+    // border (stroke) stuff of UI:
+    usesBorder,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // configs:
 import {
@@ -22,8 +40,8 @@ const minImageHeight = 255; // 255px
 
 
 // styles:
-export default () => [
-    scope('main', {
+const usesMainLayout = () => {
+    return style({
         // layouts:
         display      : 'grid',
         
@@ -38,120 +56,168 @@ export default () => [
         ...children('section', {
             padding: '0px',
         }),
-    }),
-    scope('list', {
+    });
+};
+const usesListLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {borderRule, borderVars} = usesBorder({
+        borderRadius : borderRadiuses.md,
+    });
+    
+    
+    
+    return style({
         // layouts:
-        display             : 'grid',
-        gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
-        
-        
-        
-        // scrolls:
-        overflow: 'visible', // do not clip <item>'s boxShadow
-        
-        
-        
-        // spacings:
-        gap: '4rem',
-        
-        
-        
-        // children:
-        ...children('article', {
+        ...style({
             // layouts:
-            display       : 'flex',
-            flexDirection : 'column',
+            display             : 'grid',
+            gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
             
             
             
-            // animations:
-            transition : [
-                ['box-shadow', '300ms'],
-            ],
-            boxShadow  : '0px 0px 1rem rgba(0, 0, 0, 0.1)',
-            ...rule(':hover', {
-                boxShadow : '0px 0px 1rem rgba(0, 0, 0, 0.7)',
-                ...children('.prodImg', {
-                    ...children(['img', '.status'], {
-                        scale: '105%',
-                    }),
-                }),
-                ...children('header', {
-                    ...children(['.name', '.price'], {
-                        overflow: 'visible',
-                    }),
-                }),
-            }),
+            // scrolls:
+            overflow: 'visible', // do not clip <item>'s boxShadow
             
-            position : 'relative',
-            ...children('a', {
-                position : 'absolute',
-                inset    : 0,
-            }),
+            
+            
+            // spacings:
+            gap: spacers.lg,
             
             
             
             // children:
-            ...children('.prodImg', {
-                // sizes:
-                flex        : [[1, 1, 'auto']], // growable, shrinkable, initial from it's height
-                minWidth    : `${minImageSize}px`,
-                width       : 'unset',
-                minHeight   : `${minImageHeight}px`,
-                aspectRatio : commerces.defaultProductAspectRatio,
-                
-                
-                
-                // scrolls:
-                overflow    : 'hidden',
-                
-                
-                
-                // backgrounds:
-                background  : 'white',
-                
-                
-                
-                // children:
-                ...children(['img', '.status'], {
-                    // animations:
-                    transition : [
-                        ['scale', '300ms'],
-                    ],
-                }),
-                ...children('img', {
-                    // sizes:
-                    width  : '100% !important',
-                    height : '100% !important',
-                }),
-            }),
-            ...children('.header', {
+            ...children('article', {
                 // layouts:
-                display       : 'block',
+                display       : 'flex',
+                flexDirection : 'column',
                 
                 
                 
-                // spacings:
-                padding : '0.75rem',
+                // animations:
+                transition : [
+                    ['box-shadow', '300ms'],
+                ],
+                boxShadow  : '0px 0px 1rem rgba(0, 0, 0, 0.1)',
+                ...rule(':hover', {
+                    boxShadow : '0px 0px 1rem rgba(0, 0, 0, 0.7)',
+                    ...children('.prodImg', {
+                        ...children(['img', '.status'], {
+                            scale: '105%',
+                        }),
+                    }),
+                    ...children('header', {
+                        ...children(['.name', '.price'], {
+                            overflow: 'visible',
+                        }),
+                    }),
+                }),
+                
+                position : 'relative',
+                ...children('a', {
+                    position : 'absolute',
+                    inset    : 0,
+                }),
+                
+                
+                
+                // borders:
+                border                 : borderVars.border,
+             // borderRadius           : borderVars.borderRadius,
+                borderStartStartRadius : borderVars.borderStartStartRadius,
+                borderStartEndRadius   : borderVars.borderStartEndRadius,
+                borderEndStartRadius   : borderVars.borderEndStartRadius,
+                borderEndEndRadius     : borderVars.borderEndEndRadius,
                 
                 
                 
                 // children:
-                ...children(['.name', '.price'], {
+                ...children('.prodImg', {
+                    // sizes:
+                    flex        : [[1, 1, 'auto']], // growable, shrinkable, initial from it's height
+                    minWidth    : `${minImageSize}px`,
+                    width       : 'unset',
+                    minHeight   : `${minImageHeight}px`,
+                    aspectRatio : commerces.defaultProductAspectRatio,
+                    
+                    
+                    
                     // scrolls:
-                    overflow     : 'hidden',
+                    overflow    : 'hidden',
                     
                     
                     
-                    // typos:
-                    whiteSpace   : 'nowrap',
-                    textOverflow : 'ellipsis',
+                    // backgrounds:
+                    background  : 'white',
+                    
+                    
+                    
+                    // borders:
+                    borderStartStartRadius : borderVars.borderStartStartRadius,
+                    borderStartEndRadius   : borderVars.borderStartEndRadius,
+                    
+                    
+                    
+                    // children:
+                    ...children(['img', '.status'], {
+                        // animations:
+                        transition : [
+                            ['scale', '300ms'],
+                        ],
+                    }),
+                    ...children('img', {
+                        // sizes:
+                        width  : '100% !important',
+                        height : '100% !important',
+                    }),
                 }),
-                ...children('.price', {
-                    // typos:
-                    textAlign    : 'end',
+                ...children('.header', {
+                    // layouts:
+                    display       : 'block',
+                    
+                    
+                    
+                    // spacings:
+                    padding : '0.75rem',
+                    
+                    
+                    
+                    // children:
+                    ...children(['.name', '.price'], {
+                        // scrolls:
+                        overflow     : 'hidden',
+                        
+                        
+                        
+                        // typos:
+                        whiteSpace   : 'nowrap',
+                        textOverflow : 'ellipsis',
+                    }),
+                    ...children('.price', {
+                        // typos:
+                        textAlign    : 'end',
+                    }),
                 }),
             }),
         }),
+        
+        
+        
+        // features:
+        ...borderRule(), // must be placed at the last
+    });
+};
+
+
+
+export default () => [
+    scope('main', {
+        // layouts:
+        ...usesMainLayout(),
+    }),
+    scope('list', {
+        // layouts:
+        ...usesListLayout(),
     }),
 ];
