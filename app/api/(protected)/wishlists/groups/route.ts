@@ -209,7 +209,7 @@ router
                 where  : {
                     parentId : customerId, // important: the signedIn customerId
                     name     : { equals: name, mode: 'insensitive' },
-                    id       : { not: id },
+                    id       : { not: id }, // do not conflicting with the current record itself
                 },
                 select : {
                     id : true,
@@ -223,10 +223,10 @@ router
             
             return await prismaTransaction.wishlistGroup.update({
                 where  : {
-                    id : id,
+                    parentId : customerId, // important: the signedIn customerId
+                    id       : id,
                 },
                 data   : {
-                    parentId : customerId, // important: the signedIn customerId
                     name     : name,
                 },
                 select : wishlistGroupDetailSelect,
