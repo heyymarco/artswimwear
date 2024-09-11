@@ -515,7 +515,7 @@ export const apiSlice = createApi({
         
         getWishlistGroups           : builder.query<EntityState<WishlistGroupDetail>, void>({
             query: () => ({
-                url         : 'wishlist',
+                url         : 'wishlist/group',
                 method      : 'GET',
             }),
             transformResponse(response: WishlistGroupDetail[]) {
@@ -528,7 +528,7 @@ export const apiSlice = createApi({
         }),
         createWishlistGroup         : builder.mutation<WishlistGroupDetail, CreateWishlistGroupRequest>({
             query: (arg) => ({
-                url         : 'wishlist',
+                url         : 'wishlist/group',
                 method      : 'POST',
                 body        : arg,
             }),
@@ -539,7 +539,7 @@ export const apiSlice = createApi({
         }),
         updateWishlistGroup         : builder.mutation<WishlistGroupDetail, UpdateWishlistGroupRequest>({
             query: (arg) => ({
-                url         : 'wishlist',
+                url         : 'wishlist/group',
                 method      : 'PATCH',
                 body        : arg,
             }),
@@ -550,7 +550,7 @@ export const apiSlice = createApi({
         }),
         deleteWishlistGroup         : builder.mutation<WishlistGroupDetail, DeleteWishlistGroupRequest>({
             query: (arg) => ({
-                url         : `wishlist?id=${encodeURIComponent(arg.id)}`,
+                url         : `wishlist/group?id=${encodeURIComponent(arg.id)}`,
                 method      : 'DELETE',
             }),
             invalidatesTags : (wishlistGroup, error, arg) => !wishlistGroup ? [] : [{
