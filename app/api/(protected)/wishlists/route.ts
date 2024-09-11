@@ -97,9 +97,18 @@ router
     } // if
     const {
         arg : {
-            groupId,
+            groupId : groupIdRaw,
         },
     } = requestData;
+    const groupId = ( // fix data encoded in searchParams
+        (groupIdRaw === 'undefined')
+        ? undefined
+        : (
+            (groupIdRaw === 'null')
+            ? null
+            : groupIdRaw
+        )
+    );
     //#endregion parsing and validating request
     
     

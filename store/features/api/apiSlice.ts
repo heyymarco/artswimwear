@@ -561,7 +561,7 @@ export const apiSlice = createApi({
         
         getWishlists                : builder.query<EntityState<WishlistDetail['productId']>, GetWishlistRequest>({
             query: ({groupId}) => ({
-                url         : `wishlists?groupId=${(groupId === null) ? null : encodeURIComponent(groupId)}`,
+                url         : `wishlists?groupId=${(typeof(groupId) !== 'string') ? groupId : encodeURIComponent(groupId)}`,
                 method      : 'GET',
             }),
             transformResponse(response: WishlistDetail['productId'][]) {
@@ -637,7 +637,7 @@ export const {
     useUpdateWishlistGroupMutation         : useUpdateWishlistGroup,
     useDeleteWishlistGroupMutation         : useDeleteWishlistGroup,
     
-    useGetWishlistsQuery                   : useGetWishlists,
+    useLazyGetWishlistsQuery               : useGetWishlists,
     useUpdateWishlistMutation              : useUpdateWishlist,
     useDeleteWishlistMutation              : useDeleteWishlist,
 } = apiSlice;

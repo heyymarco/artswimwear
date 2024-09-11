@@ -36,7 +36,7 @@ export const DeleteWishlistGroupRequestSchema = z.object({
 
 
 export const GetWishlistRequestSchema = z.object({
-    groupId   : ModelIdSchema.nullable(),
+    groupId   : ModelIdSchema.nullable().optional(),
 }) satisfies z.Schema<GetWishlistRequest>;
 
 export const CreateOrUpdateWishlistRequestSchema = z.object({

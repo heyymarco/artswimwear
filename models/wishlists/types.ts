@@ -71,10 +71,10 @@ export interface DeleteWishlistGroupRequest
 
 export interface GetWishlistRequest
     extends
-        Pick<Wishlist,
+        Partial<Pick<Wishlist,
             // relations:
             |'groupId'
-        >
+        >>
 {
 }
 

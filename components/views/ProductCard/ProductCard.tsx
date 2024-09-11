@@ -12,10 +12,21 @@ import {
     useEffect,
 }                           from 'react'
 
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
 // styles:
 import {
     useProductCardStyleSheet,
 }                           from './styles/loader'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
@@ -45,6 +56,7 @@ import {
     
     // hooks:
     usePrefetchProductDetail,
+    useGetWishlists,
 }                           from '@/store/features/api/apiSlice'
 
 // utilities:
@@ -79,6 +91,11 @@ const ProductCard = (props: ProductCardProps) => {
     
     
     
+    // sessions:
+    const { status: sessionStatus } = useSession();
+    
+    
+    
     // styles:
     const styleSheet = useProductCardStyleSheet();
     
@@ -91,6 +108,9 @@ const ProductCard = (props: ProductCardProps) => {
     
     // apis:
     const prefetchProductDetail = usePrefetchProductDetail();
+    
+    const [getWishlists, { data: wishlists }] = useGetWishlists();
+    const isWishlisted = (!!wishlists && !!wishlists.entities[id]);
     
     
     
@@ -125,6 +145,23 @@ const ProductCard = (props: ProductCardProps) => {
             observer.disconnect();
         };
     }, [path]);
+    
+    useEffect(() => {
+        // conditions:
+        if (sessionStatus !== 'authenticated') return; // only interested to signedIn customer
+        
+        
+        
+        // actions:
+        getWishlists({ groupId: undefined /* all wishlists in current signedIn customer */ });
+    }, [sessionStatus]);
+    
+    
+    
+    // handlers:
+    const handleWishlistClick = useEvent(() => {
+        // TODO
+    });
     
     
     
@@ -177,7 +214,7 @@ const ProductCard = (props: ProductCardProps) => {
                 </span>
                 <ButtonIcon
                     // appearances:
-                    icon='favorite_outline'
+                    icon={isWishlisted ? 'favorite' : 'favorite_outline'}
                     
                     
                     
@@ -189,6 +226,11 @@ const ProductCard = (props: ProductCardProps) => {
                     
                     // classes:
                     className='wishlist'
+                    
+                    
+                    
+                    // handlers:
+                    onClick={handleWishlistClick}
                 />
             </header>
         </article>
