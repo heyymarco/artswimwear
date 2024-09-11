@@ -6,11 +6,10 @@ import {
     default as React,
 }                           from 'react'
 
-// cssfn:
+// styles:
 import {
-    // style sheets:
-    dynamicStyleSheets,
-}                           from '@cssfn/cssfn-react'           // writes css in react hook
+    useProductListPageStyleSheet,
+}                           from './styles/loader'
 
 // heymarco components:
 import {
@@ -34,14 +33,6 @@ import {
     // hooks:
     useGetProductList,
 }                           from '@/store/features/api/apiSlice'
-
-
-
-// styles:
-const useProductListPageStyleSheet = dynamicStyleSheets(
-    () => import(/* webpackPrefetch: true */'./page-styles')
-, { id: 'mfvzha989y' });
-import './page-styles';
 
 
 
