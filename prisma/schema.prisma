@@ -708,6 +708,7 @@ model Customer {
     preference                      CustomerPreference?
     
     cart                            Cart?
+    wishlistGroups                  WishlistGroup[]
     wishlists                       Wishlist[]
     
     accounts                        CustomerAccount[]
@@ -885,11 +886,15 @@ model WishlistGroup {
     name                            String                          @unique
     
     items                           Wishlist[]
+    
+    // relations:
+    parentId                        String
+    parent                          Customer                        @relation(fields: [parentId] , references: [id], onDelete: Cascade) // delete the related WishlistGroup(s) if the Customer deleted
 }
 model Wishlist {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
-    updatedAt                       DateTime                        @updatedAt
+    createdAt                       DateTime                        @default(now())
     
     // relations:
     parentId                        String
