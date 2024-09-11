@@ -22,6 +22,9 @@ import {
     LoadingBlankPage,
     ErrorBlankPage,
 }                           from '@/components/BlankPage'
+import {
+    ProductCard,
+}                           from '@/components/views/ProductCard'
 
 // private components:
 import {
@@ -79,14 +82,14 @@ export function ProductListPageContent(): JSX.Element|null {
                     Object.values(productList.entities)
                     .filter((product): product is Exclude<typeof product, undefined> => !!product)
                     .map((product) =>
-                        <ProductItem
+                        <ProductCard
                             // identifiers:
                             key={product.id}
                             
                             
                             
                             // data:
-                            product={product}
+                            model={product}
                         />
                     )
                 }
