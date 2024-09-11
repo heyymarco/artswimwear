@@ -13,6 +13,11 @@ import {
 }                           from 'react'
 
 // reusable-ui components:
+// reusable-ui components:
+import {
+    ButtonIcon,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+
 import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
@@ -106,6 +111,10 @@ const ProductItem = ({product}: ProductItemProps) => {
             // refs:
             ref={articleRef}
         >
+            <Link
+                // data:
+                href={`/products/${product.path}`}
+            />
             <Image
                 // appearances:
                 alt={product.name ?? ''}
@@ -133,11 +142,22 @@ const ProductItem = ({product}: ProductItemProps) => {
                 >
                     <CurrencyDisplay amount={product.price} />
                 </span>
+                <ButtonIcon
+                    // appearances:
+                    icon='favorite_outline'
+                    
+                    
+                    
+                    // variants:
+                    buttonStyle='link'
+                    theme='danger'
+                    
+                    
+                    
+                    // classes:
+                    className='wishlist'
+                />
             </header>
-            <Link
-                // data:
-                href={`/products/${product.path}`}
-            />
         </article>
     );
 };

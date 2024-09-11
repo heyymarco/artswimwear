@@ -90,8 +90,13 @@ const usesListLayout = () => {
             // children:
             ...children('article', {
                 // layouts:
-                display       : 'flex',
-                flexDirection : 'column',
+                display       : 'grid',
+                gridTemplate  : [[
+                    '"prodImg" 1fr',
+                    '"header " max-content',
+                    '/',
+                    '100%',
+                ]],
                 
                 
                 
@@ -116,8 +121,9 @@ const usesListLayout = () => {
                 
                 position : 'relative',
                 ...children('a', {
-                    position : 'absolute',
-                    inset    : 0,
+                    // positions:
+                    gridArea: '1 / 1 / -1 / -1', // fill the entire <article>
+                    // zIndex   : -1,
                 }),
                 
                 
@@ -133,12 +139,19 @@ const usesListLayout = () => {
                 
                 
                 // children:
+                ...children(['.prodImg', '.header'], {
+                    // accessibilities:
+                    pointerEvents : 'none', // makes the <a> behind this element clickable
+                }),
                 ...children('.prodImg', {
+                    // positions:
+                    gridArea: 'prodImg',
+                    
+                    
+                    
                     // sizes:
-                    flex        : [[1, 1, 'auto']], // growable, shrinkable, initial from it's height
-                    minWidth    : `${minImageSize}px`,
-                    width       : 'unset',
-                    minHeight   : `${minImageHeight}px`,
+                    // minInlineSize  : `${minImageSize}px`,
+                    // minBlockSize   : `${minImageHeight}px`,
                     aspectRatio : commerces.defaultProductAspectRatio,
                     
                     
@@ -173,13 +186,27 @@ const usesListLayout = () => {
                     }),
                 }),
                 ...children('.header', {
+                    // positions:
+                    gridArea: 'header',
+                    
+                    
+                    
                     // layouts:
-                    display       : 'block',
+                    display       : 'grid',
+                    gridTemplate : [[
+                        '"name      name" auto',
+                        '"wishlist price" auto',
+                        '/',
+                        'min-content 1fr',
+                    ]],
+                    alignItems: 'center', // center vertically
                     
                     
                     
                     // spacings:
                     padding : '0.75rem',
+                    gapInline : spacers.sm,
+                    gapBlock  : spacers.xs,
                     
                     
                     
@@ -190,13 +217,36 @@ const usesListLayout = () => {
                         
                         
                         
+                        // spacings:
+                        margin: 0,
+                        
+                        
+                        
                         // typos:
                         whiteSpace   : 'nowrap',
                         textOverflow : 'ellipsis',
                     }),
+                    ...children('.name', {
+                        // positions:
+                        gridArea: 'name',
+                    }),
                     ...children('.price', {
+                        // positions:
+                        gridArea: 'price',
+                        
+                        
+                        
                         // typos:
                         textAlign    : 'end',
+                    }),
+                    ...children('.wishlist', {
+                        // positions:
+                        gridArea: 'wishlist',
+                        
+                        
+                        
+                        // accessibilities:
+                        pointerEvents: 'initial', // makes the wishlist clickable above the <a>
                     }),
                 }),
             }),
