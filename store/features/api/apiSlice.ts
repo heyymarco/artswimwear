@@ -568,8 +568,8 @@ export const apiSlice = createApi({
                 return wishlistListAdapter.addMany(wishlistListAdapter.getInitialState(), response);
             },
             providesTags    : (wishlistList, error, arg) => !wishlistList ? [] : wishlistList.ids.map((id) => ({
-                type : 'Wishlist',
-                id   : `${id}`,
+                type        : 'Wishlist',
+                id          : `${id}`,
             })),
         }),
         updateWishlist              : builder.mutation<WishlistDetail['productId'], CreateOrUpdateWishlistRequest>({
