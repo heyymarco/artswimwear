@@ -38,6 +38,17 @@ import {
     type PublicOrderDetail,
     
     type ShippingPreview,
+    
+    type WishlistDetail,
+    type WishlistGroupDetail,
+    
+    type CreateWishlistGroupRequest,
+    type UpdateWishlistGroupRequest,
+    type DeleteWishlistGroupRequest,
+    
+    type GetWishlistRequest,
+    type CreateOrUpdateWishlistRequest,
+    type DeleteWishlistRequest,
 }                           from '@/models'
 export {
     type PaymentDetail,
@@ -102,6 +113,12 @@ const shippingListAdapter         = createEntityAdapter<ShippingPreview>({
 const matchingShippingListAdapter = createEntityAdapter<MatchingShipping>({
     selectId : (shippingEntry) => `${shippingEntry.id}`,
 });
+const wishlistGroupListAdapter    = createEntityAdapter<WishlistGroupDetail>({
+    selectId : (wishlistGroup) => wishlistGroup.id,
+});
+const wishlistListAdapter         = createEntityAdapter<WishlistDetail['productId']>({
+    selectId : (productId) => productId,
+});
 
 
 
@@ -154,7 +171,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['Preferences'],
+    tagTypes  : ['Preferences', 'WishlistGroup', 'Wishlist'],
     endpoints : (builder) => ({
         getProductList              : builder.query<EntityState<ProductPreview>, void>({
             query : () => ({
@@ -495,6 +512,87 @@ export const apiSlice = createApi({
                 },
             }),
         }),
+        
+        getWishlistGroups           : builder.query<EntityState<WishlistGroupDetail>, void>({
+            query: () => ({
+                url         : 'wishlist',
+                method      : 'GET',
+            }),
+            transformResponse(response: WishlistGroupDetail[]) {
+                return wishlistGroupListAdapter.addMany(wishlistGroupListAdapter.getInitialState(), response);
+            },
+            providesTags    : (wishlistGroupList, error, arg) => !wishlistGroupList ? [] : wishlistGroupList.ids.map((id) => ({
+                type : 'WishlistGroup',
+                id   : `${id}`,
+            })),
+        }),
+        createWishlistGroup         : builder.mutation<WishlistGroupDetail, CreateWishlistGroupRequest>({
+            query: (arg) => ({
+                url         : 'wishlist',
+                method      : 'POST',
+                body        : arg,
+            }),
+            invalidatesTags : (wishlistGroup, error, arg) => !wishlistGroup ? [] : [{
+                type        : 'WishlistGroup',
+                id          : wishlistGroup.id,
+            }],
+        }),
+        updateWishlistGroup         : builder.mutation<WishlistGroupDetail, UpdateWishlistGroupRequest>({
+            query: (arg) => ({
+                url         : 'wishlist',
+                method      : 'PATCH',
+                body        : arg,
+            }),
+            invalidatesTags : (wishlistGroup, error, arg) => !wishlistGroup ? [] : [{
+                type        : 'WishlistGroup',
+                id          : wishlistGroup.id,
+            }],
+        }),
+        deleteWishlistGroup         : builder.mutation<WishlistGroupDetail, DeleteWishlistGroupRequest>({
+            query: (arg) => ({
+                url         : `wishlist?id=${encodeURIComponent(arg.id)}`,
+                method      : 'DELETE',
+            }),
+            invalidatesTags : (wishlistGroup, error, arg) => !wishlistGroup ? [] : [{
+                type        : 'WishlistGroup',
+                id          : wishlistGroup.id,
+            }],
+        }),
+        
+        getWishlists                : builder.query<EntityState<WishlistDetail['productId']>, GetWishlistRequest>({
+            query: ({groupId}) => ({
+                url         : `wishlist?groupId=${(groupId === null) ? null : encodeURIComponent(groupId)}`,
+                method      : 'GET',
+            }),
+            transformResponse(response: WishlistDetail['productId'][]) {
+                return wishlistListAdapter.addMany(wishlistListAdapter.getInitialState(), response);
+            },
+            providesTags    : (wishlistList, error, arg) => !wishlistList ? [] : wishlistList.ids.map((id) => ({
+                type : 'Wishlist',
+                id   : `${id}`,
+            })),
+        }),
+        updateWishlist              : builder.mutation<WishlistDetail['productId'], CreateOrUpdateWishlistRequest>({
+            query: (arg) => ({
+                url         : 'wishlist',
+                method      : 'PATCH',
+                body        : arg,
+            }),
+            invalidatesTags : (productIds, error, arg) => !productIds ? [] : [{
+                type        : 'Wishlist',
+                id          : productIds,
+            }],
+        }),
+        deleteWishlist              : builder.mutation<WishlistDetail['productId'], DeleteWishlistRequest>({
+            query: (arg) => ({
+                url         : `wishlist?id=${encodeURIComponent(arg.productId)}`,
+                method      : 'DELETE',
+            }),
+            invalidatesTags : (productIds, error, arg) => !productIds ? [] : [{
+                type        : 'Wishlist',
+                id          : productIds,
+            }],
+        }),
     }),
 });
 
@@ -533,6 +631,15 @@ export const {
     
     usePostImageMutation                   : usePostImage,
     useDeleteImageMutation                 : useDeleteImage,
+    
+    useGetWishlistGroupsQuery              : useGetWishlistGroups,
+    useCreateWishlistGroupMutation         : useCreateWishlistGroup,
+    useUpdateWishlistGroupMutation         : useUpdateWishlistGroup,
+    useDeleteWishlistGroupMutation         : useDeleteWishlistGroup,
+    
+    useGetWishlistsQuery                   : useGetWishlists,
+    useUpdateWishlistMutation              : useUpdateWishlist,
+    useDeleteWishlistMutation              : useDeleteWishlist,
 } = apiSlice;
 
 export const {

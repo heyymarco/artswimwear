@@ -8,7 +8,10 @@ import {
 
 export interface WishlistGroupDetail
     extends
-        WishlistGroup
+        Omit<WishlistGroup,
+            // relations:
+            |'parentId'
+        >
 {
 }
 
@@ -19,7 +22,7 @@ export interface WishlistDetail
         Omit<Wishlist,
             // records:
             |'id'
-            |'updatedAt'
+            |'createdAt'
             
             
             
@@ -80,11 +83,8 @@ export interface CreateOrUpdateWishlistRequest
         Pick<Wishlist,
             // relations:
             |'productId'
-        >,
-        Partial<Pick<Wishlist,
-            // relations:
             |'groupId'
-        >>
+        >
 {
 }
 
