@@ -1,4 +1,13 @@
 // types:
+export interface Model {
+    id : string
+}
+export type PartialModel<TModel extends Model> =
+    Pick<TModel, 'id'>
+    & Partial<Omit<TModel, 'id'>>
+
+
+
 export interface PaginationArgs {
     page     : number
     perPage  : number
@@ -7,15 +16,6 @@ export interface Pagination<TEntry> {
     total    : number
     entities : TEntry[]
 }
-
-
-
-export interface Model {
-    id : string
-}
-export type PartialModel<TModel extends Model> =
-    Pick<TModel, 'id'>
-    & Partial<Omit<TModel, 'id'>>
 
 
 

@@ -572,10 +572,10 @@ export const apiSlice = createApi({
                     type        : 'Wishlist',
                     id          : `${id}`,
                 })),
-                {
-                    type : 'Wishlist',
-                    id   : 'LIST',
-                },
+                // {
+                //     type : 'Wishlist',
+                //     id   : 'LIST',
+                // },
             ] as { type: 'Wishlist', id: string }[],
         }),
         updateWishlist              : builder.mutation<WishlistDetail['productId'], CreateOrUpdateWishlistRequest>({
@@ -589,10 +589,10 @@ export const apiSlice = createApi({
                     type        : 'Wishlist',
                     id          : productId,
                 },
-                {
-                    type : 'Wishlist',
-                    id   : 'LIST',
-                },
+                // {
+                //     type : 'Wishlist',
+                //     id   : 'LIST',
+                // },
             ],
         }),
         deleteWishlist              : builder.mutation<WishlistDetail['productId'], DeleteWishlistRequest>({
@@ -605,10 +605,10 @@ export const apiSlice = createApi({
                     type        : 'Wishlist',
                     id          : productId,
                 },
-                {
-                    type : 'Wishlist',
-                    id   : 'LIST',
-                },
+                // {
+                //     type : 'Wishlist',
+                //     id   : 'LIST',
+                // },
             ],
         }),
     }),
