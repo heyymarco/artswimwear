@@ -521,7 +521,7 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             onCacheEntryAdded: async (arg, api) => {
-                await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'CREATE', 'WishlistGroup');
+                await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'UPSERT', 'WishlistGroup');
             },
         }),
         updateWishlistGroup         : builder.mutation<WishlistGroupDetail, UpdateWishlistGroupRequest>({
@@ -531,7 +531,7 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             onCacheEntryAdded: async (arg, api) => {
-                await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'UPDATE', 'WishlistGroup');
+                await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'UPSERT', 'WishlistGroup');
             },
         }),
         deleteWishlistGroup         : builder.mutation<WishlistGroupDetail, DeleteWishlistGroupRequest>({
@@ -561,35 +561,7 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             onCacheEntryAdded: async (arg, api) => {
-                // mutated TEntry data:
-                const { data: mutatedEntry } = await api.cacheDataLoaded;
-                const mutatedId = selectIdFromEntry<WishlistDetail['productId']>(mutatedEntry);
-                
-                
-                
-                // find related TEntry data(s):
-                const state                 = api.getState();
-                const allQueryCaches        = state.api.queries;
-                const collectionQueryCaches = (
-                    Object.values(allQueryCaches)
-                    .filter((allQueryCache): allQueryCache is Exclude<typeof allQueryCache, undefined> =>
-                        (allQueryCache !== undefined)
-                        &&
-                        (allQueryCache.endpointName === 'getWishlists')
-                        &&
-                        (allQueryCache.data !== undefined)
-                    )
-                );
-                const isDataAlreadyInCache : boolean = (
-                    collectionQueryCaches
-                    .some(({data}) =>
-                        (selectIndexOfId<WishlistDetail['productId']>(data, mutatedId) >= 0) // is FOUND
-                    )
-                );
-                
-                
-                
-                await cumulativeUpdateEntityCache(api, 'getWishlists', isDataAlreadyInCache ? 'UPDATE' : 'CREATE', 'Wishlist');
+                await cumulativeUpdateEntityCache(api, 'getWishlists', 'UPSERT', 'Wishlist');
             },
         }),
         deleteWishlist              : builder.mutation<WishlistDetail['productId'], DeleteWishlistRequest>({
@@ -728,11 +700,10 @@ const selectRangeFromArg    = (originalArg: unknown): { indexStart: number, inde
     };
 };
 
-type UpdateType =
-    |'CREATE'
-    |'UPDATE'
+type EntityUpdateType =
+    |'UPSERT'
     |'DELETE'
-const cumulativeUpdateEntityCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationCacheLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishlistGroups'|'getWishlists'>, updateType: UpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
+const cumulativeUpdateEntityCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationCacheLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishlistGroups'|'getWishlists'>, updateType: EntityUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
     // mutated TEntry data:
     const { data: mutatedEntry } = await api.cacheDataLoaded;
     const mutatedId = selectIdFromEntry<TEntry>(mutatedEntry);
@@ -776,37 +747,9 @@ const cumulativeUpdateEntityCache = async <TEntry extends Model|string, TQueryAr
     
     
     
-    /* update existing data: SIMPLE: the number of collection_items is unchanged */
-    if (updateType === 'UPDATE') {
-        const updatedCollectionQueryCaches = (
-            collectionQueryCaches
-            .filter(({ data }) =>
-                (selectIndexOfId<TEntry>(data, mutatedId) >= 0) // is FOUND
-            )
-        );
-        
-        
-        
-        // reconstructuring the updated entry, so the invalidatesTag can be avoided:
-        
-        
-        
-        // update cache:
-        for (const { originalArgs } of updatedCollectionQueryCaches) {
-            api.dispatch(
-                apiSlice.util.updateQueryData(endpointName, originalArgs as any, (data) => {
-                    (data.entities as Dictionary<TEntry>)[mutatedId] = mutatedEntry; // replace oldEntry with mutatedEntry
-                })
-            );
-        } // for
-    }
-    
-    /* add new data: COMPLEX: the number of collection_items is scaled_up */
-    else if (updateType === 'CREATE') {
+    /* update existing data -or- add new data: COMPLEX: the number of collection_items MAY scaled_up */
+    if (updateType === 'UPSERT') {
         const shiftedCollectionQueryCaches = collectionQueryCaches;
-        if (!shiftedCollectionQueryCaches.length) {
-            return; // cache not found => no further reconstruct
-        } // if
         
         
         
@@ -819,16 +762,22 @@ const cumulativeUpdateEntityCache = async <TEntry extends Model|string, TQueryAr
             // reconstruct current entity cache:
             api.dispatch(
                 apiSlice.util.updateQueryData(endpointName, originalArgs as any, (data) => {
-                    // INSERT the new entry:
-                    (data.entities as Dictionary<TEntry>) = {
-                        [mutatedId] : mutatedEntry, // place the inserted entry to the first property
-                        ...data.entities as Dictionary<TEntry>,
-                    } satisfies Dictionary<TEntry>;
-                    
-                    
-                    
-                    // INSERT the new entry's id at the BEGINNING of the ids:
-                    data.ids.unshift(mutatedId);
+                    if (selectIndexOfId<TEntry>(data, mutatedId) >= 0) { // is FOUND
+                        // UPDATE the existing entry:
+                        (data.entities as Dictionary<TEntry>)[mutatedId] = mutatedEntry; // replace oldEntry with mutatedEntry
+                    }
+                    else {
+                        // INSERT the new entry:
+                        (data.entities as Dictionary<TEntry>) = {
+                            [mutatedId] : mutatedEntry, // place the inserted entry to the first property
+                            ...data.entities as Dictionary<TEntry>,
+                        } satisfies Dictionary<TEntry>;
+                        
+                        
+                        
+                        // INSERT the new entry's id at the BEGINNING of the ids:
+                        data.ids.unshift(mutatedId);
+                    } // if
                 })
             );
         } // for
@@ -839,11 +788,9 @@ const cumulativeUpdateEntityCache = async <TEntry extends Model|string, TQueryAr
     else {
         const shiftedCollectionQueryCaches = (
             collectionQueryCaches
-            .filter(({ data }) => {
-                return (
-                    (selectIndexOfId<TEntry>(data, mutatedId) >= 0) // is FOUND
-                );
-            })
+            .filter(({ data }) =>
+                (selectIndexOfId<TEntry>(data, mutatedId) >= 0) // is FOUND
+            )
         );
         
         
