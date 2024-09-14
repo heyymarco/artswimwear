@@ -171,7 +171,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['Preferences', 'WishlistGroup', 'Wishlist'],
+    tagTypes  : ['Preference', 'WishlistGroup', 'Wishlist'],
     endpoints : (builder) => ({
         getProductList              : builder.query<EntityState<ProductPreview>, void>({
             query : () => ({
@@ -461,14 +461,7 @@ export const apiSlice = createApi({
                 url    : 'preferences',
                 method : 'GET',
             }),
-            providesTags: (result, error, page)  => {
-                return [
-                    {
-                        type : 'Preferences',
-                        id   : 'PREFERENCES',
-                    },
-                ];
-            },
+            providesTags: ['Preference'],
         }),
         updatePreference            : builder.mutation<CustomerPreferenceDetail, Partial<CustomerPreferenceData>>({
             query: (patch) => ({
@@ -476,12 +469,7 @@ export const apiSlice = createApi({
                 method : 'PATCH',
                 body   : patch
             }),
-            invalidatesTags: (preference, error, arg) => [
-                {
-                    type : 'Preferences',
-                    id   : 'PREFERENCES',
-                },
-            ],
+            invalidatesTags: ['Preference'],
         }),
         
         postImage                   : builder.mutation<ImageId, { image: File, folder?: string, onUploadProgress?: (percentage: number) => void, abortSignal?: AbortSignal }>({
