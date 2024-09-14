@@ -794,7 +794,7 @@ const cumulativeUpdateEntityCache = async <TEntry extends Model|string, TQueryAr
         // update cache:
         for (const { originalArgs } of updatedCollectionQueryCaches) {
             api.dispatch(
-                apiSlice.util.updateQueryData(endpointName, undefined, (data) => {
+                apiSlice.util.updateQueryData(endpointName, originalArgs as any, (data) => {
                     (data.entities as Dictionary<TEntry>)[mutatedId] = mutatedEntry; // replace oldEntry with mutatedEntry
                 })
             );
@@ -818,7 +818,7 @@ const cumulativeUpdateEntityCache = async <TEntry extends Model|string, TQueryAr
         for (const { originalArgs } of shiftedCollectionQueryCaches) {
             // reconstruct current entity cache:
             api.dispatch(
-                apiSlice.util.updateQueryData(endpointName, undefined, (data) => {
+                apiSlice.util.updateQueryData(endpointName, originalArgs as any, (data) => {
                     // INSERT the new entry:
                     (data.entities as Dictionary<TEntry>) = {
                         [mutatedId] : mutatedEntry, // place the inserted entry to the first property
@@ -856,7 +856,7 @@ const cumulativeUpdateEntityCache = async <TEntry extends Model|string, TQueryAr
         for (const { originalArgs } of shiftedCollectionQueryCaches) {
             // reconstruct current entity cache:
             api.dispatch(
-                apiSlice.util.updateQueryData(endpointName, undefined, (data) => {
+                apiSlice.util.updateQueryData(endpointName, originalArgs as any, (data) => {
                     // REMOVE the deleted entry:
                     delete (data.entities as Dictionary<TEntry>)[mutatedId];
                     
