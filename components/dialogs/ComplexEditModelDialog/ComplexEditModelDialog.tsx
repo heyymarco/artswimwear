@@ -567,6 +567,11 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                     {!isMultiTabs && <CardBody
                         // refs:
                         elmRef={editorRef} // use elmRef, to validate all input(s) inside <CardBody>
+                        
+                        
+                        
+                        // classes:
+                        className={styleSheet.cardBody}
                     >
                         {children}
                     </CardBody>}
