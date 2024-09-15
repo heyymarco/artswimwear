@@ -67,9 +67,9 @@ router
     //#region parsing and validating request
     const requestData = await (async () => {
         try {
-            const data = await req.json();
+            const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
             return {
-                name : ModelNameSchema.parse(data),
+                name : ModelNameSchema.parse(data?.name),
             };
         }
         catch {
