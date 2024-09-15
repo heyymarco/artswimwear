@@ -546,6 +546,12 @@ export const apiSlice = createApi({
                 await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'DELETE', 'WishlistGroup');
             },
         }),
+        availableWishlistGroupName  : builder.query<boolean, string>({
+            query: (arg) => ({
+                url    : `wishlists/groups/check-name?name=${encodeURIComponent(arg)}`,
+                method : 'GET',
+            }),
+        }),
         
         getWishlists                : builder.query<EntityState<WishlistDetail['productId']>, GetWishlistRequest>({
             query: ({groupId}) => ({
@@ -652,6 +658,7 @@ export const {
     useGetWishlistGroupsQuery              : useGetWishlistGroups,
     useUpdateWishlistGroupMutation         : useUpdateWishlistGroup,
     useDeleteWishlistGroupMutation         : useDeleteWishlistGroup,
+    useLazyAvailableWishlistGroupNameQuery : useAvailableWishlistGroupName,
     
     useLazyGetWishlistsQuery               : useGetWishlists,
     useUpdateWishlistMutation              : useUpdateWishlist,
