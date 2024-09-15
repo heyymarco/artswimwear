@@ -133,12 +133,24 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                     Also save to Collections? <span className='txt-sec'>(optional)</span>
                 </p>
                 <PaginationExplorerStateProvider
+                    // states:
+                    initialPerPage={5}
+                    
+                    
+                    
                     // data:
                     useGetModelPage={useGetWishlistGroupPage}
                 >
                     <PaginationExplorer<WishlistGroupDetail>
+                        // appearances:
+                        showPaginationTop={false}
+                        autoHidePagination={true}
+                        
+                        
+                        
                         // accessibilities:
                         createItemText='Add New Collection'
+                        textEmpty='Your collection is empty'
                         
                         
                         
