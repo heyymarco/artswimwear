@@ -20,10 +20,14 @@ import {
 
 // models:
 import {
+    type Pagination,
+}                           from '@/libs/types'
+import {
     type WishlistGroupDetail,
     
     
     
+    PaginationArgSchema,
     UpdateWishlistGroupRequestSchema,
     DeleteWishlistGroupRequestSchema,
     
@@ -76,7 +80,34 @@ router
     // authorized => next:
     return await next();
 })
-.get(async (req) => {
+.post(async (req) => {
+    //#region parsing and validating request
+    const requestData = await (async () => {
+        try {
+            const data = await req.json();
+            return {
+                paginationArg : PaginationArgSchema.parse(data),
+            };
+        }
+        catch {
+            return null;
+        } // try
+    })();
+    if (requestData === null) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    const {
+        paginationArg : {
+            page,
+            perPage,
+        },
+    } = requestData;
+    //#endregion parsing and validating request
+    
+    
+    
     //#region validating privileges
     const session = (req as any).session as Session;
     const customerId = session.user?.id;
@@ -86,13 +117,29 @@ router
     
     
     //#region query result
-    const wishlistGroups : WishlistGroupDetail[] = await prisma.wishlistGroup.findMany({
-        where  : {
-            parentId : customerId, // important: the signedIn customerId
-        },
-        select : wishlistGroupDetailSelect,
-    });
-    return Response.json(wishlistGroups); // handled with success
+    const [total, paged] = await prisma.$transaction([
+        prisma.wishlistGroup.count({
+            where  : {
+                parentId : customerId, // important: the signedIn customerId
+            },
+        }),
+        prisma.wishlistGroup.findMany({
+            where  : {
+                parentId : customerId, // important: the signedIn customerId
+            },
+            select : wishlistGroupDetailSelect,
+            orderBy : {
+                name: 'asc',
+            },
+            skip    : (page - 1) * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
+            take    : perPage,
+        }),
+    ]);
+    const paginationOrderDetail : Pagination<WishlistGroupDetail> = {
+        total    : total,
+        entities : paged,
+    };
+    return Response.json(paginationOrderDetail); // handled with success
     //#endregion query result
 })
 .patch(async (req) => {

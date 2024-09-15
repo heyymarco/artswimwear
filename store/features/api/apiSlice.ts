@@ -131,9 +131,6 @@ const shippingListAdapter         = createEntityAdapter<ShippingPreview>({
 const matchingShippingListAdapter = createEntityAdapter<MatchingShipping>({
     selectId : (shippingEntry) => `${shippingEntry.id}`,
 });
-const wishlistGroupListAdapter    = createEntityAdapter<WishlistGroupDetail>({
-    selectId : (wishlistGroup) => wishlistGroup.id,
-});
 const wishlistListAdapter         = createEntityAdapter<WishlistDetail['productId']>({
     selectId : (productId) => productId,
 });
@@ -463,10 +460,10 @@ export const apiSlice = createApi({
         }),
         
         getOrderHistoryPage         : builder.query<Pagination<PublicOrderDetail>, PaginationArgs>({
-            query : (paginationArg) => ({
+            query : (arg) => ({
                 url    : 'order-history',
                 method : 'POST',
-                body   : paginationArg,
+                body   : arg,
             }),
         }),
         
@@ -517,14 +514,12 @@ export const apiSlice = createApi({
             }),
         }),
         
-        getWishlistGroups           : builder.query<EntityState<WishlistGroupDetail>, void>({
-            query: () => ({
+        getWishlistGroupPage        : builder.query<Pagination<WishlistGroupDetail>, PaginationArgs>({
+            query: (arg) => ({
                 url         : 'wishlists/groups',
-                method      : 'GET',
+                method      : 'POST',
+                body   : arg,
             }),
-            transformResponse(response: WishlistGroupDetail[]) {
-                return wishlistGroupListAdapter.addMany(wishlistGroupListAdapter.getInitialState(), response);
-            },
             providesTags: ['WishlistGroup'],
         }),
         updateWishlistGroup         : builder.mutation<WishlistGroupDetail, UpdateWishlistGroupRequest>({
@@ -534,7 +529,7 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             onQueryStarted: async (arg, api) => {
-                await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'UPSERT', 'WishlistGroup');
+                await cumulativeUpdatePaginationCache(api, 'getWishlistGroupPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'WishlistGroup');
             },
         }),
         deleteWishlistGroup         : builder.mutation<WishlistGroupDetail, DeleteWishlistGroupRequest>({
@@ -543,7 +538,7 @@ export const apiSlice = createApi({
                 method      : 'DELETE',
             }),
             onQueryStarted: async (arg, api) => {
-                await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'DELETE', 'WishlistGroup');
+                await cumulativeUpdatePaginationCache(api, 'getWishlistGroupPage', 'DELETE', 'WishlistGroup');
             },
         }),
         availableWishlistGroupName  : builder.query<boolean, string>({
@@ -655,7 +650,7 @@ export const {
     usePostImageMutation                   : usePostImage,
     useDeleteImageMutation                 : useDeleteImage,
     
-    useGetWishlistGroupsQuery              : useGetWishlistGroups,
+    useGetWishlistGroupPageQuery           : useGetWishlistGroupPage,
     useUpdateWishlistGroupMutation         : useUpdateWishlistGroup,
     useDeleteWishlistGroupMutation         : useDeleteWishlistGroup,
     useLazyAvailableWishlistGroupNameQuery : useAvailableWishlistGroupName,
@@ -741,6 +736,323 @@ const selectRangeFromArg    = (originalArg: unknown): { indexStart: number, inde
         page,
         perPage,
     };
+};
+
+type PaginationUpdateType =
+    |'CREATE'
+    |'UPDATE'
+    |'DELETE'
+const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishlistGroupPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
+    // mutated TEntry data:
+    const mutatedEntry = await (async (): Promise<TEntry|undefined> => {
+        try {
+            const { data: mutatedEntry } = await api.queryFulfilled;
+            return mutatedEntry;
+        }
+        catch {
+            return undefined;
+        } // try
+    })();
+    if (mutatedEntry === undefined) return; // api request aborted|failed => nothing to update
+    const mutatedId = selectIdFromEntry<TEntry>(mutatedEntry);
+    
+    
+    
+    // find related TEntry data(s):
+    const state                 = api.getState();
+    const allQueryCaches        = state.api.queries;
+    const collectionQueryCaches = (
+        Object.values(allQueryCaches)
+        .filter((allQueryCache): allQueryCache is Exclude<typeof allQueryCache, undefined> =>
+            (allQueryCache !== undefined)
+            &&
+            (allQueryCache.endpointName === endpointName)
+            &&
+            (allQueryCache.data !== undefined)
+        )
+    );
+    
+    
+    
+    const lastCollectionQueryCache       = collectionQueryCaches.length ? collectionQueryCaches[collectionQueryCaches.length - 1] : undefined;
+    if (lastCollectionQueryCache === undefined) {
+        // there's no queryCaches to update => nothing to do
+        return;
+    } // if
+    const validTotalEntries              = selectTotalFromData(lastCollectionQueryCache.data);
+    const hasInvalidCollectionQueryCache = collectionQueryCaches.some(({ data }) =>
+        (selectTotalFromData(data) !== validTotalEntries)
+    );
+    if (hasInvalidCollectionQueryCache) {
+        // the queryCaches has a/some inconsistent data => panic => clear all the caches and (may) trigger the rtk to re-fetch
+        
+        // clear caches:
+        api.dispatch(
+            apiSlice.util.invalidateTags([invalidateTag])
+        );
+        return; // panic => cannot further reconstruct
+    } // if
+    
+    
+    
+    /* update existing data: SIMPLE: the number of collection_items is unchanged */
+    if (updateType === 'UPDATE') {
+        const updatedCollectionQueryCaches = (
+            collectionQueryCaches
+            .filter(({ data }) =>
+                (selectIndexOfId<TEntry>(data, mutatedId) >= 0) // is FOUND
+            )
+        );
+        
+        
+        
+        // reconstructuring the updated entry, so the invalidatesTag can be avoided:
+        
+        
+        
+        // update cache:
+        for (const { originalArgs } of updatedCollectionQueryCaches) {
+            api.dispatch(
+                apiSlice.util.updateQueryData(endpointName, originalArgs as PaginationArgs, (data) => {
+                    const currentEntryIndex = selectIndexOfId<TEntry>(data, mutatedId);
+                    if (currentEntryIndex < 0) return; // not found => nothing to update
+                    (data.entities as unknown as TEntry[])[currentEntryIndex] = mutatedEntry; // replace oldEntry with mutatedEntry
+                })
+            );
+        } // for
+    }
+    
+    /* add new data: COMPLEX: the number of collection_items is scaled_up */
+    else if (updateType === 'CREATE') {
+        /*
+            Adding a_new_entry causing the restPagination(s) shifted their entries to neighboringPagination(s).
+            [876] [543] [210] + 9 => [987] [654] [321] [0]
+            page1 page2 page3        page1 page2 page3 pageTail
+        */
+        const shiftedCollectionQueryCaches = collectionQueryCaches;
+        
+        
+        
+        // reconstructuring the shifted entries, so the invalidatesTag can be avoided:
+        
+        
+        
+        //#region BACKUP the entries from paginations (which will be shifted) 
+        const mergedEntryList : TEntry[] = []; // use an `Array<TEntry>` instead of `Map<number, TEntry>`, so we can SHIFT the key easily
+        for (const { originalArgs, data } of shiftedCollectionQueryCaches) {
+            const {
+                indexStart, // the global first_entry_index
+                indexEnd,   // the global last_entry_index
+            } = selectRangeFromArg(originalArgs);
+            
+            
+            
+            /*
+                Assumes the next paginations having the same perPage size:
+                Only the last_entry of current pagination is useful for backup.
+                After the whole `mergedEntryList` shifted_down, the last_entry becomes the first_entry of the next pagination chains.
+            */
+            const paginationEntries = selectEntriesFromData<TEntry>(data);
+            const relativeIndexEnd = indexEnd - indexStart; // a zero based starting index, select the LAST pagination entry
+            const entryEnd = (relativeIndexEnd < paginationEntries.length) ? paginationEntries[relativeIndexEnd] : undefined;
+            if (entryEnd !== undefined) mergedEntryList[indexEnd] = entryEnd; // if exists, copy the LAST pagination entry
+        } // for
+        //#endregion BACKUP the entries from paginations (which will be shifted) 
+        
+        
+        
+        // INSERT the new_entry at the BEGINNING of the list:
+        mergedEntryList.unshift(mutatedEntry);
+        // re-calculate the total entries:
+        const newTotalEntries = validTotalEntries + 1;
+        
+        
+        
+        //#region RESTORE the shifted paginations from the backup
+        for (const { originalArgs } of shiftedCollectionQueryCaches) {
+            const {
+                indexStart, // the global first_entry_index
+                page,
+                perPage,
+            } = selectRangeFromArg(originalArgs);
+            
+            const entryStart = mergedEntryList[indexStart] as TEntry|undefined; // take the *valid* first_entry of current pagination, the old_first_entry...the_2nd_last_entry will be 2nd_first_entry...last_entry
+            
+            
+            
+            if (entryStart === undefined) {
+                // UNABLE to reconstruct current pagination cache => invalidate the cache:
+                api.dispatch(
+                    apiSlice.util.invalidateTags([{ type: invalidateTag, id: page }])
+                );
+            }
+            else {
+                // reconstruct current pagination cache:
+                api.dispatch(
+                    apiSlice.util.updateQueryData(endpointName, originalArgs as PaginationArgs, (data) => {
+                        // RESTORE the entryStart at the BEGINNING of the pagination:
+                        (data.entities as unknown as TEntry[]).unshift(entryStart);
+                        
+                        
+                        
+                        // update the total data:
+                        data.total = newTotalEntries;
+                        
+                        
+                        
+                        // if OVERFLOW pagination size => remove the last entry:
+                        if (data.entities.length > perPage) {
+                            data.entities.pop();
+                        } // if
+                    })
+                );
+            } // if
+        } // for
+        //#endregion RESTORE the shifted paginations from the backup
+    }
+    
+    /* delete existing data: COMPLEX: the number of collection_items is scaled_down */
+    else {
+        const deletedPaginationIndices = (
+            collectionQueryCaches
+            .map(({ originalArgs, data }) => ({
+                indexStart        : selectRangeFromArg(originalArgs).indexStart,
+                indexLocalDeleted : selectIndexOfId<TEntry>(data, mutatedId),
+            }))
+            .filter(({ indexLocalDeleted }) =>
+                (indexLocalDeleted >= 0) // is FOUND
+            )
+            .map(({ indexStart, indexLocalDeleted }) =>
+                (indexStart + indexLocalDeleted) // convert local index to global index
+            )
+        );
+        const uniqueDeletedPaginationIndices = Array.from(new Set<number>(deletedPaginationIndices));
+        if (uniqueDeletedPaginationIndices.length !== 1) {
+            // all the deleted queryCaches should have ONE valid deleted index, otherwise => panic => clear all the caches and (may) trigger the rtk to re-fetch
+            
+            // clear caches:
+            api.dispatch(
+                apiSlice.util.invalidateTags([invalidateTag])
+            );
+            return; // panic => cannot further reconstruct
+        } // if
+        const indexDeleted = uniqueDeletedPaginationIndices[0];
+        
+        
+        
+        const shiftedCollectionQueryCaches = (
+            collectionQueryCaches
+            .filter(({ originalArgs, data }) => {
+                const {
+                    indexStart,
+                } = selectRangeFromArg(originalArgs);
+                const indexLast = (
+                    indexStart
+                    +
+                    (selectTotalFromData(data) - 1)
+                );
+                
+                
+                
+                return (
+                    ((indexDeleted >= indexStart) && (indexDeleted <= indexLast)) // the deleted_pagination => within indexStart to indexLast
+                    ||
+                    (indexStart > indexDeleted) // the shifted_up_pagination => below the deleted_pagination
+                );
+            })
+        );
+        
+        
+        
+        // reconstructuring the deleted entry, so the invalidatesTag can be avoided:
+        
+        
+        
+        //#region BACKUP the entries from paginations (which will be shifted) 
+        const mergedEntryList : TEntry[] = []; // use an `Array<TEntry>` instead of `Map<number, TEntry>`, so we can SHIFT the key easily
+        for (const { originalArgs, data } of shiftedCollectionQueryCaches) {
+            const {
+                indexStart, // the global first_entry_index
+            } = selectRangeFromArg(originalArgs);
+            
+            
+            
+            /*
+                Assumes the prev paginations having the same perPage size:
+                Only the first_entry of current pagination is useful for backup.
+                After the whole `mergedEntryList` shifted_up, the first_entry becomes the last_entry of the prev pagination chains.
+            */
+            const paginationEntries = selectEntriesFromData<TEntry>(data);
+            const entryStart = paginationEntries[0] as TEntry|undefined; // a zero based starting index, select the FIRST pagination entry
+            if (entryStart !== undefined) mergedEntryList[indexStart] = entryStart; // if exists, copy the FIRST pagination entry
+        } // for
+        //#endregion BACKUP the entries from paginations (which will be shifted) 
+        
+        
+        
+        // REMOVE the del_entry at the DELETED_INDEX of the list:
+        mergedEntryList.splice(indexDeleted, 1);
+        // re-calculate the total entries:
+        const newTotalEntries = validTotalEntries - 1;
+        
+        
+        
+        //#region RESTORE the shifted paginations from the backup
+        for (const { originalArgs, data } of shiftedCollectionQueryCaches) {
+            const {
+                indexStart, // the global first_entry_index
+                indexEnd,   // the global last_entry_index
+                page,
+            } = selectRangeFromArg(originalArgs);
+            const indexLast = (
+                indexStart
+                +
+                (selectTotalFromData(data) - 1)
+            );
+            
+            const entryEnd = mergedEntryList[indexEnd] as TEntry|undefined; // take the *valid* last_entry of current pagination, the old_2nd_first_entry...the_last_entry will be first_entry...2nd_last_entry
+            
+            
+            
+            // reconstruct current pagination cache:
+            api.dispatch(
+                apiSlice.util.updateQueryData(endpointName, originalArgs as PaginationArgs, (data) => {
+                    // Shift up at the top/middle of pagination:
+                    if ((indexDeleted >= indexStart) && (indexDeleted <= indexLast)) { // the deleted_pagination => within indexStart to indexLast
+                        // REMOVE the deleted entry at specific index:
+                        const relativeIndexDeleted = indexDeleted - indexStart;
+                        data.entities.splice(relativeIndexDeleted, 1);
+                    }
+                    else { // the shifted_up_pagination => below the deleted_pagination
+                        // because ONE entry in prev pagination has been DELETED => ALL subsequent paginations are SHIFTED_UP:
+                        // REMOVE the first entry for shifting:
+                        data.entities.shift();
+                    } // if
+                    
+                    
+                    
+                    // a shifting compensation to maintain pagination size (if possible):
+                    // RESTORE the entryStart at the END of the pagination:
+                    if (entryEnd !== undefined /* if possible */) (data.entities as unknown as TEntry[]).push(entryEnd);
+                    
+                    
+                    
+                    // update the total data:
+                    data.total = newTotalEntries;
+                    
+                    
+                    
+                    // if UNDERFLOW (empty) pagination size => invalidate the cache:
+                    if (!data.entities.length) {
+                        api.dispatch(
+                            apiSlice.util.invalidateTags([{ type: invalidateTag, id: page }])
+                        );
+                    } // if
+                })
+            );
+        } // for
+        //#endregion RESTORE the shifted paginations from the backup
+    } // if
 };
 
 type EntityUpdateType =
