@@ -9,11 +9,6 @@ import {
 
 // reusable-ui core:
 import {
-    // a responsive management system:
-    breakpoints,
-    
-    
-    
     // border (stroke) stuff of UI:
     usesBorder,
     
@@ -136,50 +131,32 @@ const usesEmptyModelLayout = () => {
 
 export default () => [
     scope('main', {
-        flexGrow: 1,
-        
-        display: 'grid',
-        gridAutoFlow: 'row',
-        ...children('article', {
-            // positions:
-            justifySelf: 'center', // centering for `maxInlineSize`
-            
-            
-            
-            // layouts:
-            display      : 'grid',
+        // layouts:
+        display      : 'grid',
+        gridTemplate : [[
+            '"paginTop "', 'auto',
+            '"modelList"', '1fr',
+            '"paginBtm "', 'auto',
+            '/',
+            'auto',
+        ]],
+        ...rule(':has(>.toolbar>*:not(:empty))', {
             gridTemplate : [[
+                '"toolbar  "', 'auto',
                 '"paginTop "', 'auto',
                 '"modelList"', '1fr',
                 '"paginBtm "', 'auto',
                 '/',
                 'auto',
             ]],
-            ...rule(':has(>.toolbar>*:not(:empty))', {
-                gridTemplate : [[
-                    '"toolbar  "', 'auto',
-                    '"paginTop "', 'auto',
-                    '"modelList"', '1fr',
-                    '"paginBtm "', 'auto',
-                    '/',
-                    'auto',
-                ]],
-            }),
-            
-            
-            
-            // spacings:
-            gapInline : spacers.md,
-            gapBlock  : spacers.sm,
-            
-            
-            
-            // sizes:
-            flexGrow      : 1,
-            maxInlineSize : `${breakpoints.xxxl}px`,
-            alignSelf     : 'center',
         }),
-    }, { specificityWeight: 2 }),
+        
+        
+        
+        // spacings:
+        gapInline : spacers.md,
+        gapBlock  : spacers.sm,
+    }),
     
     scope('toolbar', {
         // positions:

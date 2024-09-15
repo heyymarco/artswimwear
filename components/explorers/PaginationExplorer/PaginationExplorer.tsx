@@ -34,6 +34,8 @@ import {
 // reusable-ui components:
 import {
     // base-components:
+    GenericProps,
+    Generic,
     Basic,
     
     
@@ -65,11 +67,6 @@ import {
     // utility-components:
     useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
-
-// heymarco components:
-import {
-    Section,
-}                           from '@heymarco/section'
 
 // internals components:
 import {
@@ -295,8 +292,12 @@ export const ModelEmpty = () => {
 };
 
 /* <PaginationExplorer> */
-export interface PaginationExplorerProps<TModel extends Model>
+export interface PaginationExplorerProps<TModel extends Model, TElement extends Element = HTMLElement>
     extends
+        // bases:
+        Omit<GenericProps<TElement>,
+            |'children' // no nested children
+        >,
         // data:
         Partial<Pick<ModelCreateOuterProps<TModel>,
             // accessibilities:
@@ -317,7 +318,7 @@ export interface PaginationExplorerProps<TModel extends Model>
     menusBefore           ?: React.ReactNode
     menusAfter            ?: React.ReactNode
 }
-const PaginationExplorer         = <TModel extends Model>(props: PaginationExplorerProps<TModel>): JSX.Element|null => {
+const PaginationExplorer         = <TModel extends Model, TElement extends Element = HTMLElement>(props: PaginationExplorerProps<TModel, TElement>): JSX.Element|null => {
     // props:
     const {
         // accessibilities:
@@ -334,6 +335,11 @@ const PaginationExplorer         = <TModel extends Model>(props: PaginationExplo
         // children:
         menusBefore,
         menusAfter,
+        
+        
+        
+        // other props:
+        ...restPaginationExplorerProps
     } = props;
     
     
@@ -360,9 +366,30 @@ const PaginationExplorer         = <TModel extends Model>(props: PaginationExplo
     
     
     
+    // default props:
+    const {
+        // classes
+        mainClass = styleSheets.main,
+        
+        
+        
+        // other props:
+        ...restGenericProps
+    } = restPaginationExplorerProps;
+    
+    
+    
     // jsx:
     return (
-        <Section className={`fill-self ${styleSheets.main}`} theme='primary'>
+        <Generic<TElement>
+            // other props:
+            {...restGenericProps}
+            
+            
+            
+            // classes:
+            mainClass={mainClass}
+        >
             <div className={`toolbar ${styleSheets.toolbar}`}>
                 <div className='toolbarBefore'>
                     {menusBefore}
@@ -420,7 +447,7 @@ const PaginationExplorer         = <TModel extends Model>(props: PaginationExplo
                 // classes:
                 className={styleSheets.paginBtm}
             />
-        </Section>
+        </Generic>
     );
 };
 export {

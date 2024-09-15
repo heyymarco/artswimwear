@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// heymarco components:
+import {
+    Section,
+}                           from '@heymarco/section'
+
 // internal components:
 import {
     SimpleMainPage,
@@ -67,15 +72,17 @@ function OrderHistoryPageContentInternal(): JSX.Element|null {
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
         <SimpleMainPage>
-            <PaginationExplorer<PublicOrderDetail>
-                // components:
-                modelPreviewComponent={
-                    <OrderHistoryPreview
-                        // data:
-                        model={undefined as any}
-                    />
-                }
-            />
+            <Section theme='primary'>
+                <PaginationExplorer<PublicOrderDetail>
+                    // components:
+                    modelPreviewComponent={
+                        <OrderHistoryPreview
+                            // data:
+                            model={undefined as any}
+                        />
+                    }
+                />
+            </Section>
         </SimpleMainPage>
     );
 }
