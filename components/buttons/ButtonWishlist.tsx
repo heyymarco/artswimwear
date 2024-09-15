@@ -33,6 +33,9 @@ import {
     // utility-components:
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
+import {
+
+}                           from '@/components/dialogs/NotifyWishlistAddedDialog'
 
 // stores:
 import {
@@ -50,7 +53,7 @@ import {
 
 
 // react components:
-export interface ProductWishlistProps
+export interface ButtonWishlistProps
     extends
         // bases:
         ButtonIconProps
@@ -58,7 +61,7 @@ export interface ProductWishlistProps
     // data:
     model : ProductPreview
 }
-const ProductWishlist = (props: ProductWishlistProps) => {
+const ButtonWishlist = (props: ButtonWishlistProps) => {
     // props:
     const {
         // data:
@@ -70,7 +73,7 @@ const ProductWishlist = (props: ProductWishlistProps) => {
         
         
         // other props:
-        ...restProductWishlistProps
+        ...restButtonWishlistProps
     } = props;
     
     
@@ -161,7 +164,7 @@ const ProductWishlist = (props: ProductWishlistProps) => {
         
         // other props:
         ...restButtonIconProps
-    } = restProductWishlistProps;
+    } = restButtonWishlistProps;
     
     
     
@@ -190,6 +193,6 @@ const ProductWishlist = (props: ProductWishlistProps) => {
     );
 };
 export {
-    ProductWishlist,            // named export for readibility
-    ProductWishlist as default, // default export to support React.lazy
+    ButtonWishlist,            // named export for readibility
+    ButtonWishlist as default, // default export to support React.lazy
 }

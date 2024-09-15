@@ -32,8 +32,8 @@ import {
     CurrencyDisplay,
 }                           from '@/components/CurrencyDisplay'
 import {
-    ProductWishlist,
-}                           from '@/components/buttons/ProductWishlist'
+    ButtonWishlist,
+}                           from '@/components/buttons/ButtonWishlist'
 
 // stores:
 import {
@@ -175,7 +175,7 @@ const ProductCard = (props: ProductCardProps) => {
                 >
                     <CurrencyDisplay amount={price} />
                 </span>
-                <ProductWishlist
+                <ButtonWishlist
                     // data:
                     model={model}
                     
