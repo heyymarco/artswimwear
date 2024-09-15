@@ -60,7 +60,6 @@ import {
     type WishlistDetail,
     type WishlistGroupDetail,
     
-    type CreateWishlistGroupRequest,
     type UpdateWishlistGroupRequest,
     type DeleteWishlistGroupRequest,
     
@@ -528,16 +527,6 @@ export const apiSlice = createApi({
             },
             providesTags: ['WishlistGroup'],
         }),
-        createWishlistGroup         : builder.mutation<WishlistGroupDetail, CreateWishlistGroupRequest>({
-            query: (arg) => ({
-                url         : 'wishlists/groups',
-                method      : 'POST',
-                body        : arg,
-            }),
-            onQueryStarted: async (arg, api) => {
-                await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'UPSERT', 'WishlistGroup');
-            },
-        }),
         updateWishlistGroup         : builder.mutation<WishlistGroupDetail, UpdateWishlistGroupRequest>({
             query: (arg) => ({
                 url         : 'wishlists/groups',
@@ -661,7 +650,6 @@ export const {
     useDeleteImageMutation                 : useDeleteImage,
     
     useGetWishlistGroupsQuery              : useGetWishlistGroups,
-    useCreateWishlistGroupMutation         : useCreateWishlistGroup,
     useUpdateWishlistGroupMutation         : useUpdateWishlistGroup,
     useDeleteWishlistGroupMutation         : useDeleteWishlistGroup,
     

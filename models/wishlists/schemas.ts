@@ -5,7 +5,6 @@ import {
 
 // models:
 import {
-    type CreateWishlistGroupRequest,
     type UpdateWishlistGroupRequest,
     type DeleteWishlistGroupRequest,
     
@@ -19,10 +18,6 @@ import {
 }                           from '../commons'
 
 
-
-export const CreateWishlistGroupRequestSchema = z.object({
-    name      : ModelNameSchema,
-}) satisfies z.Schema<CreateWishlistGroupRequest>;
 
 export const UpdateWishlistGroupRequestSchema = z.object({
     id        : ModelIdSchema,

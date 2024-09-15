@@ -35,15 +35,6 @@ export interface WishlistDetail
 
 
 
-export interface CreateWishlistGroupRequest
-    extends
-        Pick<WishlistGroup,
-            // data:
-            |'name'
-        >
-{
-}
-
 export interface UpdateWishlistGroupRequest
     extends
         Pick<WishlistGroup,

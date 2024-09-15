@@ -24,7 +24,6 @@ import {
     
     
     
-    CreateWishlistGroupRequestSchema,
     UpdateWishlistGroupRequestSchema,
     DeleteWishlistGroupRequestSchema,
     
@@ -96,76 +95,6 @@ router
     return Response.json(wishlistGroups); // handled with success
     //#endregion query result
 })
-.post(async (req) => {
-    //#region parsing and validating request
-    const requestData = await (async () => {
-        try {
-            const data = await req.json();
-            return {
-                arg : CreateWishlistGroupRequestSchema.parse(data),
-            };
-        }
-        catch {
-            return null;
-        } // try
-    })();
-    if (requestData === null) {
-        return Response.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
-    } // if
-    const {
-        arg: {
-            name,
-        },
-    } = requestData;
-    //#endregion parsing and validating request
-    
-    
-    
-    //#region validating privileges
-    const session = (req as any).session as Session;
-    const customerId = session.user?.id;
-    if (!customerId) return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
-    //#endregion validating privileges
-    
-    
-    
-    //#region save changes
-    try {
-        const wishlistGroup : WishlistGroupDetail|Response = await prisma.$transaction(async (prismaTransaction): Promise<WishlistGroupDetail|Response> => {
-            const conflictingWishlistGroup = await prismaTransaction.wishlistGroup.findFirst({
-                where  : {
-                    parentId : customerId, // important: the signedIn customerId
-                    name     : { equals: name, mode: 'insensitive' },
-                },
-                select : {
-                    id : true,
-                },
-            });
-            if (conflictingWishlistGroup) {
-                return Response.json({ error: `The name "${name}" already exists.` }, { status: 409 }); // handled with error
-            } // if
-            
-            
-            
-            return await prismaTransaction.wishlistGroup.create({
-                data   : {
-                    parentId : customerId, // important: the signedIn customerId
-                    name     : name,
-                },
-                select : wishlistGroupDetailSelect,
-            });
-        });
-        if (wishlistGroup instanceof Response) return wishlistGroup;
-        return Response.json(wishlistGroup); // handled with success
-    }
-    catch (error: any) {
-        console.log('ERROR: ', error);
-        return Response.json({ error: error }, { status: 500 }); // handled with error
-    } // try
-    //#endregion save changes
-})
 .patch(async (req) => {
     //#region parsing and validating request
     const requestData = await (async () => {
@@ -209,7 +138,7 @@ router
                 where  : {
                     parentId : customerId, // important: the signedIn customerId
                     name     : { equals: name, mode: 'insensitive' },
-                    id       : { not: id }, // do not conflicting with the current record itself
+                    id       : !id ? undefined : { not: id }, // when updating (has id): do not conflicting with the current record itself
                 },
                 select : {
                     id : true,
@@ -220,17 +149,26 @@ router
             } // if
             
             
-            
-            return await prismaTransaction.wishlistGroup.update({
-                where  : {
-                    parentId : customerId, // important: the signedIn customerId
-                    id       : id,
-                },
-                data   : {
-                    name     : name,
-                },
-                select : wishlistGroupDetailSelect,
-            });
+            return (
+                !id
+                ? await prismaTransaction.wishlistGroup.create({
+                    data   : {
+                        parentId : customerId, // important: the signedIn customerId
+                        name     : name,
+                    },
+                    select : wishlistGroupDetailSelect,
+                })
+                : await prismaTransaction.wishlistGroup.update({
+                    where  : {
+                        parentId : customerId, // important: the signedIn customerId
+                        id       : id,
+                    },
+                    data   : {
+                        name     : name,
+                    },
+                    select : wishlistGroupDetailSelect,
+                })
+            );
         });
         if (wishlistGroup instanceof Response) return wishlistGroup;
         return Response.json(wishlistGroup); // handled with success
