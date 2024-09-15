@@ -33,8 +33,10 @@ import {
     // utility-components:
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-import {
 
+// internal components:
+import {
+    NotifyWishlistAddedDialog,
 }                           from '@/components/dialogs/NotifyWishlistAddedDialog'
 
 // stores:
@@ -106,6 +108,7 @@ const ButtonWishlist = (props: ButtonWishlistProps) => {
     
     // dialogs:
     const {
+        showDialog,
         showMessageError,
     } = useDialogMessage();
     
@@ -125,6 +128,12 @@ const ButtonWishlist = (props: ButtonWishlistProps) => {
                     productId : id,
                 }).unwrap();
             } // if
+            
+            
+            
+            showDialog<unknown>(
+                <NotifyWishlistAddedDialog />
+            );
         }
         catch {
             showMessageError({
