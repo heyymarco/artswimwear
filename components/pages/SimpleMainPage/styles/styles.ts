@@ -23,8 +23,19 @@ export default [
         
         // children:
         ...children('section', { // the section fills the entire page width
-            justifyItems: 'center',
+            // layouts:
+            display      : 'grid',
+            justifyItems : 'center',
+            
+            
+            
+            // children:
             ...children('article', { // center the content with limited max width
+                // positions:
+                justifySelf: 'center', // centering for `maxInlineSize`
+                
+                
+                
                 // sizes:
                 maxInlineSize : `${breakpoints.lg}px`,
             }, { specificityWeight: 2 }),
