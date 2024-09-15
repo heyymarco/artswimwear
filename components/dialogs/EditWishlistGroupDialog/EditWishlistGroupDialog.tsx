@@ -25,6 +25,17 @@ import {
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// reusable-ui components:
+import {
+    // base-components:
+    Generic,
+    
+    
+    
+    // composite-components:
+    TabPanel,
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
 // internal components:
 import {
     UniqueWishlistGroupNameEditor,
@@ -124,6 +135,36 @@ const EditWishlistGroupDialog = (props: EditWishlistGroupDialogProps): JSX.Eleme
     
     
     // jsx:
+    const mainTabContent = (
+        <>
+            <span className='name label'>Name:</span>
+            <UniqueWishlistGroupNameEditor
+                // refs:
+                elmRef={firstEditorRef}
+                
+                
+                
+                // classes:
+                className='name editor'
+                
+                
+                
+                // values:
+                currentValue={model?.name ?? ''}
+                value={name}
+                onChange={setName}
+            />
+        </>
+    );
+    const mainTab = (
+        !model
+        ? <form className={styleSheet.collectionTab}>
+            {mainTabContent}
+        </form>
+        : <TabPanel label='Collection' panelComponent={<Generic className={styleSheet.collectionTab} />}>
+            {mainTabContent}
+        </TabPanel>
+    );
     return (
         <ComplexEditModelDialog<WishlistGroupDetail>
             // other props:
@@ -153,6 +194,11 @@ const EditWishlistGroupDialog = (props: EditWishlistGroupDialogProps): JSX.Eleme
             
             
             
+            // tabs:
+            tabDelete='Delete'
+            
+            
+            
             // auto focusable:
             autoFocusOn={props.autoFocusOn ?? firstEditorRef}
             
@@ -164,25 +210,7 @@ const EditWishlistGroupDialog = (props: EditWishlistGroupDialogProps): JSX.Eleme
             
             onConfirmDelete={handleConfirmDelete}
         >
-            <form className={styleSheet.main}>
-                <span className='name label'>Name:</span>
-                <UniqueWishlistGroupNameEditor
-                    // refs:
-                    elmRef={firstEditorRef}
-                    
-                    
-                    
-                    // classes:
-                    className='name editor'
-                    
-                    
-                    
-                    // values:
-                    currentValue={model?.name ?? ''}
-                    value={name}
-                    onChange={setName}
-                />
-            </form>
+            {mainTab}
         </ComplexEditModelDialog>
     );
 };

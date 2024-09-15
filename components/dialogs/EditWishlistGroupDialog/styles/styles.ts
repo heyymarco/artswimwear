@@ -13,7 +13,7 @@ import {
 
 
 // styles:
-const usesEditWishlistGroupDialogLayout = () => {
+const usesCollectionTabLayout = () => {
     return style({
         // layout:
         display      : 'grid',
@@ -40,7 +40,7 @@ const usesEditWishlistGroupDialogLayout = () => {
 };
 
 export default () => [
-    scope('main', {
-        ...usesEditWishlistGroupDialogLayout(),
+    scope('collectionTab', {
+        ...usesCollectionTabLayout(),
     }),
 ];
