@@ -173,7 +173,7 @@ const EditWishlistGroupDialog = (props: EditWishlistGroupDialogProps): JSX.Eleme
             
             
             // data:
-            modelName='Role'
+            modelName='Collection'
             modelEntryName={model?.name}
             model={model}
             
