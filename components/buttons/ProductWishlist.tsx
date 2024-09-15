@@ -24,8 +24,14 @@ import {
 
 // reusable-ui components:
 import {
+    // simple-components:
     type ButtonIconProps,
     ButtonIcon,
+    
+    
+    
+    // utility-components:
+    useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // stores:
@@ -95,6 +101,13 @@ const ProductWishlist = (props: ProductWishlistProps) => {
     
     
     
+    // dialogs:
+    const {
+        showMessageError,
+    } = useDialogMessage();
+    
+    
+    
     // handlers:
     const handleWishlistClick = useEvent(async (): Promise<void> => {
         try {
@@ -111,6 +124,23 @@ const ProductWishlist = (props: ProductWishlistProps) => {
             } // if
         }
         catch {
+            showMessageError({
+                title : <h1>Error Updating Wishlist</h1>,
+                error : <>
+                    <p>
+                        Oops, something went wrong while <strong>updating your last wishlist</strong>.
+                        <br />
+                        Your last changes were not saved.
+                    </p>
+                    <p>
+                        There was a <strong>problem contacting our server</strong>.<br />
+                        Make sure your internet connection is available.
+                    </p>
+                    <p>
+                        Please try again in a few minutes.
+                    </p>
+                </>,
+            })
         } // try
     });
     
