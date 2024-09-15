@@ -16,9 +16,6 @@ import {
 import {
     type PrefetchOptions,
 }                           from '@reduxjs/toolkit/dist/query/core/module'
-import {
-    type QuerySubState,
-}                           from '@reduxjs/toolkit/dist/query/core/apiState'
 
 // types:
 import {
