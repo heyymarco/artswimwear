@@ -289,7 +289,7 @@ export const apiSlice = createApi({
                 
                 
                 
-                const currentQueryCaches = (
+                const updatedCollectionQueryCaches = (
                     queryCaches
                     .filter(({originalArgs}) =>
                         (originalArgs !== undefined)
@@ -316,29 +316,26 @@ export const apiSlice = createApi({
                     )
                 );
                 
-                // reconstructuring the mutated pagination, so the invalidatesTag can be avoided:
-                if (currentQueryCaches.length) {
-                    for (const currentQueryCache of currentQueryCaches) {
-                        // update cache:
-                        api.dispatch(
-                            apiSlice.util.updateQueryData(endpointName, currentQueryCache.originalArgs as any, (currentQueryCacheData) => {
-                                const currentDynamicRates = (
-                                    (Object.values(currentQueryCacheData.entities) as MatchingShipping[])
-                                    .filter((entity): entity is Exclude<typeof entity, undefined> => (entity !== undefined))
-                                    .filter((matchingShipping) =>
-                                        Array.isArray(matchingShipping.rates) // do not delete dynamic rates
-                                    )
-                                );
-                                const combinedRates = [
-                                    ...currentDynamicRates,
-                                    ...(Object.values(mutatedEntities.entities) as MatchingShipping[])
-                                ];
-                                const newData = matchingShippingListAdapter.addMany(matchingShippingListAdapter.getInitialState(), combinedRates);
-                                return newData;
-                            })
-                        );
-                    } // for
-                } // if
+                // reconstructuring the mutated entry, so the invalidatesTag can be avoided:
+                for (const { originalArgs } of updatedCollectionQueryCaches) {
+                    api.dispatch(
+                        apiSlice.util.updateQueryData(endpointName, originalArgs as any, (currentQueryCacheData) => {
+                            const currentDynamicRates = (
+                                (Object.values(currentQueryCacheData.entities) as MatchingShipping[])
+                                .filter((entity): entity is Exclude<typeof entity, undefined> => (entity !== undefined))
+                                .filter((matchingShipping) =>
+                                    Array.isArray(matchingShipping.rates) // do not delete dynamic rates
+                                )
+                            );
+                            const combinedRates = [
+                                ...currentDynamicRates,
+                                ...(Object.values(mutatedEntities.entities) as MatchingShipping[])
+                            ];
+                            const newData = matchingShippingListAdapter.addMany(matchingShippingListAdapter.getInitialState(), combinedRates);
+                            return newData;
+                        })
+                    );
+                } // for
             },
         }),
         
@@ -375,35 +372,32 @@ export const apiSlice = createApi({
                 
                 
                 
-                const currentQueryCaches = (
+                const updatedCollectionQueryCaches = (
                     queryCaches
                     // assumes there's only ONE kind call of `restoreCart(no_arg)`, so we not need to `filter()`
                 );
                 
-                // reconstructuring the mutated pagination, so the invalidatesTag can be avoided:
-                if (currentQueryCaches.length) {
-                    for (const currentQueryCache of currentQueryCaches) {
-                        // update cache:
-                        api.dispatch(
-                            apiSlice.util.updateQueryData(endpointName, currentQueryCache.originalArgs as any, (currentQueryCacheData) => {
-                                const {
-                                    checkout = (currentQueryCacheData?.checkout ?? null),
-                                    marketingOpt,
-                                    ...restBackupData
-                                } = arg;
-                                
-                                
-                                
-                                const newRestore : (CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>) = {
-                                    checkout,
-                                    marketingOpt : marketingOpt ?? null,
-                                    ...restBackupData,
-                                };
-                                return newRestore;
-                            })
-                        );
-                    } // for
-                } // if
+                // reconstructuring the mutated entry, so the invalidatesTag can be avoided:
+                for (const { originalArgs } of updatedCollectionQueryCaches) {
+                    api.dispatch(
+                        apiSlice.util.updateQueryData(endpointName, originalArgs as any, (currentQueryCacheData) => {
+                            const {
+                                checkout = (currentQueryCacheData?.checkout ?? null),
+                                marketingOpt,
+                                ...restBackupData
+                            } = arg;
+                            
+                            
+                            
+                            const newRestore : (CartDetail & Pick<CustomerPreferenceDetail, 'marketingOpt'>) = {
+                                checkout,
+                                marketingOpt : marketingOpt ?? null,
+                                ...restBackupData,
+                            };
+                            return newRestore;
+                        })
+                    );
+                } // for
             },
         }),
         
