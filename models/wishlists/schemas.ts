@@ -13,6 +13,7 @@ import {
     type DeleteWishlistRequest,
 }                           from './types'
 import {
+    EmptyStringSchema,
     ModelIdSchema,
     ModelNameSchema,
 }                           from '../commons'
@@ -20,7 +21,7 @@ import {
 
 
 export const UpdateWishlistGroupRequestSchema = z.object({
-    id        : ModelIdSchema,
+    id        : z.union([ModelIdSchema, EmptyStringSchema]),
     name      : ModelNameSchema,
 }) satisfies z.Schema<UpdateWishlistGroupRequest>;
 
