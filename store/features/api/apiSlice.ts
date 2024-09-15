@@ -1,11 +1,29 @@
-import { createEntityAdapter, EntityState, Dictionary }                         from '@reduxjs/toolkit'
-import type { PrefetchOptions }                                     from '@reduxjs/toolkit/dist/query/core/module'
-import { BaseQueryFn, createApi, fetchBaseQuery }                   from '@reduxjs/toolkit/query/react'
-import type { QuerySubState }                                       from '@reduxjs/toolkit/dist/query/core/apiState'
-import type { BaseEndpointDefinition, MutationCacheLifecycleApi }   from '@reduxjs/toolkit/dist/query/endpointDefinitions'
-import type { MatchingShipping }                                    from '@/libs/shippings/shippings'
+// redux:
+import {
+    type Dictionary,
+    type EntityState,
+    
+    createEntityAdapter,
+}                           from '@reduxjs/toolkit'
+import {
+    type BaseQueryFn,
+    
+    createApi,
+}                           from '@reduxjs/toolkit/query/react'
+import {
+    type MutationLifecycleApi,
+}                           from '@reduxjs/toolkit/dist/query/endpointDefinitions'
+import {
+    type PrefetchOptions,
+}                           from '@reduxjs/toolkit/dist/query/core/module'
+import {
+    type QuerySubState,
+}                           from '@reduxjs/toolkit/dist/query/core/apiState'
 
 // types:
+import {
+    type MatchingShipping,
+}                           from '@/libs/shippings/shippings'
 import {
     type Model,
     
@@ -96,10 +114,11 @@ export type { ImageId }         from '@/app/api/(protected)/uploads/route'
 
 // other libs:
 import {
+    type AxiosRequestConfig,
+    type AxiosError,
+    
     default as axios,
-    AxiosRequestConfig,
     CanceledError,
-    AxiosError,
 }                           from 'axios'
 
 
@@ -247,9 +266,9 @@ export const apiSlice = createApi({
                 return matchingShippingListAdapter.addMany(matchingShippingListAdapter.getInitialState(), response);
             },
             
-            async onCacheEntryAdded(arg, api) {
+            onQueryStarted: async (arg, api) => {
                 // updated TEntry data:
-                const { data: mutatedEntities } = await api.cacheDataLoaded;
+                const { data: mutatedEntities } = await api.queryFulfilled;
                 
                 
                 
@@ -259,10 +278,12 @@ export const apiSlice = createApi({
                 const endpointName   = 'getMatchingShippingList';
                 const queryCaches    = (
                     Object.values(allQueryCaches)
-                    .filter((allQueryCache): allQueryCache is QuerySubState<BaseEndpointDefinition<ShippingAddressDetail, BaseQueryFn<AxiosRequestConfig<any>>, EntityState<MatchingShipping>>> =>
-                        !!allQueryCache
+                    .filter((allQueryCache): allQueryCache is Exclude<typeof allQueryCache, undefined> =>
+                        (allQueryCache !== undefined)
                         &&
                         (allQueryCache.endpointName === endpointName)
+                        &&
+                        (allQueryCache.data !== undefined)
                     )
                 );
                 
@@ -271,27 +292,27 @@ export const apiSlice = createApi({
                 const currentQueryCaches = (
                     queryCaches
                     .filter(({originalArgs}) =>
-                        !!originalArgs
+                        (originalArgs !== undefined)
                         &&
-                        (originalArgs.country   === arg.country)
+                        ((originalArgs as ShippingAddressDetail).country   === arg.country)
                         &&
-                        (originalArgs.state     === arg.state)
+                        ((originalArgs as ShippingAddressDetail).state     === arg.state)
                         &&
-                        (originalArgs.city      === arg.city)
+                        ((originalArgs as ShippingAddressDetail).city      === arg.city)
                         &&
-                        (originalArgs.zip       === arg.zip)
+                        ((originalArgs as ShippingAddressDetail).zip       === arg.zip)
                         
                         // not contributing of determining shipping cost:
                         // &&
-                        // (originalArgs.address   === arg.address)
+                        // ((originalArgs as ShippingAddressDetail).address   === arg.address)
                         // 
                         // &&
                         // 
-                        // (originalArgs.firstName === arg.firstName)
+                        // ((originalArgs as ShippingAddressDetail).firstName === arg.firstName)
                         // &&
-                        // (originalArgs.lastName  === arg.lastName)
+                        // ((originalArgs as ShippingAddressDetail).lastName  === arg.lastName)
                         // &&
-                        // (originalArgs.phone     === arg.phone)
+                        // ((originalArgs as ShippingAddressDetail).phone     === arg.phone)
                     )
                 );
                 
@@ -336,17 +357,19 @@ export const apiSlice = createApi({
                 body   : cartRequest,
             }),
             
-            async onCacheEntryAdded(arg, api) {
+            onQueryStarted: async (arg, api) => {
                 // find related TEntry data(s):
                 const state          = api.getState();
                 const allQueryCaches = state.api.queries;
                 const endpointName   = 'restoreCart';
                 const queryCaches    = (
                     Object.values(allQueryCaches)
-                    .filter((allQueryCache): allQueryCache is QuerySubState<BaseEndpointDefinition<ShippingAddressDetail, BaseQueryFn<AxiosRequestConfig<any>>, EntityState<MatchingShipping>>> =>
-                        !!allQueryCache
+                    .filter((allQueryCache): allQueryCache is Exclude<typeof allQueryCache, undefined> =>
+                        (allQueryCache !== undefined)
                         &&
                         (allQueryCache.endpointName === endpointName)
+                        &&
+                        (allQueryCache.data !== undefined)
                     )
                 );
                 
@@ -520,7 +543,7 @@ export const apiSlice = createApi({
                 method      : 'POST',
                 body        : arg,
             }),
-            onCacheEntryAdded: async (arg, api) => {
+            onQueryStarted: async (arg, api) => {
                 await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'UPSERT', 'WishlistGroup');
             },
         }),
@@ -530,7 +553,7 @@ export const apiSlice = createApi({
                 method      : 'PATCH',
                 body        : arg,
             }),
-            onCacheEntryAdded: async (arg, api) => {
+            onQueryStarted: async (arg, api) => {
                 await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'UPSERT', 'WishlistGroup');
             },
         }),
@@ -539,7 +562,7 @@ export const apiSlice = createApi({
                 url         : `wishlists/groups?id=${encodeURIComponent(arg.id)}`,
                 method      : 'DELETE',
             }),
-            onCacheEntryAdded: async (arg, api) => {
+            onQueryStarted: async (arg, api) => {
                 await cumulativeUpdateEntityCache(api, 'getWishlistGroups', 'DELETE', 'WishlistGroup');
             },
         }),
@@ -560,7 +583,7 @@ export const apiSlice = createApi({
                 method      : 'PATCH',
                 body        : arg,
             }),
-            onCacheEntryAdded: async (arg, api) => {
+            onQueryStarted: async (arg, api) => {
                 await cumulativeUpdateEntityCache(api, 'getWishlists', 'UPSERT', 'Wishlist');
             },
         }),
@@ -569,7 +592,7 @@ export const apiSlice = createApi({
                 url         : `wishlists?productId=${encodeURIComponent(arg.productId)}`,
                 method      : 'DELETE',
             }),
-            onCacheEntryAdded: async (arg, api) => {
+            onQueryStarted: async (arg, api) => {
                 await cumulativeUpdateEntityCache(api, 'getWishlists', 'DELETE', 'Wishlist');
             },
         }),
@@ -703,9 +726,18 @@ const selectRangeFromArg    = (originalArg: unknown): { indexStart: number, inde
 type EntityUpdateType =
     |'UPSERT'
     |'DELETE'
-const cumulativeUpdateEntityCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationCacheLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishlistGroups'|'getWishlists'>, updateType: EntityUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
+const cumulativeUpdateEntityCache     = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishlistGroups'|'getWishlists'>, updateType: EntityUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
     // mutated TEntry data:
-    const { data: mutatedEntry } = await api.cacheDataLoaded;
+    const mutatedEntry = await (async (): Promise<TEntry|undefined> => {
+        try {
+            const { data: mutatedEntry } = await api.queryFulfilled;
+            return mutatedEntry;
+        }
+        catch {
+            return undefined;
+        } // try
+    })();
+    if (mutatedEntry === undefined) return; // api request aborted|failed => nothing to update
     const mutatedId = selectIdFromEntry<TEntry>(mutatedEntry);
     
     
