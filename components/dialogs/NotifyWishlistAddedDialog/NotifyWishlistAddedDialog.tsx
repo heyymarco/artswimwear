@@ -33,10 +33,34 @@ import {
     ModalCard,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
+// internal components:
+import {
+    PaginationExplorerStateProvider,
+    usePaginationExplorerState,
+    PaginationExplorer,
+}                           from '@/components/explorers/PaginationExplorer'
+import {
+    WishlistGroupPreview,
+}                           from '@/components/views/WishlistGroupPreview'
+import {
+    EditWishlistGroupDialog,
+}                           from '@/components/dialogs/EditWishlistGroupDialog'
+
+// models:
+import {
+    type WishlistGroupDetail,
+}                           from '@/models'
+
 // internals:
 import {
     useNotifyWishlistAddedDialogStyleSheets,
 }                           from './styles/loader'
+
+// stores:
+import {
+    // hooks:
+    useGetWishlistGroupPage,
+}                           from '@/store/features/api/apiSlice'
 
 
 
@@ -108,6 +132,31 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                 <p>
                     Also save to Collections? <span className='txt-sec'>(optional)</span>
                 </p>
+                <PaginationExplorerStateProvider
+                    // data:
+                    useGetModelPage={useGetWishlistGroupPage}
+                >
+                    <PaginationExplorer<WishlistGroupDetail>
+                        // accessibilities:
+                        createItemText='Add New Collection'
+                        
+                        
+                        
+                        // components:
+                        modelPreviewComponent={
+                            <WishlistGroupPreview
+                                // data:
+                                model={undefined as any}
+                            />
+                        }
+                        modelCreateComponent={
+                            <EditWishlistGroupDialog
+                                // data:
+                                model={null} // create a new model
+                            />
+                        }
+                    />
+                </PaginationExplorerStateProvider>
             </CardBody>
             <CardFooter>
                 <ButtonIcon className='btnCancel' icon='done' theme='primary' onClick={handleCloseDialog}>Close</ButtonIcon>
