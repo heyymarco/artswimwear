@@ -31,9 +31,14 @@ const usesListModelLayout = () => {
     // dependencies:
     
     // capabilities:
-    const {groupableRule} = usesGroupable({
+    const {groupableRule, groupableVars} = usesGroupable({
         orientationInlineSelector : null, // craft the <List>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
         orientationBlockSelector  : null, // craft the <List>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
+    });
+    const {groupableRule: groupableRuleForBackdrop} = usesGroupable({
+        orientationInlineSelector : '&', // always => target the <portal><ModalBackdrop><ModalDialog>
+        orientationBlockSelector  : '&', // always => target the <portal><ModalBackdrop><ModalDialog>
+        itemsSelector             : '*>[role="dialog"]',
     });
     
     // features:
@@ -44,13 +49,13 @@ const usesListModelLayout = () => {
     return style({
         // capabilities:
         ...groupableRule(),  // make a nicely rounded corners
+        ...groupableRuleForBackdrop(), // make a nicely rounded corners
         
         
         
         // layouts:
         ...style({
             // positions:
-            gridArea  : 'modelList',
             alignSelf : 'start',
             
             
@@ -88,6 +93,7 @@ const usesModelListInnerLayout = () => { // the <List> of model
     
     return style({
         // sizes:
+        minBlockSize : '9rem', // limits the minimum height to make loading popup more space
         blockSize: '100%', // fill the entire <Outer>
         
         
@@ -113,6 +119,13 @@ const usesCreateModelLayout = () => { // the <ListItem> of model add_new
 };
 const usesEmptyModelLayout = () => {
     return style({
+        // layout:
+        display: 'grid',
+        justifyItems : 'center', // center horizontally
+        alignItems: 'center',    // center vertically
+        
+        
+        
         // appearances:
         opacity    : 0.5,
         
@@ -132,24 +145,7 @@ const usesEmptyModelLayout = () => {
 export default () => [
     scope('main', {
         // layouts:
-        display      : 'grid',
-        gridTemplate : [[
-            '"paginTop "', 'auto',
-            '"modelList"', '1fr',
-            '"paginBtm "', 'auto',
-            '/',
-            'auto',
-        ]],
-        ...rule(':has(>.toolbar>*:not(:empty))', {
-            gridTemplate : [[
-                '"toolbar  "', 'auto',
-                '"paginTop "', 'auto',
-                '"modelList"', '1fr',
-                '"paginBtm "', 'auto',
-                '/',
-                'auto',
-            ]],
-        }),
+        display : 'grid',
         
         
         
@@ -159,11 +155,6 @@ export default () => [
     }),
     
     scope('toolbar', {
-        // positions:
-        gridArea: 'toolbar',
-        
-        
-        
         // layouts:
         display        : 'none',
         ...rule(':has(>*:not(:empty))', {
@@ -196,8 +187,6 @@ export default () => [
     }),
     
     scope('paginTop', {
-        gridArea: 'paginTop',
-        
         justifySelf: 'center',
     }),
     scope('listModel', {
@@ -207,8 +196,6 @@ export default () => [
         ...usesModelListInnerLayout(),
     }, { specificityWeight: 2 }),
     scope('paginBtm', {
-        gridArea: 'paginBtm',
-        
         justifySelf: 'center',
     }),
     

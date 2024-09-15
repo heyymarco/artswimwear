@@ -262,7 +262,19 @@ export interface ModelPreviewProps<TModel extends Model, TElement extends Elemen
 }
 
 /* <ModelEmpty> */
-export const ModelEmpty = () => {
+export interface ModalEmptyProps {
+    // accessibilities:
+    textEmpty ?: React.ReactNode
+}
+export const ModelEmpty = (props: ModalEmptyProps) => {
+    // props:
+    const {
+        // accessibilities:
+        textEmpty = <>The data is empty.</>,
+    } = props;
+    
+    
+    
     // styles:
     const styleSheets = usePaginationExplorerStyleSheet();
     
@@ -285,7 +297,7 @@ export const ModelEmpty = () => {
             className={styleSheets.emptyModel}
         >
             <p>
-                The data is empty.
+                {textEmpty}
             </p>
         </ListItem>
     );
@@ -307,8 +319,18 @@ export interface PaginationExplorerProps<TModel extends Model, TElement extends 
             
             // components:
             |'modelCreateComponent'
-        >>
+        >>,
+        
+        // accessibilities:
+        ModalEmptyProps
 {
+    // appearances:
+    showPaginationTop     ?: boolean
+    showPaginationBottom  ?: boolean
+    autoHidePagination    ?: boolean
+    
+    
+    
     // components:
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
     
@@ -321,8 +343,16 @@ export interface PaginationExplorerProps<TModel extends Model, TElement extends 
 const PaginationExplorer         = <TModel extends Model, TElement extends Element = HTMLElement>(props: PaginationExplorerProps<TModel, TElement>): JSX.Element|null => {
     // props:
     const {
+        // appearances:
+        showPaginationTop    = true,
+        showPaginationBottom = true,
+        autoHidePagination   = false,
+        
+        
+        
         // accessibilities:
         createItemText,
+        textEmpty,
         
         
         
@@ -351,6 +381,11 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
     
     // states:
     const {
+        // states:
+        perPage,
+        
+        
+        
         // data:
         data,
         isFetching,
@@ -358,6 +393,13 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
         refetch,
     } = usePaginationExplorerState<TModel>();
     const isDataEmpty = !!data && !data.total;
+    const showPagination = (
+        !autoHidePagination
+        ? true
+        : (
+            (data?.total ?? 0) > perPage
+        )
+    );
     
     
     
@@ -401,10 +443,10 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
                 </div>
             </div>
             
-            <PaginationNav<TModel>
+            {showPagination && showPaginationTop && <PaginationNav<TModel>
                 // classes:
                 className={styleSheets.paginTop}
-            />
+            />}
             
             <Basic className={`${styleSheets.listModel}${isDataEmpty ? ' empty' : ''}`} mild={true} elmRef={dataListRef}>
                 <ModalLoadingError
@@ -423,7 +465,7 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
                     {/* <ModelCreate> */}
                     {!!modelCreateComponent  && <ModelCreateOuter<TModel> className='solid' createItemText={createItemText} modelCreateComponent={modelCreateComponent} />}
                     
-                    {!!data && !data.total && <ModelEmpty />}
+                    {!!data && !data.total && <ModelEmpty textEmpty={textEmpty} />}
                     
                     {!!data?.total && Object.values(data?.entities).filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
                         /* <ModelPreview> */
@@ -443,10 +485,10 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
                 </List>
             </Basic>
             
-            <PaginationNav<TModel>
+            {showPagination && showPaginationBottom && <PaginationNav<TModel>
                 // classes:
                 className={styleSheets.paginBtm}
-            />
+            />}
         </Generic>
     );
 };
