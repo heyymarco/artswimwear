@@ -576,12 +576,14 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
-                api.dispatch(
+                const patchResult = api.dispatch(
                     apiSlice.util.updateQueryData('getWishlists', { groupId: undefined /* all wishlists in current signedIn customer */ } satisfies GetWishlistRequest, (data) => {
                         wishlistListAdapter.upsertOne(data, arg.productId);
                     })
                 );
                 api.queryFulfilled.catch(() => {
+                    patchResult.undo();
+                    
                     api.dispatch(
                         apiSlice.util.invalidateTags([{ type: 'Wishlist', id: 'undefined' }])
                     );
@@ -600,12 +602,14 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
-                api.dispatch(
+                const patchResult = api.dispatch(
                     apiSlice.util.updateQueryData('getWishlists', { groupId: undefined /* all wishlists in current signedIn customer */ } satisfies GetWishlistRequest, (data) => {
                         wishlistListAdapter.removeOne(data, arg.productId);
                     })
                 );
                 api.queryFulfilled.catch(() => {
+                    patchResult.undo();
+                    
                     api.dispatch(
                         apiSlice.util.invalidateTags([{ type: 'Wishlist', id: 'undefined' }])
                     );
