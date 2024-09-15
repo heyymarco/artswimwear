@@ -575,6 +575,21 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             onQueryStarted: async (arg, api) => {
+                //#region optimistic update
+                api.dispatch(
+                    apiSlice.util.updateQueryData('getWishlists', { groupId: undefined /* all wishlists in current signedIn customer */ } satisfies GetWishlistRequest, (data) => {
+                        wishlistListAdapter.upsertOne(data, arg.productId);
+                    })
+                );
+                api.queryFulfilled.catch(() => {
+                    api.dispatch(
+                        apiSlice.util.invalidateTags([{ type: 'Wishlist', id: 'undefined' }])
+                    );
+                });
+                //#endregion optimistic update
+                
+                
+                
                 await cumulativeUpdateEntityCache(api, 'getWishlists', 'UPSERT', 'Wishlist');
             },
         }),
@@ -584,6 +599,21 @@ export const apiSlice = createApi({
                 method      : 'DELETE',
             }),
             onQueryStarted: async (arg, api) => {
+                //#region optimistic update
+                api.dispatch(
+                    apiSlice.util.updateQueryData('getWishlists', { groupId: undefined /* all wishlists in current signedIn customer */ } satisfies GetWishlistRequest, (data) => {
+                        wishlistListAdapter.removeOne(data, arg.productId);
+                    })
+                );
+                api.queryFulfilled.catch(() => {
+                    api.dispatch(
+                        apiSlice.util.invalidateTags([{ type: 'Wishlist', id: 'undefined' }])
+                    );
+                });
+                //#endregion optimistic update
+                
+                
+                
                 await cumulativeUpdateEntityCache(api, 'getWishlists', 'DELETE', 'Wishlist');
             },
         }),

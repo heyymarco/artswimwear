@@ -134,6 +134,12 @@ router
     //#endregion query result
 })
 .patch(async (req) => {
+    // await new Promise<void>((resolve) => {
+    //     setTimeout(resolve, 1000);
+    // });
+    
+    
+    
     //#region parsing and validating request
     const requestData = await (async () => {
         try {
@@ -217,6 +223,12 @@ router
     //#endregion save changes
 })
 .delete(async (req) => {
+    // await new Promise<void>((resolve) => {
+    //     setTimeout(resolve, 1000);
+    // });
+    
+    
+    
     //#region parsing and validating request
     const requestData = await (async () => {
         try {
