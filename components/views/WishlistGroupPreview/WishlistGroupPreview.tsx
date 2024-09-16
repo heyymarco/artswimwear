@@ -24,6 +24,11 @@ import {
 
 // reusable-ui components:
 import {
+    // simple-components:
+    Icon,
+    
+    
+    
     // layout-components:
     ListItem,
     
@@ -67,13 +72,12 @@ export interface WishlistGroupPreviewProps
     extends
         Omit<ModelPreviewProps<WishlistGroupDetail>,
             // values:
-            |'defaultValue' // not supported, controllable only
-            |'value'
-            |'onChange'
+            |'onSelect'
         >
 {
-    // handlers:
-    onChange ?: EditorChangeEventHandler<string|null>
+    // values:
+    selected ?: string|null
+    onSelect ?: EditorChangeEventHandler<string|null>
 }
 const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|null => {
     // styles:
@@ -89,12 +93,13 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
         
         
         // values:
-        onChange,
+        selected,
+        onSelect,
         
         
         
         // other props:
-        ...restListItemProps
+        ...restWishlistGroupPreviewProps
     } = props;
     const {
         id,
@@ -123,7 +128,7 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
         
         
         // actions:
-        onChange?.(id || null); // null (no selection) if the id is an empty string
+        onSelect?.(id || null); // null (no selection) if the id is an empty string
     });
     
     type EditMode = 'full'
@@ -158,6 +163,23 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
     });
     
     
+    // default props:
+    const {
+        // behaviors:
+        actionCtrl = true,
+        
+        
+        
+        // states:
+        active     = (selected === id),
+        
+        
+        
+        // other props:
+        ...restListItemProps
+    } = restWishlistGroupPreviewProps;
+    
+    
     
     // jsx:
     return (
@@ -173,7 +195,12 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
             
             
             // behaviors:
-            actionCtrl={true}
+            actionCtrl={actionCtrl}
+            
+            
+            
+            // states:
+            active={active}
             
             
             
@@ -191,7 +218,30 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
                 {name}
             </h6>
             
-            <EditButton title='Edit Collection' className='edit' onClick={() => handleEdit('full')}>
+            <EditButton
+                // accessibilities:
+                title='Edit Collection'
+                
+                
+                
+                // variants:
+                mild={false}
+                
+                
+                
+                // classes:
+                className='edit'
+                
+                
+                
+                // components:
+                iconComponent={<Icon icon='edit' mild={active} />}
+                
+                
+                
+                // handlers:
+                onClick={() => handleEdit('full')}
+            >
                 {null}
             </EditButton>
         </ListItem>

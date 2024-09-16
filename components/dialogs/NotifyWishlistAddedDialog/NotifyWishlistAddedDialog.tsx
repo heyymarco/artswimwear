@@ -4,6 +4,11 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useState,
 }                           from 'react'
 
 // reusable-ui core:
@@ -88,6 +93,11 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
     
     
     
+    // states:
+    const [selectedCollection, setSelectedCollection] = useState<string|null>(null);
+    
+    
+    
     // handlers:
     const handleCloseDialog        = useEvent((): void => {
         // actions:
@@ -103,7 +113,7 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
     // default props:
     const {
         // variants:
-        theme          = 'primary',
+        theme          = 'success',
         backdropStyle  = 'static',
         modalCardStyle = 'scrollable',
     } = restNotifyWishlistAddedDialogProps;
@@ -125,12 +135,12 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
         >
             <CardHeader className={styleSheets.cardHeader}>
                 <h1>Saved to Wishlist!</h1>
-                <ButtonIcon icon='menu' theme='success' buttonStyle='link'>View Wishlist</ButtonIcon>
+                <ButtonIcon icon='menu' buttonStyle='link'>View Wishlist</ButtonIcon>
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheets.cardBody}>
                 <p>
-                    Also save to Collections? <span className='txt-sec'>(optional)</span>
+                    Also save to your collection? <span className='txt-sec'>(optional)</span>
                 </p>
                 <PaginationExplorerStateProvider
                     // states:
@@ -159,6 +169,12 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                             <WishlistGroupPreview
                                 // data:
                                 model={undefined as any}
+                                
+                                
+                                
+                                // values:
+                                selected={selectedCollection}
+                                onSelect={setSelectedCollection}
                             />
                         }
                         modelCreateComponent={
@@ -171,7 +187,7 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                 </PaginationExplorerStateProvider>
             </CardBody>
             <CardFooter>
-                <ButtonIcon className='btnCancel' icon='done' theme='primary' onClick={handleCloseDialog}>Close</ButtonIcon>
+                <ButtonIcon className='btnCancel' icon='done' onClick={handleCloseDialog}>Close</ButtonIcon>
             </CardFooter>
         </ModalCard>
     );
