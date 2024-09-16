@@ -88,42 +88,37 @@ const PaginationNav = <TModel extends Model, TElement extends Element = HTMLElem
     
     
     
-    // jsx:
-    return (
-        <PaginationControl<TElement>
-            // other props:
-            {...props}
-            
-            
-            
-            // paginations:
-            itemsLimit={props.itemsLimit ?? 20}
-            
-            
-            
-            // variants:
-            size={props.size ?? 'sm'}
-            theme={props.theme ?? 'primary'}
-            
-            
-            
-            // accessibilities:
-            enabled={props.enabled ?? !isDataEmpty}
-            
-            
-            
-            // components:
-            prevItems={
-                <NavPrevItem
-                    onClick={handleNavigatePrev}
-                />
-            }
-            nextItems={
-                <NavNextItem
-                    onClick={handleNavigateNext}
-                />
-            }
-        >
+    // default props:
+    const {
+        // paginations:
+        itemsLimit = 20,
+        
+        
+        
+        // variants:
+        size       = 'sm',
+        
+        
+        
+        // accessibilities:
+        enabled    = !isDataEmpty,
+        
+        
+        
+        // components:
+        prevItems  = <NavPrevItem
+            // handlers:
+            onClick={handleNavigatePrev}
+        />,
+        nextItems  = <NavNextItem
+            // handlers:
+            onClick={handleNavigateNext}
+        />,
+        
+        
+        
+        // children:
+        children = <>
             {!data && <ListItem actionCtrl={false} nude={true}><LoadingBar className={styleSheets.loadingBar}
                 nude={true}
                 running={isFetching}
@@ -140,6 +135,45 @@ const PaginationNav = <TModel extends Model, TElement extends Element = HTMLElem
                     {index + 1}
                 </ListItem>
             )}
+        </>,
+        
+        
+        
+        
+        // other props:
+        ...restPaginationControlProps
+    } = props;
+    
+    
+    
+    // jsx:
+    return (
+        <PaginationControl<TElement>
+            // other props:
+            {...restPaginationControlProps}
+            
+            
+            
+            // paginations:
+            itemsLimit={itemsLimit}
+            
+            
+            
+            // variants:
+            size={size}
+            
+            
+            
+            // accessibilities:
+            enabled={enabled}
+            
+            
+            
+            // components:
+            prevItems={prevItems}
+            nextItems={nextItems}
+        >
+            {children}
         </PaginationControl>
     );
 };
