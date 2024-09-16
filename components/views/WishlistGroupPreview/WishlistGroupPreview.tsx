@@ -240,7 +240,10 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
                 
                 
                 // handlers:
-                onClick={() => handleEdit('full')}
+                onClick={(event) => {
+                    event.stopPropagation(); // prevent from causing `onSelect`
+                    handleEdit('full');
+                }}
             >
                 {null}
             </EditButton>
