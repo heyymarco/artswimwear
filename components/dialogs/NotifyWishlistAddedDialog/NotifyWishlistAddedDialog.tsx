@@ -140,11 +140,11 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
             </CardHeader>
             <CardBody className={styleSheets.cardBody}>
                 <p>
-                    Also save to your collection? <span className='txt-sec'>(optional)</span>
+                    Also save to <em>your collection</em>? <span className='txt-sec'>(optional)</span>
                 </p>
                 <PaginationExplorerStateProvider
                     // states:
-                    initialPerPage={5}
+                    initialPerPage={10}
                     
                     
                     
@@ -187,7 +187,7 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                 </PaginationExplorerStateProvider>
             </CardBody>
             <CardFooter>
-                <ButtonIcon className='btnCancel' icon='done' onClick={handleCloseDialog}>Close</ButtonIcon>
+                <ButtonIcon className='btnCancel' icon='done' onClick={handleCloseDialog}>No, Thanks</ButtonIcon>
             </CardFooter>
         </ModalCard>
     );
