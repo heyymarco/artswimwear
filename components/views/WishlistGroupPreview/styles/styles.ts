@@ -29,8 +29,8 @@ const usesWishlistGroupPreviewLayout = () => { // the <ListItem> of order list
     
     // features:
     const {paddingRule, paddingVars} = usesPadding({
-        paddingInline : '1rem',
-        paddingBlock  : '1rem',
+        paddingInline : spacers.sm,
+        paddingBlock  : spacers.sm,
     });
     
     
@@ -41,17 +41,15 @@ const usesWishlistGroupPreviewLayout = () => { // the <ListItem> of order list
             // layouts:
             display: 'grid',
             gridTemplate: [[
-                '"name      "', 'auto',
-                '".........."', spacers.md, // the minimum space between name and fullEditor
-                '".........."', '1fr',      // the extra rest space (if any) between name and fullEditor
-                '"fullEditor"', 'auto',
+                '"radio name edit"', '1fr',
                 '/',
-                `${spacers.md} 1fr`,
+                'min-content 1fr min-content',
             ]],
             
             
             
             // spacings:
+            gap           : spacers.sm,
          // padding       : paddingVars.padding,
             paddingInline : paddingVars.paddingInline,
             paddingBlock  : paddingVars.paddingBlock,
@@ -62,29 +60,16 @@ const usesWishlistGroupPreviewLayout = () => { // the <ListItem> of order list
             ...descendants(['.name', 'p'], {
                 margin: 0,
             }),
+            ...children('.radio', {
+                // positions:
+                gridArea   : 'radio',
+            }),
             ...children('.name', {
                 // positions:
                 gridArea   : 'name',
-                
-                
-                
-                // layouts:
-                display    : 'flex',
-                flexWrap   : 'wrap',
-                alignItems : 'center',
-                
-                
-                
-                // spacings:
-                gap        : '0.25em',
-                
-                
-                
-                // typos:
-                fontSize: typos.fontSizeXl,
             }),
-            ...children('.fullEditor', {
-                gridArea: 'fullEditor',
+            ...children('.edit', {
+                gridArea: 'edit',
             }),
             ...descendants('[role="dialog"]', {
                 // remove the padding of <Dialog>'s backdrop:

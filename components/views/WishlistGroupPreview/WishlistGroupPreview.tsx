@@ -35,8 +35,11 @@ import {
 
 // internal components:
 import {
-    ModelPreviewProps,
+    type ModelPreviewProps,
 }                           from '@/components/explorers/PaginationExplorer'
+import {
+    type EditorChangeEventHandler,
+}                           from '@/components/editors/Editor'
 import {
     EditButton,
 }                           from '@/components/EditButton'
@@ -47,6 +50,11 @@ import {
     EditWishlistGroupDialog,
 }                           from '@/components/dialogs/EditWishlistGroupDialog'
 
+// heymarco components:
+import {
+    RadioDecorator,
+}                           from '@heymarco/radio-decorator'
+
 // models:
 import {
     type WishlistGroupDetail,
@@ -55,7 +63,18 @@ import {
 
 
 // react components:
-export interface WishlistGroupPreviewProps extends ModelPreviewProps<WishlistGroupDetail> {}
+export interface WishlistGroupPreviewProps
+    extends
+        Omit<ModelPreviewProps<WishlistGroupDetail>,
+            // values:
+            |'defaultValue' // not supported, controllable only
+            |'value'
+            |'onChange'
+        >
+{
+    // handlers:
+    onChange ?: EditorChangeEventHandler<string|null>
+}
 const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|null => {
     // styles:
     const styleSheet = useWishlistGroupPreviewStyleSheet();
@@ -69,10 +88,16 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
         
         
         
+        // values:
+        onChange,
+        
+        
+        
         // other props:
         ...restListItemProps
     } = props;
     const {
+        id,
         name,
     } = model;
     
@@ -91,6 +116,16 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
     
     
     // handlers:
+    const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        // conditions:
+        if (!event.currentTarget.contains(event.target as Node)) return; // ignore bubbling from <portal> of <EditRoleDialog>
+        
+        
+        
+        // actions:
+        onChange?.(id || null); // null (no selection) if the id is an empty string
+    });
+    
     type EditMode = 'full'
     const handleEdit = useEvent((editMode: EditMode): void => {
         // just for cosmetic backdrop:
@@ -137,18 +172,28 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
             
             
             
+            // behaviors:
+            actionCtrl={true}
+            
+            
+            
             // classes:
             className={styleSheet.main}
-        >
-            <h3 className='name'>
-                {name}
-            </h3>
             
-            <p className='fullEditor'>
-                <EditButton icon='table_view' title='View the order details' className='fullEditor' buttonStyle='regular' onClick={() => handleEdit('full')}>
-                    View Details
-                </EditButton>
-            </p>
+            
+            
+            // handlers:
+            onClick={handleClick}
+        >
+            <RadioDecorator className='radio' />
+            
+            <h6 className='name'>
+                {name}
+            </h6>
+            
+            <EditButton title='Edit Collection' className='edit' onClick={() => handleEdit('full')}>
+                {null}
+            </EditButton>
         </ListItem>
     );
 };
