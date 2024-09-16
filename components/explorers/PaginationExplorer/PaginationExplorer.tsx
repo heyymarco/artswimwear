@@ -9,6 +9,7 @@ import {
     
     // hooks:
     useRef,
+    useState,
 }                           from 'react'
 
 // styles:
@@ -19,6 +20,7 @@ import {
 // reusable-ui core:
 import {
     // react helper hooks:
+    useIsomorphicLayoutEffect,
     useEvent,
     useMountedFlag,
     
@@ -262,11 +264,15 @@ export interface ModelPreviewProps<TModel extends Model, TElement extends Elemen
 }
 
 /* <ModelEmpty> */
-export interface ModalEmptyProps {
+export interface ModalEmptyProps<TElement extends Element = HTMLElement>
+    extends
+        // bases:
+        ListItemProps<TElement>
+{
     // accessibilities:
     textEmpty ?: React.ReactNode
 }
-export const ModelEmpty = (props: ModalEmptyProps) => {
+export const ModelEmpty = <TElement extends Element = HTMLElement>(props: ModalEmptyProps<TElement>) => {
     // props:
     const {
         // accessibilities:
@@ -281,20 +287,20 @@ export const ModelEmpty = (props: ModalEmptyProps) => {
     
     
     // refs:
-    const statusEmptyListRef = useRef<HTMLElement|null>(null);
+    const statusEmptyListRef = useRef<TElement|null>(null);
     
     
     
     // jsx:
     return (
-        <ListItem
+        <ListItem<TElement>
             // refs:
             elmRef={statusEmptyListRef}
             
             
             
             // classes:
-            className={styleSheets.emptyModel}
+            className={`${styleSheets.emptyModel} ${props.className}`}
         >
             <p>
                 {textEmpty}
@@ -322,7 +328,7 @@ export interface PaginationExplorerProps<TModel extends Model, TElement extends 
         >>,
         
         // accessibilities:
-        ModalEmptyProps
+        ModalEmptyProps<TElement>
 {
     // appearances:
     showPaginationTop     ?: boolean
@@ -392,7 +398,6 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
         isError,
         refetch,
     } = usePaginationExplorerState<TModel>();
-    const isDataEmpty = !!data && !data.total;
     const showPagination = (
         !autoHidePagination
         ? true
@@ -400,11 +405,14 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
             (data?.total ?? 0) > perPage
         )
     );
+    const isModelEmpty = !!data && !data.total;
+    const pagedItems   = !data ? undefined : Object.values(data.entities);
     
     
     
     // refs:
-    const dataListRef = useRef<HTMLElement|null>(null);
+    const dataListRef  = useRef<HTMLElement|null>(null);
+    const innerListRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -418,6 +426,30 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
         // other props:
         ...restGenericProps
     } = restPaginationExplorerProps;
+    
+    
+    
+    // effects:
+    const [requiresSeparatorHack, setRequiresSeparatorHack] = useState<boolean>(false); // hack-LESS if possible
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        const innerListElm = innerListRef.current;
+        if (!innerListElm) return;
+        
+        
+        
+        // setups:
+        const requiresSeparatorHack = (
+            !isModelEmpty
+            &&
+            ((): boolean => {
+                const lastItemBottom = innerListElm.lastElementChild?.getBoundingClientRect().bottom;
+                if (!lastItemBottom) return false;
+                return ((innerListElm.getBoundingClientRect().bottom - lastItemBottom) >= 1 /* px */);
+            })()
+        );
+        setRequiresSeparatorHack(requiresSeparatorHack);
+    }, [pagedItems?.length ?? 0, isModelEmpty]); // runs the effect every time the items added/removed
     
     
     
@@ -448,7 +480,7 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
                 className={styleSheets.paginTop}
             />}
             
-            <Basic className={`${styleSheets.listModel}${isDataEmpty ? ' empty' : ''}`} mild={true} elmRef={dataListRef}>
+            <Basic className={styleSheets.listModel} mild={true} elmRef={dataListRef}>
                 <ModalLoadingError
                     // data:
                     isFetching={isFetching}
@@ -461,13 +493,13 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
                     viewport={dataListRef}
                 />
                 
-                <List listStyle='flush' className={styleSheets.listModelInner}>
+                <List outerRef={innerListRef} listStyle='flush' className={styleSheets.listModelInner}>
                     {/* <ModelCreate> */}
-                    {!!modelCreateComponent  && <ModelCreateOuter<TModel> className='solid' createItemText={createItemText} modelCreateComponent={modelCreateComponent} />}
+                    {!!modelCreateComponent  && <ModelCreateOuter<TModel> enabled={data !== undefined /* data is fully loaded even if empty data */} className='solid' createItemText={createItemText} modelCreateComponent={modelCreateComponent} />}
                     
-                    {!!data && !data.total && <ModelEmpty textEmpty={textEmpty} />}
+                    {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
                     
-                    {!!data?.total && Object.values(data?.entities).filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
+                    {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
                         /* <ModelPreview> */
                         React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
                             // props:
@@ -482,6 +514,9 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
                             },
                         )
                     )}
+                    
+                    {/* a hack for making last separator when the total of <ListItems>(s) is smaller than the min-height of <List> */}
+                    {requiresSeparatorHack && <ListItem className={`solid ${styleSheets.separatorHack}`} />}
                 </List>
             </Basic>
             

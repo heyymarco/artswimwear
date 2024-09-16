@@ -9,6 +9,11 @@ import {
 
 // reusable-ui core:
 import {
+    // a spacer (gap) management system:
+    spacers,
+    
+    
+    
     // border (stroke) stuff of UI:
     usesBorder,
     
@@ -21,7 +26,6 @@ import {
     
     // groups a list of UIs into a single UI
     usesGroupable,
-    spacers,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
@@ -66,14 +70,6 @@ const usesListModelLayout = () => {
             
             
             
-            // sizes:
-            ...rule('.empty', {
-                blockSize : '100%',   // if model is empty => fill the entire available page height
-                overflow  : 'hidden', // a fix for <Backdrop>'s borderRadius // TODO: fix reusable-ui's <ModalBackdrop>
-            }),
-            
-            
-            
             // spacings:
             [paddingVars.paddingInline] : '0px',
             [paddingVars.paddingBlock ] : '0px',
@@ -93,7 +89,7 @@ const usesModelListInnerLayout = () => { // the <List> of model
     
     return style({
         // sizes:
-        minBlockSize : '9rem', // limits the minimum height to make loading popup more space
+        minBlockSize : '13rem', // limits the minimum height to make loading|error popup have enough space
         blockSize: '100%', // fill the entire <Outer>
         
         
@@ -108,6 +104,13 @@ const usesModelListInnerLayout = () => { // the <List> of model
         [borderVars.borderStartEndRadius  ] : groupableVars.borderStartEndRadius,
         [borderVars.borderEndStartRadius  ] : groupableVars.borderEndStartRadius,
         [borderVars.borderEndEndRadius    ] : groupableVars.borderEndEndRadius,
+        
+        
+        
+        // children:
+        ...children('li:not(:is(.solid, .fluid))', { // defaults to .solid
+            flex : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
+        })
     });
 };
 
@@ -139,6 +142,23 @@ const usesEmptyModelLayout = () => {
         // typos:
         fontStyle  : 'italic',
         textAlign  : 'center',
+    });
+};
+const usesSeparatorHackLayout = () => {
+    return style({
+        // layouts:
+        display: 'grid',
+        
+        
+        
+        // sizes:
+        boxSizing    : 'border-box',
+        minBlockSize : 0,
+        
+        
+        
+        // spacings:
+        padding      : 0,
     });
 };
 
@@ -202,9 +222,12 @@ export default () => [
     scope('createModel', { // the <ListItem> of model add_new
         ...usesCreateModelLayout(),
     }, { specificityWeight: 2 }),
-    scope('emptyModel', { // the <ListItem> of model add_new
+    scope('emptyModel', { // the <ListItem> of model empty_data
         ...usesEmptyModelLayout(),
     }, { specificityWeight: 2 }),
+    scope('separatorHack', {
+        ...usesSeparatorHackLayout(),
+    }),
     
     scope('loadingBar', {
         // sizes:
