@@ -199,7 +199,7 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
     const addNewBUtton = (
         <ButtonIcon
             // appearances:
-            icon='create'
+            icon='add'
             
             
             
