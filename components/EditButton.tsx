@@ -6,48 +6,86 @@ import {
 
 // reusable-ui components:
 import {
-    ButtonIconProps,
+    type ButtonIconProps,
     ButtonIcon,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 
 
-export interface EditButtonProps extends ButtonIconProps
+// react components:
+export interface EditButtonProps
+    extends
+        // bases:
+        ButtonIconProps
 {
 }
 const EditButton = (props: EditButtonProps) => {
+    // default props:
+    const {
+        // appearances:
+        icon        = 'edit',
+        
+        
+        
+        // variants:
+        size        = 'sm',
+        buttonStyle = 'link',
+        
+        
+        
+        // classes:
+        className   = 'edit',
+        
+        
+        
+        // accessibilities:
+        title       = 'Edit',
+        
+        
+        
+        // children:
+        children    = 'Edit',
+        
+        
+        
+        // other props:
+        ...buttonIconProps
+    } = props;
+    
+    
+    
     // jsx:
     return (
         <ButtonIcon
             // other props:
-            {...props}
+            {...buttonIconProps}
             
             
             
             // appearances:
-            icon={props.icon ?? 'edit'}
+            icon={icon}
             
             
             
             // variants:
-            size={props.size ?? 'sm'}
-            buttonStyle={props.buttonStyle ?? 'link'}
+            size={size}
+            buttonStyle={buttonStyle}
             
             
             
             // classes:
-            className={props.className ?? 'edit'}
+            className={className}
             
             
             
             // accessibilities:
-            title={props.title ?? 'edit'}
+            title={title}
         >
-            {props.children ?? 'Edit'}
+            {children}
         </ButtonIcon>
     );
 };
 export {
-    EditButton,
-    EditButton as default,
+    EditButton,            // named export for readibility
+    EditButton as default, // default export to support React.lazy
 }
