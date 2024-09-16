@@ -30,6 +30,11 @@ import {
     
     
     
+    // layout-components:
+    CardBody,
+    
+    
+    
     // utility-components:
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
@@ -38,6 +43,9 @@ import {
 import {
     NotifyWishlistAddedDialog,
 }                           from '@/components/dialogs/NotifyWishlistAddedDialog'
+import {
+    NotifyDialog,
+}                           from '@/components/dialogs/NotifyDialog'
 
 // stores:
 import {
@@ -122,18 +130,30 @@ const ButtonWishlist = (props: ButtonWishlistProps) => {
                     productId : id,
                     groupId   : undefined,
                 }).unwrap();
+                
+                
+                
+                showDialog<unknown>(
+                    <NotifyWishlistAddedDialog />
+                );
             }
             else {
                 await deleteWishlist({
                     productId : id,
                 }).unwrap();
+                
+                
+                
+                showDialog<unknown>(
+                    <NotifyDialog>
+                        <CardBody>
+                            <p>
+                                Item has been removed from wishlist!
+                            </p>
+                        </CardBody>
+                    </NotifyDialog>
+                );
             } // if
-            
-            
-            
-            showDialog<unknown>(
-                <NotifyWishlistAddedDialog />
-            );
         }
         catch {
             showMessageError({
