@@ -325,6 +325,11 @@ export interface PaginationExplorerProps<TModel extends Model, TElement extends 
             
             // components:
             |'modelCreateComponent'
+            
+            
+            
+            // handlers:
+            |'onModelCreate'
         >>,
         
         // accessibilities:
@@ -371,6 +376,11 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
         // children:
         menusBefore,
         menusAfter,
+        
+        
+        
+        // handlers:
+        onModelCreate,
         
         
         
@@ -495,7 +505,30 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
                 
                 <List outerRef={innerListRef} listStyle='flush' className={styleSheets.listModelInner}>
                     {/* <ModelCreate> */}
-                    {!!modelCreateComponent  && <ModelCreateOuter<TModel> enabled={data !== undefined /* data is fully loaded even if empty data */} className='solid' createItemText={createItemText} modelCreateComponent={modelCreateComponent} />}
+                    {!!modelCreateComponent  && <ModelCreateOuter<TModel>
+                        // accessibilities:
+                        createItemText={createItemText}
+                        
+                        
+                        
+                        // classes:
+                        className='solid'
+                        
+                        
+                        
+                        // states:
+                        enabled={data !== undefined /* data is fully loaded even if empty data */}
+                        
+                        
+                        
+                        // components:
+                        modelCreateComponent={modelCreateComponent}
+                        
+                        
+                        
+                        // handlers:
+                        onModelCreate={onModelCreate}
+                    />}
                     
                     {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
                     
