@@ -461,7 +461,7 @@ export const apiSlice = createApi({
         
         getOrderHistoryPage         : builder.query<Pagination<PublicOrderDetail>, PaginationArgs>({
             query : (arg) => ({
-                url    : 'order-history',
+                url    : 'customer/order-history',
                 method : 'POST',
                 body   : arg,
             }),

@@ -147,8 +147,8 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
                 />
             </ListItem>
             <ListSeparatorItem />
-            <ListItem onClick={() => handleNavigate('/order-history')}>
-                <Link href='/order-history'>
+            <ListItem onClick={() => handleNavigate('/customer/order-history')}>
+                <Link href='/customer/order-history'>
                     My order history
                 </Link>
             </ListItem>
