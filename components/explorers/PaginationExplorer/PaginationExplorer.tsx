@@ -68,16 +68,16 @@ import {
 }                           from './PaginationNav'
 
 // internals:
-import type {
-    Pagination,
-    Model,
+import {
+    type Pagination,
+    type Model,
 }                           from '@/libs/types'
 import {
     ModalLoadingError,
 }                           from '@/components/ModalLoadingError'
-import type {
+import {
     // types:
-    ComplexEditModelDialogResult,
+    type ComplexEditModelDialogResult,
 }                           from '@/components/dialogs/ComplexEditModelDialog'
 import {
     usePaginationExplorerState,
