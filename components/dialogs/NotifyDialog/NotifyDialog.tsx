@@ -2,14 +2,33 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useEffect,
+    useRef,
 }                           from 'react'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+    useSetTimeout,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
-    // react components:
+    // simple-components:
+    Button,
+    
+    
+    
+    // layout-components:
     type CardProps,
     Card,
-}                           from '@reusable-ui/card'            // a flexible and extensible content container, with optional header and footer
+    CardBody,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 import {
     // react components:
     type ModalExpandedChangeEvent,
@@ -25,7 +44,7 @@ import {
 
 
 // react components:
-export interface NotifyDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<unknown> = ModalExpandedChangeEvent<unknown>>
+export interface NotifyDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<'ok'|'timedOut'> = ModalExpandedChangeEvent<'ok'|'timedOut'>>
     extends
         // bases:
         Omit<ModalSideProps<TElement, TModalExpandedChangeEvent>,
@@ -37,10 +56,80 @@ export interface NotifyDialogProps<TElement extends Element = HTMLElement, TModa
             |'modalSideStyle' // makes partial
         >>
 {
+    // behaviors:
+    timeout ?: number
 }
-const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<unknown> = ModalExpandedChangeEvent<unknown>>(props: NotifyDialogProps<TElement, TModalExpandedChangeEvent>): JSX.Element|null => {
+const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<'ok'|'timedOut'> = ModalExpandedChangeEvent<'ok'|'timedOut'>>(props: NotifyDialogProps<TElement, TModalExpandedChangeEvent>): JSX.Element|null => {
+    // props:
+    const {
+        // behaviors:
+        timeout = 3000,
+        
+        
+        
+        // other props:
+        ...restNotifyDialogProps
+    } = props;
+    
+    
+    
     // styles:
     const styleSheet = useNotifyDialogStyleSheet();
+    
+    
+    
+    // refs:
+    const buttonRef = useRef<HTMLButtonElement|null>(null);
+    
+    
+    
+    // utilities:
+    const setTimeoutAsync = useSetTimeout();
+    
+    
+    
+    // effects:
+    useEffect(() => {
+        // conditions:
+        if (timeout <= 0) return; // no timeout => ignore
+        if (!props.onExpandedChange) return; // no close callback => ignore
+        
+        
+        
+        // setups:
+        const timerPromise = setTimeoutAsync(timeout)
+        timerPromise.then((isDone) => {
+            // conditions:
+            if (!isDone) return; // the component was unloaded before the timer runs => do nothing
+            
+            
+            
+            // actions:
+            props.onExpandedChange?.({
+                expanded   : false,
+                actionType : 'ui',
+                data       : 'timedOut',
+            } as TModalExpandedChangeEvent);
+        });
+        
+        
+        
+        // cleanups:
+        return () => {
+            timerPromise.abort();
+        };
+    }, [timeout, props.onExpandedChange]);
+    
+    
+    
+    // handlers:
+    const handleCloseDialog = useEvent((): void => {
+        props.onExpandedChange?.({
+            expanded   : false,
+            actionType : 'ui',
+            data       : 'ok',
+        } as TModalExpandedChangeEvent);
+    });
     
     
     
@@ -53,14 +142,24 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
         
         
         
+        // auto focusable:
+        autoFocusOn    = buttonRef,
+        
+        
+        
         // components:
         cardComponent  = (<Card<Element> className={styleSheet.card} /> as React.ReactElement<CardProps<Element>>),
         
         
         
+        // children:
+        children,
+        
+        
+        
         // other props:
         ...restModalSideProps
-    } = props;
+    } = restNotifyDialogProps;
     
     
     
@@ -79,9 +178,21 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
             
             
             
+            // auto focusable:
+            autoFocusOn={autoFocusOn}
+            
+            
+            
             // components:
             cardComponent={cardComponent}
-        />
+        >
+            <CardBody className={styleSheet.cardBody}>
+                <Button elmRef={buttonRef} className='action' onClick={handleCloseDialog}>
+                    Okay
+                </Button>
+                {children}
+            </CardBody>
+        </ModalSide>
     );
 };
 export {

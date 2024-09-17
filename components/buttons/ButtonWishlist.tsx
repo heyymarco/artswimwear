@@ -30,11 +30,6 @@ import {
     
     
     
-    // layout-components:
-    CardBody,
-    
-    
-    
     // utility-components:
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
@@ -146,11 +141,9 @@ const ButtonWishlist = (props: ButtonWishlistProps) => {
                 
                 showDialog<unknown>(
                     <NotifyDialog>
-                        <CardBody>
-                            <p>
-                                Item has been removed from wishlist!
-                            </p>
-                        </CardBody>
+                        <p>
+                            Item has been removed from wishlist!
+                        </p>
                     </NotifyDialog>
                 );
             } // if

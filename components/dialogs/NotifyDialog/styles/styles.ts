@@ -1,14 +1,15 @@
 // cssfn:
 import {
-    style,
+    rule,
+    children,
     scope,
 }                           from '@cssfn/core'          // writes css in javascript
 
 
 
 // styles:
-const usesCardLayout = () => {
-    return style({
+export default () => [
+    scope('card', {
         // positions:
         justifySelf   : 'center',
         
@@ -16,12 +17,16 @@ const usesCardLayout = () => {
         
         // sizes:
         maxInlineSize : 'max-content',
-    });
-};
-
-export default () => [
-    scope('card', {
+    }, { specificityWeight: 2 }),
+    scope('cardBody', {
         // layouts:
-        ...usesCardLayout(),
+        ...children('.action', {
+            float: 'inline-end',
+        }),
+        ...children('p', {
+            ...rule(':nth-child(2)', {
+                marginBlockStart: 0,
+            }),
+        }),
     }, { specificityWeight: 2 }),
 ];
