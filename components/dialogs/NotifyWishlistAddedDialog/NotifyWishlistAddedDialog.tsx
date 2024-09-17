@@ -70,7 +70,7 @@ import {
 
 
 // react components:
-export interface NotifyWishlistAddedDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<unknown> = ModalExpandedChangeEvent<unknown>>
+export interface NotifyWishlistAddedDialogProps<TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<WishlistGroupDetail> = ModalExpandedChangeEvent<WishlistGroupDetail>>
     extends
         // bases:
         Omit<ModalCardProps<TElement, TModalExpandedChangeEvent>,
@@ -79,7 +79,7 @@ export interface NotifyWishlistAddedDialogProps<TElement extends Element = HTMLE
         >
 {
 }
-const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<unknown> = ModalExpandedChangeEvent<unknown>>(props: NotifyWishlistAddedDialogProps<TElement, TModalExpandedChangeEvent>) => {
+const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<WishlistGroupDetail> = ModalExpandedChangeEvent<WishlistGroupDetail>>(props: NotifyWishlistAddedDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
     const {
         // other props:
@@ -94,11 +94,19 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
     
     
     // states:
-    const [selectedCollection, setSelectedCollection] = useState<string|null>(null);
+    const [selectedCollection, setSelectedCollection] = useState<WishlistGroupDetail|null>(null);
     
     
     
     // handlers:
+    const handleGroupSelected      = useEvent((wishlistGroup: WishlistGroupDetail): void => {
+        setSelectedCollection(wishlistGroup);
+        props.onExpandedChange?.({
+            expanded   : false,
+            actionType : 'ui',
+            data       : wishlistGroup,
+        } as TModalExpandedChangeEvent);
+    });
     const handleCloseDialog        = useEvent((): void => {
         // actions:
         props.onExpandedChange?.({
@@ -173,8 +181,8 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                                 
                                 
                                 // values:
-                                selected={selectedCollection}
-                                onSelect={setSelectedCollection}
+                                selected={selectedCollection?.id ?? null}
+                                onSelect={handleGroupSelected}
                             />
                         }
                         modelCreateComponent={

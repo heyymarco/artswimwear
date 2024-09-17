@@ -42,6 +42,11 @@ import {
     NotifyDialog,
 }                           from '@/components/dialogs/NotifyDialog'
 
+// models:
+import {
+    type WishlistGroupDetail,
+}                           from '@/models'
+
 // stores:
 import {
     // types:
@@ -128,8 +133,26 @@ const ButtonWishlist = (props: ButtonWishlistProps) => {
                 
                 
                 
-                showDialog<unknown>(
+                const wishlistGroup = await showDialog<WishlistGroupDetail>(
                     <NotifyWishlistAddedDialog />
+                );
+                if (wishlistGroup === undefined) return;
+                
+                
+                
+                await updateWishlist({
+                    productId : id,
+                    groupId   : wishlistGroup.id,
+                }).unwrap();
+                
+                
+                
+                showDialog<unknown>(
+                    <NotifyDialog theme='success'>
+                        <p>
+                            Item has been added to your <strong>{wishlistGroup.name}</strong> collection!
+                        </p>
+                    </NotifyDialog>
                 );
             }
             else {

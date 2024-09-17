@@ -77,7 +77,7 @@ export interface WishlistGroupPreviewProps
 {
     // values:
     selected ?: string|null
-    onSelect ?: EditorChangeEventHandler<string|null>
+    onSelect ?: EditorChangeEventHandler<WishlistGroupDetail>
 }
 const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|null => {
     // styles:
@@ -128,7 +128,7 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
         
         
         // actions:
-        onSelect?.(id || null); // null (no selection) if the id is an empty string
+        onSelect?.(model);
     });
     
     type EditMode = 'full'
