@@ -23,14 +23,6 @@ import {
     useIsomorphicLayoutEffect,
     useEvent,
     useMountedFlag,
-    
-    
-    
-    // a capability of UI to expand/reduce its size or toggle the visibility:
-    ExpandedChangeEvent,
-    CollapsibleProps,
-    CollapsibleEventProps,
-    ControllableCollapsibleProps,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
@@ -79,7 +71,6 @@ import {
 import type {
     Pagination,
     Model,
-    PartialModel,
 }                           from '@/libs/types'
 import {
     ModalLoadingError,
@@ -92,21 +83,15 @@ import {
     usePaginationExplorerState,
 }                           from './states/paginationExplorerState'
 
+// internals:
+import {
+    type ModelCreateProps,
+    type CreateHandler,
+}                           from './types'
+
 
 
 // react components:
-
-/* <ModelCreate> */
-export type CloseEvent = string|false|null
-export interface ModelCreateProps
-    extends
-        CollapsibleProps<ExpandedChangeEvent>,
-        CollapsibleEventProps,
-        ControllableCollapsibleProps<ExpandedChangeEvent>
-{
-}
-
-export type CreateHandler<TModel extends Model> = (createdModel: PartialModel<TModel>) => void|Promise<void>
 
 /* <ModelCreateOuter> */
 export interface ModelCreateOuterProps<TModel extends Model>
