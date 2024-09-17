@@ -211,6 +211,9 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
                 
                 // states:
                 expanded={true}
+                
+                
+                
                 // components:
                 controlComponent={
                     <CloseButton elmRef={buttonRef} className='action' onClick={handleCloseDialog} />
