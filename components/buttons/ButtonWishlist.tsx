@@ -163,7 +163,7 @@ const ButtonWishlist = (props: ButtonWishlistProps) => {
                 
                 
                 showDialog<unknown>(
-                    <NotifyDialog>
+                    <NotifyDialog theme='success'>
                         <p>
                             Item has been removed from wishlist!
                         </p>

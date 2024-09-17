@@ -20,21 +20,26 @@ import {
 // reusable-ui components:
 import {
     // simple-components:
-    Button,
+    CloseButton,
     
     
     
     // layout-components:
     type CardProps,
     Card,
-    CardBody,
-}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-import {
-    // react components:
+    
+    
+    
+    // notification-components:
+    Alert,
+    
+    
+    
+    // dialog-components:
     type ModalExpandedChangeEvent,
     type ModalSideProps,
     ModalSide,
-}                           from '@reusable-ui/modal-side'      // overlays a card dialog to the side of site's page
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // styles:
 import {
@@ -123,7 +128,14 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
     
     
     // handlers:
-    const handleCloseDialog = useEvent((): void => {
+    const handleCloseDialog = useEvent<React.MouseEventHandler<HTMLButtonElement>>((event) => {
+        // conditions:
+        if (event.defaultPrevented) return; // the event was already handled by user => nothing to do
+        event.preventDefault(); // handled
+        
+        
+        
+        // actions:
         props.onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
@@ -186,12 +198,26 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
             // components:
             cardComponent={cardComponent}
         >
-            <CardBody className={styleSheet.cardBody}>
-                <Button elmRef={buttonRef} className='action' onClick={handleCloseDialog}>
-                    Okay
-                </Button>
+            <Alert
+                // variants:
+                theme={theme}
+                
+                
+                
+                // classes:
+                className={`body ${styleSheet.cardBody}`}
+                
+                
+                
+                // states:
+                expanded={true}
+                // components:
+                controlComponent={
+                    <CloseButton elmRef={buttonRef} className='action' onClick={handleCloseDialog} />
+                }
+            >
                 {children}
-            </CardBody>
+            </Alert>
         </ModalSide>
     );
 };
