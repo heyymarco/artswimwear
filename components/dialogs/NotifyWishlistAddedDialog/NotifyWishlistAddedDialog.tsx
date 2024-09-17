@@ -181,8 +181,8 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                                 
                                 
                                 // values:
-                                selected={selectedCollection?.id ?? null}
-                                onSelect={handleGroupSelected}
+                                selectedModel={selectedCollection}
+                                onModelSelect={handleGroupSelected}
                             />
                         }
                         modelCreateComponent={

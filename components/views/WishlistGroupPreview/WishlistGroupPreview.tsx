@@ -72,12 +72,12 @@ export interface WishlistGroupPreviewProps
     extends
         Omit<ModelPreviewProps<WishlistGroupDetail>,
             // values:
-            |'onSelect'
+            |'onModelSelect'
         >
 {
     // values:
-    selected ?: string|null
-    onSelect ?: EditorChangeEventHandler<WishlistGroupDetail>
+    selectedModel ?: WishlistGroupDetail|null
+    onModelSelect ?: EditorChangeEventHandler<WishlistGroupDetail>
 }
 const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|null => {
     // styles:
@@ -93,8 +93,8 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
         
         
         // values:
-        selected,
-        onSelect,
+        selectedModel,
+        onModelSelect,
         
         
         
@@ -128,7 +128,7 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
         
         
         // actions:
-        onSelect?.(model);
+        onModelSelect?.(model);
     });
     
     type EditMode = 'full'
@@ -171,7 +171,7 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
         
         
         // states:
-        active     = (selected === id),
+        active     = (selectedModel?.id === id),
         
         
         
@@ -241,7 +241,7 @@ const WishlistGroupPreview = (props: WishlistGroupPreviewProps): JSX.Element|nul
                 
                 // handlers:
                 onClick={(event) => {
-                    event.stopPropagation(); // prevent from causing `onSelect`
+                    event.stopPropagation(); // prevent from causing `onModelSelect`
                     handleEdit('full');
                 }}
             >
