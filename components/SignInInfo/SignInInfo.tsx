@@ -22,6 +22,9 @@ import {
     type BasicProps,
     Basic,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // internal components:
 import {
@@ -145,7 +148,9 @@ const SignInInfo = <TElement extends Element = HTMLElement>(props: SignInInfoPro
                 // handlers:
                 onClick={onEdit}
             >
-                Edit Profile
+                <Link href='/customer'>
+                    Edit Profile
+                </Link>
             </EditButton>}
         </Basic>
     );

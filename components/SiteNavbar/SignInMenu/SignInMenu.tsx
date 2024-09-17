@@ -225,7 +225,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 newShownMenu.collapseEndEvent().then((event) => {
                     switch (event.data) {
                         case 'editProfile':
-                            router.push('/profile');
+                            router.push('/customer');
                             break;
                         
                         case 'signOut':

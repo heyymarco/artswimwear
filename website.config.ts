@@ -49,6 +49,9 @@ export const PAGE_SIGNUP_DESCRIPTION                     = 'Customer Registratio
 export const PAGE_RECOVER_TITLE                          = `Reset Password - ${WEBSITE_TITLE}`
 export const PAGE_RECOVER_DESCRIPTION                    = 'Reset Your Password.'
 
+export const PAGE_CUSTOMER_TITLE                         = `My Profile - ${WEBSITE_TITLE}`
+export const PAGE_CUSTOMER_DESCRIPTION                   = 'Customer Profile.'
+
 export const PAGE_ORDER_HISTORY_TITLE                    = `Order History - ${WEBSITE_TITLE}`
 export const PAGE_ORDER_HISTORY_DESCRIPTION              = 'Customer Order History.'
 export const PAGE_ORDER_HISTORY_TAB_ORDER_N_SHIPPING     = 'Order & Shipping';
