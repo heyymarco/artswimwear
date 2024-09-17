@@ -540,6 +540,7 @@ export const apiSlice = createApi({
             onQueryStarted: async (arg, api) => {
                 await cumulativeUpdatePaginationCache(api, 'getWishlistGroupPage', 'DELETE', 'WishlistGroup');
             },
+            invalidatesTags: ['Wishlist'], // the deleted WishlistGroup MAY also delete a/some Wishlist(s) => the Wishlist(s) need to be invalidated
         }),
         availableWishlistGroupName  : builder.query<boolean, string>({
             query: (arg) => ({
