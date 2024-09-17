@@ -32,6 +32,11 @@ import {
     
     
     
+    // notification-components:
+    Alert,
+    
+    
+    
     // dialog-components:
     ModalExpandedChangeEvent,
     ModalCardProps,
@@ -158,6 +163,11 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheets.cardBody}>
+                <Alert theme='success' expanded={true} mild={false} controlComponent={<></>}>
+                    <p>
+                        Item has been added to wishlist!
+                    </p>
+                </Alert>
                 <p>
                     Also save to <em>your collection</em>? <span className='txt-sec'>(optional)</span>
                 </p>
