@@ -40,8 +40,11 @@ import {
 
 // internal components:
 import {
+    type CreateHandler,
+    
+    
+    
     PaginationExplorerStateProvider,
-    usePaginationExplorerState,
     PaginationExplorer,
 }                           from '@/components/explorers/PaginationExplorer'
 import {
@@ -101,6 +104,14 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
     // handlers:
     const handleGroupSelected      = useEvent((wishlistGroup: WishlistGroupDetail): void => {
         setSelectedCollection(wishlistGroup);
+        props.onExpandedChange?.({
+            expanded   : false,
+            actionType : 'ui',
+            data       : wishlistGroup,
+        } as TModalExpandedChangeEvent);
+    });
+    const handleGroupCreated      = useEvent<CreateHandler<WishlistGroupDetail>>((wishlistGroup) => {
+        setSelectedCollection(wishlistGroup as WishlistGroupDetail);
         props.onExpandedChange?.({
             expanded   : false,
             actionType : 'ui',
@@ -191,6 +202,11 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                                 model={null} // create a new model
                             />
                         }
+                        
+                        
+                        
+                        // handlers:
+                        onModelCreate={handleGroupCreated}
                     />
                 </PaginationExplorerStateProvider>
             </CardBody>
