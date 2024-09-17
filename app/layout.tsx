@@ -136,7 +136,7 @@ const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequ
         <br />
         If the problem still persists, please contact us manually.
     </p>}
-    {(context === 'payment') && <Alert theme='warning' mild={false} expanded={true} controlComponent={<></>}>
+    {(context === 'payment') && <Alert theme='warning' mild={false} expanded={true} controlComponent={null}>
         <p>
             Make sure your funds have not been deducted.<br />
             If you have, please contact us for assistance.

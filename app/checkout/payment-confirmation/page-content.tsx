@@ -383,7 +383,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                             
                             
                             // components:
-                            controlComponent={<React.Fragment />}
+                            controlComponent={null}
                         >
                             <p>
                                 This payment confirmation link is invalid or expired.
@@ -416,7 +416,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     
                                     
                                     // components:
-                                    controlComponent={<React.Fragment />}
+                                    controlComponent={null}
                                 >
                                     <p>
                                         Your payment confirmation is <strong>being reviewed</strong>.
@@ -464,7 +464,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                         
                                         
                                         // components:
-                                        controlComponent={<React.Fragment />}
+                                        controlComponent={null}
                                     >
                                         <p>
                                             Sorry, your payment confirmation was <strong>rejected</strong>.
@@ -499,7 +499,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                         
                                         
                                         // components:
-                                        controlComponent={<React.Fragment />}
+                                        controlComponent={null}
                                     >
                                         <p>
                                             Congratulations! Your payment has been approved.
@@ -719,7 +719,7 @@ export function PaymentConfirmationPageContent(): JSX.Element|null {
                                     
                                     
                                     // components:
-                                    controlComponent={<React.Fragment />}
+                                    controlComponent={null}
                                 >
                                     <p>
                                         Your payment confirmation has been sent. We will immediately review your confirmation and notify you back.

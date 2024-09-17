@@ -101,7 +101,7 @@ const ViewOrderFinished = (props: ViewOrderFinishedProps): JSX.Element|null => {
                     
                     
                     // components:
-                    controlComponent={<React.Fragment />}
+                    controlComponent={null}
                 >
                     <p>
                         {paid && <>

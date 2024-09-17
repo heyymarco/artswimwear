@@ -500,7 +500,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                             
                             
                             // components:
-                            controlComponent={<React.Fragment />}
+                            controlComponent={null}
                         >
                             {isCanceled && <>
                                 <p>
@@ -653,7 +653,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                 
                                 
                                 // components:
-                                controlComponent={<React.Fragment />}
+                                controlComponent={null}
                             >
                                 <p>
                                     You have not made a payment.
@@ -682,7 +682,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     
                                     
                                     // components:
-                                    controlComponent={<React.Fragment />}
+                                    controlComponent={null}
                                 >
                                     <p>
                                         You have <strong>confirmed your payment</strong>.
@@ -709,7 +709,7 @@ const EditOrderDialog = (props: EditOrderDialogProps): JSX.Element|null => {
                                     
                                     
                                     // components:
-                                    controlComponent={<React.Fragment />}
+                                    controlComponent={null}
                                 >
                                     <p>
                                         We are sorry, your payment confirmation was <strong>rejected</strong> because the information you submitted was invalid.

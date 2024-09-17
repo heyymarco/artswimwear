@@ -267,7 +267,7 @@ export function ShipmentPageContent(): JSX.Element|null {
                     
                     
                     // components:
-                    controlComponent={<React.Fragment />}
+                    controlComponent={null}
                 >
                     <p>
                         This shipping tracking link is invalid or expired.

@@ -163,7 +163,7 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                 <CloseButton onClick={handleCloseDialog} />
             </CardHeader>
             <CardBody className={styleSheets.cardBody}>
-                <Alert theme='success' expanded={true} mild={false} controlComponent={<></>}>
+                <Alert theme='success' expanded={true} mild={false} controlComponent={null}>
                     <p>
                         Item has been added to wishlist!
                     </p>
