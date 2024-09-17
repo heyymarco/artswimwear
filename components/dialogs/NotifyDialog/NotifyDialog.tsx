@@ -205,7 +205,7 @@ const NotifyDialog = <TElement extends Element = HTMLElement, TModalExpandedChan
                 
                 
                 // classes:
-                className={`body ${styleSheet.cardBody}`}
+                className='body'
                 
                 
                 
