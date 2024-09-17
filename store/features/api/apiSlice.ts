@@ -471,14 +471,14 @@ export const apiSlice = createApi({
         
         getPreference               : builder.query<CustomerPreferenceDetail, void>({
             query : () => ({
-                url    : 'preferences',
+                url    : 'customer/preferences',
                 method : 'GET',
             }),
             providesTags: ['Preference'],
         }),
         updatePreference            : builder.mutation<CustomerPreferenceDetail, Partial<CustomerPreferenceData>>({
             query: (patch) => ({
-                url    : 'preferences',
+                url    : 'customer/preferences',
                 method : 'PATCH',
                 body   : patch
             }),
