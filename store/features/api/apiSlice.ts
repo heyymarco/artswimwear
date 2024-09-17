@@ -568,7 +568,9 @@ export const apiSlice = createApi({
                 //#region optimistic update
                 const patchResult = api.dispatch(
                     apiSlice.util.updateQueryData('getWishlists', { groupId: undefined /* all wishlists in current signedIn customer */ } satisfies GetWishlistRequest, (data) => {
-                        wishlistListAdapter.upsertOne(data, arg.productId);
+                        if (!data.ids.includes(arg.productId)) {
+                            wishlistListAdapter.upsertOne(data, arg.productId);
+                        } // if
                     })
                 );
                 api.queryFulfilled.catch(() => {
@@ -594,7 +596,9 @@ export const apiSlice = createApi({
                 //#region optimistic update
                 const patchResult = api.dispatch(
                     apiSlice.util.updateQueryData('getWishlists', { groupId: undefined /* all wishlists in current signedIn customer */ } satisfies GetWishlistRequest, (data) => {
-                        wishlistListAdapter.removeOne(data, arg.productId);
+                        if (data.ids.includes(arg.productId)) {
+                            wishlistListAdapter.removeOne(data, arg.productId);
+                        } // if
                     })
                 );
                 api.queryFulfilled.catch(() => {
