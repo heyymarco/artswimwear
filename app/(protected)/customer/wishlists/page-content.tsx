@@ -31,6 +31,9 @@ import {
 import {
     WishlistGroupImage,
 }                           from '@/components/views/WishlistGroupImage'
+import {
+    EditWishlistGroupDialog,
+}                           from '@/components/dialogs/EditWishlistGroupDialog'
 
 // models:
 import {
@@ -81,6 +84,12 @@ function WishlistPageContentInternal(): JSX.Element|null {
                         <WishlistGroupImage
                             // data:
                             model={undefined as any}
+                        />
+                    }
+                    modelCreateComponent={
+                        <EditWishlistGroupDialog
+                            // data:
+                            model={null} // create a new model
                         />
                     }
                 />

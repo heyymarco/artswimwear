@@ -28,6 +28,12 @@ import {
     usesGroupable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// reusable-ui components:
+import {
+    // base-content-components:
+    usesContentBasicLayout,
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
 
 
 // defaults:
@@ -94,46 +100,58 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
     
     
     return style({
+        ...usesContentBasicLayout(),
         // layouts:
-        display             : 'grid',
-        gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
-        
-        
-        
-        // scrolls:
-        overflow: 'visible', // do not clip <item>'s boxShadow
-        
-        
-        
-        // sizes:
-        gridArea     : '1 / 1 / -1 / -1', // fill the entire <GalleryBodyWrapper>
-        minBlockSize : '13rem', // limits the minimum height to make loading|error popup have enough space
-        
-        
-        
-        // borders:
-        [groupableVars.borderStartStartRadius] : 'inherit !important', // reads parent's prop
-        [groupableVars.borderStartEndRadius  ] : 'inherit !important', // reads parent's prop
-        [groupableVars.borderEndStartRadius  ] : 'inherit !important', // reads parent's prop
-        [groupableVars.borderEndEndRadius    ] : 'inherit !important', // reads parent's prop
-        
-        [borderVars.borderWidth           ] : '0px', // flush (border-less)
-        [borderVars.borderStartStartRadius] : groupableVars.borderStartStartRadius,
-        [borderVars.borderStartEndRadius  ] : groupableVars.borderStartEndRadius,
-        [borderVars.borderEndStartRadius  ] : groupableVars.borderEndStartRadius,
-        [borderVars.borderEndEndRadius    ] : groupableVars.borderEndEndRadius,
-        
-        
-        
-        // spacings:
-        gap: spacers.lg,
+        ...style({
+            // layouts:
+            display             : 'grid', // use css block grid for layouting, the core of our <PaginationGallery> layout
+            gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
+            gridAutoRows        : '1fr',  // make all <GalleryItem>s having consistent height
+            
+            
+            
+            // scrolls:
+            overflow: 'visible', // do not clip <item>'s boxShadow
+            
+            
+            
+            // sizes:
+            gridArea     : '1 / 1 / -1 / -1', // fill the entire <GalleryBodyWrapper>
+            minBlockSize : '13rem', // limits the minimum height to make loading|error popup have enough space
+            
+            
+            
+            // borders:
+            [groupableVars.borderStartStartRadius] : 'inherit !important', // reads parent's prop
+            [groupableVars.borderStartEndRadius  ] : 'inherit !important', // reads parent's prop
+            [groupableVars.borderEndStartRadius  ] : 'inherit !important', // reads parent's prop
+            [groupableVars.borderEndEndRadius    ] : 'inherit !important', // reads parent's prop
+            
+            [borderVars.borderWidth           ] : '0px', // flush (border-less)
+            [borderVars.borderStartStartRadius] : groupableVars.borderStartStartRadius,
+            [borderVars.borderStartEndRadius  ] : groupableVars.borderStartEndRadius,
+            [borderVars.borderEndStartRadius  ] : groupableVars.borderEndStartRadius,
+            [borderVars.borderEndEndRadius    ] : groupableVars.borderEndEndRadius,
+            
+            
+            
+            // spacings:
+            gap: spacers.lg,
+            
+            
+            
+            // children:
+            ...children('*', {
+                aspectRatio: '1 / 1',
+            }),
+        }),
     });
 };
 
 const usesCreateModelLayout = () => { // the <GalleryItem> of model add_new
     return style({
-        // layouts:
-        display: 'grid',
+        // borders:
+        borderStyle: 'dashed',
     });
 };
 const usesEmptyModelLayout = () => { // the <GalleryItem> of model empty_data

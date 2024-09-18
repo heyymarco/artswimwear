@@ -44,8 +44,9 @@ const usesMainLayout = () => {
 const usesListLayout = () => {
     return style({
         // layouts:
-        display             : 'grid',
+        display             : 'grid', // use css block grid for layouting, the core of our <PaginationGallery> layout
         gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
+        gridAutoRows        : '1fr',  // make all <GalleryItem>s having consistent height
         
         
         
@@ -56,6 +57,13 @@ const usesListLayout = () => {
         
         // spacings:
         gap: spacers.lg,
+        
+        
+        
+        // // children:
+        // ...children('*', {
+        //     aspectRatio: '1 / 1',
+        // }),
     });
 };
 

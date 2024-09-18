@@ -31,22 +31,13 @@ import {
     Generic,
     BasicProps,
     Basic,
-    BasicComponentProps,
     
     
     
     // simple-components:
+    ButtonProps,
+    ButtonComponentProps,
     ButtonIcon,
-    
-    
-    
-    // menu-components:
-    DropdownListButtonProps,
-    
-    
-    
-    // composite-components:
-    Group,
     
     
     
@@ -86,10 +77,10 @@ import {
 export interface ModelCreateOuterProps<TModel extends Model>
     extends
         // bases:
-        BasicProps,
+        ButtonProps,
         
         // components:
-        BasicComponentProps<Element>
+        ButtonComponentProps
 {
     // accessibilities:
     createItemText       ?: React.ReactNode
@@ -98,7 +89,6 @@ export interface ModelCreateOuterProps<TModel extends Model>
     
     // components:
     modelCreateComponent  : React.ReactComponentElement<any, ModelCreateProps> | (() => TModel|Promise<TModel>) | false
-    moreButtonComponent  ?: React.ReactComponentElement<any, DropdownListButtonProps>
     
     
     
@@ -120,14 +110,18 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
         
         // components:
         modelCreateComponent,
-        moreButtonComponent,
-        basicComponent = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
+        buttonComponent = (<ButtonIcon icon='add' /> as React.ReactComponentElement<any, ButtonProps>),
         
         
         
         // handlers:
         onModelCreate,
-    ...resBasicProps} = props;
+        
+        
+        
+        // other props:
+        ...restModelCreateOuterProps
+    } = props;
     
     
     
@@ -169,59 +163,64 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
     
     
     
+    // default props:
+    const {
+        // variants:
+        mild        : buttonMild        = true,
+        orientation : buttonOrientation = 'block',
+        
+        
+        
+        // classes:
+        className   : buttonClassName   = '',
+    } = buttonComponent.props;
+    
+    const {
+        // variants:
+        mild        = buttonMild,
+        orientation = buttonOrientation,
+        
+        
+        
+        // classes:
+        className   : propsClassName = '',
+        
+        
+        
+        // other props:
+        ...restButtonProps
+    } = restModelCreateOuterProps
+    
+    
+    
     // jsx:
-    const addNewBUtton = (
-        <ButtonIcon
-            // appearances:
-            icon='add'
+    return React.cloneElement<ButtonProps>(buttonComponent,
+        // props:
+        {
+            // other props:
+            ...restButtonProps,
+            
+            
+            
+            // variants:
+            mild        : mild,
+            orientation : orientation,
             
             
             
             // classes:
-            className='fluid'
-            
-            
-            
-            // states:
-            enabled={
-                (modelCreateComponent === false)
-                ? false
-                : true
-            }
+            className   : `${styleSheets.createModel} ${buttonClassName} ${propsClassName}`,
             
             
             
             // handlers:
-            onClick={handleShowDialog}
-        >
-            {createItemText ?? 'Add New Item'}
-        </ButtonIcon>
-    );
-    return React.cloneElement<BasicProps<Element>>(basicComponent,
-        // props:
-        {
-            // other props:
-            ...resBasicProps,
-            
-            
-            
-            // classes:
-            className : `${styleSheets.createModel} ${props.className}`,
+            onClick     : handleShowDialog,
         },
         
         
         
         // children:
-        (
-            !moreButtonComponent
-            ?
-            addNewBUtton
-            :
-            <Group>
-                {addNewBUtton}
-                {moreButtonComponent}
-            </Group>
-        ),
+        (createItemText ?? 'Add New Item'),
     );
 };
 
@@ -467,6 +466,26 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 
                 {/* <GalleryBody> */}
                 <Basic tag='section' theme='inherit' mild='inherit' className={styleSheets.galleryBody}>
+                    {/* <ModelEmpty> */}
+                    {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
+                    
+                    {/* <GalleryItem> */}
+                    {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
+                        /* <ModelPreview> */
+                        React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
+                            // props:
+                            {
+                                // identifiers:
+                                key   : modelPreviewComponent.key         ?? model.id,
+                                
+                                
+                                
+                                // data:
+                                model : modelPreviewComponent.props.model ?? model,
+                            },
+                        )
+                    )}
+                    
                     {/* <ModelCreate> */}
                     {!!modelCreateComponent  && <ModelCreateOuter<TModel>
                         // accessibilities:
@@ -487,26 +506,6 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                         // handlers:
                         onModelCreate={onModelCreate}
                     />}
-                    
-                    {/* <ModelEmpty> */}
-                    {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
-                    
-                    {/* <GalleryItem> */}
-                    {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
-                        /* <ModelPreview> */
-                        React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
-                            // props:
-                            {
-                                // identifiers:
-                                key   : modelPreviewComponent.key         ?? model.id,
-                                
-                                
-                                
-                                // data:
-                                model : modelPreviewComponent.props.model ?? model,
-                            },
-                        )
-                    )}
                 </Basic>
             </Basic>
             
