@@ -34,6 +34,11 @@ import {
     
     
     
+    // base-content-components:
+    Content,
+    
+    
+    
     // simple-components:
     ButtonProps,
     ButtonComponentProps,
@@ -373,7 +378,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         
         
         // components:
-        bodyComponent = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
+        bodyComponent = (<Content<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
         modelCreateComponent,
         modelPreviewComponent,
         
@@ -517,7 +522,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 />,
                 
                 /* <GalleryBody> */
-                <Basic tag='section' theme='inherit' mild='inherit' className={styleSheets.galleryBody}>
+                <Generic tag='section' className={styleSheets.galleryBody}>
                     {/* <ModelEmpty> */}
                     {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
                     
@@ -563,7 +568,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                         // handlers:
                         onModelCreate={onModelCreate}
                     />}
-                </Basic>
+                </Generic>
             )}
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>

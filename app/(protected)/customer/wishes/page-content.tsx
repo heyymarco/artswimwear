@@ -6,6 +6,12 @@ import {
     default as React,
 }                           from 'react'
 
+// reusable-ui components:
+import {
+    // base-components:
+    Basic,
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
 // heymarco components:
 import {
     Section,
@@ -13,8 +19,8 @@ import {
 
 // internal components:
 import {
-    SimpleMainPage,
-}                           from '@/components/pages/SimpleMainPage'
+    WideMainPage,
+}                           from '@/components/pages/WideMainPage'
 import {
     PageLoading,
 }                           from '@/components/PageLoading'
@@ -76,7 +82,7 @@ function WishPageContentInternal(): JSX.Element|null {
     // if (isLoadingAndNoData) return <PageLoading />;
     // if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
-        <SimpleMainPage>
+        <WideMainPage>
             <Section theme='primary'>
                 <PaginationGallery<PublicOrderDetail>
                     // accessibilities:
@@ -85,6 +91,9 @@ function WishPageContentInternal(): JSX.Element|null {
                     
                     
                     // components:
+                    bodyComponent={
+                        <Basic nude={true} />
+                    }
                     modelPreviewComponent={
                         <WishGroupImage
                             // data:
@@ -99,6 +108,6 @@ function WishPageContentInternal(): JSX.Element|null {
                     }
                 />
             </Section>
-        </SimpleMainPage>
+        </WideMainPage>
     );
 }
