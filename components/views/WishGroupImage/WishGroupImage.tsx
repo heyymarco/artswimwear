@@ -69,6 +69,7 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
     
     // stores:
     const [getWishPage, { data: wishes }] = useGetWishPage();
+    const previews = !wishes ? undefined : Object.values(wishes.entities);
     
     
     
@@ -94,8 +95,8 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                 // data:
                 href={`/customer/wishes/collection/${encodeURIComponent(id)}`}
             />
-            {!!wishes && <div className='images'>
-                {Object.values(wishes.entities).map(({ image }, index) =>
+            {!!previews && <div className='images'>
+                {previews.map(({ image }, index) =>
                     <Image
                         // key:
                         key={index}
@@ -129,7 +130,7 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                     // classes:
                     className='count'
                 >
-                    {wishes.total}
+                    {wishes.total} item{(wishes.total > 1) ? 's' : ''}
                 </span>}
             </header>
         </article>

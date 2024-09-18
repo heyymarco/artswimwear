@@ -1,25 +1,32 @@
 // cssfn:
 import {
+    // writes css in javascript:
+    rule,
     children,
-    descendants,
     style,
     scope,
-}                           from '@cssfn/core'          // writes css in javascript
+}                           from '@cssfn/core'              // writes css in javascript
 
+// reusable-ui core:
 import {
     // a spacer (gap) management system:
     spacers,
     
     
     
-    // a typography management system:
-    typos,
+    // a border (stroke) management system:
+    borderRadiuses,
     
     
     
-    // padding (inner spacing) stuff of UI:
-    usesPadding,
+    // border (stroke) stuff of UI:
+    usesBorder,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// configs:
+import {
+    commerces,
+}                           from '@/config'
 
 
 
@@ -28,9 +35,8 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
     // dependencies:
     
     // features:
-    const {paddingRule, paddingVars} = usesPadding({
-        paddingInline : spacers.sm,
-        paddingBlock  : spacers.sm,
+    const {borderRule, borderVars} = usesBorder({
+        borderRadius : borderRadiuses.md,
     });
     
     
@@ -39,49 +45,175 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
         // layouts:
         ...style({
             // layouts:
-            display: 'grid',
-            gridTemplate: [[
-                '"radio name edit"', '1fr',
+            display       : 'grid',
+            gridTemplate  : [[
+                '"images" 1fr',
+                '"header " max-content',
                 '/',
-                'min-content 1fr min-content',
+                '100%',
             ]],
             
             
             
-            // spacings:
-            gap           : spacers.sm,
-         // padding       : paddingVars.padding,
-            paddingInline : paddingVars.paddingInline,
-            paddingBlock  : paddingVars.paddingBlock,
+            // animations:
+            transition : [
+                ['box-shadow', '300ms'],
+            ],
+            boxShadow  : '0px 0px 1rem rgba(0, 0, 0, 0.1)',
+            ...rule(':hover', {
+                boxShadow : '0px 0px 1rem rgba(0, 0, 0, 0.7)',
+                ...children('.images', {
+                    ...children('*', {
+                        ...children(['img', '.status'], {
+                            scale: '105%',
+                        }),
+                    }),
+                }),
+                ...children('header', {
+                    ...children(['.name', '.price'], {
+                        overflow: 'visible',
+                    }),
+                }),
+            }),
+            
+            position : 'relative',
+            ...children('a', {
+                // positions:
+                gridArea: '1 / 1 / -1 / -1', // fill the entire <article>
+            }),
+            
+            
+            
+            // borders:
+            border                 : borderVars.border,
+         // borderRadius           : borderVars.borderRadius,
+            borderStartStartRadius : borderVars.borderStartStartRadius,
+            borderStartEndRadius   : borderVars.borderStartEndRadius,
+            borderEndStartRadius   : borderVars.borderEndStartRadius,
+            borderEndEndRadius     : borderVars.borderEndEndRadius,
             
             
             
             // children:
-            ...descendants(['.name', 'p'], {
-                margin: 0,
+            ...children(['.images', '.header'], {
+                // accessibilities:
+                pointerEvents : 'none', // makes the <a> behind this element clickable
             }),
-            ...children('.radio', {
+            ...children('.images', {
                 // positions:
-                gridArea   : 'radio',
+                gridArea: 'images',
+                
+                
+                
+                // layouts:
+                display             : 'grid',
+                gridTemplateColumns : '1fr 1fr',
+                gridAutoRows        : '1fr',
+                
+                
+                
+                // borders:
+                borderStartStartRadius : borderVars.borderStartStartRadius,
+                borderStartEndRadius   : borderVars.borderStartEndRadius,
+                overflow               : 'hidden',
+                
+                
+                
+                // spacings:
+                gap : spacers.xs,
+                
+                
+                
+                // children:
+                ...children('*', {
+                    // sizes:
+                    // minInlineSize  : `${minImageSize}px`,
+                    // minBlockSize   : `${minImageHeight}px`,
+                    boxSizing   : 'border-box',
+                    aspectRatio : commerces.defaultProductAspectRatio,
+                    
+                    
+                    
+                    // scrolls:
+                    overflow    : 'hidden',
+                    
+                    
+                    
+                    // backgrounds:
+                    background  : 'white',
+                    
+                    
+                    
+                    // children:
+                    ...children(['img', '.status'], {
+                        // animations:
+                        transition : [
+                            ['scale', '300ms'],
+                        ],
+                    }),
+                    ...children('img', {
+                        // sizes:
+                        width  : '100% !important',
+                        height : '100% !important',
+                    }),
+                }),
             }),
-            ...children('.name', {
+            ...children('.header', {
                 // positions:
-                gridArea   : 'name',
-            }),
-            ...children('.edit', {
-                gridArea: 'edit',
-            }),
-            ...descendants('[role="dialog"]', {
-                // remove the padding of <Dialog>'s backdrop:
-                [paddingVars.paddingInline] : '0px',
-                [paddingVars.paddingBlock ] : '0px',
+                gridArea: 'header',
+                
+                
+                
+                // layouts:
+                display       : 'grid',
+                gridTemplate : [[
+                    '"name   menu" auto',
+                    '"count count" auto',
+                    '/',
+                    '1fr min-content',
+                ]],
+                alignItems: 'center', // center vertically
+                
+                
+                
+                // spacings:
+                padding : '0.75rem',
+                gapInline : spacers.sm,
+                gapBlock  : spacers.xs,
+                
+                
+                
+                // children:
+                ...children(['.name', '.count'], {
+                    // scrolls:
+                    overflow     : 'hidden',
+                    
+                    
+                    
+                    // spacings:
+                    margin: 0,
+                    
+                    
+                    
+                    // typos:
+                    whiteSpace   : 'nowrap',
+                    textOverflow : 'ellipsis',
+                }),
+                ...children('.name', {
+                    // positions:
+                    gridArea: 'name',
+                }),
+                ...children('.count', {
+                    // positions:
+                    gridArea: 'count',
+                }),
             }),
         }),
         
         
         
         // features:
-        ...paddingRule(), // must be placed at the last
+        ...borderRule(), // must be placed at the last
     });
 };
 

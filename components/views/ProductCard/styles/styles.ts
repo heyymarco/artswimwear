@@ -78,7 +78,6 @@ const usesProductCardLayout = () => {
             ...children('a', {
                 // positions:
                 gridArea: '1 / 1 / -1 / -1', // fill the entire <article>
-                // zIndex   : -1,
             }),
             
             
