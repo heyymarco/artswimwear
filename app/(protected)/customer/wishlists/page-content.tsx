@@ -29,8 +29,8 @@ import {
     PaginationGallery,
 }                           from '@/components/explorers/PaginationGallery'
 import {
-    WishlistGroupPreview,
-}                           from '@/components/views/WishlistGroupPreview'
+    WishlistGroupImage,
+}                           from '@/components/views/WishlistGroupImage'
 
 // models:
 import {
@@ -78,7 +78,7 @@ function WishlistPageContentInternal(): JSX.Element|null {
                 <PaginationGallery<PublicOrderDetail>
                     // components:
                     modelPreviewComponent={
-                        <WishlistGroupPreview
+                        <WishlistGroupImage
                             // data:
                             model={undefined as any}
                         />
