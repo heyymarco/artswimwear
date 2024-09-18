@@ -36,5 +36,5 @@ export const ImageUrlSchema      = z.string().url().min(10).max(255);
 
 export const PaginationArgSchema = z.object({
     page    : z.number().int().finite().gte(1),
-    perPage : z.number().int().finite().gte(5).lte(50),
+    perPage : z.number().int().finite().gte(4).lte(50), // minimum 4 for displaying preview of four images
 }) satisfies z.Schema<PaginationArgs>;
