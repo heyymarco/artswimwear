@@ -88,7 +88,6 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
     
     return style({
         // layouts:
-        // layouts:
         display             : 'grid', // use css block grid for layouting, the core of our <PaginationGallery> layout
         gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
         gridAutoRows        : '1fr',  // make all <GalleryItem>s having consistent height
