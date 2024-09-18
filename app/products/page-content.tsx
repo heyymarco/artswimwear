@@ -26,11 +26,6 @@ import {
     ProductCard,
 }                           from '@/components/views/ProductCard'
 
-// private components:
-import {
-    ProductItem,
-}                           from './ProductItem'
-
 // stores:
 import {
     // hooks:
