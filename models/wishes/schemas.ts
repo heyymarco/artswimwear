@@ -32,7 +32,7 @@ export const DeleteWishGroupRequestSchema = z.object({
 
 
 export const GetWishRequestSchema = z.object({
-    groupId   : ModelIdSchema.nullable().optional(),
+    groupId   : ModelIdSchema/*.nullable()*/.optional(), // remove null, we only filter wishes by groupId (string) or get all wishes (undefined)
 }) satisfies z.Schema<GetWishRequest>;
 
 export const CreateOrUpdateWishRequestSchema = z.object({

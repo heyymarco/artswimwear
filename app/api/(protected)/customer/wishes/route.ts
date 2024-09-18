@@ -20,16 +20,23 @@ import {
 
 // models:
 import {
+    type Pagination,
+}                           from '@/libs/types'
+import {
+    type ProductPreview,
     type WishDetail,
     
     
     
+    PaginationArgSchema,
     GetWishRequestSchema,
     CreateOrUpdateWishRequestSchema,
     DeleteWishRequestSchema,
     
     
     
+    productPreviewSelect,
+    convertProductPreviewDataToProductPreview,
     wishDetailSelect,
 }                           from '@/models'
 import {
@@ -83,7 +90,7 @@ router
         try {
             const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
             return {
-                arg : GetWishRequestSchema.parse(data),
+                groupId : GetWishRequestSchema.parse(data).groupId,
             };
         }
         catch {
@@ -96,18 +103,12 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        arg : {
-            groupId : groupIdRaw,
-        },
+        groupId : groupIdRaw,
     } = requestData;
     const groupId = ( // fix data encoded in searchParams
         (groupIdRaw === 'undefined')
         ? undefined
-        : (
-            (groupIdRaw === 'null')
-            ? null
-            : groupIdRaw
-        )
+        : groupIdRaw
     );
     //#endregion parsing and validating request
     
@@ -125,12 +126,95 @@ router
     const wishes : WishDetail[] = await prisma.wish.findMany({
         where  : {
             parentId : customerId, // important: the signedIn customerId
-            groupId  : groupId,    // null => get ungrouped wishes, string => get grouped wishes
+            groupId  : groupId,    // string => get grouped wishes, undefined => get all wishes
         },
         select : wishDetailSelect,
     });
     const productIds = wishes.map(({ productId }) => productId);
     return Response.json(productIds); // handled with success
+    //#endregion query result
+})
+.post(async (req) => {
+    //#region parsing and validating request
+    const requestData = await (async () => {
+        try {
+            const data = await req.json();
+            return {
+                paginationArg : PaginationArgSchema.parse(data),
+                groupId       : GetWishRequestSchema.parse(data).groupId,
+            };
+        }
+        catch {
+            return null;
+        } // try
+    })();
+    if (requestData === null) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    const {
+        paginationArg : {
+            page,
+            perPage,
+        },
+        groupId : groupIdRaw,
+    } = requestData;
+    const groupId = ( // fix data encoded in searchParams
+        (groupIdRaw === 'undefined')
+        ? undefined
+        : groupIdRaw
+    );
+    //#endregion parsing and validating request
+    
+    
+    
+    //#region validating privileges
+    const session = (req as any).session as Session;
+    const customerId = session.user?.id;
+    if (!customerId) return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+    //#endregion validating privileges
+    
+    
+    
+    //#region query result
+    const [total, paged] = await prisma.$transaction([
+        prisma.wish.count({
+            where  : {
+                parentId : customerId, // important: the signedIn customerId
+                groupId  : groupId,    // string => get grouped wishes, undefined => get all wishes
+                
+                product  : {
+                    visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                },
+            },
+        }),
+        prisma.wish.findMany({
+            where  : {
+                parentId : customerId, // important: the signedIn customerId
+                groupId  : groupId,    // string => get grouped wishes, undefined => get all wishes
+                
+                product  : {
+                    visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                },
+            },
+            select  : {
+                product : {
+                    select : productPreviewSelect,
+                },
+            },
+            // orderBy : {
+            //     name: 'asc', TODO: order by createdAt 'desc'
+            // },
+            skip    : (page - 1) * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
+            take    : perPage,
+        }),
+    ]);
+    const paginationOrderDetail : Pagination<ProductPreview> = {
+        total    : total,
+        entities : paged.map(({ product }) => convertProductPreviewDataToProductPreview(product)),
+    };
+    return Response.json(paginationOrderDetail); // handled with success
     //#endregion query result
 })
 .patch(async (req) => {
@@ -234,7 +318,7 @@ router
         try {
             const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
             return {
-                arg : DeleteWishRequestSchema.parse(data),
+                productId : DeleteWishRequestSchema.parse(data).productId,
             };
         }
         catch {
@@ -247,9 +331,7 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        arg : {
-            productId,
-        },
+        productId,
     } = requestData;
     //#endregion parsing and validating request
     

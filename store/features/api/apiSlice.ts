@@ -549,6 +549,14 @@ export const apiSlice = createApi({
             }),
         }),
         
+        getWishPage                 : builder.query<Pagination<ProductPreview>, PaginationArgs & GetWishRequest>({
+            query: (arg) => ({
+                url         : 'customer/wishes',
+                method      : 'POST',
+                body        : arg,
+            }),
+            providesTags: ['Wish'],
+        }),
         getWishes                   : builder.query<EntityState<WishDetail['productId']>, GetWishRequest>({
             query: ({groupId}) => ({
                 url         : `customer/wishes?groupId=${(typeof(groupId) !== 'string') ? groupId : encodeURIComponent(groupId)}`,
@@ -668,6 +676,7 @@ export const {
     useDeleteWishGroupMutation             : useDeleteWishGroup,
     useLazyAvailableWishGroupNameQuery     : useAvailableWishGroupName,
     
+    useLazyGetWishPageQuery                : useGetWishPage,
     useLazyGetWishesQuery                  : useGetWishes,
     useUpdateWishMutation                  : useUpdateWish,
     useDeleteWishMutation                  : useDeleteWish,

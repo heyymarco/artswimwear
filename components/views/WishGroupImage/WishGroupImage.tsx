@@ -8,7 +8,7 @@ import {
     
     
     // hooks:
-    useRef,
+    useEffect,
 }                           from 'react'
 
 // styles:
@@ -18,66 +18,36 @@ import {
 
 // reusable-ui core:
 import {
-    // react helper hooks:
-    useEvent,
-}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
-
-// reusable-ui components:
-import {
-    // base-components:
-    Basic,
-    
-    
-    
-    // simple-components:
-    Icon,
-    
-    
-    
-    // utility-components:
-    useDialogMessage,
-}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
-
-// internal components:
-import {
-    type ModelPreviewProps,
-}                           from '@/components/explorers/PaginationList'
-import {
-    type EditorChangeEventHandler,
-}                           from '@/components/editors/Editor'
-import {
-    EditButton,
-}                           from '@/components/EditButton'
-import {
-    DummyDialog,
-}                           from '@/components/dialogs/DummyDialog'
-import {
-    EditWishGroupDialog,
-}                           from '@/components/dialogs/EditWishGroupDialog'
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // heymarco components:
 import {
-    RadioDecorator,
-}                           from '@heymarco/radio-decorator'
+    Image,
+}                           from '@heymarco/image'
 
 // models:
 import {
     type WishGroupDetail,
 }                           from '@/models'
 
+// stores:
+import {
+    // hooks:
+    useGetWishPage,
+}                           from '@/store/features/api/apiSlice'
+
+// utilities:
+import {
+    resolveMediaUrl,
+}                           from '@/libs/mediaStorage.client'
+
 
 
 // react components:
-export interface WishGroupImageProps
-    extends
-        Omit<ModelPreviewProps<WishGroupDetail>,
-            // values:
-            |'onModelSelect'
-        >
-{
-    // values:
-    selectedModel ?: WishGroupDetail|null
-    onModelSelect ?: EditorChangeEventHandler<WishGroupDetail>
+export interface WishGroupImageProps {
+    // data:
+    model : WishGroupDetail
 }
 const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
     // styles:
@@ -85,21 +55,10 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
     
     
     
-    // rest props:
+    // props:
     const {
         // data:
         model,
-        
-        
-        
-        // values:
-        selectedModel,
-        onModelSelect,
-        
-        
-        
-        // other props:
-        ...restWishGroupImageProps
     } = props;
     const {
         id,
@@ -108,126 +67,72 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
     
     
     
-    // refs:
-    const listItemRef = useRef<HTMLElement|null>(null);
+    // stores:
+    const [getWishPage, { data: wishes }] = useGetWishPage();
     
     
     
-    // dialogs:
-    const {
-        showDialog,
-    } = useDialogMessage();
-    
-    
-    
-    // handlers:
-    const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
-        // conditions:
-        if (!event.currentTarget.contains(event.target as Node)) return; // ignore bubbling from <portal> of <EditRoleDialog>
-        
-        
-        
-        // actions:
-        onModelSelect?.(model);
-    });
-    
-    type EditMode = 'full'
-    const handleEdit = useEvent((editMode: EditMode): void => {
-        // just for cosmetic backdrop:
-        const dummyPromise = (
-            ['full', 'full-status', 'full-payment'].includes(editMode)
-            ? showDialog(
-                <DummyDialog
-                    // global stackable:
-                    viewport={listItemRef}
-                />
-            )
-            : undefined
-        );
-        
-        const dialogPromise = showDialog((() => {
-            switch (editMode) {
-                case 'full' : return (
-                    <EditWishGroupDialog
-                        // data:
-                        model={model} // modify current model
-                    />
-                );
-                default     : throw new Error('app error');
-            } // switch
-        })());
-        
-        if (dummyPromise) {
-            dialogPromise.collapseStartEvent().then(() => dummyPromise.closeDialog(undefined));
-        } // if
-    });
-    
-    
-    // default props:
-    const {
-        // other props:
-        ...restBasicProps
-    } = restWishGroupImageProps;
+    // effects:
+    useEffect(() => {
+        getWishPage({ page: 1, perPage: 4, groupId: id });
+    }, []);
     
     
     
     // jsx:
     return (
-        <Basic
-            // other props:
-            {...restBasicProps}
-            
-            
-            
-            // refs:
-            elmRef={listItemRef}
+        <article
+            // identifiers:
+            key={id}
             
             
             
             // classes:
             className={styleSheet.main}
-            
-            
-            
-            // handlers:
-            onClick={handleClick}
         >
-            <RadioDecorator className='radio' />
-            
-            <h6 className='name'>
-                {name}
-            </h6>
-            
-            <EditButton
-                // accessibilities:
-                title='Edit Collection'
-                
-                
-                
-                // variants:
-                mild={false}
-                
-                
-                
+            <Link
+                // data:
+                href={`/customer/wishes/collection/${encodeURIComponent(id)}`}
+            />
+            {!!wishes && <div className='images'>
+                {Object.values(wishes.entities).map(({ image }, index) =>
+                    <Image
+                        // key:
+                        key={index}
+                        
+                        
+                        
+                        // appearances:
+                        alt={name}
+                        src={resolveMediaUrl(image)}
+                        sizes='207px' // (255*2) - ((4*16) * 1.5) = 414 => 414/2 = 207
+                        
+                        
+                        
+                        // classes:
+                        className='prodImg'
+                    />
+                )}
+            </div>}
+            <header
                 // classes:
-                className='edit'
-                
-                
-                
-                // components:
-                iconComponent={<Icon icon='edit' />}
-                
-                
-                
-                // handlers:
-                onClick={(event) => {
-                    event.stopPropagation(); // prevent from causing `onModelSelect`
-                    handleEdit('full');
-                }}
+                className='header'
             >
-                {null}
-            </EditButton>
-        </Basic>
+                <h2
+                    // classes:
+                    className='name h6'
+                >
+                    {name}
+                </h2>
+                
+                {!!wishes && <span
+                    // classes:
+                    className='count'
+                >
+                    {wishes.total}
+                </span>}
+            </header>
+        </article>
     );
 };
 export {

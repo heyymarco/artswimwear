@@ -71,6 +71,7 @@ export interface GetWishRequest
             |'groupId'
         >>
 {
+    groupId ?: string|undefined // remove null, we only filter wishes by groupId (string) or get all wishes (undefined)
 }
 
 export interface CreateOrUpdateWishRequest
