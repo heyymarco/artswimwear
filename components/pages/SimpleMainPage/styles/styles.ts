@@ -2,6 +2,7 @@
 import {
     // writes css in javascript:
     children,
+    style,
     scope,
 }                           from '@cssfn/core'                  // writes css in javascript
 
@@ -9,15 +10,33 @@ import {
 import {
     // a responsive management system:
     breakpoints,
+    
+    
+    
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
 
 // styles:
-export default [
-    scope('main', {
+const usesMainLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {paddingVars} = usesPadding();
+    
+    
+    
+    return style({
         // layouts:
-        display      : 'grid',
+        display : 'grid',
+        
+        
+        
+        // spacings:
+        [paddingVars.paddingInline] : '0px',
+        [paddingVars.paddingBlock ] : '0px',
         
         
         
@@ -40,5 +59,14 @@ export default [
                 maxInlineSize : `${breakpoints.lg}px`,
             }, { specificityWeight: 2 }),
         }),
+    });
+};
+
+
+
+export default [
+    scope('main', {
+        // layouts:
+        ...usesMainLayout(),
     }),
 ];
