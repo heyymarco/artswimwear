@@ -30,19 +30,25 @@ import {
 
 
 
+// defaults:
+const minImageSize   = 255; // 255px
+
+
+
 // styles:
-const usesGalleryBodyOuterLayout = () => {
+const usesGalleryBodyWrapperLayout = () => {
     // dependencies:
     
     // capabilities:
     const {groupableRule, groupableVars} = usesGroupable({
-        orientationInlineSelector : null, // craft the <List>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
-        orientationBlockSelector  : null, // craft the <List>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
+        orientationInlineSelector : null, // craft the <GalleryBody>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
+        orientationBlockSelector  : null, // craft the <GalleryBody>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
+        itemsSelector             : null, // craft the <GalleryBody>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
     });
     const {groupableRule: groupableRuleForBackdrop} = usesGroupable({
         orientationInlineSelector : '&', // always => target the <portal><ModalBackdrop><ModalDialog>
         orientationBlockSelector  : '&', // always => target the <portal><ModalBackdrop><ModalDialog>
-        itemsSelector             : '*>[role="dialog"]',
+        itemsSelector             : '*>[role="dialog"]', // target the <portal><ModalBackdrop><ModalDialog>
     });
     
     // features:
@@ -53,7 +59,7 @@ const usesGalleryBodyOuterLayout = () => {
     return style({
         // capabilities:
         ...groupableRule(),  // make a nicely rounded corners
-        ...groupableRuleForBackdrop(), // make a nicely rounded corners
+        // ...groupableRuleForBackdrop(), // make a nicely rounded corners
         
         
         
@@ -76,7 +82,7 @@ const usesGalleryBodyOuterLayout = () => {
         }),
     });
 };
-const usesGalleryBodyInnerLayout = () => { // the <List> of model
+const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
     // dependencies:
     
     // capabilities:
@@ -88,9 +94,20 @@ const usesGalleryBodyInnerLayout = () => { // the <List> of model
     
     
     return style({
+        // layouts:
+        display             : 'grid',
+        gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
+        
+        
+        
+        // scrolls:
+        overflow: 'visible', // do not clip <item>'s boxShadow
+        
+        
+        
         // sizes:
+        gridArea     : '1 / 1 / -1 / -1', // fill the entire <GalleryBodyWrapper>
         minBlockSize : '13rem', // limits the minimum height to make loading|error popup have enough space
-        blockSize: '100%', // fill the entire <Outer>
         
         
         
@@ -100,6 +117,7 @@ const usesGalleryBodyInnerLayout = () => { // the <List> of model
         [groupableVars.borderEndStartRadius  ] : 'inherit !important', // reads parent's prop
         [groupableVars.borderEndEndRadius    ] : 'inherit !important', // reads parent's prop
         
+        [borderVars.borderWidth           ] : '0px', // flush (border-less)
         [borderVars.borderStartStartRadius] : groupableVars.borderStartStartRadius,
         [borderVars.borderStartEndRadius  ] : groupableVars.borderStartEndRadius,
         [borderVars.borderEndStartRadius  ] : groupableVars.borderEndStartRadius,
@@ -107,20 +125,18 @@ const usesGalleryBodyInnerLayout = () => { // the <List> of model
         
         
         
-        // children:
-        ...children('li:not(:is(.solid, .fluid))', { // defaults to .solid
-            flex : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
-        })
+        // spacings:
+        gap: spacers.lg,
     });
 };
 
-const usesCreateModelLayout = () => { // the <ListItem> of model add_new
+const usesCreateModelLayout = () => { // the <GalleryItem> of model add_new
     return style({
         // layouts:
         display: 'grid',
     });
 };
-const usesEmptyModelLayout = () => {
+const usesEmptyModelLayout = () => { // the <GalleryItem> of model empty_data
     return style({
         // layout:
         display: 'grid',
@@ -144,6 +160,8 @@ const usesEmptyModelLayout = () => {
         textAlign  : 'center',
     });
 };
+
+
 
 export default () => [
     scope('main', {
@@ -196,16 +214,16 @@ export default () => [
     scope('paginTop', {
         justifySelf: 'center',
     }),
-    scope('galleryBodyOuter', {
-        ...usesGalleryBodyOuterLayout(),
+    scope('galleryBodyWrapper', {
+        ...usesGalleryBodyWrapperLayout(),
     }, { specificityWeight: 2 }),
-    scope('galleryBodyInner', { // the <List> of model
-        ...usesGalleryBodyInnerLayout(),
+    scope('galleryBody', { // the <GalleryBody> of model
+        ...usesGalleryBodyLayout(),
     }, { specificityWeight: 2 }),
-    scope('createModel', { // the <ListItem> of model add_new
+    scope('createModel', { // the <GalleryItem> of model add_new
         ...usesCreateModelLayout(),
     }, { specificityWeight: 2 }),
-    scope('emptyModel', { // the <ListItem> of model empty_data
+    scope('emptyModel', { // the <GalleryItem> of model empty_data
         ...usesEmptyModelLayout(),
     }, { specificityWeight: 2 }),
     scope('paginBtm', {

@@ -9,7 +9,6 @@ import {
     
     // hooks:
     useRef,
-    useState,
 }                           from 'react'
 
 // styles:
@@ -30,21 +29,14 @@ import {
     // base-components:
     GenericProps,
     Generic,
+    BasicProps,
     Basic,
+    BasicComponentProps,
     
     
     
     // simple-components:
     ButtonIcon,
-    
-    
-    
-    // layout-components:
-    ListItemProps,
-    ListItem,
-    ListItemComponentProps,
-    
-    List,
     
     
     
@@ -94,10 +86,10 @@ import {
 export interface ModelCreateOuterProps<TModel extends Model>
     extends
         // bases:
-        ListItemProps,
+        BasicProps,
         
         // components:
-        ListItemComponentProps<Element>
+        BasicComponentProps<Element>
 {
     // accessibilities:
     createItemText       ?: React.ReactNode
@@ -129,13 +121,13 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
         // components:
         modelCreateComponent,
         moreButtonComponent,
-        listItemComponent = (<ListItem<Element> /> as React.ReactComponentElement<any, ListItemProps<Element>>),
+        basicComponent = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
         
         
         
         // handlers:
         onModelCreate,
-    ...restListItemProps} = props;
+    ...resBasicProps} = props;
     
     
     
@@ -205,11 +197,11 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
             {createItemText ?? 'Add New Item'}
         </ButtonIcon>
     );
-    return React.cloneElement<ListItemProps<Element>>(listItemComponent,
+    return React.cloneElement<BasicProps<Element>>(basicComponent,
         // props:
         {
             // other props:
-            ...restListItemProps,
+            ...resBasicProps,
             
             
             
@@ -237,7 +229,7 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
 export interface ModelPreviewProps<TModel extends Model, TElement extends Element = HTMLElement>
     extends
         // bases:
-        Omit<ListItemProps<TElement>,
+        Omit<BasicProps<TElement>,
             'draggable' // reserved for <OrderableList>
         >
 {
@@ -249,7 +241,7 @@ export interface ModelPreviewProps<TModel extends Model, TElement extends Elemen
 export interface ModalEmptyProps<TElement extends Element = HTMLElement>
     extends
         // bases:
-        ListItemProps<TElement>
+        BasicProps<TElement>
 {
     // accessibilities:
     textEmpty ?: React.ReactNode
@@ -275,7 +267,7 @@ export const ModelEmpty = <TElement extends Element = HTMLElement>(props: ModalE
     
     // jsx:
     return (
-        <ListItem<TElement>
+        <Basic<TElement>
             // refs:
             elmRef={statusEmptyListRef}
             
@@ -287,7 +279,7 @@ export const ModelEmpty = <TElement extends Element = HTMLElement>(props: ModalE
             <p>
                 {textEmpty}
             </p>
-        </ListItem>
+        </Basic>
     );
 };
 
@@ -459,7 +451,8 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 className={styleSheets.paginTop}
             />}
             
-            <Basic className={styleSheets.galleryBodyOuter} mild={true} elmRef={dataListRef}>
+            {/* <GalleryBodyWrapper> */}
+            <Basic className={styleSheets.galleryBodyWrapper} mild={true} elmRef={dataListRef}>
                 <ModalLoadingError
                     // data:
                     isFetching={isFetching}
@@ -472,7 +465,8 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                     viewport={dataListRef}
                 />
                 
-                <Generic tag='section' className={styleSheets.galleryBodyInner}>
+                {/* <GalleryBody> */}
+                <Basic tag='section' theme='inherit' mild='inherit' className={styleSheets.galleryBody}>
                     {/* <ModelCreate> */}
                     {!!modelCreateComponent  && <ModelCreateOuter<TModel>
                         // accessibilities:
@@ -485,11 +479,6 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                         
                         
                         
-                        // states:
-                        enabled={data !== undefined /* data is fully loaded even if empty data */}
-                        
-                        
-                        
                         // components:
                         modelCreateComponent={modelCreateComponent}
                         
@@ -499,8 +488,10 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                         onModelCreate={onModelCreate}
                     />}
                     
+                    {/* <ModelEmpty> */}
                     {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
                     
+                    {/* <GalleryItem> */}
                     {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
                         /* <ModelPreview> */
                         React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
@@ -516,7 +507,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                             },
                         )
                     )}
-                </Generic>
+                </Basic>
             </Basic>
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>
