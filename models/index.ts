@@ -16,4 +16,4 @@ export      * from './customers'
 export      * from './carts'
 export      * from './checkouts'
 
-export      * from './wishlists'
+export      * from './wishes'

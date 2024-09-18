@@ -149,8 +149,8 @@ const usesProductCardLayout = () => {
                 // layouts:
                 display       : 'grid',
                 gridTemplate : [[
-                    '"name      name" auto',
-                    '"wishlist price" auto',
+                    '"name name" auto',
+                    '"wish price" auto',
                     '/',
                     'min-content 1fr',
                 ]],
@@ -194,14 +194,14 @@ const usesProductCardLayout = () => {
                     // typos:
                     textAlign    : 'end',
                 }),
-                ...children('.wishlist', {
+                ...children('.wish', {
                     // positions:
-                    gridArea: 'wishlist',
+                    gridArea: 'wish',
                     
                     
                     
                     // accessibilities:
-                    pointerEvents: 'initial', // makes the wishlist clickable above the <a>
+                    pointerEvents: 'initial', // makes the wish clickable above the <a>
                 }),
             }),
         }),

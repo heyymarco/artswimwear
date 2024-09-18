@@ -57,15 +57,15 @@ import {
     
     type ShippingPreview,
     
-    type WishlistDetail,
-    type WishlistGroupDetail,
+    type WishDetail,
+    type WishGroupDetail,
     
-    type UpdateWishlistGroupRequest,
-    type DeleteWishlistGroupRequest,
+    type UpdateWishGroupRequest,
+    type DeleteWishGroupRequest,
     
-    type GetWishlistRequest,
-    type CreateOrUpdateWishlistRequest,
-    type DeleteWishlistRequest,
+    type GetWishRequest,
+    type CreateOrUpdateWishRequest,
+    type DeleteWishRequest,
 }                           from '@/models'
 export {
     type PaymentDetail,
@@ -131,7 +131,7 @@ const shippingListAdapter         = createEntityAdapter<ShippingPreview>({
 const matchingShippingListAdapter = createEntityAdapter<MatchingShipping>({
     selectId : (shippingEntry) => `${shippingEntry.id}`,
 });
-const wishlistListAdapter         = createEntityAdapter<WishlistDetail['productId']>({
+const wishListAdapter         = createEntityAdapter<WishDetail['productId']>({
     selectId : (productId) => productId,
 });
 
@@ -186,7 +186,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['Preference', 'WishlistGroup', 'Wishlist'],
+    tagTypes  : ['Preference', 'WishGroup', 'Wish'],
     endpoints : (builder) => ({
         getProductList              : builder.query<EntityState<ProductPreview>, void>({
             query : () => ({
@@ -514,114 +514,114 @@ export const apiSlice = createApi({
             }),
         }),
         
-        getWishlistGroupPage        : builder.query<Pagination<WishlistGroupDetail>, PaginationArgs>({
+        getWishGroupPage            : builder.query<Pagination<WishGroupDetail>, PaginationArgs>({
             query: (arg) => ({
-                url         : 'customer/wishlists/groups',
+                url         : 'customer/wishes/groups',
                 method      : 'POST',
                 body   : arg,
             }),
-            providesTags: ['WishlistGroup'],
+            providesTags: ['WishGroup'],
         }),
-        updateWishlistGroup         : builder.mutation<WishlistGroupDetail, UpdateWishlistGroupRequest>({
+        updateWishGroup             : builder.mutation<WishGroupDetail, UpdateWishGroupRequest>({
             query: (arg) => ({
-                url         : 'customer/wishlists/groups',
+                url         : 'customer/wishes/groups',
                 method      : 'PATCH',
                 body        : arg,
             }),
             onQueryStarted: async (arg, api) => {
-                await cumulativeUpdatePaginationCache(api, 'getWishlistGroupPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'WishlistGroup');
+                await cumulativeUpdatePaginationCache(api, 'getWishGroupPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'WishGroup');
             },
         }),
-        deleteWishlistGroup         : builder.mutation<WishlistGroupDetail, DeleteWishlistGroupRequest>({
+        deleteWishGroup             : builder.mutation<WishGroupDetail, DeleteWishGroupRequest>({
             query: (arg) => ({
-                url         : `customer/wishlists/groups?id=${encodeURIComponent(arg.id)}`,
+                url         : `customer/wishes/groups?id=${encodeURIComponent(arg.id)}`,
                 method      : 'DELETE',
             }),
             onQueryStarted: async (arg, api) => {
-                await cumulativeUpdatePaginationCache(api, 'getWishlistGroupPage', 'DELETE', 'WishlistGroup');
+                await cumulativeUpdatePaginationCache(api, 'getWishGroupPage', 'DELETE', 'WishGroup');
             },
-            invalidatesTags: ['Wishlist'], // the deleted WishlistGroup MAY also delete a/some Wishlist(s) => the Wishlist(s) need to be invalidated
+            invalidatesTags: ['Wish'], // the deleted WishGroup MAY also delete a/some Wish(s) => the Wish(s) need to be invalidated
         }),
-        availableWishlistGroupName  : builder.query<boolean, string>({
+        availableWishGroupName      : builder.query<boolean, string>({
             query: (arg) => ({
-                url    : `customer/wishlists/groups/check-name?name=${encodeURIComponent(arg)}`,
+                url    : `customer/wishes/groups/check-name?name=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
         }),
         
-        getWishlists                : builder.query<EntityState<WishlistDetail['productId']>, GetWishlistRequest>({
+        getWishes                   : builder.query<EntityState<WishDetail['productId']>, GetWishRequest>({
             query: ({groupId}) => ({
-                url         : `customer/wishlists?groupId=${(typeof(groupId) !== 'string') ? groupId : encodeURIComponent(groupId)}`,
+                url         : `customer/wishes?groupId=${(typeof(groupId) !== 'string') ? groupId : encodeURIComponent(groupId)}`,
                 method      : 'GET',
             }),
-            transformResponse(response: WishlistDetail['productId'][]) {
-                return wishlistListAdapter.addMany(wishlistListAdapter.getInitialState(), response);
+            transformResponse(response: WishDetail['productId'][]) {
+                return wishListAdapter.addMany(wishListAdapter.getInitialState(), response);
             },
-            providesTags: (data, error, arg) => [{ type: 'Wishlist', id: `${arg.groupId}` }],
+            providesTags: (data, error, arg) => [{ type: 'Wish', id: `${arg.groupId}` }],
         }),
-        updateWishlist              : builder.mutation<WishlistDetail['productId'], CreateOrUpdateWishlistRequest>({
+        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest>({
             query: (arg) => ({
-                url         : 'customer/wishlists',
+                url         : 'customer/wishes',
                 method      : 'PATCH',
                 body        : arg,
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
                 const patchResult = api.dispatch(
-                    apiSlice.util.updateQueryData('getWishlists', { groupId: undefined /* all wishlists in current signedIn customer */ } satisfies GetWishlistRequest, (data) => {
+                    apiSlice.util.updateQueryData('getWishes', { groupId: undefined /* all wishes in current signedIn customer */ } satisfies GetWishRequest, (data) => {
                         // conditions:
                         if (data.ids.includes(arg.productId)) return; // already added => no need to update => nothing to do
                         
                         
                         
                         // update:
-                        wishlistListAdapter.upsertOne(data, arg.productId);
+                        wishListAdapter.upsertOne(data, arg.productId);
                     })
                 );
                 api.queryFulfilled.catch(() => {
                     patchResult.undo();
                     
                     api.dispatch(
-                        apiSlice.util.invalidateTags([{ type: 'Wishlist', id: 'undefined' }])
+                        apiSlice.util.invalidateTags([{ type: 'Wish', id: 'undefined' }])
                     );
                 });
                 //#endregion optimistic update
                 
                 
                 
-                await cumulativeUpdateEntityCache(api, 'getWishlists', 'UPSERT', 'Wishlist');
+                await cumulativeUpdateEntityCache(api, 'getWishes', 'UPSERT', 'Wish');
             },
         }),
-        deleteWishlist              : builder.mutation<WishlistDetail['productId'], DeleteWishlistRequest>({
+        deleteWish                  : builder.mutation<WishDetail['productId'], DeleteWishRequest>({
             query: (arg) => ({
-                url         : `customer/wishlists?productId=${encodeURIComponent(arg.productId)}`,
+                url         : `customer/wishes?productId=${encodeURIComponent(arg.productId)}`,
                 method      : 'DELETE',
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
                 const patchResult = api.dispatch(
-                    apiSlice.util.updateQueryData('getWishlists', { groupId: undefined /* all wishlists in current signedIn customer */ } satisfies GetWishlistRequest, (data) => {
+                    apiSlice.util.updateQueryData('getWishes', { groupId: undefined /* all wishes in current signedIn customer */ } satisfies GetWishRequest, (data) => {
                         // conditions:
                         if (!data.ids.includes(arg.productId)) return; // already removed => no need to update => nothing to do
                         
                         
                         
                         // update:
-                        wishlistListAdapter.removeOne(data, arg.productId);
+                        wishListAdapter.removeOne(data, arg.productId);
                     })
                 );
                 api.queryFulfilled.catch(() => {
                     patchResult.undo();
                     
                     api.dispatch(
-                        apiSlice.util.invalidateTags([{ type: 'Wishlist', id: 'undefined' }])
+                        apiSlice.util.invalidateTags([{ type: 'Wish', id: 'undefined' }])
                     );
                 });
                 //#endregion optimistic update
                 
                 
                 
-                await cumulativeUpdateEntityCache(api, 'getWishlists', 'DELETE', 'Wishlist');
+                await cumulativeUpdateEntityCache(api, 'getWishes', 'DELETE', 'Wish');
             },
         }),
     }),
@@ -663,14 +663,14 @@ export const {
     usePostImageMutation                   : usePostImage,
     useDeleteImageMutation                 : useDeleteImage,
     
-    useGetWishlistGroupPageQuery           : useGetWishlistGroupPage,
-    useUpdateWishlistGroupMutation         : useUpdateWishlistGroup,
-    useDeleteWishlistGroupMutation         : useDeleteWishlistGroup,
-    useLazyAvailableWishlistGroupNameQuery : useAvailableWishlistGroupName,
+    useGetWishGroupPageQuery               : useGetWishGroupPage,
+    useUpdateWishGroupMutation             : useUpdateWishGroup,
+    useDeleteWishGroupMutation             : useDeleteWishGroup,
+    useLazyAvailableWishGroupNameQuery     : useAvailableWishGroupName,
     
-    useLazyGetWishlistsQuery               : useGetWishlists,
-    useUpdateWishlistMutation              : useUpdateWishlist,
-    useDeleteWishlistMutation              : useDeleteWishlist,
+    useLazyGetWishesQuery                  : useGetWishes,
+    useUpdateWishMutation                  : useUpdateWish,
+    useDeleteWishMutation                  : useDeleteWish,
 } = apiSlice;
 
 export const {
@@ -755,7 +755,7 @@ type PaginationUpdateType =
     |'CREATE'
     |'UPDATE'
     |'DELETE'
-const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishlistGroupPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
+const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishGroupPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
     // mutated TEntry data:
     const mutatedEntry = await (async (): Promise<TEntry|undefined> => {
         try {
@@ -1071,7 +1071,7 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
 type EntityUpdateType =
     |'UPSERT'
     |'DELETE'
-const cumulativeUpdateEntityCache     = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishlistGroups'|'getWishlists'>, updateType: EntityUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
+const cumulativeUpdateEntityCache     = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishGroups'|'getWishes'>, updateType: EntityUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
     // mutated TEntry data:
     const mutatedEntry = await (async (): Promise<TEntry|undefined> => {
         try {

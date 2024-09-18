@@ -46,7 +46,7 @@ model Product {
     orderItems                      OrderItem[]                     // some Product(s) may have some related Order(s)      // many to many
     draftOrderItems                 DraftOrderItem[]                // some Product(s) may have some related DraftOrder(s) // many to many
     cartItems                       CartItem[]                      // some Product(s) may have some related CartItem(s)   // many to many
-    wishlists                       Wishlist[]                      // some Product(s) may have some related Wishlist(s)   // many to many
+    wishes                          Wish[]                          // some Product(s) may have some related Wish(s)   // many to many
 }
 enum ProductVisibility {
     PUBLISHED
@@ -708,8 +708,8 @@ model Customer {
     preference                      CustomerPreference?
     
     cart                            Cart?
-    wishlistGroups                  WishlistGroup[]
-    wishlists                       Wishlist[]
+    wishGroups                      WishGroup[]
+    wishes                          Wish[]
     
     accounts                        CustomerAccount[]
     sessions                        CustomerSession[]
@@ -878,35 +878,35 @@ model CheckoutBillingAddress {
 
 
 
-model WishlistGroup {
+model WishGroup {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
+    updatedAt                       DateTime                        @updatedAt
     
     // data:
     name                            String                          @unique
     
-    items                           Wishlist[]
+    items                           Wish[]
     
     // relations:
     parentId                        String
-    parent                          Customer                        @relation(fields: [parentId] , references: [id], onDelete: Cascade) // delete the related WishlistGroup(s) if the Customer deleted
+    parent                          Customer                        @relation(fields: [parentId] , references: [id], onDelete: Cascade) // delete the related WishGroup(s) if the Customer deleted
 }
-model Wishlist {
+model Wish {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
-    createdAt                       DateTime                        @default(now())
     
     // relations:
     parentId                        String
-    parent                          Customer                        @relation(fields: [parentId] , references: [id], onDelete: Cascade) // delete the related Wishlist(s) if the Customer deleted
+    parent                          Customer                        @relation(fields: [parentId] , references: [id], onDelete: Cascade) // delete the related Wish(s) if the Customer deleted
     
     productId                       String
-    product                         Product                         @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related Wishlist(s) if the Product deleted
+    product                         Product                         @relation(fields: [productId], references: [id], onDelete: Cascade) // delete the related Wish(s) if the Product deleted
     
     @@unique([parentId, productId]) // only 1 wish is allowed for each Product for each Customer
     
     groupId                         String?
-    group                           WishlistGroup?                  @relation(fields: [groupId]  , references: [id], onDelete: Cascade) // delete the related Wishlist(s) if the WishlistGroup deleted
+    group                           WishGroup?                      @relation(fields: [groupId]  , references: [id], onDelete: Cascade) // delete the related Wish(s) if the WishGroup deleted
 }
 
 
