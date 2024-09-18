@@ -262,6 +262,11 @@ export const ModelEmpty = <TElement extends Element = HTMLElement>(props: ModalE
     const {
         // accessibilities:
         textEmpty = <>The data is empty.</>,
+        
+        
+        
+        // other props:
+        ...restModalEmptyProps
     } = props;
     
     
@@ -276,9 +281,27 @@ export const ModelEmpty = <TElement extends Element = HTMLElement>(props: ModalE
     
     
     
+    // default props:
+    const {
+        // variants:
+        theme = 'secondary',
+        
+        
+        
+        // other props:
+        ...restListItemProps
+    } = restModalEmptyProps;
+    
+    
+    
     // jsx:
     return (
         <ListItem<TElement>
+            // other props:
+            {...restListItemProps}
+            
+            
+            
             // refs:
             elmRef={statusEmptyListRef}
             
