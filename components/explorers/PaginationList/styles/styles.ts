@@ -74,6 +74,13 @@ const usesGalleryBodyWrapperLayout = () => {
             // spacings:
             [paddingVars.paddingInline] : '0px',
             [paddingVars.paddingBlock ] : '0px',
+            
+            
+            
+            // children:
+            ...children('*>[role="dialog"]', {
+                pointerEvents : 'initial', // block the interaction behind the <Backdrop> but still make the <Backdrop> interactive for touch & scrolling
+            }),
         }),
     });
 };
