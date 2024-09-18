@@ -142,7 +142,7 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
             
             // children:
             ...children('*', {
-                aspectRatio: '1 / 1',
+                aspectRatio: '1 / 1', // TODO: set product aspect ratio for consistent height
             }),
         }),
     });
