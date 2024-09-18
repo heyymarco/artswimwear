@@ -250,6 +250,11 @@ export const ModelEmpty = <TElement extends Element = HTMLElement>(props: ModalE
     const {
         // accessibilities:
         textEmpty = <>The data is empty.</>,
+        
+        
+        
+        // other props:
+        ...restModalEmptyProps
     } = props;
     
     
@@ -264,11 +269,34 @@ export const ModelEmpty = <TElement extends Element = HTMLElement>(props: ModalE
     
     
     
+    // default props:
+    const {
+        // variants:
+        theme = 'secondary',
+        
+        
+        
+        // other props:
+        ...restBasicProps
+    } = restModalEmptyProps;
+    
+    
+    
     // jsx:
     return (
         <Basic<TElement>
+            // other props:
+            {...restBasicProps}
+            
+            
+            
             // refs:
             elmRef={statusEmptyListRef}
+            
+            
+            
+            // variants:
+            theme={theme}
             
             
             
@@ -495,6 +523,11 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                         
                         // classes:
                         className='solid'
+                        
+                        
+                        
+                        // states:
+                        enabled={data !== undefined /* data is fully loaded even if empty data */}
                         
                         
                         

@@ -60,9 +60,11 @@ const usesListLayout = () => {
         
         
         
+        // the aspectRatio is already defined in <ProductCard>
         // // children:
         // ...children('*', {
-        //     aspectRatio: '1 / 1', // TODO: set product aspect ratio for consistent height
+        //     boxSizing   : 'border-box',
+        //     aspectRatio : commerces.defaultProductAspectRatio,
         // }),
     });
 };

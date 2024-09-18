@@ -65,7 +65,7 @@ const usesGalleryBodyWrapperLayout = () => {
     return style({
         // capabilities:
         ...groupableRule(),  // make a nicely rounded corners
-        // ...groupableRuleForBackdrop(), // make a nicely rounded corners
+        ...groupableRuleForBackdrop(), // make a nicely rounded corners
         
         
         
@@ -85,6 +85,13 @@ const usesGalleryBodyWrapperLayout = () => {
             // spacings:
             [paddingVars.paddingInline] : '0px',
             [paddingVars.paddingBlock ] : '0px',
+            
+            
+            
+            // children:
+            ...children('*>[role="dialog"]', {
+                pointerEvents : 'initial', // block the interaction behind the <Backdrop> but still make the <Backdrop> interactive for touch & scrolling
+            }),
         }),
     });
 };
@@ -140,10 +147,12 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
             
             
             
-            // children:
-            ...children('*', {
-                aspectRatio: '1 / 1', // TODO: set product aspect ratio for consistent height
-            }),
+            // the aspectRatio is already defined in <WishGroupImage>
+            // // children:
+            // ...children('*', {
+            //     boxSizing   : 'border-box',
+            //     aspectRatio : commerces.defaultProductAspectRatio,
+            // }),
         }),
     });
 };

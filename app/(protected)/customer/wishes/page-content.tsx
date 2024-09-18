@@ -73,12 +73,17 @@ function WishPageContentInternal(): JSX.Element|null {
     
     
     // jsx:
-    if (isLoadingAndNoData) return <PageLoading />;
-    if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
+    // if (isLoadingAndNoData) return <PageLoading />;
+    // if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
         <SimpleMainPage>
             <Section theme='primary'>
                 <PaginationGallery<PublicOrderDetail>
+                    // accessibilities:
+                    textEmpty='The collection is empty'
+                    
+                    
+                    
                     // components:
                     modelPreviewComponent={
                         <WishGroupImage

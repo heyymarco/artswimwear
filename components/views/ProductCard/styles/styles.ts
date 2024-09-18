@@ -107,6 +107,7 @@ const usesProductCardLayout = () => {
                 // sizes:
                 // minInlineSize  : `${minImageSize}px`,
                 // minBlockSize   : `${minImageHeight}px`,
+                boxSizing   : 'border-box',
                 aspectRatio : commerces.defaultProductAspectRatio,
                 
                 
