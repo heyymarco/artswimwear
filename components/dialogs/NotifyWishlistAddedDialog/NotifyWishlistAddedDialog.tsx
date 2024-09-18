@@ -49,9 +49,11 @@ import {
     
     
     
-    PaginationExplorerStateProvider,
-    PaginationExplorer,
-}                           from '@/components/explorers/PaginationExplorer'
+    PaginationStateProvider,
+}                           from '@/components/explorers/Pagination'
+import {
+    PaginationList,
+}                           from '@/components/explorers/PaginationList'
 import {
     WishlistGroupPreview,
 }                           from '@/components/views/WishlistGroupPreview'
@@ -171,7 +173,7 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                 <p>
                     Also save to <em>your collection</em>? <span className='txt-sec'>(optional)</span>
                 </p>
-                <PaginationExplorerStateProvider
+                <PaginationStateProvider
                     // states:
                     initialPerPage={10}
                     
@@ -180,7 +182,7 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                     // data:
                     useGetModelPage={useGetWishlistGroupPage}
                 >
-                    <PaginationExplorer<WishlistGroupDetail>
+                    <PaginationList<WishlistGroupDetail>
                         // appearances:
                         showPaginationTop={false}
                         autoHidePagination={true}
@@ -218,7 +220,7 @@ const NotifyWishlistAddedDialog = <TElement extends Element = HTMLElement, TModa
                         // handlers:
                         onModelCreate={handleGroupCreated}
                     />
-                </PaginationExplorerStateProvider>
+                </PaginationStateProvider>
             </CardBody>
             <CardFooter>
                 <ButtonIcon className='btnCancel' icon='done' onClick={handleCloseDialog}>No, Thanks</ButtonIcon>

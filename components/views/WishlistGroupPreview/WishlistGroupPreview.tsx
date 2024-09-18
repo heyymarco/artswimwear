@@ -41,7 +41,7 @@ import {
 // internal components:
 import {
     type ModelPreviewProps,
-}                           from '@/components/explorers/PaginationExplorer'
+}                           from '@/components/explorers/PaginationList'
 import {
     type EditorChangeEventHandler,
 }                           from '@/components/editors/Editor'

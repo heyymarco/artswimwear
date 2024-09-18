@@ -8,6 +8,6 @@ import {
 
 // styles:
 import './styles';
-export const usePaginationExplorerStyleSheet = dynamicStyleSheets(
+export const usePaginationNavStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */ './styles')
-, { id: 'lm1zazz2r7' });
+, { id: 'lky86dcwhx' });

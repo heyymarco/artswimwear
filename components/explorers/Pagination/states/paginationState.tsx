@@ -36,7 +36,7 @@ import {
 
 // states:
 
-//#region paginationExplorerState
+//#region paginationState
 
 // contexts:
 export type UseGetModelPage<TModel extends Model> = (arg: PaginationArgs) => UseGetModelPageApi<TModel>
@@ -49,7 +49,7 @@ export interface UseGetModelPageApi<TModel extends Model> {
     refetch     : () => void
 }
 
-export interface PaginationExplorerState<TModel extends Model>
+export interface PaginationState<TModel extends Model>
     extends
         // apis:
         UseGetModelPageApi<TModel>
@@ -63,7 +63,7 @@ export interface PaginationExplorerState<TModel extends Model>
 }
 
 const noopSetter : EventHandler<unknown> = () => {};
-const PaginationExplorerStateContext = createContext<PaginationExplorerState<any>>({
+const PaginationStateContext = createContext<PaginationState<any>>({
     // states:
     page       : 1,
     setPage    : noopSetter,
@@ -80,16 +80,16 @@ const PaginationExplorerStateContext = createContext<PaginationExplorerState<any
     isError    : false,
     refetch    : () => {}
 });
-PaginationExplorerStateContext.displayName  = 'PaginationExplorerState';
+PaginationStateContext.displayName  = 'PaginationState';
 
-export const usePaginationExplorerState = <TModel extends Model>(): PaginationExplorerState<TModel> => {
-    return useContext(PaginationExplorerStateContext);
+export const usePaginationState = <TModel extends Model>(): PaginationState<TModel> => {
+    return useContext(PaginationStateContext);
 }
 
 
 
 // react components:
-export interface PaginationExplorerStateProps<TModel extends Model> {
+export interface PaginationStateProps<TModel extends Model> {
     // states:
     initialPage     ?: number
     initialPerPage  ?: number
@@ -99,7 +99,7 @@ export interface PaginationExplorerStateProps<TModel extends Model> {
     // data:
     useGetModelPage  : UseGetModelPage<TModel>
 }
-const PaginationExplorerStateProvider = <TModel extends Model>(props: React.PropsWithChildren<PaginationExplorerStateProps<TModel>>): JSX.Element|null => {
+const PaginationStateProvider = <TModel extends Model>(props: React.PropsWithChildren<PaginationStateProps<TModel>>): JSX.Element|null => {
     // props:
     const {
         // states:
@@ -132,7 +132,7 @@ const PaginationExplorerStateProvider = <TModel extends Model>(props: React.Prop
         
         refetch,
     } = useGetModelPage({ page, perPage });
-    const paginationExplorerState = useMemo<PaginationExplorerState<TModel>>(() => ({
+    const paginationState = useMemo<PaginationState<TModel>>(() => ({
         // states:
         page,
         setPage,                  // stable ref
@@ -174,13 +174,13 @@ const PaginationExplorerStateProvider = <TModel extends Model>(props: React.Prop
     
     // jsx:
     return (
-        <PaginationExplorerStateContext.Provider value={paginationExplorerState}>
+        <PaginationStateContext.Provider value={paginationState}>
             {children}
-        </PaginationExplorerStateContext.Provider>
+        </PaginationStateContext.Provider>
     );
 };
 export {
-    PaginationExplorerStateProvider,            // named export for readibility
-    PaginationExplorerStateProvider as default, // default export to support React.lazy
+    PaginationStateProvider,            // named export for readibility
+    PaginationStateProvider as default, // default export to support React.lazy
 }
-//#endregion paginationExplorerState
+//#endregion paginationState

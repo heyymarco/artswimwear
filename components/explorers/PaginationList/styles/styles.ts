@@ -228,9 +228,4 @@ export default () => [
     scope('separatorHack', {
         ...usesSeparatorHackLayout(),
     }),
-    
-    scope('loadingBar', {
-        // sizes:
-        blockSize: '100%',
-    }),
 ];

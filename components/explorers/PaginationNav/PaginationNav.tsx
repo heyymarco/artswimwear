@@ -8,7 +8,7 @@ import {
 
 // styles:
 import {
-    usePaginationExplorerStyleSheet,
+    usePaginationNavStyleSheet,
 }                           from './styles/loader'
 
 // reusable-ui core:
@@ -26,7 +26,7 @@ import {
     
     // composite-components:
     PaginationProps,
-    Pagination as PaginationControl,
+    Pagination,
     NavPrevItem,
     NavNextItem,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
@@ -36,13 +36,15 @@ import {
     LoadingBar,
 }                           from '@heymarco/loading-bar'
 
+// internal components:
+import {
+    usePaginationState,
+}                           from '@/components/explorers/Pagination'
+
 // internals:
 import type {
     Model,
 }                           from '@/libs/types'
-import {
-    usePaginationExplorerState,
-}                           from './states/paginationExplorerState'
 
 
 
@@ -54,7 +56,7 @@ export interface PaginationNavProps<TElement extends Element = HTMLElement>
 }
 const PaginationNav = <TModel extends Model, TElement extends Element = HTMLElement>(props: PaginationNavProps<TElement>): JSX.Element|null => {
     // styles:
-    const styleSheets = usePaginationExplorerStyleSheet();
+    const styleSheets = usePaginationNavStyleSheet();
     
     
     
@@ -72,7 +74,7 @@ const PaginationNav = <TModel extends Model, TElement extends Element = HTMLElem
         data,
         isFetching,
         isError,
-    } = usePaginationExplorerState<TModel>();
+    } = usePaginationState<TModel>();
     const pages       = Math.ceil((data?.total ?? 0) / perPage);
     const isDataEmpty = !!data && !data.total;
     
@@ -148,7 +150,7 @@ const PaginationNav = <TModel extends Model, TElement extends Element = HTMLElem
     
     // jsx:
     return (
-        <PaginationControl<TElement>
+        <Pagination<TElement>
             // other props:
             {...restPaginationControlProps}
             
@@ -174,7 +176,7 @@ const PaginationNav = <TModel extends Model, TElement extends Element = HTMLElem
             nextItems={nextItems}
         >
             {children}
-        </PaginationControl>
+        </Pagination>
     );
 };
 export {

@@ -14,7 +14,7 @@ import {
 
 // styles:
 import {
-    usePaginationExplorerStyleSheet,
+    usePaginationListStyleSheet,
 }                           from './styles/loader'
 
 // reusable-ui core:
@@ -62,10 +62,16 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// internals components:
+// internal components:
+import {
+    type ModelCreateProps,
+    type CreateHandler,
+    
+    usePaginationState,
+}                           from '@/components/explorers/Pagination'
 import {
     PaginationNav,
-}                           from './PaginationNav'
+}                           from '@/components/explorers/PaginationNav'
 
 // internals:
 import {
@@ -79,15 +85,6 @@ import {
     // types:
     type ComplexEditModelDialogResult,
 }                           from '@/components/dialogs/ComplexEditModelDialog'
-import {
-    usePaginationExplorerState,
-}                           from './states/paginationExplorerState'
-
-// internals:
-import {
-    type ModelCreateProps,
-    type CreateHandler,
-}                           from './types'
 
 
 
@@ -118,7 +115,7 @@ export interface ModelCreateOuterProps<TModel extends Model>
 }
 export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterProps<TModel>) => {
     // styles:
-    const styleSheets = usePaginationExplorerStyleSheet();
+    const styleSheets = usePaginationListStyleSheet();
     
     
     
@@ -267,7 +264,7 @@ export const ModelEmpty = <TElement extends Element = HTMLElement>(props: ModalE
     
     
     // styles:
-    const styleSheets = usePaginationExplorerStyleSheet();
+    const styleSheets = usePaginationListStyleSheet();
     
     
     
@@ -294,8 +291,8 @@ export const ModelEmpty = <TElement extends Element = HTMLElement>(props: ModalE
     );
 };
 
-/* <PaginationExplorer> */
-export interface PaginationExplorerProps<TModel extends Model, TElement extends Element = HTMLElement>
+/* <PaginationList> */
+export interface PaginationListProps<TModel extends Model, TElement extends Element = HTMLElement>
     extends
         // bases:
         Omit<GenericProps<TElement>,
@@ -336,7 +333,7 @@ export interface PaginationExplorerProps<TModel extends Model, TElement extends 
     menusBefore           ?: React.ReactNode
     menusAfter            ?: React.ReactNode
 }
-const PaginationExplorer         = <TModel extends Model, TElement extends Element = HTMLElement>(props: PaginationExplorerProps<TModel, TElement>): JSX.Element|null => {
+const PaginationList         = <TModel extends Model, TElement extends Element = HTMLElement>(props: PaginationListProps<TModel, TElement>): JSX.Element|null => {
     // props:
     const {
         // appearances:
@@ -370,13 +367,13 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
         
         
         // other props:
-        ...restPaginationExplorerProps
+        ...restPaginationListProps
     } = props;
     
     
     
     // styles:
-    const styleSheets = usePaginationExplorerStyleSheet();
+    const styleSheets = usePaginationListStyleSheet();
     
     
     
@@ -392,7 +389,7 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
         isFetching,
         isError,
         refetch,
-    } = usePaginationExplorerState<TModel>();
+    } = usePaginationState<TModel>();
     const showPagination = (
         !autoHidePagination
         ? true
@@ -420,7 +417,7 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
         
         // other props:
         ...restGenericProps
-    } = restPaginationExplorerProps;
+    } = restPaginationListProps;
     
     
     
@@ -546,6 +543,6 @@ const PaginationExplorer         = <TModel extends Model, TElement extends Eleme
     );
 };
 export {
-    PaginationExplorer,            // named export for readibility
-    PaginationExplorer as default, // default export to support React.lazy
+    PaginationList,            // named export for readibility
+    PaginationList as default, // default export to support React.lazy
 }

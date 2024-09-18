@@ -55,8 +55,8 @@ import {
 
 // internal components:
 import {
-    ModelPreviewProps,
-}                           from '@/components/explorers/PaginationExplorer'
+    type ModelPreviewProps,
+}                           from '@/components/explorers/PaginationList'
 import {
     CompoundWithBadge,
 }                           from '@/components/CompoundWithBadge'
