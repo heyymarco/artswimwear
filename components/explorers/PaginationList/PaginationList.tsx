@@ -28,8 +28,9 @@ import {
 // reusable-ui components:
 import {
     // base-components:
-    GenericProps,
+    type GenericProps,
     Generic,
+    type BasicProps,
     Basic,
     
     
@@ -40,16 +41,16 @@ import {
     
     
     // layout-components:
-    ListItemProps,
+    type ListItemProps,
     ListItem,
-    ListItemComponentProps,
+    type ListItemComponentProps,
     
     List,
     
     
     
     // menu-components:
-    DropdownListButtonProps,
+    type  DropdownListButtonProps,
     
     
     
@@ -341,7 +342,10 @@ export interface PaginationListProps<TModel extends Model, TElement extends Elem
         >>,
         
         // accessibilities:
-        ModalEmptyProps<TElement>
+        Pick<ModalEmptyProps<TElement>,
+            // accessibilities:
+            |'textEmpty'
+        >
 {
     // appearances:
     showPaginationTop     ?: boolean
@@ -351,6 +355,7 @@ export interface PaginationListProps<TModel extends Model, TElement extends Elem
     
     
     // components:
+    bodyComponent         ?: React.ReactComponentElement<any, BasicProps<Element>>
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
     
     
@@ -376,6 +381,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         
         
         // components:
+        bodyComponent = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
         modelCreateComponent,
         modelPreviewComponent,
         
@@ -501,7 +507,26 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
             />}
             
             {/* <GalleryBodyWrapper> */}
-            <Basic className={styleSheets.galleryBodyWrapper} mild={true} elmRef={dataListRef}>
+            {React.cloneElement<BasicProps<Element>>(bodyComponent,
+                // props:
+                {
+                    // refs:
+                    elmRef    : dataListRef,
+                    
+                    
+                    
+                    // variants:
+                    mild      : true,
+                    
+                    
+                    
+                    // classes:
+                    className : styleSheets.galleryBodyWrapper,
+                },
+                
+                
+                
+                // children:
                 <ModalLoadingError
                     // data:
                     isFetching={isFetching}
@@ -512,9 +537,9 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                     
                     // global stackable:
                     viewport={dataListRef}
-                />
+                />,
                 
-                {/* <GalleryBody> */}
+                /* <GalleryBody> */
                 <List outerRef={innerListRef} theme='inherit' mild='inherit' listStyle='flush' className={styleSheets.galleryBody}>
                     {/* <ModelCreate> */}
                     {!!modelCreateComponent  && <ModelCreateOuter<TModel>
@@ -565,7 +590,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                     {/* a hack for making last separator when the total of <ListItems>(s) is smaller than the min-height of <List> */}
                     {requiresSeparatorHack && <ListItem className={`solid ${styleSheets.separatorHack}`} />}
                 </List>
-            </Basic>
+            )}
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>
                 // classes:
