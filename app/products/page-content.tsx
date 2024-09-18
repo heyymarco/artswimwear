@@ -14,10 +14,12 @@ import {
 // heymarco components:
 import {
     GenericSection,
-    Main,
 }                           from '@heymarco/section'
 
 // internal components:
+import {
+    WideMainPage,
+}                           from '@/components/pages/WideMainPage'
 import {
     LoadingBlankPage,
     ErrorBlankPage,
@@ -65,10 +67,7 @@ export function ProductListPageContent(): JSX.Element|null {
         />
     );
     return (
-        <Main
-            // classes:
-            className={styleSheet.main}
-        >
+        <WideMainPage>
             <GenericSection
                 // classes:
                 className={styleSheet.list}
@@ -89,6 +88,6 @@ export function ProductListPageContent(): JSX.Element|null {
                     )
                 }
             </GenericSection>
-        </Main>
+        </WideMainPage>
     );
 }

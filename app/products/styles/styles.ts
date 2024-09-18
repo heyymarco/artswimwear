@@ -1,7 +1,6 @@
 // cssfn:
 import {
     // writes css in javascript:
-    children,
     style,
     scope,
 }                           from '@cssfn/core'              // writes css in javascript
@@ -23,24 +22,6 @@ const minImageSize   = 255; // 255px
 
 
 // styles:
-const usesMainLayout = () => {
-    return style({
-        // layouts:
-        display      : 'grid',
-        
-        
-        
-        // scrolls:
-        overflow: 'hidden', // workaround for overflowing popup
-        
-        
-        
-        // children:
-        ...children('section', {
-            padding: '0px',
-        }),
-    });
-};
 const usesListLayout = () => {
     return style({
         // layouts:
@@ -72,10 +53,6 @@ const usesListLayout = () => {
 
 
 export default () => [
-    scope('main', {
-        // layouts:
-        ...usesMainLayout(),
-    }),
     scope('list', {
         // layouts:
         ...usesListLayout(),
