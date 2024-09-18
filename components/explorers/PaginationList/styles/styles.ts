@@ -31,18 +31,19 @@ import {
 
 
 // styles:
-const usesListModelLayout = () => {
+const usesGalleryBodyWrapperLayout = () => {
     // dependencies:
     
     // capabilities:
     const {groupableRule, groupableVars} = usesGroupable({
-        orientationInlineSelector : null, // craft the <List>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
-        orientationBlockSelector  : null, // craft the <List>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
+        orientationInlineSelector : null, // craft the <GalleryBody>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
+        orientationBlockSelector  : null, // craft the <GalleryBody>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
+        itemsSelector             : null, // craft the <GalleryBody>'s borderRadius manually, uncraft the other <portal><ModalBackdrop><ModalDialog>
     });
     const {groupableRule: groupableRuleForBackdrop} = usesGroupable({
         orientationInlineSelector : '&', // always => target the <portal><ModalBackdrop><ModalDialog>
         orientationBlockSelector  : '&', // always => target the <portal><ModalBackdrop><ModalDialog>
-        itemsSelector             : '*>[role="dialog"]',
+        itemsSelector             : '*>[role="dialog"]', // target the <portal><ModalBackdrop><ModalDialog>
     });
     
     // features:
@@ -76,7 +77,7 @@ const usesListModelLayout = () => {
         }),
     });
 };
-const usesModelListInnerLayout = () => { // the <List> of model
+const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
     // dependencies:
     
     // capabilities:
@@ -89,8 +90,8 @@ const usesModelListInnerLayout = () => { // the <List> of model
     
     return style({
         // sizes:
+        gridArea     : '1 / 1 / -1 / -1', // fill the entire <GalleryBodyWrapper>
         minBlockSize : '13rem', // limits the minimum height to make loading|error popup have enough space
-        blockSize: '100%', // fill the entire <Outer>
         
         
         
@@ -110,17 +111,17 @@ const usesModelListInnerLayout = () => { // the <List> of model
         // children:
         ...children('li:not(:is(.solid, .fluid))', { // defaults to .solid
             flex : [[0, 0, 'auto']], // ungrowable, unshrinkable, initial from it's width
-        })
+        }),
     });
 };
 
-const usesCreateModelLayout = () => { // the <ListItem> of model add_new
+const usesCreateModelLayout = () => { // the <GalleryItem> of model add_new
     return style({
         // layouts:
         display: 'grid',
     });
 };
-const usesEmptyModelLayout = () => {
+const usesEmptyModelLayout = () => { // the <GalleryItem> of model empty_data
     return style({
         // layout:
         display: 'grid',
@@ -162,6 +163,8 @@ const usesSeparatorHackLayout = () => {
     });
 };
 
+
+
 export default () => [
     scope('main', {
         // layouts:
@@ -173,6 +176,8 @@ export default () => [
         gapInline : spacers.md,
         gapBlock  : spacers.sm,
     }),
+    
+    
     
     scope('toolbar', {
         // layouts:
@@ -206,26 +211,27 @@ export default () => [
         }),
     }),
     
+    
+    
     scope('paginTop', {
         justifySelf: 'center',
     }),
-    scope('listModel', {
-        ...usesListModelLayout(),
+    scope('galleryBodyWrapper', {
+        ...usesGalleryBodyWrapperLayout(),
     }, { specificityWeight: 2 }),
-    scope('listModelInner', { // the <List> of model
-        ...usesModelListInnerLayout(),
+    scope('galleryBody', { // the <GalleryBody> of model
+        ...usesGalleryBodyLayout(),
     }, { specificityWeight: 2 }),
-    scope('paginBtm', {
-        justifySelf: 'center',
-    }),
-    
-    scope('createModel', { // the <ListItem> of model add_new
+    scope('createModel', { // the <GalleryItem> of model add_new
         ...usesCreateModelLayout(),
     }, { specificityWeight: 2 }),
-    scope('emptyModel', { // the <ListItem> of model empty_data
+    scope('emptyModel', { // the <GalleryItem> of model empty_data
         ...usesEmptyModelLayout(),
     }, { specificityWeight: 2 }),
     scope('separatorHack', {
         ...usesSeparatorHackLayout(),
+    }),
+    scope('paginBtm', {
+        justifySelf: 'center',
     }),
 ];

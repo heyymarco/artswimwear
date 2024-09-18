@@ -456,7 +456,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
             // classes:
             mainClass={mainClass}
         >
-            <div className={`toolbar ${styleSheets.toolbar}`}>
+            <header className={`toolbar ${styleSheets.toolbar}`}>
                 <div className='toolbarBefore'>
                     {menusBefore}
                 </div>
@@ -465,14 +465,17 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                 <div className='toolbarAfter'>
                     {menusAfter}
                 </div>
-            </div>
+            </header>
+            
+            
             
             {showPagination && showPaginationTop && <PaginationNav<TModel>
                 // classes:
                 className={styleSheets.paginTop}
             />}
             
-            <Basic className={styleSheets.listModel} mild={true} elmRef={dataListRef}>
+            {/* <GalleryBodyWrapper> */}
+            <Basic className={styleSheets.galleryBodyWrapper} mild={true} elmRef={dataListRef}>
                 <ModalLoadingError
                     // data:
                     isFetching={isFetching}
@@ -485,7 +488,8 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                     viewport={dataListRef}
                 />
                 
-                <List outerRef={innerListRef} listStyle='flush' className={styleSheets.listModelInner}>
+                {/* <GalleryBody> */}
+                <List outerRef={innerListRef} listStyle='flush' className={styleSheets.galleryBody}>
                     {/* <ModelCreate> */}
                     {!!modelCreateComponent  && <ModelCreateOuter<TModel>
                         // accessibilities:
@@ -512,8 +516,10 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                         onModelCreate={onModelCreate}
                     />}
                     
+                    {/* <ModelEmpty> */}
                     {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
                     
+                    {/* <GalleryItem> */}
                     {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
                         /* <ModelPreview> */
                         React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
