@@ -35,7 +35,7 @@ const WideMainPage = (props: WideMainPageProps): JSX.Element|null => {
     // default props:
     const {
         // classes:
-        mainClass = styleSheet.main,
+        className = '',
         
         
         
@@ -54,7 +54,7 @@ const WideMainPage = (props: WideMainPageProps): JSX.Element|null => {
             
             
             // classes:
-            mainClass={mainClass}
+            className={`${className} ${styleSheet.main}`}
         />
     )
 };
