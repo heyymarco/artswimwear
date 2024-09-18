@@ -68,6 +68,12 @@ const usesGalleryBodyWrapperLayout = () => {
             
             
             
+            // spacings:
+            // [paddingVars.paddingInline] : '0px', // the padding is rely on this <GalleryBodyWrapper>, do not remove, the <GalleryBody> doesn't have a padding
+            // [paddingVars.paddingBlock ] : '0px', // the padding is rely on this <GalleryBodyWrapper>, do not remove, the <GalleryBody> doesn't have a padding
+            
+            
+            
             // children:
             ...children('*>[role="dialog"]', {
                 pointerEvents : 'initial', // block the interaction behind the <Backdrop> but still make the <Backdrop> interactive for touch & scrolling
@@ -95,7 +101,7 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
         
         
         // scrolls:
-        overflow: 'visible', // do not clip <item>'s boxShadow
+        overflow     : 'visible', // do not clip <item>'s boxShadow
         
         
         
