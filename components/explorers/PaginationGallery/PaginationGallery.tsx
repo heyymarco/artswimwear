@@ -404,13 +404,17 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
     
     // refs:
     const dataListRef  = useRef<HTMLElement|null>(null);
-    const innerListRef = useRef<HTMLElement|null>(null);
     
     
     
     // default props:
     const {
-        // classes
+        // semantics:
+        tag       = 'article',
+        
+        
+        
+        // classes:
         mainClass = styleSheets.main,
         
         
@@ -418,30 +422,6 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         // other props:
         ...restGenericProps
     } = restPaginationGalleryProps;
-    
-    
-    
-    // effects:
-    const [requiresSeparatorHack, setRequiresSeparatorHack] = useState<boolean>(false); // hack-LESS if possible
-    useIsomorphicLayoutEffect(() => {
-        // conditions:
-        const innerListElm = innerListRef.current;
-        if (!innerListElm) return;
-        
-        
-        
-        // setups:
-        const requiresSeparatorHack = (
-            !isModelEmpty
-            &&
-            ((): boolean => {
-                const lastItemBottom = innerListElm.lastElementChild?.getBoundingClientRect().bottom;
-                if (!lastItemBottom) return false;
-                return ((innerListElm.getBoundingClientRect().bottom - lastItemBottom) >= 1 /* px */);
-            })()
-        );
-        setRequiresSeparatorHack(requiresSeparatorHack);
-    }, [pagedItems?.length ?? 0, isModelEmpty]); // runs the effect every time the items added/removed
     
     
     
@@ -453,10 +433,15 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
             
             
             
+            // semantics:
+            tag={tag}
+            
+            
+            
             // classes:
             mainClass={mainClass}
         >
-            <div className={`toolbar ${styleSheets.toolbar}`}>
+            <header className={`toolbar ${styleSheets.toolbar}`}>
                 <div className='toolbarBefore'>
                     {menusBefore}
                 </div>
@@ -465,14 +450,16 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 <div className='toolbarAfter'>
                     {menusAfter}
                 </div>
-            </div>
+            </header>
+            
+            
             
             {showPagination && showPaginationTop && <PaginationNav<TModel>
                 // classes:
                 className={styleSheets.paginTop}
             />}
             
-            <Basic className={styleSheets.listModel} mild={true} elmRef={dataListRef}>
+            <Basic className={styleSheets.galleryBodyOuter} mild={true} elmRef={dataListRef}>
                 <ModalLoadingError
                     // data:
                     isFetching={isFetching}
@@ -485,7 +472,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                     viewport={dataListRef}
                 />
                 
-                <List outerRef={innerListRef} listStyle='flush' className={styleSheets.listModelInner}>
+                <Generic tag='section' className={styleSheets.galleryBodyInner}>
                     {/* <ModelCreate> */}
                     {!!modelCreateComponent  && <ModelCreateOuter<TModel>
                         // accessibilities:
@@ -529,10 +516,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                             },
                         )
                     )}
-                    
-                    {/* a hack for making last separator when the total of <ListItems>(s) is smaller than the min-height of <List> */}
-                    {requiresSeparatorHack && <ListItem className={`solid ${styleSheets.separatorHack}`} />}
-                </List>
+                </Generic>
             </Basic>
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>

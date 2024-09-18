@@ -31,7 +31,7 @@ import {
 
 
 // styles:
-const usesListModelLayout = () => {
+const usesGalleryBodyOuterLayout = () => {
     // dependencies:
     
     // capabilities:
@@ -76,7 +76,7 @@ const usesListModelLayout = () => {
         }),
     });
 };
-const usesModelListInnerLayout = () => { // the <List> of model
+const usesGalleryBodyInnerLayout = () => { // the <List> of model
     // dependencies:
     
     // capabilities:
@@ -144,23 +144,6 @@ const usesEmptyModelLayout = () => {
         textAlign  : 'center',
     });
 };
-const usesSeparatorHackLayout = () => {
-    return style({
-        // layouts:
-        display: 'grid',
-        
-        
-        
-        // sizes:
-        boxSizing    : 'border-box',
-        minBlockSize : 0,
-        
-        
-        
-        // spacings:
-        padding      : 0,
-    });
-};
 
 export default () => [
     scope('main', {
@@ -173,6 +156,8 @@ export default () => [
         gapInline : spacers.md,
         gapBlock  : spacers.sm,
     }),
+    
+    
     
     scope('toolbar', {
         // layouts:
@@ -206,26 +191,24 @@ export default () => [
         }),
     }),
     
+    
+    
     scope('paginTop', {
         justifySelf: 'center',
     }),
-    scope('listModel', {
-        ...usesListModelLayout(),
+    scope('galleryBodyOuter', {
+        ...usesGalleryBodyOuterLayout(),
     }, { specificityWeight: 2 }),
-    scope('listModelInner', { // the <List> of model
-        ...usesModelListInnerLayout(),
+    scope('galleryBodyInner', { // the <List> of model
+        ...usesGalleryBodyInnerLayout(),
     }, { specificityWeight: 2 }),
-    scope('paginBtm', {
-        justifySelf: 'center',
-    }),
-    
     scope('createModel', { // the <ListItem> of model add_new
         ...usesCreateModelLayout(),
     }, { specificityWeight: 2 }),
     scope('emptyModel', { // the <ListItem> of model empty_data
         ...usesEmptyModelLayout(),
     }, { specificityWeight: 2 }),
-    scope('separatorHack', {
-        ...usesSeparatorHackLayout(),
+    scope('paginBtm', {
+        justifySelf: 'center',
     }),
 ];
