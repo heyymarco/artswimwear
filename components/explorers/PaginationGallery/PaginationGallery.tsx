@@ -334,7 +334,10 @@ export interface PaginationGalleryProps<TModel extends Model, TElement extends E
         >>,
         
         // accessibilities:
-        ModalEmptyProps<TElement>
+        Pick<ModalEmptyProps<TElement>,
+            // accessibilities:
+            |'textEmpty'
+        >
 {
     // appearances:
     showPaginationTop     ?: boolean
@@ -344,6 +347,7 @@ export interface PaginationGalleryProps<TModel extends Model, TElement extends E
     
     
     // components:
+    bodyComponent         ?: React.ReactComponentElement<any, BasicProps<Element>>
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
     
     
@@ -369,6 +373,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         
         
         // components:
+        bodyComponent = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
         modelCreateComponent,
         modelPreviewComponent,
         
@@ -479,7 +484,26 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
             />}
             
             {/* <GalleryBodyWrapper> */}
-            <Basic className={styleSheets.galleryBodyWrapper} mild={true} elmRef={dataListRef}>
+            {React.cloneElement<BasicProps<Element>>(bodyComponent,
+                // props:
+                {
+                    // refs:
+                    elmRef    : dataListRef,
+                    
+                    
+                    
+                    // variants:
+                    mild      : true,
+                    
+                    
+                    
+                    // classes:
+                    className : styleSheets.galleryBodyWrapper,
+                },
+                
+                
+                
+                // children:
                 <ModalLoadingError
                     // data:
                     isFetching={isFetching}
@@ -490,9 +514,9 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                     
                     // global stackable:
                     viewport={dataListRef}
-                />
+                />,
                 
-                {/* <GalleryBody> */}
+                /* <GalleryBody> */
                 <Basic tag='section' theme='inherit' mild='inherit' className={styleSheets.galleryBody}>
                     {/* <ModelEmpty> */}
                     {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
@@ -540,7 +564,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                         onModelCreate={onModelCreate}
                     />}
                 </Basic>
-            </Basic>
+            )}
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>
                 // classes:
