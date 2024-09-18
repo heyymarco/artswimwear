@@ -106,6 +106,9 @@ export interface ModelCreateOuterProps<TModel extends Model>
     
     // components:
     modelCreateComponent  : React.ReactComponentElement<any, ModelCreateProps> | (() => TModel|Promise<TModel>) | false
+    /**
+     * An additional button such as `<DropdownMoreButton>`.
+     */
     moreButtonComponent  ?: React.ReactComponentElement<any, DropdownListButtonProps>
     
     
@@ -178,7 +181,7 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
     
     
     // jsx:
-    const addNewBUtton = (
+    const addNewButton = (
         <ButtonIcon
             // appearances:
             icon='add'
@@ -223,10 +226,10 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
         (
             !moreButtonComponent
             ?
-            addNewBUtton
+            addNewButton
             :
             <Group>
-                {addNewBUtton}
+                {addNewButton}
                 {moreButtonComponent}
             </Group>
         ),
@@ -489,7 +492,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                 />
                 
                 {/* <GalleryBody> */}
-                <List outerRef={innerListRef} listStyle='flush' className={styleSheets.galleryBody}>
+                <List outerRef={innerListRef} theme='inherit' mild='inherit' listStyle='flush' className={styleSheets.galleryBody}>
                     {/* <ModelCreate> */}
                     {!!modelCreateComponent  && <ModelCreateOuter<TModel>
                         // accessibilities:
