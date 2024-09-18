@@ -10,9 +10,14 @@ import {
 }                           from 'next-connect'
 
 // models:
-import type {
-    ProductPreview,
-    ProductDetail,
+import {
+    type ProductPreview,
+    type ProductDetail,
+    
+    
+    
+    productPreviewSelect,
+    convertProductPreviewDataToProductPreview,
 }                           from '@/models'
 export type {
     VariantPreview,
@@ -129,65 +134,9 @@ router
             where  : {
                 visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
             },
-            select : {
-                id                   : true,
-                
-                name                 : true,
-                
-                price                : true,
-                shippingWeight       : true,
-                
-                path                 : true,
-                
-                images               : true,
-                
-                variantGroups : {
-                    select : {
-                        variants : {
-                            where    : {
-                                visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                            },
-                            select : {
-                                id             : true,
-                                
-                                name           : true,
-                                
-                                price          : true,
-                                shippingWeight : true,
-                                
-                                images         : true,
-                            },
-                            orderBy : {
-                                sort : 'asc',
-                            },
-                        },
-                    },
-                    orderBy : {
-                        sort : 'asc',
-                    },
-                },
-            },
+            select : productPreviewSelect,
         }))
-        .map((product) => {
-            const {
-                images,        // take
-                variantGroups, // take
-            ...restProduct} = product;
-            return {
-                ...restProduct,
-                image         : images?.[0],
-                variantGroups : (
-                    variantGroups
-                    .map(({variants}) =>
-                        variants
-                        .map(({images, ...restVariantPreview}) => ({
-                            ...restVariantPreview,
-                            image : images?.[0],
-                        }))
-                    )
-                ),
-            };
-        })
+        .map(convertProductPreviewDataToProductPreview)
     );
     return NextResponse.json(productPreviews); // handled with success
 });
