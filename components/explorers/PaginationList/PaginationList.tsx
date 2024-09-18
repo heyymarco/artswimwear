@@ -442,6 +442,11 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
     
     // default props:
     const {
+        // semantics:
+        tag       = 'article',
+        
+        
+        
         // classes
         mainClass = styleSheets.main,
         
@@ -482,6 +487,11 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         <Generic<TElement>
             // other props:
             {...restGenericProps}
+            
+            
+            
+            // semantics:
+            tag={tag}
             
             
             
