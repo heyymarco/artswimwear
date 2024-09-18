@@ -26,8 +26,8 @@ import {
     usePaginationState,
 }                           from '@/components/explorers/Pagination'
 import {
-    PaginationList,
-}                           from '@/components/explorers/PaginationList'
+    PaginationGallery,
+}                           from '@/components/explorers/PaginationGallery'
 import {
     WishlistGroupPreview,
 }                           from '@/components/views/WishlistGroupPreview'
@@ -75,7 +75,7 @@ function WishlistPageContentInternal(): JSX.Element|null {
     return (
         <SimpleMainPage>
             <Section theme='primary'>
-                <PaginationList<PublicOrderDetail>
+                <PaginationGallery<PublicOrderDetail>
                     // components:
                     modelPreviewComponent={
                         <WishlistGroupPreview
