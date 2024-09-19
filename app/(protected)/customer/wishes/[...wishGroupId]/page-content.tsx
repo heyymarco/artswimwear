@@ -4,17 +4,18 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useCallback,
 }                           from 'react'
 
 // styles:
 import {
     useWishAllPageStyleSheet,
 }                           from './styles/loader'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
@@ -34,19 +35,12 @@ import {
 // heymarco components:
 import {
     Section,
-    Main,
 }                           from '@heymarco/section'
 
 // internal components:
 import {
     WideMainPage,
 }                           from '@/components/pages/WideMainPage'
-import {
-    PageLoading,
-}                           from '@/components/PageLoading'
-import {
-    PageError,
-}                           from '@/components/PageError'
 import {
     PaginationStateProvider,
     usePaginationState,
@@ -57,17 +51,15 @@ import {
 import {
     ProductCard,
 }                           from '@/components/views/ProductCard'
-import {
-    EditWishGroupDialog,
-}                           from '@/components/dialogs/EditWishGroupDialog'
 
 // models:
 import {
     type PaginationArgs,
+    type Pagination,
 }                           from '@/libs/types'
 import {
-    type GetWishRequest,
     type ProductPreview,
+    type WishGroupDetail,
 }                           from '@/models'
 
 // stores:
@@ -81,12 +73,12 @@ import {
 // react components:
 export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
     // stores:
-    const useGetWishPageInternal = useCallback((arg: PaginationArgs) => {
+    const useGetWishPageIntercept = useEvent((arg: PaginationArgs) => {
         return useGetWishPage({
             ...arg,
             groupId : (wishGroupId && (wishGroupId !== 'all')) ? wishGroupId : undefined,
         });
-    }, [wishGroupId]);
+    });
     
     
     
@@ -94,7 +86,7 @@ export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JS
     return (
         <PaginationStateProvider
             // data:
-            useGetModelPage={useGetWishPageInternal}
+            useGetModelPage={useGetWishPageIntercept}
         >
             <WishAllPageContentInternal wishGroupId={wishGroupId} />
         </PaginationStateProvider>
@@ -108,18 +100,18 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     
     // stores:
     const {
-        data,
-        isLoading: isLoadingAndNoData,
-        isError,
-        refetch,
+        data: dataRaw,
     } = usePaginationState<ProductPreview>();
-    const isErrorAndNoData = isError && !data;
+    const data = dataRaw as (Pagination<ProductPreview> & { wishGroup : WishGroupDetail|null })|undefined;
+    const wishGroupNameFn = (
+        !wishGroupId
+        ? 'All'
+        : data?.wishGroup?.name ?? 'Collection'
+    );
     
     
     
     // jsx:
-    // if (isLoadingAndNoData) return <PageLoading />;
-    // if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
         <WideMainPage
             // classes:
@@ -129,6 +121,9 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                 // classes:
                 className={styleSheet.nav}
             >
+                <p>
+                    test {wishGroupNameFn}
+                </p>
                 <Nav
                     // variants:
                     theme='primary'
@@ -141,11 +136,11 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                         </Link>
                     </NavItem>
                     
-                    <NavItem end>
+                    {!wishGroupId && <NavItem end>
                         <Link href={`/customer/wishes/${encodeURIComponent(wishGroupId)}`} >
-                            All
+                            {wishGroupNameFn}
                         </Link>
-                    </NavItem>
+                    </NavItem>}
                 </Nav>
             </Section>
             

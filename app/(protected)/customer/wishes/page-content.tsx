@@ -36,14 +36,7 @@ import {
     WideMainPage,
 }                           from '@/components/pages/WideMainPage'
 import {
-    PageLoading,
-}                           from '@/components/PageLoading'
-import {
-    PageError,
-}                           from '@/components/PageError'
-import {
     PaginationStateProvider,
-    usePaginationState,
 }                           from '@/components/explorers/Pagination'
 import {
     PaginationGallery,
@@ -86,20 +79,7 @@ function WishPageContentInternal(): JSX.Element|null {
     
     
     
-    // stores:
-    const {
-        data,
-        isLoading: isLoadingAndNoData,
-        isError,
-        refetch,
-    } = usePaginationState<PublicOrderDetail>();
-    const isErrorAndNoData = isError && !data;
-    
-    
-    
     // jsx:
-    // if (isLoadingAndNoData) return <PageLoading />;
-    // if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
         <WideMainPage>
             <Section

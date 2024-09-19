@@ -549,7 +549,7 @@ export const apiSlice = createApi({
             }),
         }),
         
-        getWishPage                 : builder.query<Pagination<ProductPreview>, PaginationArgs & GetWishRequest>({
+        getWishPage                 : builder.query<Pagination<ProductPreview> & { wishGroup : WishGroupDetail|null }, PaginationArgs & GetWishRequest>({
             query: (arg) => ({
                 url         : 'customer/wishes',
                 method      : 'POST',

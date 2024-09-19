@@ -24,6 +24,7 @@ import {
 }                           from '@/libs/types'
 import {
     type ProductPreview,
+    type WishGroupDetail,
     type WishDetail,
     
     
@@ -178,7 +179,7 @@ router
     
     
     //#region query result
-    const [total, paged] = await prisma.$transaction([
+    const [total, paged, wishGroup] = await prisma.$transaction([
         prisma.wish.count({
             where  : {
                 parentId : customerId, // important: the signedIn customerId
@@ -209,10 +210,20 @@ router
             skip    : (page - 1) * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
             take    : perPage,
         }),
+        prisma.wishGroup.findFirst({
+            where : {
+                id : groupId ?? '--never-match--',
+            },
+            select : {
+                id   : true,
+                name : true,
+            },
+        }),
     ]);
-    const paginationOrderDetail : Pagination<ProductPreview> = {
-        total    : total,
-        entities : paged.map(({ product }) => convertProductPreviewDataToProductPreview(product)),
+    const paginationOrderDetail : Pagination<ProductPreview> & { wishGroup : WishGroupDetail|null } = {
+        total     : total,
+        entities  : paged.map(({ product }) => convertProductPreviewDataToProductPreview(product)),
+        wishGroup : wishGroup,
     };
     return Response.json(paginationOrderDetail); // handled with success
     //#endregion query result
