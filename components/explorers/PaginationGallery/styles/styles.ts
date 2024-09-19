@@ -69,8 +69,8 @@ const usesGalleryBodyWrapperLayout = () => {
             
             
             // spacings:
-            // [paddingVars.paddingInline] : '0px', // the padding is rely on this <GalleryBodyWrapper>, do not remove, the <GalleryBody> doesn't have a padding
-            // [paddingVars.paddingBlock ] : '0px', // the padding is rely on this <GalleryBodyWrapper>, do not remove, the <GalleryBody> doesn't have a padding
+            // [paddingVars.paddingInline] : '0px', // do NOT remove the padding on the <GalleryBodyWrapper> because the <GalleryBody> is NOT have padding
+            // [paddingVars.paddingBlock ] : '0px', // do NOT remove the padding on the <GalleryBodyWrapper> because the <GalleryBody> is NOT have padding
             
             
             

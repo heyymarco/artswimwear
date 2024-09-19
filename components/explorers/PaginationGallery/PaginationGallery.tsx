@@ -378,7 +378,10 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         
         
         // components:
+        
+        // we use <Content> for the <GalleryBodyWrapper>, because the <GalleryBody> is NOT have enough styling:
         bodyComponent = (<Content<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
+        
         modelCreateComponent,
         modelPreviewComponent,
         
@@ -522,6 +525,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 />,
                 
                 /* <GalleryBody> */
+                /* we use <Generic> for the gallery body because the <GalleryBodyWrapper> is ALREADY has nice styling */
                 <Generic tag='section' className={styleSheets.galleryBody}>
                     {/* <ModelEmpty> */}
                     {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
@@ -568,7 +572,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                         // handlers:
                         onModelCreate={onModelCreate}
                     />}
-                </Generic>
+                </Generic>,
             )}
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>
