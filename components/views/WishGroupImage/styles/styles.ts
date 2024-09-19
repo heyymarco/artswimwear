@@ -129,7 +129,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
             }),
             ...children('.images', {
                 // positions:
-                gridArea: 'images',
+                gridArea  : 'images',
                 
                 
                 
@@ -142,8 +142,23 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 ...rule(':not(.noImage)', {
                     // layouts:
                     display             : 'grid',
-                    gridTemplateColumns : '1fr 1fr',
                     gridAutoRows        : '1fr',
+                    gridTemplateColumns : '1fr 1fr',
+                    ...rule(':has(>:nth-child(3)):not(:has(>:nth-child(4)))', { // only having 3 images (not having 4rd image)
+                        ...children(':nth-child(3)', {
+                            translate : '50% 0',
+                        }),
+                    }),
+                    ...rule(':has(>:nth-child(2)):not(:has(>:nth-child(3)))', { // only having 2 images (not having 3rd image)
+                        ...children(':nth-child(1)', {
+                            translate : '0 25%',
+                        }),...children(':nth-child(2)', {
+                            translate : '0 75%',
+                        }),
+                    }),
+                    ...rule(':has(>:nth-child(1)):not(:has(>:nth-child(2)))', { // only having 1 image  (not having 2nd image)
+                        gridTemplateColumns : '1fr',
+                    }),
                     
                     
                     
