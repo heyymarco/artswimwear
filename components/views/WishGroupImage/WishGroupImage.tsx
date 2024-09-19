@@ -21,6 +21,12 @@ import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
 
+// reusable-ui components:
+import {
+    // simple-components:
+    Icon,
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
 // heymarco components:
 import {
     Image,
@@ -95,7 +101,10 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                 // data:
                 href={`/customer/wishes/collection/${encodeURIComponent(id)}`}
             />
-            {!!previews && <div className='images'>
+            {!previews || !previews.length && <div className='images noImage'>
+                <Icon icon='collections' size='xl' />
+            </div>}
+            {!!previews && !!previews.length && <div className='images'>
                 {previews.map(({ image }, index) =>
                     <Image
                         // key:

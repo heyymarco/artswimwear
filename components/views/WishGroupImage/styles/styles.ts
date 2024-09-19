@@ -62,10 +62,38 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
             boxShadow  : '0px 0px 1rem rgba(0, 0, 0, 0.1)',
             ...rule(':hover', {
                 boxShadow : '0px 0px 1rem rgba(0, 0, 0, 0.7)',
-                ...children('.images', {
+            }),
+            
+            ...children('.images', {
+                ...rule('.noImage', {
+                    ...children('*', {
+                        transition : [
+                            ['scale', '300ms'],
+                        ],
+                    }),
+                }),
+                ...rule(':not(.noImage)', {
                     ...children('*', {
                         ...children(['img', '.status'], {
+                            transition : [
+                                ['scale', '300ms'],
+                            ],
+                        }),
+                    }),
+                }),
+            }),
+            ...rule(':hover', {
+                ...children('.images', {
+                    ...rule('.noImage', {
+                        ...children('*', {
                             scale: '105%',
+                        }),
+                    }),
+                    ...rule(':not(.noImage)', {
+                        ...children('*', {
+                            ...children(['img', '.status'], {
+                                scale: '105%',
+                            }),
                         }),
                     }),
                 }),
@@ -105,56 +133,58 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 
                 
                 
-                // layouts:
-                display             : 'grid',
-                gridTemplateColumns : '1fr 1fr',
-                gridAutoRows        : '1fr',
-                
-                
-                
-                // borders:
-                borderStartStartRadius : borderVars.borderStartStartRadius,
-                borderStartEndRadius   : borderVars.borderStartEndRadius,
-                overflow               : 'hidden',
-                
-                
-                
-                // spacings:
-                gap : spacers.xs,
-                
-                
-                
-                // children:
-                ...children('*', {
-                    // sizes:
-                    // minInlineSize  : `${minImageSize}px`,
-                    // minBlockSize   : `${minImageHeight}px`,
-                    boxSizing   : 'border-box',
-                    aspectRatio : commerces.defaultProductAspectRatio,
+                ...rule('.noImage', {
+                    // layouts:
+                    display      : 'grid',
+                    justifyItems : 'center',
+                    alignItems   : 'center',
+                }),
+                ...rule(':not(.noImage)', {
+                    // layouts:
+                    display             : 'grid',
+                    gridTemplateColumns : '1fr 1fr',
+                    gridAutoRows        : '1fr',
                     
                     
                     
-                    // scrolls:
-                    overflow    : 'hidden',
+                    // borders:
+                    borderStartStartRadius : borderVars.borderStartStartRadius,
+                    borderStartEndRadius   : borderVars.borderStartEndRadius,
+                    overflow               : 'hidden',
                     
                     
                     
-                    // backgrounds:
-                    background  : 'white',
+                    // spacings:
+                    gap : spacers.xs,
                     
                     
                     
                     // children:
-                    ...children(['img', '.status'], {
-                        // animations:
-                        transition : [
-                            ['scale', '300ms'],
-                        ],
-                    }),
-                    ...children('img', {
+                    ...children('*', {
                         // sizes:
-                        width  : '100% !important',
-                        height : '100% !important',
+                        // minInlineSize  : `${minImageSize}px`,
+                        // minBlockSize   : `${minImageHeight}px`,
+                        boxSizing   : 'border-box',
+                        aspectRatio : commerces.defaultProductAspectRatio,
+                        
+                        
+                        
+                        // scrolls:
+                        overflow    : 'hidden',
+                        
+                        
+                        
+                        // backgrounds:
+                        background  : 'white',
+                        
+                        
+                        
+                        // children:
+                        ...children('img', {
+                            // sizes:
+                            width  : '100% !important',
+                            height : '100% !important',
+                        }),
                     }),
                 }),
             }),

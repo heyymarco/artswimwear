@@ -62,6 +62,16 @@ const usesProductCardLayout = () => {
             boxShadow  : '0px 0px 1rem rgba(0, 0, 0, 0.1)',
             ...rule(':hover', {
                 boxShadow : '0px 0px 1rem rgba(0, 0, 0, 0.7)',
+            }),
+            
+            ...children('.prodImg', {
+                ...children(['img', '.status'], {
+                    transition : [
+                        ['scale', '300ms'],
+                    ],
+                }),
+            }),
+            ...rule(':hover', {
                 ...children('.prodImg', {
                     ...children(['img', '.status'], {
                         scale: '105%',
@@ -128,12 +138,6 @@ const usesProductCardLayout = () => {
                 
                 
                 // children:
-                ...children(['img', '.status'], {
-                    // animations:
-                    transition : [
-                        ['scale', '300ms'],
-                    ],
-                }),
                 ...children('img', {
                     // sizes:
                     width  : '100% !important',
