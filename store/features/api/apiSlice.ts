@@ -676,7 +676,7 @@ export const {
     useDeleteWishGroupMutation             : useDeleteWishGroup,
     useLazyAvailableWishGroupNameQuery     : useAvailableWishGroupName,
     
-    useLazyGetWishPageQuery                : useGetWishPage,
+    useGetWishPageQuery                    : useGetWishPage,
     useLazyGetWishesQuery                  : useGetWishes,
     useUpdateWishMutation                  : useUpdateWish,
     useDeleteWishMutation                  : useDeleteWish,

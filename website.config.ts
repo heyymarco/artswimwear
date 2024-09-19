@@ -57,5 +57,8 @@ export const PAGE_ORDER_HISTORY_DESCRIPTION              = 'Customer Order Histo
 export const PAGE_ORDER_HISTORY_TAB_ORDER_N_SHIPPING     = 'Order & Shipping';
 export const PAGE_ORDER_HISTORY_TAB_PAYMENT              = 'Payment';
 
-export const PAGE_WISHLIST_TITLE                         = `Wishlist - ${WEBSITE_TITLE}`
-export const PAGE_WISHLIST_DESCRIPTION                   = 'Customer Wishlist.'
+export const PAGE_WISH_TITLE                             = `Wishlist - ${WEBSITE_TITLE}`
+export const PAGE_WISH_DESCRIPTION                       = 'Customer Wishlist.'
+
+export const PAGE_WISH_ALL_TITLE                          = `Wishlist - ${WEBSITE_TITLE}`
+export const PAGE_WISH_ALL_DESCRIPTION                    = 'Customer Wishlist.'

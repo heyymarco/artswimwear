@@ -4,11 +4,6 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useEffect,
 }                           from 'react'
 
 // styles:
@@ -74,15 +69,8 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
     
     
     // stores:
-    const [getWishPage, { data: wishes }] = useGetWishPage();
+    const { data: wishes } = useGetWishPage({ page: 1, perPage: 4, groupId: id });
     const previews = !wishes ? undefined : Object.values(wishes.entities);
-    
-    
-    
-    // effects:
-    useEffect(() => {
-        getWishPage({ page: 1, perPage: 4, groupId: id });
-    }, []);
     
     
     

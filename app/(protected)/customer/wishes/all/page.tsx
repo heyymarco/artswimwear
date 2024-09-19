@@ -11,28 +11,28 @@ import type {
 
 // private components:
 import {
-    WishPageContent,
+    WishAllPageContent,
 }                           from './page-content'
 
 // configs:
 import {
-    PAGE_WISH_TITLE,
-    PAGE_WISH_DESCRIPTION,
+    PAGE_WISH_ALL_TITLE,
+    PAGE_WISH_ALL_DESCRIPTION,
 }                           from '@/website.config'
 
 
 
 export const metadata: Metadata = {
-    title       : PAGE_WISH_TITLE,
-    description : PAGE_WISH_DESCRIPTION,
+    title       : PAGE_WISH_ALL_TITLE,
+    description : PAGE_WISH_ALL_DESCRIPTION,
 }
 
 
 
 // react components:
-export default function WishPage(): JSX.Element|null {
+export default function WishAllPage(): JSX.Element|null {
     // jsx:
     return (
-        <WishPageContent />
+        <WishAllPageContent />
     );
 }
