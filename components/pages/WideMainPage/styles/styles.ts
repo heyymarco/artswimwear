@@ -1,28 +1,44 @@
 // cssfn:
 import {
     // writes css in javascript:
-    children,
+    style,
     scope,
 }                           from '@cssfn/core'                  // writes css in javascript
+
+// reusable-ui core:
+import {
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
 
 // styles:
-export default [
-    scope('main', {
+const usesMainLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {paddingVars} = usesPadding();
+    
+    
+    
+    return style({
         // layouts:
         display      : 'grid',
         
         
         
-        // scrolls:
-        overflow: 'hidden', // workaround for overflowing popup
-        
-        
-        
-        // children:
-        ...children('section', {
-            padding: '0px',
-        }),
+        // spacings:
+        [paddingVars.paddingInline] : '0px',
+        [paddingVars.paddingBlock ] : '0px',
+    });
+};
+
+
+
+export default [
+    scope('main', {
+        // layouts:
+        ...usesMainLayout(),
     }),
 ];
