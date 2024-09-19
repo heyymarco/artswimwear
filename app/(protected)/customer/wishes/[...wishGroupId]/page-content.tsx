@@ -11,11 +11,6 @@ import {
     useWishAllPageStyleSheet,
 }                           from './styles/loader'
 
-// next-js:
-import {
-    default as Link,
-}                           from 'next/link'
-
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -33,6 +28,9 @@ import {
     NavItem,
     Nav,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // heymarco components:
 import {
@@ -67,7 +65,7 @@ import {
 // stores:
 import {
     // hooks:
-    useGetWishPage,
+    useGetWishPage as _useGetWishPage,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -76,7 +74,7 @@ import {
 export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
     // stores:
     const useGetWishPageIntercept = useEvent((arg: PaginationArgs) => {
-        return useGetWishPage({
+        return _useGetWishPage({
             ...arg,
             groupId : (wishGroupId && (wishGroupId !== 'all')) ? wishGroupId : undefined,
         });
