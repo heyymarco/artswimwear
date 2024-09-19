@@ -72,8 +72,8 @@ const usesGalleryBodyWrapperLayout = () => {
             
             
             // spacings:
-            [paddingVars.paddingInline] : '0px', // the padding is rely on the <List><ListItem>, so padding on this <GalleryBodyWrapper> is not required
-            [paddingVars.paddingBlock ] : '0px', // the padding is rely on the <List><ListItem>, so padding on this <GalleryBodyWrapper> is not required
+            [paddingVars.paddingInline] : '0px', // we REMOVED the padding on the <GalleryBodyWrapper> because the <GalleryBody> is ALREADY has padding on the <ListItem>
+            [paddingVars.paddingBlock ] : '0px', // we REMOVED the padding on the <GalleryBodyWrapper> because the <GalleryBody> is ALREADY has padding on the <ListItem>
             
             
             

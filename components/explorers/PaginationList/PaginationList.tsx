@@ -381,7 +381,10 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         
         
         // components:
+        
+        // we use <Basic> for the <GalleryBodyWrapper>, because the <GalleryBody> is ALREADY has nice styling:
         bodyComponent = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
+        
         modelCreateComponent,
         modelPreviewComponent,
         
@@ -550,6 +553,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                 />,
                 
                 /* <GalleryBody> */
+                /* we use <List> for the gallery body and we removed the surrounding border (flush) because the <GalleryBodyWrapper> is ALREADY has border */
                 <List outerRef={innerListRef} theme='inherit' mild='inherit' listStyle='flush' className={styleSheets.galleryBody}>
                     {/* <ModelCreate> */}
                     {!!modelCreateComponent  && <ModelCreateOuter<TModel>
@@ -599,7 +603,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                     
                     {/* a hack for making last separator when the total of <ListItems>(s) is smaller than the min-height of <List> */}
                     {requiresSeparatorHack && <ListItem className={`solid ${styleSheets.separatorHack}`} />}
-                </List>
+                </List>,
             )}
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>
