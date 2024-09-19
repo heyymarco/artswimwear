@@ -11,6 +11,11 @@ import {
     useWishAllPageStyleSheet,
 }                           from './styles/loader'
 
+// next-js:
+import {
+    default as Link,
+}                           from 'next/link'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -28,9 +33,6 @@ import {
     NavItem,
     Nav,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
-import {
-    Link,
-}                           from '@reusable-ui/next-compat-link'
 
 // heymarco components:
 import {
@@ -121,9 +123,6 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                 // classes:
                 className={styleSheet.nav}
             >
-                <p>
-                    test {wishGroupNameFn}
-                </p>
                 <Nav
                     // variants:
                     theme='primary'
