@@ -136,11 +136,11 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                         </Link>
                     </NavItem>
                     
-                    {!wishGroupId && <NavItem end>
+                    <NavItem end>
                         <Link href={`/customer/wishes/${encodeURIComponent(wishGroupId)}`} >
                             {wishGroupNameFn}
                         </Link>
-                    </NavItem>}
+                    </NavItem>
                 </Nav>
             </Section>
             
