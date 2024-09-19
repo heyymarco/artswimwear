@@ -106,7 +106,7 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     const wishGroupNameFn = (
         !wishGroupId
         ? 'All'
-        : data?.wishGroup?.name ?? 'Collection'
+        : data?.wishGroup?.name ?? 'Loading...'
     );
     
     

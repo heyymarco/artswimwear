@@ -97,12 +97,6 @@ function WishPageContentInternal(): JSX.Element|null {
                             Wishlist
                         </Link>
                     </NavItem>
-                    
-                    <NavItem end>
-                        <Link href='/customer/wishes/all' >
-                            All
-                        </Link>
-                    </NavItem>
                 </Nav>
             </Section>
             
