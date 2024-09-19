@@ -133,6 +133,12 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 
                 
                 
+                // sizes:
+                boxSizing   : 'content-box',
+                aspectRatio : commerces.defaultProductAspectRatio,
+                
+                
+                
                 ...rule('.noImage', {
                     // layouts:
                     display      : 'grid',
@@ -152,8 +158,14 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                     ...rule(':has(>:nth-child(2)):not(:has(>:nth-child(3)))', { // only having 2 images (not having 3rd image)
                         ...children(':nth-child(1)', {
                             translate : '0 25%',
-                        }),...children(':nth-child(2)', {
+                        }),
+                        ...children(':nth-child(2)', {
                             translate : '0 75%',
+                        }),
+                        ...children(':nth-child(n)', {
+                            // prevent the height taking 100% of parent height:
+                            boxSizing   : 'border-box',
+                            aspectRatio : commerces.defaultProductAspectRatio, // it's ok to be slightly inaccurate: the aspectRatio is slightly different than the `.images` due to `gap`
                         }),
                     }),
                     ...rule(':has(>:nth-child(1)):not(:has(>:nth-child(2)))', { // only having 1 image  (not having 2nd image)
@@ -179,8 +191,8 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                         // sizes:
                         // minInlineSize  : `${minImageSize}px`,
                         // minBlockSize   : `${minImageHeight}px`,
-                        boxSizing   : 'border-box',
-                        aspectRatio : commerces.defaultProductAspectRatio,
+                        // boxSizing   : 'border-box',
+                        // aspectRatio : commerces.defaultProductAspectRatio, // the aspectRatio is slightly different than the `.images` due to `gap`
                         
                         
                         

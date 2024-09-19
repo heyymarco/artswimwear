@@ -89,10 +89,10 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                 // data:
                 href={`/customer/wishes/${encodeURIComponent(id)}`}
             />
-            {!previews || !previews.length && <div className='images noImage'>
+            {(!previews || !previews.length)   && <div className='images noImage'>
                 <Icon icon='collections' size='xl' />
             </div>}
-            {!!previews && !!previews.length && <div className='images'>
+            {(!!previews && !!previews.length) && <div className='images'>
                 {previews.map(({ image }, index) =>
                     <Image
                         // key:
