@@ -4,6 +4,11 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useCallback,
 }                           from 'react'
 
 // styles:
@@ -58,6 +63,10 @@ import {
 
 // models:
 import {
+    type PaginationArgs,
+}                           from '@/libs/types'
+import {
+    type GetWishRequest,
     type ProductPreview,
 }                           from '@/models'
 
@@ -70,18 +79,28 @@ import {
 
 
 // react components:
-export function WishAllPageContent(): JSX.Element|null {
+export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
+    // stores:
+    const useGetWishPageInternal = useCallback((arg: PaginationArgs) => {
+        return useGetWishPage({
+            ...arg,
+            groupId : (wishGroupId && (wishGroupId !== 'all')) ? wishGroupId : undefined,
+        });
+    }, [wishGroupId]);
+    
+    
+    
     // jsx:
     return (
         <PaginationStateProvider
             // data:
-            useGetModelPage={useGetWishPage}
+            useGetModelPage={useGetWishPageInternal}
         >
-            <WishAllPageContentInternal />
+            <WishAllPageContentInternal wishGroupId={wishGroupId} />
         </PaginationStateProvider>
     );
 }
-function WishAllPageContentInternal(): JSX.Element|null {
+function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
     // styles:
     const styleSheet = useWishAllPageStyleSheet();
     
@@ -99,8 +118,8 @@ function WishAllPageContentInternal(): JSX.Element|null {
     
     
     // jsx:
-    if (isLoadingAndNoData) return <PageLoading />;
-    if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
+    // if (isLoadingAndNoData) return <PageLoading />;
+    // if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
         <WideMainPage
             // classes:
@@ -123,7 +142,7 @@ function WishAllPageContentInternal(): JSX.Element|null {
                     </NavItem>
                     
                     <NavItem end>
-                        <Link href='/customer/wishes/all' >
+                        <Link href={`/customer/wishes/${encodeURIComponent(wishGroupId)}`} >
                             All
                         </Link>
                     </NavItem>

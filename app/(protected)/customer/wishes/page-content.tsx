@@ -6,11 +6,25 @@ import {
     default as React,
 }                           from 'react'
 
+// styles:
+import {
+    useWishesPageStyleSheet,
+}                           from './styles/loader'
+
 // reusable-ui components:
 import {
     // base-components:
     Basic,
+    
+    
+    
+    // composite-components:
+    NavItem,
+    Nav,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // heymarco components:
 import {
@@ -67,6 +81,11 @@ export function WishPageContent(): JSX.Element|null {
     );
 }
 function WishPageContentInternal(): JSX.Element|null {
+    // styles:
+    const styleSheet = useWishesPageStyleSheet();
+    
+    
+    
     // stores:
     const {
         data,
@@ -83,7 +102,39 @@ function WishPageContentInternal(): JSX.Element|null {
     // if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
         <WideMainPage>
-            <Section theme='primary'>
+            <Section
+                // classes:
+                className={styleSheet.nav}
+            >
+                <Nav
+                    // variants:
+                    theme='primary'
+                    listStyle='breadcrumb'
+                    orientation='inline'
+                >
+                    <NavItem end>
+                        <Link href='/customer/wishes'>
+                            Wishlist
+                        </Link>
+                    </NavItem>
+                    
+                    <NavItem end>
+                        <Link href='/customer/wishes/all' >
+                            All
+                        </Link>
+                    </NavItem>
+                </Nav>
+            </Section>
+            
+            <Section
+                // variants:
+                theme='primary'
+                
+                
+                
+                // classes:
+                className={styleSheet.collection}
+            >
                 <PaginationGallery<PublicOrderDetail>
                     // accessibilities:
                     textEmpty='The collection is empty'

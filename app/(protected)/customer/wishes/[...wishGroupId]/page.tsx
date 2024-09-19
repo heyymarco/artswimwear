@@ -30,9 +30,11 @@ export const metadata: Metadata = {
 
 
 // react components:
-export default function WishAllPage(): JSX.Element|null {
+export default function WishAllPage({ params: { wishGroupId } }: { params: { wishGroupId: string } }): JSX.Element|null {
     // jsx:
     return (
-        <WishAllPageContent />
+        <WishAllPageContent
+            wishGroupId={`${wishGroupId}`}
+        />
     );
 }

@@ -152,6 +152,11 @@ const SignInDropdown = (props: SignInDropdownProps): JSX.Element|null => {
                     My order history
                 </Link>
             </ListItem>
+            <ListItem onClick={() => handleNavigate('/customer/wishes')}>
+                <Link href='/customer/wishes'>
+                    My wishlist
+                </Link>
+            </ListItem>
             <ListSeparatorItem />
             <ListItem onClick={(event) => handleClose(event, 'signOut')}>
                 <Icon icon='logout' size='md' />
