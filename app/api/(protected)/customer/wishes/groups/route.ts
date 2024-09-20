@@ -117,7 +117,7 @@ router
     
     
     //#region query result
-    const [total, paged] = await prisma.$transaction([
+    const [total, paged, /*lastCreated, lastAdded*/] = await prisma.$transaction([
         prisma.wishGroup.count({
             where  : {
                 parentId : customerId, // important: the signedIn customerId
@@ -127,14 +127,59 @@ router
             where  : {
                 parentId : customerId, // important: the signedIn customerId
             },
-            select : wishGroupDetailSelect,
+            select  : wishGroupDetailSelect,
             orderBy : {
-                name: 'asc',
+                // name: 'asc', // shows the alphabetical created|moved Wish for pagination_view
+                createdAt : 'desc', // shows the last_created WishGroup for pagination_create
             },
             skip    : (page - 1) * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
             take    : perPage,
         }),
+        /*prisma.wishGroup.findFirst({
+            where  : {
+                parentId : customerId, // important: the signedIn customerId
+            },
+            select  : {
+                id        : true,
+                createdAt : true,
+            },
+            orderBy : {
+                createdAt : 'desc', // shows the last_created WishGroup for pagination_create
+            },
+        }),
+        prisma.wish.findFirst({
+            where  : {
+                parentId : customerId, // important: the signedIn customerId
+                groupId  : { not: null },
+            },
+            select  : {
+                groupId   : true,
+                updatedAt : true,
+            },
+            orderBy : {
+                updatedAt: 'desc', // shows the most_recent created|moved Wish for pagination_select
+            },
+        }),*/
     ]);
+    /*const lastTouchedId = ((): string|null => {
+        if (!lastCreated && !lastAdded) return null;
+        if (lastCreated && !lastAdded)  return lastCreated.id;
+        if (!lastCreated && lastAdded)  return lastAdded.groupId;
+        
+        
+        
+        if (lastCreated && lastAdded) {
+            return (
+                (lastCreated.createdAt > lastAdded.updatedAt)
+                ? lastCreated.id
+                : lastAdded.groupId
+            );
+        } // if
+        
+        
+        
+        return null;
+    })();*/
     const paginationOrderDetail : Pagination<WishGroupDetail> = {
         total    : total,
         entities : paged,

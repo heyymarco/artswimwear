@@ -174,9 +174,9 @@ router
                     select : productPreviewSelect,
                 },
             },
-            // orderBy : {
-            //     name: 'asc', TODO: order by createdAt 'desc'
-            // },
+            orderBy : {
+                updatedAt: 'desc', // shows the most_recent created|moved Wish for pagination_view
+            },
             skip    : (page - 1) * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
             take    : perPage,
         }),

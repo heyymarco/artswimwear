@@ -555,7 +555,11 @@ export const apiSlice = createApi({
                 method      : 'POST',
                 body        : arg,
             }),
-            providesTags: ['Wish'],
+            providesTags: (data, error, arg) => [
+                { type: 'Wish', id: arg.page },
+                
+                ...((!data?.entities ? [] : data.entities.map(({ id: productId }) => ({ type: 'Wish', id: productId }))) satisfies { type: 'Wish', id: string }[]),
+            ],
         }),
         getWishes                   : builder.query<EntityState<WishDetail['productId']>, void>({
             query: () => ({
@@ -633,6 +637,7 @@ export const apiSlice = createApi({
                 
                 
                 await cumulativeUpdateEntityCache(api, 'getWishes', 'DELETE', 'Wish');
+                await cumulativeUpdatePaginationCache(api, 'getWishPage', 'DELETE', 'Wish');
             },
             // TODO: invalidates `WishGroup` caches containing `productId`
         }),

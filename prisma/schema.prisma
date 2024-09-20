@@ -881,7 +881,7 @@ model CheckoutBillingAddress {
 model WishGroup {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
-    updatedAt                       DateTime                        @updatedAt
+    createdAt                       DateTime                        @default(now())
     
     // data:
     name                            String                          @unique
@@ -895,6 +895,7 @@ model WishGroup {
 model Wish {
     // records:
     id                              String                          @id @default(cuid()) // @map("_id")
+    updatedAt                       DateTime                        @updatedAt
     
     // relations:
     parentId                        String

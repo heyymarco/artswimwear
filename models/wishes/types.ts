@@ -10,7 +10,7 @@ export interface WishGroupDetail
     extends
         Omit<WishGroup,
             // records:
-            |'updatedAt'
+            |'createdAt'
             
             
             
@@ -27,6 +27,7 @@ export interface WishDetail
         Omit<Wish,
             // records:
             |'id'
+            |'updatedAt'
             
             
             
