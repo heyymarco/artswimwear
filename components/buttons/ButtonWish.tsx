@@ -109,7 +109,7 @@ const ButtonWish = (props: ButtonWishProps) => {
         
         
         // actions:
-        getWishes({ groupId: undefined /* all wishes in current signedIn customer */ });
+        getWishes();
     }, [sessionStatus]);
     
     

@@ -71,13 +71,18 @@ import {
 
 
 // react components:
-export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
-    // stores:
-    const useGetWishPageOfGroup = useEvent((arg: PaginationArgs) => {
+const useUseGetWishPageOfGroup = ({ groupId }: { groupId: string|undefined }) => {
+    return (arg: PaginationArgs) => {
         return _useGetWishPage({
             ...arg,
-            groupId : (wishGroupId && (wishGroupId !== 'all')) ? wishGroupId : undefined,
+            groupId,
         });
+    };
+};
+export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
+    // stores:
+    const _useGetWishPage = useUseGetWishPageOfGroup({
+        groupId : (wishGroupId && (wishGroupId !== 'all')) ? wishGroupId : undefined,
     });
     
     
@@ -86,7 +91,7 @@ export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JS
     return (
         <PaginationStateProvider<ProductPreview>
             // data:
-            useGetModelPage={useGetWishPageOfGroup}
+            useGetModelPage={_useGetWishPage}
         >
             <WishAllPageContentInternal wishGroupId={wishGroupId} />
         </PaginationStateProvider>

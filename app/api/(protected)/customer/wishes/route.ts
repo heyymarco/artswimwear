@@ -30,7 +30,7 @@ import {
     
     
     PaginationArgSchema,
-    GetWishRequestSchema,
+    GetWishPageRequestSchema,
     CreateOrUpdateWishRequestSchema,
     DeleteWishRequestSchema,
     
@@ -86,35 +86,6 @@ router
     return await next();
 })
 .get(async (req) => {
-    //#region parsing and validating request
-    const requestData = await (async () => {
-        try {
-            const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
-            return {
-                groupId : GetWishRequestSchema.parse(data).groupId,
-            };
-        }
-        catch {
-            return null;
-        } // try
-    })();
-    if (requestData === null) {
-        return Response.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
-    } // if
-    const {
-        groupId : groupIdRaw,
-    } = requestData;
-    const groupId = ( // fix data encoded in searchParams
-        (groupIdRaw === 'undefined')
-        ? undefined
-        : groupIdRaw
-    );
-    //#endregion parsing and validating request
-    
-    
-    
     //#region validating privileges
     const session = (req as any).session as Session;
     const customerId = session.user?.id;
@@ -127,7 +98,6 @@ router
     const wishes : WishDetail[] = await prisma.wish.findMany({
         where  : {
             parentId : customerId, // important: the signedIn customerId
-            groupId  : groupId,    // string => get grouped wishes, undefined => get all wishes
         },
         select : wishDetailSelect,
     });
@@ -142,7 +112,7 @@ router
             const data = await req.json();
             return {
                 paginationArg : PaginationArgSchema.parse(data),
-                groupId       : GetWishRequestSchema.parse(data).groupId,
+                groupId       : GetWishPageRequestSchema.parse(data).groupId,
             };
         }
         catch {

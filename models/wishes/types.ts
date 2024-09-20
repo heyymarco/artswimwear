@@ -64,7 +64,7 @@ export interface DeleteWishGroupRequest
 
 
 
-export interface GetWishRequest
+export interface GetWishPageRequest
     extends
         Partial<Pick<Wish,
             // relations:

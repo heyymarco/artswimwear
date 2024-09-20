@@ -63,7 +63,7 @@ import {
     type UpdateWishGroupRequest,
     type DeleteWishGroupRequest,
     
-    type GetWishRequest,
+    type GetWishPageRequest,
     type CreateOrUpdateWishRequest,
     type DeleteWishRequest,
 }                           from '@/models'
@@ -549,7 +549,7 @@ export const apiSlice = createApi({
             }),
         }),
         
-        getWishPage                 : builder.query<Pagination<ProductPreview> & { wishGroup : WishGroupDetail|null }, PaginationArgs & GetWishRequest>({
+        getWishPage                 : builder.query<Pagination<ProductPreview> & { wishGroup : WishGroupDetail|null }, PaginationArgs & GetWishPageRequest>({
             query: (arg) => ({
                 url         : 'customer/wishes',
                 method      : 'POST',
@@ -557,15 +557,15 @@ export const apiSlice = createApi({
             }),
             providesTags: ['Wish'],
         }),
-        getWishes                   : builder.query<EntityState<WishDetail['productId']>, GetWishRequest>({
-            query: ({groupId}) => ({
-                url         : `customer/wishes?groupId=${(typeof(groupId) !== 'string') ? groupId : encodeURIComponent(groupId)}`,
+        getWishes                   : builder.query<EntityState<WishDetail['productId']>, void>({
+            query: () => ({
+                url         : 'customer/wishes',
                 method      : 'GET',
             }),
             transformResponse(response: WishDetail['productId'][]) {
                 return wishListAdapter.addMany(wishListAdapter.getInitialState(), response);
             },
-            providesTags: (data, error, arg) => [{ type: 'Wish', id: `${arg.groupId}` }],
+            providesTags: ['Wish'],
         }),
         updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest>({
             query: (arg) => ({
@@ -576,7 +576,7 @@ export const apiSlice = createApi({
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
                 const patchResult = api.dispatch(
-                    apiSlice.util.updateQueryData('getWishes', { groupId: undefined /* all wishes in current signedIn customer */ } satisfies GetWishRequest, (data) => {
+                    apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
                         // conditions:
                         if (data.ids.includes(arg.productId)) return; // already added => no need to update => nothing to do
                         
@@ -598,7 +598,10 @@ export const apiSlice = createApi({
                 
                 
                 await cumulativeUpdateEntityCache(api, 'getWishes', 'UPSERT', 'Wish');
+                // await cumulativeUpdatePaginationCache(api, 'getWishPage', '')
             },
+            // TODO: set   wishGroupId
+            // TODO: unset wishGroupId
         }),
         deleteWish                  : builder.mutation<WishDetail['productId'], DeleteWishRequest>({
             query: (arg) => ({
@@ -608,7 +611,7 @@ export const apiSlice = createApi({
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
                 const patchResult = api.dispatch(
-                    apiSlice.util.updateQueryData('getWishes', { groupId: undefined /* all wishes in current signedIn customer */ } satisfies GetWishRequest, (data) => {
+                    apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
                         // conditions:
                         if (!data.ids.includes(arg.productId)) return; // already removed => no need to update => nothing to do
                         
@@ -631,6 +634,7 @@ export const apiSlice = createApi({
                 
                 await cumulativeUpdateEntityCache(api, 'getWishes', 'DELETE', 'Wish');
             },
+            // TODO: invalidates `WishGroup` caches containing `productId`
         }),
     }),
 });
@@ -764,7 +768,7 @@ type PaginationUpdateType =
     |'CREATE'
     |'UPDATE'
     |'DELETE'
-const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishGroupPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
+const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishGroupPage'|'getWishPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
     // mutated TEntry data:
     const mutatedEntry = await (async (): Promise<TEntry|undefined> => {
         try {

@@ -8,7 +8,7 @@ import {
     type UpdateWishGroupRequest,
     type DeleteWishGroupRequest,
     
-    type GetWishRequest,
+    type GetWishPageRequest,
     type CreateOrUpdateWishRequest,
     type DeleteWishRequest,
 }                           from './types'
@@ -31,9 +31,9 @@ export const DeleteWishGroupRequestSchema = z.object({
 
 
 
-export const GetWishRequestSchema = z.object({
+export const GetWishPageRequestSchema = z.object({
     groupId   : ModelIdSchema/*.nullable()*/.optional(), // remove null, we only filter wishes by groupId (string) or get all wishes (undefined)
-}) satisfies z.Schema<GetWishRequest>;
+}) satisfies z.Schema<GetWishPageRequest>;
 
 export const CreateOrUpdateWishRequestSchema = z.object({
     productId : ModelIdSchema,
