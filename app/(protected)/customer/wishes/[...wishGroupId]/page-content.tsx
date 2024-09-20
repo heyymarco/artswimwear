@@ -73,7 +73,7 @@ import {
 // react components:
 export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
     // stores:
-    const useGetWishPageIntercept = useEvent((arg: PaginationArgs) => {
+    const useGetWishPageOfGroup = useEvent((arg: PaginationArgs) => {
         return _useGetWishPage({
             ...arg,
             groupId : (wishGroupId && (wishGroupId !== 'all')) ? wishGroupId : undefined,
@@ -86,7 +86,7 @@ export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JS
     return (
         <PaginationStateProvider<ProductPreview>
             // data:
-            useGetModelPage={useGetWishPageIntercept}
+            useGetModelPage={useGetWishPageOfGroup}
         >
             <WishAllPageContentInternal wishGroupId={wishGroupId} />
         </PaginationStateProvider>
