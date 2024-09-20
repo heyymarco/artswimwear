@@ -151,6 +151,12 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                 className={styleSheet.gallery}
             >
                 <PaginationGallery<ProductPreview>
+                    // appearances:
+                    showPaginationTop={false}
+                    autoHidePagination={true}
+                    
+                    
+                    
                     // accessibilities:
                     textEmpty='The collection is empty'
                     

@@ -121,6 +121,12 @@ function WishPageContentInternal(): JSX.Element|null {
                 className={styleSheet.collection}
             >
                 <PaginationGallery<WishGroupDetail>
+                    // appearances:
+                    showPaginationTop={false}
+                    autoHidePagination={true}
+                    
+                    
+                    
                     // accessibilities:
                     textEmpty='The collection is empty'
                     
