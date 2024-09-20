@@ -49,7 +49,7 @@ import {
 export function OrderHistoryPageContent(): JSX.Element|null {
     // jsx:
     return (
-        <PaginationStateProvider
+        <PaginationStateProvider<PublicOrderDetail>
             // data:
             useGetModelPage={useGetOrderHistoryPage}
         >

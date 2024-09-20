@@ -173,7 +173,7 @@ const NotifyWishAddedDialog = <TElement extends Element = HTMLElement, TModalExp
                 <p>
                     Also save to <em>your collection</em>? <span className='txt-sec'>(optional)</span>
                 </p>
-                <PaginationStateProvider
+                <PaginationStateProvider<WishGroupDetail>
                     // states:
                     initialPerPage={10}
                     

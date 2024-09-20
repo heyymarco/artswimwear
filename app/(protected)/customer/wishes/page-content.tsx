@@ -71,7 +71,7 @@ import {
 export function WishPageContent(): JSX.Element|null {
     // jsx:
     return (
-        <PaginationStateProvider
+        <PaginationStateProvider<WishGroupDetail>
             // data:
             useGetModelPage={useGetWishGroupPage}
         >

@@ -84,7 +84,7 @@ export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JS
     
     // jsx:
     return (
-        <PaginationStateProvider
+        <PaginationStateProvider<ProductPreview>
             // data:
             useGetModelPage={useGetWishPageIntercept}
         >
