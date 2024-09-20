@@ -30,7 +30,7 @@ import {
     
     
     PaginationArgSchema,
-    GetWishPageRequestSchema,
+    GetWishOfGroupPageRequestSchema,
     CreateOrUpdateWishRequestSchema,
     DeleteWishRequestSchema,
     
@@ -112,7 +112,7 @@ router
             const data = await req.json();
             return {
                 paginationArg : PaginationArgSchema.parse(data),
-                groupId       : GetWishPageRequestSchema.parse(data).groupId,
+                groupId       : GetWishOfGroupPageRequestSchema.optional().parse(data)?.groupId,
             };
         }
         catch {
@@ -129,13 +129,8 @@ router
             page,
             perPage,
         },
-        groupId : groupIdRaw,
+        groupId,
     } = requestData;
-    const groupId = ( // fix data encoded in searchParams
-        (groupIdRaw === 'undefined')
-        ? undefined
-        : groupIdRaw
-    );
     //#endregion parsing and validating request
     
     

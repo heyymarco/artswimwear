@@ -65,14 +65,14 @@ export interface DeleteWishGroupRequest
 
 
 
-export interface GetWishPageRequest
+export interface GetWishOfGroupPageRequest
     extends
-        Partial<Pick<Wish,
+        Pick<Wish,
             // relations:
             |'groupId'
-        >>
+        >
 {
-    groupId ?: string|undefined // remove null, we only filter wishes by groupId (string) or get all wishes (undefined)
+    groupId: string // remove null, we only filter wishes by groupId (string)
 }
 
 export interface CreateOrUpdateWishRequest

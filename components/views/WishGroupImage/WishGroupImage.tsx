@@ -35,7 +35,8 @@ import {
 // stores:
 import {
     // hooks:
-    useGetWishPage,
+    useGetWishOfGroupPage as _useGetWishOfGroupPage,
+    useGetWishPage        as _useGetWishPage,
 }                           from '@/store/features/api/apiSlice'
 
 // utilities:
@@ -69,7 +70,11 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
     
     
     // stores:
-    const { data: wishes } = useGetWishPage({ page: 1, perPage: 4, groupId: id || undefined });
+    const { data: wishes } = (
+        id // the `id` is never changed during page's lifecycle, so it's safe to make these hooks as conditional
+        ? _useGetWishOfGroupPage({ page: 1, perPage: 4, groupId: id })
+        : _useGetWishPage({ page: 1, perPage: 4 })
+    );
     const previews = !wishes ? undefined : Object.values(wishes.entities);
     
     
