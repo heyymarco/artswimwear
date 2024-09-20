@@ -180,8 +180,7 @@ export default () => [
         
         
         // spacings:
-        gapInline : spacers.md,
-        gapBlock  : spacers.sm,
+        gap : spacers.md,
     }),
     
     
