@@ -37,6 +37,7 @@ import {
 }                           from '@/components/pages/WideMainPage'
 import {
     PaginationStateProvider,
+    InterceptPaginationStateProvider,
 }                           from '@/components/explorers/Pagination'
 import {
     PaginationGallery,
@@ -50,7 +51,7 @@ import {
 
 // models:
 import {
-    type PublicOrderDetail,
+    type WishGroupDetail,
 }                           from '@/models'
 
 // stores:
@@ -58,6 +59,11 @@ import {
     // hooks:
     useGetWishGroupPage,
 }                           from '@/store/features/api/apiSlice'
+
+// internals:
+import {
+    handleWishGroupPageIntercept,
+}                           from './utilities'
 
 
 
@@ -69,7 +75,12 @@ export function WishPageContent(): JSX.Element|null {
             // data:
             useGetModelPage={useGetWishGroupPage}
         >
-            <WishPageContentInternal />
+            <InterceptPaginationStateProvider
+                // handlers:
+                onIntercept={handleWishGroupPageIntercept}
+            >
+                <WishPageContentInternal />
+            </InterceptPaginationStateProvider>
         </PaginationStateProvider>
     );
 }
@@ -109,7 +120,7 @@ function WishPageContentInternal(): JSX.Element|null {
                 // classes:
                 className={styleSheet.collection}
             >
-                <PaginationGallery<PublicOrderDetail>
+                <PaginationGallery<WishGroupDetail>
                     // accessibilities:
                     textEmpty='The collection is empty'
                     

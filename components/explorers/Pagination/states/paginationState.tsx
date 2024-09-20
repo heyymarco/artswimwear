@@ -183,4 +183,93 @@ export {
     PaginationStateProvider,            // named export for readibility
     PaginationStateProvider as default, // default export to support React.lazy
 }
+
+
+
+export type InterceptEventHandler<TModel extends Model> = (state: PaginationState<TModel>) => PaginationState<TModel>;
+export interface InterceptPaginationStateProps<TModel extends Model> {
+    onIntercept : InterceptEventHandler<TModel>
+}
+export const InterceptPaginationStateProvider = <TModel extends Model>(props: React.PropsWithChildren<InterceptPaginationStateProps<TModel>>): JSX.Element|null => {
+    // props:
+    const {
+        // states:
+        onIntercept,
+        
+        
+        
+        // children:
+        children,
+    } = props;
+    
+    
+    
+    // states:
+    const paginationState = usePaginationState<TModel>();
+    const {
+        // states:
+        page,
+        setPage,                  // stable ref
+        
+        perPage,
+        setPerPage,               // stable ref
+        
+        
+        
+        // data:
+        data,
+        
+        isFetching,
+        isLoading,
+        isError,
+        
+        refetch,
+    } = onIntercept(paginationState);
+    const interceptedPaginationState = useMemo<PaginationState<TModel>>(() => ({
+        // states:
+        page,
+        setPage,                  // stable ref
+        
+        perPage,
+        setPerPage,               // stable ref
+        
+        
+        
+        // data:
+        data,
+        
+        isFetching,
+        isLoading,
+        isError,
+        
+        refetch,
+    }), [
+        // states:
+        page,
+        // setPage,               // stable ref
+        
+        perPage,
+        // setPerPage,            // stable ref
+        
+        
+        
+        // data:
+        data,
+        
+        isFetching,
+        isLoading,
+        isError,
+        
+        refetch,
+    ]);
+    
+    
+    
+    // jsx:
+    return (
+        <PaginationStateContext.Provider value={interceptedPaginationState}>
+            {children}
+        </PaginationStateContext.Provider>
+    );
+};
 //#endregion paginationState

@@ -69,7 +69,7 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
     
     
     // stores:
-    const { data: wishes } = useGetWishPage({ page: 1, perPage: 4, groupId: id });
+    const { data: wishes } = useGetWishPage({ page: 1, perPage: 4, groupId: id || undefined });
     const previews = !wishes ? undefined : Object.values(wishes.entities);
     
     
@@ -87,7 +87,7 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
         >
             <Link
                 // data:
-                href={`/customer/wishes/${encodeURIComponent(id)}`}
+                href={`/customer/wishes/${!id ? 'all' : encodeURIComponent(id)}`}
             />
             {(!previews || !previews.length)   && <div className='images noImage'>
                 <Icon icon='collections' size='xl' />

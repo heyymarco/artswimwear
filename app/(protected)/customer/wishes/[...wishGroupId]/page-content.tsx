@@ -104,7 +104,7 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     } = usePaginationState<ProductPreview>();
     const data = dataRaw as (Pagination<ProductPreview> & { wishGroup : WishGroupDetail|null })|undefined;
     const wishGroupNameFn = (
-        !wishGroupId
+        (!wishGroupId || (wishGroupId === 'all'))
         ? 'All'
         : data?.wishGroup?.name ?? 'Loading...'
     );
