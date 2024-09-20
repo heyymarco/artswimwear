@@ -17,6 +17,10 @@ import {
     useMemo,
     useState,
 }                           from 'react'
+import {
+    type Draft,
+    produce,
+}                           from 'immer'
 
 // reusable-ui core:
 import {
@@ -186,7 +190,7 @@ export {
 
 
 
-export type InterceptEventHandler<TModel extends Model> = (state: PaginationState<TModel>) => PaginationState<TModel>;
+export type InterceptEventHandler<TModel extends Model> = (state: Draft<PaginationState<TModel>>) => Draft<PaginationState<TModel>> | void | undefined;
 export interface InterceptPaginationStateProps<TModel extends Model> {
     onIntercept : InterceptEventHandler<TModel>
 }
@@ -224,7 +228,7 @@ export const InterceptPaginationStateProvider = <TModel extends Model>(props: Re
         isError,
         
         refetch,
-    } = onIntercept(paginationState);
+    } = produce(paginationState, onIntercept);
     const interceptedPaginationState = useMemo<PaginationState<TModel>>(() => ({
         // states:
         page,
