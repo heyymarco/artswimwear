@@ -14,44 +14,44 @@ import {
 
 // handlers:
 interface InterceptPaginationCache {
-    original    : Pagination<WishGroupDetail>
+    equality    : [number, ...string[]]
     intercepted : Pagination<WishGroupDetail>
 }
 let interceptedPaginationCacheRef : WeakRef<InterceptPaginationCache>|undefined = undefined;
 export const handleWishGroupPageIntercept : InterceptEventHandler<WishGroupDetail> = (state) => {
-    if (state.page === 1) {
-        const data = state.data;
-        if (data) {
-            const cached = interceptedPaginationCacheRef?.deref();
-            if (cached && (cached.original === data)) return {
-                ...state,
-                data : cached.intercepted,
-            };
-            
-            
-            
-            const newCache : InterceptPaginationCache = {
-                original    : data,
-                intercepted : {
-                    entities : [
-                        {
-                            id   : '', // empty string => no id
-                            name : 'All items',
-                        } satisfies WishGroupDetail,
-                        ...data.entities,
-                    ],
-                    total    : data.total + 1,
-                },
-            };
-            interceptedPaginationCacheRef = new WeakRef<InterceptPaginationCache>(newCache);
-            return {
-                ...state,
-                data : newCache.intercepted,
-            };
-        } // if
+    // conditions:
+    if (state.page !== 1) return; // nothing to modify
+    const data = state.data;
+    if (data === undefined) return; // no data => nothing to modify
+    
+    
+    
+    // read from cache:
+    const equality : InterceptPaginationCache['equality'] = [data.total, ...data.entities.map(({ id }) => id)];
+    const cached   = interceptedPaginationCacheRef?.deref();
+    if (cached && cached.equality.every((eq, index) => (eq === equality[index]))) {
+        // console.log('CACHE HIT');
+        state.data = cached.intercepted;
+        return;
     } // if
     
     
     
-    return state;
+    // create a new cache:
+    const newCache : InterceptPaginationCache = {
+        equality    : equality,
+        intercepted : {
+            entities : [
+                {
+                    id   : '', // empty string => no id
+                    name : 'All items',
+                } satisfies WishGroupDetail,
+                ...data.entities,
+            ],
+            total    : data.total + 1,
+        },
+    };
+    interceptedPaginationCacheRef = new WeakRef<InterceptPaginationCache>(newCache);
+    state.data = newCache.intercepted;
+    // console.log('CACHE MISS', { eq: equality, ca: cached});
 };
