@@ -11,7 +11,7 @@ import type {
 
 // private components:
 import {
-    ProductListPageContent,
+    ProductPageContent,
 }                           from './page-content'
 
 // configs:
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
 
 
 // react components:
-export default function ProductListPage(): JSX.Element|null {
+export default function ProductPage(): JSX.Element|null {
     // jsx:
     return (
-        <ProductListPageContent />
+        <ProductPageContent />
     );
 }

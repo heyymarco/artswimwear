@@ -23,7 +23,7 @@ export default () => [
         }),
     }, { specificityWeight: 2 }),
     
-    scope('collection', {
+    scope('gallery', {
         paddingBlockStart : '2rem',
         ...children('article', {
             marginBlockStart: '-2rem', // kill parent padding

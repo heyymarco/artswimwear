@@ -118,7 +118,7 @@ function WishPageContentInternal(): JSX.Element|null {
                 
                 
                 // classes:
-                className={styleSheet.collection}
+                className={styleSheet.gallery}
             >
                 <PaginationGallery<WishGroupDetail>
                     // appearances:

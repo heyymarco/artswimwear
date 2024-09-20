@@ -11,9 +11,24 @@ import {
     useProductListPageStyleSheet,
 }                           from './styles/loader'
 
+// reusable-ui components:
+import {
+    // base-components:
+    Basic,
+    
+    
+    
+    // composite-components:
+    NavItem,
+    Nav,
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
+
 // heymarco components:
 import {
-    GenericSection,
+    Section,
 }                           from '@heymarco/section'
 
 // internal components:
@@ -21,73 +36,126 @@ import {
     WideMainPage,
 }                           from '@/components/pages/WideMainPage'
 import {
-    LoadingBlankPage,
-    ErrorBlankPage,
-}                           from '@/components/BlankPage'
+    PageLoading,
+}                           from '@/components/PageLoading'
+import {
+    PageError,
+}                           from '@/components/PageError'
+import {
+    PaginationStateProvider,
+    usePaginationState,
+}                           from '@/components/explorers/Pagination'
+import {
+    PaginationGallery,
+}                           from '@/components/explorers/PaginationGallery'
 import {
     ProductCard,
 }                           from '@/components/views/ProductCard'
 
+// models:
+import {
+    // types:
+    type ProductPreview,
+}                           from '@/models'
+
 // stores:
 import {
     // hooks:
-    useGetProductList,
+    useGetProductPage,
 }                           from '@/store/features/api/apiSlice'
 
 
 
 // react components:
-export function ProductListPageContent(): JSX.Element|null {
+export function ProductPageContent(): JSX.Element|null {
+    // jsx:
+    return (
+        <PaginationStateProvider<ProductPreview>
+            // data:
+            useGetModelPage={useGetProductPage}
+        >
+            <ProductPageContentInternal />
+        </PaginationStateProvider>
+    );
+}
+function ProductPageContentInternal(): JSX.Element|null {
     // styles:
     const styleSheet = useProductListPageStyleSheet();
     
     
     
-    // apis:
-    const {data: productList, isLoading: isProductLoading, isError: isProductError, refetch} = useGetProductList();
-    
-    const isPageLoading = isProductLoading;
-    const hasData       = (!!productList);
-    const isPageError   = (!isPageLoading && (isProductError)) || !hasData /* considered as error if no data */;
-    // const isPageReady   = !isPageLoading && !isPageError;
+    // stores:
+    const {
+        data,
+        isLoading: isLoadingAndNoData,
+        isError,
+        refetch,
+    } = usePaginationState<ProductPreview>();
+    const isErrorAndNoData = isError && !data;
     
     
     
     // jsx:
-    if (isPageLoading) return (
-        <LoadingBlankPage
-            // identifiers:
-            key='busy' // avoids re-creating a similar dom during loading transition in different components
-        />
-    );
-    if (isPageError)   return (
-        <ErrorBlankPage
-            // handlers:
-            onRetry={refetch}
-        />
-    );
+    if (isLoadingAndNoData) return <PageLoading />;
+    if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
         <WideMainPage>
-            <GenericSection
+            <Section
                 // classes:
-                className={styleSheet.list}
+                className={styleSheet.nav}
             >
-                {
-                    Object.values(productList.entities)
-                    .filter((product): product is Exclude<typeof product, undefined> => !!product)
-                    .map((product) =>
+                <Nav
+                    // variants:
+                    theme='primary'
+                    listStyle='breadcrumb'
+                    orientation='inline'
+                >
+                    <NavItem end>
+                        <Link href='/'>
+                            Home
+                        </Link>
+                    </NavItem>
+                    
+                    <NavItem end>
+                        <Link href='/products'>
+                            Products
+                        </Link>
+                    </NavItem>
+                </Nav>
+            </Section>
+            
+            <Section
+                // variants:
+                theme='primary'
+                
+                
+                
+                // classes:
+                className={styleSheet.gallery}
+            >
+                <PaginationGallery<ProductPreview>
+                    // appearances:
+                    autoHidePagination={true}
+                    
+                    
+                    
+                    // accessibilities:
+                    textEmpty='The product collection is empty'
+                    
+                    
+                    
+                    // components:
+                    bodyComponent={
+                        <Basic nude={true} />
+                    }
+                    modelPreviewComponent={
                         <ProductCard
-                            // identifiers:
-                            key={product.id}
-                            
-                            
-                            
                             // data:
-                            model={product}
+                            model={undefined as any}
                         />
-                    )
-                }
-            </GenericSection>
+                    }
+                />
+            </Section>
         </WideMainPage>
     );
 }
