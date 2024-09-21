@@ -432,7 +432,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 }))
             )
         );
-    }, [items, productPreviewGeneration]); // calls the api when the items|productPreviewGeneration is changed
+    }, [items, productPreviewGeneration]); // re-create the `productPreviewPromises` when the items|productPreviewGeneration are changed
     useIsomorphicLayoutEffect(() => {
         // cleanups:
         return () => {
@@ -499,7 +499,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         // computes:
         return realProductPreviewsDelayed;
-    }, [items, realProductPreviewsDelayed]);
+    }, [items, productPreviewGeneration, realProductPreviewsDelayed]);// re-create the `realProductPreviews` when the items|productPreviewGeneration|realProductPreviewsDelayed are changed
     const realIsProductLoading       = (realProductPreviews === /* = loading|uninitialized */ undefined);
     const realIsProductError         = (realProductPreviews === /* = error */ null);
     const productPreviews            = mockProductPreviews        ??        realProductPreviews;
