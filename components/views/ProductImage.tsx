@@ -57,10 +57,10 @@ const ProductImage = <TElement extends Element = HTMLElement>(props: ProductImag
     
     // jsx:
     if (!productId) return (
-        <ProductImageBlank {...restProductImageProps} />
+        <ProductImageBlank<TElement> {...restProductImageProps} />
     );
     return (
-        <ProductImageInternal {...restProductImageProps} productId={productId} />
+        <ProductImageInternal<TElement> {...restProductImageProps} productId={productId} />
     );
 };
 const ProductImageBlank = <TElement extends Element = HTMLElement>(props: Omit<ProductImageProps<TElement>, 'productId'>): JSX.Element|null => {
