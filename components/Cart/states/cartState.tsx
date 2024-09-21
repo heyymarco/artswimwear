@@ -414,10 +414,9 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // apis:
-    const [productPreviewPromises, setProductPreviewPromises] = useState<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>([]);
-    useIsomorphicLayoutEffect(() => {
-        // setups:
-        setProductPreviewPromises(
+    const [productPreviewGeneration, setProductPreviewGeneration] = useState<{}>({});
+    const productPreviewPromises = useMemo<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>(() => {
+        return (
             items
             .map(({ productId }): QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>> =>
                 dispatch(getProductPreview(productId, {
@@ -426,16 +425,15 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 }))
             )
         );
-        
-        
-        
+    }, [items, productPreviewGeneration]); // calls the api when the items|productPreviewGeneration is changed
+    useIsomorphicLayoutEffect(() => {
         // cleanups:
         return () => {
             for (const productPreviewPromise of productPreviewPromises) {
                 productPreviewPromise.unsubscribe();
             } // for
         };
-    }, [items]);
+    }, [productPreviewPromises]);
     
     const productPreviewRef   = useRef<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
     const productPreviewReady = useCallback((onChange: () => void): (() => void) => {
@@ -473,7 +471,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     const productPreviewSelect = useEvent((): Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */ => {
         return productPreviewRef.current;
     });
-    const realProductPreviews = useSyncExternalStore<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(
+    const realProductPreviews  = useSyncExternalStore<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(
         productPreviewReady,
         productPreviewSelect,
         productPreviewSelect,
@@ -958,7 +956,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     });
     
     const refetchCart           = useEvent((): void => {
-        if (realIsProductError && !realIsProductLoading && !mockProductPreviews) setProductPreviewPromises(productPreviewPromises.slice(0)); // force to re-create the `productPreviewReady()`
+        if (realIsProductError && !realIsProductLoading && !mockProductPreviews) setProductPreviewGeneration({}); // force to re-create the `productPreviewPromises`
     });
     const resetCart             = useEvent((): void => {
         lastRestoredCartDetailRef.current = undefined;
