@@ -437,14 +437,21 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     const productPreviewRef   = useRef<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
     const productPreviewReady = useCallback((onChange: () => void): (() => void) => {
-        // setups:
-        productPreviewRef.current = /* = loading|uninitialized */ undefined;
+        // loading:
+        if (productPreviewRef.current !== undefined) {
+            productPreviewRef.current = /* = loading|uninitialized */ undefined;
+            onChange();
+        } // if
+        
+        // processing:
         Promise.all(
             productPreviewPromises
             .map((productPreviewPromise) =>
                 productPreviewPromise.unwrap()
             )
         )
+        
+        // ready:
         .then((productPreviews) => {
             productPreviewRef.current = /* = ready */ new Map<string, ProductPreview>(
                 productPreviews
@@ -455,6 +462,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             );
             onChange();
         })
+        
+        // error:
         .catch(() => {
             productPreviewRef.current = /* = error */ null;
             onChange();
