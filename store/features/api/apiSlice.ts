@@ -675,6 +675,7 @@ export const apiSlice = createApi({
 export const {
     useGetProductPageQuery                 : useGetProductPage,
     useGetProductListQuery                 : useGetProductList,
+    useGetProductPreviewQuery              : useGetProductPreview,
     useGetProductDetailQuery               : useGetProductDetail,
     
     useGetShippingListQuery                : useGetShippingList,
