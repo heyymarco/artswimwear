@@ -428,7 +428,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             .map(({ productId }): QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>> =>
                 dispatch(getProductPreview(productId, {
                     forceRefetch           : false,
-                    subscribe              : true,
+                    subscribe              : true,               // must be true in order to get the response result
                     subscriptionOptions    : {
                         pollingInterval    : 1 * 60 * 60 * 1000, // How frequently to automatically re-fetch data (in milliseconds).
                         refetchOnFocus     : false,              // This setting allows you to control whether RTK Query will try to refetch all subscribed queries after the application window regains focus.
