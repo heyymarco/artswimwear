@@ -497,12 +497,12 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         productPreviewSelect,
     );
     const realProductPreviews        = useMemo<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(() => {
-        // reset:
+        // use LIVE data when error|loading|uninitialized:
         if (!productPreviewMapRef.current) return productPreviewMapRef.current;
         
         
         
-        // computes:
+        // use DELAYED data when ready:
         return realProductPreviewsDelayed;
     }, [items, productPreviewGeneration, realProductPreviewsDelayed]);// re-create the `realProductPreviews` when the items|productPreviewGeneration|realProductPreviewsDelayed are changed
     const realIsProductLoading       = (realProductPreviews === /* = loading|uninitialized */ undefined);
