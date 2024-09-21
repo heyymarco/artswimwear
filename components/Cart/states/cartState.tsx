@@ -427,7 +427,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             items
             .map(({ productId }): QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>> =>
                 dispatch(getProductPreview(productId, {
-                    forceRefetch           : false,
+                    forceRefetch           : false,              // take from cache (if available)
                     subscribe              : true,               // must be true in order to get the response result
                     subscriptionOptions    : {
                         pollingInterval    : 1 * 60 * 60 * 1000, // How frequently to automatically re-fetch data (in milliseconds).
