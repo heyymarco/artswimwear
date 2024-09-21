@@ -1,9 +1,3 @@
-// next-js:
-import {
-    NextRequest,
-    NextResponse,
-}                           from 'next/server'
-
 // next-connect:
 import {
     createEdgeRouter,
@@ -50,8 +44,8 @@ interface RequestContext {
         /* no params yet */
     }
 }
-const router  = createEdgeRouter<NextRequest, RequestContext>();
-const handler = async (req: NextRequest, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
+const router  = createEdgeRouter<Request, RequestContext>();
+const handler = async (req: Request, ctx: RequestContext) => router.run(req, ctx) as Promise<any>;
 export {
     handler as GET,
     handler as POST,
@@ -68,8 +62,10 @@ router
     
     
     //#region parsing request
-    const path = req.nextUrl.searchParams.get('path');
-    const id   = req.nextUrl.searchParams.get('id');
+    const {
+        path,
+        id,
+    } = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
     //#endregion parsing request
     
     
@@ -86,12 +82,12 @@ router
         );
         
         if (!productPreviewData) {
-            return NextResponse.json({
-                error: `The product with specified path "${path}" is not found.`,
+            return Response.json({
+                error: `The product with specified id "${id}" is not found.`,
             }, { status: 404 }); // handled with error
         } // if
         
-        return NextResponse.json(convertProductPreviewDataToProductPreview(productPreviewData) satisfies ProductPreview); // handled with success
+        return Response.json(convertProductPreviewDataToProductPreview(productPreviewData) satisfies ProductPreview); // handled with success
     }
     else if (path) {
         const productDetail : ProductDetail|null = (
@@ -146,12 +142,12 @@ router
         );
         
         if (!productDetail) {
-            return NextResponse.json({
+            return Response.json({
                 error: `The product with specified path "${path}" is not found.`,
             }, { status: 404 }); // handled with error
         } // if
         
-        return NextResponse.json(productDetail); // handled with success
+        return Response.json(productDetail); // handled with success
     } // if
     
     
@@ -165,7 +161,7 @@ router
         }))
         .map(convertProductPreviewDataToProductPreview)
     );
-    return NextResponse.json(productPreviews); // handled with success
+    return Response.json(productPreviews); // handled with success
 })
 .post(async (req) => {
     //#region parsing and validating request
