@@ -48,11 +48,6 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// heymarco components:
-import {
-    Image,
-}                           from '@heymarco/image'
-
 // internal components:
 import {
     type ModelPreviewProps,
@@ -81,6 +76,9 @@ import {
 import {
     EditOrderDialog,
 }                           from '@/components/dialogs/EditOrderDialog'
+import {
+    ProductImage,
+}                           from '@/components/views/ProductImage'
 
 // models:
 import {
@@ -92,16 +90,7 @@ import {
     isKnownPaymentBrand,
 }                           from '@/models'
 
-// stores:
-import {
-    // hooks:
-    useGetProductList,
-}                           from '@/store/features/api/apiSlice';
-
 // internals:
-import {
-    resolveMediaUrl,
-}                           from '@/libs/mediaStorage.client'
 import {
     // utilities:
     getTotalQuantity,
@@ -160,14 +149,6 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
     const isExpired           = (orderStatus === 'EXPIRED');
     const isCanceledOrExpired = isCanceled || isExpired;
     const isPaid              = !isCanceledOrExpired && (!!payment && payment.type !== 'MANUAL');
-    
-    
-    
-    // stores:
-    const {
-        data      : productList,
-     // isLoading : isProductLoadingAndNoData,
-    } = useGetProductList();
     
     
     
@@ -320,46 +301,49 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
                         // classes:
                         className='images'
                     >
-                        {items.map(({quantity, productId}, index: number) => {
-                            const product = productList?.entities?.[`${productId}`];
-                            
-                            
-                            
-                            // jsx:
-                            return (
-                                /* image + quantity */
-                                <CompoundWithBadge
-                                    // identifiers:
-                                    key={index}
-                                    
-                                    
-                                    
-                                    // components:
-                                    wrapperComponent={<React.Fragment />}
-                                    badgeComponent={
-                                        <Badge
-                                            // variants:
-                                            floatingPlacement='right-start'
-                                            floatingShift={10}
-                                            floatingOffset={-40}
-                                        >
-                                            {quantity}x
-                                        </Badge>
-                                    }
-                                    elementComponent={
-                                        <Image
-                                            className='prodImg'
-                                            
-                                            alt={`image #${index + 1} of ${product?.name ?? 'unknown product'}`}
-                                            src={resolveMediaUrl(product?.image)}
-                                            sizes={`${imageSize}px`}
-                                            
-                                            priority={true}
-                                        />
-                                    }
-                                />
-                            );
-                        })}
+                        {items.map(({quantity, productId}, index: number) =>
+                            /* image + quantity */
+                            <CompoundWithBadge
+                                // identifiers:
+                                key={index}
+                                
+                                
+                                
+                                // components:
+                                wrapperComponent={<React.Fragment />}
+                                badgeComponent={
+                                    <Badge
+                                        // variants:
+                                        floatingPlacement='right-start'
+                                        floatingShift={10}
+                                        floatingOffset={-40}
+                                    >
+                                        {quantity}x
+                                    </Badge>
+                                }
+                                elementComponent={
+                                    <ProductImage
+                                        // data:
+                                        productId={productId}
+                                        
+                                        
+                                        
+                                        // appearances:
+                                        sizes={`${imageSize}px`}
+                                        
+                                        
+                                        
+                                        // behaviors:
+                                        priority={true}
+                                        
+                                        
+                                        
+                                        // classes:
+                                        className='prodImg'
+                                    />
+                                }
+                            />
+                        )}
                     </MiniCarousel>
                 }
             />
