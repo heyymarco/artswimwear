@@ -334,7 +334,7 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
                                         
                                         
                                         // behaviors:
-                                        priority={true}
+                                        priority={false}
                                         
                                         
                                         
