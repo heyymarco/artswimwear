@@ -112,7 +112,7 @@ router
             const data = await req.json();
             return {
                 paginationArg : PaginationArgSchema.parse(data),
-                groupId       : GetWishOfGroupPageRequestSchema.optional().parse(data)?.groupId,
+                groupId       : GetWishOfGroupPageRequestSchema.partial().parse(data)?.groupId,
             };
         }
         catch {
