@@ -415,7 +415,14 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     // apis:
     const [productPreviewGeneration, setProductPreviewGeneration] = useState<{}>({});
-    const productPreviewPromises = useMemo<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>(() => {
+    const productPreviewRef          = useRef<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
+    const productPreviewPromises     = useMemo<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>(() => {
+        // reset:
+        productPreviewRef.current = /* = loading|uninitialized */ undefined;
+        
+        
+        
+        // computes:
         return (
             items
             .map(({ productId }): QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>> =>
@@ -435,9 +442,8 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         };
     }, [productPreviewPromises]);
     
-    const productPreviewRef   = useRef<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
-    const productPreviewReady = useCallback((onChange: () => void): (() => void) => {
-        // loading:
+    const productPreviewReady        = useCallback((onChange: () => void): (() => void) => {
+        // reset:
         if (productPreviewRef.current !== undefined) {
             productPreviewRef.current = /* = loading|uninitialized */ undefined;
             onChange();
@@ -477,19 +483,28 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         };
     }, [productPreviewPromises]); // change the function reference when the productPreviewPromises is changed
     
-    const productPreviewSelect = useEvent((): Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */ => {
+    const productPreviewSelect       = useEvent((): Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */ => {
         return productPreviewRef.current;
     });
-    const realProductPreviews  = useSyncExternalStore<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(
+    const realProductPreviewsDelayed = useSyncExternalStore<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(
         productPreviewReady,
         productPreviewSelect,
         productPreviewSelect,
     );
-    const realIsProductLoading = (realProductPreviews === /* = loading|uninitialized */ undefined);
-    const realIsProductError   = (realProductPreviews === /* = error */ null);
-    const productPreviews      = mockProductPreviews        ??        realProductPreviews;
-    const isProductLoading     = mockProductPreviews ?    false     : realIsProductLoading;
-    const isProductError       = mockProductPreviews ?    false     : realIsProductError;
+    const realProductPreviews        = useMemo<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(() => {
+        // reset:
+        if (!productPreviewRef.current) return productPreviewRef.current;
+        
+        
+        
+        // computes:
+        return realProductPreviewsDelayed;
+    }, [items, realProductPreviewsDelayed]);
+    const realIsProductLoading       = (realProductPreviews === /* = loading|uninitialized */ undefined);
+    const realIsProductError         = (realProductPreviews === /* = error */ null);
+    const productPreviews            = mockProductPreviews        ??        realProductPreviews;
+    const isProductLoading           = mockProductPreviews ?    false     : realIsProductLoading;
+    const isProductError             = mockProductPreviews ?    false     : realIsProductError;
     
     
     
