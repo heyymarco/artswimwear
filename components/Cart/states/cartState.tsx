@@ -482,7 +482,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         
-        // cleanups:
+        // unsubscribe:
         return () => {
             // no cleanup needed
         };
