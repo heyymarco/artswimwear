@@ -442,7 +442,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         };
     }, [productPreviewPromises]);
     
-    const productPreviewReady        = useCallback((onChange: () => void): (() => void) => {
+    const productPreviewWatchdog     = useCallback((onChange: () => void): (() => void) => {
         // reset:
         if (productPreviewRef.current !== undefined) {
             productPreviewRef.current = /* = loading|uninitialized */ undefined;
@@ -481,13 +481,13 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         return () => {
             // no cleanup needed
         };
-    }, [productPreviewPromises]); // change the function reference when the productPreviewPromises is changed
+    }, [productPreviewPromises]); // change the function REFERENCE when the productPreviewPromises is changed, so React will REEVALUATE the external store
     
     const productPreviewSelect       = useEvent((): Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */ => {
         return productPreviewRef.current;
     });
     const realProductPreviewsDelayed = useSyncExternalStore<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(
-        productPreviewReady,
+        productPreviewWatchdog,
         productPreviewSelect,
         productPreviewSelect,
     );
