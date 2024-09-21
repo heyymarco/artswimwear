@@ -445,7 +445,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 productPreviewPromise.unsubscribe();
             } // for
         };
-    }, [productPreviewPromises]);
+    }, [productPreviewPromises]); // unsubscribes the `productPreviewPromises` when the cartState unmounted
     
     const productPreviewWatchdog     = useCallback((onChange: () => void): (() => void) => {
         // reset:
