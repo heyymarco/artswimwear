@@ -69,11 +69,31 @@ router
     
     //#region parsing request
     const path = req.nextUrl.searchParams.get('path');
+    const id   = req.nextUrl.searchParams.get('id');
     //#endregion parsing request
     
     
     
-    if (path) {
+    if (id) {
+        const productPreviewData = (
+            await prisma.product.findUnique({
+                where  : {
+                    id         : id, // find by id
+                    visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
+                },
+                select : productPreviewSelect,
+            })
+        );
+        
+        if (!productPreviewData) {
+            return NextResponse.json({
+                error: `The product with specified path "${path}" is not found.`,
+            }, { status: 404 }); // handled with error
+        } // if
+        
+        return NextResponse.json(convertProductPreviewDataToProductPreview(productPreviewData) satisfies ProductPreview); // handled with success
+    }
+    else if (path) {
         const productDetail : ProductDetail|null = (
             await prisma.product.findUnique({
                 where  : {

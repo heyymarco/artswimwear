@@ -17,6 +17,8 @@ import {
     useMemo,
     useRef,
     useState,
+    useSyncExternalStore,
+    useCallback,
 }                           from 'react'
 
 // redux:
@@ -124,12 +126,9 @@ import {
     
     
     
-    // hooks:
-    useGetProductList,
-    
-    
-    
     // apis:
+    getProductPreview,
+    
     restoreCart,
     backupCart,
 }                           from '@/store/features/api/apiSlice'
@@ -181,7 +180,7 @@ export interface CartStateBase
     
     
     // relation data:
-    productList               : EntityState<ProductPreview> | undefined
+    productPreviews           : Map<string, ProductPreview> | null | undefined
     
     
     
@@ -210,7 +209,7 @@ export type PickAlways<T, K extends keyof T, V> = {
     [P in K] : Extract<T[P], V>
 }
 export type CartState =
-    &Omit<CartStateBase, 'isCartEmpty'|'isCartLoading'|'isCartError'|'isCartReady' | 'productList'>
+    &Omit<CartStateBase, 'isCartEmpty'|'isCartLoading'|'isCartError'|'isCartReady' | 'productPreviews'>
     &(
         |(
             &PickAlways<CartStateBase, 'isCartEmpty'                              , true   > // if   the cart is  empty
@@ -243,12 +242,12 @@ export type CartState =
     )
     &(
         |(
-            &PickAlways<CartStateBase, 'isCartReady', true        > // if   the cart is  ready
-            &PickAlways<CartStateBase, 'productList', {}          > // then the cart is  always having_data
+            &PickAlways<CartStateBase, 'isCartReady', true                 > // if   the cart is  ready
+            &PickAlways<CartStateBase, 'productPreviews', {}               > // then the cart is  always having_data
         )
         |(
-            &PickAlways<CartStateBase, 'isCartReady', false       > // if   the cart not ready
-            &PickAlways<CartStateBase, 'productList', {}|undefined> // then the cart is  maybe  having_data
+            &PickAlways<CartStateBase, 'isCartReady', false                > // if   the cart not ready
+            &PickAlways<CartStateBase, 'productPreviews', {}|null|undefined> // then the cart is  maybe  having_data
         )
     )
 
@@ -282,7 +281,7 @@ const CartStateContext = createContext<CartState>({
     
     
     // relation data:
-    productList               : undefined,
+    productPreviews           : undefined,
     
     
     
@@ -344,15 +343,15 @@ export const useRestoredCartEvent = (eventHandler: EventHandler<(CartDetail & Pi
 // react components:
 export interface CartStateProps {
     // mocks:
-    mockCartState   ?: Pick<CartState, 'items'|'currency'>
-    mockProductList ?: CartState['productList']
+    mockCartState       ?: Pick<CartState, 'items'|'currency'>
+    mockProductPreviews ?: CartState['productPreviews']
 }
 const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // rest props:
     const {
         // mocks:
         mockCartState,
-        mockProductList,
+        mockProductPreviews,
         
         
         
@@ -415,10 +414,75 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     
     
     // apis:
-    const {data: realProductList , isFetching: realIsProductLoading, isError: realIsProductError, refetch: realRefetchCart}  = useGetProductList();
-    const productList      = mockProductList        ??        realProductList;
-    const isProductLoading = mockProductList ?    false     : realIsProductLoading;
-    const isProductError   = mockProductList ?    false     : realIsProductError;
+    const [productPreviewPromises, setProductPreviewPromises] = useState<QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>>[]>([]);
+    useIsomorphicLayoutEffect(() => {
+        // setups:
+        setProductPreviewPromises(
+            items
+            .map(({ productId }): QueryActionCreatorResult<QueryDefinition<string, any, 'Product', ProductPreview, 'api'>> =>
+                dispatch(getProductPreview(productId, {
+                    forceRefetch : false,
+                    subscribe    : true,
+                }))
+            )
+        );
+        
+        
+        
+        // cleanups:
+        return () => {
+            for (const productPreviewPromise of productPreviewPromises) {
+                productPreviewPromise.unsubscribe();
+            } // for
+        };
+    }, [items]);
+    
+    const productPreviewRef   = useRef<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(undefined);
+    const productPreviewReady = useCallback((onChange: () => void): (() => void) => {
+        // setups:
+        productPreviewRef.current = /* = loading|uninitialized */ undefined;
+        Promise.all(
+            productPreviewPromises
+            .map((productPreviewPromise) =>
+                productPreviewPromise.unwrap()
+            )
+        )
+        .then((productPreviews) => {
+            productPreviewRef.current = /* = ready */ new Map<string, ProductPreview>(
+                productPreviews
+                .map((productPreview): [string, ProductPreview] => [
+                    productPreview.id,
+                    productPreview
+                ])
+            );
+            onChange();
+        })
+        .catch(() => {
+            productPreviewRef.current = /* = error */ null;
+            onChange();
+        });
+        
+        
+        
+        // cleanups:
+        return () => {
+            // no cleanup needed
+        };
+    }, [productPreviewPromises]); // change the function reference when the productPreviewPromises is changed
+    
+    const productPreviewSelect = useEvent((): Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */ => {
+        return productPreviewRef.current;
+    });
+    const realProductPreviews = useSyncExternalStore<Map<string, ProductPreview> /* = ready */ | null /* = error */ | undefined /* = loading|uninitialized */>(
+        productPreviewReady,
+        productPreviewSelect,
+        productPreviewSelect,
+    );
+    const realIsProductLoading = (realProductPreviews === /* = loading|uninitialized */ undefined);
+    const realIsProductError   = (realProductPreviews === /* = error */ null);
+    const productPreviews      = mockProductPreviews        ??        realProductPreviews;
+    const isProductLoading     = mockProductPreviews ?    false     : realIsProductLoading;
+    const isProductError       = mockProductPreviews ?    false     : realIsProductError;
     
     
     
@@ -476,7 +540,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         const productPriceParts  : ProductPricePart[] = [];
         let   totalProductWeight : number|null        = null;
         for (const {productId, variantIds, quantity} of items) {
-            const product = productList?.entities?.[productId];
+            const product = productPreviews?.get(productId);
             if (!product) {
                 return {
                     productPriceParts  : undefined, // difficulty getting product data => the subPrice(s)  cannot be populated  => undefined
@@ -545,7 +609,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
             productPriceParts,
             totalProductWeight,
         };
-    }, [items, productList]);
+    }, [items, productPreviews]);
     
     const totalProductWeightStepped = useMemo<number|null|undefined>(() => {
         if ((totalProductWeight === undefined) || (totalProductWeight === null)) return totalProductWeight;
@@ -738,19 +802,19 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     // auto trim product quantities if less than the stocks:
     useIsomorphicLayoutEffect(() => {
         // conditions:
-        if (!isCartReady)  return; // do not clean up when the related data is still loading
-        if (!items.length) return; // no item(s) in the cart => nothing to clean up
-        if (!productList)  return; // the productList is not yet loaded => do not clean up now
+        if (!isCartReady)     return; // do not clean up when the related data is still loading
+        if (!items.length)    return; // no item(s) in the cart => nothing to clean up
+        if (!productPreviews) return; // the productPreviews is not yet loaded => do not clean up now
         
         
         
         // clean up invalid productId(s):
         const invalidProducts = items.filter(({productId, variantIds}) => {
-            const validProductIds = productList.ids;
+            const validProductIds = Array.from(productPreviews.keys());
             if (!validProductIds.includes(productId)) return true; // invalid
             
-            const validVariantGroups = productList.entities[productId]?.variantGroups ?? [];
-            const validVariantIds    = validVariantGroups.flat().map(({id}) => id)    ?? [];
+            const validVariantGroups = productPreviews.get(productId)?.variantGroups ?? [];
+            const validVariantIds    = validVariantGroups.flat().map(({id}) => id)   ?? [];
             if (variantIds.length !== validVariantGroups.length) return true; // invalid
             if (!variantIds.every((variantId) => validVariantIds.includes(variantId))) return true; // invalid
             
@@ -766,7 +830,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                 }))
             );
         } // if
-    }, [isCartReady, items, productList]);
+    }, [isCartReady, items, productPreviews]);
     
     
     
@@ -798,7 +862,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                     title    : <h1>Delete Confirmation</h1>,
                     message  : <p>
                         Are you sure to remove product:<br />
-                        <strong>{productList?.entities?.[productId]?.name ?? 'UNKNOWN PRODUCT'}</strong><br />from the cart?
+                        <strong>{productPreviews?.get(productId)?.name ?? 'UNKNOWN PRODUCT'}</strong><br />from the cart?
                     </p>,
                     options  : {
                         yes  : <ButtonIcon icon='check'          theme='primary'>Yes</ButtonIcon>,
@@ -877,7 +941,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
                         
                         
                         // relation data:
-                        productList={productList}
+                        productPreviews={productPreviews}
                     />
                 </>
             });
@@ -894,7 +958,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
     });
     
     const refetchCart           = useEvent((): void => {
-        if (realIsProductError && !realIsProductLoading && !mockProductList) realRefetchCart();
+        if (realIsProductError && !realIsProductLoading && !mockProductPreviews) setProductPreviewPromises(productPreviewPromises.slice(0)); // force to re-create the `productPreviewReady()`
     });
     const resetCart             = useEvent((): void => {
         lastRestoredCartDetailRef.current = undefined;
@@ -933,7 +997,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // relation data:
-        productList,
+        productPreviews,
         
         
         
@@ -984,7 +1048,7 @@ const CartStateProvider = (props: React.PropsWithChildren<CartStateProps>) => {
         
         
         // relation data:
-        productList,
+        productPreviews,
         
         
         

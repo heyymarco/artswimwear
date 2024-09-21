@@ -2140,37 +2140,36 @@ router
     const isPaid       = (!!paymentDetail && (paymentDetail.type !== 'MANUAL'));
     const checkoutStep = isPaid ? 'PAID' : 'PENDING';
     
-    const productListAdapter = createEntityAdapter<ProductPreview>({
-        selectId : (productPreview) => productPreview.id,
-    });
-    
     const finishedOrderState : FinishedOrderState = {
         cartState                 : {
             items    : items.map(({productId, variantIds, quantity}) => ({productId : productId ?? '', variantIds, quantity})),
             currency : currency?.currency ?? checkoutConfigServer.payment.defaultCurrency,
         },
-        productList               : productListAdapter.addMany(
-            productListAdapter.getInitialState(),
+        productPreviews           : new Map<string, ProductPreview>(
             items.map(({product}) => product).filter((product): product is Exclude<typeof product, null> => (product !== null))
-            .map((product) => {
+            .map((product): [string, ProductPreview] => {
                 const {
                     images,        // take
                     variantGroups, // take
                 ...restProduct} = product;
-                return {
-                    ...restProduct,
-                    image         : images?.[0],
-                    variantGroups : (
-                        variantGroups
-                        .map(({variants}) =>
-                            variants
-                            .map(({images, ...restVariantPreview}) => ({
-                                ...restVariantPreview,
-                                image : images?.[0],
-                            }))
-                        )
-                    ),
-                };
+                
+                return [
+                    restProduct.id,
+                    {
+                        ...restProduct,
+                        image         : images?.[0],
+                        variantGroups : (
+                            variantGroups
+                            .map(({variants}) =>
+                                variants
+                                .map(({images, ...restVariantPreview}) => ({
+                                    ...restVariantPreview,
+                                    image : images?.[0],
+                                }))
+                            )
+                        ),
+                    }
+                ];
             })
         ),
         checkoutSession           : {

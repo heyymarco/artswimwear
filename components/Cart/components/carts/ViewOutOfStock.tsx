@@ -68,7 +68,7 @@ export interface ViewOutOfStockProps
     
     
     // relation data:
-    productList       : EntityState<ProductPreview>|undefined
+    productPreviews   : Map<string, ProductPreview> | null | undefined
 }
 const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
     // styles:
@@ -84,7 +84,7 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
         
         
         // relation data:
-        productList,
+        productPreviews,
     ...restListProps} = props;
     const isPlural = limitedStockItems.length > 1;
     
@@ -117,9 +117,9 @@ const ViewOutOfStock = (props: ViewOutOfStockProps): JSX.Element|null => {
             </ListItem>
             {limitedStockItems.map(({productId, variantIds, stock}, index) => {
                 // fn props:
-                const product          = productList?.entities?.[productId];
+                const product          = productPreviews?.get(productId);
                 const variants         = product?.variantGroups.flat();
-                const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
+                const isProductDeleted = isCartReady && !product; // the relation data is available but there is no specified productId in productPreviews => it's a deleted product
                 
                 
                 

@@ -585,7 +585,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         
         // relation data:
-        productList: globalProductList,
+        productPreviews: globalProductPreviews,
         
         
         
@@ -598,7 +598,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     } = cartState;
     const currency              = finishedOrderState ? finishedOrderState.cartState.currency : globalCartCurrency;
     const cartItems             = finishedOrderState ? finishedOrderState.cartState.items    : globalCartItems;
-    const productList           = finishedOrderState ? finishedOrderState.productList        : globalProductList;
+    const productPreviews       = finishedOrderState ? finishedOrderState.productPreviews    : globalProductPreviews;
     
     
     
@@ -2153,19 +2153,11 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             .map(({productId}) => productId)
         );
         const finishedOrderState : FinishedOrderState = {
-            cartState   : {
+            cartState       : {
                 items    : cartItems,
                 currency : currency,
             },
-            productList : {
-                // the minimal version of `productList`, only contains the sold items:
-                
-                ids      : productList?.ids.filter((id) => soldProductIds.has(id)) ?? [],
-                entities : Object.fromEntries(
-                    Object.entries(productList?.entities ?? {})
-                    .filter(([key]) => soldProductIds.has(key))
-                ),
-            },
+            productPreviews : productPreviews,
             
             checkoutSession : {
                 ...localCheckoutSession,
@@ -2437,8 +2429,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         finishedOrderState
         ? <CartStateProvider
             // mocks:
-            mockCartState   = {finishedOrderState.cartState}
-            mockProductList = {finishedOrderState.productList}
+            mockCartState       = {finishedOrderState.cartState}
+            mockProductPreviews = {finishedOrderState.productPreviews}
         >
             {children}
         </CartStateProvider>

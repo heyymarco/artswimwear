@@ -205,9 +205,15 @@ export const apiSlice = createApi({
                 return productListAdapter.addMany(productListAdapter.getInitialState(), response);
             },
         }),
+        getProductPreview           : builder.query<ProductPreview, string>({
+            query : (arg: string) => ({
+                url    : `products?id=${encodeURIComponent(arg)}`,
+                method : 'GET',
+            }),
+        }),
         getProductDetail            : builder.query<ProductDetail, string>({
-            query : (productPath: string) => ({
-                url    : `products?path=${productPath}`,
+            query : (arg: string) => ({
+                url    : `products?path=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
         }),
@@ -714,14 +720,16 @@ export const {
 } = apiSlice;
 
 export const {
-    restoreCart    : { initiate : restoreCart    },
-    backupCart     : { initiate : backupCart     },
-    placeOrder     : { initiate : placeOrder     },
-    makePayment    : { initiate : makePayment    },
+    getProductPreview : { initiate : getProductPreview },
     
-    getCountryList : { initiate : getCountryList },
-    getStateList   : { initiate : getStateList   },
-    getCityList    : { initiate : getCityList    },
+    restoreCart       : { initiate : restoreCart       },
+    backupCart        : { initiate : backupCart        },
+    placeOrder        : { initiate : placeOrder        },
+    makePayment       : { initiate : makePayment       },
+    
+    getCountryList    : { initiate : getCountryList    },
+    getStateList      : { initiate : getStateList      },
+    getCityList       : { initiate : getCityList       },
 } = apiSlice.endpoints;
 
 export const usePrefetchProductList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList'  , options);

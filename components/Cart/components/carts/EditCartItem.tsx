@@ -136,7 +136,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
         
         
         // relation data:
-        productList,
+        productPreviews,
     } = useCartState();
     
     const {
@@ -146,7 +146,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
     
     
     // fn props:
-    const product               = productList?.entities?.[productId];
+    const product               = productPreviews?.get(productId);
     const selectedVariants      = !product ? undefined : (
         product.variantGroups
         .map((variants) =>
@@ -176,7 +176,7 @@ const EditCartItem = (props: EditCartItemProps): JSX.Element|null => {
         ]
     );
     const variants              = product?.variantGroups.flat();
-    const isProductDeleted      = isCartReady && !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
+    const isProductDeleted      = isCartReady && !product; // the relation data is available but there is no specified productId in productPreviews => it's a deleted product
     
     
     
