@@ -71,7 +71,7 @@ import {
 import {
     // hooks:
     useSignedInCacheRefresh,
-}                           from '@/store/features/api/apiSlice'
+}                           from '@/store/features/api/hooks'
 
 // configs:
 import {
