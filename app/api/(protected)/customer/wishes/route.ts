@@ -200,7 +200,7 @@ router
     const {
         arg: {
             productId,
-            groupId = null, // if not supplied (undefined) => assumes adding a wish as non grouped wish (null)
+            groupId,
         },
     } = requestData;
     //#endregion parsing and validating request

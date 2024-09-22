@@ -1,8 +1,9 @@
 // models:
-import type {
-    Variant,
-    VariantGroup,
-    Product,
+import {
+    type Variant,
+    type VariantGroup,
+    type Product,
+    type Wish,
 }                           from '@prisma/client'
 
 
@@ -60,7 +61,12 @@ export interface ProductPreview
     variantGroups : VariantPreview[][]
     
     // relations:
-    wished        : boolean
+    /**
+     * undefined : unwished  
+     * null      : wished (ungrouped)  
+     * string    : wished (grouped)  
+     */
+    wished        : Wish['groupId']|undefined
 }
 export interface ProductDetail
     extends

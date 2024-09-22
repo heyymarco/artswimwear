@@ -95,10 +95,11 @@ const ButtonWish = (props: ButtonWishProps) => {
     // handlers:
     const handleWishClick = useEvent(async (): Promise<void> => {
         try {
-            if (!wished) {
+            if (wished !== undefined) { // undefined: unwished; null: wished (ungrouped); string: wished (grouped)
                 await updateWish({
-                    productId : id,
-                    groupId   : undefined,
+                    productId       : id,
+                    groupId         : null,
+                    originalGroupId : wished,
                 }).unwrap();
                 
                 
@@ -111,8 +112,9 @@ const ButtonWish = (props: ButtonWishProps) => {
                 
                 
                 await updateWish({
-                    productId : id,
-                    groupId   : wishGroup.id,
+                    productId       : id,
+                    groupId         : wishGroup.id,
+                    originalGroupId : wished,
                 }).unwrap();
                 
                 
@@ -127,7 +129,8 @@ const ButtonWish = (props: ButtonWishProps) => {
             }
             else {
                 await deleteWish({
-                    productId : id,
+                    productId       : id,
+                    originalGroupId : wished,
                 }).unwrap();
                 
                 
@@ -167,7 +170,7 @@ const ButtonWish = (props: ButtonWishProps) => {
     // default props:
     const {
         // appearances:
-        icon        = wished ? 'favorite' : 'favorite_outline',
+        icon        = (wished !== undefined /* undefined: unwished; null: wished (ungrouped); string: wished (grouped) */) ? 'favorite' : 'favorite_outline',
         
         
         

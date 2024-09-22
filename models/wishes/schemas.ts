@@ -37,7 +37,7 @@ export const GetWishPageRequestSchema = z.object({
 
 export const CreateOrUpdateWishRequestSchema = z.object({
     productId : ModelIdSchema,
-    groupId   : ModelIdSchema.nullable().optional(),
+    groupId   : ModelIdSchema.nullable(),
 }) satisfies z.Schema<CreateOrUpdateWishRequest>;
 
 export const DeleteWishRequestSchema = z.object({

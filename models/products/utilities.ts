@@ -59,7 +59,7 @@ export const productPreviewSelect = (customerId: string|undefined) => ({
             parentId : customerId,
         },
         select : {
-            id : true,
+            groupId : true,
         },
         take : 1,
     },
@@ -83,6 +83,6 @@ export const convertProductPreviewDataToProductPreview = (productPreviewData: Aw
                 }))
             )
         ),
-        wished : !!wishes?.length,
+        wished : wishes?.[0]?.groupId,
     };
 };

@@ -2168,7 +2168,7 @@ router
                                 }))
                             )
                         ),
-                        wished        : false, // no need to check wished status, so just simply reported as false
+                        wished        : undefined, // no need to check wished status, so just simply reported as false
                     }
                 ];
             })

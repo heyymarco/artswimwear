@@ -81,10 +81,10 @@ export interface CreateOrUpdateWishRequest
             // relations:
             |'productId'
         >,
-        Partial<Pick<Wish,
+        Pick<Wish,
             // relations:
             |'groupId'
-        >>
+        >
 {
 }
 
