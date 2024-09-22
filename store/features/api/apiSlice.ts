@@ -590,29 +590,28 @@ export const apiSlice = createApi({
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', { providedMutatedEntry: wishedProduct as any });
                 
                 // update pagination of all wishes:
-                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                 // update pagination of grouped wishes:
                 if (arg.groupId) {
-                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
+                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
                 } // if
                 
                 
                 
                 // when the optimistic update fail => invalidate the updates above:
                 api.queryFulfilled.catch(() => {
-                    // TODO: undo optimistic
+                    // invalidate pagination of products:
+                    api.dispatch(
+                        apiSlice.util.invalidateTags(['Product'])
+                    );
+                    
+                    // invalidate pagination of all|grouped wishes:
+                    api.dispatch(
+                        apiSlice.util.invalidateTags(['Wish'])
+                    );
                 });
                 //#endregion optimistic update
-                
-                
-                
-                api.dispatch(
-                    apiSlice.util.invalidateTags(['Wish']) // the `cumulativeUpdatePaginationCache()` doesn't support 'UPSERT', so we simplify to invalidate it
-                );
-                // TODO: await cumulativeUpdateEntityCache(api, 'getWishes', 'UPSERT', 'Wish');
             },
-            // TODO: set   wishGroupId
-            // TODO: unset wishGroupId
         }),
         deleteWish                  : builder.mutation<WishDetail['productId'], DeleteWishRequest>({
             query: (arg) => ({
@@ -647,26 +646,26 @@ export const apiSlice = createApi({
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', { providedMutatedEntry: unwishedProduct as any });
                 
                 // update pagination of all wishes:
-                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                 // update pagination of grouped wishes:
-                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId !== undefined) });
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId !== undefined) });
                 
                 
                 
                 // when the optimistic update fail => invalidate the updates above:
                 api.queryFulfilled.catch(() => {
-                    // TODO: undo optimistic
+                    // invalidate pagination of products:
+                    api.dispatch(
+                        apiSlice.util.invalidateTags(['Product'])
+                    );
+                    
+                    // invalidate pagination of all|grouped wishes:
+                    api.dispatch(
+                        apiSlice.util.invalidateTags(['Wish'])
+                    );
                 });
                 //#endregion optimistic update
-                
-                
-                
-                await Promise.all([
-                    cumulativeUpdatePaginationCache(api, 'getWishPage', 'DELETE', 'Wish'),
-                    // TODO: cumulativeUpdateEntityCache(api, 'getWishes', 'DELETE', 'Wish'),
-                ]);
             },
-            // TODO: invalidates `WishGroup` caches containing `productId`
         }),
     }),
 });
