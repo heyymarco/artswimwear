@@ -4,17 +4,7 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useEffect,
 }                           from 'react'
-
-// next-auth:
-import {
-    useSession,
-}                           from 'next-auth/react'
 
 // reusable-ui core:
 import {
@@ -55,7 +45,6 @@ import {
     
     
     // hooks:
-    useGetWishes,
     useUpdateWish,
     useDeleteWish,
 }                           from '@/store/features/api/apiSlice'
@@ -78,6 +67,7 @@ const ButtonWish = (props: ButtonWishProps) => {
         model : {
             // records:
             id,
+            wished,
         },
         
         
@@ -88,29 +78,9 @@ const ButtonWish = (props: ButtonWishProps) => {
     
     
     
-    // sessions:
-    const { status: sessionStatus } = useSession();
-    
-    
-    
     // apis:
-    const [getWishes, { data: wishes }] = useGetWishes();
     const [updateWish] = useUpdateWish();
     const [deleteWish] = useDeleteWish();
-    const isWished = (!!wishes && !!wishes.entities[id]);
-    
-    
-    
-    // effects:
-    useEffect(() => {
-        // conditions:
-        if (sessionStatus !== 'authenticated') return; // only interested to signedIn customer
-        
-        
-        
-        // actions:
-        getWishes();
-    }, [sessionStatus]);
     
     
     
@@ -125,7 +95,7 @@ const ButtonWish = (props: ButtonWishProps) => {
     // handlers:
     const handleWishClick = useEvent(async (): Promise<void> => {
         try {
-            if (!isWished) {
+            if (!wished) {
                 await updateWish({
                     productId : id,
                     groupId   : undefined,
@@ -197,7 +167,7 @@ const ButtonWish = (props: ButtonWishProps) => {
     // default props:
     const {
         // appearances:
-        icon        = isWished ? 'favorite' : 'favorite_outline',
+        icon        = wished ? 'favorite' : 'favorite_outline',
         
         
         

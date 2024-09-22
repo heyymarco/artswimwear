@@ -85,26 +85,6 @@ router
     // authorized => next:
     return await next();
 })
-.get(async (req) => {
-    //#region validating privileges
-    const session = (req as any).session as Session;
-    const customerId = session.user?.id;
-    if (!customerId) return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
-    //#endregion validating privileges
-    
-    
-    
-    //#region query result
-    const wishes : WishDetail[] = await prisma.wish.findMany({
-        where  : {
-            parentId : customerId, // important: the signedIn customerId
-        },
-        select : wishDetailSelect,
-    });
-    const productIds = wishes.map(({ productId }) => productId);
-    return Response.json(productIds); // handled with success
-    //#endregion query result
-})
 .post(async (req) => {
     //#region parsing and validating request
     const requestData = await (async () => {
@@ -166,7 +146,7 @@ router
             },
             select  : {
                 product : {
-                    select : productPreviewSelect,
+                    select : productPreviewSelect(customerId),
                 },
             },
             orderBy : {

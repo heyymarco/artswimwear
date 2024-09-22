@@ -16,7 +16,7 @@ import {
 
 
 // utilities:
-export const productPreviewSelect = {
+export const productPreviewSelect = (customerId: string|undefined) => ({
     id             : true,
     
     name           : true,
@@ -53,11 +53,22 @@ export const productPreviewSelect = {
             sort : 'asc',
         },
     },
-} satisfies Prisma.ProductSelect;
-export const convertProductPreviewDataToProductPreview = (productPreviewData: Awaited<ReturnType<typeof prisma.product.findFirstOrThrow<{ select: typeof productPreviewSelect }>>>): ProductPreview => {
+    
+    wishes        : !customerId ? undefined : {
+        where : {
+            parentId : customerId,
+        },
+        select : {
+            id : true,
+        },
+        take : 1,
+    },
+}) satisfies Prisma.ProductSelect;
+export const convertProductPreviewDataToProductPreview = (productPreviewData: Awaited<ReturnType<typeof prisma.product.findFirstOrThrow<{ select: ReturnType<typeof productPreviewSelect> }>>>): ProductPreview => {
     const {
         images,        // take
         variantGroups, // take
+        wishes,        // take
     ...restProduct} = productPreviewData;
     return {
         ...restProduct,
@@ -72,5 +83,6 @@ export const convertProductPreviewDataToProductPreview = (productPreviewData: Aw
                 }))
             )
         ),
+        wished : !!wishes?.length,
     };
 };

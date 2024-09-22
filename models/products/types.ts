@@ -58,6 +58,9 @@ export interface ProductPreview
 {
     image         : Required<Product>['images'][number]|undefined
     variantGroups : VariantPreview[][]
+    
+    // relations:
+    wished        : boolean
 }
 export interface ProductDetail
     extends

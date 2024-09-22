@@ -3,6 +3,21 @@ import {
     createEdgeRouter,
 }                           from 'next-connect'
 
+// next-auth:
+import {
+    getServerSession,
+}                           from 'next-auth'
+
+// heymarco:
+import type {
+    Session,
+}                           from '@heymarco/next-auth/server'
+
+// internal auth:
+import {
+    authOptions,
+}                           from '@/libs/auth.server'
+
 // models:
 import {
     type Pagination,
@@ -59,6 +74,16 @@ export {
 }
 
 router
+.use(async (req, ctx, next) => {
+    // conditions:
+    const session = await getServerSession(authOptions);
+    if (session) (req as any).session = session;
+    
+    
+    
+    // not_authenticated|authenticated => next:
+    return await next();
+})
 .get(async (req) => {
     //#region parsing and validating request
     const requestData = await (async () => {
@@ -97,6 +122,14 @@ router
     
     
     
+    //#region validating privileges
+    const session = (req as any).session as Session;
+    const customerId = session.user?.id ?? undefined; // optional loggedIn (allows for public access too)
+    //#endregion validating privileges
+    
+    
+    
+    //#region query result
     if (id) {
         const productPreviewData = (
             await prisma.product.findUnique({
@@ -104,7 +137,7 @@ router
                     id         : id, // find by id
                     visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
                 },
-                select : productPreviewSelect,
+                select : productPreviewSelect(customerId),
             })
         );
         
@@ -176,6 +209,7 @@ router
         
         return Response.json(productDetail); // handled with success
     } // if
+    //#endregion query result
     
     
     
@@ -212,6 +246,13 @@ router
     
     
     
+    //#region validating privileges
+    const session = (req as any).session as Session;
+    const customerId = session.user?.id ?? undefined; // optional loggedIn (allows for public access too)
+    //#endregion validating privileges
+    
+    
+    
     //#region query result
     const [total, paged] = await prisma.$transaction([
         prisma.product.count({
@@ -223,7 +264,7 @@ router
             where  : {
                 visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
             },
-            select  : productPreviewSelect,
+            select  : productPreviewSelect(customerId),
             orderBy : {
                 name: 'asc', // shows the alphabetical Product for pagination_view
             },

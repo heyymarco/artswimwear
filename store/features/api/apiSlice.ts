@@ -1,6 +1,5 @@
 // redux:
 import {
-    type Dictionary,
     type EntityState,
     
     createEntityAdapter,
@@ -570,16 +569,6 @@ export const apiSlice = createApi({
             }),
             providesTags: (data, error, arg) => [{ type: 'Wish', id: arg.page }],
         }),
-        getWishes                   : builder.query<EntityState<WishDetail['productId']>, void>({
-            query: () => ({
-                url         : 'customer/wishes',
-                method      : 'GET',
-            }),
-            transformResponse(response: WishDetail['productId'][]) {
-                return wishListAdapter.addMany(wishListAdapter.getInitialState(), response);
-            },
-            providesTags: ['Wish'],
-        }),
         updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest>({
             query: (arg) => ({
                 url         : 'customer/wishes',
@@ -587,26 +576,27 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             onQueryStarted: async (arg, api) => {
-                //#region optimistic update
-                const patchResult = api.dispatch(
-                    apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
-                        // conditions:
-                        if (data.ids.includes(arg.productId)) return; // already added => no need to update => nothing to do
-                        
-                        
-                        
-                        // update:
-                        wishListAdapter.upsertOne(data, arg.productId);
-                    })
-                );
-                api.queryFulfilled.catch(() => {
-                    patchResult.undo();
-                    
-                    api.dispatch(
-                        apiSlice.util.invalidateTags(['Wish'])
-                    );
-                });
-                //#endregion optimistic update
+                // TODO:
+                // //#region optimistic update
+                // const patchResult = api.dispatch(
+                //     apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
+                //         // conditions:
+                //         if (data.ids.includes(arg.productId)) return; // already added => no need to update => nothing to do
+                //         
+                //         
+                //         
+                //         // update:
+                //         wishListAdapter.upsertOne(data, arg.productId);
+                //     })
+                // );
+                // api.queryFulfilled.catch(() => {
+                //     patchResult.undo();
+                //     
+                //     api.dispatch(
+                //         apiSlice.util.invalidateTags(['Wish'])
+                //     );
+                // });
+                // //#endregion optimistic update
                 
                 
                 
@@ -616,7 +606,7 @@ export const apiSlice = createApi({
                 api.dispatch(
                     apiSlice.util.invalidateTags(['Wish']) // the `cumulativeUpdatePaginationCache()` doesn't support 'UPSERT', so we simplify to invalidate it
                 );
-                await cumulativeUpdateEntityCache(api, 'getWishes', 'UPSERT', 'Wish');
+                // TODO: await cumulativeUpdateEntityCache(api, 'getWishes', 'UPSERT', 'Wish');
             },
             // TODO: set   wishGroupId
             // TODO: unset wishGroupId
@@ -627,33 +617,34 @@ export const apiSlice = createApi({
                 method      : 'DELETE',
             }),
             onQueryStarted: async (arg, api) => {
-                //#region optimistic update
-                const patchResult = api.dispatch(
-                    apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
-                        // conditions:
-                        if (!data.ids.includes(arg.productId)) return; // already removed => no need to update => nothing to do
-                        
-                        
-                        
-                        // update:
-                        wishListAdapter.removeOne(data, arg.productId);
-                    })
-                );
-                api.queryFulfilled.catch(() => {
-                    patchResult.undo();
-                    
-                    api.dispatch(
-                        apiSlice.util.invalidateTags(['Wish'])
-                    );
-                });
-                //#endregion optimistic update
+                // TODO:
+                // //#region optimistic update
+                // const patchResult = api.dispatch(
+                //     apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
+                //         // conditions:
+                //         if (!data.ids.includes(arg.productId)) return; // already removed => no need to update => nothing to do
+                //         
+                //         
+                //         
+                //         // update:
+                //         wishListAdapter.removeOne(data, arg.productId);
+                //     })
+                // );
+                // api.queryFulfilled.catch(() => {
+                //     patchResult.undo();
+                //     
+                //     api.dispatch(
+                //         apiSlice.util.invalidateTags(['Wish'])
+                //     );
+                // });
+                // //#endregion optimistic update
                 
                 
                 
                 await Promise.all([
                     cumulativeUpdatePaginationCache(api, 'getWishOfGroupPage', 'DELETE', 'WishOfGroup'),
                     cumulativeUpdatePaginationCache(api, 'getWishPage', 'DELETE', 'Wish'),
-                    cumulativeUpdateEntityCache(api, 'getWishes', 'DELETE', 'Wish'),
+                    // TODO: cumulativeUpdateEntityCache(api, 'getWishes', 'DELETE', 'Wish'),
                 ]);
             },
             // TODO: invalidates `WishGroup` caches containing `productId`
@@ -705,7 +696,6 @@ export const {
     
     useGetWishOfGroupPageQuery             : useGetWishOfGroupPage,
     useGetWishPageQuery                    : useGetWishPage,
-    useLazyGetWishesQuery                  : useGetWishes,
     useUpdateWishMutation                  : useUpdateWish,
     useDeleteWishMutation                  : useDeleteWish,
 } = apiSlice;
@@ -1103,133 +1093,5 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
             );
         } // for
         //#endregion RESTORE the shifted paginations from the backup
-    } // if
-};
-
-type EntityUpdateType =
-    |'UPSERT'
-    |'DELETE'
-const cumulativeUpdateEntityCache     = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishGroups'|'getWishes'>, updateType: EntityUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
-    // mutated TEntry data:
-    const mutatedEntry = await (async (): Promise<TEntry|undefined> => {
-        try {
-            const { data: mutatedEntry } = await api.queryFulfilled;
-            return mutatedEntry;
-        }
-        catch {
-            return undefined;
-        } // try
-    })();
-    if (mutatedEntry === undefined) return; // api request aborted|failed => nothing to update
-    const mutatedId = selectIdFromEntry<TEntry>(mutatedEntry);
-    
-    
-    
-    // find related TEntry data(s):
-    const state                 = api.getState();
-    const allQueryCaches        = state.api.queries;
-    const collectionQueryCaches = (
-        Object.values(allQueryCaches)
-        .filter((allQueryCache): allQueryCache is Exclude<typeof allQueryCache, undefined> =>
-            (allQueryCache !== undefined)
-            &&
-            (allQueryCache.endpointName === endpointName)
-            &&
-            (allQueryCache.data !== undefined)
-        )
-    );
-    
-    
-    
-    const lastCollectionQueryCache       = collectionQueryCaches.length ? collectionQueryCaches[collectionQueryCaches.length - 1] : undefined;
-    if (lastCollectionQueryCache === undefined) {
-        // there's no queryCaches to update => nothing to do
-        return;
-    } // if
-    const validTotalEntries              = selectTotalFromData(lastCollectionQueryCache.data);
-    const hasInvalidCollectionQueryCache = collectionQueryCaches.some(({ data }) =>
-        (selectTotalFromData(data) !== validTotalEntries)
-    );
-    if (hasInvalidCollectionQueryCache) {
-        // the queryCaches has a/some inconsistent data => panic => clear all the caches and (may) trigger the rtk to re-fetch
-        
-        // clear caches:
-        api.dispatch(
-            apiSlice.util.invalidateTags([invalidateTag])
-        );
-        return; // panic => cannot further reconstruct
-    } // if
-    
-    
-    
-    /* update existing data -or- add new data: COMPLEX: the number of collection_items MAY scaled_up */
-    if (updateType === 'UPSERT') {
-        const shiftedCollectionQueryCaches = collectionQueryCaches;
-        
-        
-        
-        // reconstructuring the shifted entries, so the invalidatesTag can be avoided:
-        
-        
-        
-        //#region INSERT the new entry to the cache's entity
-        for (const { originalArgs } of shiftedCollectionQueryCaches) {
-            // reconstruct current entity cache:
-            api.dispatch(
-                apiSlice.util.updateQueryData(endpointName, originalArgs as any, (data) => {
-                    if (selectIndexOfId<TEntry>(data, mutatedId) >= 0) { // is FOUND
-                        // UPDATE the existing entry:
-                        (data.entities as Dictionary<TEntry>)[mutatedId] = mutatedEntry; // replace oldEntry with mutatedEntry
-                    }
-                    else {
-                        // INSERT the new entry:
-                        (data.entities as Dictionary<TEntry>) = {
-                            [mutatedId] : mutatedEntry, // place the inserted entry to the first property
-                            ...data.entities as Dictionary<TEntry>,
-                        } satisfies Dictionary<TEntry>;
-                        
-                        
-                        
-                        // INSERT the new entry's id at the BEGINNING of the ids:
-                        data.ids.unshift(mutatedId);
-                    } // if
-                })
-            );
-        } // for
-        //#endregion INSERT the new entry to the cache's entity
-    }
-    
-    /* delete existing data: COMPLEX: the number of collection_items is scaled_down */
-    else {
-        const shiftedCollectionQueryCaches = (
-            collectionQueryCaches
-            .filter(({ data }) =>
-                (selectIndexOfId<TEntry>(data, mutatedId) >= 0) // is FOUND
-            )
-        );
-        
-        
-        
-        // reconstructuring the deleted entry, so the invalidatesTag can be avoided:
-        
-        
-        
-        //#region REMOVE the deleted entry from the cache's entity
-        for (const { originalArgs } of shiftedCollectionQueryCaches) {
-            // reconstruct current entity cache:
-            api.dispatch(
-                apiSlice.util.updateQueryData(endpointName, originalArgs as any, (data) => {
-                    // REMOVE the deleted entry:
-                    delete (data.entities as Dictionary<TEntry>)[mutatedId];
-                    
-                    
-                    
-                    // REMOVE the deleted entry's id at the BEGINNING of the ids:
-                    const indexOfId = selectIndexOfId<TEntry>(data, mutatedId);
-                    if (indexOfId >= 0) data.ids.splice(indexOfId, 1);
-                })
-            );
-        } // for
-        //#endregion REMOVE the deleted entry from the cache's entity
     } // if
 };
