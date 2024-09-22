@@ -588,6 +588,7 @@ export const apiSlice = createApi({
                 // update pagination of product page:
                 const wishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: true };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', { providedMutatedEntry: wishedProduct as any });
+                // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
                 
                 // update pagination of all wishes:
                 cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
@@ -644,6 +645,7 @@ export const apiSlice = createApi({
                 // update pagination of product page:
                 const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: false };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', { providedMutatedEntry: unwishedProduct as any });
+                // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
                 
                 // update pagination of all wishes:
                 cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
