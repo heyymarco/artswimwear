@@ -65,8 +65,7 @@ import {
 // stores:
 import {
     // hooks:
-    useGetWishOfGroupPage as _useGetWishOfGroupPage,
-    useGetWishPage        as _useGetWishPage,
+    useGetWishPage,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -74,15 +73,10 @@ import {
 // react components:
 const useUseGetWishPageOfGroup = ({ groupId }: { groupId: string|undefined }) => {
     return (arg: PaginationArgs) => {
-        if (groupId) { // the `groupId` is never changed during page's lifecycle, so it's safe to make these hooks as conditional
-            return _useGetWishOfGroupPage({
-                ...arg,
-                groupId,
-            });
-        }
-        else {
-            return _useGetWishPage(arg);
-        } // if
+        return useGetWishPage({
+            ...arg,
+            groupId,
+        });
     };
 };
 export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
