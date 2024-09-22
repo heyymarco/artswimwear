@@ -6,22 +6,12 @@ import {
     default as React,
 }                           from 'react'
 
-// redux:
-import type {
-    EntityState
-}                           from '@reduxjs/toolkit'
-
 // reusable-ui components:
 import {
     // layout-components:
     ListItemProps,
     ListItem,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
-
-// heymarco components:
-import {
-    Image,
-}                           from '@heymarco/image'
 
 // internal components:
 import {
@@ -30,6 +20,9 @@ import {
 import {
     VariantIndicator,
 }                           from '@/components/VariantIndicator'
+import {
+    ProductImage,
+}                           from '@/components/views/ProductImage'
 
 // models:
 import {
@@ -43,15 +36,15 @@ import {
     useGetProductPreview,
 }                           from '@/store/features/api/apiSlice'
 
-// utilities:
-import {
-    resolveMediaUrl,
-}                           from '@/libs/mediaStorage.client'
-
 // internals:
 import {
     useEditOrderDialogStyleSheet,
 }                           from './styles/loader'
+
+
+
+// defaults:
+const imageSize = 64;  // 64px
 
 
 
@@ -76,7 +69,6 @@ export interface ViewCartItemProps
     // relation data:
     productId     : string|null
     variantIds    : string[]
-    productList   : EntityState<ProductPreview>|undefined
 }
 const ViewCartItem = (props: ViewCartItemProps): JSX.Element|null => {
     // props:
@@ -93,8 +85,8 @@ const ViewCartItem = (props: ViewCartItemProps): JSX.Element|null => {
     
     
     // jsx:
-    if (!productId) return (
-        <ViewCartItemInternal {...restViewCartItemProps} product={undefined} />
+    if (productId === null /* deleted product */) return (
+        <ViewCartItemInternal {...restViewCartItemProps} product={null /* null: deleted product */ } />
     );
     return (
         <ViewCartItemWithProduct {...restViewCartItemProps} productId={productId} />
@@ -115,16 +107,32 @@ const ViewCartItemWithProduct = (props: ViewCartItemProps & { productId: string 
     
     
     // apis:
-    const { data: product } = useGetProductPreview(productId);
+    const { data: product, isSuccess } = useGetProductPreview(productId);
     
     
     
     // jsx:
     return (
-        <ViewCartItemInternal {...restViewCartItemProps} product={product} />
+        <ViewCartItemInternal
+            // other props:
+            {...restViewCartItemProps}
+            
+            
+            
+            // data:
+            product={
+                isSuccess
+                ? (
+                    product
+                    ??
+                    null    // null      : has productId but no product => it's a deleted product
+                )
+                : undefined // undefined : unknown product (either still loading or was error)
+            }
+        />
     );
 };
-const ViewCartItemInternal = (props: Omit<ViewCartItemProps, 'productId'> & { product: ProductPreview|undefined }): JSX.Element|null => {
+const ViewCartItemInternal = (props: Omit<ViewCartItemProps, 'productId'> & { product: ProductPreview|null|undefined }): JSX.Element|null => {
     // props:
     const {
         // data:
@@ -139,7 +147,6 @@ const ViewCartItemInternal = (props: Omit<ViewCartItemProps, 'productId'> & { pr
         // relation data:
         product,
         variantIds,
-        productList,
         
         
         
@@ -156,7 +163,7 @@ const ViewCartItemInternal = (props: Omit<ViewCartItemProps, 'productId'> & { pr
     
     // fn props:
     const variants          = product?.variantGroups.flat();
-    const isProductDeleted  = !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
+    const isProductDeleted  = (product === null); // the relation data is available but there is no specified product => it's a deleted product
     
     
     
@@ -169,8 +176,8 @@ const ViewCartItemInternal = (props: Omit<ViewCartItemProps, 'productId'> & { pr
             
             
             // variants:
-            theme={isProductDeleted ? 'danger' : undefined}
-            mild={isProductDeleted ? false : undefined}
+            theme = {isProductDeleted ? 'danger' : undefined}
+            mild  = {isProductDeleted ? false    : undefined}
             
             
             
@@ -206,11 +213,19 @@ const ViewCartItemInternal = (props: Omit<ViewCartItemProps, 'productId'> & { pr
                 }
             </p>
             
-            <Image
+            <ProductImage
+                // data:
+                productId={product?.id ?? null}
+                
+                
+                
                 // appearances:
-                alt={product?.name ?? ''}
-                src={resolveMediaUrl(product?.image)}
-                sizes='64px'
+                sizes={`${imageSize}px`}
+                
+                
+                
+                // behaviors:
+                priority={false}
                 
                 
                 
@@ -237,11 +252,9 @@ const ViewCartItemInternal = (props: Omit<ViewCartItemProps, 'productId'> & { pr
             </p>
             
             <p className='subPrice currencyBlock'>
-                {isProductDeleted && <>This product was deleted</>}
-                
-                {!isProductDeleted && <span className='currency'>
-                <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={unitPrice} multiply={quantity} />
-                </span>}
+                <span className='currency'>
+                    <CurrencyDisplay currency={currency} currencyRate={1 /* do not convert foreign currency to cartCurrency, just display as is */} amount={unitPrice} multiply={quantity} />
+                </span>
             </p>
         </ListItem>
     );
