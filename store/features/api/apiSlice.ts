@@ -778,9 +778,9 @@ type PaginationUpdateType =
     |'CREATE'
     |'UPDATE'
     |'DELETE'
-const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getWishGroupPage'|'getWishOfGroupPage'|'getWishPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>) => {
+const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishOfGroupPage'|'getWishPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>, providedMutatedEntry?: TEntry) => {
     // mutated TEntry data:
-    const mutatedEntry = await (async (): Promise<TEntry|undefined> => {
+    const mutatedEntry : TEntry|undefined = (providedMutatedEntry !== undefined) ? providedMutatedEntry : await (async (): Promise<TEntry|undefined> => {
         try {
             const { data: mutatedEntry } = await api.queryFulfilled;
             return mutatedEntry;
