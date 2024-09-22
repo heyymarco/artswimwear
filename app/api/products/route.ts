@@ -124,7 +124,7 @@ router
     
     //#region validating privileges
     const session = (req as any).session as Session;
-    const customerId = session.user?.id ?? undefined; // optional loggedIn (allows for public access too)
+    const customerId = session?.user?.id ?? undefined; // optional loggedIn (allows for public access too)
     //#endregion validating privileges
     
     
@@ -248,7 +248,7 @@ router
     
     //#region validating privileges
     const session = (req as any).session as Session;
-    const customerId = session.user?.id ?? undefined; // optional loggedIn (allows for public access too)
+    const customerId = session?.user?.id ?? undefined; // optional loggedIn (allows for public access too)
     //#endregion validating privileges
     
     

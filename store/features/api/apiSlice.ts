@@ -1,3 +1,15 @@
+// react:
+import {
+    // hooks:
+    useRef,
+    useEffect,
+}                           from 'react'
+
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
 // redux:
 import {
     type EntityState,
@@ -116,6 +128,12 @@ import {
     CanceledError,
 }                           from 'axios'
 
+// internals:
+import {
+    // hooks:
+    useAppDispatch,
+}                           from '../../hooks'
+
 
 
 const countryListAdapter          = createEntityAdapter<CountryPreview>({
@@ -194,6 +212,7 @@ export const apiSlice = createApi({
                 url    : `products?id=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
+            providesTags: ['Product'],
         }),
         getProductDetail            : builder.query<ProductDetail, string>({
             query : (arg: string) => ({
@@ -1088,4 +1107,29 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
         } // for
         //#endregion RESTORE the shifted paginations from the backup
     } // if
+};
+
+
+
+// hooks:
+export const useSignedInCacheRefresh = () => {
+    // stores:
+    const dispatch = useAppDispatch();
+    
+    
+    
+    // sessions:
+    const { data: session } = useSession();
+    const isSignedIn = !!session;
+    const prefIsSignedInRef = useRef<boolean>(isSignedIn);
+    useEffect(() => {
+        // conditions:
+        if (prefIsSignedInRef.current === isSignedIn) return; // no diff => ignore
+        prefIsSignedInRef.current = isSignedIn; // sync
+        
+        
+        
+        // actions:
+        dispatch(apiSlice.util.invalidateTags(['Product'])); // a ProductPreview contains wished property that depens on SignedIn state, so we need to invalidate the caches of ProductPreview
+    }, [isSignedIn]);
 };

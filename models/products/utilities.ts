@@ -54,7 +54,7 @@ export const productPreviewSelect = (customerId: string|undefined) => ({
         },
     },
     
-    wishes        : !customerId ? undefined : {
+    wishes        : !!customerId && {
         where : {
             parentId : customerId,
         },

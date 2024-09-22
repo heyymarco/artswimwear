@@ -68,6 +68,10 @@ import {
     store,
     persistor,
 }                           from '@/store/store'
+import {
+    // hooks:
+    useSignedInCacheRefresh,
+}                           from '@/store/features/api/apiSlice'
 
 // configs:
 import {
@@ -181,13 +185,9 @@ export default function RootLayout({
                                 fetchErrorMessageDefault={fetchErrorMessageDefault}
                             >
                                 <CartStateProvider>
-                                    <Header />
-                                    
-                                    {children}
-                                    
-                                    <Footer />
-                                    
-                                    <CartDialog />
+                                    <RootLayoutInternal>
+                                        {children}
+                                    </RootLayoutInternal>
                                 </CartStateProvider>
                             </DialogMessageProvider>
                         </PersistGate></Provider>
@@ -195,5 +195,28 @@ export default function RootLayout({
                 </NextAuthSessionProvider>
             </body>
         </html>
+    );
+}
+function RootLayoutInternal({
+    children,
+}: {
+    children: React.ReactNode
+}): JSX.Element|null {
+    // stores:
+    useSignedInCacheRefresh();
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <Header />
+            
+            {children}
+            
+            <Footer />
+            
+            <CartDialog />
+        </>
     );
 }
