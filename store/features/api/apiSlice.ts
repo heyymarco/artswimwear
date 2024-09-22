@@ -593,10 +593,18 @@ export const apiSlice = createApi({
                 });
                 */
                 
+                // update pagination of product page:
                 const wishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: true };
-                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', wishedProduct as any);
-                cumulativeUpdatePaginationCache(api, 'getWishOfGroupPage', 'UPDATE', 'Product', wishedProduct as any);
-                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', wishedProduct as any);
+                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', { providedMutatedEntry: wishedProduct as any });
+                
+                // update pagination of grouped wishes:
+                cumulativeUpdatePaginationCache(api, 'getWishOfGroupPage', 'UPDATE', 'Product', { providedMutatedEntry: wishedProduct as any });
+                // update pagination of all wishes:
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', { providedMutatedEntry: wishedProduct as any });
+                
+                
+                
+                // when the optimistic update fail => invalidate the updates above:
                 api.queryFulfilled.catch(() => {
                     // TODO: undo optimistic
                 });
@@ -643,10 +651,18 @@ export const apiSlice = createApi({
                 });
                 */
                 
+                // update pagination of product page:
                 const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: false };
-                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', unwishedProduct as any);
-                cumulativeUpdatePaginationCache(api, 'getWishOfGroupPage', 'UPDATE', 'Product', unwishedProduct as any);
-                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', unwishedProduct as any);
+                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', { providedMutatedEntry: unwishedProduct as any });
+                
+                // update pagination of grouped wishes:
+                cumulativeUpdatePaginationCache(api, 'getWishOfGroupPage', 'UPDATE', 'Product', { providedMutatedEntry: unwishedProduct as any });
+                // update pagination of all wishes:
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', { providedMutatedEntry: unwishedProduct as any });
+                
+                
+                
+                // when the optimistic update fail => invalidate the updates above:
                 api.queryFulfilled.catch(() => {
                     // TODO: undo optimistic
                 });
@@ -796,7 +812,19 @@ type PaginationUpdateType =
     |'CREATE'
     |'UPDATE'
     |'DELETE'
-const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishOfGroupPage'|'getWishPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>, providedMutatedEntry?: TEntry) => {
+interface PaginationUpdateOptions<TEntry extends Model|string> {
+    providedMutatedEntry ?: TEntry
+    predicate            ?: (originalArgs: unknown) => boolean
+}
+const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishOfGroupPage'|'getWishPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>, options?: PaginationUpdateOptions<TEntry>) => {
+    // options
+    const {
+        providedMutatedEntry,
+        predicate,
+    } = options ?? {};
+    
+    
+    
     // mutated TEntry data:
     const mutatedEntry : TEntry|undefined = (providedMutatedEntry !== undefined) ? providedMutatedEntry : await (async (): Promise<TEntry|undefined> => {
         try {
@@ -823,6 +851,8 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
             (allQueryCache.endpointName === endpointName)
             &&
             (allQueryCache.data !== undefined)
+            &&
+            ((predicate === undefined) || predicate(allQueryCache.originalArgs))
         )
     );
     
