@@ -13,6 +13,9 @@ import {
     
     
     
+    // schemas:
+    ModelIdSchema,
+    SlugSchema,
     PaginationArgSchema,
     
     
@@ -20,15 +23,15 @@ import {
     productPreviewSelect,
     convertProductPreviewDataToProductPreview,
 }                           from '@/models'
-export type {
-    VariantPreview,
-    VariantDetail,
-    VariantGroupDetail,
+export {
+    type VariantPreview,
+    type VariantDetail,
+    type VariantGroupDetail,
     
-    ProductPreview,
-    ProductDetail,
+    type ProductPreview,
+    type ProductDetail,
     
-    ProductPricePart,
+    type ProductPricePart,
 }                           from '@/models'
 
 // ORMs:
@@ -57,16 +60,40 @@ export {
 
 router
 .get(async (req) => {
-    /* required for displaying related_products in orders page */
-    
-    
-    
-    //#region parsing request
+    //#region parsing and validating request
+    const requestData = await (async () => {
+        try {
+            const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
+            return {
+                id   : ModelIdSchema.optional().parse(data?.id),
+                path : SlugSchema.optional().parse(data?.path),
+            };
+        }
+        catch {
+            return null;
+        } // try
+    })();
+    if (requestData === null) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
     const {
-        path,
         id,
-    } = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
-    //#endregion parsing request
+        path,
+    } = requestData;
+    
+    // one of `id` or `path` must be defined, but cannot both defined or both undefined:
+    if (
+        ((id === undefined) && (path === undefined)) // both undefined
+        ||
+        ((id !== undefined) && (path !== undefined)) // both defined
+    ) {
+        return Response.json({
+            error: 'Invalid data.',
+        }, { status: 400 }); // handled with error
+    } // if
+    //#endregion parsing and validating request
     
     
     
@@ -152,16 +179,10 @@ router
     
     
     
-    const productPreviews : ProductPreview[] = (
-        (await prisma.product.findMany({
-            where  : {
-                visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
-            },
-            select : productPreviewSelect,
-        }))
-        .map(convertProductPreviewDataToProductPreview)
-    );
-    return Response.json(productPreviews); // handled with success
+    // default response:
+    return Response.json({
+        error: 'Invalid data.',
+    }, { status: 400 }); // handled with error
 })
 .post(async (req) => {
     //#region parsing and validating request

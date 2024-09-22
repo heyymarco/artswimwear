@@ -48,7 +48,6 @@ import {
 
 // stores:
 import {
-    usePrefetchProductList,
     usePrefetchCountryList,
 }                           from '@/store/features/api/apiSlice'
 
@@ -70,12 +69,10 @@ export function HomePageContent(): JSX.Element|null {
     
     
     // dom effects:
-    const prefetchProductList = usePrefetchProductList();
     const prefetchCountryList = usePrefetchCountryList();
     useEffect(() => {
         // setups:
         const cancelPrefetch = setTimeout(() => {
-            prefetchProductList();
             prefetchCountryList();
         }, 100);
         

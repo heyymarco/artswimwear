@@ -196,15 +196,6 @@ export const apiSlice = createApi({
             }),
             providesTags: ['Product'],
         }),
-        getProductList              : builder.query<EntityState<ProductPreview>, void>({
-            query : () => ({
-                url    : 'products',
-                method : 'GET',
-            }),
-            transformResponse(response: ProductPreview[]) {
-                return productListAdapter.addMany(productListAdapter.getInitialState(), response);
-            },
-        }),
         getProductPreview           : builder.query<ProductPreview, string>({
             query : (arg: string) => ({
                 url    : `products?id=${encodeURIComponent(arg)}`,
@@ -674,7 +665,6 @@ export const apiSlice = createApi({
 
 export const {
     useGetProductPageQuery                 : useGetProductPage,
-    useGetProductListQuery                 : useGetProductList,
     useGetProductPreviewQuery              : useGetProductPreview,
     useGetProductDetailQuery               : useGetProductDetail,
     
@@ -733,7 +723,6 @@ export const {
     getCityList       : { initiate : getCityList       },
 } = apiSlice.endpoints;
 
-export const usePrefetchProductList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductList'  , options);
 export const usePrefetchProductDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail', options);
 export const usePrefetchCountryList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCountryList'  , options);
 
