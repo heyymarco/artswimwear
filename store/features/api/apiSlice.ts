@@ -118,9 +118,6 @@ import {
 
 
 
-const productListAdapter          = createEntityAdapter<ProductPreview>({
-    selectId : (productPreview) => productPreview.id,
-});
 const countryListAdapter          = createEntityAdapter<CountryPreview>({
     selectId : (countryEntry) => countryEntry.code,
 });
@@ -129,9 +126,6 @@ const shippingListAdapter         = createEntityAdapter<ShippingPreview>({
 });
 const matchingShippingListAdapter = createEntityAdapter<MatchingShipping>({
     selectId : (shippingEntry) => `${shippingEntry.id}`,
-});
-const wishListAdapter         = createEntityAdapter<WishDetail['productId']>({
-    selectId : (productId) => productId,
 });
 
 
