@@ -1,5 +1,7 @@
 [high prior] protect payment confirmation page using captcha
 
+[med prior ] remove useGetCountryList hook, replaced with a specific url get for a specific country
+
 [low  prior] fix @heymarco/image (no error detected again in new Chrome)
 
 [low  prior] prefer to display: flex with display: grid
