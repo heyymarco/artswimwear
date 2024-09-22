@@ -37,6 +37,12 @@ import {
     type ProductPreview,
 }                           from '@/models'
 
+// stores:
+import {
+    // hooks:
+    useGetProductPreview,
+}                           from '@/store/features/api/apiSlice'
+
 // utilities:
 import {
     resolveMediaUrl,
@@ -50,7 +56,7 @@ import {
 
 
 // react components:
-export interface EditCartItemProps
+export interface ViewCartItemProps
     extends
         // bases:
         Omit<ListItemProps,
@@ -72,13 +78,54 @@ export interface EditCartItemProps
     variantIds    : string[]
     productList   : EntityState<ProductPreview>|undefined
 }
-const ViewCartItem = (props: EditCartItemProps): JSX.Element|null => {
-    // styles:
-    const styleSheet = useEditOrderDialogStyleSheet();
+const ViewCartItem = (props: ViewCartItemProps): JSX.Element|null => {
+    // props:
+    const {
+        // relation data:
+        productId,
+        
+        
+        
+        // other props:
+        ...restViewCartItemProps
+    } = props;
     
     
     
-    // rest props:
+    // jsx:
+    if (!productId) return (
+        <ViewCartItemInternal {...restViewCartItemProps} product={undefined} />
+    );
+    return (
+        <ViewCartItemWithProduct {...restViewCartItemProps} productId={productId} />
+    );
+};
+const ViewCartItemWithProduct = (props: ViewCartItemProps & { productId: string }): JSX.Element|null => {
+    // props:
+    const {
+        // relation data:
+        productId,
+        
+        
+        
+        // other props:
+        ...restViewCartItemProps
+    } = props;
+    
+    
+    
+    // apis:
+    const { data: product } = useGetProductPreview(productId);
+    
+    
+    
+    // jsx:
+    return (
+        <ViewCartItemInternal {...restViewCartItemProps} product={product} />
+    );
+};
+const ViewCartItemInternal = (props: Omit<ViewCartItemProps, 'productId'> & { product: ProductPreview|undefined }): JSX.Element|null => {
+    // props:
     const {
         // data:
         currency,
@@ -90,17 +137,26 @@ const ViewCartItem = (props: EditCartItemProps): JSX.Element|null => {
         
         
         // relation data:
-        productId,
+        product,
         variantIds,
         productList,
-    ...restListItemProps} = props;
+        
+        
+        
+        // other props:
+        ...restListItemProps
+    } = props;
+    
+    
+    
+    // styles:
+    const styleSheet = useEditOrderDialogStyleSheet();
     
     
     
     // fn props:
-    const product          = productId ? productList?.entities?.[productId] : undefined;
-    const variants         = product?.variantGroups.flat();
-    const isProductDeleted = !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
+    const variants          = product?.variantGroups.flat();
+    const isProductDeleted  = !product; // the relation data is available but there is no specified productId in productList => it's a deleted product
     
     
     
