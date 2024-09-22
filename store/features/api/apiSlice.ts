@@ -852,7 +852,15 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
                 apiSlice.util.updateQueryData(endpointName, originalArgs as PaginationArgs, (data) => {
                     const currentEntryIndex = selectIndexOfId<TEntry>(data, mutatedId);
                     if (currentEntryIndex < 0) return; // not found => nothing to update
-                    (data.entities as unknown as TEntry[])[currentEntryIndex] = mutatedEntry; // replace oldEntry with mutatedEntry
+                    const currentEntry = (data.entities as unknown as TEntry[])[currentEntryIndex];
+                    (data.entities as unknown as TEntry[])[currentEntryIndex] = (
+                        ((typeof(currentEntry) === 'object') && (typeof(mutatedEntry) === 'object'))
+                        ? {
+                            ...currentEntry,
+                            ...mutatedEntry, // partially|fully replace oldEntry with mutatedEntry
+                        }
+                        : mutatedEntry       // fully           replace oldEntry with mutatedEntry
+                    );
                 })
             );
         } // for
