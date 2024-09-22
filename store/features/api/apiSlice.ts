@@ -571,8 +571,7 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             onQueryStarted: async (arg, api) => {
-                // TODO:
-                // //#region optimistic update
+                //#region optimistic update
                 // const patchResult = api.dispatch(
                 //     apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
                 //         // conditions:
@@ -591,7 +590,15 @@ export const apiSlice = createApi({
                 //         apiSlice.util.invalidateTags(['Wish'])
                 //     );
                 // });
-                // //#endregion optimistic update
+                
+                const wishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: true };
+                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', wishedProduct as any);
+                cumulativeUpdatePaginationCache(api, 'getWishOfGroupPage', 'UPDATE', 'Product', wishedProduct as any);
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', wishedProduct as any);
+                api.queryFulfilled.catch(() => {
+                    // TODO: undo optimistic
+                });
+                //#endregion optimistic update
                 
                 
                 
@@ -612,8 +619,7 @@ export const apiSlice = createApi({
                 method      : 'DELETE',
             }),
             onQueryStarted: async (arg, api) => {
-                // TODO:
-                // //#region optimistic update
+                //#region optimistic update
                 // const patchResult = api.dispatch(
                 //     apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
                 //         // conditions:
@@ -632,7 +638,15 @@ export const apiSlice = createApi({
                 //         apiSlice.util.invalidateTags(['Wish'])
                 //     );
                 // });
-                // //#endregion optimistic update
+                
+                const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: false };
+                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', unwishedProduct as any);
+                cumulativeUpdatePaginationCache(api, 'getWishOfGroupPage', 'UPDATE', 'Product', unwishedProduct as any);
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Product', unwishedProduct as any);
+                api.queryFulfilled.catch(() => {
+                    // TODO: undo optimistic
+                });
+                //#endregion optimistic update
                 
                 
                 
