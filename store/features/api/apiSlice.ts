@@ -572,24 +572,26 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
-                // const patchResult = api.dispatch(
-                //     apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
-                //         // conditions:
-                //         if (data.ids.includes(arg.productId)) return; // already added => no need to update => nothing to do
-                //         
-                //         
-                //         
-                //         // update:
-                //         wishListAdapter.upsertOne(data, arg.productId);
-                //     })
-                // );
-                // api.queryFulfilled.catch(() => {
-                //     patchResult.undo();
-                //     
-                //     api.dispatch(
-                //         apiSlice.util.invalidateTags(['Wish'])
-                //     );
-                // });
+                /*
+                const patchResult = api.dispatch(
+                    apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
+                        // conditions:
+                        if (data.ids.includes(arg.productId)) return; // already added => no need to update => nothing to do
+                        
+                        
+                        
+                        // update:
+                        wishListAdapter.upsertOne(data, arg.productId);
+                    })
+                );
+                api.queryFulfilled.catch(() => {
+                    patchResult.undo();
+                    
+                    api.dispatch(
+                        apiSlice.util.invalidateTags(['Wish'])
+                    );
+                });
+                */
                 
                 const wishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: true };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', wishedProduct as any);
@@ -620,24 +622,26 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
-                // const patchResult = api.dispatch(
-                //     apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
-                //         // conditions:
-                //         if (!data.ids.includes(arg.productId)) return; // already removed => no need to update => nothing to do
-                //         
-                //         
-                //         
-                //         // update:
-                //         wishListAdapter.removeOne(data, arg.productId);
-                //     })
-                // );
-                // api.queryFulfilled.catch(() => {
-                //     patchResult.undo();
-                //     
-                //     api.dispatch(
-                //         apiSlice.util.invalidateTags(['Wish'])
-                //     );
-                // });
+                /*
+                const patchResult = api.dispatch(
+                    apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
+                        // conditions:
+                        if (!data.ids.includes(arg.productId)) return; // already removed => no need to update => nothing to do
+                        
+                        
+                        
+                        // update:
+                        wishListAdapter.removeOne(data, arg.productId);
+                    })
+                );
+                api.queryFulfilled.catch(() => {
+                    patchResult.undo();
+                    
+                    api.dispatch(
+                        apiSlice.util.invalidateTags(['Wish'])
+                    );
+                });
+                */
                 
                 const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: false };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', unwishedProduct as any);
