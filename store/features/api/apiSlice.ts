@@ -179,7 +179,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'Wished', 'Preference', 'WishGroupPage', 'WishPage'],
+    tagTypes  : ['ProductPage', 'Wished', 'PreferenceData', 'WishGroupPage', 'WishPage'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
             query: (arg) => ({
@@ -483,7 +483,7 @@ export const apiSlice = createApi({
                 url    : 'customer/preferences',
                 method : 'GET',
             }),
-            providesTags: ['Preference'],
+            providesTags: ['PreferenceData'],
         }),
         updatePreference            : builder.mutation<CustomerPreferenceDetail, Partial<CustomerPreferenceData>>({
             query: (patch) => ({
@@ -491,7 +491,7 @@ export const apiSlice = createApi({
                 method : 'PATCH',
                 body   : patch
             }),
-            invalidatesTags: ['Preference'],
+            invalidatesTags: ['PreferenceData'],
         }),
         
         
