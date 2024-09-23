@@ -179,7 +179,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'WishGrouped'],
+    tagTypes  : ['ProductPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'WishGroupable'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
             query: (arg) => ({
@@ -572,7 +572,7 @@ export const apiSlice = createApi({
             }),
             providesTags: (data, error, arg) => [
                 { type: 'WishPage'   , id: arg.page },
-                ...((!arg.groupId ? [] : [{ type: 'WishGrouped', id: arg.groupId }]) satisfies { type: 'WishGrouped', id: string }[]),
+                ...((!arg.groupId ? [] : [{ type: 'WishGroupable', id: arg.groupId }]) satisfies { type: 'WishGroupable', id: string }[]),
                 
                 ...(data?.entities ?? []).map(({ id }) =>
                     ({ type: 'Wishable', id: id })
@@ -634,8 +634,8 @@ export const apiSlice = createApi({
                             { type: 'Wishable', id: arg.productId },
                             
                             // invalidate the grouped wishes in wish of group paginations:
-                            ...((!arg.groupId         ? [] : [{ type: 'WishGrouped', id: arg.groupId         }]) satisfies { type: 'WishGrouped', id: string }[]),
-                            ...((!arg.originalGroupId ? [] : [{ type: 'WishGrouped', id: arg.originalGroupId }]) satisfies { type: 'WishGrouped', id: string }[]),
+                            ...((!arg.groupId         ? [] : [{ type: 'WishGroupable', id: arg.groupId         }]) satisfies { type: 'WishGroupable', id: string }[]),
+                            ...((!arg.originalGroupId ? [] : [{ type: 'WishGroupable', id: arg.originalGroupId }]) satisfies { type: 'WishGroupable', id: string }[]),
                         ])
                     );
                 });
@@ -692,7 +692,7 @@ export const apiSlice = createApi({
                             { type: 'Wishable', id: arg.productId },
                             
                             // invalidate the grouped wishes in wish of group paginations:
-                            ...((!arg.originalGroupId ? [] : [{ type: 'WishGrouped', id: arg.originalGroupId }]) satisfies { type: 'WishGrouped', id: string }[]),
+                            ...((!arg.originalGroupId ? [] : [{ type: 'WishGroupable', id: arg.originalGroupId }]) satisfies { type: 'WishGroupable', id: string }[]),
                         ])
                     );
                 });
