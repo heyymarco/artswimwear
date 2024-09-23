@@ -179,7 +179,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'Wished', 'PreferenceData', 'WishGroupPage', 'WishPage'],
+    tagTypes  : ['ProductPage', 'Wished', 'PreferenceData', 'WishGroupPage', 'WishPage', 'WishGrouped'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
             query: (arg) => ({
@@ -553,7 +553,7 @@ export const apiSlice = createApi({
             onQueryStarted: async (arg, api) => {
                 await cumulativeUpdatePaginationCache(api, 'getWishGroupPage', 'DELETE', 'WishGroupPage');
             },
-            invalidatesTags: ['WishPage'], // the deleted WishGroup MAY also delete a/some Wish(s) => the all wish paginations need to be invalidated
+            invalidatesTags: ['WishPage'], // the deleted WishGroup MAY also delete a/some Wish(s) => the whole wish paginations need to be invalidated
         }),
         availableWishGroupName      : builder.query<boolean, string>({
             query: (arg) => ({
@@ -571,7 +571,8 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             providesTags: (data, error, arg) => [
-                { type: 'WishPage', id: arg.page },
+                { type: 'WishPage'   , id: arg.page },
+                ...((!arg.groupId ? [] : [{ type: 'WishGrouped', id: arg.groupId }]) satisfies { type: 'WishGrouped', id: string }[]),
                 
                 ...(data?.entities ?? []).map(({ id }) =>
                     ({ type: 'Wished', id: id })
@@ -625,12 +626,16 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fails => invalidate all caches containing Wished+id:
+                // when the optimistic update fails => invalidates all caches containing Wished+id tag:
                 api.queryFulfilled.catch(() => {
                     api.dispatch(
                         apiSlice.util.invalidateTags([
                             // invalidate the wishes in product paginations and wish paginations:
                             { type: 'Wished', id: arg.productId },
+                            
+                            // invalidate the grouped wishes in wish of group paginations:
+                            ...((!arg.groupId         ? [] : [{ type: 'WishGrouped', id: arg.groupId         }]) satisfies { type: 'WishGrouped', id: string }[]),
+                            ...((!arg.originalGroupId ? [] : [{ type: 'WishGrouped', id: arg.originalGroupId }]) satisfies { type: 'WishGrouped', id: string }[]),
                         ])
                     );
                 });
@@ -679,12 +684,15 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fails => invalidate all caches containing Wished+id tag:
+                // when the optimistic update fails => invalidates all caches containing Wished+id tag:
                 api.queryFulfilled.catch(() => {
                     api.dispatch(
                         apiSlice.util.invalidateTags([
                             // invalidate the wishes in product paginations and wish paginations:
                             { type: 'Wished', id: arg.productId },
+                            
+                            // invalidate the grouped wishes in wish of group paginations:
+                            ...((!arg.originalGroupId ? [] : [{ type: 'WishGrouped', id: arg.originalGroupId }]) satisfies { type: 'WishGrouped', id: string }[]),
                         ])
                     );
                 });
