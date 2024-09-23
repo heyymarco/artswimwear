@@ -42,6 +42,6 @@ export const useSignedInCacheRefresh = () => {
         
         
         // actions:
-        dispatch(apiSlice.util.invalidateTags(['ProductPage', 'ProductPreview'])); // a ProductPreview contains wished property that depens on SignedIn state, so we need to invalidate the caches of ProductPreview
+        dispatch(apiSlice.util.invalidateTags(['WishedInfo'])); // a ProductPreview contains wished property that depens on SignedIn state, so we need to invalidate the caches of ProductPreview
     }, [isSignedIn]);
 };
