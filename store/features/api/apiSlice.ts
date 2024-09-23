@@ -533,11 +533,7 @@ export const apiSlice = createApi({
                 method      : 'POST',
                 body   : arg,
             }),
-            providesTags: (data, error, arg) => [
-                { type: 'WishGroupPage', id: arg.page },
-                
-                'Wished',
-            ],
+            providesTags: (data, error, arg) => [{ type: 'WishGroupPage', id: arg.page }],
         }),
         updateWishGroup             : builder.mutation<WishGroupDetail, UpdateWishGroupRequest>({
             query: (arg) => ({
