@@ -65,7 +65,7 @@ import {
 // stores:
 import {
     // hooks:
-    useGetWishPage,
+    useGetWishPage as _useGetWishPage,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -73,7 +73,7 @@ import {
 // react components:
 const useUseGetWishPageOfGroup = ({ groupId }: { groupId: string|undefined }) => {
     return (arg: PaginationArgs) => {
-        return useGetWishPage({
+        return _useGetWishPage({
             ...arg,
             groupId,
         });
@@ -81,7 +81,7 @@ const useUseGetWishPageOfGroup = ({ groupId }: { groupId: string|undefined }) =>
 };
 export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
     // stores:
-    const _useGetWishPage = useUseGetWishPageOfGroup({
+    const _useGetWishOfGroupPage = useUseGetWishPageOfGroup({
         groupId : (wishGroupId && (wishGroupId !== 'all')) ? wishGroupId : undefined,
     });
     
@@ -91,7 +91,7 @@ export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JS
     return (
         <PaginationStateProvider<ProductPreview>
             // data:
-            useGetModelPage={_useGetWishPage}
+            useGetModelPage={_useGetWishOfGroupPage}
         >
             <WishAllPageContentInternal wishGroupId={wishGroupId} />
         </PaginationStateProvider>
