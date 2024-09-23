@@ -42,6 +42,6 @@ export const useSignedInCacheRefresh = () => {
         
         
         // actions:
-        dispatch(apiSlice.util.invalidateTags(['Wished'])); // invalidate all caches containing Wished tag
+        dispatch(apiSlice.util.invalidateTags(['Wishable'])); // invalidate all caches containing Wishable tag
     }, [isSignedIn]);
 };

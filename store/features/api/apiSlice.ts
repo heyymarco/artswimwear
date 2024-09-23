@@ -179,7 +179,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'Wished', 'PreferenceData', 'WishGroupPage', 'WishPage', 'WishGrouped'],
+    tagTypes  : ['ProductPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'WishGrouped'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
             query: (arg) => ({
@@ -191,8 +191,8 @@ export const apiSlice = createApi({
                 { type: 'ProductPage', id: arg.page },
                 
                 ...(data?.entities ?? []).map(({ id }) =>
-                    ({ type: 'Wished', id: id })
-                ) satisfies { type: 'Wished', id: string }[],
+                    ({ type: 'Wishable', id: id })
+                ) satisfies { type: 'Wishable', id: string }[],
             ],
         }),
         
@@ -201,7 +201,7 @@ export const apiSlice = createApi({
                 url    : `products?id=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
-            providesTags: (data, error, arg) => [{ type: 'Wished', id: arg }],
+            providesTags: (data, error, arg) => [{ type: 'Wishable', id: arg }],
         }),
         getProductDetail            : builder.query<ProductDetail, string>({
             query : (arg: string) => ({
@@ -575,8 +575,8 @@ export const apiSlice = createApi({
                 ...((!arg.groupId ? [] : [{ type: 'WishGrouped', id: arg.groupId }]) satisfies { type: 'WishGrouped', id: string }[]),
                 
                 ...(data?.entities ?? []).map(({ id }) =>
-                    ({ type: 'Wished', id: id })
-                ) satisfies { type: 'Wished', id: string }[],
+                    ({ type: 'Wishable', id: id })
+                ) satisfies { type: 'Wishable', id: string }[],
             ],
         }),
         updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null }>({
@@ -626,12 +626,12 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fails => invalidates all caches containing Wished+id tag:
+                // when the optimistic update fails => invalidates all caches containing Wishable+id tag:
                 api.queryFulfilled.catch(() => {
                     api.dispatch(
                         apiSlice.util.invalidateTags([
                             // invalidate the wishes in product paginations and wish paginations:
-                            { type: 'Wished', id: arg.productId },
+                            { type: 'Wishable', id: arg.productId },
                             
                             // invalidate the grouped wishes in wish of group paginations:
                             ...((!arg.groupId         ? [] : [{ type: 'WishGrouped', id: arg.groupId         }]) satisfies { type: 'WishGrouped', id: string }[]),
@@ -684,12 +684,12 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fails => invalidates all caches containing Wished+id tag:
+                // when the optimistic update fails => invalidates all caches containing Wishable+id tag:
                 api.queryFulfilled.catch(() => {
                     api.dispatch(
                         apiSlice.util.invalidateTags([
                             // invalidate the wishes in product paginations and wish paginations:
-                            { type: 'Wished', id: arg.productId },
+                            { type: 'Wishable', id: arg.productId },
                             
                             // invalidate the grouped wishes in wish of group paginations:
                             ...((!arg.originalGroupId ? [] : [{ type: 'WishGrouped', id: arg.originalGroupId }]) satisfies { type: 'WishGrouped', id: string }[]),
