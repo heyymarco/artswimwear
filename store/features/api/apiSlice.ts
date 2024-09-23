@@ -179,7 +179,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['Product', 'Preference', 'WishGroup', 'Wish'],
+    tagTypes  : ['ProductPage', 'ProductPreview', 'ProductDetail', 'Preference', 'WishGroup', 'Wish'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
             query: (arg) => ({
@@ -187,20 +187,22 @@ export const apiSlice = createApi({
                 method : 'POST',
                 body   : arg,
             }),
-            providesTags: ['Product'],
+            providesTags: (data, error, arg) => [{ type: 'ProductPage', id: arg.page }],
         }),
+        
         getProductPreview           : builder.query<ProductPreview, string>({
             query : (arg: string) => ({
                 url    : `products?id=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
-            providesTags: ['Product'],
+            providesTags: (data, error, arg) => [{ type: 'ProductPreview', id: arg }],
         }),
         getProductDetail            : builder.query<ProductDetail, string>({
             query : (arg: string) => ({
                 url    : `products?path=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
+            providesTags: (data, error, arg) => [{ type: 'ProductDetail', id: arg }],
         }),
         
         
@@ -214,6 +216,7 @@ export const apiSlice = createApi({
                 return shippingListAdapter.addMany(shippingListAdapter.getInitialState(), response);
             },
         }),
+        
         getCountryList              : builder.query<EntityState<CountryPreview>, void>({
             query : () => ({
                 url    : 'shippings/countries',
@@ -458,6 +461,8 @@ export const apiSlice = createApi({
             }),
         }),
         
+        
+        
         getOrderHistoryPage         : builder.query<Pagination<PublicOrderDetail>, PaginationArgs>({
             query : (arg) => ({
                 url    : 'customer/order-history',
@@ -483,6 +488,8 @@ export const apiSlice = createApi({
             }),
             invalidatesTags: ['Preference'],
         }),
+        
+        
         
         postImage                   : builder.mutation<ImageId, { image: File, folder?: string, onUploadProgress?: (percentage: number) => void, abortSignal?: AbortSignal }>({
             query: ({ image, folder, onUploadProgress, abortSignal }) => ({
@@ -512,6 +519,8 @@ export const apiSlice = createApi({
                 },
             }),
         }),
+        
+        
         
         getWishGroupPage            : builder.query<Pagination<WishGroupDetail>, PaginationArgs>({
             query: (arg) => ({
@@ -547,6 +556,8 @@ export const apiSlice = createApi({
                 method : 'GET',
             }),
         }),
+        
+        
         
         getWishPage                 : builder.query<Pagination<ProductPreview>, PaginationArgs & GetWishPageRequest>({
             query: (arg) => ({
@@ -587,7 +598,7 @@ export const apiSlice = createApi({
                 
                 // update pagination of product page:
                 const wishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: arg.groupId };
-                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', { providedMutatedEntry: wishedProduct as any });
+                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
                 
                 // update pagination of all wishes:
@@ -607,7 +618,7 @@ export const apiSlice = createApi({
                 api.queryFulfilled.catch(() => {
                     // invalidate pagination of products:
                     api.dispatch(
-                        apiSlice.util.invalidateTags(['Product'])
+                        apiSlice.util.invalidateTags(['ProductPage'])
                     );
                     
                     // invalidate pagination of all|grouped wishes:
@@ -648,7 +659,7 @@ export const apiSlice = createApi({
                 
                 // update pagination of product page:
                 const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: undefined };
-                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'Product', { providedMutatedEntry: unwishedProduct as any });
+                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: unwishedProduct as any });
                 // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
                 
                 // delete pagination of all wishes:
@@ -664,7 +675,7 @@ export const apiSlice = createApi({
                 api.queryFulfilled.catch(() => {
                     // invalidate pagination of products:
                     api.dispatch(
-                        apiSlice.util.invalidateTags(['Product'])
+                        apiSlice.util.invalidateTags(['ProductPage'])
                     );
                     
                     // invalidate pagination of all|grouped wishes:
@@ -682,19 +693,30 @@ export const apiSlice = createApi({
 
 export const {
     useGetProductPageQuery                 : useGetProductPage,
+    
     useGetProductPreviewQuery              : useGetProductPreview,
     useGetProductDetailQuery               : useGetProductDetail,
     
+    
+    
     useGetShippingListQuery                : useGetShippingList,
+    
     useGetCountryListQuery                 : useGetCountryList,
     // useLazyGetStateListQuery               : useGetStateList,
     // useLazyGetCityListQuery                : useGetCityList,
     
+    
+    
     useLazyGetMatchingShippingListQuery    : useGetMatchingShippingList,
     useRefreshMatchingShippingListMutation : useRefreshMatchingShippingList,
     
+    
+    
     // useLazyRestoreCartQuery                : useRestoreCart,
     // useBackupCartMutation                  : useBackupCart,
+    
+    
+    
     useLazyGeneratePaymentSessionQuery     : useGeneratePaymentSession,
     // usePlaceOrderMutation                  : usePlaceOrder,
     // useMakePaymentMutation                 : useMakePayment,
@@ -702,23 +724,35 @@ export const {
     usePaymentConfirmationMutation         : usePaymentConfirmation,
     useLazyGetShipmentQuery                : useGetShipment,
     
+    
+    
     useUpdateCustomerMutation              : useUpdateCustomer,
     useLazyAvailableUsernameQuery          : useAvailableUsername,
     useLazyNotProhibitedUsernameQuery      : useNotProhibitedUsername,
     // useLazyAvailableEmailQuery             : useAvailableEmail, // TODO
     
+    
+    
     useGetOrderHistoryPageQuery            : useGetOrderHistoryPage,
+    
+    
     
     useGetPreferenceQuery                  : useGetPreference,
     useUpdatePreferenceMutation            : useUpdatePreference,
     
+    
+    
     usePostImageMutation                   : usePostImage,
     useDeleteImageMutation                 : useDeleteImage,
+    
+    
     
     useGetWishGroupPageQuery               : useGetWishGroupPage,
     useUpdateWishGroupMutation             : useUpdateWishGroup,
     useDeleteWishGroupMutation             : useDeleteWishGroup,
     useLazyAvailableWishGroupNameQuery     : useAvailableWishGroupName,
+    
+    
     
     useGetWishPageQuery                    : useGetWishPage,
     useUpdateWishMutation                  : useUpdateWish,
@@ -728,14 +762,21 @@ export const {
 export const {
     getProductPreview : { initiate : getProductPreview },
     
-    restoreCart       : { initiate : restoreCart       },
-    backupCart        : { initiate : backupCart        },
-    placeOrder        : { initiate : placeOrder        },
-    makePayment       : { initiate : makePayment       },
+    
     
     getCountryList    : { initiate : getCountryList    },
     getStateList      : { initiate : getStateList      },
     getCityList       : { initiate : getCityList       },
+    
+    
+    
+    restoreCart       : { initiate : restoreCart       },
+    backupCart        : { initiate : backupCart        },
+    
+    
+    
+    placeOrder        : { initiate : placeOrder        },
+    makePayment       : { initiate : makePayment       },
 } = apiSlice.endpoints;
 
 export const usePrefetchProductDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail', options);
