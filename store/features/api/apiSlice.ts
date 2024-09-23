@@ -179,7 +179,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'WishedInfo', 'Preference', 'WishGroup', 'Wish'],
+    tagTypes  : ['ProductPage', 'Wished', 'Preference', 'WishGroup', 'Wish'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
             query: (arg) => ({
@@ -190,7 +190,7 @@ export const apiSlice = createApi({
             providesTags: (data, error, arg) => [
                 { type: 'ProductPage', id: arg.page },
                 
-                'WishedInfo',
+                'Wished',
             ],
         }),
         
@@ -199,7 +199,7 @@ export const apiSlice = createApi({
                 url    : `products?id=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
-            providesTags: ['WishedInfo'],
+            providesTags: ['Wished'],
         }),
         getProductDetail            : builder.query<ProductDetail, string>({
             query : (arg: string) => ({
@@ -534,7 +534,7 @@ export const apiSlice = createApi({
             providesTags: [
                 'WishGroup',
                 
-                'WishedInfo',
+                'Wished',
             ],
         }),
         updateWishGroup             : builder.mutation<WishGroupDetail, UpdateWishGroupRequest>({
@@ -575,7 +575,7 @@ export const apiSlice = createApi({
             providesTags: (data, error, arg) => [
                 { type: 'Wish', id: arg.page },
                 
-                'WishedInfo',
+                'Wished',
             ],
         }),
         updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null }>({
