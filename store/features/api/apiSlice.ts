@@ -179,7 +179,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'Wished', 'Preference', 'WishGroup', 'Wish'],
+    tagTypes  : ['ProductPage', 'Wished', 'Preference', 'WishGroupPage', 'WishPage'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
             query: (arg) => ({
@@ -533,8 +533,8 @@ export const apiSlice = createApi({
                 method      : 'POST',
                 body   : arg,
             }),
-            providesTags: [
-                'WishGroup',
+            providesTags: (data, error, arg) => [
+                { type: 'WishGroupPage', id: arg.page },
                 
                 'Wished',
             ],
@@ -546,7 +546,7 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             onQueryStarted: async (arg, api) => {
-                await cumulativeUpdatePaginationCache(api, 'getWishGroupPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'WishGroup');
+                await cumulativeUpdatePaginationCache(api, 'getWishGroupPage', (arg.id === '') ? 'CREATE' : 'UPDATE', 'WishGroupPage');
             },
         }),
         deleteWishGroup             : builder.mutation<WishGroupDetail, DeleteWishGroupRequest>({
@@ -555,9 +555,9 @@ export const apiSlice = createApi({
                 method      : 'DELETE',
             }),
             onQueryStarted: async (arg, api) => {
-                await cumulativeUpdatePaginationCache(api, 'getWishGroupPage', 'DELETE', 'WishGroup');
+                await cumulativeUpdatePaginationCache(api, 'getWishGroupPage', 'DELETE', 'WishGroupPage');
             },
-            invalidatesTags: ['Wish'], // the deleted WishGroup MAY also delete a/some Wish(s) => the Wish(s) need to be invalidated
+            invalidatesTags: ['WishPage'], // the deleted WishGroup MAY also delete a/some Wish(s) => the all wish paginations need to be invalidated
         }),
         availableWishGroupName      : builder.query<boolean, string>({
             query: (arg) => ({
@@ -575,7 +575,7 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             providesTags: (data, error, arg) => [
-                { type: 'Wish', id: arg.page },
+                { type: 'WishPage', id: arg.page },
                 
                 ...(data?.entities ?? []).map(({ id }) =>
                     ({ type: 'Wished', id: id })
@@ -606,7 +606,7 @@ export const apiSlice = createApi({
                     patchResult.undo();
                     
                     api.dispatch(
-                        apiSlice.util.invalidateTags(['Wish'])
+                        apiSlice.util.invalidateTags(['WishPage'])
                     );
                 });
                 */
@@ -617,14 +617,14 @@ export const apiSlice = createApi({
                 // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
                 
                 // update pagination of all wishes:
-                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                 // update pagination of grouped wishes:
                 if (arg.groupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
-                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
+                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
                 } // if
                 if (arg.originalGroupId && (arg.originalGroupId !== arg.groupId)) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
                     // delete pagination of grouped wishes:
-                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'Wish'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
+                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
                 } // if
                 
                 
@@ -664,7 +664,7 @@ export const apiSlice = createApi({
                     patchResult.undo();
                     
                     api.dispatch(
-                        apiSlice.util.invalidateTags(['Wish'])
+                        apiSlice.util.invalidateTags(['WishPage'])
                     );
                 });
                 */
@@ -675,10 +675,10 @@ export const apiSlice = createApi({
                 // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
                 
                 // delete pagination of all wishes:
-                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'Wish'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                 if (arg.originalGroupId) { // if the wish is having existing_group => DELETE the wish from existing_group
                     // delete pagination of grouped wishes:
-                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'Wish'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
+                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
                 } // if
                 
                 
