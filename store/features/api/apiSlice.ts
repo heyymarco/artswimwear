@@ -190,7 +190,9 @@ export const apiSlice = createApi({
             providesTags: (data, error, arg) => [
                 { type: 'ProductPage', id: arg.page },
                 
-                'Wished',
+                ...(data?.entities ?? []).map(({ id }) =>
+                    ({ type: 'Wished', id: id })
+                ) satisfies { type: 'Wished', id: string }[],
             ],
         }),
         
@@ -199,7 +201,7 @@ export const apiSlice = createApi({
                 url    : `products?id=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
-            providesTags: ['Wished'],
+            providesTags: (data, error, arg) => [{ type: 'Wished', id: arg }],
         }),
         getProductDetail            : builder.query<ProductDetail, string>({
             query : (arg: string) => ({
@@ -575,7 +577,9 @@ export const apiSlice = createApi({
             providesTags: (data, error, arg) => [
                 { type: 'Wish', id: arg.page },
                 
-                'Wished',
+                ...(data?.entities ?? []).map(({ id }) =>
+                    ({ type: 'Wished', id: id })
+                ) satisfies { type: 'Wished', id: string }[],
             ],
         }),
         updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null }>({
@@ -625,16 +629,13 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fails => invalidate the updates above:
+                // when the optimistic update fails => invalidate all caches containing Wished+id:
                 api.queryFulfilled.catch(() => {
-                    // invalidate pagination of products:
                     api.dispatch(
-                        apiSlice.util.invalidateTags(['ProductPage'])
-                    );
-                    
-                    // invalidate pagination of all|grouped wishes:
-                    api.dispatch(
-                        apiSlice.util.invalidateTags(['Wish'])
+                        apiSlice.util.invalidateTags([
+                            // invalidate the wishes in product paginations and wish paginations:
+                            { type: 'Wished', id: arg.productId },
+                        ])
                     );
                 });
                 //#endregion optimistic update
@@ -682,16 +683,13 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fails => invalidate the updates above:
+                // when the optimistic update fails => invalidate all caches containing Wished+id tag:
                 api.queryFulfilled.catch(() => {
-                    // invalidate pagination of products:
                     api.dispatch(
-                        apiSlice.util.invalidateTags(['ProductPage'])
-                    );
-                    
-                    // invalidate pagination of all|grouped wishes:
-                    api.dispatch(
-                        apiSlice.util.invalidateTags(['Wish'])
+                        apiSlice.util.invalidateTags([
+                            // invalidate the wishes in product paginations and wish paginations:
+                            { type: 'Wished', id: arg.productId },
+                        ])
                     );
                 });
                 //#endregion optimistic update
