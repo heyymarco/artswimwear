@@ -95,11 +95,11 @@ const ButtonWish = (props: ButtonWishProps) => {
     // handlers:
     const handleWishClick = useEvent(async (): Promise<void> => {
         try {
-            if (wished !== undefined) { // undefined: unwished; null: wished (ungrouped); string: wished (grouped)
+            if (wished === undefined) { // undefined: unwished; null: wished (ungrouped); string: wished (grouped)
                 await updateWish({
                     productId       : id,
                     groupId         : null,
-                    originalGroupId : wished,
+                    originalGroupId : null, // the `originalGroupId` IS ALWAYS `null` (was not grouped) because the product WAS NEITHER wished NOR grouped
                 }).unwrap();
                 
                 
@@ -114,7 +114,7 @@ const ButtonWish = (props: ButtonWishProps) => {
                 await updateWish({
                     productId       : id,
                     groupId         : wishGroup.id,
-                    originalGroupId : wished,
+                    originalGroupId : null, // the `originalGroupId` IS ALWAYS `null` (was not grouped) because the product WAS NEITHER wished NOR grouped
                 }).unwrap();
                 
                 

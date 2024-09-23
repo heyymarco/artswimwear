@@ -556,7 +556,7 @@ export const apiSlice = createApi({
             }),
             providesTags: (data, error, arg) => [{ type: 'Wish', id: arg.page }],
         }),
-        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null|undefined }>({
+        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null }>({
             query: (arg) => ({
                 url         : 'customer/wishes',
                 method      : 'PATCH',
@@ -593,12 +593,12 @@ export const apiSlice = createApi({
                 // update pagination of all wishes:
                 cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                 // update pagination of grouped wishes:
-                if (arg.groupId) {
+                if (arg.groupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
                     cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'Wish'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
                 } // if
-                if (arg.originalGroupId) {
+                if (arg.originalGroupId && (arg.originalGroupId !== arg.groupId)) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
                     // delete pagination of grouped wishes:
-                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'Wish'   , { predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
+                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'Wish'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
                 } // if
                 
                 
