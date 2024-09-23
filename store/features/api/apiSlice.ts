@@ -603,7 +603,7 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fail => invalidate the updates above:
+                // when the optimistic update fails => invalidate the updates above:
                 api.queryFulfilled.catch(() => {
                     // invalidate pagination of products:
                     api.dispatch(
@@ -660,7 +660,7 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fail => invalidate the updates above:
+                // when the optimistic update fails => invalidate the updates above:
                 api.queryFulfilled.catch(() => {
                     // invalidate pagination of products:
                     api.dispatch(
