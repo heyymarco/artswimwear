@@ -283,15 +283,15 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             cardToken      : paymentMethod.id,
         });
     });
-    const proxyDoAuthenticate    = useEvent(async (draftOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
+    const proxyDoAuthenticate    = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
         if (!stripe)   throw Error('Oops, an error occured!');
         if (!elements) throw Error('Oops, an error occured!');
         
         
         
-        const clientSecret = draftOrderDetail.redirectData;
+        const clientSecret = placeOrderDetail.redirectData;
         if (clientSecret === undefined) return (
-            !draftOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
+            !placeOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
             ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
             : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
         );
@@ -395,8 +395,8 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
             cardToken      : cardToken,
         });
     });
-    const proxyDoAuthenticate = useEvent(async (draftOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
-        const redirectData = draftOrderDetail.redirectData;
+    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
+        const redirectData = placeOrderDetail.redirectData;
         if (redirectData === undefined) throw Error('Oops, an error occured!');
         
         

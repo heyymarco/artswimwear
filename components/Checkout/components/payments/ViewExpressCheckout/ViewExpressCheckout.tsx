@@ -212,7 +212,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     
     const signalAuthenticatedRef         = useRef<((authenticatedResult: AuthenticatedResult) => void)|undefined>(undefined);
     const throwAuthenticatedRef          = useRef<((error: unknown) => void)|undefined>(undefined);
-    const draftOrderDetailRef            = useRef<PlaceOrderDetail|undefined>(undefined);
+    const placeOrderDetailRef            = useRef<PlaceOrderDetail|undefined>(undefined);
     const handlePaymentInterfaceStart    = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
         const {promise: promiseAuthenticate , resolve: resolveAuthenticate, reject: rejectAuthenticate} = ((): ReturnType<typeof Promise.withResolvers<AuthenticatedResult>> => { // Promise.withResolvers<AuthenticatedResult>();
             let resolve : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['resolve'];
@@ -280,8 +280,8 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                     orderId : '', // empty string, will be updated later on `doAuthenticate()`
                 } as PlaceOrderDetail;
             },
-            doAuthenticate       : (draftOrderDetail) => {
-                draftOrderDetailRef.current = draftOrderDetail; // de-ref
+            doAuthenticate       : (placeOrderDetail) => {
+                placeOrderDetailRef.current = placeOrderDetail; // de-ref
                 
                 return promiseAuthenticate;
             },
@@ -323,7 +323,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             </>,
         })
         .finally(async () => {
-            draftOrderDetailRef.current    = undefined; // un-ref
+            placeOrderDetailRef.current    = undefined; // un-ref
             
             signalAuthenticatedRef.current = undefined; // un-ref
             throwAuthenticatedRef.current  = undefined; // un-ref
@@ -399,26 +399,26 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             
             
-            const draftOrderDetail = await doPlaceOrder({
+            const placeOrderDetail = await doPlaceOrder({
                 paymentSource  : 'stripeExpress',
                 cardToken      : confirmationToken,
             });
-            if (draftOrderDetail === true) { // immediately paid => no need further action
+            if (placeOrderDetail === true) { // immediately paid => no need further action
                 signalAuthenticatedRef.current?.(AuthenticatedResult.CAPTURED);
                 return;
             } // if
             
             
             
-            const oldDraftOrderDetail = draftOrderDetailRef.current;
-            if (oldDraftOrderDetail) oldDraftOrderDetail.orderId = draftOrderDetail.orderId;
+            const oldPlaceOrderDetail = placeOrderDetailRef.current;
+            if (oldPlaceOrderDetail) oldPlaceOrderDetail.orderId = placeOrderDetail.orderId;
             
             
             
-            const clientSecret = draftOrderDetail.redirectData;
+            const clientSecret = placeOrderDetail.redirectData;
             if (clientSecret === undefined) {
                 signalAuthenticatedRef.current?.(
-                    !draftOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
+                    !placeOrderDetail.orderId        // the rawOrderId to be passed to server_side for capturing the fund, if empty_string => already CAPTURED, no need to AUTHORIZE, just needs DISPLAY paid page
                     ? AuthenticatedResult.CAPTURED   // already CAPTURED (maybe delayed), no need to AUTHORIZE, just needs DISPLAY paid page
                     : AuthenticatedResult.AUTHORIZED // will be manually capture on server_side
                 );
@@ -468,7 +468,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
             
             
             
-            const rawOrderId = draftOrderDetail.orderId;
+            const rawOrderId = placeOrderDetail.orderId;
             const orderId = (
                 rawOrderId.startsWith('#STRIPE_')
                 ? rawOrderId          // not prefixed => no need to modify

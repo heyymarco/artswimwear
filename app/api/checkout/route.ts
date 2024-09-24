@@ -164,7 +164,7 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 
 // types:
 /**
- * TODO: rename to avoid naming collision.
+ * TODO: move to /models.
  */
 export interface PlaceOrderDetail
     extends
@@ -1554,11 +1554,11 @@ router
     // draftOrder created:
     if (orderId === '') { // empty string => simulateOrder
         // simulateOrder:
-        const draftOrderDetail : PlaceOrderDetail = {
+        const placeOrderDetail : PlaceOrderDetail = {
             orderId      : '',
             redirectData : undefined,
         };
-        return Response.json(draftOrderDetail, {
+        return Response.json(placeOrderDetail, {
             status : 200, // handled with success
         });
     } // if
@@ -1584,7 +1584,7 @@ router
         });
     } // if
     
-    const draftOrderDetail : PlaceOrderDetail = {
+    const placeOrderDetail : PlaceOrderDetail = {
         orderId      : (
             !isAuthorizedFundData(authorizedOrPaymentDetail)
             ? orderId
@@ -1613,7 +1613,7 @@ router
             };
         })(),
     };
-    return Response.json(draftOrderDetail, {
+    return Response.json(placeOrderDetail, {
         status : 200, // handled with success
     });
 })

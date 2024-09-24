@@ -244,7 +244,7 @@ export const enum AuthenticatedResult {
 export interface StartTransactionArg {
     // handlers:
     doPlaceOrder          : () => Promise<PlaceOrderDetail|true>
-    doAuthenticate       ?: (draftOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult>
+    doAuthenticate       ?: (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult>
     
     
     
@@ -1804,17 +1804,17 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return await doTransaction(async (): Promise<void> => {
             try {
                 // createOrder:
-                const draftOrderDetail = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
-                if (draftOrderDetail === true) return; // immediately paid => no need further action
+                const placeOrderDetail = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
+                if (placeOrderDetail === true) return; // immediately paid => no need further action
                 if (!doAuthenticate) return; // the nextAction callback is not defined => no need further action
                 
                 
                 
-                let rawOrderId = draftOrderDetail.orderId;
+                let rawOrderId = placeOrderDetail.orderId;
                 let authenticatedResult : AuthenticatedResult;
                 try {
-                    authenticatedResult = await doAuthenticate(draftOrderDetail);
-                    rawOrderId = draftOrderDetail.orderId; // the `draftOrderDetail.orderId` may be updated during `doAuthenticate()` call.
+                    authenticatedResult = await doAuthenticate(placeOrderDetail);
+                    rawOrderId = placeOrderDetail.orderId; // the `placeOrderDetail.orderId` may be updated during `doAuthenticate()` call.
                 }
                 catch (error: any) { // an unexpected authentication error occured
                     // notify to cancel transaction, so the draftOrder (if any) will be reverted:
@@ -1967,7 +1967,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
     });
     const doPlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|true> => {
         try {
-            const draftOrderDetailOrPaymentDetail = await dispatch(placeOrder({
+            const placeOrderDetailOrPaymentDetail = await dispatch(placeOrder({
                 // currency options:
                 currency, // informs the customer's currency, so we know the selected currency when he/she made an order
                 
@@ -2014,12 +2014,12 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             
             
             
-            if (!('orderId' in draftOrderDetailOrPaymentDetail)) {
-                gotoFinished(draftOrderDetailOrPaymentDetail, /*paid:*/(draftOrderDetailOrPaymentDetail.type !== 'MANUAL')); // buggy
+            if (!('orderId' in placeOrderDetailOrPaymentDetail)) {
+                gotoFinished(placeOrderDetailOrPaymentDetail, /*paid:*/(placeOrderDetailOrPaymentDetail.type !== 'MANUAL')); // buggy
                 return true; // paid
             }
             else {
-                return draftOrderDetailOrPaymentDetail;
+                return placeOrderDetailOrPaymentDetail;
             } // if
         }
         catch (fetchError: any) {
