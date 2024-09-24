@@ -581,11 +581,11 @@ export const apiSlice = createApi({
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
                 
-                // update pagination of all wishes:
-                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
-                // update pagination of grouped wishes:
+                // upsert pagination of all wishes:
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPSERT', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
+                // upsert pagination of grouped wishes:
                 if (arg.groupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
-                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
+                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPSERT', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
                 } // if
                 if (arg.originalGroupId && (arg.originalGroupId !== arg.groupId)) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
                     // delete pagination of grouped wishes:
@@ -829,6 +829,7 @@ const selectRangeFromArg    = (originalArg: unknown): { indexStart: number, inde
 type PaginationUpdateType =
     |'CREATE'
     |'UPDATE'
+    |'UPSERT'
     |'DELETE'
 interface PaginationUpdateOptions<TEntry extends Model|string> {
     providedMutatedEntry ?: TEntry
@@ -898,12 +899,61 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
     
     
     /* update existing data: SIMPLE: the number of collection_items is unchanged */
-    if (updateType === 'UPDATE') {
-        const updatedCollectionQueryCaches = (
+    if ((updateType === 'UPDATE') || (updateType === 'UPSERT')) {
+        const mutatedPaginationIndices = (
             collectionQueryCaches
-            .filter(({ data }) =>
-                (selectIndexOfId<TEntry>(data, mutatedId) >= 0) // is FOUND
+            .map(({ originalArgs, data }) => ({
+                indexStart        : selectRangeFromArg(originalArgs).indexStart,
+                indexLocalMutated : selectIndexOfId<TEntry>(data, mutatedId),
+            }))
+            .filter(({ indexLocalMutated }) =>
+                (indexLocalMutated >= 0) // is FOUND
             )
+            .map(({ indexStart, indexLocalMutated }) =>
+                (indexStart + indexLocalMutated) // convert local index to global index
+            )
+        );
+        const uniqueMutatedPaginationIndices = Array.from(new Set<number>(mutatedPaginationIndices));
+        if (uniqueMutatedPaginationIndices.length === 0) { // not found
+            if (updateType === 'UPSERT') { // UPSERT
+                // nothing to update => switch to CREATE mode:
+                return cumulativeUpdatePaginationCache(api, endpointName, 'CREATE', invalidateTag, options);
+            }
+            else { // UPDATE
+                return; // nothing to update => nothing to do
+            } // if
+        }
+        else if (uniqueMutatedPaginationIndices.length !== 1) { // ambigous
+            // all the mutated queryCaches should have ONE valid mutated index, otherwise => panic => clear all the caches and (may) trigger the rtk to re-fetch
+            
+            // clear caches:
+            api.dispatch(
+                apiSlice.util.invalidateTags([invalidateTag])
+            );
+            return; // panic => cannot further reconstruct
+        } // if
+        const indexMutated = uniqueMutatedPaginationIndices[0];
+        
+        
+        
+        const mutatedCollectionQueryCaches = (
+            collectionQueryCaches
+            .filter(({ originalArgs, data }) => {
+                const {
+                    indexStart,
+                } = selectRangeFromArg(originalArgs);
+                const indexLast = (
+                    indexStart
+                    +
+                    (selectTotalFromData(data) - 1)
+                );
+                
+                
+                
+                return (
+                    ((indexMutated >= indexStart) && (indexMutated <= indexLast)) // the updated_pagination => within indexStart to indexLast
+                );
+            })
         );
         
         
@@ -913,7 +963,7 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
         
         
         // update cache:
-        for (const { originalArgs } of updatedCollectionQueryCaches) {
+        for (const { originalArgs } of mutatedCollectionQueryCaches) {
             api.dispatch(
                 apiSlice.util.updateQueryData(endpointName, originalArgs as PaginationArgs, (data) => {
                     const currentEntryIndex = selectIndexOfId<TEntry>(data, mutatedId);
@@ -1037,7 +1087,10 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
             )
         );
         const uniqueDeletedPaginationIndices = Array.from(new Set<number>(deletedPaginationIndices));
-        if (uniqueDeletedPaginationIndices.length !== 1) {
+        if (uniqueDeletedPaginationIndices.length === 0) { // not found
+            return; // nothing to delete => nothing to do
+        }
+        else if (uniqueDeletedPaginationIndices.length !== 1) { // ambigous
             // all the deleted queryCaches should have ONE valid deleted index, otherwise => panic => clear all the caches and (may) trigger the rtk to re-fetch
             
             // clear caches:
