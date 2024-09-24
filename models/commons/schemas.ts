@@ -32,6 +32,7 @@ export const UsernameSchema      = z.string().trim().min(3).max(20);
 export const PasswordSchema      = z.string().min(5).max(30);
 export const ImageUrlSchema      = z.string().url().min(10).max(255);
 export const SlugSchema          = z.string().min(1).max(100).regex(/^[a-zA-Z0-9-_.!$%&'*+=^`|~(){}<>\[\]]+$/);
+export const BooleanStringSchema = z.enum(['true', 'false']);
 
 
 
