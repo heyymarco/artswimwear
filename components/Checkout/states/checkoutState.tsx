@@ -142,7 +142,7 @@ import {
 }                           from '@/store/features/checkout/checkoutSlice'
 import {
     // types:
-    DraftOrderDetail,
+    PlaceOrderDetail,
     PaymentDetail,
     
     MakePaymentOptions,
@@ -243,8 +243,8 @@ export const enum AuthenticatedResult {
 }
 export interface StartTransactionArg {
     // handlers:
-    doPlaceOrder          : () => Promise<DraftOrderDetail|true>
-    doAuthenticate       ?: (draftOrderDetail: DraftOrderDetail) => Promise<AuthenticatedResult>
+    doPlaceOrder          : () => Promise<PlaceOrderDetail|true>
+    doAuthenticate       ?: (draftOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult>
     
     
     
@@ -351,7 +351,7 @@ export interface CheckoutStateBase
     
     startTransaction             : (arg: StartTransactionArg) => Promise<boolean>
     doTransaction                : (transaction: (() => Promise<void>)) => Promise<boolean>
-    doPlaceOrder                 : (options?: PlaceOrderRequestOptions) => Promise<DraftOrderDetail|true>
+    doPlaceOrder                 : (options?: PlaceOrderRequestOptions) => Promise<PlaceOrderDetail|true>
     doMakePayment                : (orderId: string, paid: boolean, options?: MakePaymentOptions) => Promise<void>
     
     refetchCheckout              : () => void
@@ -1804,7 +1804,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         return await doTransaction(async (): Promise<void> => {
             try {
                 // createOrder:
-                const draftOrderDetail = await doPlaceOrder(); // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
+                const draftOrderDetail = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
                 if (draftOrderDetail === true) return; // immediately paid => no need further action
                 if (!doAuthenticate) return; // the nextAction callback is not defined => no need further action
                 
@@ -1965,7 +1965,7 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
         
         return true; // transaction completed
     });
-    const doPlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<DraftOrderDetail|true> => {
+    const doPlaceOrder         = useEvent(async (options?: PlaceOrderRequestOptions): Promise<PlaceOrderDetail|true> => {
         try {
             const draftOrderDetailOrPaymentDetail = await dispatch(placeOrder({
                 // currency options:

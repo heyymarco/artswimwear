@@ -166,7 +166,7 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 /**
  * TODO: rename to avoid naming collision.
  */
-export interface DraftOrderDetail
+export interface PlaceOrderDetail
     extends
         Pick<AuthorizedFundData,
             |'redirectData'
@@ -1554,7 +1554,7 @@ router
     // draftOrder created:
     if (orderId === '') { // empty string => simulateOrder
         // simulateOrder:
-        const draftOrderDetail : DraftOrderDetail = {
+        const draftOrderDetail : PlaceOrderDetail = {
             orderId      : '',
             redirectData : undefined,
         };
@@ -1584,7 +1584,7 @@ router
         });
     } // if
     
-    const draftOrderDetail : DraftOrderDetail = {
+    const draftOrderDetail : PlaceOrderDetail = {
         orderId      : (
             !isAuthorizedFundData(authorizedOrPaymentDetail)
             ? orderId
@@ -1598,7 +1598,7 @@ router
                 return `${prefix}${authorizedOrPaymentDetail.paymentId}`;
             })()
         ),
-        ...((): Pick<DraftOrderDetail, 'redirectData'|'expires'>|undefined => {
+        ...((): Pick<PlaceOrderDetail, 'redirectData'|'expires'>|undefined => {
             if (!isAuthorizedFundData(authorizedOrPaymentDetail)) return undefined;
             
             

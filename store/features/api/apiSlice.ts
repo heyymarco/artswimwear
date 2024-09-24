@@ -85,7 +85,7 @@ export type {
     ProductPricePart,
 }                               from '@/app/api/products/route'
 import type {
-    DraftOrderDetail,
+    PlaceOrderDetail,
     
     // MakePaymentOptions,
     MakePaymentData,
@@ -93,7 +93,7 @@ import type {
     ShowOrderRequest,
 }                               from '@/app/api/checkout/route'
 export type {
-    DraftOrderDetail,
+    PlaceOrderDetail,
     
     MakePaymentOptions,
     MakePaymentData,
@@ -408,7 +408,7 @@ export const apiSlice = createApi({
                 method : 'GET',
             }),
         }),
-        placeOrder                  : builder.mutation<DraftOrderDetail|PaymentDetail, PlaceOrderRequest>({
+        placeOrder                  : builder.mutation<PlaceOrderDetail|PaymentDetail, PlaceOrderRequest>({
             query : (orderData) => ({
                 url    : 'checkout',
                 method : 'POST',

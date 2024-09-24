@@ -54,7 +54,7 @@ import {
 // stores:
 import type {
     // types:
-    DraftOrderDetail,
+    PlaceOrderDetail,
 }                           from '@/store/features/api/apiSlice'
 
 // stripe:
@@ -212,7 +212,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
     
     const signalAuthenticatedRef         = useRef<((authenticatedResult: AuthenticatedResult) => void)|undefined>(undefined);
     const throwAuthenticatedRef          = useRef<((error: unknown) => void)|undefined>(undefined);
-    const draftOrderDetailRef            = useRef<DraftOrderDetail|undefined>(undefined);
+    const draftOrderDetailRef            = useRef<PlaceOrderDetail|undefined>(undefined);
     const handlePaymentInterfaceStart    = useEvent((event: StripeExpressCheckoutElementClickEvent): void => {
         const {promise: promiseAuthenticate , resolve: resolveAuthenticate, reject: rejectAuthenticate} = ((): ReturnType<typeof Promise.withResolvers<AuthenticatedResult>> => { // Promise.withResolvers<AuthenticatedResult>();
             let resolve : ReturnType<typeof Promise.withResolvers<AuthenticatedResult>>['resolve'];
@@ -234,7 +234,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
         
         startTransaction({ // fire and forget
             // handlers:
-            doPlaceOrder         : async () => { // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
+            doPlaceOrder         : async () => { // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
                 if (!stripe)   throw Error('Oops, an error occured!');
                 if (!elements) throw Error('Oops, an error occured!');
                 
@@ -278,7 +278,7 @@ const ViewExpressCheckout = (props: ViewExpressCheckoutProps): JSX.Element|null 
                 
                 return {
                     orderId : '', // empty string, will be updated later on `doAuthenticate()`
-                } as DraftOrderDetail;
+                } as PlaceOrderDetail;
             },
             doAuthenticate       : (draftOrderDetail) => {
                 draftOrderDetailRef.current = draftOrderDetail; // de-ref

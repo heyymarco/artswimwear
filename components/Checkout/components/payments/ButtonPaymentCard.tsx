@@ -44,7 +44,7 @@ import {
 // stores:
 import type {
     // types:
-    DraftOrderDetail,
+    PlaceOrderDetail,
 }                           from '@/store/features/api/apiSlice'
 
 // paypal:
@@ -148,7 +148,7 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
     // handlers:
     const hostedFields      = usePayPalHostedFields();
     
-    const proxyDoPlaceOrder = useEvent(async (): Promise<DraftOrderDetail> => {
+    const proxyDoPlaceOrder = useEvent(async (): Promise<PlaceOrderDetail> => {
         const paymentCardSectionElm = paymentCardSectionRef?.current;
         const paypalDoPlaceOrder    = hostedFields.cardFields?.submit;
         if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
@@ -197,7 +197,7 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
         return {
             orderId      : orderId,
             redirectData : undefined,
-        } satisfies DraftOrderDetail;
+        } satisfies PlaceOrderDetail;
     });
     
     
@@ -237,7 +237,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
     const stripe   = useStripe();
     const elements = useElements();
     
-    const proxyDoPlaceOrder      = useEvent(async (): Promise<DraftOrderDetail|true> => {
+    const proxyDoPlaceOrder      = useEvent(async (): Promise<PlaceOrderDetail|true> => {
         if (!stripe)            throw Error('Oops, an error occured!');
         if (!elements)          throw Error('Oops, an error occured!');
         const cardNumberElement = elements.getElement('cardNumber');
@@ -283,7 +283,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             cardToken      : paymentMethod.id,
         });
     });
-    const proxyDoAuthenticate    = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
+    const proxyDoAuthenticate    = useEvent(async (draftOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
         if (!stripe)   throw Error('Oops, an error occured!');
         if (!elements) throw Error('Oops, an error occured!');
         
@@ -360,7 +360,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
     
     
     // handlers:
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<DraftOrderDetail|true> => {
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|true> => {
         const paymentCardSectionElm = paymentCardSectionRef?.current;
         if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
         
@@ -395,7 +395,7 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
             cardToken      : cardToken,
         });
     });
-    const proxyDoAuthenticate = useEvent(async (draftOrderDetail: DraftOrderDetail): Promise<AuthenticatedResult> => {
+    const proxyDoAuthenticate = useEvent(async (draftOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
         const redirectData = draftOrderDetail.redirectData;
         if (redirectData === undefined) throw Error('Oops, an error occured!');
         
@@ -618,7 +618,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
     const handlePayButtonClick   = useEvent(async () => {
         startTransaction({
             // handlers:
-            doPlaceOrder         : doPlaceOrder,   // if returns `DraftOrderDetail` => assumes a DraftOrder has been created
+            doPlaceOrder         : doPlaceOrder,   // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
             doAuthenticate       : doAuthenticate, // trigger `authenticate` function
             
             
