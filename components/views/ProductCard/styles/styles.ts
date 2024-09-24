@@ -55,6 +55,11 @@ const usesProductCardLayout = () => {
             
             
             
+            // sizes:
+            contain : 'layout', // do not making <parent> having scrollbar when the child text overflowed
+            
+            
+            
             // animations:
             transition : [
                 ['box-shadow', '300ms'],
