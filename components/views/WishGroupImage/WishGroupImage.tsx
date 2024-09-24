@@ -198,7 +198,7 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                     </>}
                 </span>
                 
-                <DropdownListButton
+                {!!model.id /* no edit|delete for 'All Items' */ && <DropdownListButton
                     // appearances:
                     // icon='more_vert'
                     
@@ -226,7 +226,7 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                     <ListItem theme='danger' onClick={handleDeleteClick}>
                         <Icon icon='delete' /> Delete
                     </ListItem>
-                </DropdownListButton>
+                </DropdownListButton>}
             </header>
         </article>
     );
