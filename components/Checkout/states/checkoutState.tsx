@@ -74,26 +74,31 @@ import {
 
 // models:
 import {
-    type PlaceOrderRequestOptions,
-    
+    // types:
     type ShippingAddressDetail,
     type BillingAddressDetail,
+    
+    type PaymentDetail,
+    
+    type CustomerOrGuestPreview,
+    type CustomerPreferenceDetail,
     
     type CheckoutStep,
     type TotalShippingCostStatus,
     type PaymentMethod,
-    
+    type PlaceOrderRequestOptions,
+    type PlaceOrderDetail,
+    type MakePaymentOptions,
     type FinishedOrderState,
     type BusyState,
-    
-    type CustomerPreferenceDetail,
+    type CheckoutSession,
     
     type CartDetail,
     type CartUpdateRequest,
-    type CheckoutSession,
     
-    type CustomerOrGuestPreview,
     
+    
+    // utilities:
     calculateCheckoutProgress,
 }                           from '@/models'
 // stores:
@@ -141,14 +146,6 @@ import {
     selectIsInitialCheckoutState,
 }                           from '@/store/features/checkout/checkoutSlice'
 import {
-    // types:
-    PlaceOrderDetail,
-    PaymentDetail,
-    
-    MakePaymentOptions,
-    
-    
-    
     // hooks:
     useGetMatchingShippingList,
     useRefreshMatchingShippingList,
@@ -186,9 +183,9 @@ import {
 }                           from '@/errors'
 
 // internals:
-import type {
+import {
     // types:
-    MatchingShipping,
+    type MatchingShipping,
 }                           from '@/libs/shippings/shippings'
 import {
     calculateShippingCost,

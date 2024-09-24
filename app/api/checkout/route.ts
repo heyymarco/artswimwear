@@ -1,6 +1,6 @@
 // redux:
 import {
-    createEntityAdapter
+    createEntityAdapter,
 }                           from '@reduxjs/toolkit'
 
 // next-js:
@@ -29,7 +29,9 @@ import {
     z,
 }                           from 'zod'
 import {
+    // types:
     type Product,
+    type ProductPreview,
     type Variant,
     type VariantGroup,
     type Stock,
@@ -54,8 +56,19 @@ import {
     
     type CustomerOrGuestPreferenceDetail,
     type GuestDetail,
+    
+    type PlaceOrderDetail,
+    type PaymentDeclined,
+    type LimitedStockItem,
+    
+    
+    
+    // schemas:
     GuestDetailSchema,
     
+    
+    
+    // utilities:
     commitDraftOrderSelect,
     revertDraftOrderSelect,
     
@@ -63,10 +76,9 @@ import {
     isPaymentDetail,
     
     defaultShippingOriginSelect,
+    
+    OutOfStockError,
 }                           from '@/models'
-import type {
-    ProductPreview,
-}                           from '@/store/features/api/apiSlice'
 
 // ORMs:
 import {
@@ -74,10 +86,10 @@ import {
 }                           from '@/libs/prisma.server'
 
 // templates:
-import type {
+import {
     // types:
-    CustomerOrGuestData,
-    OrderAndData,
+    type CustomerOrGuestData,
+    type OrderAndData,
 }                           from '@/components/Checkout/templates/orderDataContext'
 
 // others:
@@ -159,91 +171,6 @@ import {
 export const dynamic    = 'force-dynamic';
 export const fetchCache = 'force-no-store';
 export const maxDuration = 60; // this function can run for a maximum of 60 seconds for many & complex transactions
-
-
-
-// types:
-/**
- * TODO: move to /models.
- */
-export interface PlaceOrderDetail
-    extends
-        Pick<AuthorizedFundData,
-            |'redirectData'
-            |'expires'
-        >
-{
-    orderId : string
-}
-
-/**
- * TODO: move to /models.
- */
-export interface MakePaymentOptions {
-    cancelOrder ?: true
-}
-/**
- * TODO: move to /models.
- */
-export interface MakePaymentDataBasic
-    extends
-        Omit<MakePaymentOptions, 'cancelOrder'> // options: empty yet
-{
-    orderId : string
-}
-/**
- * TODO: move to /models.
- */
-export interface MakePaymentDataWithBillingAddress
-    extends
-        MakePaymentDataBasic
-{
-    // billing data:
-    billingAddress      : BillingAddressDetail|null
-}
-/**
- * TODO: move to /models.
- */
-export interface MakePaymentDataWithCancelation
-    extends
-        Pick<MakePaymentDataBasic, 'orderId'>,
-        Required<Pick<MakePaymentOptions, 'cancelOrder'>>
-{
-}
-/**
- * TODO: move to /models.
- */
-export type MakePaymentData =
-    |MakePaymentDataBasic
-    |MakePaymentDataWithBillingAddress
-    |MakePaymentDataWithCancelation
-export interface PaymentDeclined {
-    error : string
-}
-
-/**
- * TODO: move to /models.
- */
-export interface ShowOrderRequest
-{
-    orderId : string
-}
-
-/**
- * TODO: move to /models and remove duplicates.
- */
-export interface LimitedStockItem {
-    productId   : string
-    variantIds  : string[]
-    stock       : number
-}
-class OutOfStockError extends Error {
-    limitedStockItems : LimitedStockItem[];
-    constructor(limitedStockItems : LimitedStockItem[]) {
-        super('out of stock');
-        this.limitedStockItems = limitedStockItems;
-    }
-}
 
 
 

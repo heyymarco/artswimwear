@@ -51,11 +51,11 @@ import {
     MessageError,
 }                           from '@/components/MessageError'
 
-// stores:
-import type {
+// models:
+import {
     // types:
-    PlaceOrderDetail,
-}                           from '@/store/features/api/apiSlice'
+    type PlaceOrderDetail,
+}                           from '@/models'
 
 // stripe:
 import {

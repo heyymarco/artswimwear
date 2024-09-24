@@ -5,6 +5,7 @@ import {
 }                           from '@/models'
 import {
     type AuthorizedFundData,
+    type LimitedStockItem,
 }                           from './types'
 
 
@@ -29,4 +30,14 @@ export const isPaymentDetail      = (data: AuthorizedFundData|PaymentDetail|bool
 }
 export const calculateCheckoutProgress = (checkoutStep: CheckoutStep): number => {
     return (['INFO', 'SHIPPING', 'PAYMENT', 'PENDING', 'PAID'] satisfies CheckoutStep[]).findIndex((progress) => progress === checkoutStep);
+}
+
+
+
+export class OutOfStockError extends Error {
+    limitedStockItems : LimitedStockItem[];
+    constructor(limitedStockItems : LimitedStockItem[]) {
+        super('out of stock');
+        this.limitedStockItems = limitedStockItems;
+    }
 }

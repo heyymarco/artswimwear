@@ -192,56 +192,59 @@ export type BusyState =
 
 
 
-export interface MakePaymentOptions {
-    cancelOrder ?: true
+export interface PlaceOrderDetail
+    extends
+        Pick<AuthorizedFundData,
+            |'redirectData'
+            |'expires'
+        >
+{
+    orderId : string
 }
 
 
 
-// export interface DraftOrderDetail
-//     extends
-//         Pick<AuthorizedFundData,
-//             |'redirectData'
-//             |'expires'
-//         >
-// {
-//     orderId : string
-// }
-// 
-// export interface MakePaymentOptions {
-//     cancelOrder ?: true
-// }
-// export interface MakePaymentDataBasic
-//     extends
-//         Omit<MakePaymentOptions, 'cancelOrder'> // options: empty yet
-// {
-//     orderId : string
-// }
-// export interface MakePaymentDataWithBillingAddress
-//     extends
-//         MakePaymentDataBasic
-// {
-//     // billing data:
-//     billingAddress      : BillingAddressDetail|null
-// }
-// export interface MakePaymentDataWithCancelation
-//     extends
-//         Pick<MakePaymentDataBasic, 'orderId'>,
-//         Required<Pick<MakePaymentOptions, 'cancelOrder'>>
-// {
-// }
-// export type MakePaymentData =
-//     |MakePaymentDataBasic
-//     |MakePaymentDataWithBillingAddress
-//     |MakePaymentDataWithCancelation
-// export interface PaymentDeclined {
-//     error : string
-// }
-// 
-// export interface ShowOrderRequest
-// {
-//     orderId : string
-// }
+export interface MakePaymentOptions {
+    cancelOrder ?: true
+}
+
+export interface MakePaymentDataBasic
+    extends
+        Omit<MakePaymentOptions, 'cancelOrder'> // options: empty yet
+{
+    orderId : string
+}
+export interface MakePaymentDataWithBillingAddress
+    extends
+        MakePaymentDataBasic
+{
+    // billing data:
+    billingAddress      : BillingAddressDetail|null
+}
+export interface MakePaymentDataWithCancelation
+    extends
+        Pick<MakePaymentDataBasic, 'orderId'>,
+        Required<Pick<MakePaymentOptions, 'cancelOrder'>>
+{
+}
+export type MakePaymentData =
+    |MakePaymentDataBasic
+    |MakePaymentDataWithBillingAddress
+    |MakePaymentDataWithCancelation
+
+
+
+export interface PaymentDeclined {
+    error : string
+}
+
+
+
+export interface ShowOrderRequest {
+    orderId : string
+}
+
+
 
 export interface LimitedStockItem {
     productId   : string
