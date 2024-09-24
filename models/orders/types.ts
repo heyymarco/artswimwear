@@ -22,16 +22,8 @@ import {
     type BillingAddressDetail,
 }                           from '../shippings'
 import {
-    type CustomerOrGuestPreview,
     type CustomerDetail,
-    type CustomerOrGuestPreferenceDetail,
 }                           from '../customers'
-import {
-    type CartDetail,
-}                           from '../carts'
-import {
-    type CheckoutDetail,
-}                           from '../checkouts'
 
 // templates:
 import {
@@ -39,77 +31,9 @@ import {
     type CustomerOrGuestData,
 }                           from '@/components/Checkout/templates/orderDataContext'
 
-// paypal:
-import {
-    type CreateOrderData as PaypalCreateOrderData,
-}                           from '@paypal/paypal-js'
-
 
 
 // types:
-export interface PlaceOrderRequestOptions
-    extends
-        Omit<Partial<PaypalCreateOrderData>,
-            |'paymentSource' // replaced with more options
-        >
-{
-    simulateOrder ?: boolean
-    
-    paymentSource ?: // replaced with more options
-        // manual:
-        |'manual'
-        
-        // paypal:
-        |PaypalCreateOrderData['paymentSource']
-        
-        // stripe:
-        |'stripeCard'
-        |'stripeExpress'
-        
-        // midtrans:
-        |'midtransCard'|'midtransQris'|'gopay'|'shopeepay'|'indomaret'|'alfamart'
-    
-    cardToken     ?: string
-    captcha       ?: string
-}
-export interface PlaceOrderRequestBasic
-    extends
-        Omit<CartDetail,          // cart item(s)
-            |'checkout'
-        >,
-        
-        PlaceOrderRequestOptions, // options: pay manually | paymentSource
-        
-        Partial<Pick<CustomerOrGuestPreferenceDetail,
-            |'marketingOpt'       // conditionally required if no simulateOrder
-        >>
-{
-    // customer data:
-    customer ?: CustomerOrGuestPreview|undefined // conditionally required if no simulateOrder and not loggedIn (order as guest)
-}
-export interface PlaceOrderRequestWithShippingAddress
-    extends
-        Pick<CheckoutDetail,
-            |'shippingAddress'
-            |'shippingProviderId'
-        >
-{
-}
-export interface PlaceOrderRequestWithBillingAddress
-    extends
-        Pick<CheckoutDetail,
-            |'billingAddress'
-        >
-{
-}
-export type PlaceOrderRequest =
-    |PlaceOrderRequestBasic                                                       // non_physical_product, without_credit_card
-    |PlaceOrderRequestWithShippingAddress                                         //     physical_product, without_credit_card
-    |PlaceOrderRequestWithBillingAddress                                          // non_physical_product,    with_credit_card
-    |(PlaceOrderRequestWithShippingAddress & PlaceOrderRequestWithBillingAddress) //     physical_product,    with_credit_card
-
-
-
 export interface DraftOrderDetail
     extends
         Omit<DraftOrder,

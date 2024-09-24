@@ -57,7 +57,7 @@ import {
     type FinishedOrderState,
     type PlaceOrderRequest,
     type PlaceOrderDetail,
-    type MakePaymentData,
+    type MakePaymentRequest,
     type ShowOrderRequest,
     
     type WishDetail,
@@ -384,7 +384,7 @@ export const apiSlice = createApi({
                 body   : orderData,
             }),
         }),
-        makePayment                 : builder.mutation<PaymentDetail, MakePaymentData>({
+        makePayment                 : builder.mutation<PaymentDetail, MakePaymentRequest>({
             query : (paymentData) => ({
                 url    : 'checkout',
                 method : 'PATCH',

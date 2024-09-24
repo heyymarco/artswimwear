@@ -24,6 +24,14 @@ import {
     type CustomerOrGuestPreview,
     type CustomerOrGuestPreferenceDetail,
 }                           from '../customers'
+import {
+    type CartDetail,
+}                           from '../carts'
+
+// paypal:
+import {
+    type CreateOrderData as PaypalCreateOrderData,
+}                           from '@paypal/paypal-js'
 
 
 
@@ -192,6 +200,69 @@ export type BusyState =
 
 
 
+export interface PlaceOrderRequestOptions
+    extends
+        Omit<Partial<PaypalCreateOrderData>,
+            |'paymentSource' // replaced with more options
+        >
+{
+    simulateOrder ?: boolean
+    
+    paymentSource ?: // replaced with more options
+        // manual:
+        |'manual'
+        
+        // paypal:
+        |PaypalCreateOrderData['paymentSource']
+        
+        // stripe:
+        |'stripeCard'
+        |'stripeExpress'
+        
+        // midtrans:
+        |'midtransCard'|'midtransQris'|'gopay'|'shopeepay'|'indomaret'|'alfamart'
+    
+    cardToken     ?: string
+    captcha       ?: string
+}
+export interface PlaceOrderRequestBasic
+    extends
+        Omit<CartDetail,          // cart item(s)
+            |'checkout'
+        >,
+        
+        PlaceOrderRequestOptions, // options: pay manually | paymentSource
+        
+        Partial<Pick<CustomerOrGuestPreferenceDetail,
+            |'marketingOpt'       // conditionally required if no simulateOrder
+        >>
+{
+    // customer data:
+    customer ?: CustomerOrGuestPreview|undefined // conditionally required if no simulateOrder and not loggedIn (order as guest)
+}
+export interface PlaceOrderRequestWithShippingAddress
+    extends
+        Pick<CheckoutDetail,
+            |'shippingAddress'
+            |'shippingProviderId'
+        >
+{
+}
+export interface PlaceOrderRequestWithBillingAddress
+    extends
+        Pick<CheckoutDetail,
+            |'billingAddress'
+        >
+{
+}
+export type PlaceOrderRequest =
+    |PlaceOrderRequestBasic                                                       // non_physical_product, without_credit_card
+    |PlaceOrderRequestWithShippingAddress                                         //     physical_product, without_credit_card
+    |PlaceOrderRequestWithBillingAddress                                          // non_physical_product,    with_credit_card
+    |(PlaceOrderRequestWithShippingAddress & PlaceOrderRequestWithBillingAddress) //     physical_product,    with_credit_card
+
+
+
 export interface PlaceOrderDetail
     extends
         Pick<AuthorizedFundData,
@@ -208,29 +279,29 @@ export interface MakePaymentOptions {
     cancelOrder ?: true
 }
 
-export interface MakePaymentDataBasic
+export interface MakePaymentRequestBasic
     extends
         Omit<MakePaymentOptions, 'cancelOrder'> // options: empty yet
 {
     orderId : string
 }
-export interface MakePaymentDataWithBillingAddress
+export interface MakePaymentRequestWithBillingAddress
     extends
-        MakePaymentDataBasic
+        MakePaymentRequestBasic
 {
     // billing data:
     billingAddress      : BillingAddressDetail|null
 }
-export interface MakePaymentDataWithCancelation
+export interface MakePaymentRequestWithCancelation
     extends
-        Pick<MakePaymentDataBasic, 'orderId'>,
+        Pick<MakePaymentRequestBasic, 'orderId'>,
         Required<Pick<MakePaymentOptions, 'cancelOrder'>>
 {
 }
-export type MakePaymentData =
-    |MakePaymentDataBasic
-    |MakePaymentDataWithBillingAddress
-    |MakePaymentDataWithCancelation
+export type MakePaymentRequest =
+    |MakePaymentRequestBasic
+    |MakePaymentRequestWithBillingAddress
+    |MakePaymentRequestWithCancelation
 
 
 
