@@ -189,3 +189,17 @@ export type BusyState =
     | 'checkShipping'
     | 'preparePayment'
     | 'transaction'
+
+
+
+export interface MakePaymentOptions {
+    cancelOrder ?: true
+}
+
+
+
+export interface LimitedStockItem {
+    productId   : string
+    variantIds  : string[]
+    stock       : number
+}
