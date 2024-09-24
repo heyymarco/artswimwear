@@ -127,9 +127,9 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                     // classes:
                     className='count'
                 >
-                    {!wishes && <>
+                    {!wishes && <span className='txt-sec'>
                         Loading...
-                    </>}
+                    </span>}
                     {!!wishes && <>
                         {wishes.total} item{(wishes.total > 1) ? 's' : ''}
                     </>}
