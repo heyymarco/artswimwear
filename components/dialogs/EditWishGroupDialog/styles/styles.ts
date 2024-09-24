@@ -13,8 +13,8 @@ import {
 
 
 // styles:
-const usesCollectionTabLayout = () => {
-    return style({
+export default () => [
+    scope('collectionTab', {
         // layout:
         display      : 'grid',
         alignContent : 'start',
@@ -28,7 +28,7 @@ const usesCollectionTabLayout = () => {
         
         
         // spacings:
-        gapInline    : spacers.default,
+        gapInline    : spacers.md,
         gapBlock     : spacers.xs,
         
         
@@ -36,11 +36,14 @@ const usesCollectionTabLayout = () => {
         // children:
         ...children('.name.label' , { gridArea: 'name-label'  }),
         ...children('.name.editor', { gridArea: 'name-editor' }),
-    });
-};
-
-export default () => [
-    scope('collectionTab', {
-        ...usesCollectionTabLayout(),
+    }),
+    scope('deleteTab', {
+        // layout:
+        display : 'grid',
+        
+        
+        
+        // spacings:
+        gap : spacers.sm,
     }),
 ];

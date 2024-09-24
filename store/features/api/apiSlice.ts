@@ -515,13 +515,25 @@ export const apiSlice = createApi({
         }),
         deleteWishGroup             : builder.mutation<WishGroupDetail, DeleteWishGroupRequest>({
             query: (arg) => ({
-                url         : `customer/wishes/groups?id=${encodeURIComponent(arg.id)}`,
+                url         : `customer/wishes/groups?id=${encodeURIComponent(arg.id)}&deleteBoth=${encodeURIComponent(arg.deleteBoth ?? false)}`,
                 method      : 'DELETE',
             }),
             onQueryStarted: async (arg, api) => {
                 await cumulativeUpdatePaginationCache(api, 'getWishGroupPage', 'DELETE', 'WishGroupPage');
             },
-            invalidatesTags: ['WishPage'], // the deleted WishGroup MAY also delete a/some Wish(s) => the whole wish paginations need to be invalidated
+            invalidatesTags: (data, error, arg) => [
+                // invalidates wish page of specific group:
+                { type: 'WishGroupable', id: arg.id /* `string`: grouped wishes */ },
+                
+                // if deleteBoth is checked => affects BOTH wish page of all wishlist AND containing wishes
+                ...((!arg.deleteBoth ? [] : [
+                    // invalidates wish page of all wishlist:
+                    { type: 'WishGroupable', id: undefined /* `undefined`: all wishes (grouped + ungrouped) */ },
+                    
+                    // invalidates product page and productPeview containing wishes:
+                    'Wishable',
+                ]) satisfies ({ type: 'WishGroupable', id: string|undefined }|'Wishable')[]),
+            ],
         }),
         availableWishGroupName      : builder.query<boolean, string>({
             query: (arg) => ({
@@ -539,8 +551,8 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             providesTags: (data, error, arg) => [
-                { type: 'WishPage'   , id: arg.page },
-                ...((!arg.groupId ? [] : [{ type: 'WishGroupable', id: arg.groupId }]) satisfies { type: 'WishGroupable', id: string }[]),
+                { type: 'WishPage'     , id: arg.page    },
+                { type: 'WishGroupable', id: arg.groupId },
                 
                 ...(data?.entities ?? []).map(({ id }) =>
                     ({ type: 'Wishable', id: id })

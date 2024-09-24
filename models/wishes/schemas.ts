@@ -26,7 +26,8 @@ export const UpdateWishGroupRequestSchema = z.object({
 }) satisfies z.Schema<UpdateWishGroupRequest>;
 
 export const DeleteWishGroupRequestSchema = z.object({
-    id        : ModelIdSchema,
+    id         : ModelIdSchema,
+    deleteBoth : z.boolean().optional(),
 }) satisfies z.Schema<DeleteWishGroupRequest>;
 
 

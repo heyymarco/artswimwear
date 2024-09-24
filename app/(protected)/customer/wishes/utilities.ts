@@ -42,7 +42,7 @@ export const handleWishGroupPageIntercept : InterceptEventHandler<WishGroupDetai
             entities : [
                 {
                     id   : '', // empty string => no id
-                    name : 'All items',
+                    name : 'All Wishlist',
                 } satisfies WishGroupDetail,
                 ...data.entities,
             ],

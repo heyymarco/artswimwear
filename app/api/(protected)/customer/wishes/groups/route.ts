@@ -18,6 +18,11 @@ import {
     createEdgeRouter,
 }                           from 'next-connect'
 
+// zod:
+import {
+    z,
+}                           from 'zod'
+
 // models:
 import {
     type Pagination,
@@ -25,6 +30,7 @@ import {
     
     
     
+    BooleanStringSchema,
     PaginationArgSchema,
     UpdateWishGroupRequestSchema,
     DeleteWishGroupRequestSchema,
@@ -276,7 +282,11 @@ router
         try {
             const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
             return {
-                arg : DeleteWishGroupRequestSchema.parse(data),
+                arg :
+                    DeleteWishGroupRequestSchema.omit({ deleteBoth: true })
+                    .merge(z.object({
+                        deleteBoth : BooleanStringSchema.optional(),
+                    })).parse(data),
             };
         }
         catch {
@@ -291,8 +301,10 @@ router
     const {
         arg: {
             id,
+            deleteBoth : deleteBothRaw,
         },
     } = requestData;
+    const deleteBoth = (deleteBothRaw === 'true');
     //#endregion parsing and validating request
     
     
@@ -307,12 +319,32 @@ router
     
     //#region save changes
     try {
-        const wishGroup : WishGroupDetail = await prisma.wishGroup.delete({
-            where  : {
-                parentId : customerId, // important: the signedIn customerId
-                id       : id,
-            },
-            select : wishGroupDetailSelect,
+        const wishGroup : WishGroupDetail = await prisma.$transaction(async (prismaTransaction): Promise<WishGroupDetail> => {
+            if (!deleteBoth) {
+                // disconnects all related records before deleting to avoid "cascade" delete
+                await prismaTransaction.wishGroup.update({
+                    where  : {
+                        parentId : customerId, // important: the signedIn customerId
+                        id       : id,
+                    },
+                    data   : {
+                        items : {
+                            set: [], // disconnects all related records in a one-to-many relation
+                        },
+                    },
+                });
+            } // if
+            
+            
+            
+            const wishGroup : WishGroupDetail = await prismaTransaction.wishGroup.delete({
+                where  : {
+                    parentId : customerId, // important: the signedIn customerId
+                    id       : id,
+                },
+                select : wishGroupDetailSelect,
+            });
+            return wishGroup;
         });
         return Response.json(wishGroup); // handled with success
     }

@@ -61,6 +61,7 @@ export interface DeleteWishGroupRequest
             |'id'
         >
 {
+    deleteBoth ?: boolean
 }
 
 

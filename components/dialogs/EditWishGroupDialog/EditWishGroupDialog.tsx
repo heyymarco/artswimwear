@@ -32,9 +32,19 @@ import {
     
     
     
+    // simple-components:
+    ButtonIcon,
+    
+    
+    
     // composite-components:
     TabPanel,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
+// heymarco components:
+import {
+    AlternateSeparator,
+}                           from '@heymarco/alternate-separator'
 
 // internal components:
 import {
@@ -115,9 +125,11 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
         }).unwrap();
     });
     
-    const handleDelete         = useEvent<DeleteHandler<WishGroupDetail>>(async ({id}) => {
+    const handleDelete         = useEvent<DeleteHandler<WishGroupDetail>>(async ({id}, arg) => {
+        const deleteBoth = (arg === true);
         await deleteWishGroup({
-            id : id,
+            id         : id,
+            deleteBoth : deleteBoth,
         }).unwrap();
     });
     
@@ -195,7 +207,20 @@ const EditWishGroupDialog = (props: EditWishGroupDialogProps): JSX.Element|null 
             
             
             // tabs:
-            tabDelete='Delete'
+            tabDelete     = 'Delete'
+            contentDelete = {({ handleDelete }) =>
+                <div className={styleSheet.deleteTab}>
+                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={() => handleDelete(false)}>
+                        Delete Only <strong>{model?.name}</strong> Collection
+                    </ButtonIcon>
+                    
+                    <AlternateSeparator />
+                    
+                    <ButtonIcon icon={isLoadingDelete ? 'busy' : 'delete'} theme='danger' onClick={() => handleDelete(true)}>
+                        Delete Both <strong>{model?.name}</strong> Collection and Related Items on Wishlist
+                    </ButtonIcon>
+                </div>
+            }
             
             
             
