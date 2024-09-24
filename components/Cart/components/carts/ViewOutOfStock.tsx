@@ -6,11 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// redux:
-import type {
-    EntityState
-}                           from '@reduxjs/toolkit'
-
 // reusable-ui components:
 import {
     // layout-components:
@@ -32,13 +27,8 @@ import {
 // models:
 import {
     type ProductPreview,
+    type LimitedStockItem,
 }                           from '@/models'
-
-// stores:
-import type {
-    // types:
-    LimitedStockItem,
-}                           from '@/store/features/api/apiSlice'
 
 // internals:
 import {

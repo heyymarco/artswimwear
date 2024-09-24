@@ -34,16 +34,12 @@ import {
 
 // models:
 import {
+    type ProductPreview,
     type WishGroupDetail,
 }                           from '@/models'
 
 // stores:
 import {
-    // types:
-    type ProductPreview,
-    
-    
-    
     // hooks:
     useUpdateWish,
     useDeleteWish,

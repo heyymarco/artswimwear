@@ -20,6 +20,8 @@ import {
 import {
     type MatchingShipping,
 }                           from '@/libs/shippings/shippings'
+
+// models:
 import {
     type Model,
     
@@ -27,10 +29,7 @@ import {
     type Pagination,
     
     type MutationArgs,
-}                           from '@/libs/types'
-
-// models:
-import {
+    
     type PlaceOrderRequest,
     
     type ShippingAddressDetail,

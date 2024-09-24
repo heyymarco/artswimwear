@@ -18,15 +18,15 @@ import {
     useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// models:
+import {
+    type ProductPricePart,
+}                           from '@/models'
+
 // internals:
 import {
     useCartState,
 }                           from '@/components/Cart/states/cartState'
-
-// stores:
-import type {
-    ProductPricePart,
-}                           from '@/store/features/api/apiSlice'
 
 // utilities:
 import {

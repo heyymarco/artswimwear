@@ -88,10 +88,12 @@ import {
     MessageError,
 }                           from '@/components/MessageError'
 
-// internals:
+// models:
 import {
     type Model,
-}                           from '@/libs/types'
+}                           from '@/models'
+
+// internals:
 import {
     type ComplexEditModelDialogResult,
     type ComplexEditModelDialogExpandedChangeEvent,

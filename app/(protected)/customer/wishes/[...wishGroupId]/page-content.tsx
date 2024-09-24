@@ -54,10 +54,9 @@ import {
 
 // models:
 import {
-    type PaginationArgs,
     type Pagination,
-}                           from '@/libs/types'
-import {
+    type PaginationArgs,
+    
     type ProductPreview,
     type WishGroupDetail,
 }                           from '@/models'

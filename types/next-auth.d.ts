@@ -1,8 +1,8 @@
-// stores:
-import type {
+// models:
+import {
     // types:
-    CustomerDetail,
-}                           from '@/store/features/api/apiSlice'
+    type CustomerDetail,
+}                           from '@/models'
 
 
 

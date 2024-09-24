@@ -61,11 +61,13 @@ import {
     PaginationNav,
 }                           from '@/components/explorers/PaginationNav'
 
-// internals:
+// models:
 import {
-    type Pagination,
     type Model,
-}                           from '@/libs/types'
+    type Pagination,
+}                           from '@/models'
+
+// internals:
 import {
     ModalLoadingError,
 }                           from '@/components/ModalLoadingError'

@@ -41,10 +41,10 @@ import {
     usePaginationState,
 }                           from '@/components/explorers/Pagination'
 
-// internals:
-import type {
-    Model,
-}                           from '@/libs/types'
+// models:
+import {
+    type Model,
+}                           from '@/models'
 
 
 

@@ -10,11 +10,11 @@ import {
     type ModalExpandedChangeEvent,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// internals:
+// models:
 import {
     type Model,
     type PartialModel,
-}                           from '@/libs/types'
+}                           from '@/models'
 
 
 

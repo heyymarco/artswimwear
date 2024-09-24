@@ -21,8 +21,6 @@ import {
 // models:
 import {
     type Pagination,
-}                           from '@/libs/types'
-import {
     type ProductPreview,
     type WishGroupDetail,
     type WishDetail,

@@ -35,13 +35,13 @@ import {
     ButtonWish,
 }                           from '@/components/buttons/ButtonWish'
 
+// models:
+import {
+    type ProductPreview,
+}                           from '@/models'
+
 // stores:
 import {
-    // types:
-    type ProductPreview,
-    
-    
-    
     // hooks:
     usePrefetchProductDetail,
 }                           from '@/store/features/api/apiSlice'

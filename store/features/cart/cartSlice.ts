@@ -9,16 +9,14 @@ import type {
     // types:
     RootState,
 }                           from '../../store'
-import type {
-    // types:
-    LimitedStockItem,
-}                           from '@/store/features/api/apiSlice'
 
 // models:
 import {
     type CartDetail,
     type CartItemPreview,
     type CartSession,
+    
+    type LimitedStockItem,
 }                           from '@/models'
 
 // configs:

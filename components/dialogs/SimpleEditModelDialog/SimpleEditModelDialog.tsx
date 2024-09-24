@@ -65,11 +65,13 @@ import {
     type EditorProps,
 }                           from '@/components/editors/Editor'
 
-// internals:
+// models:
 import {
     type Model,
     type MutationArgs,
-}                           from '@/libs/types'
+}                           from '@/models'
+
+// internals:
 import {
     type KeyOfModel,
     type ValueOfModel,

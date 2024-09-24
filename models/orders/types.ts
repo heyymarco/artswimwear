@@ -432,3 +432,17 @@ export interface CommitOrderData {
     order   : CommitOrder
     payment : Pick<PaymentDetail, 'amount'|'fee'> & Partial<Omit<PaymentDetail, 'amount'|'fee'>>
 }
+
+
+
+export interface MakePaymentOptions {
+    cancelOrder ?: true
+}
+
+
+
+export interface LimitedStockItem {
+    productId   : string
+    variantIds  : string[]
+    stock       : number
+}

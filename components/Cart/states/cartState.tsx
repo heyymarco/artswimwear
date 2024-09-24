@@ -70,6 +70,10 @@ import {
 
 // models:
 import {
+    type ProductPreview,
+    type ProductPricePart,
+    type LimitedStockItem,
+    
     type CustomerPreferenceDetail,
     
     type CartDetail,
@@ -119,13 +123,6 @@ import {
     selectCartSession,
 }                           from '@/store/features/cart/cartSlice'
 import {
-    // types:
-    ProductPreview,
-    ProductPricePart,
-    LimitedStockItem,
-    
-    
-    
     // apis:
     getProductPreview,
     

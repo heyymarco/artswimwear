@@ -7,11 +7,11 @@ import {
     type ControllableCollapsibleProps,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// internals:
+// models:
 import {
     type Model,
     type PartialModel,
-}                           from '@/libs/types'
+}                           from '@/models'
 
 
 

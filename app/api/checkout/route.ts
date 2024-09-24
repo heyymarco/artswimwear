@@ -163,6 +163,9 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 
 
 // types:
+/**
+ * TODO: rename to avoid naming collision.
+ */
 export interface DraftOrderDetail
     extends
         Pick<AuthorizedFundData,
@@ -173,15 +176,24 @@ export interface DraftOrderDetail
     orderId : string
 }
 
+/**
+ * TODO: move to /models.
+ */
 export interface MakePaymentOptions {
     cancelOrder ?: true
 }
+/**
+ * TODO: move to /models.
+ */
 export interface MakePaymentDataBasic
     extends
         Omit<MakePaymentOptions, 'cancelOrder'> // options: empty yet
 {
     orderId : string
 }
+/**
+ * TODO: move to /models.
+ */
 export interface MakePaymentDataWithBillingAddress
     extends
         MakePaymentDataBasic
@@ -189,12 +201,18 @@ export interface MakePaymentDataWithBillingAddress
     // billing data:
     billingAddress      : BillingAddressDetail|null
 }
+/**
+ * TODO: move to /models.
+ */
 export interface MakePaymentDataWithCancelation
     extends
         Pick<MakePaymentDataBasic, 'orderId'>,
         Required<Pick<MakePaymentOptions, 'cancelOrder'>>
 {
 }
+/**
+ * TODO: move to /models.
+ */
 export type MakePaymentData =
     |MakePaymentDataBasic
     |MakePaymentDataWithBillingAddress
@@ -203,11 +221,17 @@ export interface PaymentDeclined {
     error : string
 }
 
+/**
+ * TODO: move to /models.
+ */
 export interface ShowOrderRequest
 {
     orderId : string
 }
 
+/**
+ * TODO: move to /models and remove duplicates.
+ */
 export interface LimitedStockItem {
     productId   : string
     variantIds  : string[]

@@ -1,6 +1,7 @@
+// internals:
 import {
     type Model,
-} from '@/libs/types'
+}                           from './commons/types'
 
 
 

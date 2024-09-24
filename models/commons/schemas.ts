@@ -3,10 +3,10 @@ import {
     z,
 }                           from 'zod'
 
-// types:
+// models:
 import {
     type PaginationArgs,
-}                           from '@/libs/types'
+}                           from './types'
 
 
 

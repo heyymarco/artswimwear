@@ -30,10 +30,10 @@ import {
 
 // models:
 import {
-    type PaginationArgs,
-    type Pagination,
     type Model,
-}                           from '@/libs/types'
+    type Pagination,
+    type PaginationArgs,
+}                           from '@/models'
 
 
 // hooks:
