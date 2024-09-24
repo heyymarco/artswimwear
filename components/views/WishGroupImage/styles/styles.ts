@@ -224,8 +224,8 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 // layouts:
                 display       : 'grid',
                 gridTemplate : [[
-                    '"name   menu" auto',
-                    '"count count" auto',
+                    '"name  menu" auto',
+                    '"count more" auto',
                     '/',
                     '1fr min-content',
                 ]],
@@ -263,6 +263,15 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 ...children('.count', {
                     // positions:
                     gridArea: 'count',
+                }),
+                ...children('.more', {
+                    // positions:
+                    gridArea: 'more',
+                    
+                    
+                    
+                    // accessibilities:
+                    pointerEvents: 'initial', // makes the wish clickable above the <a>
                 }),
             }),
         }),
