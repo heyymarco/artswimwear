@@ -123,12 +123,17 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                     {name}
                 </h2>
                 
-                {!!wishes && <span
+                <span
                     // classes:
                     className='count'
                 >
-                    {wishes.total} item{(wishes.total > 1) ? 's' : ''}
-                </span>}
+                    {!wishes && <>
+                        Loading...
+                    </>}
+                    {!!wishes && <>
+                        {wishes.total} item{(wishes.total > 1) ? 's' : ''}
+                    </>}
+                </span>
             </header>
         </article>
     );
