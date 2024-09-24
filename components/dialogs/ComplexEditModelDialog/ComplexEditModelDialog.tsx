@@ -156,6 +156,7 @@ export interface ComplexEditModelDialogProps<TModel extends Model>
     
     // tabs:
     tabDelete        ?: React.ReactNode
+    contentDelete    ?: React.ReactNode | ((props: { handleDelete: (arg?: unknown|undefined) => Promise<false|undefined> }) => React.ReactNode),
     
     
     
@@ -245,6 +246,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         // tabs:
         tabDelete,
+        contentDelete  : contentDeleteRaw,
         
         
         
@@ -359,7 +361,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
             showMessageFetchError(fetchError);
         } // try
     });
-    const handleDelete         = useEvent(async () => {
+    const handleDelete         = useEvent(async (arg?: unknown|undefined) => {
         // conditions:
         if (!model) return; // no model to delete => ignore
         {
@@ -395,7 +397,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         
         // actions:
         try {
-            const deletingModelTask = onDelete?.(model);
+            const deletingModelTask = onDelete?.(model, arg);
             
             const deletingModelAndOthersTask = (
                 deletingModelTask
@@ -515,6 +517,19 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
         if (!React.isValidElement<TabPanelProps>(child)) return false;
         return !!child.props.label; // has <TabPanel>'s label
     })();
+    const {
+        contentDelete = !whenDelete ? undefined : <>
+            <ButtonIcon icon={isDeleting ? 'busy' : 'delete'} theme='danger' onClick={handleDelete}>
+                Delete {!modelEntryName ? 'this ' : ''}<strong>{
+                    // the model name is entered:
+                    modelEntryName
+                    ||
+                    // the model name is blank:
+                    modelName
+                }</strong>
+            </ButtonIcon>
+        </>,
+    } = { contentDelete: contentDeleteRaw };
     return (
         <AccessibilityProvider enabled={!isLoading}>
             <ModalCard
@@ -614,15 +629,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                     >
                         {children}
                         {whenDelete && <TabPanel label={tabDelete} panelComponent={<Content theme='warning' className={styleSheet.tabDelete} />}>
-                            <ButtonIcon icon={isDeleting ? 'busy' : 'delete'} theme='danger' onClick={handleDelete}>
-                                Delete {!modelEntryName ? 'this ' : ''}<strong>{
-                                    // the model name is entered:
-                                    modelEntryName
-                                    ||
-                                    // the model name is blank:
-                                    modelName
-                                }</strong>
-                            </ButtonIcon>
+                            {(typeof(contentDelete) === 'function') ? contentDelete({ handleDelete }) : contentDelete}
                         </TabPanel>}
                     </Tab>}
                 </ValidationProvider>}
