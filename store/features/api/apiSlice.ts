@@ -522,7 +522,7 @@ export const apiSlice = createApi({
                 await cumulativeUpdatePaginationCache(api, 'getWishGroupPage', 'DELETE', 'WishGroupPage');
             },
             invalidatesTags: (data, error, arg) => [
-                // invalidates wish page of specific group:
+                // invalidate the related_affected_pagination_of_wishGroup (specific wishGroup):
                 { type: 'WishGroupable', id: arg.id /* `string`: grouped wishes */ },
                 
                 // if deleteBoth is checked => affects the related_affected_wish and the all_wishes_wishGroup:
@@ -530,7 +530,7 @@ export const apiSlice = createApi({
                     // because the related_affected_wishes are UNKNOWN, we simply invalidate ALL wishes:
                     'Wishable',
                     
-                    // invalidates wish page of all wishlist:
+                    // invalidate the related_affected_pagination_of_wishGroup (all wishes wishGroup):
                     { type: 'WishGroupable', id: undefined /* `undefined`: all wishes (grouped + ungrouped) */ },
                 ]) satisfies ({ type: 'WishGroupable', id: undefined }|'Wishable')[]),
             ],
@@ -613,7 +613,7 @@ export const apiSlice = createApi({
                             // invalidate the related_affected_wish:
                             { type: 'Wishable', id: arg.productId },
                             
-                            // invalidate the grouped wishes in wish of group paginations:
+                            // invalidate the related_affected_pagination_of_wishGroup:
                             ...((!arg.groupId         ? [] : [{ type: 'WishGroupable', id: arg.groupId         }]) satisfies { type: 'WishGroupable', id: string }[]),
                             ...((!arg.originalGroupId ? [] : [{ type: 'WishGroupable', id: arg.originalGroupId }]) satisfies { type: 'WishGroupable', id: string }[]),
                         ])
@@ -671,7 +671,7 @@ export const apiSlice = createApi({
                             // invalidate the related_affected_wish:
                             { type: 'Wishable', id: arg.productId },
                             
-                            // invalidate the grouped wishes in wish of group paginations:
+                            // invalidate the related_affected_pagination_of_wishGroup:
                             ...((!arg.originalGroupId ? [] : [{ type: 'WishGroupable', id: arg.originalGroupId }]) satisfies { type: 'WishGroupable', id: string }[]),
                         ])
                     );
