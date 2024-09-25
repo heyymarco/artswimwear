@@ -60,11 +60,6 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
             
             
             
-            // sizes:
-            contain : 'layout', // do not making <parent> having scrollbar when the child text overflowed
-            
-            
-            
             // animations:
             transition : [
                 ['box-shadow', '300ms'],
@@ -248,6 +243,11 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                     '1fr min-content',
                 ]],
                 alignItems: 'center', // center vertically
+                
+                
+                
+                // sizes:
+                contain: 'inline-size', // do not making <parent> having scrollbar when the child text overflowed
                 
                 
                 

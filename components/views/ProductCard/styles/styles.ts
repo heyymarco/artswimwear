@@ -60,11 +60,6 @@ const usesProductCardLayout = () => {
             
             
             
-            // sizes:
-            contain : 'layout', // do not making <parent> having scrollbar when the child text overflowed
-            
-            
-            
             // animations:
             transition : [
                 ['box-shadow', '300ms'],
@@ -177,6 +172,11 @@ const usesProductCardLayout = () => {
                     'min-content 1fr',
                 ]],
                 alignItems: 'center', // center vertically
+                
+                
+                
+                // sizes:
+                contain: 'inline-size', // do not making <parent> having scrollbar when the child text overflowed
                 
                 
                 
