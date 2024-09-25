@@ -26,6 +26,11 @@ import {
     
     // border (stroke) stuff of UI:
     usesBorder,
+    
+    
+    
+    // a capability of UI to stack on top-most of another UI(s) regardless of DOM's stacking context:
+    globalStacks,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // configs:
@@ -57,6 +62,11 @@ const usesProductCardLayout = () => {
                 '/',
                 '1fr',
             ]],
+            
+            
+            
+            // sizes:
+            contain: 'layout', // prevents the <Gallery> having scrollbar when the <ProductCard> having overflowed children
             
             
             
@@ -95,6 +105,10 @@ const usesProductCardLayout = () => {
                         }),
                     }),
                 }),
+                
+                
+                
+                zIndex: globalStacks.tooltip, // handles long text to be top_most when hovered
             }),
             
             position : 'relative',
@@ -176,7 +190,7 @@ const usesProductCardLayout = () => {
                 
                 
                 // sizes:
-                contain: 'inline-size', // do not making <parent> having scrollbar when the child text overflowed
+                contain: 'inline-size', // prevents the <ProductCard> to resize when the <header> having overflowed children
                 
                 
                 

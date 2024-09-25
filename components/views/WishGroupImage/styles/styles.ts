@@ -26,6 +26,11 @@ import {
     
     // border (stroke) stuff of UI:
     usesBorder,
+    
+    
+    
+    // a capability of UI to stack on top-most of another UI(s) regardless of DOM's stacking context:
+    globalStacks,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // configs:
@@ -57,6 +62,11 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 '/',
                 '1fr',
             ]],
+            
+            
+            
+            // sizes:
+            contain: 'layout', // prevents the <Gallery> having scrollbar when the <WishGroupImage> having overflowed children
             
             
             
@@ -115,6 +125,10 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                         }),
                     }),
                 }),
+                
+                
+                
+                zIndex: globalStacks.tooltip, // handles long text to be top_most when hovered
             }),
             
             position : 'relative',
@@ -247,7 +261,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 
                 
                 // sizes:
-                contain: 'inline-size', // do not making <parent> having scrollbar when the child text overflowed
+                contain: 'inline-size', // prevents the <WishGroupImage> to resize when the <header> having overflowed children
                 
                 
                 
