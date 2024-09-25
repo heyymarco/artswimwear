@@ -79,7 +79,7 @@ const usesGalleryBodyWrapperLayout = () => {
             
             // children:
             ...children('*>[role="dialog"]', {
-                pointerEvents : 'initial', // block the interaction behind the <Backdrop> but still make the <Backdrop> interactive for touch & scrolling
+                pointerEvents : 'auto', // block the interaction behind the <Backdrop> but still make the <Backdrop> interactive for touch & scrolling
             }),
         }),
     });
