@@ -143,10 +143,9 @@ export default () => [
         // spacings:
         gap : spacers.sm,
     }),
-    scope('ctrlAction', {
-        // sizes:
-        boxSizing : 'border-box',
-        width     : '100%',
+    scope('paraAction', {
+        // layouts:
+        display: 'grid',
     }),
     
     scope('desc', {

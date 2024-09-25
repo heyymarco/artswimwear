@@ -70,6 +70,9 @@ import {
 import {
     CurrencyDisplay,
 }                           from '@/components/CurrencyDisplay'
+import {
+    ButtonWishOfId,
+}                           from '@/components/buttons/ButtonWishOfId'
 
 // internals:
 import {
@@ -425,7 +428,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     </div>
                 </>}
                 
-                <p>
+                <p className={styleSheet.paraAction}>
                     <ButtonIcon
                         // appearances:
                         icon={!!existingItemInCart ? 'shopping_cart' : 'add_shopping_cart'}
@@ -439,16 +442,24 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                         
                         
                         
-                        // classes:
-                        className={styleSheet.ctrlAction}
-                        
-                        
-                        
                         // handlers:
                         onClick={handleBuyButtonClick}
                     >
                         {!!existingItemInCart ? 'Already in Cart' : 'Add to Cart'}
                     </ButtonIcon>
+                </p>
+                <p className={styleSheet.paraAction}>
+                    <ButtonWishOfId
+                        // data:
+                        productId={productDetail.id}
+                        
+                        
+                        
+                        // variants:
+                        buttonStyle='regular'
+                    >
+                        Wishlist
+                    </ButtonWishOfId>
                 </p>
             </Section>
             

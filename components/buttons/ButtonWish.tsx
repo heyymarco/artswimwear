@@ -72,17 +72,13 @@ export interface ButtonWishProps
         ButtonIconProps
 {
     // data:
-    model : ProductPreview
+    model : ProductPreview|undefined
 }
 const ButtonWish = (props: ButtonWishProps) => {
     // props:
     const {
         // data:
-        model : {
-            // records:
-            id,
-            wished,
-        },
+        model,
         
         
         
@@ -121,6 +117,7 @@ const ButtonWish = (props: ButtonWishProps) => {
     // handlers:
     const handleWishClick = useEvent(async (): Promise<void> => {
         // conditions:
+        if (!model) return;
         if (!isSignedIn) {
             router.push('/signin', { scroll: false });
             
@@ -152,9 +149,9 @@ const ButtonWish = (props: ButtonWishProps) => {
         
         // actions:
         try {
-            if (wished === undefined) { // undefined: unwished; null: wished (ungrouped); string: wished (grouped)
+            if (model.wished === undefined) { // undefined: unwished; null: wished (ungrouped); string: wished (grouped)
                 await updateWish({
-                    productId       : id,
+                    productId       : model.id,
                     groupId         : null,
                     originalGroupId : null, // the `originalGroupId` IS ALWAYS `null` (was not grouped) because the product WAS NEITHER wished NOR grouped
                 }).unwrap();
@@ -169,7 +166,7 @@ const ButtonWish = (props: ButtonWishProps) => {
                 
                 
                 await updateWish({
-                    productId       : id,
+                    productId       : model.id,
                     groupId         : wishGroup.id,
                     originalGroupId : null, // the `originalGroupId` IS ALWAYS `null` (was not grouped) because the product WAS NEITHER wished NOR grouped
                 }).unwrap();
@@ -186,8 +183,8 @@ const ButtonWish = (props: ButtonWishProps) => {
             }
             else {
                 await deleteWish({
-                    productId       : id,
-                    originalGroupId : wished,
+                    productId       : model.id,
+                    originalGroupId : model.wished,
                 }).unwrap();
                 
                 
@@ -227,13 +224,18 @@ const ButtonWish = (props: ButtonWishProps) => {
     // default props:
     const {
         // appearances:
-        icon        = (wished !== undefined /* undefined: unwished; null: wished (ungrouped); string: wished (grouped) */) ? 'favorite' : 'favorite_outline',
+        icon        = (model?.wished !== undefined /* undefined: unwished; null: wished (ungrouped); string: wished (grouped) */) ? 'favorite' : 'favorite_outline',
         
         
         
         // variants:
         buttonStyle = 'link',
         theme       = 'danger',
+        
+        
+        
+        // states:
+        active      = (model?.wished !== undefined),
         
         
         
@@ -259,6 +261,11 @@ const ButtonWish = (props: ButtonWishProps) => {
             // variants:
             buttonStyle={buttonStyle}
             theme={theme}
+            
+            
+            
+            // states:
+            active={active}
             
             
             
