@@ -593,14 +593,14 @@ export const apiSlice = createApi({
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
                 
-                // upsert pagination of all wishes:
+                // upsert related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                 cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE_OR_INVALIDATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
-                // upsert pagination of grouped wishes:
                 if (arg.groupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
+                    // upsert related_affected_pagination_of_wishGroup in `getWishPage('to_group_id')`:
                     cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE_OR_INVALIDATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
                 } // if
                 if (arg.originalGroupId && (arg.originalGroupId !== arg.groupId)) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
-                    // delete pagination of grouped wishes:
+                    // upsert related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
                     cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
                 } // if
                 
@@ -656,10 +656,10 @@ export const apiSlice = createApi({
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: unwishedProduct as any });
                 // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
                 
-                // delete pagination of all wishes:
+                // delete related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                 cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                 if (arg.originalGroupId) { // if the wish is having existing_group => DELETE the wish from existing_group
-                    // delete pagination of grouped wishes:
+                    // delete related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
                     cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
                 } // if
                 
