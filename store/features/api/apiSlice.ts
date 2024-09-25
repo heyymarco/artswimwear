@@ -606,7 +606,7 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fails => invalidates all caches containing Wishable+id tag:
+                // when the optimistic update fails => invalidates the related_affected_wish and the related_affected_wishGroup:
                 api.queryFulfilled.catch(() => {
                     api.dispatch(
                         apiSlice.util.invalidateTags([
@@ -664,7 +664,7 @@ export const apiSlice = createApi({
                 
                 
                 
-                // when the optimistic update fails => invalidates all caches containing Wishable+id tag:
+                // when the optimistic update fails => invalidates the related_affected_wish and the related_affected_wishGroup:
                 api.queryFulfilled.catch(() => {
                     api.dispatch(
                         apiSlice.util.invalidateTags([
