@@ -24,6 +24,7 @@ export default () => [
     }, { specificityWeight: 2 }),
     
     scope('gallery', {
+        // spacings:
         paddingBlockStart : '2rem',
         ...children('article', {
             marginBlockStart: '-2rem', // kill parent padding

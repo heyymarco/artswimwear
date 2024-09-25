@@ -456,6 +456,7 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                         
                         
                         // variants:
+                        outlined={true}
                         buttonStyle='regular'
                     >
                         Wishlist

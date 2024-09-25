@@ -41,26 +41,13 @@ const ButtonWishOfId = (props: ButtonWishOfIdProps) => {
         
         
         // other props:
-        ...restButtonWishOfIdProps
+        ...restButtonWishProps
     } = props;
     
     
     
     // apis:
     const { data: product, isLoading: isProductLoading } = useGetProductPreview(productId);
-    
-    
-    
-    // default props:
-    const {
-        // variants:
-        mild = true,
-        
-        
-        
-        // other props:
-        ...restButtonWishProps
-    } = restButtonWishOfIdProps
     
     
     
@@ -87,11 +74,6 @@ const ButtonWishOfId = (props: ButtonWishOfIdProps) => {
                     : undefined
                 )
             }
-            
-            
-            
-            // variants:
-            mild={mild}
             
             
             

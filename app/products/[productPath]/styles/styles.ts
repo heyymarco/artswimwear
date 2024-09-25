@@ -53,7 +53,12 @@ export default () => [
         
         // children:
         ...children('section', {
+            // spacings:
             padding: '0px',
+            ...children('article', {
+                margin: '0px', // kill parent padding
+                padding: '0px',
+            }, { specificityWeight: 2 }),
         }),
     }),
     
