@@ -448,6 +448,9 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                         {!!existingItemInCart ? 'Already in Cart' : 'Add to Cart'}
                     </ButtonIcon>
                 </p>
+                
+                <hr />
+                
                 <p className={styleSheet.paraAction}>
                     <ButtonWishOfId
                         // data:
