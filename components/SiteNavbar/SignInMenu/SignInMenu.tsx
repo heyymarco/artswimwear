@@ -168,7 +168,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
         
         if (isSignedOut) {
             //#region a fix for signIn page interceptor when on /checkout page
-            if (pathname === '/checkout') {
+            if (['/products', '/checkout'].includes(pathname)) {
                 const backPathname = pathname;
                 
                 showDialog<false|Session>(

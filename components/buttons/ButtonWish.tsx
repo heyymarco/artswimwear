@@ -6,6 +6,17 @@ import {
     default as React,
 }                           from 'react'
 
+// next-auth:
+import {
+    useSession,
+}                           from 'next-auth/react'
+
+// next-js:
+import {
+    usePathname,
+    useRouter,
+}                           from 'next/navigation'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -31,6 +42,13 @@ import {
 import {
     NotifyDialog,
 }                           from '@/components/dialogs/NotifyDialog'
+import {
+    SignInDialog,
+}                           from '@/components/dialogs/SignInDialog'
+import {
+    type Session,
+    SignIn,
+}                           from '@/components/SignIn'
 
 // models:
 import {
@@ -74,6 +92,12 @@ const ButtonWish = (props: ButtonWishProps) => {
     
     
     
+    // sessions:
+    const { data: session } = useSession();
+    const isSignedIn = !!session;
+    
+    
+    
     // apis:
     const [updateWish] = useUpdateWish();
     const [deleteWish] = useDeleteWish();
@@ -88,8 +112,45 @@ const ButtonWish = (props: ButtonWishProps) => {
     
     
     
+    // hooks:
+    const pathName = usePathname();
+    const router   = useRouter();
+    
+    
+    
     // handlers:
     const handleWishClick = useEvent(async (): Promise<void> => {
+        // conditions:
+        if (!isSignedIn) {
+            router.push('/signin', { scroll: false });
+            
+            
+            
+            const backPathname = pathName;
+            
+            showDialog<false|Session>(
+                <SignInDialog
+                    // components:
+                    signInComponent={
+                        <SignIn<Element>
+                            // back to current checkout page after signed in:
+                            defaultCallbackUrl={backPathname}
+                        />
+                    }
+                />
+            )
+            .then(() => { // on fully closed:
+                router.push(backPathname, { scroll: false });
+            });
+            
+            
+            
+            return; // done
+        } // if
+        
+        
+        
+        // actions:
         try {
             if (wished === undefined) { // undefined: unwished; null: wished (ungrouped); string: wished (grouped)
                 await updateWish({
