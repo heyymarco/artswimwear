@@ -201,11 +201,6 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                 </span>
                 
                 {!!model.id /* no edit|delete for 'All Items' */ && <DropdownListButton
-                    // appearances:
-                    // icon='more_vert'
-                    
-                    
-                    
                     // variants:
                     theme='primary'
                     buttonStyle='link'
