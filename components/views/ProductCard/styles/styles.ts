@@ -257,7 +257,7 @@ const usesProductCardLayout = () => {
                     
                     
                     // accessibilities:
-                    pointerEvents: 'initial', // makes the wish clickable above the <a>
+                    pointerEvents: 'auto', // makes the wish clickable above the <a>
                 }),
             }),
         }),
