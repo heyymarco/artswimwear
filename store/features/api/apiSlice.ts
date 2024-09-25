@@ -530,7 +530,7 @@ export const apiSlice = createApi({
                     // invalidates wish page of all wishlist:
                     { type: 'WishGroupable', id: undefined /* `undefined`: all wishes (grouped + ungrouped) */ },
                     
-                    // invalidates product page and productPeview containing wishes:
+                    // because the related_affected_wishes are unknown, we simply invalidate all wishes:
                     'Wishable',
                 ]) satisfies ({ type: 'WishGroupable', id: string|undefined }|'Wishable')[]),
             ],
@@ -588,7 +588,7 @@ export const apiSlice = createApi({
                 });
                 */
                 
-                // update pagination of product page:
+                // update related_affected_wish in `getProductPage`:
                 const wishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: arg.groupId };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
@@ -610,7 +610,7 @@ export const apiSlice = createApi({
                 api.queryFulfilled.catch(() => {
                     api.dispatch(
                         apiSlice.util.invalidateTags([
-                            // invalidate the wishes in product paginations and wish paginations:
+                            // invalidate the related_affected_wish:
                             { type: 'Wishable', id: arg.productId },
                             
                             // invalidate the grouped wishes in wish of group paginations:
@@ -650,7 +650,7 @@ export const apiSlice = createApi({
                 });
                 */
                 
-                // update pagination of product page:
+                // update related_affected_wish in `getProductPage`:
                 const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: undefined };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: unwishedProduct as any });
                 // no need to update `getProductPreview`'s cache, because the `wished` property is not used yet
@@ -668,7 +668,7 @@ export const apiSlice = createApi({
                 api.queryFulfilled.catch(() => {
                     api.dispatch(
                         apiSlice.util.invalidateTags([
-                            // invalidate the wishes in product paginations and wish paginations:
+                            // invalidate the related_affected_wish:
                             { type: 'Wishable', id: arg.productId },
                             
                             // invalidate the grouped wishes in wish of group paginations:
