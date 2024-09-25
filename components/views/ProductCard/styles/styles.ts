@@ -220,6 +220,11 @@ const usesProductCardLayout = () => {
                         
                         
                         
+                        // sizes:
+                        blockSize : '1.03lh', // a fix for Chrome's unintended cropped text
+                        
+                        
+                        
                         // animations:
                         transition : [
                             ['background', '300ms'],
