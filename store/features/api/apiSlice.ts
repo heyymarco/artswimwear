@@ -147,7 +147,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'WishGroupable'],
+    tagTypes  : ['ProductPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
             query: (arg) => ({
@@ -523,7 +523,7 @@ export const apiSlice = createApi({
             },
             invalidatesTags: (data, error, arg) => [
                 // invalidate the related_affected_pagination_of_wishGroup (specific wishGroup):
-                { type: 'WishGroupable', id: arg.id /* `string`: grouped wishes */ },
+                { type: 'OfWishGroupable', id: arg.id /* `string`: grouped wishes */ },
                 
                 // if deleteBoth is checked => affects the related_affected_wish and the all_wishes_wishGroup:
                 ...((!arg.deleteBoth ? [] : [
@@ -531,8 +531,8 @@ export const apiSlice = createApi({
                     'Wishable',
                     
                     // invalidate the related_affected_pagination_of_wishGroup (all wishes wishGroup):
-                    { type: 'WishGroupable', id: undefined /* `undefined`: all wishes (grouped + ungrouped) */ },
-                ]) satisfies ({ type: 'WishGroupable', id: undefined }|'Wishable')[]),
+                    { type: 'OfWishGroupable', id: undefined /* `undefined`: all wishes (grouped + ungrouped) */ },
+                ]) satisfies ({ type: 'OfWishGroupable', id: undefined }|'Wishable')[]),
             ],
         }),
         availableWishGroupName      : builder.query<boolean, string>({
@@ -551,8 +551,8 @@ export const apiSlice = createApi({
                 body        : arg,
             }),
             providesTags: (data, error, arg) => [
-                { type: 'WishPage'     , id: arg.page    },
-                { type: 'WishGroupable', id: arg.groupId },
+                { type: 'WishPage'       , id: arg.page    },
+                { type: 'OfWishGroupable', id: arg.groupId },
                 
                 ...(data?.entities ?? []).map(({ id }) =>
                     ({ type: 'Wishable', id: id })
@@ -611,11 +611,12 @@ export const apiSlice = createApi({
                     api.dispatch(
                         apiSlice.util.invalidateTags([
                             // invalidate the related_affected_wish:
-                            { type: 'Wishable', id: arg.productId },
+                            { type: 'Wishable'       , id: arg.productId },
                             
                             // invalidate the related_affected_pagination_of_wishGroup:
-                            ...((!arg.groupId         ? [] : [{ type: 'WishGroupable', id: arg.groupId         }]) satisfies { type: 'WishGroupable', id: string }[]),
-                            ...((!arg.originalGroupId ? [] : [{ type: 'WishGroupable', id: arg.originalGroupId }]) satisfies { type: 'WishGroupable', id: string }[]),
+                            { type: 'OfWishGroupable', id: undefined     },
+                            ...(((arg.groupId)                                                  ? [{ type: 'OfWishGroupable', id: arg.groupId         }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
+                            ...(((arg.originalGroupId && (arg.originalGroupId !== arg.groupId)) ? [{ type: 'OfWishGroupable', id: arg.originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
                         ])
                     );
                 });
@@ -669,10 +670,11 @@ export const apiSlice = createApi({
                     api.dispatch(
                         apiSlice.util.invalidateTags([
                             // invalidate the related_affected_wish:
-                            { type: 'Wishable', id: arg.productId },
+                            { type: 'Wishable'       , id: arg.productId },
                             
                             // invalidate the related_affected_pagination_of_wishGroup:
-                            ...((!arg.originalGroupId ? [] : [{ type: 'WishGroupable', id: arg.originalGroupId }]) satisfies { type: 'WishGroupable', id: string }[]),
+                            { type: 'OfWishGroupable', id: undefined     },
+                            ...(((arg.originalGroupId) ? [{ type: 'OfWishGroupable', id: arg.originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
                         ])
                     );
                 });
