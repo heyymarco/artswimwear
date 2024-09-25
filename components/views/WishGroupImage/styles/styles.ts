@@ -50,7 +50,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 '"images" 1fr',
                 '"header " max-content',
                 '/',
-                '100%',
+                '1fr',
             ]],
             
             

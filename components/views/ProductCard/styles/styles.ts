@@ -50,7 +50,7 @@ const usesProductCardLayout = () => {
                 '"prodImg" 1fr',
                 '"header " max-content',
                 '/',
-                '100%',
+                '1fr',
             ]],
             
             
