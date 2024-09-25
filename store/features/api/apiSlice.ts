@@ -530,9 +530,9 @@ export const apiSlice = createApi({
                     // invalidates wish page of all wishlist:
                     { type: 'WishGroupable', id: undefined /* `undefined`: all wishes (grouped + ungrouped) */ },
                     
-                    // because the related_affected_wishes are unknown, we simply invalidate all wishes:
+                    // because the related_affected_wishes are UNKNOWN, we simply invalidate ALL wishes:
                     'Wishable',
-                ]) satisfies ({ type: 'WishGroupable', id: string|undefined }|'Wishable')[]),
+                ]) satisfies ({ type: 'WishGroupable', id: undefined }|'Wishable')[]),
             ],
         }),
         availableWishGroupName      : builder.query<boolean, string>({
