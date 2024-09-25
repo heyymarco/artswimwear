@@ -229,7 +229,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 // layouts:
                 display       : 'grid',
                 gridTemplate : [[
-                    '"name  menu" auto',
+                    '"name  name" auto',
                     '"count more" auto',
                     '/',
                     '1fr min-content',
