@@ -22,6 +22,17 @@ import {
     Link,
 }                           from '@reusable-ui/next-compat-link'
 
+// reusable-ui components:
+import {
+    // simple-components:
+    ButtonIcon,
+    
+    
+    
+    // menu-components:
+    type DropdownListButtonProps,
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
 // heymarco components:
 import {
     Image,
@@ -32,6 +43,7 @@ import {
     CurrencyDisplay,
 }                           from '@/components/CurrencyDisplay'
 import {
+    type ButtonWishProps,
     ButtonWish,
 }                           from '@/components/buttons/ButtonWish'
 
@@ -57,12 +69,24 @@ import {
 export interface ProductCardProps {
     // data:
     model : ProductPreview
+    
+    
+    
+    // components:
+    buttonWishComponent         ?: React.ReactElement<ButtonWishProps>|null
+    dropdownListButtonComponent ?: React.ReactElement<DropdownListButtonProps>|null
 }
 const ProductCard = (props: ProductCardProps) => {
     // props:
     const {
         // data:
         model,
+        
+        
+        
+        // components:
+        buttonWishComponent         = (<ButtonWish model={model} /> as React.ReactElement<ButtonWishProps>),
+        dropdownListButtonComponent = null,
     } = props;
     const {
         // records:
@@ -171,6 +195,7 @@ const ProductCard = (props: ProductCardProps) => {
                         {name}
                     </span>
                 </h2>
+                
                 <span
                     // classes:
                     className='price h6'
@@ -179,15 +204,45 @@ const ProductCard = (props: ProductCardProps) => {
                         <CurrencyDisplay amount={price} />
                     </span>
                 </span>
-                <ButtonWish
-                    // data:
-                    model={model}
-                    
-                    
-                    
-                    // classes:
-                    className='wish'
-                />
+                
+                {!!buttonWishComponent && React.cloneElement<ButtonWishProps>(buttonWishComponent,
+                    // props:
+                    {
+                        // data:
+                        model     : model,
+                        
+                        
+                        
+                        // classes:
+                        className : 'wish',
+                    },
+                )}
+                
+                {!!dropdownListButtonComponent && React.cloneElement<DropdownListButtonProps>(dropdownListButtonComponent,
+                    // props:
+                    {
+                        // variants:
+                        theme             : 'primary',
+                        buttonStyle       : 'link',
+                        
+                        
+                        
+                        // classes:
+                        className         : 'more',
+                        
+                        
+                        
+                        // behaviors:
+                        floatingPlacement : 'bottom-start',
+                        
+                        
+                        
+                        // components:
+                        buttonComponent   : (
+                            <ButtonIcon icon='more_vert' />
+                        ),
+                    },
+                )}
             </header>
         </article>
     );

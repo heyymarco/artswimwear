@@ -212,6 +212,11 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                     
                     
                     
+                    // behaviors:
+                    floatingPlacement='bottom-start'
+                    
+                    
+                    
                     // components:
                     buttonComponent={
                         <ButtonIcon icon='more_vert' />

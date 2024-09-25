@@ -267,7 +267,6 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 
                 // spacings:
                 padding : '0.75rem',
-                gapInline : spacers.sm,
                 gapBlock  : spacers.sm,
                 
                 
@@ -326,6 +325,11 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                     
                     // accessibilities:
                     pointerEvents: 'auto', // makes the wish clickable above the <a>
+                    
+                    
+                    
+                    // spacings:
+                    marginInlineEnd : spacers.sm,
                 }),
             }),
         }),

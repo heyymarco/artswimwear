@@ -180,10 +180,10 @@ const usesProductCardLayout = () => {
                 // layouts:
                 display       : 'grid',
                 gridTemplate : [[
-                    '"name  name" auto',
-                    '"wish price" auto',
+                    '"name name  name" auto',
+                    '"more wish price" auto',
                     '/',
-                    'min-content 1fr',
+                    'min-content min-content 1fr',
                 ]],
                 alignItems: 'center', // center vertically
                 
@@ -196,7 +196,6 @@ const usesProductCardLayout = () => {
                 
                 // spacings:
                 padding : '0.75rem',
-                gapInline : spacers.sm,
                 gapBlock  : spacers.sm,
                 
                 
@@ -255,6 +254,20 @@ const usesProductCardLayout = () => {
                     
                     // accessibilities:
                     pointerEvents: 'auto', // makes the wish clickable above the <a>
+                }),
+                ...children('.more', {
+                    // positions:
+                    gridArea: 'more',
+                    
+                    
+                    
+                    // accessibilities:
+                    pointerEvents: 'auto', // makes the wish clickable above the <a>
+                    
+                    
+                    
+                    // spacings:
+                    marginInlineEnd : spacers.sm,
                 }),
             }),
         }),
