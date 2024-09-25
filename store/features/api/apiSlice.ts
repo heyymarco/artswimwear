@@ -525,13 +525,13 @@ export const apiSlice = createApi({
                 // invalidates wish page of specific group:
                 { type: 'WishGroupable', id: arg.id /* `string`: grouped wishes */ },
                 
-                // if deleteBoth is checked => affects BOTH wish page of all wishlist AND containing wishes
+                // if deleteBoth is checked => affects the related_affected_wish and the all_wishes_wishGroup:
                 ...((!arg.deleteBoth ? [] : [
-                    // invalidates wish page of all wishlist:
-                    { type: 'WishGroupable', id: undefined /* `undefined`: all wishes (grouped + ungrouped) */ },
-                    
                     // because the related_affected_wishes are UNKNOWN, we simply invalidate ALL wishes:
                     'Wishable',
+                    
+                    // invalidates wish page of all wishlist:
+                    { type: 'WishGroupable', id: undefined /* `undefined`: all wishes (grouped + ungrouped) */ },
                 ]) satisfies ({ type: 'WishGroupable', id: undefined }|'Wishable')[]),
             ],
         }),
