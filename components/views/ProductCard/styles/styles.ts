@@ -180,7 +180,7 @@ const usesProductCardLayout = () => {
                 // layouts:
                 display       : 'grid',
                 gridTemplate : [[
-                    '"name name" auto',
+                    '"name  name" auto',
                     '"wish price" auto',
                     '/',
                     'min-content 1fr',
@@ -197,7 +197,7 @@ const usesProductCardLayout = () => {
                 // spacings:
                 padding : '0.75rem',
                 gapInline : spacers.sm,
-                gapBlock  : spacers.xs,
+                gapBlock  : spacers.sm,
                 
                 
                 
@@ -239,16 +239,13 @@ const usesProductCardLayout = () => {
                 }),
                 ...children('.name', {
                     // positions:
-                    gridArea: 'name',
+                    gridArea    : 'name',
+                    justifySelf : 'start',
                 }),
                 ...children('.price', {
                     // positions:
-                    gridArea: 'price',
-                    
-                    
-                    
-                    // typos:
-                    textAlign    : 'end',
+                    gridArea    : 'price',
+                    justifySelf : 'end',
                 }),
                 ...children('.wish', {
                     // positions:

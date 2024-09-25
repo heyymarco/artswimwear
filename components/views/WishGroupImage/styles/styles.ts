@@ -252,9 +252,9 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 display       : 'grid',
                 gridTemplate : [[
                     '"name  name" auto',
-                    '"count more" auto',
+                    '"more count" auto',
                     '/',
-                    '1fr min-content',
+                    'min-content 1fr',
                 ]],
                 alignItems: 'center', // center vertically
                 
@@ -268,7 +268,7 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 // spacings:
                 padding : '0.75rem',
                 gapInline : spacers.sm,
-                gapBlock  : spacers.xs,
+                gapBlock  : spacers.sm,
                 
                 
                 
@@ -310,11 +310,13 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 }),
                 ...children('.name', {
                     // positions:
-                    gridArea: 'name',
+                    gridArea    : 'name',
+                    justifySelf : 'start',
                 }),
                 ...children('.count', {
                     // positions:
-                    gridArea: 'count',
+                    gridArea    : 'count',
+                    justifySelf : 'end',
                 }),
                 ...children('.more', {
                     // positions:
