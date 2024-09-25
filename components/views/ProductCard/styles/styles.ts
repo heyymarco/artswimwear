@@ -14,6 +14,11 @@ import {
     
     
     
+    // a typography management system:
+    typos,
+    
+    
+    
     // a border (stroke) management system:
     borderRadiuses,
     
@@ -83,8 +88,16 @@ const usesProductCardLayout = () => {
                     }),
                 }),
                 ...children('header', {
-                    ...children(['.name', '.price'], {
-                        overflow: 'visible',
+                    ...children(['.name', '.price'], { // handles long text
+                        ...children('.longText', {
+                            // scrolls:
+                            overflow: 'visible',
+                            
+                            
+                            
+                            // backgrounds:
+                            background: typos.backg,
+                        }),
                     }),
                 }),
             }),
@@ -175,9 +188,9 @@ const usesProductCardLayout = () => {
                 
                 
                 // children:
-                ...children(['.name', '.price'], {
-                    // scrolls:
-                    overflow     : 'hidden',
+                ...children(['.name', '.price'], { // handles long text
+                    // layouts:
+                    display: 'grid',
                     
                     
                     
@@ -186,9 +199,24 @@ const usesProductCardLayout = () => {
                     
                     
                     
-                    // typos:
-                    whiteSpace   : 'nowrap',
-                    textOverflow : 'ellipsis',
+                    // children:
+                    ...children('.longText', {
+                        // scrolls:
+                        overflow     : 'hidden',
+                        
+                        
+                        
+                        // animations:
+                        transition : [
+                            ['background', '300ms'],
+                        ],
+                        
+                        
+                        
+                        // typos:
+                        whiteSpace   : 'nowrap',
+                        textOverflow : 'ellipsis',
+                    }),
                 }),
                 ...children('.name', {
                     // positions:

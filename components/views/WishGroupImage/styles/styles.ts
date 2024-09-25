@@ -14,6 +14,11 @@ import {
     
     
     
+    // a typography management system:
+    typos,
+    
+    
+    
     // a border (stroke) management system:
     borderRadiuses,
     
@@ -103,8 +108,16 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                     }),
                 }),
                 ...children('header', {
-                    ...children(['.name', '.price'], {
-                        overflow: 'visible',
+                    ...children('.name', { // handles long text
+                        ...children('.longText', {
+                            // scrolls:
+                            overflow: 'visible',
+                            
+                            
+                            
+                            // backgrounds:
+                            background: typos.backg,
+                        }),
                     }),
                 }),
             }),
@@ -246,9 +259,9 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 
                 
                 // children:
-                ...children(['.name', '.count'], {
-                    // scrolls:
-                    overflow     : 'hidden',
+                ...children('.name', { // handles long text
+                    // layouts:
+                    display: 'grid',
                     
                     
                     
@@ -257,9 +270,24 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                     
                     
                     
-                    // typos:
-                    whiteSpace   : 'nowrap',
-                    textOverflow : 'ellipsis',
+                    // children:
+                    ...children('.longText', {
+                        // scrolls:
+                        overflow     : 'hidden',
+                        
+                        
+                        
+                        // animations:
+                        transition : [
+                            ['background', '300ms'],
+                        ],
+                        
+                        
+                        
+                        // typos:
+                        whiteSpace   : 'nowrap',
+                        textOverflow : 'ellipsis',
+                    }),
                 }),
                 ...children('.name', {
                     // positions:

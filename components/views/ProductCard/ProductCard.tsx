@@ -167,13 +167,17 @@ const ProductCard = (props: ProductCardProps) => {
                     // classes:
                     className='name h6'
                 >
-                    {name}
+                    <span className='longText'>
+                        {name}
+                    </span>
                 </h2>
                 <span
                     // classes:
                     className='price h6'
                 >
-                    <CurrencyDisplay amount={price} />
+                    <span className='longText'>
+                        <CurrencyDisplay amount={price} />
+                    </span>
                 </span>
                 <ButtonWish
                     // data:

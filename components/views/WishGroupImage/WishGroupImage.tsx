@@ -182,7 +182,9 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                     // classes:
                     className='name h6'
                 >
-                    {name}
+                    <span className='longText'>
+                        {name}
+                    </span>
                 </h2>
                 
                 <span
