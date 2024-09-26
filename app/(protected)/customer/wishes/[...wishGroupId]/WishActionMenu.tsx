@@ -45,14 +45,13 @@ import {
 // models:
 import {
     type ProductPreview,
+    
     type WishGroupDetail,
+    type GetWishPageResponse,
 }                           from '@/models'
 
 // stores:
 import {
-    // hooks:
-    useGetWishPage as _useGetWishPage,
-    
     useUpdateWish,
     useDeleteWish,
 }                           from '@/store/features/api/apiSlice'
@@ -65,11 +64,13 @@ export interface WishActionMenuProps
         // bases:
         Omit<DropdownListButtonProps,
             |'children' // no nested children
+        >,
+        Pick<GetWishPageResponse,
+            |'wishGroup'
         >
 {
     // data:
     model     : ProductPreview
-    wishGroup : WishGroupDetail|null
 }
 const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
     // props:

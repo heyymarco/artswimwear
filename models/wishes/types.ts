@@ -3,6 +3,12 @@ import {
     type WishGroup,
     type Wish,
 }                           from '@prisma/client'
+import {
+    type Pagination,
+}                           from '../commons'
+import {
+    type ProductPreview,
+}                           from '../products'
 
 
 
@@ -74,6 +80,13 @@ export interface GetWishPageRequest
         >>
 {
     groupId?: string // remove support for `null`; `string`: get grouped wishes, `undefined`: get all wishes (grouped + ungrouped), `null`: get ungrouped wishes
+}
+
+export interface GetWishPageResponse
+    extends
+        Pagination<ProductPreview>
+{
+    wishGroup : WishGroupDetail|undefined
 }
 
 export interface CreateOrUpdateWishRequest

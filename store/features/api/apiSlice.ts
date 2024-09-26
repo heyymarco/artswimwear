@@ -67,6 +67,7 @@ import {
     type DeleteWishGroupRequest,
     
     type GetWishPageRequest,
+    type GetWishPageResponse,
     type CreateOrUpdateWishRequest,
     type DeleteWishRequest,
 }                           from '@/models'
@@ -544,7 +545,7 @@ export const apiSlice = createApi({
         
         
         
-        getWishPage                 : builder.query<Pagination<ProductPreview>, PaginationArgs & GetWishPageRequest>({
+        getWishPage                 : builder.query<GetWishPageResponse, PaginationArgs & GetWishPageRequest>({
             query: (arg) => ({
                 url         : 'customer/wishes',
                 method      : 'POST',

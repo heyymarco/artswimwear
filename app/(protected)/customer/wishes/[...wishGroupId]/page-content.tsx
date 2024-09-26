@@ -53,11 +53,10 @@ import {
 
 // models:
 import {
-    type Pagination,
     type PaginationArgs,
     
     type ProductPreview,
-    type WishGroupDetail,
+    type GetWishPageResponse,
 }                           from '@/models'
 
 // stores:
@@ -103,16 +102,35 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     
     
     // stores:
+    const isGroupedWishes = (wishGroupId && (wishGroupId !== 'all'));
+    
     const {
         data: dataRaw,
     } = usePaginationState<ProductPreview>();
-    const data = dataRaw as (Pagination<ProductPreview> & { wishGroup : WishGroupDetail|null })|undefined;
-    const isGroupedWishes = (wishGroupId && (wishGroupId !== 'all'));
-    const wishGroup = data?.wishGroup;
-    const wishGroupNameFn = (
+    const data = dataRaw as GetWishPageResponse|undefined;
+    
+    /**
+     * `undefined`       : AMBIGOUS: wish pagination of all wishes (grouped wishes + ungrouped wishes) -or- still loading.  
+     * `WishGroupDetail` : wish pagination of a specific wishGroup.  
+     */
+    const wishGroup = (
         isGroupedWishes
-        ? wishGroup?.name ?? 'Loading...'
-        : 'All'
+        ? (
+            (data === undefined)
+            ? undefined           // still loading (undefined)
+            : data.wishGroup      // wish pagination of a specific wishGroup (WishGroupDetail) -or- wish pagination of all wishes (grouped wishes + ungrouped wishes)
+        )
+        : undefined               // wish pagination of all wishes (grouped wishes + ungrouped wishes), known instantly without waiting for loading completed
+    );
+    
+    const wishGroupNameFn = (
+        (wishGroup === undefined) // AMBIGOUS: wish pagination of all wishes (grouped wishes + ungrouped wishes) -or- still loading
+        ? (
+            isGroupedWishes
+            ? 'Loading...'        // still loading
+            : 'All'               // wish pagination of all wishes (grouped wishes + ungrouped wishes)
+        )
+        : wishGroup.name          // wish pagination of a specific wishGroup
     );
     
     

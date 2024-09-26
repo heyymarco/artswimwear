@@ -20,9 +20,7 @@ import {
 
 // models:
 import {
-    type Pagination,
-    type ProductPreview,
-    type WishGroupDetail,
+    type GetWishPageResponse,
     type WishDetail,
     
     
@@ -163,10 +161,10 @@ router
             },
         }),
     ]);
-    const paginationOrderDetail : Pagination<ProductPreview> & { wishGroup : WishGroupDetail|null } = {
+    const paginationOrderDetail : GetWishPageResponse = {
         total     : total,
         entities  : paged.map(({ product }) => convertProductPreviewDataToProductPreview(product)),
-        wishGroup : wishGroup,
+        wishGroup : wishGroup ?? undefined,
     };
     return Response.json(paginationOrderDetail); // handled with success
     //#endregion query result
