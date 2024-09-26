@@ -215,7 +215,7 @@ const ButtonWish = (props: ButtonWishProps) => {
                         Please try again in a few minutes.
                     </p>
                 </>,
-            })
+            });
         } // try
     });
     

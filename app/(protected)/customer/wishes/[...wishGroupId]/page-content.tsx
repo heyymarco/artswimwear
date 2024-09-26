@@ -24,9 +24,29 @@ import {
     
     
     
+    // layout-components:
+    ListItem,
+    
+    
+    
+    // simple-components:
+    Icon,
+    
+    
+    
+    // menu-components:
+    DropdownListButton,
+    
+    
+    
     // composite-components:
     NavItem,
     Nav,
+    
+    
+    
+    // utility-components:
+    useDialogMessage,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 import {
     Link,
@@ -51,6 +71,12 @@ import {
 import {
     ProductCard,
 }                           from '@/components/views/ProductCard'
+import {
+    NotifyDialog,
+}                           from '@/components/dialogs/NotifyDialog'
+import {
+    MoveWishDialog,
+}                           from '@/components/dialogs/MoveWishDialog'
 
 // models:
 import {
@@ -65,6 +91,9 @@ import {
 import {
     // hooks:
     useGetWishPage as _useGetWishPage,
+    
+    useUpdateWish,
+    useDeleteWish,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -80,8 +109,9 @@ const useUseGetWishPageOfGroup = ({ groupId }: { groupId: string|undefined }) =>
 };
 export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
     // stores:
+    const isGroupedWishes = (wishGroupId && (wishGroupId !== 'all'));
     const _useGetWishOfGroupPage = useUseGetWishPageOfGroup({
-        groupId : (wishGroupId && (wishGroupId !== 'all')) ? wishGroupId : undefined,
+        groupId : isGroupedWishes ? wishGroupId : undefined,
     });
     
     
@@ -107,11 +137,182 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
         data: dataRaw,
     } = usePaginationState<ProductPreview>();
     const data = dataRaw as (Pagination<ProductPreview> & { wishGroup : WishGroupDetail|null })|undefined;
+    const isGroupedWishes = (wishGroupId && (wishGroupId !== 'all'));
+    const wishGroup = data?.wishGroup;
     const wishGroupNameFn = (
-        (!wishGroupId || (wishGroupId === 'all'))
-        ? 'All'
-        : data?.wishGroup?.name ?? 'Loading...'
+        isGroupedWishes
+        ? wishGroup?.name ?? 'Loading...'
+        : 'All'
     );
+    
+    
+    
+    // apis:
+    const [updateWish] = useUpdateWish();
+    const [deleteWish] = useDeleteWish();
+    
+    
+    
+    // dialogs:
+    const {
+        showDialog,
+        showMessageError,
+    } = useDialogMessage();
+    
+    
+    
+    // handlers:
+    const handleMoveToCollection     = useEvent(async (model: ProductPreview): Promise<void> => {
+        // conditions:
+        const fromWishGroup = (
+            isGroupedWishes
+            ? wishGroup
+            : null
+        );
+        if (fromWishGroup === undefined) return;
+        
+        const toWishGroup = await showDialog<WishGroupDetail>(
+            <MoveWishDialog />
+        );
+        if (toWishGroup === undefined) return;
+        
+        
+        
+        // actions:
+        try {
+            await updateWish({
+                productId       : model.id,
+                groupId         : toWishGroup.id,
+                originalGroupId : fromWishGroup?.id ?? null,
+            }).unwrap();
+            
+            
+            
+            showDialog<unknown>(
+                <NotifyDialog theme='success'>
+                    <p>
+                        Item has been moved to <strong>{toWishGroup.name}</strong> collection!
+                    </p>
+                </NotifyDialog>
+            );
+        }
+        catch {
+            showMessageError({
+                title : <h1>Error Moving Wish</h1>,
+                error : <>
+                    <p>
+                        Oops, something went wrong while <strong>moving your last wish</strong>.
+                        <br />
+                        Your last changes were not saved.
+                    </p>
+                    <p>
+                        There was a <strong>problem contacting our server</strong>.<br />
+                        Make sure your internet connection is available.
+                    </p>
+                    <p>
+                        Please try again in a few minutes.
+                    </p>
+                </>,
+            });
+        } // try
+    });
+    const handleDeleteFromCollection = useEvent(async (model: ProductPreview): Promise<void> => {
+        // conditions:
+        const fromWishGroup = (
+            isGroupedWishes
+            ? wishGroup
+            : null
+        );
+        if (!fromWishGroup) return;
+        
+        
+        
+        // actions:
+        try {
+            await updateWish({
+                productId       : model.id,
+                groupId         : null,
+                originalGroupId : fromWishGroup.id,
+            }).unwrap();
+            
+            
+            
+            showDialog<unknown>(
+                <NotifyDialog theme='success'>
+                    <p>
+                        Item has been deleted from <strong>{fromWishGroup.name}</strong> collection!
+                    </p>
+                </NotifyDialog>
+            );
+        }
+        catch {
+            showMessageError({
+                title : <h1>Error Deleting Wish</h1>,
+                error : <>
+                    <p>
+                        Oops, something went wrong while <strong>deleting your last wish</strong>.
+                        <br />
+                        Your last changes were not saved.
+                    </p>
+                    <p>
+                        There was a <strong>problem contacting our server</strong>.<br />
+                        Make sure your internet connection is available.
+                    </p>
+                    <p>
+                        Please try again in a few minutes.
+                    </p>
+                </>,
+            });
+        } // try
+    });
+    const handleDeleteFromWishlist   = useEvent(async (model: ProductPreview): Promise<void> => {
+        // conditions:
+        const fromWishGroup = (
+            isGroupedWishes
+            ? wishGroup
+            : null
+        );
+        if (fromWishGroup === undefined) return;
+        
+        
+        
+        // actions:
+        try {
+            await deleteWish({
+                productId       : model.id,
+                originalGroupId : (fromWishGroup !== null) ? fromWishGroup.id : null,
+            }).unwrap();
+            
+            
+            
+            showDialog<unknown>(
+                <NotifyDialog theme='success'>
+                    <p>
+                        Item has been deleted from wishlist!
+                    </p>
+                </NotifyDialog>
+            );
+        }
+        catch {
+            showMessageError({
+                title : <h1>Error Deleting Wish</h1>,
+                error : <>
+                    <p>
+                        Oops, something went wrong while <strong>deleting your last wish</strong>.
+                        <br />
+                        Your last changes were not saved.
+                    </p>
+                    <p>
+                        There was a <strong>problem contacting our server</strong>.<br />
+                        Make sure your internet connection is available.
+                    </p>
+                    <p>
+                        Please try again in a few minutes.
+                    </p>
+                </>,
+            });
+        } // try
+    });
     
     
     
@@ -174,6 +375,34 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                         <ProductCard
                             // data:
                             model={undefined as any}
+                            
+                            
+                            
+                            // components:
+                            buttonWishComponent={null}
+                            dropdownListButtonComponent={({ model }) =>
+                                <DropdownListButton>
+                                    {isGroupedWishes && <>
+                                        <ListItem onClick={() => handleMoveToCollection(model)}>
+                                            <Icon icon='forward' /> Move to another collection
+                                        </ListItem>
+                                        <ListItem theme='danger' onClick={() => handleDeleteFromCollection(model)}>
+                                            <Icon icon='delete' /> Delete from this collection
+                                        </ListItem>
+                                        <ListItem theme='danger' onClick={() => handleDeleteFromWishlist(model)}>
+                                            <Icon icon='delete' /> Delete from this collection and wishlist
+                                        </ListItem>
+                                    </>}
+                                    {!isGroupedWishes && <>
+                                        <ListItem onClick={() => handleMoveToCollection(model)}>
+                                            <Icon icon='forward' /> Add to collection
+                                        </ListItem>
+                                        <ListItem theme='danger' onClick={() => handleDeleteFromWishlist(model)}>
+                                            <Icon icon='delete' /> Delete from wishlist
+                                        </ListItem>
+                                    </>}
+                                </DropdownListButton>
+                            }
                         />
                     }
                 />

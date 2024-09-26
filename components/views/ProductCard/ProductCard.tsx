@@ -74,7 +74,7 @@ export interface ProductCardProps {
     
     // components:
     buttonWishComponent         ?: React.ReactElement<ButtonWishProps>|null
-    dropdownListButtonComponent ?: React.ReactElement<DropdownListButtonProps>|null
+    dropdownListButtonComponent ?: React.ReactElement<DropdownListButtonProps>|((arg: { model: ProductPreview }) => React.ReactElement<DropdownListButtonProps>)|null
 }
 const ProductCard = (props: ProductCardProps) => {
     // props:
@@ -86,8 +86,9 @@ const ProductCard = (props: ProductCardProps) => {
         
         // components:
         buttonWishComponent         = (<ButtonWish model={model} /> as React.ReactElement<ButtonWishProps>),
-        dropdownListButtonComponent = null,
+        dropdownListButtonComponent : dropdownListButtonComponentFn = null,
     } = props;
+    const dropdownListButtonComponent = (typeof(dropdownListButtonComponentFn) === 'function') ? dropdownListButtonComponentFn({ model }) : dropdownListButtonComponentFn;
     const {
         // records:
         id,
