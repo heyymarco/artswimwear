@@ -115,7 +115,7 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         const toWishGroup = await showDialog<WishGroupDetail>(
             <MoveWishDialog />
         );
-        if (toWishGroup === undefined) return;
+        if (!toWishGroup) return;
         
         
         
@@ -123,8 +123,8 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         try {
             await updateWish({
                 productId       : model.id,
-                groupId         : toWishGroup.id,
-                originalGroupId : fromWishGroup?.id ?? null,
+                groupId         : toWishGroup.id,            // to group
+                originalGroupId : fromWishGroup?.id ?? null, // from group
             }).unwrap();
             
             
@@ -169,8 +169,8 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         try {
             await updateWish({
                 productId       : model.id,
-                groupId         : null,
-                originalGroupId : fromWishGroup.id,
+                groupId         : null,             // ungroup
+                originalGroupId : fromWishGroup.id, // from group
             }).unwrap();
             
             
@@ -210,7 +210,7 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         try {
             await deleteWish({
                 productId       : model.id,
-                originalGroupId : fromWishGroup?.id ?? null,
+                originalGroupId : fromWishGroup?.id ?? null, // from group
             }).unwrap();
             
             
