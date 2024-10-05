@@ -85,6 +85,11 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         ...restDropdownListButtonProps
     } = props;
     const isGroupedWishes = !!wishGroup;
+    const fromWishGroup = (
+        isGroupedWishes
+        ? wishGroup
+        : null
+    );
     
     
     
@@ -105,12 +110,7 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
     // handlers:
     const handleMoveToCollection     = useEvent(async (): Promise<void> => {
         // conditions:
-        const fromWishGroup = (
-            isGroupedWishes
-            ? wishGroup
-            : null
-        );
-        if (fromWishGroup === undefined) return;
+        if (!fromWishGroup) return;
         
         const toWishGroup = await showDialog<WishGroupDetail>(
             <MoveWishDialog />
@@ -124,7 +124,7 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
             await updateWish({
                 productId       : model.id,
                 groupId         : toWishGroup.id,
-                originalGroupId : fromWishGroup?.id ?? null,
+                originalGroupId : fromWishGroup.id ?? null,
             }).unwrap();
             
             
@@ -159,11 +159,6 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
     });
     const handleDeleteFromCollection = useEvent(async (): Promise<void> => {
         // conditions:
-        const fromWishGroup = (
-            isGroupedWishes
-            ? wishGroup
-            : null
-        );
         if (!fromWishGroup) return;
         
         
@@ -207,21 +202,11 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         } // try
     });
     const handleDeleteFromWishlist   = useEvent(async (): Promise<void> => {
-        // conditions:
-        const fromWishGroup = (
-            isGroupedWishes
-            ? wishGroup
-            : null
-        );
-        if (fromWishGroup === undefined) return;
-        
-        
-        
         // actions:
         try {
             await deleteWish({
                 productId       : model.id,
-                originalGroupId : (fromWishGroup !== null) ? fromWishGroup.id : null,
+                originalGroupId : fromWishGroup?.id ?? null,
             }).unwrap();
             
             
