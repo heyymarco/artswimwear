@@ -78,7 +78,7 @@ const useUseGetWishPageOfGroup = ({ groupId }: { groupId: string|undefined }) =>
 };
 export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
     // stores:
-    const isGroupedWishes = (wishGroupId && (wishGroupId !== 'all'));
+    const isGroupedWishes = (!!wishGroupId && (wishGroupId !== 'all')); // empty_string|'all' => ungrouped wishes
     const _useGetWishOfGroupPage = useUseGetWishPageOfGroup({
         groupId : isGroupedWishes ? wishGroupId : undefined,
     });
@@ -102,7 +102,7 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     
     
     // stores:
-    const isGroupedWishes = (wishGroupId && (wishGroupId !== 'all'));
+    const isGroupedWishes = (!!wishGroupId && (wishGroupId !== 'all')); // empty_string|'all' => ungrouped wishes
     
     const {
         data: dataRaw,
@@ -110,27 +110,28 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     const data = dataRaw as GetWishPageResponse|undefined;
     
     /**
-     * `undefined`       : AMBIGOUS: wish pagination of all wishes (grouped wishes + ungrouped wishes) -or- still loading.  
+     * `false`           : still loading -or- load error.  
+     * `undefined`       : wish pagination of all wishes (grouped wishes + ungrouped wishes).  
      * `WishGroupDetail` : wish pagination of a specific wishGroup.  
      */
     const wishGroup = (
         isGroupedWishes
         ? (
             (data === undefined)
-            ? undefined           // still loading (undefined)
-            : data.wishGroup      // wish pagination of a specific wishGroup (WishGroupDetail) -or- wish pagination of all wishes (grouped wishes + ungrouped wishes)
+            ? false                   // still loading -or- load error
+            : data.wishGroup          // wish pagination of a specific wishGroup -or- wish pagination of all wishes (grouped wishes + ungrouped wishes)
         )
-        : undefined               // wish pagination of all wishes (grouped wishes + ungrouped wishes), known instantly without waiting for loading completed
+        : undefined                   // wish pagination of all wishes (grouped wishes + ungrouped wishes), known instantly without waiting for loading completed
     );
     
-    const wishGroupNameFn = (
-        (wishGroup === undefined) // AMBIGOUS: wish pagination of all wishes (grouped wishes + ungrouped wishes) -or- still loading
-        ? (
-            isGroupedWishes
-            ? 'Loading...'        // still loading
-            : 'All'               // wish pagination of all wishes (grouped wishes + ungrouped wishes)
+    const wishGroupName = (
+        (wishGroup === false)
+        ? 'Loading...'                // still loading -or- load error
+        : (
+            (wishGroup === undefined)
+            ? 'All'                   // wish pagination of all wishes (grouped wishes + ungrouped wishes)
+            : wishGroup.name          // wish pagination of a specific wishGroup
         )
-        : wishGroup.name          // wish pagination of a specific wishGroup
     );
     
     
@@ -159,7 +160,7 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                     
                     <NavItem end>
                         <Link href={`/customer/wishes/${encodeURIComponent(wishGroupId)}`} >
-                            {wishGroupNameFn}
+                            {wishGroupName}
                         </Link>
                     </NavItem>
                 </Nav>
@@ -199,12 +200,15 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                             
                             // components:
                             buttonWishComponent={null}
-                            dropdownListButtonComponent={(wishGroup === undefined) ? null : ({ model }) =>
-                                <WishActionMenu
-                                    // data:
-                                    model={model}
-                                    wishGroup={wishGroup}
-                                />
+                            dropdownListButtonComponent={
+                                wishGroup
+                                ? ({ model }) => // `WishGroupDetail` => wish pagination of a specific wishGroup => shows action menu
+                                    <WishActionMenu
+                                        // data:
+                                        model={model}
+                                        wishGroup={wishGroup}
+                                    />
+                                : null // `false`|`undefined` => still loading -or- load error -or- wish pagination of all wishes (grouped wishes + ungrouped wishes) => no action menu needed
                             }
                         />
                     }
