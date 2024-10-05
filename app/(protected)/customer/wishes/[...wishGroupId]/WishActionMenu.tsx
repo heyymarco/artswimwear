@@ -217,9 +217,12 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
             
             showDialog<unknown>(
                 <NotifyDialog theme='success'>
-                    <p>
+                    {!!fromWishGroup && <p>
+                        Item has been deleted from both <strong>{fromWishGroup.name}</strong> collection and wishlist!
+                    </p>}
+                    {!fromWishGroup && <p>
                         Item has been deleted from wishlist!
-                    </p>
+                    </p>}
                 </NotifyDialog>
             );
         }
