@@ -201,14 +201,14 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                             // components:
                             buttonWishComponent={null}
                             dropdownListButtonComponent={
-                                wishGroup
-                                ? ({ model }) => // `WishGroupDetail` => wish pagination of a specific wishGroup => shows action menu
+                                (wishGroup || (wishGroup === undefined))
+                                ? ({ model }) => // `WishGroupDetail`|`undefined` => wish pagination of a specific wishGroup -or- wish pagination of all wishes (grouped wishes + ungrouped wishes) => shows action menu
                                     <WishActionMenu
                                         // data:
                                         model={model}
                                         wishGroup={wishGroup}
                                     />
-                                : null // `false`|`undefined` => still loading -or- load error -or- wish pagination of all wishes (grouped wishes + ungrouped wishes) => no action menu needed
+                                : null // `false` => still loading -or- load error => no action menu needed
                             }
                         />
                     }
