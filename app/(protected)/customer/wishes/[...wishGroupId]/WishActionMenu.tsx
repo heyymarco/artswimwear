@@ -108,10 +108,10 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
     
     
     // handlers:
+    
+    // MOVE action for: grouped wishes + all wishes (grouped wishes + ungrouped wishes)
     const handleMoveToCollection     = useEvent(async (): Promise<void> => {
         // conditions:
-        if (!fromWishGroup) return;
-        
         const toWishGroup = await showDialog<WishGroupDetail>(
             <MoveWishDialog />
         );
@@ -124,7 +124,7 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
             await updateWish({
                 productId       : model.id,
                 groupId         : toWishGroup.id,
-                originalGroupId : fromWishGroup.id ?? null,
+                originalGroupId : fromWishGroup?.id ?? null,
             }).unwrap();
             
             
@@ -157,6 +157,8 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
             });
         } // try
     });
+    
+    // DELETE action for: grouped wishes
     const handleDeleteFromCollection = useEvent(async (): Promise<void> => {
         // conditions:
         if (!fromWishGroup) return;
@@ -201,6 +203,8 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
             });
         } // try
     });
+    
+    // DELETE action for: grouped wishes + all wishes (grouped wishes + ungrouped wishes)
     const handleDeleteFromWishlist   = useEvent(async (): Promise<void> => {
         // actions:
         try {
@@ -248,6 +252,7 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
             // other props:
             {...restDropdownListButtonProps}
         >
+            {/* menu for grouped wishes */}
             {isGroupedWishes && <>
                 <ListItem onClick={handleMoveToCollection}>
                     <Icon icon='forward' /> Move to another collection
@@ -259,6 +264,8 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
                     <Icon icon='delete' /> Delete from this collection and wishlist
                 </ListItem>
             </>}
+            
+            {/* menu for all wishes (grouped wishes + ungrouped wishes) */}
             {!isGroupedWishes && <>
                 <ListItem onClick={handleMoveToCollection}>
                     <Icon icon='forward' /> Add to collection
