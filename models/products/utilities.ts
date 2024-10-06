@@ -83,6 +83,6 @@ export const convertProductPreviewDataToProductPreview = (productPreviewData: Aw
                 }))
             )
         ),
-        wished : wishes?.[0]?.groupId,
+        wished : !wishes.length ? undefined : wishes?.[0]?.groupId,
     };
 };
