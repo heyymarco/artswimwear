@@ -123,8 +123,8 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         try {
             await updateWish({
                 productId       : model.id,
-                groupId         : toWishGroup.id,            // to group
-                originalGroupId : fromWishGroup?.id ?? null, // from group
+                groupId         : toWishGroup.id,            // to grouped wishes
+                originalGroupId : fromWishGroup?.id ?? null, // string: from grouped wishes, null: from all wishes, undefined: from unwished (never happened)
             }).unwrap();
             
             
@@ -169,8 +169,8 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         try {
             await updateWish({
                 productId       : model.id,
-                groupId         : null,             // ungroup
-                originalGroupId : fromWishGroup.id, // from group
+                groupId         : null,             // ungroup (but still wished)
+                originalGroupId : fromWishGroup.id, // string: from grouped wishes
             }).unwrap();
             
             
@@ -210,7 +210,7 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         try {
             await deleteWish({
                 productId       : model.id,
-                originalGroupId : fromWishGroup?.id ?? null, // from group
+                originalGroupId : fromWishGroup?.id ?? null, // string: from grouped wishes, null: from all wishes, undefined: from unwished (never happened)
             }).unwrap();
             
             
