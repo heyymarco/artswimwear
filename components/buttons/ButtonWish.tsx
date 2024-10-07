@@ -153,7 +153,7 @@ const ButtonWish = (props: ButtonWishProps) => {
                 await updateWish({
                     productId       : model.id,
                     groupId         : null,
-                    originalGroupId : null, // the `originalGroupId` IS ALWAYS `null` (was not grouped) because the product WAS NEITHER wished NOR grouped
+                    originalGroupId : model.wished, // the `originalGroupId` IS ALWAYS `undefined` (was not grouped) because the product WAS NEITHER wished NOR grouped
                 }).unwrap();
                 
                 
@@ -168,7 +168,7 @@ const ButtonWish = (props: ButtonWishProps) => {
                 await updateWish({
                     productId       : model.id,
                     groupId         : wishGroup.id,
-                    originalGroupId : null, // the `originalGroupId` IS ALWAYS `null` (was not grouped) because the product WAS NEITHER wished NOR grouped
+                    originalGroupId : model.wished, // the `originalGroupId` IS ALWAYS `undefined` (was not grouped) because the product WAS NEITHER wished NOR grouped
                 }).unwrap();
                 
                 
