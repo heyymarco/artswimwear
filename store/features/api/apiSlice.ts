@@ -580,7 +580,7 @@ export const apiSlice = createApi({
                 const wishedProduct   : ProductPreview = {
                     ...arg.productPreview,
                     id     : productId,
-                    wished : desiredGroupId,
+                    wished : desiredGroupId, // set to grouped wishes -or- ungroup (but still wished)
                 };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 
@@ -633,7 +633,10 @@ export const apiSlice = createApi({
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
                 // update related_affected_wish in `getProductPage`:
-                const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: undefined };
+                const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = {
+                    id     : arg.productId,
+                    wished : undefined, // set to unwished
+                };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: unwishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
