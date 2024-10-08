@@ -561,7 +561,7 @@ export const apiSlice = createApi({
                 ) satisfies { type: 'Wishable', id: string }[],
             ],
         }),
-        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null|undefined }>({
+        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null|undefined, productPreview: ProductPreview }>({
             query: (arg) => ({
                 url         : 'customer/wishes',
                 method      : 'PATCH',
@@ -569,29 +569,12 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
-                /*
-                const patchResult = api.dispatch(
-                    apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
-                        // conditions:
-                        if (data.ids.includes(arg.productId)) return; // already added => no need to update => nothing to do
-                        
-                        
-                        
-                        // update:
-                        wishListAdapter.upsertOne(data, arg.productId);
-                    })
-                );
-                api.queryFulfilled.catch(() => {
-                    patchResult.undo();
-                    
-                    api.dispatch(
-                        apiSlice.util.invalidateTags(['WishPage'])
-                    );
-                });
-                */
-                
                 // update related_affected_wish in `getProductPage`:
-                const wishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: arg.groupId };
+                const wishedProduct : ProductPreview = {
+                    ...arg.productPreview,
+                    id     : arg.productId,
+                    wished : arg.groupId,
+                };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
@@ -642,27 +625,6 @@ export const apiSlice = createApi({
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
-                /*
-                const patchResult = api.dispatch(
-                    apiSlice.util.updateQueryData('getWishes', undefined, (data) => {
-                        // conditions:
-                        if (!data.ids.includes(arg.productId)) return; // already removed => no need to update => nothing to do
-                        
-                        
-                        
-                        // update:
-                        wishListAdapter.removeOne(data, arg.productId);
-                    })
-                );
-                api.queryFulfilled.catch(() => {
-                    patchResult.undo();
-                    
-                    api.dispatch(
-                        apiSlice.util.invalidateTags(['WishPage'])
-                    );
-                });
-                */
-                
                 // update related_affected_wish in `getProductPage`:
                 const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = { id: arg.productId, wished: undefined };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: unwishedProduct as any });

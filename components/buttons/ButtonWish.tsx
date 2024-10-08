@@ -154,6 +154,7 @@ const ButtonWish = (props: ButtonWishProps) => {
                     productId       : model.id,
                     groupId         : null,
                     originalGroupId : model.wished, // the `originalGroupId` IS ALWAYS `undefined` (was not grouped) because the product WAS NEITHER wished NOR grouped
+                    productPreview  : model,
                 }).unwrap();
                 
                 
@@ -169,6 +170,7 @@ const ButtonWish = (props: ButtonWishProps) => {
                     productId       : model.id,
                     groupId         : wishGroup.id,
                     originalGroupId : model.wished, // the `originalGroupId` IS ALWAYS `undefined` (was not grouped) because the product WAS NEITHER wished NOR grouped
+                    productPreview  : model,
                 }).unwrap();
                 
                 
