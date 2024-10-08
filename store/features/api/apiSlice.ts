@@ -602,13 +602,13 @@ export const apiSlice = createApi({
                     } // if
                     
                     // move related_affected_pagination_of_wishGroup from `getWishPage('from_group_id')` to `getWishPage('to_group_id')`:
-                    if (desiredGroupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
-                        // create related_affected_pagination_of_wishGroup in `getWishPage('to_group_id')`:
-                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === desiredGroupId) });
-                    } // if
                     if (originalGroupId) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
                         // delete related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
                         cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === originalGroupId) });
+                    } // if
+                    if (desiredGroupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
+                        // create related_affected_pagination_of_wishGroup in `getWishPage('to_group_id')`:
+                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === desiredGroupId) });
                     } // if
                 } // if
                 
