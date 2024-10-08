@@ -570,22 +570,24 @@ export const apiSlice = createApi({
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
                 // update related_affected_wish in `getProductPage`:
-                const wishedProduct : ProductPreview = {
+                const productId       = arg.productPreview.id;
+                const originalGroupId = arg.originalGroupId;
+                const wishedProduct   : ProductPreview = {
                     ...arg.productPreview,
-                    id     : arg.productPreview.id,
+                    id     : productId,
                     wished : arg.groupId,
                 };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
-                    apiSlice.util.updateQueryData('getProductPreview', arg.productPreview.id, (data) => {
+                    apiSlice.util.updateQueryData('getProductPreview', productId, (data) => {
                         data.wished = arg.groupId;
                     })
                 );
                 
-                if (arg.groupId !== arg.originalGroupId) {
-                    if (arg.originalGroupId === undefined) { // if was never wished
+                if (arg.groupId !== originalGroupId) {
+                    if (originalGroupId === undefined) { // if was never wished
                         // create related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                         cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                     } // if
@@ -593,9 +595,9 @@ export const apiSlice = createApi({
                         // upsert related_affected_pagination_of_wishGroup in `getWishPage('to_group_id')`:
                         cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
                     } // if
-                    if (arg.originalGroupId) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
+                    if (originalGroupId) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
                         // upsert related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
-                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
+                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === originalGroupId) });
                     } // if
                 } // if
                 
@@ -606,12 +608,12 @@ export const apiSlice = createApi({
                     api.dispatch(
                         apiSlice.util.invalidateTags([
                             // invalidate the related_affected_wish:
-                            { type: 'Wishable'       , id: arg.productPreview.id },
+                            { type: 'Wishable'       , id: productId },
                             
                             // invalidate the related_affected_pagination_of_wishGroup:
                             { type: 'OfWishGroupable', id: undefined     },
-                            ...(((arg.groupId)                                                  ? [{ type: 'OfWishGroupable', id: arg.groupId         }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
-                            ...(((arg.originalGroupId && (arg.originalGroupId !== arg.groupId)) ? [{ type: 'OfWishGroupable', id: arg.originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
+                            ...(((arg.groupId)                                          ? [{ type: 'OfWishGroupable', id: arg.groupId     }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
+                            ...(((originalGroupId && (originalGroupId !== arg.groupId)) ? [{ type: 'OfWishGroupable', id: originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
                         ])
                     );
                 });
