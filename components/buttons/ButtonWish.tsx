@@ -151,10 +151,9 @@ const ButtonWish = (props: ButtonWishProps) => {
         try {
             if (model.wished === undefined) { // undefined: unwished; null: wished (ungrouped); string: wished (grouped)
                 await updateWish({
-                    productId       : model.id,
+                    productPreview  : model,
                     groupId         : null,
                     originalGroupId : model.wished, // the `originalGroupId` IS ALWAYS `undefined` (was not grouped) because the product WAS NEITHER wished NOR grouped
-                    productPreview  : model,
                 }).unwrap();
                 
                 
@@ -167,10 +166,9 @@ const ButtonWish = (props: ButtonWishProps) => {
                 
                 
                 await updateWish({
-                    productId       : model.id,
+                    productPreview  : model,
                     groupId         : wishGroup.id,
                     originalGroupId : model.wished, // the `originalGroupId` IS ALWAYS `undefined` (was not grouped) because the product WAS NEITHER wished NOR grouped
-                    productPreview  : model,
                 }).unwrap();
                 
                 

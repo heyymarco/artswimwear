@@ -93,13 +93,10 @@ export interface CreateOrUpdateWishRequest
     extends
         Pick<Wish,
             // relations:
-            |'productId'
-        >,
-        Pick<Wish,
-            // relations:
             |'groupId'
         >
 {
+    productPreview: Omit<ProductPreview, 'wished'>
 }
 
 export interface DeleteWishRequest

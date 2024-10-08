@@ -561,7 +561,7 @@ export const apiSlice = createApi({
                 ) satisfies { type: 'Wishable', id: string }[],
             ],
         }),
-        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null|undefined, productPreview: ProductPreview }>({
+        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null|undefined }>({
             query: (arg) => ({
                 url         : 'customer/wishes',
                 method      : 'PATCH',
@@ -572,14 +572,14 @@ export const apiSlice = createApi({
                 // update related_affected_wish in `getProductPage`:
                 const wishedProduct : ProductPreview = {
                     ...arg.productPreview,
-                    id     : arg.productId,
+                    id     : arg.productPreview.id,
                     wished : arg.groupId,
                 };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
-                    apiSlice.util.updateQueryData('getProductPreview', arg.productId, (data) => {
+                    apiSlice.util.updateQueryData('getProductPreview', arg.productPreview.id, (data) => {
                         data.wished = arg.groupId;
                     })
                 );
@@ -606,7 +606,7 @@ export const apiSlice = createApi({
                     api.dispatch(
                         apiSlice.util.invalidateTags([
                             // invalidate the related_affected_wish:
-                            { type: 'Wishable'       , id: arg.productId },
+                            { type: 'Wishable'       , id: arg.productPreview.id },
                             
                             // invalidate the related_affected_pagination_of_wishGroup:
                             { type: 'OfWishGroupable', id: undefined     },
