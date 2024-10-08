@@ -572,28 +572,29 @@ export const apiSlice = createApi({
                 // update related_affected_wish in `getProductPage`:
                 const productId       = arg.productPreview.id;
                 const originalGroupId = arg.originalGroupId;
+                const desiredGroupId  = arg.groupId;
                 const wishedProduct   : ProductPreview = {
                     ...arg.productPreview,
                     id     : productId,
-                    wished : arg.groupId,
+                    wished : desiredGroupId,
                 };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
                     apiSlice.util.updateQueryData('getProductPreview', productId, (data) => {
-                        data.wished = arg.groupId;
+                        data.wished = desiredGroupId;
                     })
                 );
                 
-                if (arg.groupId !== originalGroupId) {
+                if (desiredGroupId !== originalGroupId) {
                     if (originalGroupId === undefined) { // if was never wished
                         // create related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                         cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                     } // if
-                    if (arg.groupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
+                    if (desiredGroupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
                         // upsert related_affected_pagination_of_wishGroup in `getWishPage('to_group_id')`:
-                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.groupId) });
+                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === desiredGroupId) });
                     } // if
                     if (originalGroupId) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
                         // upsert related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
@@ -612,8 +613,8 @@ export const apiSlice = createApi({
                             
                             // invalidate the related_affected_pagination_of_wishGroup:
                             { type: 'OfWishGroupable', id: undefined     },
-                            ...(((arg.groupId)                                          ? [{ type: 'OfWishGroupable', id: arg.groupId     }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
-                            ...(((originalGroupId && (originalGroupId !== arg.groupId)) ? [{ type: 'OfWishGroupable', id: originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
+                            ...(((desiredGroupId)                                          ? [{ type: 'OfWishGroupable', id: desiredGroupId  }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
+                            ...(((originalGroupId && (originalGroupId !== desiredGroupId)) ? [{ type: 'OfWishGroupable', id: originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
                         ])
                     );
                 });
