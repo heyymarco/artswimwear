@@ -165,7 +165,10 @@ const ButtonWish = (props: ButtonWishProps) => {
                 
                 
                 await updateWish({
-                    productPreview  : model,
+                    productPreview  : { // refresh the `model`
+                        ...model,
+                        wished : null, // ungroup (but still wished)
+                    } satisfies ProductPreview,
                     groupId         : wishGroup.id, // grouped wishes
                 }).unwrap();
                 
