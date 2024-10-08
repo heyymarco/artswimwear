@@ -591,16 +591,23 @@ export const apiSlice = createApi({
                 );
                 
                 if (desiredGroupId !== originalGroupId) {
+                    // create -or- update related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                     if (originalGroupId === undefined) { // if was never wished
                         // create related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                         cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
+                    }
+                    else {
+                        // update related_affected_pagination_of_wishGroup in `getWishPage('all')`:
+                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                     } // if
+                    
+                    // move related_affected_pagination_of_wishGroup from `getWishPage('from_group_id')` to `getWishPage('to_group_id')`:
                     if (desiredGroupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
-                        // upsert related_affected_pagination_of_wishGroup in `getWishPage('to_group_id')`:
+                        // create related_affected_pagination_of_wishGroup in `getWishPage('to_group_id')`:
                         cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === desiredGroupId) });
                     } // if
                     if (originalGroupId) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
-                        // upsert related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
+                        // delete related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
                         cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === originalGroupId) });
                     } // if
                 } // if
