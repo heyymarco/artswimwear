@@ -108,6 +108,11 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
     
     
     // handlers:
+    console.log({
+        wished: model.wished,
+        wGroup: fromWishGroup?.id ?? null,
+        compare: (model.wished === (fromWishGroup?.id ?? null)),
+    });
     
     // MOVE action for: grouped wishes + all wishes (grouped wishes + ungrouped wishes)
     const handleMoveToCollection     = useEvent(async (): Promise<void> => {
@@ -124,7 +129,6 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
             await updateWish({
                 productPreview  : model,
                 groupId         : toWishGroup.id,            // to grouped wishes
-                originalGroupId : fromWishGroup?.id ?? null, // string: from grouped wishes, null: from all wishes, undefined: from unwished (never happened)
             }).unwrap();
             
             
@@ -170,7 +174,6 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
             await updateWish({
                 productPreview  : model,
                 groupId         : null,             // ungroup (but still wished)
-                originalGroupId : fromWishGroup.id, // string: from grouped wishes
             }).unwrap();
             
             

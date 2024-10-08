@@ -561,7 +561,7 @@ export const apiSlice = createApi({
                 ) satisfies { type: 'Wishable', id: string }[],
             ],
         }),
-        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest & { originalGroupId: string|null|undefined }>({
+        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest>({
             query: (arg) => ({
                 url         : 'customer/wishes',
                 method      : 'PATCH',
@@ -571,7 +571,7 @@ export const apiSlice = createApi({
                 //#region optimistic update
                 // update related_affected_wish in `getProductPage`:
                 const productId       = arg.productPreview.id;
-                const originalGroupId = arg.originalGroupId;
+                const originalGroupId = arg.productPreview.wished;
                 const desiredGroupId  = arg.groupId;
                 const wishedProduct   : ProductPreview = {
                     ...arg.productPreview,

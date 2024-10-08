@@ -96,7 +96,7 @@ export interface CreateOrUpdateWishRequest
             |'groupId'
         >
 {
-    productPreview: Omit<ProductPreview, 'wished'>
+    productPreview: ProductPreview
 }
 
 export interface DeleteWishRequest
