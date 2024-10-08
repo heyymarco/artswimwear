@@ -108,11 +108,6 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
     
     
     // handlers:
-    console.log({
-        wished: model.wished,
-        wGroup: fromWishGroup?.id ?? null,
-        compare: (model.wished === (fromWishGroup?.id ?? null)),
-    });
     
     // MOVE action for: grouped wishes + all wishes (grouped wishes + ungrouped wishes)
     const handleMoveToCollection     = useEvent(async (): Promise<void> => {
