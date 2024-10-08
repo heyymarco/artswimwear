@@ -108,6 +108,9 @@ export interface CreateOrUpdateWishRequest
     productId: ProductPreview['id']
 }
 
+export interface DeleteWishParam {
+    productPreview: ProductPreview
+}
 export interface DeleteWishRequest
     extends
         Pick<Wish,

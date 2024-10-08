@@ -71,7 +71,7 @@ import {
     type GetWishPageResponse,
     type CreateOrUpdateWishParam,
     type CreateOrUpdateWishRequest,
-    type DeleteWishRequest,
+    type DeleteWishParam,
 }                           from '@/models'
 
 import {
@@ -574,10 +574,13 @@ export const apiSlice = createApi({
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
                 // update related_affected_wish in `getProductPage`:
-                const wishedProduct   = arg.productPreview;
                 const productId       = arg.productPreview.id;
                 const originalGroupId = arg.productPreview.wished;
                 const desiredGroupId  = arg.groupId;
+                const wishedProduct   : ProductPreview = {
+                    ...arg.productPreview,
+                    wished : desiredGroupId, // set to grouped wishes -or- ungroup (but still wished)
+                };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
@@ -612,7 +615,7 @@ export const apiSlice = createApi({
                             { type: 'Wishable'       , id: productId },
                             
                             // invalidate the related_affected_pagination_of_wishGroup:
-                            { type: 'OfWishGroupable', id: undefined     },
+                            { type: 'OfWishGroupable', id: undefined },
                             ...(((desiredGroupId)                                          ? [{ type: 'OfWishGroupable', id: desiredGroupId  }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
                             ...(((originalGroupId && (originalGroupId !== desiredGroupId)) ? [{ type: 'OfWishGroupable', id: originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
                         ])
@@ -621,32 +624,34 @@ export const apiSlice = createApi({
                 //#endregion optimistic update
             },
         }),
-        deleteWish                  : builder.mutation<WishDetail['productId'], DeleteWishRequest & { originalGroupId: string|null }>({
+        deleteWish                  : builder.mutation<WishDetail['productId'], DeleteWishParam>({
             query: (arg) => ({
-                url         : `customer/wishes?productId=${encodeURIComponent(arg.productId)}`,
+                url         : `customer/wishes?productId=${encodeURIComponent(arg.productPreview.id)}`,
                 method      : 'DELETE',
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update
                 // update related_affected_wish in `getProductPage`:
-                const unwishedProduct : Pick<ProductPreview, 'id'|'wished'> = {
-                    id     : arg.productId,
+                const productId       = arg.productPreview.id;
+                const originalGroupId = arg.productPreview.wished;
+                const unwishedProduct : ProductPreview = {
+                    ...arg.productPreview,
                     wished : undefined, // set to unwished
                 };
                 cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: unwishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
-                    apiSlice.util.updateQueryData('getProductPreview', arg.productId, (data) => {
+                    apiSlice.util.updateQueryData('getProductPreview', productId, (data) => {
                         data.wished = undefined;
                     })
                 );
                 
                 // delete related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                 cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
-                if (arg.originalGroupId) { // if the wish is having existing_group => DELETE the wish from existing_group
+                if (originalGroupId) { // if the wish is having existing_group => DELETE the wish from existing_group
                     // delete related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
-                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === arg.originalGroupId) });
+                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === originalGroupId) });
                 } // if
                 
                 
@@ -656,11 +661,11 @@ export const apiSlice = createApi({
                     api.dispatch(
                         apiSlice.util.invalidateTags([
                             // invalidate the related_affected_wish:
-                            { type: 'Wishable'       , id: arg.productId },
+                            { type: 'Wishable'       , id: productId },
                             
                             // invalidate the related_affected_pagination_of_wishGroup:
                             { type: 'OfWishGroupable', id: undefined     },
-                            ...(((arg.originalGroupId) ? [{ type: 'OfWishGroupable', id: arg.originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
+                            ...(((originalGroupId) ? [{ type: 'OfWishGroupable', id: originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
                         ])
                     );
                 });

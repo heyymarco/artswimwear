@@ -207,8 +207,7 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
         // actions:
         try {
             await deleteWish({
-                productId       : model.id,
-                originalGroupId : fromWishGroup?.id ?? null, // string: from grouped wishes, null: from all wishes, undefined: from unwished (never happened)
+                productPreview  : model,
             }).unwrap();
             
             

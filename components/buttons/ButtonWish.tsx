@@ -184,8 +184,7 @@ const ButtonWish = (props: ButtonWishProps) => {
             }
             else {
                 await deleteWish({
-                    productId       : model.id,
-                    originalGroupId : model.wished,
+                    productPreview  : model,
                 }).unwrap();
                 
                 
