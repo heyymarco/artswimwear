@@ -69,6 +69,7 @@ import {
     
     type GetWishPageRequest,
     type GetWishPageResponse,
+    type CreateOrUpdateWishParam,
     type CreateOrUpdateWishRequest,
     type DeleteWishRequest,
 }                           from '@/models'
@@ -561,11 +562,14 @@ export const apiSlice = createApi({
                 ) satisfies { type: 'Wishable', id: string }[],
             ],
         }),
-        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishRequest>({
+        updateWish                  : builder.mutation<WishDetail['productId'], CreateOrUpdateWishParam>({
             query: (arg) => ({
                 url         : 'customer/wishes',
                 method      : 'PATCH',
-                body        : arg,
+                body        : {
+                    productId : arg.productPreview.id,
+                    groupId   : arg.groupId,
+                } satisfies CreateOrUpdateWishRequest,
             }),
             onQueryStarted: async (arg, api) => {
                 //#region optimistic update

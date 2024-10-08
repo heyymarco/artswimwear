@@ -89,7 +89,7 @@ export interface GetWishPageResponse
     wishGroup : WishGroupDetail|undefined
 }
 
-export interface CreateOrUpdateWishRequest
+export interface CreateOrUpdateWishParam
     extends
         Pick<Wish,
             // relations:
@@ -97,6 +97,15 @@ export interface CreateOrUpdateWishRequest
         >
 {
     productPreview: ProductPreview
+}
+export interface CreateOrUpdateWishRequest
+    extends
+        Pick<Wish,
+            // relations:
+            |'groupId'
+        >
+{
+    productId: ProductPreview['id']
 }
 
 export interface DeleteWishRequest
