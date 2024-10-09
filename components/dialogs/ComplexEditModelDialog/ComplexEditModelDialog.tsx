@@ -599,7 +599,7 @@ const ComplexEditModelDialog = <TModel extends Model>(props: ComplexEditModelDia
                         
                         
                         // classes:
-                        className={styleSheet.cardBody}
+                        className={`${styleSheet.cardBody} tabs`}
                         
                         
                         

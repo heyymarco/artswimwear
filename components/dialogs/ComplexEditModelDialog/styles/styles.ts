@@ -61,7 +61,9 @@ export const usesCardBodyLayout  = () => {
             
             
             // scrolls:
-            overflow       : 'hidden', // force <TabBody> to scroll
+            ...rule('.tabs', {
+                overflow   : 'hidden', // force <TabBody> to scroll
+            }),
             
             
             
