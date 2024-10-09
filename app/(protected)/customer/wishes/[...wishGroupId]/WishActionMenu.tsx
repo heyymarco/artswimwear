@@ -113,7 +113,10 @@ const WishActionMenu = (props: WishActionMenuProps): JSX.Element|null => {
     const handleMoveToCollection     = useEvent(async (): Promise<void> => {
         // conditions:
         const toWishGroup = await showDialog<WishGroupDetail>(
-            <MoveWishDialog />
+            <MoveWishDialog
+                // data:
+                currentWishGroupId={model.wished ?? undefined}
+            />
         );
         if (!toWishGroup) return;
         

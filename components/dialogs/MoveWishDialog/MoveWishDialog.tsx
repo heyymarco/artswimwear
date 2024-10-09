@@ -83,10 +83,17 @@ export interface MoveWishDialogProps<TElement extends Element = HTMLElement, TMo
             |'children'        // already taken over
         >
 {
+    // data:
+    currentWishGroupId ?: string
 }
 const MoveWishDialog = <TElement extends Element = HTMLElement, TModalExpandedChangeEvent extends ModalExpandedChangeEvent<WishGroupDetail> = ModalExpandedChangeEvent<WishGroupDetail>>(props: MoveWishDialogProps<TElement, TModalExpandedChangeEvent>) => {
     // props:
     const {
+        // data:
+        currentWishGroupId,
+        
+        
+        
         // other props:
         ...restMoveWishDialogProps
     } = props;
@@ -189,6 +196,7 @@ const MoveWishDialog = <TElement extends Element = HTMLElement, TModalExpandedCh
                             <WishGroupPreview
                                 // data:
                                 model={undefined as any}
+                                currentModelId={currentWishGroupId}
                                 
                                 
                                 

@@ -24,6 +24,11 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Basic,
+    
+    
+    
     // simple-components:
     Icon,
     
@@ -75,6 +80,11 @@ export interface WishGroupPreviewProps
             |'onModelSelect'
         >
 {
+    // data:
+    currentModelId  ?: string
+    
+    
+    
     // values:
     selectedModel ?: WishGroupDetail|null
     onModelSelect ?: EditorChangeEventHandler<WishGroupDetail>
@@ -89,6 +99,7 @@ const WishGroupPreview = (props: WishGroupPreviewProps): JSX.Element|null => {
     const {
         // data:
         model,
+        currentModelId,
         
         
         
@@ -164,9 +175,10 @@ const WishGroupPreview = (props: WishGroupPreviewProps): JSX.Element|null => {
     
     
     // default props:
+    const isCurrentWishGroup = (currentModelId === id);
     const {
         // behaviors:
-        actionCtrl = true,
+        actionCtrl = !isCurrentWishGroup,
         
         
         
@@ -210,12 +222,17 @@ const WishGroupPreview = (props: WishGroupPreviewProps): JSX.Element|null => {
             
             
             // handlers:
-            onClick={handleClick}
+            onClick={isCurrentWishGroup ? undefined : handleClick}
         >
-            <RadioDecorator className='radio' />
+            <RadioDecorator className='radio' enabled={!isCurrentWishGroup} />
             
             <h6 className='name'>
-                {name}
+                <span className='text'>
+                    {name}
+                </span>
+                {isCurrentWishGroup && <Basic className='label' size='sm'>
+                    Already in collection
+                </Basic>}
             </h6>
             
             <EditButton

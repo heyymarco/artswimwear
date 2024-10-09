@@ -45,6 +45,7 @@ const usesWishGroupPreviewLayout = () => { // the <ListItem> of order list
                 '/',
                 'min-content 1fr min-content',
             ]],
+            alignItems: 'center',
             
             
             
@@ -67,6 +68,32 @@ const usesWishGroupPreviewLayout = () => { // the <ListItem> of order list
             ...children('.name', {
                 // positions:
                 gridArea   : 'name',
+                
+                
+                
+                // layouts:
+                display: 'grid',
+                gridTemplate: [[
+                    '"text label ..." 1fr',
+                    '/',
+                    'max-content max-content 1fr'
+                ]],
+                alignItems: 'center',
+                
+                
+                
+                // spacings:
+                gap: spacers.sm,
+                
+                
+                
+                // children:
+                ...children('text', {
+                    gridArea: 'text',
+                }),
+                ...children('label', {
+                    gridArea: 'label',
+                }),
             }),
             ...children('.edit', {
                 gridArea: 'edit',
