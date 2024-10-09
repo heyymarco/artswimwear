@@ -1176,6 +1176,13 @@ model AdminRole {
     product_uv                      Boolean                         @default(false)
     product_d                       Boolean                         @default(false)
     
+    category_r                      Boolean                         @default(false)
+    category_c                      Boolean                         @default(false)
+    category_ud                     Boolean                         @default(false)
+    category_ui                     Boolean                         @default(false)
+    category_uv                     Boolean                         @default(false)
+    category_d                      Boolean                         @default(false)
+    
     order_r                         Boolean                         @default(false)
     order_us                        Boolean                         @default(false)
     order_usa                       Boolean                         @default(false)
