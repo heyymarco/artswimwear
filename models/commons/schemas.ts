@@ -10,6 +10,7 @@ import {
 import {
     type Model,
     
+    type MutationArgs,
     type PaginationArgs,
 }                           from './types'
 
@@ -64,10 +65,10 @@ export const ModelSchema = z.object({
 
 
 
-export const MutationArgsSchema = (TModelSchema: typeof ModelSchema) => z.union([
-    TModelSchema.pick({ id: true }).required(), // the [id] field is required
-    TModelSchema.omit({ id: true }).partial(),  // the [..rest] fields are optional
-]);
+export const MutationArgsSchema = <TModel extends Model, TModelSchema extends z.ZodTypeAny>(ModelSchema: TModelSchema) => z.union([
+    (ModelSchema as z.infer<TModelSchema>).pick({ id: true }).required(), // the [id] field is required
+    (ModelSchema as z.infer<TModelSchema>).omit({ id: true }).partial(),  // the [..rest] fields are optional
+]) satisfies z.Schema<MutationArgs<TModel>> as z.Schema<MutationArgs<TModel>>;
 
 export const PaginationArgSchema = z.object({
     page    : z.number().int().finite().gte(1),
