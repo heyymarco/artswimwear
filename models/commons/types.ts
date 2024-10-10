@@ -14,9 +14,9 @@ export interface Pagination<TEntry> {
 
 
 
-export type MutationArgs<TEntry extends { id: number|string }> =
-    & Required<Pick<TEntry, 'id'>> // the [id] field is required
-    & Partial<Omit<TEntry, 'id'>>  // the [..rest] fields are optional
+export type MutationArgs<TModel extends Model> =
+    & Required<Pick<TModel, 'id'>> // the [id] field is required
+    & Partial<Omit<TModel, 'id'>>  // the [..rest] fields are optional
 
 export interface PaginationArgs {
     page     : number

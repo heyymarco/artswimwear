@@ -5,6 +5,11 @@ import {
 
 // models:
 import {
+    type Prisma,
+}                           from '@prisma/client'
+import {
+    type Model,
+    
     type PaginationArgs,
 }                           from './types'
 
@@ -23,18 +28,46 @@ export const CurrencySchema = z.enum([
 
 
 
-export const EmptyStringSchema   = z.string().max(0);
-export const ModelIdSchema       = z.string().min(1);
-export const ModelNameSchema     = z.string().trim().min(1).max(30);
-export const HumanFullNameSchema = z.string().trim().min(2).max(30);
-export const EmailSchema         = z.string().email().trim().min(5).max(50);
-export const UsernameSchema      = z.string().trim().min(3).max(20);
-export const PasswordSchema      = z.string().min(5).max(30);
-export const ImageUrlSchema      = z.string().url().min(10).max(255);
-export const SlugSchema          = z.string().min(1).max(100).regex(/^[a-zA-Z0-9-_.!$%&'*+=^`|~(){}<>\[\]]+$/);
-export const BooleanStringSchema = z.enum(['true', 'false']);
+export const EmptyStringSchema               = z.string().max(0);
+export const ModelIdSchema                   = z.string().min(1);
+export const ModelNameSchema                 = z.string().trim().min(1).max(30);
+export const HumanFullNameSchema             = z.string().trim().min(2).max(30);
+export const EmailSchema                     = z.string().email().trim().min(5).max(50);
+export const UsernameSchema                  = z.string().trim().min(3).max(20);
+export const PasswordSchema                  = z.string().min(5).max(30);
+export const ImageUrlSchema                  = z.string().url().min(10).max(255);
+export const SlugSchema                      = z.string().min(1).max(100).regex(/^[a-zA-Z0-9-_.!$%&'*+=^`|~(){}<>\[\]]+$/);
+export const BooleanStringSchema             = z.enum(['true', 'false']);
+export const CurrencyAmountSchema            = z.number().finite();
+export const NonNegativeCurrencyAmountSchema = CurrencyAmountSchema.nonnegative();
+export const WeightSchema                    = z.number().finite();
+export const NonNegativeWeightSchema         = WeightSchema.nonnegative();
+export const QuantitySchema                  = z.number().int().finite().nonnegative();
+export const JsonSchema                      = z.string().trim().nullable().refine((value) => {
+    try {
+        if (value === null) return true;
+        JSON.parse(value);
+        return true;
+    }
+    catch {
+        return false;
+    } // try
+}).transform((value): Prisma.JsonValue =>
+    (value === null) ? null : JSON.parse(value)
+);
 
 
+
+export const ModelSchema = z.object({
+    id : ModelIdSchema,
+}) satisfies z.Schema<Model>;
+
+
+
+export const MutationArgsSchema = (TModelSchema: typeof ModelSchema) => z.union([
+    TModelSchema.pick({ id: true }).required(), // the [id] field is required
+    TModelSchema.omit({ id: true }).partial(),  // the [..rest] fields are optional
+]);
 
 export const PaginationArgSchema = z.object({
     page    : z.number().int().finite().gte(1),
