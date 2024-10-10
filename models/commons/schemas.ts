@@ -65,7 +65,7 @@ export const ModelSchema = z.object({
 
 
 
-export const MutationArgsSchema = <TModel extends Model, TModelSchema extends z.ZodTypeAny>(ModelSchema: TModelSchema) => z.union([
+export const MutationArgsSchema = <TModel extends Model, TModelSchema extends z.ZodTypeAny = z.ZodTypeAny>(ModelSchema: TModelSchema) => z.union([
     (ModelSchema as z.infer<TModelSchema>).pick({ id: true }).required(), // the [id] field is required
     (ModelSchema as z.infer<TModelSchema>).omit({ id: true }).partial(),  // the [..rest] fields are optional
 ]) satisfies z.Schema<MutationArgs<TModel>> as z.Schema<MutationArgs<TModel>>;
