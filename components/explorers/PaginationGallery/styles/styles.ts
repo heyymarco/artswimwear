@@ -176,16 +176,33 @@ export default () => [
     scope('main', {
         // layouts:
         display : 'grid',
+        gridTemplate: [[
+            '"toolbar    " auto',
+            '"paginTop   " auto',
+            '"bodyWrapper" 1fr',
+            '"paginBtm   " auto',
+            '/',
+            '1fr'
+        ]],
         
         
         
         // spacings:
-        gap : spacers.md,
+        ...children('*', {
+            ...rule(':not(:last-child)', {
+                marginBottom : spacers.md,
+            }),
+        })
     }),
     
     
     
     scope('toolbar', {
+        // positions:
+        gridArea: 'toolbar',
+        
+        
+        
         // layouts:
         display        : 'none',
         ...rule(':has(>*:not(:empty))', {
@@ -220,9 +237,17 @@ export default () => [
     
     
     scope('paginTop', {
+        // positions:
+        gridArea: 'paginTop',
         justifySelf: 'center',
     }),
     scope('galleryBodyWrapper', {
+        // positions:
+        gridArea: 'bodyWrapper',
+        
+        
+        
+        // layouts:
         ...usesGalleryBodyWrapperLayout(),
     }, { specificityWeight: 2 }),
     scope('galleryBody', { // the <GalleryBody> of model
@@ -235,6 +260,8 @@ export default () => [
         ...usesEmptyModelLayout(),
     }, { specificityWeight: 2 }),
     scope('paginBtm', {
+        // positions:
+        gridArea: 'paginBtm',
         justifySelf: 'center',
     }),
 ];
