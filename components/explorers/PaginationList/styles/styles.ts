@@ -60,11 +60,6 @@ const usesGalleryBodyWrapperLayout = () => {
         
         // layouts:
         ...style({
-            // positions:
-            alignSelf : 'start',
-            
-            
-            
             // layouts:
             display            : 'grid',
             gridAutoFlow       : 'row',
