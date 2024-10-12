@@ -42,6 +42,7 @@
     "@prisma/client": "^5.16.1",
     "@reduxjs/toolkit": "^1.9.3",
     "@reusable-ui/alert": "^6.5.1",
+    "@reusable-ui/carousel": "^6.5.2",
     "@reusable-ui/components": "^6.13.1",
     "@reusable-ui/core": "^6.11.0",
     "@reusable-ui/dialog-message": "^6.7.4",
