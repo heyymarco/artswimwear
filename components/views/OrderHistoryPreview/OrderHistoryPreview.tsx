@@ -104,7 +104,7 @@ import {
 
 
 // defaults:
-const imageSize = 128;  // 128px
+const minImageWidth = 150;  // 150px === ((170px + (2* paddingBlock)) * aspectRatio) + paddingInline === ((170px + (2* 16px)) * 2/3) + 16
 
 
 
@@ -329,7 +329,7 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
                                         
                                         
                                         // appearances:
-                                        sizes={`${imageSize}px`}
+                                        sizes={`${minImageWidth}px`}
                                         
                                         
                                         
