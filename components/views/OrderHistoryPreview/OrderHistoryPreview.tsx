@@ -11,11 +11,6 @@ import {
     useRef,
 }                           from 'react'
 
-// // next-js:
-// import type {
-//     Metadata,
-// }                           from 'next'
-
 // // next-auth:
 // import {
 //     useSession,
@@ -104,7 +99,7 @@ import {
 
 
 // defaults:
-const minImageWidth = 150;  // 150px === ((170px + (2* paddingBlock)) * aspectRatio) + paddingInline === ((170px + (2* 16px)) * 2/3) + 16
+const minImageWidth = 155;  // 155px === (200px + (2* paddingBlock)) * aspectRatio === (200px + (2* 16px)) * 2/3
 
 
 
@@ -277,7 +272,7 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
             </p>
             
             <p className='fullEditor'>
-                <EditButton icon='table_view' title='View the order details' className='fullEditor' buttonStyle='regular' onClick={() => handleEdit('full')}>
+                <EditButton icon='list' title='View the order details' className='fullEditor' buttonStyle='regular' onClick={() => handleEdit('full')}>
                     View Details
                 </EditButton>
             </p>
