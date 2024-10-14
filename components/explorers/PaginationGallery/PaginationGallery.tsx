@@ -236,7 +236,13 @@ export interface ModelPreviewProps<TModel extends Model, TElement extends Elemen
     extends
         // bases:
         Omit<BasicProps<TElement>,
-            'draggable' // reserved for <OrderableList>
+            // behaviors:
+            |'draggable' // reserved for <OrderableList>
+            
+            // values:
+            |'defaultValue'
+            |'value'
+            |'onChange'
         >
 {
     // data:
