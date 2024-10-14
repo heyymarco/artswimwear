@@ -67,7 +67,7 @@ import {
 
 
 
-// react components:
+// hooks:
 const useUseGetWishPageOfGroup = ({ groupId }: { groupId: string|undefined }) => {
     return (arg: PaginationArgs) => {
         return _useGetWishPage({
@@ -76,6 +76,10 @@ const useUseGetWishPageOfGroup = ({ groupId }: { groupId: string|undefined }) =>
         });
     };
 };
+
+
+
+// react components:
 export function WishAllPageContent({ wishGroupId }: { wishGroupId: string }): JSX.Element|null {
     // stores:
     const isGroupedWishes = (!!wishGroupId && (wishGroupId !== 'all')); // empty_string|'all' => ungrouped wishes
