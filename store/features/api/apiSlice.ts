@@ -5,12 +5,14 @@ import {
     createEntityAdapter,
 }                           from '@reduxjs/toolkit'
 import {
+    type QuerySubState,
     type BaseQueryFn,
     QueryStatus,
     
     createApi,
 }                           from '@reduxjs/toolkit/query/react'
 import {
+    type BaseEndpointDefinition,
     type MutationLifecycleApi,
 }                           from '@reduxjs/toolkit/dist/query/endpointDefinitions'
 import {
@@ -581,7 +583,7 @@ export const apiSlice = createApi({
                     ...arg.productPreview,
                     wished : desiredGroupId, // set to grouped wishes -or- ungroup (but still wished)
                 };
-                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: wishedProduct as any });
+                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedModel: wishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
@@ -594,21 +596,21 @@ export const apiSlice = createApi({
                     // create -or- update related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                     if (originalGroupId === undefined) { // if was never wished
                         // create related_affected_pagination_of_wishGroup in `getWishPage('all')`:
-                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
+                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedModel: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                     }
                     else {
                         // update related_affected_pagination_of_wishGroup in `getWishPage('all')`:
-                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
+                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'UPDATE', 'WishPage'   , { providedMutatedModel: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                     } // if
                     
                     // move related_affected_pagination_of_wishGroup from `getWishPage('from_group_id')` to `getWishPage('to_group_id')`:
                     if (originalGroupId) { // if the wish is MOVED from old_group to new_group => DELETE the wish from old_group
                         // delete related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
-                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === originalGroupId) });
+                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedModel: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === originalGroupId) });
                     } // if
                     if (desiredGroupId) { // if the user select the OPTIONAL WishGroup => add to WishGroup too
                         // create related_affected_pagination_of_wishGroup in `getWishPage('to_group_id')`:
-                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedEntry: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === desiredGroupId) });
+                        cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'CREATE', 'WishPage'   , { providedMutatedModel: wishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === desiredGroupId) });
                     } // if
                 } // if
                 
@@ -645,7 +647,7 @@ export const apiSlice = createApi({
                     ...arg.productPreview,
                     wished : undefined, // set to unwished
                 };
-                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedEntry: unwishedProduct as any });
+                cumulativeUpdatePaginationCache(api, 'getProductPage'    , 'UPDATE', 'ProductPage', { providedMutatedModel: unwishedProduct as any });
                 
                 // update related_affected_wish in `getProductPreview`:
                 api.dispatch(
@@ -655,10 +657,10 @@ export const apiSlice = createApi({
                 );
                 
                 // delete related_affected_pagination_of_wishGroup in `getWishPage('all')`:
-                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
+                cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedModel: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                 if (originalGroupId) { // if the wish is having existing_group => DELETE the wish from existing_group
                     // delete related_affected_pagination_of_wishGroup in `getWishPage('from_group_id')`:
-                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedEntry: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === originalGroupId) });
+                    cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedModel: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === originalGroupId) });
                 } // if
                 
                 
@@ -793,7 +795,7 @@ const selectEntriesFromData = <TEntry extends Model|string>(data: unknown): TEnt
     );
     return items;
 };
-const selectIdFromEntry     = <TEntry extends Model|string>(entry: TEntry): string => {
+const selectIdFromModel     = <TEntry extends Model|string>(entry: TEntry): string => {
     return (typeof(entry) === 'string') ? entry : entry.id;
 };
 const selectIndexOfId       = <TEntry extends Model|string>(data: unknown, id: string): number => {
@@ -808,7 +810,7 @@ const selectIndexOfId       = <TEntry extends Model|string>(data: unknown, id: s
         : (
             (data as Pagination<TEntry>).entities
             .findIndex((searchEntry) =>
-                (selectIdFromEntry<TEntry>(searchEntry) === id)
+                (selectIdFromModel<TEntry>(searchEntry) === id)
             )
         )
     );
@@ -838,41 +840,20 @@ const selectRangeFromArg    = (originalArg: unknown): { indexStart: number, inde
     };
 };
 
-type PaginationUpdateType =
-    |'CREATE'
-    |'UPDATE'
-    |'UPSERT'
-    |'UPDATE_OR_INVALIDATE'
-    |'DELETE'
-interface PaginationUpdateOptions<TEntry extends Model|string> {
-    providedMutatedEntry ?: TEntry
-    predicate            ?: (originalArgs: unknown) => boolean
+
+
+interface GetQueryCachesOptions {
+    predicate ?: (originalArgs: unknown) => boolean
 }
-const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TEntry, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishPage'>, updateType: PaginationUpdateType, invalidateTag: Extract<Parameters<typeof apiSlice.util.invalidateTags>[0][number], string>, options?: PaginationUpdateOptions<TEntry>) => {
+const getQueryCaches = <TModel, TQueryArg, TBaseQuery extends BaseQueryFn = BaseQueryFn>(api: MutationLifecycleApi<unknown, TBaseQuery, unknown, 'api'>, endpointName: keyof (typeof apiSlice)['endpoints'], options?: GetQueryCachesOptions) => {
     // options
     const {
-        providedMutatedEntry,
         predicate,
     } = options ?? {};
     
     
     
-    // mutated TEntry data:
-    const mutatedEntry : TEntry|undefined = (providedMutatedEntry !== undefined) ? providedMutatedEntry : await (async (): Promise<TEntry|undefined> => {
-        try {
-            const { data: mutatedEntry } = await api.queryFulfilled;
-            return mutatedEntry;
-        }
-        catch {
-            return undefined;
-        } // try
-    })();
-    if (mutatedEntry === undefined) return; // api request aborted|failed => nothing to update
-    const mutatedId = selectIdFromEntry<TEntry>(mutatedEntry);
-    
-    
-    
-    // find related TEntry data(s):
+    // find related TModel data(s):
     const state                 = api.getState();
     const allQueryCaches        = state.api.queries;
     const collectionQueryCaches = (
@@ -889,6 +870,56 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
             ((predicate === undefined) || predicate(allQueryCache.originalArgs))
         )
     );
+    return collectionQueryCaches as QuerySubState<BaseEndpointDefinition<TQueryArg, TBaseQuery, TModel>>[];
+};
+
+type PaginationUpdateType =
+    |'CREATE'
+    |'UPDATE'
+    |'UPSERT'
+    |'UPDATE_OR_INVALIDATE'
+    |'DELETE'
+interface PaginationUpdateOptions<TModel extends Model|string>
+    extends
+        GetQueryCachesOptions
+{
+    providedMutatedModel ?: TModel
+    invalidatePageTag    ?: (tag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], page: number) => string|number
+}
+const cumulativeUpdatePaginationCache = async <TModel extends Model|string, TQueryArg, TBaseQuery extends BaseQueryFn>(api: MutationLifecycleApi<TQueryArg, TBaseQuery, TModel, 'api'>, endpointName: Extract<keyof (typeof apiSlice)['endpoints'], 'getProductPage'|'getWishGroupPage'|'getWishPage'>, updateType: PaginationUpdateType, invalidateTag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], options?: PaginationUpdateOptions<TModel>) => {
+    // options
+    const {
+        providedMutatedModel,
+        invalidatePageTag = (tag: Parameters<typeof apiSlice.util.invalidateTags>[0][number], page: number) => {
+            if (typeof(tag) === 'string') {
+                return page; // the tag doesn't have id => just use page number
+            }
+            else {
+                const { id } = tag;
+                return `${id}:${page}`; // merges tag's id and page number
+            } // if
+        },
+    } = options ?? {};
+    
+    
+    
+    // mutated TModel data:
+    const mutatedModel : TModel|undefined = (providedMutatedModel !== undefined) ? providedMutatedModel : await (async (): Promise<TModel|undefined> => {
+        try {
+            const { data: mutatedModel } = await api.queryFulfilled;
+            return mutatedModel;
+        }
+        catch {
+            return undefined;
+        } // try
+    })();
+    if (mutatedModel === undefined) return; // api request aborted|failed => nothing to update
+    const mutatedId = selectIdFromModel<TModel>(mutatedModel);
+    
+    
+    
+    // find related TModel data(s):
+    const collectionQueryCaches = getQueryCaches<Pagination<TModel>, TQueryArg, TBaseQuery>(api, endpointName, options);
     
     
     
@@ -919,7 +950,7 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
             collectionQueryCaches
             .map(({ originalArgs, data }) => ({
                 indexStart        : selectRangeFromArg(originalArgs).indexStart,
-                indexLocalMutated : selectIndexOfId<TEntry>(data, mutatedId),
+                indexLocalMutated : selectIndexOfId<TModel>(data, mutatedId),
             }))
             .filter(({ indexLocalMutated }) =>
                 (indexLocalMutated >= 0) // is FOUND
@@ -980,7 +1011,7 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
         
         
         
-        // reconstructuring the updated entry, so the invalidatesTag can be avoided:
+        // reconstructuring the updated model, so the invalidatesTag can be avoided:
         
         
         
@@ -988,16 +1019,16 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
         for (const { originalArgs } of mutatedCollectionQueryCaches) {
             api.dispatch(
                 apiSlice.util.updateQueryData(endpointName, originalArgs as PaginationArgs, (data) => {
-                    const currentEntryIndex = selectIndexOfId<TEntry>(data, mutatedId);
-                    if (currentEntryIndex < 0) return; // not found => nothing to update
-                    const currentEntry = (data.entities as unknown as TEntry[])[currentEntryIndex];
-                    (data.entities as unknown as TEntry[])[currentEntryIndex] = (
-                        ((typeof(currentEntry) === 'object') && (typeof(mutatedEntry) === 'object'))
+                    const currentModelIndex = selectIndexOfId<TModel>(data, mutatedId);
+                    if (currentModelIndex < 0) return; // not found => nothing to update
+                    const currentModel = (data.entities as unknown as TModel[])[currentModelIndex];
+                    (data.entities as unknown as TModel[])[currentModelIndex] = (
+                        ((typeof(currentModel) === 'object') && (typeof(mutatedModel) === 'object'))
                         ? {
-                            ...currentEntry,
-                            ...mutatedEntry, // partially|fully replace oldEntry with mutatedEntry
+                            ...currentModel,
+                            ...mutatedModel, // partially|fully replace oldModel with mutatedModel
                         }
-                        : mutatedEntry       // fully           replace oldEntry with mutatedEntry
+                        : mutatedModel       // fully           replace oldModel with mutatedModel
                     );
                 })
             );
@@ -1007,7 +1038,7 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
     /* add new data: COMPLEX: the number of collection_items is scaled_up */
     else if (updateType === 'CREATE') {
         /*
-            Adding a_new_entry causing the restPagination(s) shifted their entries to neighboringPagination(s).
+            Adding a_new_model causing the restPagination(s) shifted their entries to neighboringPagination(s).
             [876] [543] [210] + 9 => [987] [654] [321] [0]
             page1 page2 page3        page1 page2 page3 pageTail
         */
@@ -1020,31 +1051,31 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
         
         
         //#region BACKUP the entries from paginations (which will be shifted) 
-        const mergedEntryList : TEntry[] = []; // use an `Array<TEntry>` instead of `Map<number, TEntry>`, so we can SHIFT the key easily
+        const mergedModelList : TModel[] = []; // use an `Array<TModel>` instead of `Map<number, TModel>`, so we can SHIFT the key easily
         for (const { originalArgs, data } of shiftedCollectionQueryCaches) {
             const {
-                indexStart, // the global first_entry_index
-                indexEnd,   // the global last_entry_index
+                indexStart, // the global first_model_index
+                indexEnd,   // the global last_model_index
             } = selectRangeFromArg(originalArgs);
             
             
             
             /*
                 Assumes the next paginations having the same perPage size:
-                Only the last_entry of current pagination is useful for backup.
-                After the whole `mergedEntryList` shifted_down, the last_entry becomes the first_entry of the next pagination chains.
+                Only the last_model of current pagination is useful for backup.
+                After the whole `mergedModelList` shifted_down, the last_model becomes the first_model of the next pagination chains.
             */
-            const paginationEntries = selectEntriesFromData<TEntry>(data);
-            const relativeIndexEnd = indexEnd - indexStart; // a zero based starting index, select the LAST pagination entry
-            const entryEnd = (relativeIndexEnd < paginationEntries.length) ? paginationEntries[relativeIndexEnd] : undefined;
-            if (entryEnd !== undefined) mergedEntryList[indexEnd] = entryEnd; // if exists, copy the LAST pagination entry
+            const paginationEntries = selectEntriesFromData<TModel>(data);
+            const relativeIndexEnd = indexEnd - indexStart; // a zero based starting index, select the LAST pagination model
+            const modelEnd = (relativeIndexEnd < paginationEntries.length) ? paginationEntries[relativeIndexEnd] : undefined;
+            if (modelEnd !== undefined) mergedModelList[indexEnd] = modelEnd; // if exists, copy the LAST pagination model
         } // for
         //#endregion BACKUP the entries from paginations (which will be shifted) 
         
         
         
-        // INSERT the new_entry at the BEGINNING of the list:
-        mergedEntryList.unshift(mutatedEntry);
+        // INSERT the new_model at the BEGINNING of the list:
+        mergedModelList.unshift(mutatedModel);
         // re-calculate the total entries:
         const newTotalEntries = validTotalEntries + 1;
         
@@ -1053,27 +1084,27 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
         //#region RESTORE the shifted paginations from the backup
         for (const { originalArgs } of shiftedCollectionQueryCaches) {
             const {
-                indexStart, // the global first_entry_index
+                indexStart, // the global first_model_index
                 page,
                 perPage,
             } = selectRangeFromArg(originalArgs);
             
-            const entryStart = mergedEntryList[indexStart] as TEntry|undefined; // take the *valid* first_entry of current pagination, the old_first_entry...the_2nd_last_entry will be 2nd_first_entry...last_entry
+            const modelStart = mergedModelList[indexStart] as TModel|undefined; // take the *valid* first_model of current pagination, the old_first_model...the_2nd_last_model will be 2nd_first_model...last_model
             
             
             
-            if (entryStart === undefined) {
+            if (modelStart === undefined) {
                 // UNABLE to reconstruct current pagination cache => invalidate the cache:
                 api.dispatch(
-                    apiSlice.util.invalidateTags([{ type: invalidateTag, id: page }])
+                    apiSlice.util.invalidateTags([{ type: (typeof(invalidateTag) === 'string') ? invalidateTag : invalidateTag.id as any, id: invalidatePageTag(invalidateTag, page) }])
                 );
             }
             else {
                 // reconstruct current pagination cache:
                 api.dispatch(
                     apiSlice.util.updateQueryData(endpointName, originalArgs as PaginationArgs, (data) => {
-                        // RESTORE the entryStart at the BEGINNING of the pagination:
-                        (data.entities as unknown as TEntry[]).unshift(entryStart);
+                        // RESTORE the modelStart at the BEGINNING of the pagination:
+                        (data.entities as unknown as TModel[]).unshift(modelStart);
                         
                         
                         
@@ -1082,7 +1113,7 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
                         
                         
                         
-                        // if OVERFLOW pagination size => remove the last entry:
+                        // if OVERFLOW pagination size => remove the last model:
                         if (data.entities.length > perPage) {
                             data.entities.pop();
                         } // if
@@ -1099,7 +1130,7 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
             collectionQueryCaches
             .map(({ originalArgs, data }) => ({
                 indexStart        : selectRangeFromArg(originalArgs).indexStart,
-                indexLocalDeleted : selectIndexOfId<TEntry>(data, mutatedId),
+                indexLocalDeleted : selectIndexOfId<TModel>(data, mutatedId),
             }))
             .filter(({ indexLocalDeleted }) =>
                 (indexLocalDeleted >= 0) // is FOUND
@@ -1149,34 +1180,34 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
         
         
         
-        // reconstructuring the deleted entry, so the invalidatesTag can be avoided:
+        // reconstructuring the deleted model, so the invalidatesTag can be avoided:
         
         
         
         //#region BACKUP the entries from paginations (which will be shifted) 
-        const mergedEntryList : TEntry[] = []; // use an `Array<TEntry>` instead of `Map<number, TEntry>`, so we can SHIFT the key easily
+        const mergedModelList : TModel[] = []; // use an `Array<TModel>` instead of `Map<number, TModel>`, so we can SHIFT the key easily
         for (const { originalArgs, data } of shiftedCollectionQueryCaches) {
             const {
-                indexStart, // the global first_entry_index
+                indexStart, // the global first_model_index
             } = selectRangeFromArg(originalArgs);
             
             
             
             /*
                 Assumes the prev paginations having the same perPage size:
-                Only the first_entry of current pagination is useful for backup.
-                After the whole `mergedEntryList` shifted_up, the first_entry becomes the last_entry of the prev pagination chains.
+                Only the first_model of current pagination is useful for backup.
+                After the whole `mergedModelList` shifted_up, the first_model becomes the last_model of the prev pagination chains.
             */
-            const paginationEntries = selectEntriesFromData<TEntry>(data);
-            const entryStart = paginationEntries[0] as TEntry|undefined; // a zero based starting index, select the FIRST pagination entry
-            if (entryStart !== undefined) mergedEntryList[indexStart] = entryStart; // if exists, copy the FIRST pagination entry
+            const paginationEntries = selectEntriesFromData<TModel>(data);
+            const modelStart = paginationEntries[0] as TModel|undefined; // a zero based starting index, select the FIRST pagination model
+            if (modelStart !== undefined) mergedModelList[indexStart] = modelStart; // if exists, copy the FIRST pagination model
         } // for
         //#endregion BACKUP the entries from paginations (which will be shifted) 
         
         
         
-        // REMOVE the del_entry at the DELETED_INDEX of the list:
-        mergedEntryList.splice(indexDeleted, 1);
+        // REMOVE the del_model at the DELETED_INDEX of the list:
+        mergedModelList.splice(indexDeleted, 1);
         // re-calculate the total entries:
         const newTotalEntries = validTotalEntries - 1;
         
@@ -1185,8 +1216,8 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
         //#region RESTORE the shifted paginations from the backup
         for (const { originalArgs, data } of shiftedCollectionQueryCaches) {
             const {
-                indexStart, // the global first_entry_index
-                indexEnd,   // the global last_entry_index
+                indexStart, // the global first_model_index
+                indexEnd,   // the global last_model_index
                 page,
             } = selectRangeFromArg(originalArgs);
             const indexLast = (
@@ -1195,7 +1226,7 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
                 (selectTotalFromData(data) - 1)
             );
             
-            const entryEnd = mergedEntryList[indexEnd] as TEntry|undefined; // take the *valid* last_entry of current pagination, the old_2nd_first_entry...the_last_entry will be first_entry...2nd_last_entry
+            const modelEnd = mergedModelList[indexEnd] as TModel|undefined; // take the *valid* last_model of current pagination, the old_2nd_first_model...the_last_model will be first_model...2nd_last_model
             
             
             
@@ -1204,21 +1235,21 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
                 apiSlice.util.updateQueryData(endpointName, originalArgs as PaginationArgs, (data) => {
                     // Shift up at the top/middle of pagination:
                     if ((indexDeleted >= indexStart) && (indexDeleted <= indexLast)) { // the deleted_pagination => within indexStart to indexLast
-                        // REMOVE the deleted entry at specific index:
+                        // REMOVE the deleted model at specific index:
                         const relativeIndexDeleted = indexDeleted - indexStart;
                         data.entities.splice(relativeIndexDeleted, 1);
                     }
                     else { // the shifted_up_pagination => below the deleted_pagination
-                        // because ONE entry in prev pagination has been DELETED => ALL subsequent paginations are SHIFTED_UP:
-                        // REMOVE the first entry for shifting:
+                        // because ONE model in prev pagination has been DELETED => ALL subsequent paginations are SHIFTED_UP:
+                        // REMOVE the first model for shifting:
                         data.entities.shift();
                     } // if
                     
                     
                     
                     // a shifting compensation to maintain pagination size (if possible):
-                    // RESTORE the entryStart at the END of the pagination:
-                    if (entryEnd !== undefined /* if possible */) (data.entities as unknown as TEntry[]).push(entryEnd);
+                    // RESTORE the modelStart at the END of the pagination:
+                    if (modelEnd !== undefined /* if possible */) (data.entities as unknown as TModel[]).push(modelEnd);
                     
                     
                     
@@ -1230,7 +1261,7 @@ const cumulativeUpdatePaginationCache = async <TEntry extends Model|string, TQue
                     // if UNDERFLOW (empty) pagination size => invalidate the cache:
                     if (!data.entities.length) {
                         api.dispatch(
-                            apiSlice.util.invalidateTags([{ type: invalidateTag, id: page }])
+                            apiSlice.util.invalidateTags([{ type: (typeof(invalidateTag) === 'string') ? invalidateTag : invalidateTag.id as any, id: invalidatePageTag(invalidateTag, page) }])
                         );
                     } // if
                 })
