@@ -11,26 +11,28 @@ import {
 
 // reusable-ui core:
 import {
+    // a set of React node utility functions:
+    flattenChildren,
+    isTruthyNode,
+    
+    
+    
     // react helper hooks:
     useMergeRefs,
     useIsRtl,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
-import type {
-    // react components:
-    ButtonProps,
-}                           from '@reusable-ui/button'          // a button component for initiating an action
-import {
-    // react components:
-    ButtonIcon,
-}                           from '@reusable-ui/button-icon'     // a button component with a nice icon
 import {
     // react components:
     ImperativeScroll,
     CarouselProps,
     Carousel,
 }                           from '@reusable-ui/carousel'        // a slideshow component for cycling through images, slides, or another elements
+import {
+    // react components:
+    List,
+}                           from '@reusable-ui/list'            // represents a series of content
 import {
     // react components:
     NavscrollProps,
@@ -53,7 +55,7 @@ const MiniCarousel = (props: CarouselProps) => {
     
     
     // children:
-    const childrenArray = React.Children.toArray(props.children)
+    const childrenArray = flattenChildren(props.children).filter(isTruthyNode);
     
     
     
@@ -66,8 +68,8 @@ const MiniCarousel = (props: CarouselProps) => {
         
         
         // components:
-        prevButtonComponent = (<ButtonIcon iconPosition='start' icon={isRtl ? 'navright' : 'navleft' } size='xs' /> as React.ReactComponentElement<any, ButtonProps>),
-        nextButtonComponent = (<ButtonIcon iconPosition='end'   icon={isRtl ? 'navleft'  : 'navright'} size='xs' /> as React.ReactComponentElement<any, ButtonProps>),
+        prevButtonComponent = null,
+        nextButtonComponent = null,
         navscrollComponent  = (<Navscroll<Element>
             // variants:
             size='sm'
@@ -76,7 +78,8 @@ const MiniCarousel = (props: CarouselProps) => {
             
             // components:
             navComponent={
-                <Pagination
+                (childrenArray.length > 1)
+                ? <Pagination
                     itemsLimit={3}
                     prevItems={
                         <NavPrevItem
@@ -89,6 +92,7 @@ const MiniCarousel = (props: CarouselProps) => {
                         />
                     }
                 />
+                : <List actionCtrl={childrenArray.length > 1} />
             }
         >
             {childrenArray.map((child, index: number) =>
