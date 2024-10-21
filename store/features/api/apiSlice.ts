@@ -38,6 +38,7 @@ import {
     
     type CategoryPreview,
     type CategoryDetail,
+    type CategoryPageRequest,
     
     type ShippingPreview,
     type ShippingAddressDetail,
@@ -188,13 +189,13 @@ export const apiSlice = createApi({
         
         
         
-        getCategoryPage             : builder.query<Pagination<CategoryPreview>, PaginationArgs>({
+        getCategoryPage             : builder.query<Pagination<CategoryPreview>, CategoryPageRequest>({
             query: (arg) => ({
                 url    : 'products/categories',
                 method : 'POST',
                 body   : arg,
             }),
-            providesTags: (data, error, arg) => [{ type: 'CategoryPage', id: arg.page }],
+            providesTags: (data, error, arg) => [{ type: 'CategoryPage', id: `${arg.parent ?? ''}:${arg.page}` }],
         }),
         
         getCategoryPreview          : builder.query<CategoryPreview, string>({

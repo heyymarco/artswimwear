@@ -9,6 +9,9 @@ import {
     
     type Category,
 }                           from '@prisma/client'
+import {
+    type PaginationArgs,
+}                           from '../commons'
 
 
 
@@ -122,4 +125,13 @@ export interface CategoryDetail
 {
     subcategories : CategoryPreview[]
     products      : ProductPreview[]
+}
+
+
+
+export interface CategoryPageRequest
+    extends
+        PaginationArgs
+{
+    parent : Category['parentId']
 }

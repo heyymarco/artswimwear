@@ -31,8 +31,11 @@ import {
     SlugSchema,
     PaginationArgSchema,
     
+    CategoryPageRequestSchema,
     
     
+    
+    // utilities:
     categoryPreviewSelect,
     convertCategoryPreviewDataToCategoryPreview,
     categoryDetailSelect,
@@ -173,7 +176,7 @@ router
         try {
             const data = await req.json();
             return {
-                paginationArg : PaginationArgSchema.parse(data),
+                categoryPageRequest : CategoryPageRequestSchema.parse(data),
             };
         }
         catch {
@@ -186,9 +189,10 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        paginationArg : {
+        categoryPageRequest : {
             page,
             perPage,
+            parent,
         },
     } = requestData;
     //#endregion parsing and validating request
@@ -199,12 +203,14 @@ router
     const [total, paged] = await prisma.$transaction([
         prisma.category.count({
             where  : {
-                visibility: 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                visibility : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                parentId   : parent,
             },
         }),
         prisma.category.findMany({
             where  : {
-                visibility: 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                visibility : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                parentId   : parent,
             },
             select  : categoryPreviewSelect,
             orderBy : {
