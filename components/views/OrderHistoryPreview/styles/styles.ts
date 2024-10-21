@@ -56,9 +56,9 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
     
     // capabilities:
     const {groupableRule, groupableVars} = usesGroupable({
-        orientationInlineSelector : null,      // craft the <Carousel>'s borderRadius manually
-        orientationBlockSelector  : null,      // craft the <Carousel>'s borderRadius manually
-        itemsSelector             : '.images', // select the <Carousel>
+        orientationInlineSelector : null,       // craft the <Carousel>'s borderRadius manually
+        orientationBlockSelector  : null,       // craft the <Carousel>'s borderRadius manually
+        itemsSelector             : '.preview', // select the <Carousel>
     });
     
     // features:
@@ -87,14 +87,14 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
             // layouts:
             display: 'grid',
             gridTemplate: [[
-                '"images ... createdAt "', 'auto',
-                '"images ... .........."', spacers.xs,
-                '"images ... orderId   "', 'auto',
-                '"images ... .........."', spacers.md,
-                '"images ... payment   "', 'auto',
-                '"images ... .........."', spacers.md, // the minimum space between payment and fullEditor
-                '"images ... .........."', '1fr',      // the extra rest space (if any) between payment and fullEditor
-                '"images ... fullEditor"', 'auto',
+                '"preview ... createdAt "', 'auto',
+                '"preview ... .........."', spacers.xs,
+                '"preview ... orderId   "', 'auto',
+                '"preview ... .........."', spacers.md,
+                '"preview ... payment   "', 'auto',
+                '"preview ... .........."', spacers.md, // the minimum space between payment and fullEditor
+                '"preview ... .........."', 'auto',     // the extra rest space (if any) between payment and fullEditor
+                '"preview ... fullEditor"', 'auto',
                 '/',
                 `calc(((${minImageHeight}px + (2 * ${paddingVars.paddingBlock})) * ${commerces.defaultProductAspectRatio}) - ${paddingVars.paddingInline}) ${spacers.md} 1fr`,
             ]],
@@ -225,15 +225,18 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                     }),
                 }),
             }),
-            ...children('.images', {
+            ...children('.preview', {
+                // positions:
+                gridArea    : 'preview',
+                
+                justifySelf : 'stretch', // stretch the self horizontally
+                alignSelf   : 'stretch', // stretch the self vertically
+                
+                
+                
                 // layouts:
-                gridArea    : 'images',
-                
-                
-                
-                // sizes:
-                alignSelf   : 'stretch',
-                aspectRatio : commerces.defaultProductAspectRatio,
+                display: 'grid',
+                alignItems: 'start',
                 
                 
                 
@@ -243,8 +246,9 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                 [borderVars.borderStartEndRadius  ] : '0px',
                 [borderVars.borderEndStartRadius  ] : groupableVars.borderEndStartRadius,
                 [borderVars.borderEndEndRadius    ] : '0px',
+                
                 [borderVars.borderWidth           ] : '0px', // only setup borderRadius, no borderStroke
-                borderInlineEndWidth : basics.borderWidth,
+                borderInlineEndWidth                : basics.borderWidth,
                 
                 
                 
@@ -252,14 +256,83 @@ const usesOrderHistoryPreviewLayout = () => { // the <ListItem> of order list
                 // cancel-out parent's padding with negative margin:
                 marginInlineStart : negativePaddingInline,
                 marginBlock       : negativePaddingBlock,
+                [paddingVars.paddingInline] : '0px',
+                [paddingVars.paddingBlock ] : '0px',
                 
                 
                 
                 // children:
-                ...children('ul>li>.prodImg', {
-                    inlineSize : '100%',
-                    blockSize  : '100%',
+                ...children('.image', {
+                    // layouts:
+                    ...rule('.noImage', {
+                        // layouts:
+                        display: 'grid',
+                        
+                        
+                        
+                        // spacings:
+                        [paddingVars.paddingInline] : '0px',
+                        [paddingVars.paddingBlock ] : '0px',
+                        
+                        
+                        
+                        // children:
+                        ...children('*', {
+                            opacity: 0.4,
+                            
+                            justifySelf : 'center', // center the <Icon>
+                            alignSelf   : 'center', // center the <Icon>
+                        }),
+                    }),
+                    
+                    
+                    
+                    // spacings:
+                    [paddingVars.paddingInline] : '0px',
+                    [paddingVars.paddingBlock ] : '0px',
+                    
+                    
+                    
+                    // sizes:
+                    boxSizing   : 'border-box',
+                    aspectRatio : commerces.defaultProductAspectRatio,
+                    
+                    
+                    
+                    // borders:
+                    // follows the <ListItem>'s borderRadius, otherwise keeps the 4 edges has borderRadius(es)
+                    [borderVars.borderWidth           ] : '0px',
+                    
+                    [borderVars.borderStartStartRadius] : groupableVars.borderStartStartRadius,
+                    [borderVars.borderStartEndRadius  ] : '0px',
+                    [borderVars.borderEndStartRadius  ] : groupableVars.borderEndStartRadius,
+                    [borderVars.borderEndEndRadius    ] : '0px',
+                    
+                    
+                    
+                    // children:
+                    // a tweak for marco's <Image>:
+                    ...children(['ul>li>.prodImg', '.prodImg'], {
+                        inlineSize : '100%', // fills the entire <Carousel> area
+                        blockSize  : '100%', // fills the entire <Carousel> area
+                    }, { performGrouping: false }), // cannot grouping of different depth `:is(ul>li>.prodImg', .prodImg)`
+                    
+                    // a tweak for quantity <Badge>:
+                    ...children('ul>li', {
+                        ...children('.floatingQuantity', {
+                            translate: [[
+                                `calc(-100% - ${spacers.sm})`,
+                                spacers.sm,
+                            ]],
+                        }),
+                    }),
                 }),
+            }),
+            ...children('.floatingSumQuantity', {
+                translate: [[
+                    `calc(100% + ${spacers.sm})`,
+                    spacers.sm,
+                ]],
             }),
             ...children('.fullEditor', {
                 gridArea: 'fullEditor',

@@ -29,6 +29,16 @@ import {
 
 // reusable-ui components:
 import {
+    // base-components:
+    Basic,
+    
+    
+    
+    // simple-components:
+    Icon,
+    
+    
+    
     // layout-components:
     ListItem,
     
@@ -283,63 +293,102 @@ const OrderHistoryPreview = (props: OrderHistoryPreviewProps): JSX.Element|null 
                 wrapperComponent={<React.Fragment />}
                 badgeComponent={
                     <Badge
+                        // classes:
+                        className='floatingSumQuantity'
+                        
+                        
+                        
                         // floatable:
                         floatingPlacement='left-start'
-                        floatingShift={10}
-                        floatingOffset={-40}
+                        floatingShift={0}
+                        floatingOffset={0}
                     >
                         {getTotalQuantity(items)} Item(s)
                     </Badge>
                 }
                 elementComponent={
-                    <MiniCarousel
+                    <Basic
+                        // variants:
+                        mild={true}
+                        
+                        
+                        
                         // classes:
-                        className='images'
+                        className='preview'
                     >
-                        {items.map(({quantity, productId}, index: number) =>
-                            /* image + quantity */
-                            <CompoundWithBadge
-                                // identifiers:
-                                key={index}
+                        {
+                            !items.length
+                            ? <Basic
+                                // variants:
+                                mild={true}
                                 
                                 
                                 
-                                // components:
-                                wrapperComponent={<React.Fragment />}
-                                badgeComponent={
-                                    <Badge
-                                        // variants:
-                                        floatingPlacement='right-start'
-                                        floatingShift={10}
-                                        floatingOffset={-40}
-                                    >
-                                        {quantity}x
-                                    </Badge>
-                                }
-                                elementComponent={
-                                    <ProductImage
-                                        // data:
-                                        productId={productId}
+                                // classes:
+                                className='image noImage'
+                            >
+                                <Icon icon='image' size='xl' />
+                            </Basic>
+                            : <MiniCarousel
+                                // variants:
+                                theme='inherit'
+                                
+                                
+                                
+                                // classes:
+                                className='image'
+                            >
+                                {items.map(({quantity, productId}, index: number) =>
+                                    /* image + quantity */
+                                    <CompoundWithBadge
+                                        // identifiers:
+                                        key={index}
                                         
                                         
                                         
-                                        // appearances:
-                                        sizes={`${minImageWidth}px`}
-                                        
-                                        
-                                        
-                                        // behaviors:
-                                        priority={false}
-                                        
-                                        
-                                        
-                                        // classes:
-                                        className='prodImg'
+                                        // components:
+                                        wrapperComponent={<React.Fragment />}
+                                        badgeComponent={
+                                            <Badge
+                                                // classes:
+                                                className='floatingQuantity'
+                                                
+                                                
+                                                
+                                                // variants:
+                                                floatingPlacement='right-start'
+                                                floatingShift={0}
+                                                floatingOffset={0}
+                                            >
+                                                {quantity}x
+                                            </Badge>
+                                        }
+                                        elementComponent={
+                                            <ProductImage
+                                                // data:
+                                                productId={productId}
+                                                
+                                                
+                                                
+                                                // appearances:
+                                                sizes={`${minImageWidth}px`}
+                                                
+                                                
+                                                
+                                                // behaviors:
+                                                priority={false}
+                                                
+                                                
+                                                
+                                                // classes:
+                                                className='prodImg'
+                                            />
+                                        }
                                     />
-                                }
-                            />
-                        )}
-                    </MiniCarousel>
+                                )}
+                            </MiniCarousel>
+                        }
+                    </Basic>
                 }
             />
         </ListItem>
