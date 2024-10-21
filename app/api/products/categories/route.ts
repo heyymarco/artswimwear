@@ -27,9 +27,7 @@ import {
     
     
     // schemas:
-    ModelIdSchema,
     SlugSchema,
-    PaginationArgSchema,
     
     CategoryPageRequestSchema,
     
@@ -83,8 +81,7 @@ router
         try {
             const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
             return {
-                id   : ModelIdSchema.optional().parse(data?.id),
-                path : SlugSchema.optional().parse(data?.path),
+                path : SlugSchema.parse(data?.path),
             };
         }
         catch {
@@ -97,20 +94,8 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        id,
         path,
     } = requestData;
-    
-    // one of `id` or `path` must be defined, but cannot both defined or both undefined:
-    if (
-        ((id === undefined) && (path === undefined)) // both undefined
-        ||
-        ((id !== undefined) && (path !== undefined)) // both defined
-    ) {
-        return Response.json({
-            error: 'Invalid data.',
-        }, { status: 400 }); // handled with error
-    } // if
     //#endregion parsing and validating request
     
     
@@ -123,52 +108,24 @@ router
     
     
     //#region query result
-    if (id) {
-        const categoryPreviewData = (
-            await prisma.category.findUnique({
-                where  : {
-                    id         : id, // find by id
-                    visibility : { not: 'DRAFT' }, // allows access to Category with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
-                },
-                select : categoryPreviewSelect,
-            })
-        );
-        
-        if (!categoryPreviewData) {
-            return Response.json({
-                error: `The category with specified id "${id}" is not found.`,
-            }, { status: 404 }); // handled with error
-        } // if
-        
-        return Response.json(convertCategoryPreviewDataToCategoryPreview(categoryPreviewData) satisfies CategoryPreview); // handled with success
-    }
-    else if (path) {
-        const categoryDetailData = (
-            await prisma.category.findUnique({
-                where  : {
-                    path       : path, // find by url path
-                    visibility : { not: 'DRAFT' }, // allows access to Category with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
-                },
-                select : categoryDetailSelect(customerId),
-            })
-        );
-        
-        if (!categoryDetailData) {
-            return Response.json({
-                error: `The category with specified path "${path}" is not found.`,
-            }, { status: 404 }); // handled with error
-        } // if
-        
-        return Response.json(convertCategoryDetailDataToCategoryDetail(categoryDetailData) satisfies CategoryDetail|null); // handled with success
+    const categoryDetailData = (
+        await prisma.category.findUnique({
+            where  : {
+                path       : path, // find by url path
+                visibility : { not: 'DRAFT' }, // allows access to Category with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
+            },
+            select : categoryDetailSelect(customerId),
+        })
+    );
+    
+    if (!categoryDetailData) {
+        return Response.json({
+            error: `The category with specified path "${path}" is not found.`,
+        }, { status: 404 }); // handled with error
     } // if
+    
+    return Response.json(convertCategoryDetailDataToCategoryDetail(categoryDetailData) satisfies CategoryDetail|null); // handled with success
     //#endregion query result
-    
-    
-    
-    // default response:
-    return Response.json({
-        error: 'Invalid data.',
-    }, { status: 400 }); // handled with error
 })
 .post(async (req) => {
     //#region parsing and validating request

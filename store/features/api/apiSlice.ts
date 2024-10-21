@@ -214,12 +214,6 @@ export const apiSlice = createApi({
             providesTags: (data, error, arg) => [{ type: 'CategoryPage', id: `${arg.parent ?? ''}:${arg.page}` }],
         }),
         
-        getCategoryPreview          : builder.query<CategoryPreview, string>({
-            query : (arg: string) => ({
-                url    : `products/categories?id=${encodeURIComponent(arg)}`,
-                method : 'GET',
-            }),
-        }),
         getCategoryDetail           : builder.query<CategoryDetail, string>({
             query : (arg: string) => ({
                 url    : `products/categories?path=${encodeURIComponent(arg)}`,
@@ -757,7 +751,6 @@ export const {
     
     useGetCategoryPageQuery                : useGetCategoryPage,
     
-    useGetCategoryPreviewQuery             : useGetCategoryPreview,
     useGetCategoryDetailQuery              : useGetCategoryDetail,
     
     
