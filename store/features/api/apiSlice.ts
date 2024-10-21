@@ -107,6 +107,22 @@ const matchingShippingListAdapter = createEntityAdapter<MatchingShipping>({
 
 
 
+// utilities:
+const updateProductInCategoryDetail = (currentCategory: CategoryDetail, updatedProduct: ProductPreview): void => {
+    const products = currentCategory.products;
+    for (let productIndex = 0, maxProductIndex = (products.length - 1); productIndex <= maxProductIndex; productIndex++) {
+        // conditions:
+        if (products[productIndex].id !== updatedProduct.id) continue; // not the target model => ignore
+        
+        
+        
+        // update existing model:
+        products[productIndex] = updatedProduct;
+    } // if
+};
+
+
+
 const axiosBaseQuery = (
     { baseUrl }: { baseUrl: string } = { baseUrl: '' }
 ): BaseQueryFn<
@@ -625,6 +641,12 @@ export const apiSlice = createApi({
                     })
                 );
                 
+                // update related_affected_wish in `getCategoryDetail`:
+                for (const { data } of getQueryCaches<CategoryDetail, string>(api, 'getCategoryDetail')) {
+                    if (data === undefined) continue;
+                    updateProductInCategoryDetail(data, wishedProduct);
+                } // for
+                
                 if (desiredGroupId !== originalGroupId) {
                     // create -or- update related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                     if (originalGroupId === undefined) { // if was never wished
@@ -689,6 +711,12 @@ export const apiSlice = createApi({
                     })
                 );
                 
+                // update related_affected_wish in `getCategoryDetail`:
+                for (const { data } of getQueryCaches<CategoryDetail, string>(api, 'getCategoryDetail')) {
+                    if (data === undefined) continue;
+                    updateProductInCategoryDetail(data, unwishedProduct);
+                } // for
+                
                 // delete related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                 cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedModel: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });
                 if (originalGroupId) { // if the wish is having existing_group => DELETE the wish from existing_group
@@ -706,7 +734,7 @@ export const apiSlice = createApi({
                             { type: 'Wishable'       , id: productId },
                             
                             // invalidate the related_affected_pagination_of_wishGroup:
-                            { type: 'OfWishGroupable', id: undefined     },
+                            { type: 'OfWishGroupable', id: undefined },
                             ...(((originalGroupId) ? [{ type: 'OfWishGroupable', id: originalGroupId }] : []) satisfies { type: 'OfWishGroupable', id: string }[]),
                         ])
                     );
