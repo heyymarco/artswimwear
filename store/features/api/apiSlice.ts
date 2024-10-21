@@ -636,9 +636,13 @@ export const apiSlice = createApi({
                 );
                 
                 // update related_affected_wish in `getCategoryDetail`:
-                for (const { data } of getQueryCaches<CategoryDetail, string>(api, 'getCategoryDetail')) {
-                    if (data === undefined) continue;
-                    updateProductInCategoryDetail(data, wishedProduct);
+                for (const { originalArgs } of getQueryCaches<CategoryDetail, string>(api, 'getCategoryDetail')) {
+                    if (originalArgs === undefined) continue;
+                    api.dispatch(
+                        apiSlice.util.updateQueryData('getCategoryDetail', productId, (data) => {
+                            updateProductInCategoryDetail(data, wishedProduct);
+                        })
+                    );
                 } // for
                 
                 if (desiredGroupId !== originalGroupId) {
@@ -706,9 +710,13 @@ export const apiSlice = createApi({
                 );
                 
                 // update related_affected_wish in `getCategoryDetail`:
-                for (const { data } of getQueryCaches<CategoryDetail, string>(api, 'getCategoryDetail')) {
-                    if (data === undefined) continue;
-                    updateProductInCategoryDetail(data, unwishedProduct);
+                for (const { originalArgs } of getQueryCaches<CategoryDetail, string>(api, 'getCategoryDetail')) {
+                    if (originalArgs === undefined) continue;
+                    api.dispatch(
+                        apiSlice.util.updateQueryData('getCategoryDetail', productId, (data) => {
+                            updateProductInCategoryDetail(data, unwishedProduct);
+                        })
+                    );
                 } // for
                 
                 // delete related_affected_pagination_of_wishGroup in `getWishPage('all')`:
