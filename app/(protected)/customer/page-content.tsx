@@ -181,14 +181,17 @@ export function ProfilePageContent() {
                             
                             
                             
+                            // classes:
+                            className='floatingEdit'
+                            
+                            
+                            
                             // floatable:
                             floatingPlacement='left-start'
-                            floatingShift={8}
-                            floatingOffset={-26}
+                            floatingShift={0}
+                            floatingOffset={0}
                         >
-                            <EditButton className='edit overlay' onClick={() => handleEdit('image')}>
-                                <></>
-                            </EditButton>
+                            <EditButton className='edit overlay' onClick={() => handleEdit('image')}>{null} </EditButton>
                         </Badge>
                     }
                     elementComponent={
@@ -200,12 +203,13 @@ export function ProfilePageContent() {
                             
                             // variants:
                             theme='primary'
+                            mild={true}
                             // profileImageStyle='circle'
                             
                             
                             
                             // classes:
-                            className='image'
+                            className='preview'
                         />
                     }
                 />
@@ -215,7 +219,7 @@ export function ProfilePageContent() {
                         Name:
                     </span>
                     {customerName}
-                    <EditButton onClick={() => handleEdit('name')} />
+                    <EditButton onClick={() => handleEdit('name')}>{null} </EditButton>
                 </h3>
                 
                 <p className='username'>
@@ -223,7 +227,7 @@ export function ProfilePageContent() {
                         Username:
                     </span>
                     {customerUsername || <span className='noValue'>No Username</span>}
-                    <EditButton onClick={() => handleEdit('username')} />
+                    <EditButton onClick={() => handleEdit('username')}>{null} </EditButton>
                 </p>
                 
                 <p className='email'>

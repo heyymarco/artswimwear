@@ -11,7 +11,8 @@ import { dataTableValues } from '@heymarco/data-table'
 // <Icon>:
 iconConfig.image.files.push(
     { name: 'artswimwear.svg', ratio: '48/40' },
-    { name: 'scrolldown.svg', ratio: '20/40' },
+    { name: 'scrolldown.svg' , ratio: '20/40' },
+    { name: 'edit.svg'       , ratio: '24/24' },
 );
 
 
