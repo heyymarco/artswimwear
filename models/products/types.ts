@@ -2,8 +2,12 @@
 import {
     type Variant,
     type VariantGroup,
+    
     type Product,
+    
     type Wish,
+    
+    type Category,
 }                           from '@prisma/client'
 
 
@@ -88,4 +92,34 @@ export interface ProductDetail
 export interface ProductPricePart {
     priceParts : number[],
     quantity   : number
+}
+
+
+
+export interface CategoryPreview
+    extends
+        Pick<Category,
+            |'id'
+            |'name'
+            |'path'
+        >
+{
+    image : Required<Category>['images'][number]|undefined
+}
+
+
+
+export interface CategoryDetail
+    extends
+        Pick<Category,
+            |'id'
+            |'name'
+            |'path'
+            |'excerpt'
+            |'description'
+            |'images'
+        >
+{
+    subcategories : CategoryPreview[]
+    products      : ProductPreview[]
 }

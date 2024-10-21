@@ -36,6 +36,9 @@ import {
     type ProductPreview,
     type ProductDetail,
     
+    type CategoryPreview,
+    type CategoryDetail,
+    
     type ShippingPreview,
     type ShippingAddressDetail,
     type CountryPreview,
@@ -152,7 +155,7 @@ export const apiSlice = createApi({
     baseQuery : axiosBaseQuery({
         baseUrl: `${process.env.NEXT_PUBLIC_APP_URL ?? ''}/api`
     }),
-    tagTypes  : ['ProductPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable'],
+    tagTypes  : ['ProductPage', 'CategoryPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable'],
     endpoints : (builder) => ({
         getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
             query: (arg) => ({
@@ -181,6 +184,35 @@ export const apiSlice = createApi({
                 url    : `products?path=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
+        }),
+        
+        
+        
+        getCategoryPage             : builder.query<Pagination<CategoryPreview>, PaginationArgs>({
+            query: (arg) => ({
+                url    : 'products/categories',
+                method : 'POST',
+                body   : arg,
+            }),
+            providesTags: (data, error, arg) => [{ type: 'CategoryPage', id: arg.page }],
+        }),
+        
+        getCategoryPreview          : builder.query<CategoryPreview, string>({
+            query : (arg: string) => ({
+                url    : `products/categories?id=${encodeURIComponent(arg)}`,
+                method : 'GET',
+            }),
+        }),
+        getCategoryDetail           : builder.query<CategoryDetail, string>({
+            query : (arg: string) => ({
+                url    : `products/categories?path=${encodeURIComponent(arg)}`,
+                method : 'GET',
+            }),
+            providesTags: (data, error, arg) => [
+                ...(data?.products ?? []).map(({ id }) =>
+                    ({ type: 'Wishable', id: id })
+                ) satisfies { type: 'Wishable', id: string }[],
+            ],
         }),
         
         
@@ -691,6 +723,13 @@ export const {
     
     useGetProductPreviewQuery              : useGetProductPreview,
     useGetProductDetailQuery               : useGetProductDetail,
+    
+    
+    
+    useGetCategoryPageQuery                : useGetCategoryPage,
+    
+    useGetCategoryPreviewQuery             : useGetCategoryPreview,
+    useGetCategoryDetailQuery              : useGetCategoryDetail,
     
     
     

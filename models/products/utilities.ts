@@ -2,6 +2,9 @@
 // models:
 import {
     type ProductPreview,
+    
+    type CategoryPreview,
+    type CategoryDetail,
 }                           from './types'
 import {
     // types:
@@ -129,3 +132,55 @@ export const productDetailSelect = {
         },
     },
 } satisfies Prisma.ProductSelect;
+
+
+
+export const categoryPreviewSelect = {
+    id             : true,
+    
+    name           : true,
+    
+    path           : true,
+    
+    images         : true,
+} satisfies Prisma.CategorySelect;
+export const convertCategoryPreviewDataToCategoryPreview = (categoryPreviewData: Awaited<ReturnType<typeof prisma.category.findFirstOrThrow<{ select: typeof categoryPreviewSelect }>>>): CategoryPreview => {
+    const {
+        images, // take
+    ...restCategory} = categoryPreviewData;
+    return {
+        ...restCategory,
+        image : images?.[0],
+    };
+};
+
+export const categoryDetailSelect = (customerId: string|undefined) => ({
+    id            : true,
+    
+    name          : true,
+    
+    path          : true,
+    
+    excerpt       : true,
+    description   : true,
+    
+    images        : true,
+    
+    subcategories : {
+        select    : categoryPreviewSelect,
+    },
+    products      : {
+        select    : productPreviewSelect(customerId),
+    },
+}) satisfies Prisma.CategorySelect;
+export const convertCategoryDetailDataToCategoryDetail = (categoryDetailData: Awaited<ReturnType<typeof prisma.category.findFirstOrThrow<{ select: ReturnType<typeof categoryDetailSelect> }>>>): CategoryDetail => {
+    const {
+        subcategories, // take
+        products,      // take
+    ...restCategory} = categoryDetailData;
+    return {
+        ...restCategory,
+        subcategories : subcategories.map(convertCategoryPreviewDataToCategoryPreview),
+        products      : products.map(convertProductPreviewDataToProductPreview),
+    };
+};
