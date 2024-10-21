@@ -35,16 +35,7 @@ import {
     
     productPreviewSelect,
     convertProductPreviewDataToProductPreview,
-}                           from '@/models'
-export {
-    type VariantPreview,
-    type VariantDetail,
-    type VariantGroupDetail,
-    
-    type ProductPreview,
-    type ProductDetail,
-    
-    type ProductPricePart,
+    productDetailSelect,
 }                           from '@/models'
 
 // ORMs:
@@ -154,48 +145,7 @@ router
                     path       : path, // find by url path
                     visibility : { not: 'DRAFT' }, // allows access to Product with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
                 },
-                select : {
-                    id          : true,
-                    
-                    name        : true,
-                    
-                    price       : true,
-                    
-                    path        : true,
-                    
-                    excerpt     : true,
-                    description : true,
-                    
-                    images      : true,
-                    
-                    variantGroups : {
-                        select : {
-                            name : true,
-                            
-                            variants : {
-                                where    : {
-                                    visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
-                                },
-                                select   : {
-                                    id             : true,
-                                    
-                                    name           : true,
-                                    
-                                    price          : true,
-                                    shippingWeight : true,
-                                    
-                                    images         : true,
-                                },
-                                orderBy : {
-                                    sort : 'asc',
-                                },
-                            },
-                        },
-                        orderBy : {
-                            sort : 'asc',
-                        },
-                    },
-                },
+                select : productDetailSelect,
             })
         );
         

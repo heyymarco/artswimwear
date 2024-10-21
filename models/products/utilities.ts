@@ -86,3 +86,46 @@ export const convertProductPreviewDataToProductPreview = (productPreviewData: Aw
         wished : !wishes?.length ? undefined : wishes?.[0]?.groupId,
     };
 };
+
+export const productDetailSelect = {
+    id          : true,
+    
+    name        : true,
+    
+    price       : true,
+    
+    path        : true,
+    
+    excerpt     : true,
+    description : true,
+    
+    images      : true,
+    
+    variantGroups : {
+        select : {
+            name : true,
+            
+            variants : {
+                where    : {
+                    visibility : { not: 'DRAFT' } // allows access to Variant with visibility: 'PUBLISHED' but NOT 'DRAFT'
+                },
+                select   : {
+                    id             : true,
+                    
+                    name           : true,
+                    
+                    price          : true,
+                    shippingWeight : true,
+                    
+                    images         : true,
+                },
+                orderBy : {
+                    sort : 'asc',
+                },
+            },
+        },
+        orderBy : {
+            sort : 'asc',
+        },
+    },
+} satisfies Prisma.ProductSelect;
