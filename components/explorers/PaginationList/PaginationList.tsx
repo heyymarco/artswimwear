@@ -664,7 +664,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                         
                         
                         // classes:
-                        className : `${styleSheets.galleryBody} ${listComponentClassName}`
+                        className : `${styleSheets.galleryBody} ${listComponentClassName ?? ''}`
                     },
                     
                     
