@@ -108,9 +108,6 @@ const usesSignInDropdownDropdownLayout = () => {
     return style({
         ...rule('.navbarCollapsed', {
             inlineSize : '100%',
-            ...children('*', {
-                inlineSize : '100%',
-            }),
         }),
     });
 };
