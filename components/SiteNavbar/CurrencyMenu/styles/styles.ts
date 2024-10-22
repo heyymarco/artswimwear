@@ -50,7 +50,6 @@ const usesCurrencyDropdownListLayout = () => {
         ...rule('.navbarCollapsed', {
             inlineSize : '100%',
             ...children('*', {
-                inlineSize : '100%',
                 textAlign  : 'center',
             }),
         }),
