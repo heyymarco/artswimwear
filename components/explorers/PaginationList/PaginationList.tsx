@@ -45,7 +45,10 @@ import {
     ListItem,
     type ListItemComponentProps,
     
+    type ListProps,
     List,
+    
+    type ListComponentProps,
     
     
     
@@ -353,7 +356,10 @@ export interface PaginationListProps<TModel extends Model, TElement extends Elem
         Pick<ModalEmptyProps<TElement>,
             // accessibilities:
             |'textEmpty'
-        >
+        >,
+        
+        // components:
+        ListComponentProps<Element>
 {
     // appearances:
     showPaginationTop     ?: boolean
@@ -401,6 +407,11 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         // children:
         menusBefore,
         menusAfter,
+        
+        
+        
+        // components:
+        listComponent = (<List<Element> /> as React.ReactComponentElement<any, ListProps<Element>>),
         
         
         
@@ -493,6 +504,76 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
     
     
     
+    // default props:
+    const {
+        // variants:
+        theme     : listComponentTheme     = 'inherit',
+        mild      : listComponentMild      = 'inherit',
+        listStyle : listComponentListStyle = 'flush',
+        
+        
+        
+        // classes:
+        className : listComponentClassName,
+        // children:
+        children  : listComponentChildren = <>
+            {/* <ModelCreate> */}
+            {!!modelCreateComponent  && <ModelCreateOuter<TModel>
+                // accessibilities:
+                createItemText={createItemText}
+                
+                
+                
+                // classes:
+                className='solid'
+                
+                
+                
+                // states:
+                enabled={data !== undefined /* data is fully loaded even if empty data */}
+                
+                
+                
+                // components:
+                modelCreateComponent={modelCreateComponent}
+                
+                
+                
+                // handlers:
+                onModelCreate={onModelCreate}
+            />}
+            
+            {/* <ModelEmpty> */}
+            {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
+            
+            {/* <GalleryItem> */}
+            {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
+                /* <ModelPreview> */
+                React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
+                    // props:
+                    {
+                        // identifiers:
+                        key   : modelPreviewComponent.key         ?? model.id,
+                        
+                        
+                        
+                        // data:
+                        model : modelPreviewComponent.props.model ?? model,
+                    },
+                )
+            )}
+            
+            {/* a hack for making last separator when the total of <ListItems>(s) is smaller than the min-height of <List> */}
+            {requiresSeparatorHack && <ListItem className={`solid ${styleSheets.separatorHack}`} />}
+        </>,
+        
+        
+        
+        ...restListComponentProps
+    } = listComponent.props;
+    
+    
+    
     // jsx:
     return (
         <Generic<TElement>
@@ -562,56 +643,35 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                 
                 /* <GalleryBody> */
                 /* we use <List> for the gallery body and we removed the surrounding border (flush) because the <GalleryBodyWrapper> is ALREADY has border */
-                <List outerRef={innerListRef} theme='inherit' mild='inherit' listStyle='flush' className={styleSheets.galleryBody}>
-                    {/* <ModelCreate> */}
-                    {!!modelCreateComponent  && <ModelCreateOuter<TModel>
-                        // accessibilities:
-                        createItemText={createItemText}
+                React.cloneElement<ListProps<Element>>(listComponent,
+                    // props:
+                    {
+                        // other props:
+                        ...restListComponentProps,
+                        
+                        
+                        
+                        // refs:
+                        outerRef  : innerListRef,
+                        
+                        
+                        
+                        // variants:
+                        theme     : listComponentTheme,
+                        mild      : listComponentMild,
+                        listStyle : listComponentListStyle,
                         
                         
                         
                         // classes:
-                        className='solid'
-                        
-                        
-                        
-                        // states:
-                        enabled={data !== undefined /* data is fully loaded even if empty data */}
-                        
-                        
-                        
-                        // components:
-                        modelCreateComponent={modelCreateComponent}
-                        
-                        
-                        
-                        // handlers:
-                        onModelCreate={onModelCreate}
-                    />}
+                        className : `${styleSheets.galleryBody} ${listComponentClassName}`
+                    },
                     
-                    {/* <ModelEmpty> */}
-                    {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
                     
-                    {/* <GalleryItem> */}
-                    {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
-                        /* <ModelPreview> */
-                        React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
-                            // props:
-                            {
-                                // identifiers:
-                                key   : modelPreviewComponent.key         ?? model.id,
-                                
-                                
-                                
-                                // data:
-                                model : modelPreviewComponent.props.model ?? model,
-                            },
-                        )
-                    )}
                     
-                    {/* a hack for making last separator when the total of <ListItems>(s) is smaller than the min-height of <List> */}
-                    {requiresSeparatorHack && <ListItem className={`solid ${styleSheets.separatorHack}`} />}
-                </List>,
+                    // children:
+                    listComponentChildren,
+                ),
             )}
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>
