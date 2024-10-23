@@ -183,12 +183,12 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                     />
                 )
                 .then(() => { // on fully closed:
-                    router.push(backPathname, { scroll: false });
+                    router.push(backPathname, { scroll: false }); // restore the url
                 });
             } // if
             //#endregion a fix for signIn page interceptor when on /checkout page
             
-            router.push(signInPath);
+            router.push(signInPath); // goto signIn page
             toggleList(false); // collapse the <Navbar> manually
         }
         else if (isSignedIn) {
@@ -225,7 +225,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 newShownMenu.collapseEndEvent().then((event) => {
                     switch (event.data) {
                         case 'editProfile':
-                            router.push('/customer');
+                            router.push('/customer'); // goto customer's profile page
                             break;
                         
                         case 'signOut':
