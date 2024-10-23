@@ -125,7 +125,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
             });
             //#endregion a fix for categories page interceptor
             
-            router.push(categoriesPath);
+            router.push(categoriesPath, { scroll: false }); // intercept the url
         } // if
     });
     
