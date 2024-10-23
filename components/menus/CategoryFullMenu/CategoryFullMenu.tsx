@@ -10,11 +10,6 @@ import {
     // hooks:
     useRef,
     useEffect,
-    
-    
-    
-    // utilities:
-    startTransition,
 }                           from 'react'
 import {
     useImmer,
@@ -269,9 +264,9 @@ const RouterUpdater = (): JSX.Element|null => {
                 router.back();
             }
             else {
-                startTransition(() => {
+                setTimeout(() => {
                     router.push(newPathname, { scroll: false }); // intercept the url
-                });
+                }, 0);
             } // if
         } // if
     }, [parentCategories, pathname]);
