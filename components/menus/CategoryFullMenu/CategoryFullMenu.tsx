@@ -264,7 +264,7 @@ const RouterUpdater = (): JSX.Element|null => {
                 router.back();
             }
             else {
-                router.push(newPathname);
+                router.push(newPathname, { scroll: false }); // intercept the url
             } // if
         } // if
     }, [parentCategories, pathname]);
