@@ -69,7 +69,7 @@ export interface PaginationState<TModel extends Model>
 const noopSetter : EventHandler<unknown> = () => {};
 const PaginationStateContext = createContext<PaginationState<any>>({
     // states:
-    page       : 1,
+    page       : 0,
     setPage    : noopSetter,
     
     perPage    : 20,
@@ -107,7 +107,7 @@ const PaginationStateProvider = <TModel extends Model>(props: React.PropsWithChi
     // props:
     const {
         // states:
-        initialPage    = 1,
+        initialPage    = 0,
         initialPerPage = 20,
         
         

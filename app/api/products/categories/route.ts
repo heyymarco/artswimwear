@@ -173,7 +173,7 @@ router
             orderBy : {
                 name: 'asc', // shows the alphabetical Category for pagination_view
             },
-            skip    : (page - 1) * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
+            skip    : page * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
             take    : perPage,
         }),
     ]);

@@ -136,7 +136,7 @@ router
                 // name: 'asc', // shows the alphabetical created|moved Wish for pagination_view
                 createdAt : 'desc', // shows the last_created WishGroup for pagination_create
             },
-            skip    : (page - 1) * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
+            skip    : page * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
             take    : perPage,
         }),
         /*prisma.wishGroup.findFirst({

@@ -148,7 +148,7 @@ router
             orderBy : {
                 updatedAt: 'desc', // shows the most_recent created|moved Wish for pagination_view
             },
-            skip    : (page - 1) * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
+            skip    : page * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
             take    : perPage,
         }),
         prisma.wishGroup.findFirst({

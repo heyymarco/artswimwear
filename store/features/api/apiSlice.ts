@@ -899,7 +899,7 @@ const selectRangeFromArg    = (originalArg: unknown): { indexStart: number, inde
         345	    [2, 3]              (2 - 1) * 3   = 3       (3 + 3) - 1   = 5
         678	    [3, 3]              (3 - 1) * 3   = 6       (6 + 3) - 1   = 8
     */
-    const indexStart = (page - 1) * perPage; // the model_index of the first_model of current pagination
+    const indexStart = page * perPage; // the model_index of the first_model of current pagination
     const indexEnd   = indexStart + (perPage - 1);
     return {
         indexStart,
