@@ -23,6 +23,9 @@ export const PAGE_PRODUCTS_DESCRIPTION                   = 'Our product gallery.
 export const PAGE_PRODUCT_TITLE                          = `{{TheProductName}} - ${WEBSITE_TITLE}`
 export const PAGE_PRODUCT_DESCRIPTION                    = '{{TheProductExcerpt}}'
 
+export const PAGE_CATEGORIES_TITLE                       = `Categories - ${WEBSITE_TITLE}`
+export const PAGE_CATEGORIES_DESCRIPTION                 = 'Our product categories.'
+
 export const PAGE_CHECKOUT_STEP_INFO_TITLE               = 'Information'
 export const PAGE_CHECKOUT_STEP_INFO_DESCRIPTION         = 'Fill the contact information and shipping address.'
 export const PAGE_CHECKOUT_STEP_SHIPPING_TITLE           = 'Shipping'

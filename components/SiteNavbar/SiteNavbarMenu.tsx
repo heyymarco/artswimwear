@@ -52,6 +52,9 @@ import {
 import {
     SignInMenu,
 }                           from './SignInMenu'
+import {
+    ProductMenu,
+}                           from './ProductMenu'
 
 // contexts:
 import {
@@ -168,7 +171,7 @@ const SiteNavbarMenu = ({
                     orientation={navbarExpanded ? 'inline' : 'block'}
                 >
                     <NavItem><Link href='/'>Home</Link></NavItem>
-                    <NavItem><Link href='/products'>Products</Link></NavItem>
+                    <ProductMenu />
                     <NavItem><Link href='/about'>About</Link></NavItem>
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
                     <NavItem href='https://www.instagram.com/art_ethnicswim/'><Icon icon='instagram' size='lg' /></NavItem>

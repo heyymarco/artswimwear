@@ -18,9 +18,9 @@ colorValues.primaryText = primaryCol.lighten(1);
 colorValues.primaryMild = primaryCol.lighten(1);
 // colorValues.primaryMild = primaryCol.darken(0.5);
 
-defineTheme('primaryAlt',             colorValues.primaryThin.lighten(0.6));
+defineTheme('primaryAlt',             colorValues.primary.lighten(0.8));
 (colorValues as any).primaryAltText = colorValues.primaryBold;
-(colorValues as any).primaryAltMild = colorValues.primaryThin;
+(colorValues as any).primaryAltMild = colorValues.primary.lighten(0.6);
 
 const secondaryCol = primaryCol.rotate(5).desaturate(0.5).lighten(0.65);
 defineTheme('secondary', secondaryCol);
