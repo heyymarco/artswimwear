@@ -87,6 +87,7 @@ import {
 import {
     // hooks:
     useGetCategoryPage,
+    useGetCategoryPage as _useGetCategoryPage,
 }                           from '@/store/features/api/apiSlice'
 
 // models:
@@ -123,7 +124,7 @@ const useGetRootCategoryPage = (arg: PaginationArgs) => {
 };
 const useUseGetSubCategoryPage = (parentCategory: string) => {
     return (arg: PaginationArgs) => {
-        return useGetCategoryPage({
+        return _useGetCategoryPage({
             ...arg,
             parent : parentCategory,
         });
