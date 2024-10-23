@@ -535,51 +535,53 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 /* <GalleryBody> */
                 /* we use <Generic> for the gallery body because the <GalleryBodyWrapper> is ALREADY has nice styling */
                 <Generic tag='section' className={styleSheets.galleryBody}>
-                    {/* <ModelEmpty> */}
-                    {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
-                    
-                    {/* <GalleryItem> */}
-                    {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
-                        /* <ModelPreview> */
-                        React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
-                            // props:
-                            {
-                                // identifiers:
-                                key   : modelPreviewComponent.key         ?? model.id,
-                                
-                                
-                                
-                                // data:
-                                model : modelPreviewComponent.props.model ?? model,
-                            },
-                        )
-                    )}
-                    
-                    {/* <ModelCreate> */}
-                    {!!modelCreateComponent  && <ModelCreateOuter<TModel>
-                        // accessibilities:
-                        createItemText={createItemText}
+                    <Generic className={styleSheets.galleryBodyGrid}>
+                        {/* <ModelEmpty> */}
+                        {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
                         
+                        {/* <GalleryItem> */}
+                        {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
+                            /* <ModelPreview> */
+                            React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
+                                // props:
+                                {
+                                    // identifiers:
+                                    key   : modelPreviewComponent.key         ?? model.id,
+                                    
+                                    
+                                    
+                                    // data:
+                                    model : modelPreviewComponent.props.model ?? model,
+                                },
+                            )
+                        )}
                         
-                        
-                        // classes:
-                        className='solid'
-                        
-                        
-                        
-                        // states:
-                        enabled={data !== undefined /* data is fully loaded even if empty data */}
-                        
-                        
-                        
-                        // components:
-                        modelCreateComponent={modelCreateComponent}
-                        
-                        
-                        
-                        // handlers:
-                        onModelCreate={onModelCreate}
-                    />}
+                        {/* <ModelCreate> */}
+                        {!!modelCreateComponent  && <ModelCreateOuter<TModel>
+                            // accessibilities:
+                            createItemText={createItemText}
+                            
+                            
+                            
+                            // classes:
+                            className='solid'
+                            
+                            
+                            
+                            // states:
+                            enabled={data !== undefined /* data is fully loaded even if empty data */}
+                            
+                            
+                            
+                            // components:
+                            modelCreateComponent={modelCreateComponent}
+                            
+                            
+                            
+                            // handlers:
+                            onModelCreate={onModelCreate}
+                        />}
+                    </Generic>
                 </Generic>,
             )}
             

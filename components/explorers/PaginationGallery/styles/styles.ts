@@ -89,9 +89,8 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
     
     return style({
         // layouts:
-        display             : 'grid', // use css block grid for layouting, the core of our <PaginationGallery> layout
-        gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
-        gridAutoRows        : '1fr',  // make all <GalleryItem>s having consistent height
+        display      : 'grid', // use css block grid for layouting, the core of our <PaginationGallery> layout
+        alignContent : 'start', // when the item(s) are too few, place the extra spacing at the bottom
         
         
         
@@ -120,17 +119,25 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
         
         
         
-        // spacings:
-        gap: spacers.lg,
-        
-        
-        
         // the aspectRatio is already defined in <WishGroupImage>
         // // children:
         // ...children('*', {
         //     boxSizing   : 'border-box',
         //     aspectRatio : commerces.defaultProductAspectRatio,
         // }),
+    });
+};
+const usesGalleryBodyGridLayout = () => {
+    return style({
+        // layouts:
+        display             : 'grid', // use css block grid for layouting, the core of our <PaginationGallery> layout
+        gridTemplateColumns : `repeat(auto-fill, minmax(${minImageSize}px, 1fr))`,
+        gridAutoRows        : '1fr',  // make all <GalleryItem>s having consistent height
+        
+        
+        
+        // spacings:
+        gap: spacers.lg,
     });
 };
 
@@ -247,7 +254,10 @@ export default () => [
     }, { specificityWeight: 2 }),
     scope('galleryBody', { // the <GalleryBody> of model
         ...usesGalleryBodyLayout(),
-    }, { specificityWeight: 2 }),
+    }),
+    scope('galleryBodyGrid', { // the <GalleryBody> of model
+        ...usesGalleryBodyGridLayout(),
+    }),
     scope('createModel', { // the <GalleryItem> of model add_new
         ...usesCreateModelLayout(),
     }, { specificityWeight: 2 }),
