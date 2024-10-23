@@ -462,24 +462,6 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
     
     
     
-    // default props:
-    const {
-        // semantics:
-        tag       = 'article',
-        
-        
-        
-        // classes
-        mainClass = styleSheets.main,
-        
-        
-        
-        // other props:
-        ...restGenericProps
-    } = restPaginationListProps;
-    
-    
-    
     // effects:
     const [requiresSeparatorHack, setRequiresSeparatorHack] = useState<boolean>(false); // hack-LESS if possible
     useIsomorphicLayoutEffect(() => {
@@ -506,6 +488,21 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
     
     // default props:
     const {
+        // semantics:
+        tag       = 'article',
+        
+        
+        
+        // classes
+        mainClass = styleSheets.main,
+        
+        
+        
+        // other props:
+        ...restGenericProps
+    } = restPaginationListProps;
+    
+    const {
         // variants:
         theme     : listComponentTheme     = 'inherit',
         mild      : listComponentMild      = 'inherit',
@@ -515,6 +512,9 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         
         // classes:
         className : listComponentClassName,
+        
+        
+        
         // children:
         children  : listComponentChildren = <>
             {/* <ModelCreate> */}
@@ -569,6 +569,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         
         
         
+        // other props:
         ...restListComponentProps
     } = listComponent.props;
     
