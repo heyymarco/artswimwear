@@ -153,8 +153,10 @@ const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequ
 // react components:
 export default function RootLayout({
     children,
+    category_menu : _category_menu,
 }: {
-    children: React.ReactNode
+    children      : React.ReactNode
+    category_menu : React.ReactNode
 }): JSX.Element|null {
     // styles:
     const styleSheet = useDocumentStyleSheet();
