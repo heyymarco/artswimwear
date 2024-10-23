@@ -125,9 +125,10 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
             });
             //#endregion a fix for categories page interceptor
             
-            if (!(/\/categories($|\/)/i).test(pathname)) {
-                router.push(categoriesPath, { scroll: false }); // intercept the url
-            } // if
+            // causing an unknown error:
+            // if (!(/\/categories($|\/)/i).test(pathname)) {
+            //     router.push(categoriesPath, { scroll: false }); // intercept the url
+            // } // if
         } // if
     });
     
