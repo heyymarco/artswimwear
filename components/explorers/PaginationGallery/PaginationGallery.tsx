@@ -363,6 +363,9 @@ export interface PaginationGalleryProps<TModel extends Model, TElement extends E
     bodyComponent         ?: React.ReactComponentElement<any, BasicProps<Element>>
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
     
+    galleryComponent      ?: React.ReactComponentElement<any, GenericProps<Element>>
+    galleryGridComponent  ?: React.ReactComponentElement<any, GenericProps<Element>>
+    
     
     
     // children:
@@ -392,6 +395,9 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         
         modelCreateComponent,
         modelPreviewComponent,
+        
+        galleryComponent     = (<Generic<Element> /> as React.ReactComponentElement<any, GenericProps<Element>>),
+        galleryGridComponent = (<Generic<Element> /> as React.ReactComponentElement<any, GenericProps<Element>>),
         
         
         
@@ -462,6 +468,115 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         // other props:
         ...restGenericProps
     } = restPaginationGalleryProps;
+    
+    const {
+        // semantics:
+        tag       : galleryGridComponentTag  = 'div',
+        role      : galleryGridComponentRole = 'presentation',
+        
+        
+        
+        // classes:
+        className : galleryGridComponentClassName,
+        
+        
+        
+        // children:
+        children  : galleryGridComponentChildren = <>
+            {/* <ModelEmpty> */}
+            {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
+            
+            {/* <GalleryItem> */}
+            {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
+                /* <ModelPreview> */
+                React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
+                    // props:
+                    {
+                        // identifiers:
+                        key   : modelPreviewComponent.key         ?? model.id,
+                        
+                        
+                        
+                        // data:
+                        model : modelPreviewComponent.props.model ?? model,
+                    },
+                )
+            )}
+            
+            {/* <ModelCreate> */}
+            {!!modelCreateComponent  && <ModelCreateOuter<TModel>
+                // accessibilities:
+                createItemText={createItemText}
+                
+                
+                
+                // classes:
+                className='solid'
+                
+                
+                
+                // states:
+                enabled={data !== undefined /* data is fully loaded even if empty data */}
+                
+                
+                
+                // components:
+                modelCreateComponent={modelCreateComponent}
+                
+                
+                
+                // handlers:
+                onModelCreate={onModelCreate}
+            />}
+        </>,
+        
+        
+        
+        // other props:
+        ...restGalleryGridComponentProps
+    } = galleryGridComponent.props;
+    
+    const {
+        // semantics:
+        tag       : galleryComponentTag  = 'div',
+        role      : galleryComponentRole = 'list',
+        
+        
+        
+        // classes:
+        className : galleryComponentClassName,
+        
+        
+        
+        // children:
+        children  : galleryComponentChildren = <>
+            {React.cloneElement<GenericProps<Element>>(galleryGridComponent,
+                // props:
+                {
+                    // other props:
+                    ...restGalleryGridComponentProps,
+                    
+                    
+                    
+                    // semantics:
+                    tag       : galleryGridComponentTag,
+                    role      : galleryGridComponentRole,
+                    // classes:
+                    className : `${styleSheets.galleryBodyGrid} ${galleryGridComponentClassName ?? ''}`,
+                },
+                
+                
+                
+                // children:
+                galleryGridComponentChildren,
+            )}
+        </>,
+        
+        
+        
+        // other props:
+        ...restGalleryComponentProps
+    } = galleryComponent.props;
     
     
     
@@ -534,55 +649,29 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 
                 /* <GalleryBody> */
                 /* we use <Generic> for the gallery body because the <GalleryBodyWrapper> is ALREADY has nice styling */
-                <Generic tag='section' className={styleSheets.galleryBody}>
-                    <Generic className={styleSheets.galleryBodyGrid}>
-                        {/* <ModelEmpty> */}
-                        {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
+                React.cloneElement<GenericProps<Element>>(galleryComponent,
+                    // props:
+                    {
+                        // other props:
+                        ...restGalleryComponentProps,
                         
-                        {/* <GalleryItem> */}
-                        {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
-                            /* <ModelPreview> */
-                            React.cloneElement<ModelPreviewProps<TModel, Element>>(modelPreviewComponent,
-                                // props:
-                                {
-                                    // identifiers:
-                                    key   : modelPreviewComponent.key         ?? model.id,
-                                    
-                                    
-                                    
-                                    // data:
-                                    model : modelPreviewComponent.props.model ?? model,
-                                },
-                            )
-                        )}
                         
-                        {/* <ModelCreate> */}
-                        {!!modelCreateComponent  && <ModelCreateOuter<TModel>
-                            // accessibilities:
-                            createItemText={createItemText}
-                            
-                            
-                            
-                            // classes:
-                            className='solid'
-                            
-                            
-                            
-                            // states:
-                            enabled={data !== undefined /* data is fully loaded even if empty data */}
-                            
-                            
-                            
-                            // components:
-                            modelCreateComponent={modelCreateComponent}
-                            
-                            
-                            
-                            // handlers:
-                            onModelCreate={onModelCreate}
-                        />}
-                    </Generic>
-                </Generic>,
+                        
+                        // semantics:
+                        tag       : galleryComponentTag,
+                        role      : galleryComponentRole,
+                        
+                        
+                        
+                        // classes:
+                        className : `${styleSheets.galleryBody} ${galleryComponentClassName ?? ''}`,
+                    },
+                    
+                    
+                    
+                    // children:
+                    galleryComponentChildren,
+                ),
             )}
             
             {showPagination && showPaginationBottom && <PaginationNav<TModel>
