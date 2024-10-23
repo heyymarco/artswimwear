@@ -894,10 +894,10 @@ const selectRangeFromArg    = (originalArg: unknown): { indexStart: number, inde
     
     
     /*
-        index   [page, perpage]     indexStart              indexEnd
-        012	    [1, 3]              (1 - 1) * 3   = 0       (0 + 3) - 1   = 2
-        345	    [2, 3]              (2 - 1) * 3   = 3       (3 + 3) - 1   = 5
-        678	    [3, 3]              (3 - 1) * 3   = 6       (6 + 3) - 1   = 8
+        index   [page, perpage]     indexStart          indexEnd
+        012	    [0, 3]              0 * 3   = 0       (0 + 3) - 1   = 2
+        345	    [1, 3]              1 * 3   = 3       (3 + 3) - 1   = 5
+        678	    [2, 3]              2 * 3   = 6       (6 + 3) - 1   = 8
     */
     const indexStart = page * perPage; // the model_index of the first_model of current pagination
     const indexEnd   = indexStart + (perPage - 1);
