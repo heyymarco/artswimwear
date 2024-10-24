@@ -32,8 +32,8 @@ import {
     
     
     // states:
-    useCategoryMenuState,
-}                           from './states/categoryMenuState'
+    useCategoryExplorerState,
+}                           from './states/categoryExplorerState'
 
 // configs:
 import {
@@ -48,7 +48,7 @@ const RouterUpdater = (): JSX.Element|null => {
     const {
         // states:
         parentCategories,
-    } = useCategoryMenuState();
+    } = useCategoryExplorerState();
     
     
     

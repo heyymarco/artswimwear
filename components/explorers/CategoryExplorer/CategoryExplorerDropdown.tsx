@@ -32,7 +32,7 @@ import {
 
 
 // react components:
-export interface CategoryFullMenuProps<TElement extends Element = HTMLElement>
+export interface CategoryExplorerDropdownProps<TElement extends Element = HTMLElement>
     extends
         // bases:
         Omit<DropdownProps<TElement>,
@@ -41,7 +41,7 @@ export interface CategoryFullMenuProps<TElement extends Element = HTMLElement>
         >
 {
 }
-const CategoryFullMenu = (props: CategoryFullMenuProps): JSX.Element|null => {
+const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Element|null => {
     // styles:
     const styleSheet = useCategoryFullMenuStyleSheet();
     
@@ -64,13 +64,13 @@ const CategoryFullMenu = (props: CategoryFullMenuProps): JSX.Element|null => {
             
             
             // classes:
-            className={`${styleSheet.categoryFullMenuDropdown} ${props.className}`}
+            className={`${styleSheet.dropdown} ${props.className}`}
         >
             <CategoryExplorer />
         </Dropdown>
     );
 };
 export {
-    CategoryFullMenu,
-    CategoryFullMenu as default,
+    CategoryExplorerDropdown,
+    CategoryExplorerDropdown as default,
 }

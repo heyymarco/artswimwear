@@ -59,8 +59,8 @@ import {
     
     
     // states:
-    useCategoryMenuState,
-}                           from './states/categoryMenuState'
+    useCategoryExplorerState,
+}                           from './states/categoryExplorerState'
 
 
 
@@ -72,7 +72,7 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
         parentCategories,
         setParentCategories,
         setRestoreIndex,
-    } = useCategoryMenuState();
+    } = useCategoryExplorerState();
     
     const {
         // data:

@@ -71,8 +71,8 @@ import {
     
     
     // states:
-    useCategoryMenuState,
-}                           from './states/categoryMenuState'
+    useCategoryExplorerState,
+}                           from './states/categoryExplorerState'
 
 // hooks:
 import {
@@ -93,7 +93,7 @@ const CategoryExplorerSub = (): JSX.Element|null => {
         // states:
         parentCategories,
         restoreIndex,
-    } = useCategoryMenuState();
+    } = useCategoryExplorerState();
     
     const {
         // data:
@@ -199,7 +199,7 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
         parentCategories,
         setParentCategories,
         setRestoreIndex,
-    } = useCategoryMenuState();
+    } = useCategoryExplorerState();
     
     const {
         // states:

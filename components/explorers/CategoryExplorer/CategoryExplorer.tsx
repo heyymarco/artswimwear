@@ -67,8 +67,8 @@ import {
     
     
     // react components:
-    CategoryMenuStateProvider,
-}                           from './states/categoryMenuState'
+    CategoryExplorerStateProvider,
+}                           from './states/categoryExplorerState'
 
 // hooks:
 import {
@@ -150,7 +150,7 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
                 // classes:
                 className={styleSheet.body}
             >
-                <CategoryMenuStateProvider
+                <CategoryExplorerStateProvider
                     // states:
                     parentCategories={parentCategories}
                     setParentCategories={setParentCategories}
@@ -179,7 +179,7 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
                             <CategoryExplorerSub />
                         </Container>
                     </PaginationStateProvider>
-                </CategoryMenuStateProvider>
+                </CategoryExplorerStateProvider>
             </div>
             <Container className={styleSheet.subAfter} theme='primaryAlt' mild={false} />
         </Generic>

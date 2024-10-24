@@ -43,8 +43,8 @@ import {
 
 // internal components:
 import {
-    CategoryFullMenu,
-}                           from '@/components/menus/CategoryFullMenu'
+    CategoryExplorerDropdown,
+}                           from '@/components/explorers/CategoryExplorer'
 
 
 
@@ -99,7 +99,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
             
             //#region a fix for categories page interceptor
             const newShownMenu = showDialog<unknown>(
-                <CategoryFullMenu
+                <CategoryExplorerDropdown
                     // variants:
                     // theme='primary'
                     

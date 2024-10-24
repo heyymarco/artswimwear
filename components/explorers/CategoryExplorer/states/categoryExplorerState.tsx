@@ -30,7 +30,7 @@ import {
 
 // states:
 
-//#region categoryMenuState
+//#region categoryExplorerState
 
 // types:
 export interface ParentCategoryInfo {
@@ -41,7 +41,7 @@ export interface ParentCategoryInfo {
 
 
 // contexts:
-export interface CategoryMenuState {
+export interface CategoryExplorerState {
     // states:
     parentCategories    : ParentCategoryInfo[]
     setParentCategories : Updater<ParentCategoryInfo[]>
@@ -51,7 +51,7 @@ export interface CategoryMenuState {
 }
 
 const noopCallback = () => {};
-const defaultCategoryMenuStateContext : CategoryMenuState = {
+const defaultCategoryExplorerStateContext : CategoryExplorerState = {
     // states:
     parentCategories    : [],
     setParentCategories : noopCallback,
@@ -59,22 +59,22 @@ const defaultCategoryMenuStateContext : CategoryMenuState = {
     restoreIndex        : 0,
     setRestoreIndex     : noopCallback,
 }
-const CategoryMenuStateContext = createContext<CategoryMenuState>(defaultCategoryMenuStateContext);
-CategoryMenuStateContext.displayName  = 'CategoryMenuState';
+const CategoryExplorerStateContext = createContext<CategoryExplorerState>(defaultCategoryExplorerStateContext);
+CategoryExplorerStateContext.displayName  = 'CategoryExplorerState';
 
-export const useCategoryMenuState = (): CategoryMenuState => {
-    return useContext(CategoryMenuStateContext);
+export const useCategoryExplorerState = (): CategoryExplorerState => {
+    return useContext(CategoryExplorerStateContext);
 }
 
 
 
 // react components:
-export interface CategoryMenuStateProps
+export interface CategoryExplorerStateProps
     extends
-        Partial<CategoryMenuState>
+        Partial<CategoryExplorerState>
 {
 }
-const CategoryMenuStateProvider = (props: React.PropsWithChildren<CategoryMenuStateProps>): JSX.Element|null => {
+const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryExplorerStateProps>): JSX.Element|null => {
     const {
         // states:
         parentCategories    : defaultParentCategories,
@@ -82,7 +82,7 @@ const CategoryMenuStateProvider = (props: React.PropsWithChildren<CategoryMenuSt
         
         restoreIndex        : defaultRestoreIndex,
         setRestoreIndex     : defaultSetRestoreIndex,
-    } = useCategoryMenuState();
+    } = useCategoryExplorerState();
     
     
     
@@ -99,7 +99,7 @@ const CategoryMenuStateProvider = (props: React.PropsWithChildren<CategoryMenuSt
     
     
     // states:
-    const categoryMenuState = useMemo<CategoryMenuState>(() => ({
+    const categoryExplorerState = useMemo<CategoryExplorerState>(() => ({
         // states:,
         parentCategories,
         setParentCategories,
@@ -119,13 +119,13 @@ const CategoryMenuStateProvider = (props: React.PropsWithChildren<CategoryMenuSt
     
     // jsx:
     return (
-        <CategoryMenuStateContext.Provider value={categoryMenuState}>
+        <CategoryExplorerStateContext.Provider value={categoryExplorerState}>
             {props.children}
-        </CategoryMenuStateContext.Provider>
+        </CategoryExplorerStateContext.Provider>
     );
 };
 export {
-    CategoryMenuStateProvider,
-    CategoryMenuStateProvider as default,
+    CategoryExplorerStateProvider,
+    CategoryExplorerStateProvider as default,
 }
-//#endregion categoryMenuState
+//#endregion categoryExplorerState

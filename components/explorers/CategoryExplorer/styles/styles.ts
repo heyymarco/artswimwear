@@ -209,7 +209,7 @@ const usesSubExplLayout = () => {
 
 
 export default () => [
-    scope('categoryFullMenuDropdown', {
+    scope('dropdown', {
         // layouts:
         ...usesCategoryFullMenuDropdownLayout(),
     }),
