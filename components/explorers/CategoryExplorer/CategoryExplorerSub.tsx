@@ -8,7 +8,7 @@ import {
 
 // styles:
 import {
-    useCategoryFullMenuStyleSheet,
+    useCategoryExplorerStyleSheet,
 }                           from './styles/loader'
 
 // reusable-ui core:
@@ -189,7 +189,7 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
 };
 const CategoryExplorerSubInternal = (): JSX.Element|null => {
     // styles:
-    const styleSheet = useCategoryFullMenuStyleSheet();
+    const styleSheet = useCategoryExplorerStyleSheet();
     
     
     

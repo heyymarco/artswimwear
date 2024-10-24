@@ -8,6 +8,6 @@ import {
 
 // styles:
 import './styles';
-export const useCategoryFullMenuStyleSheet = dynamicStyleSheets(
+export const useCategoryExplorerStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */ './styles')
 , { id: 'ygi97nf1b3' }); // a unique salt for SSR support, ensures the server-side & client-side have the same generated class names

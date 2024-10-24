@@ -16,7 +16,7 @@ import {
 
 // styles:
 import {
-    useCategoryFullMenuStyleSheet,
+    useCategoryExplorerStyleSheet,
 }                           from './styles/loader'
 
 // reusable-ui components:
@@ -100,7 +100,7 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
 }
 const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
     // styles:
-    const styleSheet = useCategoryFullMenuStyleSheet();
+    const styleSheet = useCategoryExplorerStyleSheet();
     
     
     

@@ -12,7 +12,7 @@ import {
 export default function CategoryIntercept(): JSX.Element|null {
     /*
         handles:
-        * SOFT navigation of `/categories/subcategories+` => SHOW <CategoryFullMenu>.
+        * SOFT navigation of `/categories/subcategories+` => SHOW <CategoryExplorerDropdown>.
     */
     
     

@@ -26,7 +26,7 @@ import {
 
 
 // styles:
-const usesCategoryFullMenuDropdownLayout = () => {
+const usesDropdownLayout = () => {
     return style({
         inlineSize : '100%',
     });
@@ -211,7 +211,7 @@ const usesSubExplLayout = () => {
 export default () => [
     scope('dropdown', {
         // layouts:
-        ...usesCategoryFullMenuDropdownLayout(),
+        ...usesDropdownLayout(),
     }),
     
     scope('main', {
