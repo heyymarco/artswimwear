@@ -154,7 +154,7 @@ const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequ
 export function RootLayoutContent({
     children,
 }: {
-    children      : React.ReactNode
+    children : React.ReactNode
 }): JSX.Element|null {
     // styles:
     const styleSheet = useDocumentStyleSheet();
@@ -162,7 +162,7 @@ export function RootLayoutContent({
     
     
     // jsx:
-    return (<>
+    return (
         <html
             // classes:
             className={styleSheet.main}
@@ -195,12 +195,12 @@ export function RootLayoutContent({
                 </NextAuthSessionProvider>
             </body>
         </html>
-    </>);
+    );
 }
 function RootLayoutContentInternal({
     children,
 }: {
-    children: React.ReactNode
+    children : React.ReactNode
 }): JSX.Element|null {
     // stores:
     useSignedInCacheRefresh();

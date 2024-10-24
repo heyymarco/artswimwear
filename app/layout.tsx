@@ -15,7 +15,7 @@ import {
 export default function RootLayout({
     children,
 }: {
-    children      : React.ReactNode
+    children : React.ReactNode
 }): JSX.Element|null {
     // jsx:
     return (
