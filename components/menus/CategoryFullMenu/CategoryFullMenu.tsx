@@ -10,6 +10,7 @@ import {
     // hooks:
     useRef,
     useEffect,
+    useState,
 }                           from 'react'
 import {
     useImmer,
@@ -118,8 +119,8 @@ import {
 
 // configs:
 const categoriesPath = '/categories';
-const rootPerPage    = 3;
-const subPerPage     = 3;
+const rootPerPage    = 10;
+const subPerPage     = 10;
 
 
 
@@ -159,6 +160,7 @@ const CategoryFullMenu = (props: CategoryFullMenuProps): JSX.Element|null => {
     
     // states:
     const [parentCategories, setParentCategories] = useImmer<ParentCategoryInfo[]>([]);
+    const [restoreIndex    , setRestoreIndex    ] = useState<number>(0);
     
     
     
@@ -200,6 +202,9 @@ const CategoryFullMenu = (props: CategoryFullMenuProps): JSX.Element|null => {
                         // states:
                         parentCategories={parentCategories}
                         setParentCategories={setParentCategories}
+                        
+                        restoreIndex={restoreIndex}
+                        setRestoreIndex={setRestoreIndex}
                     >
                         {/*
                             Place the <PaginationStateProvider> for root data here,
@@ -291,6 +296,7 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
         // states:
         parentCategories,
         setParentCategories,
+        setRestoreIndex,
     } = useCategoryMenuState();
     
     const {
@@ -332,6 +338,7 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
         
         // actions:
         setParentCategories([selectedRootOrDefault]); // set the initial root category
+        setRestoreIndex(0); // reset the pagination index of child categories
     }, [parentCategories, selectedRootOrDefault]);
     
     
@@ -339,6 +346,7 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
     // handlers:
     const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview>>((model) => {
         setParentCategories([{ category: model, index: 0 }]); // set the selected root category
+        setRestoreIndex(0); // reset the pagination index of child categories
     });
     
     
@@ -368,6 +376,7 @@ const CategoryExplorerSub = (): JSX.Element|null => {
     const {
         // states:
         parentCategories,
+        restoreIndex,
     } = useCategoryMenuState();
     
     const {
@@ -409,7 +418,7 @@ const CategoryExplorerSub = (): JSX.Element|null => {
             
             // data:
             rootCategory={selectedParentOrDefault.category}
-            initialPage={selectedParentOrDefault.index % subPerPage}
+            initialPage={Math.floor(restoreIndex / subPerPage)}
         />
     );
 }
@@ -466,6 +475,7 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
         // states:
         parentCategories,
         setParentCategories,
+        setRestoreIndex,
     } = useCategoryMenuState();
     
     const {
@@ -490,7 +500,8 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
             
             
             // actions:
-            draft.pop();
+            const prevCategoryInfo = draft.pop();
+            setRestoreIndex(prevCategoryInfo?.index ?? 0); // restore the pagination index of child categories
         });
     });
     const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview>>((model) => {
@@ -511,6 +522,7 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
                 })()
             });
         });
+        setRestoreIndex(0); // reset the pagination index of child categories
     });
     
     

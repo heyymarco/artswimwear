@@ -85,5 +85,5 @@ export const MutationArgsSchema = <TModel extends Model, TModelSchema extends z.
 
 export const PaginationArgSchema = z.object({
     page    : z.number().int().finite().gte(0),
-    perPage : z.number().int().finite().gte(3).lte(50), // minimum 4 for displaying preview of four images
+    perPage : z.number().int().finite().gte(4).lte(50), // minimum 4 for displaying preview of four images
 }) satisfies z.Schema<PaginationArgs>;

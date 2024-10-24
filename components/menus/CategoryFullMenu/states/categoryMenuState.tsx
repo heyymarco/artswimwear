@@ -45,6 +45,9 @@ export interface CategoryMenuState {
     // states:
     parentCategories    : ParentCategoryInfo[]
     setParentCategories : Updater<ParentCategoryInfo[]>
+    
+    restoreIndex        : number
+    setRestoreIndex     : (restoreIndex: number) => void
 }
 
 const noopCallback = () => {};
@@ -52,6 +55,9 @@ const defaultCategoryMenuStateContext : CategoryMenuState = {
     // states:
     parentCategories    : [],
     setParentCategories : noopCallback,
+    
+    restoreIndex        : 0,
+    setRestoreIndex     : noopCallback,
 }
 const CategoryMenuStateContext = createContext<CategoryMenuState>(defaultCategoryMenuStateContext);
 CategoryMenuStateContext.displayName  = 'CategoryMenuState';
@@ -73,6 +79,9 @@ const CategoryMenuStateProvider = (props: React.PropsWithChildren<CategoryMenuSt
         // states:
         parentCategories    : defaultParentCategories,
         setParentCategories : defaultSetParentCategories,
+        
+        restoreIndex        : defaultRestoreIndex,
+        setRestoreIndex     : defaultSetRestoreIndex,
     } = useCategoryMenuState();
     
     
@@ -82,6 +91,9 @@ const CategoryMenuStateProvider = (props: React.PropsWithChildren<CategoryMenuSt
         // states:
         parentCategories    = defaultParentCategories,
         setParentCategories = defaultSetParentCategories,
+        
+        restoreIndex        = defaultRestoreIndex,
+        setRestoreIndex     = defaultSetRestoreIndex,
     } = props;
     
     
@@ -91,10 +103,16 @@ const CategoryMenuStateProvider = (props: React.PropsWithChildren<CategoryMenuSt
         // states:,
         parentCategories,
         setParentCategories,
+        
+        restoreIndex,
+        setRestoreIndex,
     }), [
         // states:,
         parentCategories,
         setParentCategories,
+        
+        restoreIndex,
+        setRestoreIndex,
     ]);
     
     
