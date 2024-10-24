@@ -1,0 +1,304 @@
+'use client'
+
+// react:
+import {
+    // react:
+    default as React,
+}                           from 'react'
+
+// styles:
+import {
+    useCategoryFullMenuStyleSheet,
+}                           from './styles/loader'
+
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
+
+// reusable-ui components:
+import {
+    // base-components:
+    Generic,
+    
+    
+    
+    // simple-components:
+    ButtonIcon,
+    
+    
+    
+    // layout-components:
+    List,
+}                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+
+// internal components:
+import {
+    type EditorChangeEventHandler,
+}                           from '@/components/editors/Editor'
+import {
+    type PaginationStateProps,
+    PaginationStateProvider,
+    usePaginationState,
+}                           from '@/components/explorers/Pagination'
+import {
+    CategoryView,
+}                           from '@/components/views/CategoryView'
+
+// private components:
+import {
+    CategoryExplorerGallery,
+}                           from './CategoryExplorerGallery'
+
+// models:
+import {
+    // types:
+    type CategoryPreview,
+}                           from '@/models'
+
+// stores:
+import {
+    // hooks:
+    useGetCategoryPage as _useGetCategoryPage,
+}                           from '@/store/features/api/apiSlice'
+
+// internals:
+import {
+    // types:
+    type ParentCategoryInfo,
+    
+    
+    
+    // states:
+    useCategoryMenuState,
+}                           from './states/categoryMenuState'
+
+// hooks:
+import {
+    useUseGetSubCategoryPage,
+}                           from './hooks'
+
+// configs:
+import {
+    subPerPage,
+}                           from './configs'
+
+
+
+// react components:
+const CategoryExplorerSub = (): JSX.Element|null => {
+    // states:
+    const {
+        // states:
+        parentCategories,
+        restoreIndex,
+    } = useCategoryMenuState();
+    
+    const {
+        // data:
+        data : rootData,
+    } = usePaginationState<CategoryPreview>();
+    
+    const selectedParentOrDefault : ParentCategoryInfo|null = (
+        // the last selected category is the displayed_category's_parent:
+        parentCategories.at(-1)
+        
+        ??
+        
+        // the first item in data is the default displayed_category's_parent:
+        (() : ParentCategoryInfo|null => {
+            if (!rootData) return null;
+            const index    = 0;
+            const category = Object.values(rootData.entities).at(index);
+            if (!category) return null;
+            return { category, index };
+        })()
+        
+        ??
+        
+        // not found:
+        null
+    );
+    
+    
+    
+    // jsx:
+    if (!selectedParentOrDefault) return null;
+    return (
+        <CategoryExplorerSubConditional
+            // identifiers:
+            key={selectedParentOrDefault.category.id} // when switched to "different" selectedParent, the "state" should be "cleared"
+            
+            
+            
+            // data:
+            rootCategory={selectedParentOrDefault.category}
+            initialPage={Math.floor(restoreIndex / subPerPage)}
+        />
+    );
+};
+export {
+    CategoryExplorerSub,
+    CategoryExplorerSub as default,
+}
+
+
+
+interface CategoryExplorerSubConditionalProps
+    extends
+        // bases:
+        Pick<PaginationStateProps<CategoryPreview>,
+            // states:
+            |'initialPage'
+        >
+{
+    // data:
+    rootCategory: CategoryPreview
+}
+const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalProps): JSX.Element|null => {
+    // props:
+    const {
+        // data:
+        rootCategory,
+        initialPage,
+    } = props;
+    
+    
+    
+    // hooks:
+    const _useGetSubCategoryPage = useUseGetSubCategoryPage(rootCategory.id);
+    
+    
+    
+    // jsx:
+    return (
+        <PaginationStateProvider<CategoryPreview>
+            // states:
+            initialPage={initialPage}
+            initialPerPage={subPerPage}
+            
+            
+            
+            // data:
+            useGetModelPage={_useGetSubCategoryPage}
+        >
+            <CategoryExplorerSubInternal />
+        </PaginationStateProvider>
+    );
+};
+const CategoryExplorerSubInternal = (): JSX.Element|null => {
+    // styles:
+    const styleSheet = useCategoryFullMenuStyleSheet();
+    
+    
+    
+    // states:
+    const {
+        // states:
+        parentCategories,
+        setParentCategories,
+        setRestoreIndex,
+    } = useCategoryMenuState();
+    
+    const {
+        // states:
+        page,
+        perPage,
+        
+        
+        
+        // data:
+        data,
+    } = usePaginationState<CategoryPreview>();
+    
+    
+    
+    // handlers:
+    const handleBack = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
+        setParentCategories((draft): void => {
+            // conditions:
+            if (!draft.length) return; // the root category is not yet selected or loaded => ignore
+            
+            
+            
+            // actions:
+            const prevCategoryInfo = draft.pop();
+            setRestoreIndex(prevCategoryInfo?.index ?? 0); // restore the pagination index of child categories
+        });
+    });
+    const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview>>((model) => {
+        setParentCategories((draft): void => {
+            // conditions:
+            if (!draft.length) return; // the root category is not yet selected or loaded => ignore
+            
+            
+            
+            // actions:
+            draft.push({
+                category : model,
+                index    : (page * perPage) + ((): number => {
+                    if (!data) return 0;
+                    const itemIndex = data.entities.findIndex(({id: searchId}) => (searchId === model.id));
+                    if (itemIndex < 0) return 0;
+                    return itemIndex;
+                })()
+            });
+        });
+        setRestoreIndex(0); // reset the pagination index of child categories
+    });
+    
+    
+    
+    // jsx:
+    return (
+        <>
+            <div className={styleSheet.nav}>
+                {(parentCategories.length >= 2) && <ButtonIcon
+                    // appearances:
+                    icon='arrow_back'
+                    
+                    
+                    
+                    // variants:
+                    theme='primary'
+                    buttonStyle='link'
+                    mild={false}
+                    
+                    
+                    
+                    // handlers:
+                    onClick={handleBack}
+                >
+                    Back
+                </ButtonIcon>}
+            </div>
+            
+            <CategoryExplorerGallery
+                // classes:
+                className={styleSheet.subExpl}
+                
+                
+                
+                // components:
+                listComponent={<List listStyle='flat' mild={false} />}
+                modelPreviewComponent={
+                    <CategoryView
+                        // data:
+                        model={undefined as any}
+                        
+                        
+                        
+                        // handlers:
+                        onModelSelect={handleSelect}
+                    />
+                }
+                
+                
+                
+                // components:
+                galleryComponent={<Generic className='flat' />}
+            />
+        </>
+    );
+};
