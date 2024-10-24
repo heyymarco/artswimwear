@@ -194,7 +194,7 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
             </Basic>
             
             { hasSubcategories && <Icon icon='dropright' size='xl' theme='primary' mild={active} className='arrow' />}
-            {!hasSubcategories && <Link href={`/categories/${parentCategories.length ? `${parentCategories.map(({category: {path}}) => path).join('/')}/` : ''}${path}`} />}
+            {!hasSubcategories && <Link href={`/_go/categories/${parentCategories.length ? `${parentCategories.map(({category: {path}}) => path).join('/')}/` : ''}${path}`} />}
         </ListItem>
     );
 };

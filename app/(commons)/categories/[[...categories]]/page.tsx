@@ -30,9 +30,12 @@ export const metadata: Metadata = {
 
 
 // react components:
-export default function CategoryPage(): JSX.Element|null {
+export default function CategoryPage({ params: { categories } }: { params: { categories: string[] } }): JSX.Element|null {
     // jsx:
     return (
-        <CategoryPageContent />
+        <CategoryPageContent
+            // params:
+            categories={categories}
+        />
     );
 }

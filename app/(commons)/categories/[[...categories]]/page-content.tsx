@@ -67,18 +67,18 @@ import {
 
 
 // react components:
-export function CategoryPageContent(): JSX.Element|null {
+export function CategoryPageContent({ categories }: { categories: string[] }): JSX.Element|null {
     // jsx:
     return (
         <PaginationStateProvider<ProductPreview>
             // data:
             useGetModelPage={useGetProductPage}
         >
-            <CategoryPageContentInternal />
+            <CategoryPageContentInternal categories={categories} />
         </PaginationStateProvider>
     );
 }
-function CategoryPageContentInternal(): JSX.Element|null {
+function CategoryPageContentInternal({ categories }: { categories: string[] }): JSX.Element|null {
     // styles:
     const styleSheet = useCategoryListPageStyleSheet();
     
