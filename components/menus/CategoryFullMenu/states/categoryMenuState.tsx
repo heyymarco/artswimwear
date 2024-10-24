@@ -32,11 +32,19 @@ import {
 
 //#region categoryMenuState
 
+// types:
+export interface ParentCategoryInfo {
+    category : CategoryPreview
+    index    : number
+}
+
+
+
 // contexts:
 export interface CategoryMenuState {
     // states:
-    parentCategories    : CategoryPreview[]
-    setParentCategories : Updater<CategoryPreview[]>
+    parentCategories    : ParentCategoryInfo[]
+    setParentCategories : Updater<ParentCategoryInfo[]>
 }
 
 const noopCallback = () => {};

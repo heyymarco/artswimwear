@@ -67,6 +67,7 @@ import {
     type EditorChangeEventHandler,
 }                           from '@/components/editors/Editor'
 import {
+    type PaginationStateProps,
     PaginationStateProvider,
     usePaginationState,
 }                           from '@/components/explorers/Pagination'
@@ -99,6 +100,11 @@ import {
 
 // internals:
 import {
+    // types:
+    type ParentCategoryInfo,
+    
+    
+    
     // states:
     useCategoryMenuState,
     
@@ -112,6 +118,8 @@ import {
 
 // configs:
 const categoriesPath = '/categories';
+const rootPerPage    = 3;
+const subPerPage     = 3;
 
 
 
@@ -150,7 +158,7 @@ const CategoryFullMenu = (props: CategoryFullMenuProps): JSX.Element|null => {
     
     
     // states:
-    const [parentCategories, setParentCategories] = useImmer<CategoryPreview[]>([]);
+    const [parentCategories, setParentCategories] = useImmer<ParentCategoryInfo[]>([]);
     
     
     
@@ -199,7 +207,7 @@ const CategoryFullMenu = (props: CategoryFullMenuProps): JSX.Element|null => {
                         */}
                         <PaginationStateProvider<CategoryPreview>
                             // states:
-                            initialPerPage={10}
+                            initialPerPage={rootPerPage}
                             
                             
                             
@@ -241,7 +249,7 @@ const RouterUpdater = (): JSX.Element|null => {
     // sync the pathname to the path of selected category:
     const pathname                = usePathname();
     const router                  = useRouter();
-    const prevParentCategoriesRef = useRef<CategoryPreview[]>(parentCategories);
+    const prevParentCategoriesRef = useRef<ParentCategoryInfo[]>(parentCategories);
     useEffect(() => {
         // conditions:
         if (prevParentCategoriesRef.current === parentCategories) return; // already the same => ignore
@@ -252,8 +260,8 @@ const RouterUpdater = (): JSX.Element|null => {
         
         
         // actions:
-        const oldPathname = `${categoriesPath}/${prevParentCategories.map(({path}) => path).join('/')}`;
-        const newPathname = `${categoriesPath}/${parentCategories.map(({path}) => path).join('/')}`;
+        const oldPathname = `${categoriesPath}/${prevParentCategories.map(({category: {path}}) => path).join('/')}`;
+        const newPathname = `${categoriesPath}/${parentCategories.map(({category: {path}}) => path).join('/')}`;
         if (newPathname.toLowerCase() !== pathname) {
             if ((prevParentCategories.length === (parentCategories.length + 1)) && ((): boolean => { // if a back action detected
                 for (let index = 0, maxIndex = parentCategories.length - 1; index <= maxIndex; index++) {
@@ -290,11 +298,24 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
         data : rootData,
     } = usePaginationState<CategoryPreview>();
     
-    const selectedRootOrDefault : CategoryPreview|null = (
+    const selectedRootOrDefault : ParentCategoryInfo|null = (
+        // the first selected category is the selected_root_category:
         parentCategories.at(0)
+        
         ??
-        (rootData ? Object.values(rootData.entities)?.[0] : null)
+        
+        // the first item in data is the default selected_root_category:
+        (() : ParentCategoryInfo|null => {
+            if (!rootData) return null;
+            const index    = 0;
+            const category = Object.values(rootData.entities).at(index);
+            if (!category) return null;
+            return { category, index };
+        })()
+        
         ??
+        
+        // not found:
         null
     );
     
@@ -310,20 +331,19 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
         
         
         // actions:
-        setParentCategories(() => [selectedRootOrDefault]); // set the initial root category
+        setParentCategories([selectedRootOrDefault]); // set the initial root category
     }, [parentCategories, selectedRootOrDefault]);
     
     
     
     // handlers:
     const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview>>((model) => {
-        setParentCategories(() => [model]); // set the selected root category
+        setParentCategories([{ category: model, index: 0 }]); // set the selected root category
     });
     
     
     
     // jsx:
-    if (!selectedRootOrDefault) return null;
     return (
         <CategoryExplorerList
             // components:
@@ -336,7 +356,7 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
                     
                     
                     // handlers:
-                    selectedModel={selectedRootOrDefault}
+                    selectedModel={selectedRootOrDefault?.category ?? null}
                     onModelSelect={handleSelect}
                 />
             }
@@ -355,11 +375,24 @@ const CategoryExplorerSub = (): JSX.Element|null => {
         data : rootData,
     } = usePaginationState<CategoryPreview>();
     
-    const selectedParentOrDefault : CategoryPreview|null = (
+    const selectedParentOrDefault : ParentCategoryInfo|null = (
+        // the last selected category is the displayed_category's_parent:
         parentCategories.at(-1)
+        
         ??
-        (rootData ? Object.values(rootData.entities)?.[0] : null)
+        
+        // the first item in data is the default displayed_category's_parent:
+        (() : ParentCategoryInfo|null => {
+            if (!rootData) return null;
+            const index    = 0;
+            const category = Object.values(rootData.entities).at(index);
+            if (!category) return null;
+            return { category, index };
+        })()
+        
         ??
+        
+        // not found:
         null
     );
     
@@ -368,17 +401,63 @@ const CategoryExplorerSub = (): JSX.Element|null => {
     // jsx:
     if (!selectedParentOrDefault) return null;
     return (
-        <CategoryExplorerSubInternal rootCategory={selectedParentOrDefault} />
+        <CategoryExplorerSubConditional
+            // identifiers:
+            key={selectedParentOrDefault.category.id} // when switched to "different" selectedParent, the "state" should be "cleared"
+            
+            
+            
+            // data:
+            rootCategory={selectedParentOrDefault.category}
+            initialPage={selectedParentOrDefault.index % subPerPage}
+        />
     );
 }
-const CategoryExplorerSubInternal = ({rootCategory}: {rootCategory: CategoryPreview}): JSX.Element|null => {
-    // styles:
-    const styleSheet = useCategoryFullMenuStyleSheet();
+interface CategoryExplorerSubConditionalProps
+    extends
+        // bases:
+        Pick<PaginationStateProps<CategoryPreview>,
+            // states:
+            |'initialPage'
+        >
+{
+    // data:
+    rootCategory: CategoryPreview
+}
+const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalProps): JSX.Element|null => {
+    // props:
+    const {
+        // data:
+        rootCategory,
+        initialPage,
+    } = props;
     
     
     
     // hooks:
     const _useGetSubCategoryPage = useUseGetSubCategoryPage(rootCategory.id);
+    
+    
+    
+    // jsx:
+    return (
+        <PaginationStateProvider<CategoryPreview>
+            // states:
+            initialPage={initialPage}
+            initialPerPage={subPerPage}
+            
+            
+            
+            // data:
+            useGetModelPage={_useGetSubCategoryPage}
+        >
+            <CategoryExplorerSubInternal />
+        </PaginationStateProvider>
+    );
+};
+const CategoryExplorerSubInternal = (): JSX.Element|null => {
+    // styles:
+    const styleSheet = useCategoryFullMenuStyleSheet();
     
     
     
@@ -389,11 +468,22 @@ const CategoryExplorerSubInternal = ({rootCategory}: {rootCategory: CategoryPrev
         setParentCategories,
     } = useCategoryMenuState();
     
+    const {
+        // states:
+        page,
+        perPage,
+        
+        
+        
+        // data:
+        data,
+    } = usePaginationState<CategoryPreview>();
+    
     
     
     // handlers:
     const handleBack = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
-        setParentCategories((draft) => {
+        setParentCategories((draft): void => {
             // conditions:
             if (!draft.length) return; // the root category is not yet selected or loaded => ignore
             
@@ -404,14 +494,22 @@ const CategoryExplorerSubInternal = ({rootCategory}: {rootCategory: CategoryPrev
         });
     });
     const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview>>((model) => {
-        setParentCategories((draft) => {
+        setParentCategories((draft): void => {
             // conditions:
             if (!draft.length) return; // the root category is not yet selected or loaded => ignore
             
             
             
             // actions:
-            draft.push(model);
+            draft.push({
+                category : model,
+                index    : (page * perPage) + ((): number => {
+                    if (!data) return 0;
+                    const itemIndex = data.entities.findIndex(({id: searchId}) => (searchId === model.id));
+                    if (itemIndex < 0) return 0;
+                    return itemIndex;
+                })()
+            });
         });
     });
     
@@ -419,15 +517,7 @@ const CategoryExplorerSubInternal = ({rootCategory}: {rootCategory: CategoryPrev
     
     // jsx:
     return (
-        <PaginationStateProvider<CategoryPreview>
-            // states:
-            initialPerPage={10}
-            
-            
-            
-            // data:
-            useGetModelPage={_useGetSubCategoryPage}
-        >
+        <>
             <div className={styleSheet.nav}>
                 {(parentCategories.length >= 2) && <ButtonIcon
                     // appearances:
@@ -474,7 +564,7 @@ const CategoryExplorerSubInternal = ({rootCategory}: {rootCategory: CategoryPrev
                 // components:
                 galleryComponent={<Generic className='flat' />}
             />
-        </PaginationStateProvider>
+        </>
     );
 };
 
