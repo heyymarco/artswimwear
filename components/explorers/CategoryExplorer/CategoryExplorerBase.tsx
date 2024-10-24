@@ -11,12 +11,6 @@ import {
     // base-components:
     BasicProps,
     Basic,
-    
-    
-    
-    // layout-components:
-    ListProps,
-    List,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // internal components:
@@ -46,10 +40,13 @@ import {
 
 
 // react components:
+type PaginationListGalleryProps = Pick<PaginationListProps<CategoryPreview> & PaginationGalleryProps<CategoryPreview>,
+    Extract<keyof PaginationListProps<CategoryPreview>, keyof PaginationGalleryProps<CategoryPreview>>
+>
 export interface CategoryExplorerBaseProps
     extends
         // bases:
-        Omit<(PaginationListProps<CategoryPreview> & PaginationGalleryProps<CategoryPreview>),
+        Omit<PaginationListGalleryProps,
             // accessibilities:
             |'createItemText'
             
@@ -61,7 +58,7 @@ export interface CategoryExplorerBaseProps
             // handlers:
             |'onModelCreate'
         >,
-        Partial<Pick<(PaginationListProps<CategoryPreview> & PaginationGalleryProps<CategoryPreview>),
+        Partial<Pick<PaginationListGalleryProps,
             |'modelPreviewComponent'
         >>
 {
@@ -97,7 +94,6 @@ const CategoryExplorerBase = (props: CategoryExplorerBaseProps): JSX.Element|nul
         
         // components:
         bodyComponent         = (<Basic nude={true} theme='inherit' mild='inherit' /> as React.ReactComponentElement<any, BasicProps<Element>>),
-        listComponent         = (<List listStyle='flat' />                            as React.ReactComponentElement<any, ListProps<Element>>),
         modelPreviewComponent = (<CategoryView
             // data:
             model={undefined as any}
@@ -134,7 +130,6 @@ const CategoryExplorerBase = (props: CategoryExplorerBaseProps): JSX.Element|nul
                 
                 // components:
                 bodyComponent,
-                listComponent,
                 modelPreviewComponent,
             },
         )

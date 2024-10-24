@@ -281,7 +281,7 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
                 
                 
                 // components:
-                listComponent={<List listStyle='flat' mild={false} />}
+                galleryComponent={<Generic className='flat' />}
                 modelPreviewComponent={
                     <CategoryView
                         // data:
@@ -293,11 +293,6 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
                         onModelSelect={handleSelect}
                     />
                 }
-                
-                
-                
-                // components:
-                galleryComponent={<Generic className='flat' />}
             />
         </>
     );
