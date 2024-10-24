@@ -107,7 +107,8 @@ export interface CategoryPreview
             |'path'
         >
 {
-    image : Required<Category>['images'][number]|undefined
+    image            : Required<Category>['images'][number]|undefined
+    hasSubcategories : boolean
 }
 
 

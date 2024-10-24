@@ -87,10 +87,11 @@ const usesCategoryViewLayout = () => { // the <ListItem> of category list
             // layouts:
             display: 'grid',
             gridTemplate: [[
-                '"preview ... name"', 'auto',
+                '"preview ... name arrow"', 'auto',
                 '/',
-                `calc(((${minImageHeight}px + (2 * ${paddingVars.paddingBlock})) * ${commerces.defaultProductAspectRatio}) - ${paddingVars.paddingInline}) ${paddingVars.paddingInline} 1fr`,
+                `calc(((${minImageHeight}px + (2 * ${paddingVars.paddingBlock})) * ${commerces.defaultProductAspectRatio}) - ${paddingVars.paddingInline}) ${paddingVars.paddingInline} 1fr min-content`,
             ]],
+            alignItems: 'center',
             
             
             
@@ -242,6 +243,15 @@ const usesCategoryViewLayout = () => { // the <ListItem> of category list
                 
                 // typos:
                 fontSize: typos.fontSizeLg,
+            }),
+            ...children('.arrow', {
+                // positions:
+                gridArea: 'arrow',
+                
+                
+                
+                // spacings:
+                marginInlineStart : spacers.md,
             }),
         }),
         

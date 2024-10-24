@@ -32,6 +32,9 @@ import {
     // layout-components:
     ListItem,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // internal components:
 import {
@@ -41,11 +44,12 @@ import {
     type ModelPreviewProps,
 }                           from '@/components/explorers/PaginationList'
 import {
-    MiniCarousel,
-}                           from '@/components/MiniCarousel'
-import {
     ModelImage,
 }                           from '@/components/views/ModelImage'
+import {
+    // states:
+    useCategoryExplorerState,
+}                           from '@/components/explorers/CategoryExplorer/states/categoryExplorerState'
 
 // models:
 import {
@@ -91,7 +95,17 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
         id,
         name,
         image = null,
+        hasSubcategories,
+        path,
     } = model;
+    
+    
+    
+    // states:
+    const {
+        // states:
+        parentCategories,
+    } = useCategoryExplorerState();
     
     
     
@@ -145,7 +159,7 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
             
             
             // handlers:
-            onClick={handleClick}
+            onClick={hasSubcategories ? handleClick : undefined}
         >
             <h3 className='name'>
                 {name}
@@ -178,6 +192,9 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
                     className='image'
                 />
             </Basic>
+            
+            { hasSubcategories && <Icon icon='dropright' size='xl' theme='primary' mild={active} className='arrow' />}
+            {!hasSubcategories && <Link href={`/categories/${parentCategories.length ? `${parentCategories.map(({category: {path}}) => path).join('/')}/` : ''}${path}`} />}
         </ListItem>
     );
 };

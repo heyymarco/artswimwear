@@ -143,14 +143,22 @@ export const categoryPreviewSelect = {
     path           : true,
     
     images         : true,
+    subcategories  : {
+        select     : {
+            id     : true,
+        },
+        take       : 1,
+    },
 } satisfies Prisma.CategorySelect;
 export const convertCategoryPreviewDataToCategoryPreview = (categoryPreviewData: Awaited<ReturnType<typeof prisma.category.findFirstOrThrow<{ select: typeof categoryPreviewSelect }>>>): CategoryPreview => {
     const {
-        images, // take
+        images,        // take
+        subcategories, // take
     ...restCategory} = categoryPreviewData;
     return {
         ...restCategory,
-        image : images?.[0],
+        image            : images?.[0],
+        hasSubcategories : !!subcategories?.length,
     };
 };
 
