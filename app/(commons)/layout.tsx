@@ -1,26 +1,26 @@
+'use client' // everything should be QUICKLY done in client, NOTHING to DO nor RENDER on server
+
 // react:
 import {
     // react:
     default as React,
 }                           from 'react'
 
-// private components:
-import {
-    RootLayoutContent,
-}                           from './layout-content'
-
 
 
 // react components:
-export default function RootLayout({
+export default function CommonLayout({
     children,
+    category_menu,
 }: {
     children      : React.ReactNode
+    category_menu : React.ReactNode
 }): JSX.Element|null {
     // jsx:
     return (
-        <RootLayoutContent>
+        <>
             {children}
-        </RootLayoutContent>
+            {category_menu}
+        </>
     );
 }

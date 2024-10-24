@@ -153,10 +153,8 @@ const fetchErrorMessageDefault : Extract<FetchErrorMessage, Function> = ({isRequ
 // react components:
 export function RootLayoutContent({
     children,
-    category_menu,
 }: {
     children      : React.ReactNode
-    category_menu : React.ReactNode
 }): JSX.Element|null {
     // styles:
     const styleSheet = useDocumentStyleSheet();
@@ -189,7 +187,6 @@ export function RootLayoutContent({
                                 <CartStateProvider>
                                     <RootLayoutContentInternal>
                                         {children}
-                                        {category_menu}
                                     </RootLayoutContentInternal>
                                 </CartStateProvider>
                             </DialogMessageProvider>
