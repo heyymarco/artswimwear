@@ -34,9 +34,11 @@ export const DeleteWishGroupRequestSchema = z.object({
 
 
 
-export const GetWishPageRequestSchema = PaginationArgSchema.merge(z.object({
-    groupId   : ModelIdSchema/*.nullable()*/.optional(), // remove support for `null`; `string`: get grouped wishes, `undefined`: get all wishes (grouped + ungrouped), `null`: get ungrouped wishes
-})) satisfies z.Schema<GetWishPageRequest>;
+export const GetWishPageRequestSchema = PaginationArgSchema.merge(
+    z.object({
+        groupId : ModelIdSchema/*.nullable()*/.optional(), // remove support for `null`; `string`: get grouped wishes, `undefined`: get all wishes (grouped + ungrouped), `null`: get ungrouped wishes
+    })
+) satisfies z.Schema<GetWishPageRequest>;
 
 export const CreateOrUpdateWishRequestSchema = z.object({
     productId : ModelIdSchema,
