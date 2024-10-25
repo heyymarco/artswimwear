@@ -62,6 +62,7 @@ import {
 import {
     // hooks:
     useGetProductPage,
+    useGetCategoryDetail,
 }                           from '@/store/features/api/apiSlice'
 
 
@@ -92,6 +93,9 @@ function CategoryPageContentInternal({ categories }: { categories: string[] }): 
         refetch,
     } = usePaginationState<ProductPreview>();
     const isErrorAndNoData = isError && !data;
+    
+    const { data: categoryDetail } = useGetCategoryDetail(categories.join('/'));
+    console.log(categoryDetail);
     
     
     

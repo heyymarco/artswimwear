@@ -1,9 +1,9 @@
 // models:
-// models:
 import {
     type ProductPreview,
     
     type CategoryPreview,
+    type CategoryParentInfo,
     type CategoryDetail,
 }                           from './types'
 import {
@@ -162,7 +162,29 @@ export const convertCategoryPreviewDataToCategoryPreview = (categoryPreviewData:
     };
 };
 
-export const categoryDetailSelect = (customerId: string|undefined) => ({
+type NestedParentSelect = {
+    select:
+        &Pick<Extract<Extract<Prisma.CategorySelect['parent'], object>['select'], object>, 'id'|'parent'>
+        &{
+            parent : NestedParentSelect|undefined
+        }
+}
+const createNestedParentSelect = (pathname: string[]): NestedParentSelect|undefined => {
+    // conditions:
+    if (!pathname.length) return undefined;
+    
+    
+    
+    // build:
+    const [_currentPathname, ...restPathname] = pathname;
+    return {
+        select : {
+            id : true,
+            parent : createNestedParentSelect(restPathname),
+        }
+    };
+};
+export const categoryDetailSelect = (pathname: string[], customerId: string|undefined) => ({
     id            : true,
     
     name          : true,
@@ -174,21 +196,81 @@ export const categoryDetailSelect = (customerId: string|undefined) => ({
     
     images        : true,
     
-    subcategories : {
-        select    : categoryPreviewSelect,
-    },
     products      : {
         select    : productPreviewSelect(customerId),
     },
+    parent        : createNestedParentSelect(((): string[] => {
+        const [_currentPathname, ...parentPathname] = pathname;
+        return parentPathname;
+    })()),
 }) satisfies Prisma.CategorySelect;
-export const convertCategoryDetailDataToCategoryDetail = (categoryDetailData: Awaited<ReturnType<typeof prisma.category.findFirstOrThrow<{ select: ReturnType<typeof categoryDetailSelect> }>>>): CategoryDetail => {
+export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailData: Awaited<ReturnType<typeof prisma.category.findFirstOrThrow<{ select: ReturnType<typeof categoryDetailSelect> }>>>, prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0]): Promise<CategoryDetail> => {
     const {
-        subcategories, // take
-        products,      // take
+        products, // take
+        parent,   // take
     ...restCategory} = categoryDetailData;
+    
+    
+    
+    const parentIds      : string[] = [];
+    const grandparentIds = new Set<string|null>();
+    for (let currentParent = parent; !!currentParent; currentParent = (currentParent as any).parent) {
+        parentIds.push(currentParent.id);
+        grandparentIds.add((currentParent as any).parent?.id ?? null);
+    } // for
+    const [parentsData, sortedParentSiblings] = await Promise.all([
+        prismaTransaction.category.findMany({
+            where  : {
+                id : { in: parentIds },
+            },
+            select : {
+                ...categoryPreviewSelect,
+                parentId : true,
+            },
+        }),
+        
+        prismaTransaction.category.findMany({
+            where  : {
+                visibility : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                OR : [
+                    {
+                        parentId : { in: Array.from(grandparentIds).filter((id): id is Exclude<typeof id, null> => (id !== null)) },
+                    },
+                    ...(grandparentIds.has(null) ? [{
+                        parentId : null,
+                    }] : []),
+                ],
+            },
+            select  : {
+                id       : true,
+                parentId : true,
+            },
+            orderBy : {
+                // not required
+                // // first : sort by parent
+                // parentId : 'asc',
+                
+                // then  : sort by name
+                name     : 'asc', // shows the alphabetical Category for pagination_view
+            },
+        }),
+    ]);
+    const categoryParentInfos : CategoryParentInfo[] = (
+        parentIds.map((parentId): CategoryParentInfo => {
+            const {parentId: grandParentId, ...parent} = parentsData.find(({id: searchId}) => (searchId === parentId))!;
+            const parentSiblings = sortedParentSiblings.filter(({parentId}) => (parentId === grandParentId));
+            return {
+                category : convertCategoryPreviewDataToCategoryPreview(parent),
+                index    : parentSiblings.findIndex(({id: searchId}) => (searchId === parent.id)),
+            };
+        })
+    );
+    
+    
+    
     return {
         ...restCategory,
-        subcategories : subcategories.map(convertCategoryPreviewDataToCategoryPreview),
-        products      : products.map(convertProductPreviewDataToProductPreview),
+        products : products.map(convertProductPreviewDataToProductPreview),
+        parents  : categoryParentInfos,
     };
 };

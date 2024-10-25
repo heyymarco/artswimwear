@@ -55,6 +55,7 @@ import {
 import {
     // types:
     type CategoryPreview,
+    type CategoryParentInfo,
 }                           from '@/models'
 
 // stores:
@@ -65,11 +66,6 @@ import {
 
 // internals:
 import {
-    // types:
-    type ParentCategoryInfo,
-    
-    
-    
     // states:
     useCategoryExplorerState,
 }                           from './states/categoryExplorerState'
@@ -100,14 +96,14 @@ const CategoryExplorerSub = (): JSX.Element|null => {
         data : rootData,
     } = usePaginationState<CategoryPreview>();
     
-    const selectedParentOrDefault : ParentCategoryInfo|null = (
+    const selectedParentOrDefault : CategoryParentInfo|null = (
         // the last selected category is the displayed_category's_parent:
         parentCategories.at(-1)
         
         ??
         
         // the first item in data is the default displayed_category's_parent:
-        (() : ParentCategoryInfo|null => {
+        (() : CategoryParentInfo|null => {
             if (!rootData) return null;
             const index    = 0;
             const category = Object.values(rootData.entities).at(index);

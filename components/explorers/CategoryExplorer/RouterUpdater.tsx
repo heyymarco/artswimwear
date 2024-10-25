@@ -18,6 +18,12 @@ import {
     useRouter,
 }                           from 'next/navigation'
 
+// models:
+import {
+    // types:
+    type CategoryParentInfo,
+}                           from '@/models'
+
 // stores:
 import {
     // hooks:
@@ -26,11 +32,6 @@ import {
 
 // internals:
 import {
-    // types:
-    type ParentCategoryInfo,
-    
-    
-    
     // states:
     useCategoryExplorerState,
 }                           from './states/categoryExplorerState'
@@ -56,7 +57,7 @@ const RouterUpdater = (): JSX.Element|null => {
     // sync the pathname to the path of selected category:
     const pathname                = usePathname();
     const router                  = useRouter();
-    const prevParentCategoriesRef = useRef<ParentCategoryInfo[]>(parentCategories);
+    const prevParentCategoriesRef = useRef<CategoryParentInfo[]>(parentCategories);
     useEffect(() => {
         // conditions:
         if (prevParentCategoriesRef.current === parentCategories) return; // already the same => ignore

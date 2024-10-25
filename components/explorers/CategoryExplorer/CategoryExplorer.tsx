@@ -51,6 +51,7 @@ import {
 import {
     // types:
     type CategoryPreview,
+    type CategoryParentInfo,
 }                           from '@/models'
 
 // stores:
@@ -61,11 +62,6 @@ import {
 
 // internals:
 import {
-    // types:
-    type ParentCategoryInfo,
-    
-    
-    
     // react components:
     type CategoryExplorerStateProps,
     CategoryExplorerStateProvider,
@@ -111,7 +107,7 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
     
     
     // states:
-    const [parentCategories, setParentCategories] = useImmer<ParentCategoryInfo[]>([]);
+    const [parentCategories, setParentCategories] = useImmer<CategoryParentInfo[]>([]);
     const [restoreIndex    , setRestoreIndex    ] = useState<number>(0);
     
     

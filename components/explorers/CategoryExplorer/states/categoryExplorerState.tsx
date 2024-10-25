@@ -21,7 +21,7 @@ import {
 // models:
 import {
     // types:
-    type CategoryPreview,
+    type CategoryParentInfo,
 }                           from '@/models'
 
 
@@ -32,19 +32,11 @@ import {
 
 //#region categoryExplorerState
 
-// types:
-export interface ParentCategoryInfo {
-    category : CategoryPreview
-    index    : number
-}
-
-
-
 // contexts:
 export interface CategoryExplorerState {
     // states:
-    parentCategories    : ParentCategoryInfo[]
-    setParentCategories : Updater<ParentCategoryInfo[]>
+    parentCategories    : CategoryParentInfo[]
+    setParentCategories : Updater<CategoryParentInfo[]>
     
     restoreIndex        : number
     setRestoreIndex     : (restoreIndex: number) => void

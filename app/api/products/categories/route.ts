@@ -20,6 +20,8 @@ import {
 
 // models:
 import {
+    type Prisma,
+    
     type Pagination,
     type CategoryPreview,
     type CategoryDetail,
@@ -27,7 +29,7 @@ import {
     
     
     // schemas:
-    SlugSchema,
+    PathnameSchema,
     
     CategoryPageRequestSchema,
     
@@ -81,7 +83,7 @@ router
         try {
             const data = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
             return {
-                path : SlugSchema.parse(data?.path),
+                pathname : PathnameSchema.parse(data?.pathname),
             };
         }
         catch {
@@ -94,7 +96,7 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        path,
+        pathname,
     } = requestData;
     //#endregion parsing and validating request
     
@@ -108,23 +110,44 @@ router
     
     
     //#region query result
-    const categoryDetailData = (
-        await prisma.category.findUnique({
-            where  : {
-                path       : path, // find by url path
-                visibility : { not: 'DRAFT' }, // allows access to Category with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
-            },
-            select : categoryDetailSelect(customerId),
-        })
-    );
-    
-    if (!categoryDetailData) {
+    const createNestedConditional = (pathname: string[]): Prisma.CategoryWhereUniqueInput|undefined => {
+        // conditions:
+        if (!pathname.length) return undefined;
+        
+        
+        
+        // build:
+        const [currentPathname, ...restPathname] = pathname;
+        return {
+            path       : currentPathname,
+            visibility : { not: 'DRAFT' }, // allows access to Category with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
+            
+            parent     : (restPathname.length === 0) ? null /* null: no more parent */ : createNestedConditional(restPathname), // recursive
+        };
+    };
+    pathname.reverse(); // reverse from currentPath up to rootPath
+    const nestedConditional = createNestedConditional(pathname);
+    if (!nestedConditional) {
         return Response.json({
-            error: `The category with specified path "${path}" is not found.`,
+            error: `The category with specified path "${pathname.join('/')}" is not found.`,
         }, { status: 404 }); // handled with error
-    } // if
-    
-    return Response.json(convertCategoryDetailDataToCategoryDetail(categoryDetailData) satisfies CategoryDetail|null); // handled with success
+    }
+    return await prisma.$transaction(async (prismaTransaction): Promise<Response> => {
+        const categoryDetailData = (
+            await prismaTransaction.category.findUnique({
+                where  : nestedConditional,
+                select : categoryDetailSelect(pathname, customerId),
+            })
+        );
+        
+        if (!categoryDetailData) {
+            return Response.json({
+                error: `The category with specified path "${pathname.join('/')}" is not found.`,
+            }, { status: 404 }); // handled with error
+        } // if
+        
+        return Response.json((await convertCategoryDetailDataToCategoryDetail(categoryDetailData, prismaTransaction)) satisfies CategoryDetail|null); // handled with success
+    });
     //#endregion query result
 })
 .post(async (req) => {

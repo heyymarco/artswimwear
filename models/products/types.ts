@@ -113,6 +113,10 @@ export interface CategoryPreview
 
 
 
+export interface CategoryParentInfo {
+    category : CategoryPreview
+    index    : number
+}
 export interface CategoryDetail
     extends
         Pick<Category,
@@ -124,8 +128,8 @@ export interface CategoryDetail
             |'images'
         >
 {
-    subcategories : CategoryPreview[]
-    products      : ProductPreview[]
+    products : ProductPreview[]
+    parents  : CategoryParentInfo[]
 }
 
 

@@ -216,7 +216,7 @@ export const apiSlice = createApi({
         
         getCategoryDetail           : builder.query<CategoryDetail, string>({
             query : (arg: string) => ({
-                url    : `products/categories?path=${encodeURIComponent(arg)}`,
+                url    : `products/categories?pathname=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
             providesTags: (data, error, arg) => [
