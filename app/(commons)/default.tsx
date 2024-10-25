@@ -8,7 +8,7 @@ import {
 // pages:
 import {
     CategoryPageContent,
-}                           from './categories/[[...categories]]/page-content'
+}                           from '@/app/(commons)/categories/[[...categories]]/page-content'
 
 
 

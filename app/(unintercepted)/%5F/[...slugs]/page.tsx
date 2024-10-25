@@ -17,19 +17,38 @@ import {
     useIsomorphicLayoutEffect,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// internal components:
+import {
+    LoadingBlankPage,
+}                           from '@/components/BlankPage'
+
 
 
 // react components:
-export default function GoToPage({ params: { slugs } }: { params: { slugs: string[] } }): JSX.Element|null {
+export default function GoToPage(props: { params: { slugs: string[] } }): JSX.Element|null {
+    // props:
+    const {
+        params: {
+            slugs,
+        },
+    } = props;
+    const pathname = `/${slugs.join('/')}`;
+    
+    
+    
     // effects:
     const router = useRouter();
     useIsomorphicLayoutEffect(() => {
-        const href = slugs.join('/');
-        router.replace(`/${href}`);
+        router.replace(pathname);
     }, []);
     
     
     
     // jsx:
-    return null;
+    return (
+        <LoadingBlankPage
+            // identifiers:
+            key='busy' // avoids re-creating a similar dom during loading transition in different components
+        />
+    );
 }
