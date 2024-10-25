@@ -135,6 +135,26 @@ export const productDetailSelect = {
 
 
 
+
+export const createNestedConditionalCategory = (pathname: string[]): Prisma.CategoryWhereUniqueInput|undefined => {
+    // conditions:
+    if (!pathname.length) return undefined;
+    
+    
+    
+    // build:
+    const [currentPathname, ...restPathname] = pathname;
+    return {
+        path       : currentPathname,
+        // accessible visibility:
+        visibility : { not: 'DRAFT' }, // allows access to Category with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
+        
+        parent     : (restPathname.length === 0) ? null /* null: no more parent */ : createNestedConditionalCategory(restPathname), // recursive
+    };
+};
+
+
+
 export const categoryPreviewSelect = {
     id             : true,
     

@@ -31,6 +31,7 @@ import {
     
     
     // utilities:
+    createNestedConditionalCategory,
     categoryPreviewSelect,
     convertCategoryPreviewDataToCategoryPreview,
     categoryDetailSelect,
@@ -98,24 +99,8 @@ router
     
     
     //#region query result
-    const createNestedConditional = (pathname: string[]): Prisma.CategoryWhereUniqueInput|undefined => {
-        // conditions:
-        if (!pathname.length) return undefined;
-        
-        
-        
-        // build:
-        const [currentPathname, ...restPathname] = pathname;
-        return {
-            path       : currentPathname,
-            // accessible visibility:
-            visibility : { not: 'DRAFT' }, // allows access to Category with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
-            
-            parent     : (restPathname.length === 0) ? null /* null: no more parent */ : createNestedConditional(restPathname), // recursive
-        };
-    };
     pathname.reverse(); // reverse from currentPath up to rootPath
-    const nestedConditional = createNestedConditional(pathname);
+    const nestedConditional = createNestedConditionalCategory(pathname);
     if (!nestedConditional) {
         return Response.json({
             error: `The category with specified path "${pathname.join('/')}" is not found.`,
