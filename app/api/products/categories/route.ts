@@ -8,11 +8,6 @@ import {
     getServerSession,
 }                           from 'next-auth'
 
-// heymarco:
-import type {
-    Session,
-}                           from '@heymarco/next-auth/server'
-
 // internal auth:
 import {
     authOptions,
@@ -102,13 +97,6 @@ router
     
     
     
-    //#region validating privileges
-    const session = (req as any).session as Session;
-    const customerId = session?.user?.id ?? undefined; // optional loggedIn (allows for public access too)
-    //#endregion validating privileges
-    
-    
-    
     //#region query result
     const createNestedConditional = (pathname: string[]): Prisma.CategoryWhereUniqueInput|undefined => {
         // conditions:
@@ -136,7 +124,7 @@ router
         const categoryDetailData = (
             await prismaTransaction.category.findUnique({
                 where  : nestedConditional,
-                select : categoryDetailSelect(pathname, customerId),
+                select : categoryDetailSelect(pathname),
             })
         );
         

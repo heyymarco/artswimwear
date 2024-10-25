@@ -128,8 +128,7 @@ export interface CategoryDetail
             |'images'
         >
 {
-    products : ProductPreview[]
-    parents  : CategoryParentInfo[]
+    parents : CategoryParentInfo[]
 }
 
 

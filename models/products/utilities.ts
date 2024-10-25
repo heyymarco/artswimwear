@@ -184,7 +184,7 @@ const createNestedParentSelect = (pathname: string[]): NestedParentSelect|undefi
         }
     };
 };
-export const categoryDetailSelect = (pathname: string[], customerId: string|undefined) => ({
+export const categoryDetailSelect = (pathname: string[]) => ({
     id            : true,
     
     name          : true,
@@ -196,9 +196,6 @@ export const categoryDetailSelect = (pathname: string[], customerId: string|unde
     
     images        : true,
     
-    products      : {
-        select    : productPreviewSelect(customerId),
-    },
     parent        : createNestedParentSelect(((): string[] => {
         const [_currentPathname, ...parentPathname] = pathname;
         return parentPathname;
@@ -206,8 +203,7 @@ export const categoryDetailSelect = (pathname: string[], customerId: string|unde
 }) satisfies Prisma.CategorySelect;
 export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailData: Awaited<ReturnType<typeof prisma.category.findFirstOrThrow<{ select: ReturnType<typeof categoryDetailSelect> }>>>, prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0]): Promise<CategoryDetail> => {
     const {
-        products, // take
-        parent,   // take
+        parent, // take
     ...restCategory} = categoryDetailData;
     
     
@@ -270,7 +266,6 @@ export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailDa
     
     return {
         ...restCategory,
-        products : products.map(convertProductPreviewDataToProductPreview),
         parents  : categoryParentInfos,
     };
 };

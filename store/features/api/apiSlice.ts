@@ -107,22 +107,6 @@ const matchingShippingListAdapter = createEntityAdapter<MatchingShipping>({
 
 
 
-// utilities:
-const updateProductInCategoryDetail = (currentCategory: CategoryDetail, updatedProduct: ProductPreview): void => {
-    const products = currentCategory.products;
-    for (let productIndex = 0, maxProductIndex = (products.length - 1); productIndex <= maxProductIndex; productIndex++) {
-        // conditions:
-        if (products[productIndex].id !== updatedProduct.id) continue; // not the target model => ignore
-        
-        
-        
-        // update existing model:
-        products[productIndex] = updatedProduct;
-    } // if
-};
-
-
-
 const axiosBaseQuery = (
     { baseUrl }: { baseUrl: string } = { baseUrl: '' }
 ): BaseQueryFn<
@@ -219,11 +203,6 @@ export const apiSlice = createApi({
                 url    : `products/categories?pathname=${encodeURIComponent(arg)}`,
                 method : 'GET',
             }),
-            providesTags: (data, error, arg) => [
-                ...(data?.products ?? []).map(({ id }) =>
-                    ({ type: 'Wishable', id: id })
-                ) satisfies { type: 'Wishable', id: string }[],
-            ],
         }),
         
         
@@ -635,16 +614,6 @@ export const apiSlice = createApi({
                     })
                 );
                 
-                // update related_affected_wish in `getCategoryDetail`:
-                for (const { originalArgs } of getQueryCaches<CategoryDetail, string>(api, 'getCategoryDetail')) {
-                    if (originalArgs === undefined) continue;
-                    api.dispatch(
-                        apiSlice.util.updateQueryData('getCategoryDetail', productId, (data) => {
-                            updateProductInCategoryDetail(data, wishedProduct);
-                        })
-                    );
-                } // for
-                
                 if (desiredGroupId !== originalGroupId) {
                     // create -or- update related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                     if (originalGroupId === undefined) { // if was never wished
@@ -708,16 +677,6 @@ export const apiSlice = createApi({
                         data.wished = undefined;
                     })
                 );
-                
-                // update related_affected_wish in `getCategoryDetail`:
-                for (const { originalArgs } of getQueryCaches<CategoryDetail, string>(api, 'getCategoryDetail')) {
-                    if (originalArgs === undefined) continue;
-                    api.dispatch(
-                        apiSlice.util.updateQueryData('getCategoryDetail', productId, (data) => {
-                            updateProductInCategoryDetail(data, unwishedProduct);
-                        })
-                    );
-                } // for
                 
                 // delete related_affected_pagination_of_wishGroup in `getWishPage('all')`:
                 cumulativeUpdatePaginationCache(api, 'getWishPage'       , 'DELETE', 'WishPage'   , { providedMutatedModel: unwishedProduct as any, predicate: (originalArgs: unknown) => ((originalArgs as GetWishPageRequest).groupId === undefined) });

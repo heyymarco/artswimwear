@@ -49,6 +49,9 @@ import {
     PaginationGallery,
 }                           from '@/components/explorers/PaginationGallery'
 import {
+    CategoryExplorer,
+}                           from '@/components/explorers/CategoryExplorer'
+import {
     ProductCard,
 }                           from '@/components/views/ProductCard'
 
@@ -128,6 +131,9 @@ function CategoryPageContentInternal({ categories }: { categories: string[] }): 
                 </Nav>
             </Section>
             
+            <Section>
+                <CategoryExplorer />
+            </Section>
             <Section
                 // variants:
                 theme='primary'
