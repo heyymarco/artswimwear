@@ -100,8 +100,8 @@ router
     
     //#region query result
     pathname.reverse(); // reverse from currentPath up to rootPath
-    const nestedConditional = createNestedConditionalCategory(pathname);
-    if (!nestedConditional) {
+    const nestedConditionalCategory = createNestedConditionalCategory(pathname);
+    if (!nestedConditionalCategory) {
         return Response.json({
             error: `The category with specified path "${pathname.join('/')}" is not found.`,
         }, { status: 404 }); // handled with error
@@ -109,7 +109,7 @@ router
     return await prisma.$transaction(async (prismaTransaction): Promise<Response> => {
         const categoryDetailData = (
             await prismaTransaction.category.findUnique({
-                where  : nestedConditional,
+                where  : nestedConditionalCategory,
                 select : categoryDetailSelect(pathname),
             })
         );
