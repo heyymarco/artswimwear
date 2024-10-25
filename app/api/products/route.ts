@@ -30,12 +30,14 @@ import {
     ModelIdSchema,
     SlugSchema,
     PaginationArgSchema,
+    GetProductPageRequestSchema,
     
     
     
     productPreviewSelect,
     convertProductPreviewDataToProductPreview,
     productDetailSelect,
+    createNestedConditionalCategory,
 }                           from '@/models'
 
 // ORMs:
@@ -172,7 +174,7 @@ router
         try {
             const data = await req.json();
             return {
-                paginationArg : PaginationArgSchema.parse(data),
+                getProductPageRequest : GetProductPageRequestSchema.parse(data),
             };
         }
         catch {
@@ -185,9 +187,10 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        paginationArg : {
+        getProductPageRequest : {
             page,
             perPage,
+            categoryPath,
         },
     } = requestData;
     //#endregion parsing and validating request
@@ -202,15 +205,31 @@ router
     
     
     //#region query result
+    const relatedCategoryId : string|null|undefined = (categoryPath === undefined) ? undefined : await (async (): Promise<string|null> => {
+        categoryPath.reverse(); // reverse from currentPath up to rootPath
+        const nestedConditionalCategory = createNestedConditionalCategory(categoryPath);
+        if (!nestedConditionalCategory) return null;
+        
+        const relatedCategory = await prisma.category.findUnique({
+            where  : nestedConditionalCategory,
+            select : {
+                id : true,
+            },
+        });
+        if (!relatedCategory) return null;
+        return relatedCategory.id;
+    })();
     const [total, paged] = await prisma.$transaction([
         prisma.product.count({
             where  : {
-                visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                visibility : 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                categories : (relatedCategoryId === undefined) ? undefined : { some: { id: relatedCategoryId ?? '--never-match--' } },
             },
         }),
         prisma.product.findMany({
             where  : {
-                visibility: 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                visibility : 'PUBLISHED', // allows access to Product with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                categories : (relatedCategoryId === undefined) ? undefined : { some: { id: relatedCategoryId ?? '--never-match--' } },
             },
             select  : productPreviewSelect(customerId),
             orderBy : {

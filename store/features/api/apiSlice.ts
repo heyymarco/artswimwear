@@ -35,6 +35,7 @@ import {
     
     type ProductPreview,
     type ProductDetail,
+    type GetProductPageRequest,
     
     type CategoryPreview,
     type CategoryDetail,
@@ -158,7 +159,7 @@ export const apiSlice = createApi({
     }),
     tagTypes  : ['ProductPage', 'CategoryPage', 'Wishable', 'PreferenceData', 'WishGroupPage', 'WishPage', 'OfWishGroupable'],
     endpoints : (builder) => ({
-        getProductPage              : builder.query<Pagination<ProductPreview>, PaginationArgs>({
+        getProductPage              : builder.query<Pagination<ProductPreview>, GetProductPageRequest>({
             query: (arg) => ({
                 url    : 'products',
                 method : 'POST',

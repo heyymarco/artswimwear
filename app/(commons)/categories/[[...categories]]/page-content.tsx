@@ -55,6 +55,8 @@ import {
 // models:
 import {
     // types:
+    type PaginationArgs,
+    
     type ProductPreview,
     type CategoryPreview,
 }                           from '@/models'
@@ -62,19 +64,36 @@ import {
 // stores:
 import {
     // hooks:
-    useGetProductPage,
+    useGetProductPage as _useGetProductPage,
     useGetCategoryDetail,
 }                           from '@/store/features/api/apiSlice'
 
 
 
+// hooks:
+const useUseGetProductPageOfCategory = (categoryPath: string[]|undefined) => {
+    return (arg: PaginationArgs) => {
+        return _useGetProductPage({
+            ...arg,
+            categoryPath,
+        });
+    };
+};
+
+
+
 // react components:
 export function CategoryPageContent({ categories }: { categories?: string[] }): JSX.Element|null {
+    // stores:
+    const _useGetProductPageOfCategory = useUseGetProductPageOfCategory(categories);
+    
+    
+    
     // jsx:
     return (
         <PaginationStateProvider<ProductPreview>
             // data:
-            useGetModelPage={useGetProductPage}
+            useGetModelPage={_useGetProductPageOfCategory}
         >
             { !categories?.length && <CategoryPageContentHome />}
             {!!categories?.length && <CategoryPageContentSub categories={categories} />}
@@ -139,7 +158,7 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                 >
                     <NavItem end>
                         <Link href='/categories'>
-                            Categories
+                            All products
                         </Link>
                     </NavItem>
                     

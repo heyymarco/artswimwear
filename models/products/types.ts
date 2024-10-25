@@ -92,6 +92,15 @@ export interface ProductDetail
 
 
 
+export interface GetProductPageRequest
+    extends
+        PaginationArgs
+{
+    categoryPath ?: string[]
+}
+
+
+
 export interface ProductPricePart {
     priceParts : number[],
     quantity   : number
