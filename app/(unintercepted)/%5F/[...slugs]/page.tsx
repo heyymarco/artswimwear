@@ -20,7 +20,7 @@ import {
 
 
 // react components:
-export default function GoPage({ params: { slugs } }: { params: { slugs: string[] } }): JSX.Element|null {
+export default function GoToPage({ params: { slugs } }: { params: { slugs: string[] } }): JSX.Element|null {
     // effects:
     const router = useRouter();
     useIsomorphicLayoutEffect(() => {
