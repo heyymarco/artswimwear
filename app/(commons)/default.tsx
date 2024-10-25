@@ -33,7 +33,7 @@ export default function LostParallelSlot(): JSX.Element|null {
     if ((/^\/categories($|\/)/i).test(pathname)) {
         let tailPathname = pathname.slice('/categories'.length);
         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
-        const categories = tailPathname.split('/');
+        const categories = !tailPathname ? undefined : tailPathname.split('/');
         
         return (
             <CategoryPageContent
