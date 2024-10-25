@@ -87,8 +87,7 @@ router
         try {
             const data = await req.json();
             return {
-                paginationArg : PaginationArgSchema.parse(data),
-                groupId       : GetWishPageRequestSchema.partial().parse(data)?.groupId,
+                getWishPageRequest : GetWishPageRequestSchema.parse(data),
             };
         }
         catch {
@@ -101,11 +100,11 @@ router
         }, { status: 400 }); // handled with error
     } // if
     const {
-        paginationArg : {
+        getWishPageRequest : {
             page,
             perPage,
+            groupId,
         },
-        groupId,
     } = requestData;
     //#endregion parsing and validating request
     
