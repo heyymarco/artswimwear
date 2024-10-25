@@ -37,7 +37,12 @@ export const EmailSchema                     = z.string().email().trim().min(5).
 export const UsernameSchema                  = z.string().trim().min(3).max(20);
 export const PasswordSchema                  = z.string().min(5).max(30);
 export const ImageUrlSchema                  = z.string().url().min(10).max(255);
-export const SlugSchema                      = z.string().min(1).max(100).regex(/^[a-zA-Z0-9-_.!$%&'*+=^`|~(){}<>\[\]]+$/);
+export const SlugSchema                      = z.string().trim().min(1).max(100).regex(/^[a-zA-Z0-9-_.!$%&'*+=^`|~(){}<>\[\]]+$/);
+export const PathnameSchema                  = z.string().trim().min(1).max(255).regex(/^\/?[a-zA-Z0-9-_.!$%&'*+=^`|~(){}<>\[\]]+(\/[a-zA-Z0-9-_.!$%&'*+=^`|~(){}<>\[\]]+)*\/?$/).transform((value): string[] => {
+    if (value[0] === '/') value = value.slice(1);
+    if (value[value.length - 1] === '/') value = value.slice(0, -1);
+    return value.split('/');
+});
 export const BooleanStringSchema             = z.enum(['true', 'false']);
 export const CurrencyAmountSchema            = z.number().finite();
 export const NonNegativeCurrencyAmountSchema = CurrencyAmountSchema.nonnegative();
