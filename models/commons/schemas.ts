@@ -41,7 +41,9 @@ export const SlugSchema                      = z.string().trim().min(1).max(100)
 export const PathnameSchema                  = z.string().trim().min(1).max(255).regex(/^\/?[a-zA-Z0-9-_.!$%&'*+=^`|~(){}<>\[\]]+(\/[a-zA-Z0-9-_.!$%&'*+=^`|~(){}<>\[\]]+)*\/?$/).transform((value): string[] => {
     if (value[0] === '/') value = value.slice(1);
     if (value[value.length - 1] === '/') value = value.slice(0, -1);
-    return value.split('/');
+    const paths = value.split('/');
+    if (paths.length > 10) throw 'Pathname is too deep';
+    return paths;
 });
 export const BooleanStringSchema             = z.enum(['true', 'false']);
 export const CurrencyAmountSchema            = z.number().finite();
