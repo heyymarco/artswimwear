@@ -172,12 +172,22 @@ const usesRootBeforeLayout = () => {
     return style({
         // positions:
         gridArea: 'rootBefore',
+        
+        
+        
+        // spacings:
+        padding: '0px',
     })
 };
 const usesSubAfterLayout = () => {
     return style({
         // positions:
         gridArea: 'subAfter',
+        
+        
+        
+        // spacings:
+        padding: '0px',
     })
 };
 
