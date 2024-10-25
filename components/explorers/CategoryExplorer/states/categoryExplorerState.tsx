@@ -48,6 +48,11 @@ export interface CategoryExplorerState {
     
     restoreIndex        : number
     setRestoreIndex     : (restoreIndex: number) => void
+    
+    
+    
+    // handlers:
+    onNavigate          : ((url: string) => void) | null|undefined
 }
 
 const noopCallback = () => {};
@@ -58,6 +63,11 @@ const defaultCategoryExplorerStateContext : CategoryExplorerState = {
     
     restoreIndex        : 0,
     setRestoreIndex     : noopCallback,
+    
+    
+    
+    // handlers:
+    onNavigate          : undefined,
 }
 const CategoryExplorerStateContext = createContext<CategoryExplorerState>(defaultCategoryExplorerStateContext);
 CategoryExplorerStateContext.displayName  = 'CategoryExplorerState';
@@ -82,6 +92,11 @@ const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryEx
         
         restoreIndex        : defaultRestoreIndex,
         setRestoreIndex     : defaultSetRestoreIndex,
+        
+        
+        
+        // handlers:
+        onNavigate          : defaultOnNavigate,
     } = useCategoryExplorerState();
     
     
@@ -94,6 +109,11 @@ const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryEx
         
         restoreIndex        = defaultRestoreIndex,
         setRestoreIndex     = defaultSetRestoreIndex,
+        
+        
+        
+        // handlers:
+        onNavigate          = defaultOnNavigate,
     } = props;
     
     
@@ -106,6 +126,11 @@ const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryEx
         
         restoreIndex,
         setRestoreIndex,
+        
+        
+        
+        // handlers:
+        onNavigate,
     }), [
         // states:,
         parentCategories,
@@ -113,6 +138,11 @@ const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryEx
         
         restoreIndex,
         setRestoreIndex,
+        
+        
+        
+        // handlers:
+        onNavigate,
     ]);
     
     

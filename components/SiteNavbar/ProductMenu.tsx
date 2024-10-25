@@ -98,7 +98,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
             const backPathname = pathname;
             
             //#region a fix for categories page interceptor
-            const newShownMenu = showDialog<unknown>(
+            const newShownMenu = showDialog<true>(
                 <CategoryExplorerDropdown
                     // variants:
                     // theme='primary'
@@ -119,8 +119,10 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
             newShownMenu.collapseStartEvent().then(() => {
                 setShownMenu(null);
             });
-            newShownMenu.collapseEndEvent().then((event) => {
-                router.push(backPathname, { scroll: false });
+            newShownMenu.collapseEndEvent().then(({data}) => {
+                if (data !== true) { // when the dropdown closed without the user clicking the menu item => restore the url, otherwise keeps the changed url
+                    router.push(backPathname, { scroll: false });
+                } // if
                 toggleList(false); // collapse the <Navbar> manually
             });
             //#endregion a fix for categories page interceptor

@@ -67,6 +67,7 @@ import {
     
     
     // react components:
+    type CategoryExplorerStateProps,
     CategoryExplorerStateProvider,
 }                           from './states/categoryExplorerState'
 
@@ -95,6 +96,11 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
         Omit<React.HTMLAttributes<TElement>,
             // semantics:
             |'role' // we redefined [role] in <Generic>
+        >,
+        
+        // handlers:
+        Pick<CategoryExplorerStateProps,
+            |'onNavigate'
         >
 {
 }
@@ -119,6 +125,11 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
         
         // classes:
         mainClass = styleSheet.main,
+        
+        
+        
+        // handlers:
+        onNavigate,
         
         
         
@@ -157,6 +168,11 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
                     
                     restoreIndex={restoreIndex}
                     setRestoreIndex={setRestoreIndex}
+                    
+                    
+                    
+                    // handlers:
+                    onNavigate={onNavigate}
                 >
                     {/*
                         Place the <PaginationStateProvider> for root data here,

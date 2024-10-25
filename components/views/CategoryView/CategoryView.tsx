@@ -108,6 +108,11 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
     const {
         // states:
         parentCategories,
+        
+        
+        
+        // handlers:
+        onNavigate,
     } = useCategoryExplorerState();
     
     
@@ -134,6 +139,7 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
         }
         else {
             router.push(categoryUninterceptedPath); // goto unintercepted category page
+            onNavigate?.(categoryUninterceptedPath);
         } // if
     });
     

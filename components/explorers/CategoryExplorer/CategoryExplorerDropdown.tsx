@@ -11,6 +11,12 @@ import {
     useCategoryExplorerStyleSheet,
 }                           from './styles/loader'
 
+// reusable-ui core:
+import {
+    // react helper hooks:
+    useEvent,
+}                           from '@reusable-ui/core'                // a set of reusable-ui packages which are responsible for building any component
+
 // reusable-ui components:
 import {
     // menu-components:
@@ -55,6 +61,18 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
     
     
     
+    // handlers:
+    const handleNavigate = useEvent(() => {
+        // actions:
+        props.onExpandedChange?.({
+            expanded   : false,
+            actionType : 'ui',
+            data       : true,
+        });
+    });
+    
+    
+    
     // jsx:
     return (
         <Dropdown
@@ -66,7 +84,10 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
             // classes:
             className={`${styleSheet.dropdown} ${props.className}`}
         >
-            <CategoryExplorer />
+            <CategoryExplorer
+                // handlers:
+                onNavigate={handleNavigate}
+            />
         </Dropdown>
     );
 };
