@@ -6,6 +6,12 @@ import {
     default as React,
 }                           from 'react'
 
+// next-js:
+import {
+    // navigations:
+    useRouter,
+}                           from 'next/navigation'
+
 // styles:
 import {
     useCategoryViewStyleSheet,
@@ -32,9 +38,6 @@ import {
     // layout-components:
     ListItem,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
-import {
-    Link,
-}                           from '@reusable-ui/next-compat-link'
 
 // internal components:
 import {
@@ -109,15 +112,29 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
     
     
     
+    // navigations:
+    const router                    = useRouter();
+    const categoryBasePath          = `${parentCategories.length ? `${parentCategories.map(({category: {path}}) => path).join('/')}/` : ''}${path}`;
+    const categoryInterceptedPath   =   `/categories/${categoryBasePath}`;
+    const categoryUninterceptedPath = `/_/categories/${categoryBasePath}`;
+    
+    
+    
     // handlers:
-    const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+    const handleNavigate = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         // conditions:
-        if (!event.currentTarget.contains(event.target as Node)) return; // ignore bubbling from <portal> of <EditCategoryDialog>
+        if (event.defaultPrevented) return; // already handled => ignore
+        event.preventDefault(); // prevents the actual `href` to havigate
         
         
         
         // actions:
-        onModelSelect?.(model);
+        if (hasSubcategories) {
+            onModelSelect?.(model);                 // navigate to subcategory
+        }
+        else {
+            router.push(categoryUninterceptedPath); // goto unintercepted category page
+        } // if
     });
     
     
@@ -159,7 +176,8 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
             
             
             // handlers:
-            onClick={hasSubcategories ? handleClick : undefined}
+            href    = {categoryInterceptedPath} // shows the physical_link as (normal) intercepted category path for presentation reason
+            onClick = {handleNavigate}          // but when clicked => navigate to subcategory -or- goto unintercepted category page
         >
             <h3 className='name'>
                 {name}
@@ -194,7 +212,6 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
             </Basic>
             
             { hasSubcategories && <Icon icon='dropright' size='xl' theme='primary' mild={active} className='arrow' />}
-            {!hasSubcategories && <Link href={`/_/categories/${parentCategories.length ? `${parentCategories.map(({category: {path}}) => path).join('/')}/` : ''}${path}`} />}
         </ListItem>
     );
 };
