@@ -49,9 +49,6 @@ import {
     PaginationGallery,
 }                           from '@/components/explorers/PaginationGallery'
 import {
-    CategoryExplorer,
-}                           from '@/components/explorers/CategoryExplorer'
-import {
     ProductCard,
 }                           from '@/components/views/ProductCard'
 
@@ -59,6 +56,7 @@ import {
 import {
     // types:
     type ProductPreview,
+    type CategoryPreview,
 }                           from '@/models'
 
 // stores:
@@ -71,18 +69,43 @@ import {
 
 
 // react components:
-export function CategoryPageContent({ categories }: { categories: string[] }): JSX.Element|null {
+export function CategoryPageContent({ categories }: { categories?: string[] }): JSX.Element|null {
     // jsx:
     return (
         <PaginationStateProvider<ProductPreview>
             // data:
             useGetModelPage={useGetProductPage}
         >
-            <CategoryPageContentInternal categories={categories} />
+            { !categories?.length && <CategoryPageContentHome />}
+            {!!categories?.length && <CategoryPageContentSub categories={categories} />}
         </PaginationStateProvider>
     );
 }
-function CategoryPageContentInternal({ categories }: { categories: string[] }): JSX.Element|null {
+function CategoryPageContentHome(): JSX.Element|null {
+    // jsx:
+    return (
+        <CategoryPageContentInternal />
+    );
+}
+function CategoryPageContentSub({ categories }: { categories: string[] }): JSX.Element|null {
+    // stores:
+    const { data: categoryDetail } = useGetCategoryDetail(categories.join('/'));
+    const parentsAndSelf : Omit<CategoryPreview, 'image'|'hasSubcategories'>[] = !categoryDetail ? [] : [
+        ...(categoryDetail.parents.toReversed().map(({category}) => category) ?? []),
+        categoryDetail,
+    ];
+    
+    
+    
+    // jsx:
+    return (
+        <CategoryPageContentInternal
+            // data:
+            parentsAndSelf={parentsAndSelf}
+        />
+    );
+}
+function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?: Omit<CategoryPreview, 'image'|'hasSubcategories'>[] }): JSX.Element|null {
     // styles:
     const styleSheet = useCategoryListPageStyleSheet();
     
@@ -96,9 +119,6 @@ function CategoryPageContentInternal({ categories }: { categories: string[] }): 
         refetch,
     } = usePaginationState<ProductPreview>();
     const isErrorAndNoData = isError && !data;
-    
-    const { data: categoryDetail } = useGetCategoryDetail(categories.join('/'));
-    console.log(categoryDetail);
     
     
     
@@ -118,22 +138,21 @@ function CategoryPageContentInternal({ categories }: { categories: string[] }): 
                     orientation='inline'
                 >
                     <NavItem end>
-                        <Link href='/'>
-                            Home
+                        <Link href='/categories'>
+                            Categories
                         </Link>
                     </NavItem>
                     
-                    <NavItem end>
-                        <Link href='/products'>
-                            Products
-                        </Link>
-                    </NavItem>
+                    {parentsAndSelf.map(({ name, path }, index, array) =>
+                        <NavItem key={index} end>
+                            <Link href={`/categories/${array.slice(0, index + 1).map(({path}) => path).join('/')}`}>
+                                {name}
+                            </Link>
+                        </NavItem>
+                    )}
                 </Nav>
             </Section>
             
-            <Section>
-                <CategoryExplorer />
-            </Section>
             <Section
                 // variants:
                 theme='primary'
