@@ -108,6 +108,7 @@ router
         const [currentPathname, ...restPathname] = pathname;
         return {
             path       : currentPathname,
+            // accessible visibility:
             visibility : { not: 'DRAFT' }, // allows access to Category with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
             
             parent     : (restPathname.length === 0) ? null /* null: no more parent */ : createNestedConditional(restPathname), // recursive
@@ -171,12 +172,14 @@ router
     const [total, paged] = await prisma.$transaction([
         prisma.category.count({
             where  : {
+                // browsable visibility:
                 visibility : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
                 parentId   : parent,
             },
         }),
         prisma.category.findMany({
             where  : {
+                // browsable visibility:
                 visibility : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
                 parentId   : parent,
             },

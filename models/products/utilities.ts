@@ -217,6 +217,8 @@ export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailDa
     const [parentsData, sortedParentSiblings] = await Promise.all([
         prismaTransaction.category.findMany({
             where  : {
+                // accessible visibility:
+                visibility : { not: 'DRAFT' }, // allows access to Category with visibility: 'PUBLISHED'|'HIDDEN' but NOT 'DRAFT'
                 id : { in: parentIds },
             },
             select : {
@@ -227,6 +229,7 @@ export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailDa
         
         prismaTransaction.category.findMany({
             where  : {
+                // browsable visibility:
                 visibility : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
                 OR : [
                     {
