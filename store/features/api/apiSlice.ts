@@ -198,9 +198,9 @@ export const apiSlice = createApi({
             providesTags: (data, error, arg) => [{ type: 'CategoryPage', id: `${arg.parent ?? ''}:${arg.page}` }],
         }),
         
-        getCategoryDetail           : builder.query<CategoryDetail, string>({
-            query : (arg: string) => ({
-                url    : `products/categories?pathname=${encodeURIComponent(arg)}`,
+        getCategoryDetail           : builder.query<CategoryDetail, string[]>({
+            query : (arg) => ({
+                url    : `products/categories?pathname=${encodeURIComponent(arg.join('/'))}`,
                 method : 'GET',
             }),
         }),

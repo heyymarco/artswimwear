@@ -89,7 +89,7 @@ function CategoryPageContentHome(): JSX.Element|null {
 }
 function CategoryPageContentSub({ categories }: { categories: string[] }): JSX.Element|null {
     // stores:
-    const { data: categoryDetail } = useGetCategoryDetail(categories.join('/'));
+    const { data: categoryDetail } = useGetCategoryDetail(categories);
     const parentsAndSelf : Omit<CategoryPreview, 'image'|'hasSubcategories'>[] = !categoryDetail ? [] : [
         ...(categoryDetail.parents.toReversed().map(({category}) => category) ?? []),
         categoryDetail,
