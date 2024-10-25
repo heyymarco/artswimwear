@@ -571,7 +571,7 @@ export const apiSlice = createApi({
         
         
         
-        getWishPage                 : builder.query<GetWishPageResponse, PaginationArgs & GetWishPageRequest>({
+        getWishPage                 : builder.query<GetWishPageResponse, GetWishPageRequest>({
             query: (arg) => ({
                 url         : 'customer/wishes',
                 method      : 'POST',

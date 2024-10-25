@@ -5,6 +5,7 @@ import {
 }                           from '@prisma/client'
 import {
     type Pagination,
+    type PaginationArgs,
 }                           from '../commons'
 import {
     type ProductPreview,
@@ -74,6 +75,7 @@ export interface DeleteWishGroupRequest
 
 export interface GetWishPageRequest
     extends
+        PaginationArgs,
         Partial<Pick<Wish,
             // relations:
             |'groupId'
