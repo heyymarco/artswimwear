@@ -94,7 +94,7 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
     
     
     // stores:
-    const { data: wishes } = useGetWishPage({ page: 1, perPage: 4, groupId: id || undefined /* fix empty_string id as `undefined` */ });
+    const { data: wishes } = useGetWishPage({ page: 0, perPage: 4, groupId: id || undefined /* fix empty_string id as `undefined` */ });
     const previews = !wishes ? undefined : Object.values(wishes.entities);
     
     
