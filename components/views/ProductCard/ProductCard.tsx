@@ -226,7 +226,6 @@ export {
 
 
 
-
 interface PrefetchProductDetailProps {
     // refs:
     articleRef : React.RefObject<HTMLDivElement|null>

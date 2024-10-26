@@ -4,6 +4,12 @@
 import {
     // react:
     default as React,
+    
+    
+    
+    // hooks:
+    useRef,
+    useEffect,
 }                           from 'react'
 
 // next-js:
@@ -58,6 +64,12 @@ import {
 import {
     type CategoryPreview,
 }                           from '@/models'
+
+// stores:
+import {
+    // hooks:
+    usePrefetchCategoryDetail,
+}                           from '@/store/features/api/apiSlice'
 
 
 
@@ -119,9 +131,18 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     
     // navigations:
     const router                    = useRouter();
-    const categoryBasePath          = `${parentCategories.length ? `${parentCategories.map(({category: {path}}) => path).join('/')}/` : ''}${path}`;
+    const hierarchyPaths : string[] = [
+        ...parentCategories.map(({category: {path}}) => path),
+        path,
+    ];
+    const categoryBasePath          = hierarchyPaths.join('/');
     const categoryInterceptedPath   =   `/categories/${categoryBasePath}`;
     const categoryUninterceptedPath = `/_/categories/${categoryBasePath}`;
+    
+    
+    
+    // refs:
+    const articleRef = useRef<HTMLDivElement|null>(null);
     
     
     
@@ -159,10 +180,15 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     
     
     // jsx:
-    return (
+    return (<>
         <ListItem
             // other props:
             {...restListItemProps}
+            
+            
+            
+            // refs:
+            elmRef={articleRef}
             
             
             
@@ -219,9 +245,87 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             
             { hasSubcategories && <Icon icon='dropright' size='xl' theme='primary' mild={active} className='arrow' />}
         </ListItem>
-    );
+        
+        <PrefetchCategoryDetail
+            // refs:
+            articleRef={articleRef}
+            
+            
+            
+            // data:
+            path={hierarchyPaths.join('/')}
+        />
+    </>);
 };
 export {
     CategoryCard,
     CategoryCard as default,
 }
+
+
+
+interface PrefetchCategoryDetailProps {
+    // refs:
+    articleRef : React.RefObject<HTMLDivElement|null>
+    
+    
+    
+    // data:
+    path       : string
+}
+const PrefetchCategoryDetail = (props: PrefetchCategoryDetailProps): JSX.Element|null => {
+    // props:
+    const {
+        // refs:
+        articleRef,
+        
+        
+        
+        // data:
+        path,
+    } = props;
+    
+    
+    
+    // apis:
+    const prefetchCategoryDetail = usePrefetchCategoryDetail();
+    
+    
+    
+    // dom effects:
+    useEffect(() => {
+        // conditions:
+        const articleElm = articleRef.current;
+        if (!articleElm) return;
+        
+        
+        
+        // setups:
+        const observer = new IntersectionObserver((entries) => {
+            // conditions:
+            if (!entries[0]?.isIntersecting) return;
+            
+            
+            
+            // actions:
+            observer.disconnect(); // the observer is no longer needed anymore
+            prefetchCategoryDetail(path.split('/'));
+        }, {
+            root      : null, // defaults to the browser viewport
+            threshold : 0.5,
+        });
+        observer.observe(articleElm);
+        
+        
+        
+        // cleanups:
+        return () => {
+            observer.disconnect();
+        };
+    }, [path]);
+    
+    
+    
+    // jsx:
+    return null;
+};

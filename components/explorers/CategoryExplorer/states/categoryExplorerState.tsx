@@ -32,6 +32,11 @@ import {
 
 //#region categoryExplorerState
 
+// utilities:
+export const rootParentCategories : CategoryParentInfo[] = [];
+
+
+
 // contexts:
 export interface CategoryExplorerState {
     // states:
@@ -50,7 +55,7 @@ export interface CategoryExplorerState {
 const noopCallback = () => {};
 const defaultCategoryExplorerStateContext : CategoryExplorerState = {
     // states:
-    parentCategories    : [],
+    parentCategories    : rootParentCategories,
     setParentCategories : noopCallback,
     
     restoreIndex        : 0,
