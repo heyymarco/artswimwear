@@ -725,7 +725,7 @@ export const {
     
     useGetShippingListQuery                : useGetShippingList,
     
-    useGetCountryListQuery                 : useGetCountryList,
+    // useGetCountryListQuery                 : useGetCountryList,
     // useLazyGetStateListQuery               : useGetStateList,
     // useLazyGetCityListQuery                : useGetCityList,
     
@@ -804,7 +804,6 @@ export const {
 } = apiSlice.endpoints;
 
 export const usePrefetchProductDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail', options);
-export const usePrefetchCountryList   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCountryList'  , options);
 
 
 

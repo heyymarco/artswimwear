@@ -4,11 +4,6 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useEffect,
 }                           from 'react'
 
 // cssfn:
@@ -46,11 +41,6 @@ import {
     Carousel,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// stores:
-import {
-    usePrefetchCountryList,
-}                           from '@/store/features/api/apiSlice'
-
 
 
 // styles:
@@ -65,24 +55,6 @@ import './page-styles';
 export function HomePageContent(): JSX.Element|null {
     // styles:
     const styleSheet = useHomePageStyleSheet();
-    
-    
-    
-    // dom effects:
-    const prefetchCountryList = usePrefetchCountryList();
-    useEffect(() => {
-        // setups:
-        const cancelPrefetch = setTimeout(() => {
-            prefetchCountryList();
-        }, 100);
-        
-        
-        
-        // cleanups:
-        return () => {
-            clearTimeout(cancelPrefetch);
-        };
-    }, []);
     
     
     

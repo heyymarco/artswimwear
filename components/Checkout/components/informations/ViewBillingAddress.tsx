@@ -14,11 +14,10 @@ import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
 
-// stores:
+// others:
 import {
-    // hooks:
-    useGetCountryList,
-}                           from '@/store/features/api/apiSlice'
+    Country,
+}                           from 'country-state-city'
 
 
 
@@ -48,11 +47,6 @@ const ViewBillingAddress = (): JSX.Element|null => {
     
     
     
-    // stores:
-    const {data: countryList}  = useGetCountryList();
-    
-    
-    
     // jsx:
     if (!isBillingAddressRequired) return null;
     if (!finalBillingAddress) return null;
@@ -73,7 +67,9 @@ const ViewBillingAddress = (): JSX.Element|null => {
                 <span className={styleSheet.data}>{firstName} {lastName} ({phone})</span>
             </p>
             <p>
-                <span className={styleSheet.data}>{`${address}, ${city}, ${state} (${zip}), ${countryList?.entities?.[country]?.name ?? country}`}</span>
+                <span className={styleSheet.data}>
+                    {address}, {city}, {state} ({zip}), {Country.getCountryByCode(country)?.name ?? country}
+                </span>
             </p>
         </>
     );
