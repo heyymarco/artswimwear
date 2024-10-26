@@ -11,16 +11,16 @@ import {
 // react components:
 export default function CommonLayout({
     children,
-    category_menu,
+    category_dropdown,
 }: {
-    children      : React.ReactNode
-    category_menu : React.ReactNode
+    children          : React.ReactNode
+    category_dropdown : React.ReactNode
 }): JSX.Element|null {
     // jsx:
     return (
         <>
             {children}
-            {category_menu}
+            {category_dropdown}
         </>
     );
 }
