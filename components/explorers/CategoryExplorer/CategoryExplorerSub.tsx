@@ -43,8 +43,8 @@ import {
     usePaginationState,
 }                           from '@/components/explorers/Pagination'
 import {
-    CategoryView,
-}                           from '@/components/views/CategoryView'
+    CategoryCard,
+}                           from '@/components/views/CategoryCard'
 
 // private components:
 import {
@@ -279,7 +279,7 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
                 // components:
                 galleryComponent={<Generic className='flat' />}
                 modelPreviewComponent={
-                    <CategoryView
+                    <CategoryCard
                         // data:
                         model={undefined as any}
                         

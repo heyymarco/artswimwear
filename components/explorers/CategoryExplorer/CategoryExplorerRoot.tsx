@@ -31,8 +31,8 @@ import {
     usePaginationState,
 }                           from '@/components/explorers/Pagination'
 import {
-    CategoryView,
-}                           from '@/components/views/CategoryView'
+    CategoryCard,
+}                           from '@/components/views/CategoryCard'
 
 // private components:
 import {
@@ -128,7 +128,7 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
             // components:
             listComponent={<List listStyle='flat' />}
             modelPreviewComponent={
-                <CategoryView
+                <CategoryCard
                     // data:
                     model={undefined as any}
                     

@@ -20,10 +20,6 @@ import {
 import {
     type PaginationGalleryProps,
 }                           from '@/components/explorers/PaginationGallery'
-import {
-    type CategoryViewProps,
-    CategoryView,
-}                           from '@/components/views/CategoryView'
 
 // models:
 import {
@@ -94,10 +90,7 @@ const CategoryExplorerBase = (props: CategoryExplorerBaseProps): JSX.Element|nul
         
         // components:
         bodyComponent         = (<Basic nude={true} theme='inherit' mild='inherit' /> as React.ReactComponentElement<any, BasicProps<Element>>),
-        modelPreviewComponent = (<CategoryView
-            // data:
-            model={undefined as any}
-        />                                                                            as React.ReactComponentElement<any, CategoryViewProps>),
+        modelPreviewComponent,
         
         
         

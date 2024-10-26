@@ -51,7 +51,7 @@ import {
 
 // styles:
 const minImageHeight = 50; // 50px
-const usesCategoryViewLayout = () => { // the <ListItem> of category list
+const usesCategoryCardLayout = () => { // the <ListItem> of category list
     // dependencies:
     
     // capabilities:
@@ -266,6 +266,6 @@ const usesCategoryViewLayout = () => { // the <ListItem> of category list
 export default () => [
     scope('main', {
         // layouts:
-        ...usesCategoryViewLayout(),
+        ...usesCategoryCardLayout(),
     }, { specificityWeight: 2 }),
 ];

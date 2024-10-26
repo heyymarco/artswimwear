@@ -14,7 +14,7 @@ import {
 
 // styles:
 import {
-    useCategoryViewStyleSheet,
+    useCategoryCardStyleSheet,
 }                           from './styles/loader'
 
 // reusable-ui core:
@@ -67,14 +67,14 @@ const minImageWidth = 55;  // 55px === (50px + (2* paddingBlock)) * aspectRatio 
 
 
 // react components:
-export interface CategoryViewProps extends ModelPreviewProps<CategoryPreview> {
+export interface CategoryCardProps extends ModelPreviewProps<CategoryPreview> {
     // values:
     selectedModel ?: CategoryPreview|null
     onModelSelect ?: EditorChangeEventHandler<CategoryPreview>
 }
-const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
+const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     // styles:
-    const styleSheet = useCategoryViewStyleSheet();
+    const styleSheet = useCategoryCardStyleSheet();
     
     
     
@@ -92,7 +92,7 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
         
         
         // other props:
-        ...restCategoryViewProps
+        ...restCategoryCardProps
     } = props;
     const {
         id,
@@ -154,7 +154,7 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
         
         // other props:
         ...restListItemProps
-    } = restCategoryViewProps;
+    } = restCategoryCardProps;
     
     
     
@@ -222,6 +222,6 @@ const CategoryView = (props: CategoryViewProps): JSX.Element|null => {
     );
 };
 export {
-    CategoryView,
-    CategoryView as default,
+    CategoryCard,
+    CategoryCard as default,
 }

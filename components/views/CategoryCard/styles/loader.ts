@@ -8,6 +8,6 @@ import {
 
 // styles:
 import './styles';
-export const useCategoryViewStyleSheet = dynamicStyleSheets(
+export const useCategoryCardStyleSheet = dynamicStyleSheets(
     () => import(/* webpackPrefetch: true */'./styles')
 , { id: 'xkcnoce2e1' });
