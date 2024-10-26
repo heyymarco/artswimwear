@@ -76,7 +76,7 @@ export interface ProductCardProps {
     buttonWishComponent         ?: React.ReactElement<ButtonWishProps>|null
     dropdownListButtonComponent ?: React.ReactElement<DropdownListButtonProps>|((arg: { model: ProductPreview }) => React.ReactElement<DropdownListButtonProps>)|null
 }
-const ProductCard = (props: ProductCardProps) => {
+const ProductCard = (props: ProductCardProps): JSX.Element|null => {
     // props:
     const {
         // data:
@@ -114,47 +114,8 @@ const ProductCard = (props: ProductCardProps) => {
     
     
     
-    // apis:
-    const prefetchProductDetail = usePrefetchProductDetail();
-    
-    
-    
-    // dom effects:
-    useEffect(() => {
-        // conditions:
-        const articleElm = articleRef.current;
-        if (!articleElm) return;
-        
-        
-        
-        // setups:
-        const observer = new IntersectionObserver((entries) => {
-            // conditions:
-            if (!entries[0]?.isIntersecting) return;
-            
-            
-            
-            // actions:
-            observer.disconnect(); // the observer is no longer needed anymore
-            prefetchProductDetail(path);
-        }, {
-            root      : null, // defaults to the browser viewport
-            threshold : 0.5,
-        });
-        observer.observe(articleElm);
-        
-        
-        
-        // cleanups:
-        return () => {
-            observer.disconnect();
-        };
-    }, [path]);
-    
-    
-    
     // jsx:
-    return (
+    return (<>
         <article
             // identifiers:
             key={id}
@@ -246,9 +207,88 @@ const ProductCard = (props: ProductCardProps) => {
                 )}
             </header>
         </article>
-    );
+        
+        <PrefetchProductDetail
+            // refs:
+            articleRef={articleRef}
+            
+            
+            
+            // data:
+            path={path}
+        />
+    </>);
 };
 export {
     ProductCard,            // named export for readibility
     ProductCard as default, // default export to support React.lazy
 }
+
+
+
+
+interface PrefetchProductDetailProps {
+    // refs:
+    articleRef : React.RefObject<HTMLDivElement|null>
+    
+    
+    
+    // data:
+    path       : string
+}
+const PrefetchProductDetail = (props: PrefetchProductDetailProps): JSX.Element|null => {
+    // props:
+    const {
+        // refs:
+        articleRef,
+        
+        
+        
+        // data:
+        path,
+    } = props;
+    
+    
+    
+    // apis:
+    const prefetchProductDetail = usePrefetchProductDetail();
+    
+    
+    
+    // dom effects:
+    useEffect(() => {
+        // conditions:
+        const articleElm = articleRef.current;
+        if (!articleElm) return;
+        
+        
+        
+        // setups:
+        const observer = new IntersectionObserver((entries) => {
+            // conditions:
+            if (!entries[0]?.isIntersecting) return;
+            
+            
+            
+            // actions:
+            observer.disconnect(); // the observer is no longer needed anymore
+            prefetchProductDetail(path);
+        }, {
+            root      : null, // defaults to the browser viewport
+            threshold : 0.5,
+        });
+        observer.observe(articleElm);
+        
+        
+        
+        // cleanups:
+        return () => {
+            observer.disconnect();
+        };
+    }, [path]);
+    
+    
+    
+    // jsx:
+    return null;
+};

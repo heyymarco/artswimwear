@@ -803,7 +803,8 @@ export const {
     makePayment       : { initiate : makePayment       },
 } = apiSlice.endpoints;
 
-export const usePrefetchProductDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail', options);
+export const usePrefetchProductDetail  = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail' , options);
+export const usePrefetchCategoryDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCategoryDetail', options);
 
 
 
