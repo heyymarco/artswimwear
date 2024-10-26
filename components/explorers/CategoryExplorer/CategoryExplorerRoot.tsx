@@ -54,8 +54,18 @@ import {
 
 // internals:
 import {
+    // utilities:
+    rootParentCategories,
+    
+    
+    
     // states:
     useCategoryExplorerState,
+    
+    
+    
+    // react components:
+    CategoryExplorerStateProvider,
 }                           from './states/categoryExplorerState'
 
 
@@ -124,22 +134,24 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
     
     // jsx:
     return (
-        <CategoryExplorerList
-            // components:
-            listComponent={<List listStyle='flat' />}
-            modelPreviewComponent={
-                <CategoryCard
-                    // data:
-                    model={undefined as any}
-                    
-                    
-                    
-                    // handlers:
-                    selectedModel={selectedRootOrDefault?.category ?? null}
-                    onModelSelect={handleSelect}
-                />
-            }
-        />
+        <CategoryExplorerStateProvider parentCategories={rootParentCategories}>
+            <CategoryExplorerList
+                // components:
+                listComponent={<List listStyle='flat' />}
+                modelPreviewComponent={
+                    <CategoryCard
+                        // data:
+                        model={undefined as any}
+                        
+                        
+                        
+                        // handlers:
+                        selectedModel={selectedRootOrDefault?.category ?? null}
+                        onModelSelect={handleSelect}
+                    />
+                }
+            />
+        </CategoryExplorerStateProvider>
     );
 };
 export {

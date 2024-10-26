@@ -62,11 +62,6 @@ import {
 
 // internals:
 import {
-    // utilities:
-    rootParentCategories,
-    
-    
-    
     // react components:
     type CategoryExplorerStateProps,
     CategoryExplorerStateProvider,
@@ -176,6 +171,9 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
                     onNavigate={onNavigate}
                 >
                     <RouterUpdater />
+                    
+                    
+                    
                     {/*
                         Place the <PaginationStateProvider> for root data here,
                         so it can be accessed by both <CategoryExplorerRoot> and <CategoryExplorerSub>
@@ -190,9 +188,7 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
                         useGetModelPage={useGetRootCategoryPage}
                     >
                         <Container className={styleSheet.root} theme='primaryAlt'>
-                            <CategoryExplorerStateProvider parentCategories={rootParentCategories}>
-                                <CategoryExplorerRoot />
-                            </CategoryExplorerStateProvider>
+                            <CategoryExplorerRoot />
                         </Container>
                         <Container className={styleSheet.sub} theme='primaryAlt' mild={false}>
                             <CategoryExplorerSub />
