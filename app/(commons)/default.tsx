@@ -8,7 +8,7 @@ import {
 // pages:
 import {
     CategoryPageContent,
-}                           from '@/app/(commons)/categories/[[...categories]]/page-content'
+}                           from '@/app/(commons)/(with signin intercept)/categories/[[...categories]]/page-content'
 
 
 
@@ -18,7 +18,7 @@ export default function LostParallelSlot(): JSX.Element|null {
         This page will be shown if one/more active_parallel_slots lost its active state.
         Example:
         First, when accessed `/categories/***` via interceptor, the route `(commons)/@category_menu/(...)categories` activates the `category_menu` slot.
-        Then,  when accessed `/categories/***` within `(unintercepted)/%5Fgo/***`, the route `(commons)/@category_menu/(...)categories` is no longer active (lost).
+        Then,  when accessed `/categories/***` OUTSIDE `(commons)/***`, the route `(commons)/@category_menu/(...)categories` is no longer active (lost).
         Thus the `LostParallelSlot` will automatically be called by next-js.
     */
     
