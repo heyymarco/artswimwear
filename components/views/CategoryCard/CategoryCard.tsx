@@ -246,7 +246,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             { hasSubcategories && <Icon icon='dropright' size='xl' theme='primary' mild={active} className='arrow' />}
         </ListItem>
         
-        <PrefetchCategoryDetail
+        {!hasSubcategories && <PrefetchCategoryDetail
             // refs:
             articleRef={articleRef}
             
@@ -254,7 +254,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             
             // data:
             path={hierarchyPaths.join('/')}
-        />
+        />}
     </>);
 };
 export {
