@@ -8,7 +8,7 @@ import {
 // pages:
 import {
     CategoryPageContent,
-}                           from '@/app/(commons)/(with categories intercept)/(with signin intercept)/categories/[[...categories]]/page-content'
+}                           from '@/app/(commons)/(with signin intercept)/(with categories intercept)/categories/[[...categories]]/page-content'
 
 
 
@@ -25,13 +25,16 @@ export default function LostParallelSlot(): JSX.Element|null {
     
     
     // states:
-    const pathname = usePathname();
+    const newPathname = usePathname();
+    const oldPathname = location.pathname;
     
     
     
     // jsx:
-    if ((/^\/categories($|\/)/i).test(pathname)) {
-        let tailPathname = pathname.slice('/categories'.length);
+    const categoriesRegex = /^\/categories($|\/)/i;
+    const isNewPathnameMatch = categoriesRegex.test(newPathname);
+    if (isNewPathnameMatch || categoriesRegex.test(oldPathname)) {
+        let tailPathname = (isNewPathnameMatch ? newPathname : oldPathname).slice('/categories'.length);
         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
         const categories = !tailPathname ? undefined : tailPathname.split('/');
         

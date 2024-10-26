@@ -8,7 +8,7 @@ import {
 // pages:
 import {
     SignInPageContent,
-}                           from '@/app/(commons)/(with signin intercept)/signin/page-content'
+}                           from '@/app/(commons)/signin/page-content'
 
 
 
@@ -25,13 +25,13 @@ export default function LostParallelSlot(): JSX.Element|null {
     
     
     // states:
-    const pathname = usePathname();
+    const newPathname = usePathname();
     
     
     
     // jsx:
-    if ((/^\/signin($|\/)/i).test(pathname)) {
-        let tailPathname = pathname.slice('/signin'.length);
+    if ((/^\/signin($|\/)/i).test(newPathname)) {
+        let tailPathname = newPathname.slice('/signin'.length);
         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
         
         switch (tailPathname.toLowerCase()) {
