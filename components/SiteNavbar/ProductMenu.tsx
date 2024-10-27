@@ -98,6 +98,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
             const backPathname = pathname;
             
             //#region a fix for categories page interceptor
+            // intercepts all_pages/** => show <CategoryExplorerDropdown>:
             const newShownMenu = showDialog<true>(
                 <CategoryExplorerDropdown
                     // variants:
