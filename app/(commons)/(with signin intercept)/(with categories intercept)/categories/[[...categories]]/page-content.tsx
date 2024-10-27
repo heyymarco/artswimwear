@@ -68,6 +68,11 @@ import {
     useGetCategoryDetail,
 }                           from '@/store/features/api/apiSlice'
 
+// states:
+import {
+    usePageInterceptState,
+}                           from '@/states/pageInterceptState'
+
 
 
 // hooks:
@@ -83,7 +88,24 @@ const useUseGetProductPageOfCategory = (categoryPath: string[]|undefined) => {
 
 
 // react components:
-export function CategoryPageContent({ categories }: { categories?: string[] }): JSX.Element|null {
+export function CategoryPageContent({ categories: categoriesRaw }: { categories?: string[] }): JSX.Element|null {
+    // states:
+    const {
+        originPathname,
+    } = usePageInterceptState();
+    const categories = (
+        originPathname
+        ? ((): string[]|undefined => {
+            let tailPathname = originPathname.slice('/categories'.length);
+            if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
+            const categories = !tailPathname ? undefined : tailPathname.split('/');
+            return categories ?? categoriesRaw;
+        })()
+        : categoriesRaw
+    );
+    
+    
+    
     // stores:
     const _useGetProductPageOfCategory = useUseGetProductPageOfCategory(categories);
     
@@ -163,7 +185,7 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                     </NavItem>
                     
                     {parentsAndSelf.map(({ name, path }, index, array) =>
-                        <NavItem key={index} end>
+                        <NavItem key={index} active={index === (array.length - 1)}>
                             <Link href={`/categories/${array.slice(0, index + 1).map(({path}) => path).join('/')}`}>
                                 {name}
                             </Link>
