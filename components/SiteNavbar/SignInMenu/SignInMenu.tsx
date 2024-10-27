@@ -179,6 +179,11 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             // intercepts home|products/**|categories/**|checkout/** */ => show <SignInDialog>:
             if ((/^\/($)|((products|categories|checkout)($|\/))/i).test(pathname)) {
                 startIntercept(async (backPathname): Promise<boolean> => {
+                    toggleList(false); // collapse the <Navbar> manually
+                    router.push(signInPath); // goto signIn page
+                    
+                    
+                    
                     await showDialog<false|Session>(
                         <SignInDialog
                             // components:
@@ -199,9 +204,6 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                 });
             } // if
             //#endregion a fix for signIn page interceptor when on /checkout page
-            
-            router.push(signInPath); // goto signIn page
-            toggleList(false); // collapse the <Navbar> manually
         }
         else if (isSignedIn) {
             if (shownMenu) {
