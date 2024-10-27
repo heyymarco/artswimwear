@@ -73,6 +73,11 @@ import {
     useSignedInCacheRefresh,
 }                           from '@/store/features/api/hooks'
 
+// states:
+import {
+    PageInterceptStateProvider,
+}                           from '@/states/pageInterceptState'
+
 // configs:
 import {
     WEBSITE_LANGUAGE,
@@ -184,11 +189,13 @@ export function RootLayoutContent({
                                 fetchErrorTitleDefault={fetchErrorTitleDefault}
                                 fetchErrorMessageDefault={fetchErrorMessageDefault}
                             >
-                                <CartStateProvider>
-                                    <RootLayoutContentInternal>
-                                        {children}
-                                    </RootLayoutContentInternal>
-                                </CartStateProvider>
+                                <PageInterceptStateProvider>
+                                    <CartStateProvider>
+                                        <RootLayoutContentInternal>
+                                            {children}
+                                        </RootLayoutContentInternal>
+                                    </CartStateProvider>
+                                </PageInterceptStateProvider>
                             </DialogMessageProvider>
                         </PersistGate></Provider>
                     </SigninTabStateProvider>

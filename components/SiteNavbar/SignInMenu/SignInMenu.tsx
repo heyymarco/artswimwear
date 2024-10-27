@@ -81,6 +81,11 @@ import {
     resolveMediaUrl,
 }                           from '@/libs/mediaStorage.client'
 
+// states:
+import {
+    usePageInterceptState,
+}                           from '@/states/pageInterceptState'
+
 // configs:
 import {
     authConfigClient,
@@ -158,6 +163,9 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     
     
     // handlers:
+    const {
+        startIntercept,
+    } = usePageInterceptState();
     const router = useRouter();
     const pathname = usePathname();
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
@@ -170,21 +178,24 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
             //#region a fix for signIn page interceptor when on /checkout page
             // intercepts home|products/**|categories/**|checkout/** */ => show <SignInDialog>:
             if ((/^\/($)|((products|categories|checkout)($|\/))/i).test(pathname)) {
-                const backPathname = pathname;
-                
-                showDialog<false|Session>(
-                    <SignInDialog
-                        // components:
-                        signInComponent={
-                            <SignIn<Element>
-                                // back to current checkout page after signed in:
-                                defaultCallbackUrl={backPathname}
-                            />
-                        }
-                    />
-                )
-                .then(() => { // on fully closed:
-                    router.push(backPathname, { scroll: false }); // restore the url
+                startIntercept(async (backPathname): Promise<boolean> => {
+                    await showDialog<false|Session>(
+                        <SignInDialog
+                            // components:
+                            signInComponent={
+                                <SignIn<Element>
+                                    // back to current checkout page after signed in:
+                                    defaultCallbackUrl={backPathname}
+                                />
+                            }
+                        />
+                    );
+                    
+                    
+                    
+                    // on fully closed:
+                    // restore the url:
+                    return true;
                 });
             } // if
             //#endregion a fix for signIn page interceptor when on /checkout page

@@ -14,7 +14,6 @@ import {
 
 // next-js:
 import {
-    usePathname,
     useRouter,
 }                           from 'next/navigation'
 
@@ -45,6 +44,11 @@ import {
 import {
     CategoryExplorerDropdown,
 }                           from '@/components/explorers/CategoryExplorer'
+
+// states:
+import {
+    usePageInterceptState,
+}                           from '@/states/pageInterceptState'
 
 
 
@@ -83,8 +87,10 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     
     
     // handlers:
+    const {
+        startIntercept,
+    } = usePageInterceptState();
     const router = useRouter();
-    const pathname = usePathname();
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
         event.preventDefault();  // prevent the `href='/signin'` to HARD|SOFT navigate
         event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
@@ -95,40 +101,43 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
             shownMenu.closeDialog(undefined);
         }
         else {
-            const backPathname = pathname;
-            
             //#region a fix for categories page interceptor
             // intercepts all_pages/** => show <CategoryExplorerDropdown>:
-            const newShownMenu = showDialog<true>(
-                <CategoryExplorerDropdown
-                    // variants:
-                    // theme='primary'
-                    
-                    
-                    
-                    // floatable:
-                    floatingOn={menuRef}
-                    floatingPlacement='bottom-end'
-                    
-                    
-                    
-                    // auto focusable:
-                    restoreFocusOn={menuRef}
-                />
-            );
-            setShownMenu(newShownMenu);
-            newShownMenu.collapseStartEvent().then(() => {
-                setShownMenu(null);
-            });
-            newShownMenu.collapseEndEvent().then(({data}) => {
-                if (data !== true) { // when the dropdown closed without the user clicking the menu item => restore the url, otherwise keeps the changed url
-                    router.push(backPathname, { scroll: false });
-                } // if
+            startIntercept(async (backPathname): Promise<boolean> => {
+                // set a temporary `/category` url before the <CategoryExplorerDropdown> resolves a more specific `/category/specific`:
+                router.push(categoriesPath, { scroll: false }); // intercept the url
+                
+                const newShownMenu = showDialog<true>(
+                    <CategoryExplorerDropdown
+                        // variants:
+                        // theme='primary'
+                        
+                        
+                        
+                        // floatable:
+                        floatingOn={menuRef}
+                        floatingPlacement='bottom-end'
+                        
+                        
+                        
+                        // auto focusable:
+                        restoreFocusOn={menuRef}
+                    />
+                );
+                setShownMenu(newShownMenu);
+                newShownMenu.collapseStartEvent().then(() => {
+                    setShownMenu(null);
+                });
+                const data = await newShownMenu;
+                
+                
+                
+                // on fully closed:
                 toggleList(false); // collapse the <Navbar> manually
+                // when the dropdown closed without the user clicking the menu item => restore the url, otherwise keeps the changed url
+                return (data !== true);
             });
             //#endregion a fix for categories page interceptor
-            
-            router.push(categoriesPath, { scroll: false }); // intercept the url
         } // if
     });
     
