@@ -103,7 +103,7 @@ function WishPageContentInternal(): JSX.Element|null {
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
-                    <NavItem end>
+                    <NavItem active={true}>
                         <Link href='/customer/wishes'>
                             Wishlist
                         </Link>

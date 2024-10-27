@@ -156,13 +156,13 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
-                    <NavItem end>
+                    <NavItem active={false}>
                         <Link href='/customer/wishes'>
                             Wishlist
                         </Link>
                     </NavItem>
                     
-                    <NavItem end>
+                    <NavItem active={true}>
                         <Link href={`/customer/wishes/${encodeURIComponent(wishGroupId)}`} >
                             {wishGroupName}
                         </Link>
