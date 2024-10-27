@@ -107,6 +107,8 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 // set a temporary `/category` url before the <CategoryExplorerDropdown> resolves a more specific `/category/specific`:
                 router.push(categoriesPath, { scroll: false }); // intercept the url
                 
+                
+                
                 const newShownMenu = showDialog<true>(
                     <CategoryExplorerDropdown
                         // variants:
