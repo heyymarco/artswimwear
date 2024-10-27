@@ -92,6 +92,11 @@ import {
     useGetProductDetail,
 }                           from '@/store/features/api/apiSlice'
 
+// states:
+import {
+    usePageInterceptState,
+}                           from '@/states/pageInterceptState'
+
 // utilities:
 import {
     resolveMediaUrl,
@@ -153,9 +158,26 @@ const selectedVariantsInitializer = (initVariantArg: InitVariantArg): VariantsSt
 
 
 // react components:
-export function ProductDetailPageContent({ productPath }: { productPath: string }): JSX.Element|null {
+export function ProductDetailPageContent({ productPath: productPathRaw }: { productPath: string }): JSX.Element|null {
     // styles:
     const styleSheet = useProductDetailPageStyleSheet();
+    
+    
+    
+    // states:
+    const {
+        originPathname,
+    } = usePageInterceptState();
+    const productPath = (
+        originPathname
+        ? ((): string|undefined => {
+            let tailPathname = originPathname.slice('/products'.length);
+            if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
+            const productPath = !tailPathname ? undefined : tailPathname;
+            return productPath;
+        })()
+        : productPathRaw
+    );
     
     
     
@@ -287,19 +309,19 @@ export function ProductDetailPageContent({ productPath }: { productPath: string 
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
-                    <NavItem end>
+                    <NavItem active={false}>
                         <Link href='/'>
                             Home
                         </Link>
                     </NavItem>
                     
-                    <NavItem end>
+                    <NavItem active={false}>
                         <Link href='/products'>
                             Products
                         </Link>
                     </NavItem>
                     
-                    {!!productDetail.path && <NavItem end>
+                    {!!productDetail.path && <NavItem active={true}>
                         <Link href={`/products/${productDetail.path}`} >
                             {productDetail.name}
                         </Link>
