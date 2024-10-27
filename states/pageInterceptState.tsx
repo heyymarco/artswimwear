@@ -26,6 +26,7 @@ import {
 import {
     // react helper hooks:
     useEvent,
+    useSetTimeout,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 
@@ -76,6 +77,11 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     
     
     
+    // utilities:
+    const setTimeoutAsync = useSetTimeout();
+    
+    
+    
     // actions:
     const router = useRouter();
     const startIntercept = useEvent<PageInterceptState['startIntercept']>(async (callback) => {
@@ -83,8 +89,23 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
         const restorePathname = (await callback(pathname)) ?? true;
         if (restorePathname) {
             router.push(pathname, { scroll: false });
+            
+            
+            
+            // wait until the router is fully applied:
+            if (!(await setTimeoutAsync(0))) return; // the component was unloaded before the timer runs => do nothing
+            if (!(await setTimeoutAsync(0))) return; // the component was unloaded before the timer runs => do nothing
+            if (!(await setTimeoutAsync(0))) return; // the component was unloaded before the timer runs => do nothing
+            
+            
+            
+            // reset the intercepting state:
+            setOriginPathname(null);
+        }
+        else {
+            // reset the intercepting state:
+            setOriginPathname(null);
         } // if
-        setOriginPathname(null);
     });
     
     
