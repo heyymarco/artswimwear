@@ -110,13 +110,13 @@ function ProductPageContentInternal(): JSX.Element|null {
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
-                    <NavItem end>
+                    <NavItem active={false}>
                         <Link href='/'>
                             Home
                         </Link>
                     </NavItem>
                     
-                    <NavItem end>
+                    <NavItem active={true}>
                         <Link href='/products'>
                             Products
                         </Link>
