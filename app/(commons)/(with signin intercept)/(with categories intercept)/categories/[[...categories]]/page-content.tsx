@@ -99,7 +99,7 @@ export function CategoryPageContent({ categories: categoriesRaw }: { categories?
             let tailPathname = originPathname.slice('/categories'.length);
             if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
             const categories = !tailPathname ? undefined : tailPathname.split('/');
-            return categories ?? categoriesRaw;
+            return categories;
         })()
         : categoriesRaw
     );
@@ -178,7 +178,7 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
-                    <NavItem end>
+                    <NavItem active={!parentsAndSelf.length}>
                         <Link href='/categories'>
                             All products
                         </Link>
