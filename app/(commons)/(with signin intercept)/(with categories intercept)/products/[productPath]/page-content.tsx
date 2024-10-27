@@ -92,10 +92,10 @@ import {
     useGetProductDetail,
 }                           from '@/store/features/api/apiSlice'
 
-// states:
-import {
-    usePageInterceptState,
-}                           from '@/states/pageInterceptState'
+// // states:
+// import {
+//     usePageInterceptState,
+// }                           from '@/states/pageInterceptState'
 
 // utilities:
 import {
@@ -158,26 +158,26 @@ const selectedVariantsInitializer = (initVariantArg: InitVariantArg): VariantsSt
 
 
 // react components:
-export function ProductDetailPageContent({ productPath: productPathRaw }: { productPath: string }): JSX.Element|null {
+export function ProductDetailPageContent({ productPath: productPath }: { productPath: string }): JSX.Element|null {
     // styles:
     const styleSheet = useProductDetailPageStyleSheet();
     
     
     
-    // states:
-    const {
-        originPathname,
-    } = usePageInterceptState();
-    const productPath = (
-        originPathname
-        ? ((): string|undefined => {
-            let tailPathname = originPathname.slice('/products'.length);
-            if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
-            const productPath = !tailPathname ? undefined : tailPathname;
-            return productPath;
-        })()
-        : productPathRaw
-    );
+    // // states:
+    // const {
+    //     originPathname,
+    // } = usePageInterceptState();
+    // const productPath = (
+    //     originPathname
+    //     ? ((): string|undefined => {
+    //         let tailPathname = originPathname.slice('/products'.length);
+    //         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
+    //         const productPath = !tailPathname ? undefined : tailPathname;
+    //         return productPath;
+    //     })()
+    //     : productPathRaw
+    // );
     
     
     
