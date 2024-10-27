@@ -29,12 +29,6 @@ import {
     CategoryExplorer,
 }                           from './CategoryExplorer'
 
-// stores:
-import {
-    // hooks:
-    useGetCategoryPage as _useGetCategoryPage,
-}                           from '@/store/features/api/apiSlice'
-
 
 
 // react components:

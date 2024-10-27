@@ -58,12 +58,6 @@ import {
     type CategoryParentInfo,
 }                           from '@/models'
 
-// stores:
-import {
-    // hooks:
-    useGetCategoryPage as _useGetCategoryPage,
-}                           from '@/store/features/api/apiSlice'
-
 // internals:
 import {
     // states:
