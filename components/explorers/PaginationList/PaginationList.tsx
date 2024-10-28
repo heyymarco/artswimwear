@@ -370,6 +370,7 @@ export interface PaginationListProps<TModel extends Model, TElement extends Elem
     
     // components:
     bodyComponent         ?: React.ReactComponentElement<any, BasicProps<Element>>
+    modelEmptyComponent   ?: React.ReactComponentElement<any, GenericProps<Element>>
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
     
     
@@ -397,21 +398,19 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         // components:
         
         // we use <Basic> for the <GalleryBodyWrapper>, because the <GalleryBody> is ALREADY has nice styling:
-        bodyComponent = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
+        bodyComponent         = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
         
+        modelEmptyComponent   = (<ModelEmpty className='fluid' /* fluid: fills the entire <PaginationList> height */ textEmpty={textEmpty} /> as React.ReactComponentElement<any, GenericProps<Element>>),
         modelCreateComponent,
         modelPreviewComponent,
+        
+        listComponent         = (<List<Element> /> as React.ReactComponentElement<any, ListProps<Element>>),
         
         
         
         // children:
         menusBefore,
         menusAfter,
-        
-        
-        
-        // components:
-        listComponent = (<List<Element> /> as React.ReactComponentElement<any, ListProps<Element>>),
         
         
         
@@ -544,7 +543,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
             />}
             
             {/* <ModelEmpty> */}
-            {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
+            {isModelEmpty && modelEmptyComponent}
             
             {/* <GalleryItem> */}
             {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
