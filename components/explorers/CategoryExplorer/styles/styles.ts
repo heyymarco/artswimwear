@@ -15,12 +15,22 @@ import {
     
     // border (stroke) stuff of UI:
     usesBorder,
+    
+    
+    
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
 import {
     // base-content-components:
     containers,
+    
+    
+    
+    // simple-components:
+    buttonIcons,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 
@@ -49,6 +59,7 @@ const usesRootLayout = () => {
     
     // features:
     const {borderVars} = usesBorder({ borderWidth: '0px' });
+    const {paddingVars} = usesPadding();
     
     
     
@@ -65,6 +76,7 @@ const usesRootLayout = () => {
         
         // spacings:
         paddingInlineEnd: '0px',
+        [paddingVars.paddingBlock]: `calc((${spacers.sm} * 2) + 1lh)`, // already reserved to nav
         
         
         
@@ -87,8 +99,8 @@ const usesRootLayout = () => {
                     
                     
                     
-                    // TODO: just a quick fix, should be removed if the <PaginationList>'s separatorHack has been fixed
-                    minBlockSize: 'unset',
+                    // // TODO: just a quick fix, should be removed if the <PaginationList>'s separatorHack has been fixed
+                    // minBlockSize: 'unset',
                 }, { specificityWeight: 2 }),
             }),
         }),
@@ -99,6 +111,7 @@ const usesSubLayout = () => {
     
     // features:
     const {borderVars} = usesBorder({ borderWidth: '0px' });
+    const {paddingVars} = usesPadding();
     
     
     
@@ -111,7 +124,9 @@ const usesSubLayout = () => {
         // layouts:
         display: 'grid',
         gridTemplate: [[
-            `"nav nav " ${containers.paddingBlock}`,
+            `"... ...." ${spacers.sm}`,
+            '"nav nav " 1lh',
+            `"... ...." ${spacers.sm}`,
             '"... expl" auto',
             '/',
             `${containers.paddingInline} 1fr`,
@@ -128,8 +143,8 @@ const usesSubLayout = () => {
                     
                     
                     
-                    // TODO: just a quick fix, should be removed if the <PaginationList>'s separatorHack has been fixed
-                    minBlockSize: 'unset',
+                    // // TODO: just a quick fix, should be removed if the <PaginationList>'s separatorHack has been fixed
+                    // minBlockSize: 'unset',
                 }, { specificityWeight: 2 }),
             }),
         }),
@@ -148,7 +163,8 @@ const usesSubLayout = () => {
         
         // spacings:
         paddingInlineStart: '0px',
-        paddingBlockStart: '0px',
+        [paddingVars.paddingBlock]: `calc((${spacers.sm} * 2) + 1lh)`, // already reserved to nav
+        paddingBlockStart: '0px', // already reserved to nav
     });
 };
 
@@ -167,7 +183,12 @@ const usesNavLayout = () => {
         
         
         // spacings:
-        paddingInlineStart: spacers.sm,
+        paddingInlineStart : spacers.sm, // already reserved to nav
+        
+        
+        
+        // typos:
+        fontSize: buttonIcons.fontSizeMd,
     });
 };
 const usesSubExplLayout = () => {

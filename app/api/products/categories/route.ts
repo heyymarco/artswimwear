@@ -153,10 +153,11 @@ router
     
     
     
-    // if (parent !== null) await new Promise<void>((resolve) => {
+    // await new Promise<void>((resolve, reject) => {
     //     setTimeout(() => {
-    //         resolve();
-    //     }, 5000);
+    //     //     resolve();
+    //         reject('Oops an error occured!');
+    //     }, 1000);
     // });
     
     
