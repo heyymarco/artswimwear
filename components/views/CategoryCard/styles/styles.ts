@@ -268,4 +268,10 @@ export default () => [
         // layouts:
         ...usesCategoryCardLayout(),
     }, { specificityWeight: 2 }),
+    scope('void', {
+        // layouts:
+        ...style({
+            visibility: 'hidden',
+        }),
+    }),
 ];
