@@ -25,6 +25,12 @@ const usesMainLayout = () => {
     return style({
         // layouts:
         display      : 'grid',
+        gridTemplate : [[
+            '"  nav  " auto',
+            '"gallery" 1fr',
+            '/',
+            '1fr',
+        ]],
         
         
         
