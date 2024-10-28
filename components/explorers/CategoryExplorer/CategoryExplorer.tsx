@@ -9,7 +9,6 @@ import {
     
     // hooks:
     useState,
-    useMemo,
 }                           from 'react'
 import {
     useImmer,
@@ -119,6 +118,7 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
     
     
     // jsx:
+    // INSIDE the `/categories/**` path => TRY to show the categories WITH initial selection:
     if (initialCategories) return (
         <CategoryExplorerWithInitial
             // other props:
@@ -131,6 +131,7 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
         />
     );
     
+    // OUTSIDE the `/categories/**` path => shows the categories WITHOUT initial selection:
     return (
         <CategoryExplorerInternal
             // other props:
@@ -169,7 +170,7 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
     
     // stores:
     const { data: categoryDetail } = useGetCategoryDetail(initialCategories);
-    const {initialSelectedCategories, initialRestoreIndex} = useMemo<{ initialSelectedCategories: CategoryParentInfo[]|null, initialRestoreIndex: number|undefined }>(() => {
+    const [{initialSelectedCategories, initialRestoreIndex}] = useState<{ initialSelectedCategories: CategoryParentInfo[]|null, initialRestoreIndex: number|undefined }>(() => {
         // conditions:
         if (!categoryDetail) return { initialSelectedCategories: null, initialRestoreIndex: 0 }; // the data is not ready => ignore
         
@@ -206,12 +207,22 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
                 : index
             ),
         };
-    }, [categoryDetail]);
+    }); // we use `useState` instead of `useMemo`, so when the data is ready AFTER that, the initial preserved data is not changed, to avoid user confusion
     
     
     
     // jsx:
-    if (!initialSelectedCategories) return null; // TODO: add a progress indicator
+    // the data is LOADING|ERROR => shows the categories WITHOUT initial selection:
+    if (!initialSelectedCategories) {
+        return (
+            <CategoryExplorerInternal
+                // other props:
+                {...props}
+            />
+        );
+    } // if
+    
+    // the data is READY => shows the categories WITH initial selection:
     return (
         <CategoryExplorerInternal<TElement>
             // other props:
