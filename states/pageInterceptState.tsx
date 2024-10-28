@@ -14,6 +14,7 @@ import {
     useContext,
     useMemo,
     useState,
+    useRef,
 }                           from 'react'
 
 // next-js:
@@ -25,6 +26,7 @@ import {
 // reusable-ui core:
 import {
     // react helper hooks:
+    useIsomorphicLayoutEffect,
     useEvent,
     useSetTimeout,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -74,6 +76,11 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
     // states:
     const pathname = usePathname();
     const [originPathname, setOriginPathname] = useState<string|null>(null);
+    const signalPathnameUpdated = useRef<(() => void)|undefined>(undefined);
+    useIsomorphicLayoutEffect(() => {
+        signalPathnameUpdated.current?.(); // signal updated
+        signalPathnameUpdated.current = undefined;
+    }, [pathname]);
     
     
     
@@ -88,14 +95,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
         setOriginPathname(pathname);
         const restorePathname = (await callback(pathname)) ?? true;
         if (restorePathname) {
-            router.push(pathname, { scroll: false });
-            
-            
-            
-            // wait until the router is fully applied:
-            if (!(await setTimeoutAsync(0))) return; // the component was unloaded before the timer runs => do nothing
-            if (!(await setTimeoutAsync(0))) return; // the component was unloaded before the timer runs => do nothing
-            if (!(await setTimeoutAsync(0))) return; // the component was unloaded before the timer runs => do nothing
+            await restorePathnameAsync(pathname);
             
             
             
@@ -106,6 +106,22 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
             // reset the intercepting state:
             setOriginPathname(null);
         } // if
+    });
+    const restorePathnameAsync = useEvent(async (originPathname: string): Promise<void> => {
+        if (originPathname.toLowerCase() === pathname.toLowerCase()) return; // already the same => ignore
+        
+        
+        
+        // wait until the router is fully applied:
+        const { promise: routerUpdatedPromise, resolve: routerUpdatedSignal } = Promise.withResolvers<void>();
+        signalPathnameUpdated.current = routerUpdatedSignal;
+        
+        router.push(originPathname, { scroll: false });
+        
+        await Promise.race([
+            routerUpdatedPromise,
+            setTimeoutAsync(1000),
+        ]);
     });
     
     
