@@ -362,6 +362,7 @@ export interface PaginationGalleryProps<TModel extends Model, TElement extends E
     // components:
     bodyComponent         ?: React.ReactComponentElement<any, BasicProps<Element>>
     modelEmptyComponent   ?: React.ReactComponentElement<any, GenericProps<Element>>
+    modelVoidComponent    ?: React.ReactComponentElement<any, GenericProps<Element>>
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
     
     galleryComponent      ?: React.ReactComponentElement<any, GenericProps<Element>>
@@ -395,6 +396,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         bodyComponent         = (<Content<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
         
         modelEmptyComponent   = (<ModelEmpty textEmpty={textEmpty} /> as React.ReactComponentElement<any, GenericProps<Element>>),
+        modelVoidComponent,
         modelCreateComponent,
         modelPreviewComponent,
         
@@ -530,6 +532,18 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 // handlers:
                 onModelCreate={onModelCreate}
             />}
+            
+            {/* <VoidGalleryItem> */}
+            {!!modelVoidComponent && ((pagedItems?.length ?? 0) < perPage) && (new Array<null>(perPage - (pagedItems?.length ?? 0)).fill(null).map((_, index) =>
+                /* <ModelPreview> */
+                React.cloneElement<GenericProps<Element>>(modelVoidComponent,
+                    // props:
+                    {
+                        // identifiers:
+                        key   : modelPreviewComponent.key ?? index,
+                    },
+                )
+            ))}
         </>,
         
         
