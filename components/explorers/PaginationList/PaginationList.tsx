@@ -371,6 +371,7 @@ export interface PaginationListProps<TModel extends Model, TElement extends Elem
     // components:
     bodyComponent         ?: React.ReactComponentElement<any, BasicProps<Element>>
     modelEmptyComponent   ?: React.ReactComponentElement<any, GenericProps<Element>>
+    modelVoidComponent    ?: React.ReactComponentElement<any, GenericProps<Element>>
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
     
     
@@ -401,6 +402,7 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         bodyComponent         = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
         
         modelEmptyComponent   = (<ModelEmpty className='fluid' /* fluid: fills the entire <PaginationList> height */ textEmpty={textEmpty} /> as React.ReactComponentElement<any, GenericProps<Element>>),
+        modelVoidComponent,
         modelCreateComponent,
         modelPreviewComponent,
         
@@ -561,6 +563,18 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
                     },
                 )
             )}
+            
+            {/* <VoidGalleryItem> */}
+            {!!modelVoidComponent && ((pagedItems?.length ?? 0) < perPage) && (new Array<null>(perPage - (pagedItems?.length ?? 0)).fill(null).map((_, index) =>
+                /* <ModelPreview> */
+                React.cloneElement<GenericProps<Element>>(modelVoidComponent,
+                    // props:
+                    {
+                        // identifiers:
+                        key   : modelPreviewComponent.key ?? index,
+                    },
+                )
+            ))}
             
             {/* a hack for making last separator when the total of <ListItems>(s) is smaller than the min-height of <List> */}
             {requiresSeparatorHack && <ListItem className={`solid ${styleSheets.separatorHack}`} />}
