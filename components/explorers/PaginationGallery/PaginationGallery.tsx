@@ -361,6 +361,7 @@ export interface PaginationGalleryProps<TModel extends Model, TElement extends E
     
     // components:
     bodyComponent         ?: React.ReactComponentElement<any, BasicProps<Element>>
+    modelEmptyComponent   ?: React.ReactComponentElement<any, GenericProps<Element>>
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
     
     galleryComponent      ?: React.ReactComponentElement<any, GenericProps<Element>>
@@ -391,13 +392,14 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         // components:
         
         // we use <Content> for the <GalleryBodyWrapper>, because the <GalleryBody> is NOT have enough styling:
-        bodyComponent = (<Content<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
+        bodyComponent         = (<Content<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
         
+        modelEmptyComponent   = (<ModelEmpty textEmpty={textEmpty} /> as React.ReactComponentElement<any, GenericProps<Element>>),
         modelCreateComponent,
         modelPreviewComponent,
         
-        galleryComponent     = (<Generic<Element> /> as React.ReactComponentElement<any, GenericProps<Element>>),
-        galleryGridComponent = (<Generic<Element> /> as React.ReactComponentElement<any, GenericProps<Element>>),
+        galleryComponent      = (<Generic<Element> /> as React.ReactComponentElement<any, GenericProps<Element>>),
+        galleryGridComponent  = (<Generic<Element> /> as React.ReactComponentElement<any, GenericProps<Element>>),
         
         
         
@@ -484,7 +486,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         // children:
         children  : galleryGridComponentChildren = <>
             {/* <ModelEmpty> */}
-            {isModelEmpty && <ModelEmpty textEmpty={textEmpty} className='fluid' />}
+            {isModelEmpty && modelEmptyComponent}
             
             {/* <GalleryItem> */}
             {pagedItems?.filter((model): model is Exclude<typeof model, undefined> => !!model).map((model) =>
