@@ -33,8 +33,8 @@ import {
 
 // internal components:
 import {
-    WideMainPage,
-}                           from '@/components/pages/WideMainPage'
+    WideGalleryPage,
+}                           from '@/components/pages/WideGalleryPage'
 import {
     PageLoading,
 }                           from '@/components/PageLoading'
@@ -99,7 +99,7 @@ function ProductPageContentInternal(): JSX.Element|null {
     if (isLoadingAndNoData) return <PageLoading />;
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
-        <WideMainPage>
+        <WideGalleryPage>
             <Section
                 // classes:
                 className={styleSheet.nav}
@@ -156,6 +156,6 @@ function ProductPageContentInternal(): JSX.Element|null {
                     }
                 />
             </Section>
-        </WideMainPage>
+        </WideGalleryPage>
     );
 }

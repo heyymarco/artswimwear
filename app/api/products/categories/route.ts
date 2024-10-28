@@ -150,6 +150,11 @@ router
         },
     } = requestData;
     //#endregion parsing and validating request
+    if (parent !== null) await new Promise<void>((resolve) => {
+        setTimeout(() => {
+            resolve();
+        }, 5000);
+    })
     
     
     

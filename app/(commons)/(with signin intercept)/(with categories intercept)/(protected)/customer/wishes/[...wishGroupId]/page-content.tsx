@@ -33,8 +33,8 @@ import {
 
 // internal components:
 import {
-    WideMainPage,
-}                           from '@/components/pages/WideMainPage'
+    WideGalleryPage,
+}                           from '@/components/pages/WideGalleryPage'
 import {
     PaginationStateProvider,
     usePaginationState,
@@ -142,7 +142,7 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     
     // jsx:
     return (
-        <WideMainPage>
+        <WideGalleryPage>
             <Section
                 // classes:
                 className={styleSheet.nav}
@@ -215,6 +215,6 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                     }
                 />
             </Section>
-        </WideMainPage>
+        </WideGalleryPage>
     );
 }

@@ -9,7 +9,7 @@ import {
 // styles:
 import {
     // style sheets:
-    useWideMainPageStyleSheet,
+    useWideGalleryPageStyleSheet,
 }                           from './styles/loader'
 
 // heymarco components:
@@ -21,14 +21,14 @@ import {
 
 
 // react components:
-export interface WideMainPageProps
+export interface WideGalleryPageProps
     extends
         MainProps
 {
 }
-const WideMainPage = (props: WideMainPageProps): JSX.Element|null => {
+const WideGalleryPage = (props: WideGalleryPageProps): JSX.Element|null => {
     // styles:
-    const styleSheet = useWideMainPageStyleSheet();
+    const styleSheet = useWideGalleryPageStyleSheet();
     
     
     
@@ -59,6 +59,6 @@ const WideMainPage = (props: WideMainPageProps): JSX.Element|null => {
     )
 };
 export {
-    WideMainPage,            // named export for readibility
-    WideMainPage as default, // default export to support React.lazy
+    WideGalleryPage,            // named export for readibility
+    WideGalleryPage as default, // default export to support React.lazy
 }

@@ -33,8 +33,8 @@ import {
 
 // internal components:
 import {
-    WideMainPage,
-}                           from '@/components/pages/WideMainPage'
+    WideGalleryPage,
+}                           from '@/components/pages/WideGalleryPage'
 import {
     PaginationStateProvider,
     InterceptPaginationStateProvider,
@@ -92,7 +92,7 @@ function WishPageContentInternal(): JSX.Element|null {
     
     // jsx:
     return (
-        <WideMainPage>
+        <WideGalleryPage>
             <Section
                 // classes:
                 className={styleSheet.nav}
@@ -150,6 +150,6 @@ function WishPageContentInternal(): JSX.Element|null {
                     }
                 />
             </Section>
-        </WideMainPage>
+        </WideGalleryPage>
     );
 }
