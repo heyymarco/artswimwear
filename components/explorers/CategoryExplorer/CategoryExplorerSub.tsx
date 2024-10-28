@@ -44,6 +44,7 @@ import {
 }                           from '@/components/explorers/Pagination'
 import {
     CategoryCard,
+    VoidCategoryCard,
 }                           from '@/components/views/CategoryCard'
 
 // private components:
@@ -272,6 +273,7 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
                 
                 // components:
                 galleryComponent={<Generic className='flat' />}
+                modelVoidComponent={<VoidCategoryCard />}
                 modelPreviewComponent={
                     <CategoryCard
                         // data:
