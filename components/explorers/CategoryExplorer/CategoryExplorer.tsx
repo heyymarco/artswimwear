@@ -169,7 +169,7 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
     
     // stores:
     const { data: categoryDetail } = useGetCategoryDetail(initialCategories);
-    const {initialSelectedCategories, initialRestoreIndex} = useMemo<{ initialSelectedCategories: CategoryParentInfo[]|null, initialRestoreIndex: number }>(() => {
+    const {initialSelectedCategories, initialRestoreIndex} = useMemo<{ initialSelectedCategories: CategoryParentInfo[]|null, initialRestoreIndex: number|undefined }>(() => {
         // conditions:
         if (!categoryDetail) return { initialSelectedCategories: null, initialRestoreIndex: 0 }; // the data is not ready => ignore
         
@@ -181,11 +181,32 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
             index,
         } = categoryDetail;
         return {
-            initialSelectedCategories : ancestorToRootParents.toReversed(), // reverse from ancestorToRootParents to rootToAncestorParents
-            initialRestoreIndex       : index,
+            initialSelectedCategories : (
+                (ancestorToRootParents.length === 0)
+                
+                // if the categoryDetail is a root category => select itself:
+                ? [{
+                    category : {
+                        ...categoryDetail,
+                        image : categoryDetail.images?.[0] ?? undefined,
+                    },
+                    index    : index,
+                } satisfies CategoryParentInfo]
+                
+                // otherwise select the parents:
+                : ancestorToRootParents.toReversed() // reverse from ancestorToRootParents to rootToAncestorParents
+            ),
+            initialRestoreIndex       : (
+                (ancestorToRootParents.length === 0)
+                
+                // if the categoryDetail is a root category => no initial selected parent for the <CategoryExplorerSub>:
+                ? undefined
+                
+                // otherwise select the index of categoryDetail:
+                : index
+            ),
         };
     }, [categoryDetail]);
-    // console.log({initialSelectedCategories, initialRestoreIndex});
     
     
     
@@ -239,7 +260,6 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
     // states:
     const [parentCategories, setParentCategories] = useImmer<CategoryParentInfo[]>(initialSelectedCategories);
     const [restoreIndex    , setRestoreIndex    ] = useState<number>(initialRestoreIndex);
-    // console.log({parentCategories, restoreIndex});
     
     
     
@@ -311,7 +331,7 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
                     */}
                     <PaginationStateProvider<CategoryPreview>
                         // states:
-                        initialPage={(parentCategories.length === 0) ? Math.floor(restoreIndex / rootPerPage) : undefined}
+                        initialPage={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
                         initialPerPage={rootPerPage}
                         
                         
