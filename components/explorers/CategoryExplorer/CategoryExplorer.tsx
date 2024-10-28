@@ -314,52 +314,45 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
             // classes:
             mainClass={mainClass}
         >
-            <Container className={styleSheet.rootBefore} theme='primaryAlt' />
-            <div
-                // classes:
-                className={styleSheet.body}
+            <CategoryExplorerStateProvider
+                // states:
+                parentCategories={parentCategories}
+                setParentCategories={setParentCategories}
+                
+                restoreIndex={restoreIndex}
+                setRestoreIndex={setRestoreIndex}
+                
+                
+                
+                // handlers:
+                onNavigate={onNavigate}
             >
-                <CategoryExplorerStateProvider
+                <RouterUpdater />
+                
+                
+                
+                {/*
+                    Place the <PaginationStateProvider> for root data here,
+                    so it can be accessed by both <CategoryExplorerRoot> and <CategoryExplorerSub>
+                */}
+                <PaginationStateProvider<CategoryPreview>
                     // states:
-                    parentCategories={parentCategories}
-                    setParentCategories={setParentCategories}
-                    
-                    restoreIndex={restoreIndex}
-                    setRestoreIndex={setRestoreIndex}
+                    initialPage={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
+                    initialPerPage={rootPerPage}
                     
                     
                     
-                    // handlers:
-                    onNavigate={onNavigate}
+                    // data:
+                    useGetModelPage={useGetRootCategoryPage}
                 >
-                    <RouterUpdater />
-                    
-                    
-                    
-                    {/*
-                        Place the <PaginationStateProvider> for root data here,
-                        so it can be accessed by both <CategoryExplorerRoot> and <CategoryExplorerSub>
-                    */}
-                    <PaginationStateProvider<CategoryPreview>
-                        // states:
-                        initialPage={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
-                        initialPerPage={rootPerPage}
-                        
-                        
-                        
-                        // data:
-                        useGetModelPage={useGetRootCategoryPage}
-                    >
-                        <Container className={styleSheet.root} theme='primaryAlt'>
-                            <CategoryExplorerRoot />
-                        </Container>
-                        <Container className={styleSheet.sub} theme='primaryAlt' mild={false}>
-                            <CategoryExplorerSub />
-                        </Container>
-                    </PaginationStateProvider>
-                </CategoryExplorerStateProvider>
-            </div>
-            <Container className={styleSheet.subAfter} theme='primaryAlt' mild={false} />
+                    <Container className={styleSheet.root} theme='primaryAlt'>
+                        <CategoryExplorerRoot />
+                    </Container>
+                    <Container className={styleSheet.sub} theme='primaryAlt' mild={false}>
+                        <CategoryExplorerSub />
+                    </Container>
+                </PaginationStateProvider>
+            </CategoryExplorerStateProvider>
         </Generic>
     );
 };

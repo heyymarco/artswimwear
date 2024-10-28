@@ -37,22 +37,6 @@ const usesMainLayout = () => {
         // layouts:
         display: 'grid',
         gridTemplate: [[
-            '"rootBefore body subAfter" auto',
-            '/',
-            '1fr max-content 1fr',
-        ]],
-    });
-};
-const usesBodyLayout = () => {
-    return style({
-        // positions:
-        gridArea: 'body',
-        
-        
-        
-        // layouts:
-        display: 'grid',
-        gridTemplate: [[
             '"root sub" auto',
             '/',
             '1fr 3fr',
@@ -168,29 +152,6 @@ const usesSubLayout = () => {
     });
 };
 
-const usesRootBeforeLayout = () => {
-    return style({
-        // positions:
-        gridArea: 'rootBefore',
-        
-        
-        
-        // spacings:
-        padding: '0px',
-    })
-};
-const usesSubAfterLayout = () => {
-    return style({
-        // positions:
-        gridArea: 'subAfter',
-        
-        
-        
-        // spacings:
-        padding: '0px',
-    })
-};
-
 const usesNavLayout = () => {
     return style({
         // positions:
@@ -228,10 +189,6 @@ export default () => [
         // layouts:
         ...usesMainLayout(),
     }, { specificityWeight: 2 }),
-    scope('body', {
-        // layouts:
-        ...usesBodyLayout(),
-    }, { specificityWeight: 2 }),
     
     scope('root', {
         // layouts:
@@ -240,15 +197,6 @@ export default () => [
     scope('sub', {
         // layouts:
         ...usesSubLayout(),
-    }),
-    
-    scope('rootBefore', {
-        // layouts:
-        ...usesRootBeforeLayout(),
-    }),
-    scope('subAfter', {
-        // layouts:
-        ...usesSubAfterLayout(),
     }),
     
     scope('nav', {
