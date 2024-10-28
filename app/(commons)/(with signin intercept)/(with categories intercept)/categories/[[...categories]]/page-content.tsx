@@ -6,6 +6,11 @@ import {
     default as React,
 }                           from 'react'
 
+// next-js:
+import {
+    useRouter,
+}                           from 'next/navigation'
+
 // styles:
 import {
     useCategoryListPageStyleSheet,
@@ -163,6 +168,11 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
     
     
     
+    // routes:
+    const router = useRouter();
+    
+    
+    
     // jsx:
     if (isLoadingAndNoData) return <PageLoading />;
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
@@ -184,13 +194,32 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                         </Link>
                     </NavItem>
                     
-                    {parentsAndSelf.map(({ name, path }, index, array) =>
-                        <NavItem key={index} active={index === (array.length - 1)}>
-                            <Link href={`/categories/${array.slice(0, index + 1).map(({path}) => path).join('/')}`}>
-                                {name}
-                            </Link>
-                        </NavItem>
-                    )}
+                    {parentsAndSelf.map(({ name }, index, array) => {
+                        const categoryHref = `/categories/${array.slice(0, index + 1).map(({path}) => path).join('/')}`;
+                        return (
+                            <NavItem
+                                // identifiers:
+                                key={index}
+                                
+                                
+                                
+                                // states:
+                                active={index === (array.length - 1)}
+                                
+                                
+                                
+                                // handlers:
+                                onClick={(event) => {
+                                    router.push(`/_${categoryHref}`);
+                                    event.preventDefault(); // handled
+                                }}
+                            >
+                                <Link href={categoryHref}>
+                                    {name}
+                                </Link>
+                            </NavItem>
+                        );
+                    })}
                 </Nav>
             </Section>
             
