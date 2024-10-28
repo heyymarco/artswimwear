@@ -9,10 +9,16 @@ import {
     
     // hooks:
     useState,
+    useMemo,
 }                           from 'react'
 import {
     useImmer,
 }                           from 'use-immer'
+
+// next-js:
+import {
+    usePathname,
+}                           from 'next/navigation'
 
 // styles:
 import {
@@ -66,6 +72,12 @@ import {
     useGetRootCategoryPage,
 }                           from './hooks'
 
+// stores:
+import {
+    // hooks:
+    useGetCategoryDetail,
+}                           from '@/store/features/api/apiSlice'
+
 // configs:
 import {
     rootPerPage,
@@ -95,14 +107,137 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
 {
 }
 const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
+    // states:
+    const pathname = usePathname();
+    const [initialCategories] = useState<string[]|undefined>(() => {
+        let tailPathname = pathname.slice('/categories'.length);
+        if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
+        const categories = !tailPathname ? undefined : tailPathname.split('/');
+        return categories;
+    });
+    
+    
+    
+    // jsx:
+    if (initialCategories) return (
+        <CategoryExplorerWithInitial
+            // other props:
+            {...props}
+            
+            
+            
+            // data:
+            initialCategories={initialCategories}
+        />
+    );
+    
+    return (
+        <CategoryExplorerInternal
+            // other props:
+            {...props}
+        />
+    );
+};
+export {
+    CategoryExplorer,
+    CategoryExplorer as default,
+}
+
+
+
+export interface CategoryExplorerWithInitialProps<TElement extends Element = HTMLElement>
+    extends
+        // bases:
+        CategoryExplorerProps<TElement>
+{
+    // data:
+    initialCategories: string[]
+}
+const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(props: CategoryExplorerWithInitialProps<TElement>): JSX.Element|null => {
+    // props:
+    const {
+        // data:
+        initialCategories,
+        
+        
+        
+        // other props:
+        ...restCategoryExplorerProps
+    } = props;
+    
+    
+    
+    // stores:
+    const { data: categoryDetail } = useGetCategoryDetail(initialCategories);
+    const {initialSelectedCategories, initialRestoreIndex} = useMemo<{ initialSelectedCategories: CategoryParentInfo[]|null, initialRestoreIndex: number }>(() => {
+        // conditions:
+        if (!categoryDetail) return { initialSelectedCategories: null, initialRestoreIndex: 0 }; // the data is not ready => ignore
+        
+        
+        
+        // computes:
+        const {
+            parents : ancestorToRootParents,
+            index,
+        } = categoryDetail;
+        return {
+            initialSelectedCategories : ancestorToRootParents.toReversed(), // reverse from ancestorToRootParents to rootToAncestorParents
+            initialRestoreIndex       : index,
+        };
+    }, [categoryDetail]);
+    
+    
+    
+    // jsx:
+    if (!initialSelectedCategories) return null; // TODO: add a progress indicator
+    return (
+        <CategoryExplorerInternal<TElement>
+            // other props:
+            {...restCategoryExplorerProps}
+            
+            
+            
+            // data:
+            initialSelectedCategories={initialSelectedCategories}
+            initialRestoreIndex={initialRestoreIndex}
+        />
+    );
+};
+
+
+
+interface CategoryExplorerInternalProps<TElement extends Element = HTMLElement>
+    extends
+        // bases:
+        CategoryExplorerProps<TElement>
+{
+    // data:
+    initialSelectedCategories ?: CategoryParentInfo[]
+    initialRestoreIndex       ?: number
+}
+const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props: CategoryExplorerInternalProps<TElement>): JSX.Element|null => {
+    // props:
+    const {
+        // data:
+        initialSelectedCategories = [],
+        initialRestoreIndex       = 0,
+        
+        
+        
+        // other props:
+        ...restCategoryExplorerProps
+    } = props;
+    
+    
+    
     // styles:
     const styleSheet = useCategoryExplorerStyleSheet();
     
     
     
     // states:
-    const [parentCategories, setParentCategories] = useImmer<CategoryParentInfo[]>([]);
-    const [restoreIndex    , setRestoreIndex    ] = useState<number>(0);
+    const [parentCategories, setParentCategories] = useImmer<CategoryParentInfo[]>(initialSelectedCategories);
+    const [restoreIndex    , setRestoreIndex    ] = useState<number>(initialRestoreIndex);
     
     
     
@@ -125,13 +260,13 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
         
         // other props:
         ...restGenericProps
-    } = props;
+    } = restCategoryExplorerProps;
     
     
     
     // jsx:
     return (
-        <Generic
+        <Generic<TElement>
             // other props:
             {...restGenericProps}
             
@@ -194,7 +329,3 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
         </Generic>
     );
 };
-export {
-    CategoryExplorer,
-    CategoryExplorer as default,
-}

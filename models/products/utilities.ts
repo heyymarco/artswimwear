@@ -216,6 +216,13 @@ export const categoryDetailSelect = (pathname: string[]) => ({
     
     images        : true,
     
+    subcategories : {
+        select    : {
+            id    : true,
+        },
+        take      : 1,
+    },
+    
     parent        : createNestedParentSelect(((): string[] => {
         const [_currentPathname, ...parentPathname] = pathname;
         return parentPathname;
@@ -223,13 +230,16 @@ export const categoryDetailSelect = (pathname: string[]) => ({
 }) satisfies Prisma.CategorySelect;
 export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailData: Awaited<ReturnType<typeof prisma.category.findFirstOrThrow<{ select: ReturnType<typeof categoryDetailSelect> }>>>, prismaTransaction: Parameters<Parameters<typeof prisma.$transaction>[0]>[0]): Promise<CategoryDetail> => {
     const {
-        parent, // take
+        subcategories, // take
+        parent  ,      // take
     ...restCategory} = categoryDetailData;
+    const parentId = parent?.id ?? null;
     
     
     
     const parentIds      : string[] = [];
     const grandparentIds = new Set<string|null>();
+    grandparentIds.add(parentId);
     for (let currentParent = parent; !!currentParent; currentParent = (currentParent as any).parent) {
         parentIds.push(currentParent.id);
         grandparentIds.add((currentParent as any).parent?.id ?? null);
@@ -277,7 +287,7 @@ export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailDa
     const categoryParentInfos : CategoryParentInfo[] = (
         parentIds.map((parentId): CategoryParentInfo => {
             const {parentId: grandParentId, ...parent} = parentsData.find(({id: searchId}) => (searchId === parentId))!;
-            const parentSiblings = sortedParentSiblings.filter(({parentId}) => (parentId === grandParentId));
+            const parentSiblings = sortedParentSiblings.filter(({parentId: searchParentId}) => (searchParentId === grandParentId));
             return {
                 category : convertCategoryPreviewDataToCategoryPreview(parent),
                 index    : parentSiblings.findIndex(({id: searchId}) => (searchId === parent.id)),
@@ -287,8 +297,11 @@ export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailDa
     
     
     
+    const parentSiblings = sortedParentSiblings.filter(({parentId: searchParentId}) => (searchParentId === parentId));
     return {
         ...restCategory,
-        parents  : categoryParentInfos,
+        hasSubcategories : !!subcategories?.length,
+        parents          : categoryParentInfos,
+        index            : parentSiblings.findIndex(({id: searchId}) => (searchId === restCategory.id)),
     };
 };
