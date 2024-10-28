@@ -124,7 +124,7 @@ const CategoryExplorerSub = (): JSX.Element|null => {
             
             // data:
             rootCategory={selectedParentOrDefault.category}
-            initialPage={Math.floor(restoreIndex / subPerPage)}
+            initialPage={(parentCategories.length >= 1) ? Math.floor(restoreIndex / subPerPage) : undefined}
         />
     );
 };

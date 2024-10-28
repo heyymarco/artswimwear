@@ -185,6 +185,7 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
             initialRestoreIndex       : index,
         };
     }, [categoryDetail]);
+    // console.log({initialSelectedCategories, initialRestoreIndex});
     
     
     
@@ -238,6 +239,7 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
     // states:
     const [parentCategories, setParentCategories] = useImmer<CategoryParentInfo[]>(initialSelectedCategories);
     const [restoreIndex    , setRestoreIndex    ] = useState<number>(initialRestoreIndex);
+    // console.log({parentCategories, restoreIndex});
     
     
     
@@ -309,6 +311,7 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
                     */}
                     <PaginationStateProvider<CategoryPreview>
                         // states:
+                        initialPage={(parentCategories.length === 0) ? Math.floor(restoreIndex / rootPerPage) : undefined}
                         initialPerPage={rootPerPage}
                         
                         
