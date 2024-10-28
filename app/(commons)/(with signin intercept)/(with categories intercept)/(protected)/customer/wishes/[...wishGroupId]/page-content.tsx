@@ -142,10 +142,7 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     
     // jsx:
     return (
-        <WideMainPage
-            // classes:
-            className={styleSheet.main}
-        >
+        <WideMainPage>
             <Section
                 // classes:
                 className={styleSheet.nav}

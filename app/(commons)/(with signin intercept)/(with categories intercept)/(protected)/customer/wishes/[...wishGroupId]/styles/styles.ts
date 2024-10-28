@@ -9,11 +9,6 @@ import {
 
 // styles:
 export default () => [
-    scope('main', {
-        // layouts:
-        display : 'grid',
-    }),
-    
     scope('nav', {
         // spacings:
         paddingBlockEnd: '0px',
