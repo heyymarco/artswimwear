@@ -19,6 +19,11 @@ import {
     
     
     
+    // padding (inner spacing) stuff of UI:
+    usesPadding,
+    
+    
+    
     // groups a list of UIs into a single UI
     usesGroupable,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
@@ -46,6 +51,9 @@ const usesGalleryBodyWrapperLayout = () => {
         itemsSelector             : '*>[role="dialog"]', // target the <portal><ModalBackdrop><ModalDialog>
     });
     
+    // features:
+    const {paddingVars} = usesPadding();
+    
     
     
     return style({
@@ -71,7 +79,14 @@ const usesGalleryBodyWrapperLayout = () => {
             
             // children:
             ...children('*>[role="dialog"]', {
+                // accessibilities:
                 pointerEvents : 'auto', // block the interaction behind the <Backdrop> but still make the <Backdrop> interactive for touch & scrolling
+                
+                
+                
+                // spacings:
+                [paddingVars.paddingInline] : '0px', // remove the padding to minimize the minInlineSize requirement
+                [paddingVars.paddingBlock ] : '0px', // remove the padding to minimize the minBlockSize  requirement
             }),
         }),
     });
