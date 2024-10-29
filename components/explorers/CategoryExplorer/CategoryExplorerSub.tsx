@@ -83,6 +83,11 @@ export interface CategoryExplorerSubProps {
     minDepth ?: number
 }
 const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null => {
+    // props:
+    const minDepth = (props.minDepth ?? 0);
+    
+    
+    
     // states:
     const {
         // states:
@@ -90,14 +95,14 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
         restoreIndex,
     } = useCategoryExplorerState();
     
-    const selectedParentOrDefault : CategoryParentInfo|null = (
-        // the last selected category is the displayed_category's_parent:
-        parentCategories.at(-1)
+    const selectedParent : CategoryParentInfo|null = (
+        (parentCategories.length >= minDepth)
         
-        ??
+        // the_parents_deep SATISFIES minDepth => select the DIRECT parent:
+        ? (parentCategories.at(-1) ?? null)
         
-        // not found:
-        null
+        // the_parents_deep NOT_SATISFY minDepth => nothing to select:
+        : null
     );
     
     
@@ -111,14 +116,14 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
             
             
             // identifiers:
-            key={selectedParentOrDefault?.category.id ?? null} // when switched to "different" selectedParent, the "state" should be "cleared"
+            key={selectedParent?.category.id ?? null} // when switched to "different" selectedParent, the "state" should be "cleared"
             
             
             
             // data:
-            rootCategory={selectedParentOrDefault?.category ?? null}
+            rootCategory={selectedParent?.category ?? null}
             initialPage={
-                (parentCategories.length >= (props.minDepth ?? 0))
+                (parentCategories.length >= minDepth)
                 
                 // restores the initialPage if the_parents_deep SATISFIES minDepth:
                 ? Math.floor(restoreIndex / subPerPage)
