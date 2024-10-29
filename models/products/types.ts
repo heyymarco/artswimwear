@@ -137,9 +137,10 @@ export interface CategoryDetail
             |'images'
         >
 {
-    hasSubcategories : boolean
-    parents          : CategoryParentInfo[]
-    index            : number
+    has2ndLevelCategories : boolean
+    hasSubcategories      : boolean
+    parents               : CategoryParentInfo[]
+    index                 : number
 }
 
 

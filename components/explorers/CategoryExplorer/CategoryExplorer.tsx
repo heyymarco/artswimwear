@@ -132,14 +132,14 @@ const CategoryExplorer = <TElement extends Element = HTMLElement>(props: Categor
         
         // computes:
         const {
-            hasSubcategories,
+            has2ndLevelCategories,
             parents : ancestorToRootParents,
             index,
         } = categoryDetail;
         return {
-            initialHasSubcategories   : hasSubcategories,
+            initialHasSubcategories   : has2ndLevelCategories,
             initialSelectedCategories : (
-                ((ancestorToRootParents.length === 0) && hasSubcategories)
+                ((ancestorToRootParents.length === 0) && has2ndLevelCategories)
                 
                 // if the categoryDetail is a root category => select itself to preserve the current_selected_root_category:
                 ? [{
