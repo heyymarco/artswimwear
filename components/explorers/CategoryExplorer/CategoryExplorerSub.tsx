@@ -95,13 +95,13 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
         restoreIndex,
     } = useCategoryExplorerState();
     
-    const selectedParent : CategoryParentInfo|null = (
+    const directParent : CategoryParentInfo|null = (
         (parentCategories.length >= minDepth)
         
         // the_parents_deep SATISFIES minDepth => select the DIRECT parent:
         ? (parentCategories.at(-1) ?? null)
         
-        // the_parents_deep NOT_SATISFY minDepth => nothing to select:
+        // the_parents_deep DOESNT_SATISFY minDepth => nothing to select:
         : null
     );
     
@@ -116,12 +116,12 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
             
             
             // identifiers:
-            key={selectedParent?.category.id ?? null} // when switched to "different" selectedParent, the "state" should be "cleared"
+            key={directParent?.category.id ?? null} // when switched to DIFFERENT `directParent`, the STATE should be CLEARED
             
             
             
             // data:
-            rootCategory={selectedParent?.category ?? null}
+            rootCategory={directParent?.category ?? null}
             initialPage={
                 (parentCategories.length >= minDepth)
                 
@@ -245,7 +245,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Eleme
     const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview>>((model) => {
         setParentCategories((draft): void => {
             // conditions:
-            if (draft.length < minDepth) return; // ABORT the operation if the_parents_deep NOT_SATISFY minDepth
+            if (draft.length < minDepth) return; // ABORT the operation if the_parents_deep DOESNT_SATISFY minDepth
             
             
             
