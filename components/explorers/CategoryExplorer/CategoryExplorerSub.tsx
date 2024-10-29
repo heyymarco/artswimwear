@@ -299,7 +299,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Eleme
             
             <CategoryExplorerGallery
                 // classes:
-                className={styleSheet.subExpl}
+                className={styleSheet.subGallery}
                 
                 
                 

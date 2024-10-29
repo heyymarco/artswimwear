@@ -35,6 +35,11 @@ import {
 
 
 
+// defaults:
+const minImageSize   = 255; // 255px
+
+
+
 // styles:
 const usesDropdownLayout = () => {
     return style({
@@ -95,12 +100,7 @@ const usesRootLayout = () => {
             ...children('*', { // <GalleryBodyWrapper>
                 ...children('ul', { // <GalleryBody>
                     // spacings:
-                    gap: spacers.sm,
-                    
-                    
-                    
-                    // // TODO: just a quick fix, should be removed if the <PaginationList>'s separatorHack has been fixed
-                    // minBlockSize: 'unset',
+                    gap: spacers.sm, // a space between <CategoryExplorerRootItem>(s)
                 }, { specificityWeight: 2 }),
             }),
         }),
@@ -124,30 +124,13 @@ const usesSubLayout = () => {
         // layouts:
         display: 'grid',
         gridTemplate: [[
-            `"... ...." ${spacers.sm}`,
-            '"nav nav " 1lh',
-            `"... ...." ${spacers.sm}`,
-            '"... expl" auto',
+            `"... ......." ${spacers.sm}`,
+            '"nav     nav" 1lh',
+            `"... ......." ${spacers.sm}`,
+            '"... gallery" auto',
             '/',
             `${containers.paddingInline} 1fr`,
         ]],
-        
-        
-        
-        // sizes:
-        ...children('*', { // <PaginationList>
-            ...children('*', { // <GalleryBodyWrapper>
-                ...children('ul', { // <GalleryBody>
-                    // spacings:
-                    gap: spacers.sm,
-                    
-                    
-                    
-                    // // TODO: just a quick fix, should be removed if the <PaginationList>'s separatorHack has been fixed
-                    // minBlockSize: 'unset',
-                }, { specificityWeight: 2 }),
-            }),
-        }),
         
         
         
@@ -165,6 +148,12 @@ const usesSubLayout = () => {
         paddingInlineStart: '0px',
         [paddingVars.paddingBlock]: `calc((${spacers.sm} * 2) + 1lh)`, // already reserved to nav
         paddingBlockStart: '0px', // already reserved to nav
+    });
+};
+const usesRootAndSubLayout = () => {
+    return style({
+        // positions:
+        gridArea: 'root / root / sub / sub',
     });
 };
 
@@ -191,10 +180,23 @@ const usesNavLayout = () => {
         fontSize: buttonIcons.fontSizeMd,
     });
 };
-const usesSubExplLayout = () => {
+const usesSubGalleryLayout = () => {
     return style({
         // positions:
-        gridArea: 'expl',
+        gridArea: 'gallery',
+        
+        
+        
+        // children:
+        ...children('*', { // <GalleryBodyWrapper>
+            ...children(':is(ul, [role="list"])', { // <GalleryBody>
+                alignContent : 'center', // an appearance adjusment when the <CategoryExplorerSubItem>(s) are too few => place the extra spacing at the top and bottom
+                ...children('[role="presentation"]', {
+                    // layouts:
+                    gridTemplateColumns : `repeat(auto-fit, minmax(${minImageSize}px, 1fr))`, // an appearance adjusment when the <CategoryExplorerSubItem>(s) are too few => fill the entire <CategoryExplorerSub> width
+                }),
+            }),
+        }),
     });
 };
 
@@ -219,13 +221,17 @@ export default () => [
         // layouts:
         ...usesSubLayout(),
     }),
+    scope('rootAndSub', {
+        // layouts:
+        ...usesRootAndSubLayout(),
+    }, { specificityWeight: 2 }), // higher specificity than root|sub
     
     scope('nav', {
         // layouts:
         ...usesNavLayout(),
     }),
-    scope('subExpl', {
+    scope('subGallery', {
         // layouts:
-        ...usesSubExplLayout(),
+        ...usesSubGalleryLayout(),
     }),
 ];

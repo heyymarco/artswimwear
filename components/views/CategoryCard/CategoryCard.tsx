@@ -74,7 +74,8 @@ import {
 
 
 // defaults:
-const minImageWidth = 55;  // 55px === (50px + (2* paddingBlock)) * aspectRatio === (50px + (2* 16px)) * 2/3
+// const maxGalleryItemWidth = 534; // 534px = (255*2) + (16 * 1.5) = 534
+const minImageWidth = 44;  // 44px === (50px + (2* paddingBlock)) * aspectRatio === (50px + (2* 8px)) * 2/3
 
 
 

@@ -247,6 +247,11 @@ interface CategoryExplorerInternalProps<TElement extends Element = HTMLElement>
     // data:
     initialSelectedCategories ?: CategoryParentInfo[]
     initialRestoreIndex       ?: number
+    
+    
+    
+    // appearances:
+    showRootSection           ?: boolean
 }
 const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props: CategoryExplorerInternalProps<TElement>): JSX.Element|null => {
     // props:
@@ -254,6 +259,11 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
         // data:
         initialSelectedCategories = [],
         initialRestoreIndex       = 0,
+        
+        
+        
+        // appearances:
+        showRootSection           = false,
         
         
         
@@ -345,13 +355,17 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
                     // data:
                     useGetModelPage={useGetRootCategoryPage}
                 >
-                    <Container className={styleSheet.root} theme='primaryAlt'>
+                    {showRootSection && <Container className={styleSheet.root} theme='primaryAlt'>
                         <CategoryExplorerRoot />
-                    </Container>
-                    <Container className={styleSheet.sub} theme='primaryAlt' mild={false}>
+                    </Container>}
+                    <Container className={`${styleSheet.sub} ${showRootSection ? '' : styleSheet.rootAndSub}`} theme='primaryAlt' mild={false}>
                         <CategoryExplorerSub
                             // configs:
-                            minDepth={1} // when navigate `back`, do not reaches `root` category
+                            minDepth={
+                                showRootSection
+                                ? 1 // when navigate `back`, do not reaches `root` category
+                                : 0
+                            }
                         />
                     </Container>
                 </PaginationStateProvider>
