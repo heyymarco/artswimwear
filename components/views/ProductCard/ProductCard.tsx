@@ -138,7 +138,7 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
                 // appearances:
                 alt={name}
                 src={resolveMediaUrl(image)}
-                sizes='414px' // (255*2) - ((4*16) * 1.5) = 414
+                sizes='534px' // max galleryImage size = (255*2) + (16 * 1.5) = 534
                 
                 
                 
