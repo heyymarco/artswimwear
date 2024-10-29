@@ -23,7 +23,7 @@ export const useGetRootCategoryPage = (arg: PaginationArgs) => {
     });
 };
 
-export const useUseGetSubCategoryPage = (parentCategory: string) => {
+export const useUseGetSubCategoryPage = (parentCategory: string|null) => {
     return (arg: PaginationArgs) => {
         return _useGetCategoryPage({
             ...arg,

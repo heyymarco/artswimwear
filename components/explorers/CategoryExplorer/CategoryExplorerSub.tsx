@@ -78,7 +78,11 @@ import {
 
 
 // react components:
-const CategoryExplorerSub = (): JSX.Element|null => {
+export interface CategoryExplorerSubProps {
+    // configs
+    minDepth ?: number
+}
+const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null => {
     // states:
     const {
         // states:
@@ -86,25 +90,9 @@ const CategoryExplorerSub = (): JSX.Element|null => {
         restoreIndex,
     } = useCategoryExplorerState();
     
-    const {
-        // data:
-        data : rootData,
-    } = usePaginationState<CategoryPreview>();
-    
     const selectedParentOrDefault : CategoryParentInfo|null = (
         // the last selected category is the displayed_category's_parent:
         parentCategories.at(-1)
-        
-        ??
-        
-        // the first item in data is the default displayed_category's_parent:
-        (() : CategoryParentInfo|null => {
-            if (!rootData) return null;
-            const index    = 0;
-            const category = Object.values(rootData.entities).at(index);
-            if (!category) return null;
-            return { category, index };
-        })()
         
         ??
         
@@ -115,17 +103,29 @@ const CategoryExplorerSub = (): JSX.Element|null => {
     
     
     // jsx:
-    if (!selectedParentOrDefault) return null;
     return (
         <CategoryExplorerSubConditional
+            // other props:
+            {...props}
+            
+            
+            
             // identifiers:
-            key={selectedParentOrDefault.category.id} // when switched to "different" selectedParent, the "state" should be "cleared"
+            key={selectedParentOrDefault?.category.id ?? null} // when switched to "different" selectedParent, the "state" should be "cleared"
             
             
             
             // data:
-            rootCategory={selectedParentOrDefault.category}
-            initialPage={(parentCategories.length >= 1) ? Math.floor(restoreIndex / subPerPage) : undefined}
+            rootCategory={selectedParentOrDefault?.category ?? null}
+            initialPage={
+                (parentCategories.length >= (props.minDepth ?? 0))
+                
+                // restores the initialPage if the_parents_deep SATISFIES minDepth:
+                ? Math.floor(restoreIndex / subPerPage)
+                
+                // otherwise not defined:
+                : undefined
+            }
         />
     );
 };
@@ -139,13 +139,16 @@ export {
 interface CategoryExplorerSubConditionalProps
     extends
         // bases:
+        CategoryExplorerSubProps,
+        
+        // states:
         Pick<PaginationStateProps<CategoryPreview>,
             // states:
             |'initialPage'
         >
 {
     // data:
-    rootCategory: CategoryPreview
+    rootCategory: CategoryPreview|null
 }
 const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalProps): JSX.Element|null => {
     // props:
@@ -153,12 +156,17 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
         // data:
         rootCategory,
         initialPage,
+        
+        
+        
+        // other props:
+        ...restCategoryExplorerSubProps
     } = props;
     
     
     
     // hooks:
-    const _useGetSubCategoryPage = useUseGetSubCategoryPage(rootCategory.id);
+    const _useGetSubCategoryPage = useUseGetSubCategoryPage(rootCategory?.id ?? null);
     
     
     
@@ -174,11 +182,22 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
             // data:
             useGetModelPage={_useGetSubCategoryPage}
         >
-            <CategoryExplorerSubInternal />
+            <CategoryExplorerSubInternal
+                // other props:
+                {...restCategoryExplorerSubProps}
+            />
         </PaginationStateProvider>
     );
 };
-const CategoryExplorerSubInternal = (): JSX.Element|null => {
+const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Element|null => {
+    // props:
+    const {
+        // configs:
+        minDepth = 0,
+    } = props;
+    
+    
+    
     // styles:
     const styleSheet = useCategoryExplorerStyleSheet();
     
@@ -209,7 +228,7 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
     const handleBack = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         setParentCategories((draft): void => {
             // conditions:
-            if (!draft.length) return; // the root category is not yet selected or loaded => ignore
+            if (draft.length >= (minDepth + 1)) return; // PREVENTS the_parents_deep BELOW the minDepth
             
             
             
@@ -221,7 +240,7 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
     const handleSelect = useEvent<EditorChangeEventHandler<CategoryPreview>>((model) => {
         setParentCategories((draft): void => {
             // conditions:
-            if (!draft.length) return; // the root category is not yet selected or loaded => ignore
+            if (draft.length < minDepth) return; // ABORT the operation if the_parents_deep NOT_SATISFY minDepth
             
             
             
@@ -235,8 +254,8 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
                     return itemIndex;
                 })()
             });
+            setRestoreIndex(0); // reset the pagination index of child categories
         });
-        setRestoreIndex(0); // reset the pagination index of child categories
     });
     
     
@@ -245,7 +264,7 @@ const CategoryExplorerSubInternal = (): JSX.Element|null => {
     return (
         <>
             <div className={styleSheet.nav}>
-                {(parentCategories.length >= 2) && <ButtonIcon
+                {(parentCategories.length >= (minDepth + 1)) /* PREVENTS the_parents_deep BELOW the minDepth */ && <ButtonIcon
                     // appearances:
                     icon='arrow_back'
                     
