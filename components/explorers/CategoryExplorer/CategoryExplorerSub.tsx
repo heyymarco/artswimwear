@@ -79,7 +79,7 @@ import {
 
 // react components:
 export interface CategoryExplorerSubProps {
-    // configs
+    // configs:
     minDepth ?: number
 }
 const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null => {
@@ -228,7 +228,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Eleme
     const handleBack = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         setParentCategories((draft): void => {
             // conditions:
-            if (draft.length >= (minDepth + 1)) return; // PREVENTS the_parents_deep BELOW the minDepth
+            if ((draft.length - 1) < minDepth) return; // PREVENTS the_parents_deep BELOW the minDepth
             
             
             
@@ -264,7 +264,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Eleme
     return (
         <>
             <div className={styleSheet.nav}>
-                {(parentCategories.length >= (minDepth + 1)) /* PREVENTS the_parents_deep BELOW the minDepth */ && <ButtonIcon
+                {((parentCategories.length - 1) >= minDepth) /* PREVENTS the_parents_deep BELOW the minDepth */ && <ButtonIcon
                     // appearances:
                     icon='arrow_back'
                     

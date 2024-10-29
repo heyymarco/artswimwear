@@ -349,7 +349,10 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
                         <CategoryExplorerRoot />
                     </Container>
                     <Container className={styleSheet.sub} theme='primaryAlt' mild={false}>
-                        <CategoryExplorerSub />
+                        <CategoryExplorerSub
+                            // configs:
+                            minDepth={1} // when navigate `back`, do not reaches `root` category
+                        />
                     </Container>
                 </PaginationStateProvider>
             </CategoryExplorerStateProvider>
