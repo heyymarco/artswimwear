@@ -11,6 +11,11 @@ import {
     useEffect,
 }                           from 'react'
 
+// styles:
+import {
+    useCategoryExplorerStyleSheet,
+}                           from './styles/loader'
+
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -66,6 +71,11 @@ import {
 
 // react components:
 const CategoryExplorerRoot = (): JSX.Element|null => {
+    // styles:
+    const styleSheet = useCategoryExplorerStyleSheet();
+    
+    
+    
     // states:
     const {
         // states:
@@ -130,6 +140,11 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
     return (
         <CategoryExplorerStateProvider parentCategories={rootParentCategories}>
             <CategoryExplorerList
+                // classes:
+                className={styleSheet.listGallery}
+                
+                
+                
                 // components:
                 listComponent={<List listStyle='flat' />}
                 modelPreviewComponent={

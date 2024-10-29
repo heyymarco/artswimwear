@@ -358,7 +358,7 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
                     {showRootSection && <Container className={styleSheet.root} theme='primaryAlt'>
                         <CategoryExplorerRoot />
                     </Container>}
-                    <Container className={`${styleSheet.sub} ${showRootSection ? '' : styleSheet.rootAndSub}`} theme='primaryAlt' mild={false}>
+                    <Container className={`${styleSheet.sub} ${showRootSection ? '' : styleSheet.rootMergeSub}`} theme='primaryAlt' mild={false}>
                         <CategoryExplorerSub
                             // configs:
                             minDepth={

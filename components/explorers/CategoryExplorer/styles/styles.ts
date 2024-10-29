@@ -13,6 +13,11 @@ import {
     
     
     
+    // a typography management system:
+    headings,
+    
+    
+    
     // border (stroke) stuff of UI:
     usesBorder,
     
@@ -150,7 +155,7 @@ const usesSubLayout = () => {
         paddingBlockStart: '0px', // already reserved to nav
     });
 };
-const usesRootAndSubLayout = () => {
+const usesRootMergeSubLayout = () => {
     return style({
         // positions:
         gridArea: 'root / root / sub / sub',
@@ -180,6 +185,52 @@ const usesNavLayout = () => {
         fontSize: buttonIcons.fontSizeMd,
     });
 };
+const usesListGalleryLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {paddingVars} = usesPadding();
+    
+    
+    
+    return style({
+        // children:
+        ...children('*', { // <GalleryBodyWrapper>
+            // children:
+            
+            //#region hides the paragraph(s), the heading seems sufficient to display the information
+            // minimize the <ModalCard>'s content to minimize the minInlineSize requirement
+            ...children('*>[role="dialog"]', {
+                ...children('*', { // <Popup>
+                    ...children('*', { // <Card>
+                        ...children('.body', {
+                            // spacings:
+                            [paddingVars.paddingInline] : spacers.md,
+                            [paddingVars.paddingBlock ] : spacers.sm,
+                            
+                            
+                            
+                            // children:
+                            ...children(['h1', 'h2', 'h3', 'h4', 'h5'], {
+                                // typos:
+                                fontSize: headings.fontSize6, // downgrade h1-h4 to h7
+                            }),
+                            ...children('p', {
+                                display: 'none',
+                            }),
+                        }),
+                    }),
+                }),
+            }),
+            //#endregion hides the paragraph(s), the heading seems sufficient to display the information
+            
+            ...children(':is(ul, [role="list"])', { // <GalleryBody>
+                // sizes:
+                minBlockSize : '6rem', // limits the minimum height to make loading|error popup have enough space
+            }),
+        }),
+    });
+};
 const usesSubGalleryLayout = () => {
     return style({
         // positions:
@@ -189,8 +240,14 @@ const usesSubGalleryLayout = () => {
         
         // children:
         ...children('*', { // <GalleryBodyWrapper>
+            // children:
             ...children(':is(ul, [role="list"])', { // <GalleryBody>
+                // layouts:
                 alignContent : 'center', // an appearance adjusment when the <CategoryExplorerSubItem>(s) are too few => place the extra spacing at the top and bottom
+                
+                
+                
+                // children:
                 ...children('[role="presentation"]', {
                     // layouts:
                     gridTemplateColumns : `repeat(auto-fit, minmax(${minImageSize}px, 1fr))`, // an appearance adjusment when the <CategoryExplorerSubItem>(s) are too few => fill the entire <CategoryExplorerSub> width
@@ -221,14 +278,18 @@ export default () => [
         // layouts:
         ...usesSubLayout(),
     }),
-    scope('rootAndSub', {
+    scope('rootMergeSub', {
         // layouts:
-        ...usesRootAndSubLayout(),
+        ...usesRootMergeSubLayout(),
     }, { specificityWeight: 2 }), // higher specificity than root|sub
     
     scope('nav', {
         // layouts:
         ...usesNavLayout(),
+    }),
+    scope('listGallery', {
+        // layouts:
+        ...usesListGalleryLayout(),
     }),
     scope('subGallery', {
         // layouts:
