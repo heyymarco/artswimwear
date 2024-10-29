@@ -290,7 +290,7 @@ export default () => [
     scope('listGallery', {
         // layouts:
         ...usesListGalleryLayout(),
-    }),
+    }, { specificityWeight: 2 }), // higher specificity than <PaginationList>|<PaginationGallery>'s style
     scope('subGallery', {
         // layouts:
         ...usesSubGalleryLayout(),

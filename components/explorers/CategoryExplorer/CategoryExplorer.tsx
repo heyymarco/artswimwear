@@ -105,7 +105,7 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
         >
 {
 }
-const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
+const CategoryExplorer = <TElement extends Element = HTMLElement>(props: CategoryExplorerProps<TElement>): JSX.Element|null => {
     // states:
     const pathname = usePathname();
     const [initialCategories] = useState<string[]|undefined>(() => {
@@ -120,7 +120,7 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
     // jsx:
     // INSIDE the `/categories/**` path => TRY to show the categories WITH initial selection:
     if (initialCategories) return (
-        <CategoryExplorerWithInitial
+        <CategoryExplorerWithInitial<TElement>
             // other props:
             {...props}
             
@@ -133,9 +133,14 @@ const CategoryExplorer = (props: CategoryExplorerProps): JSX.Element|null => {
     
     // OUTSIDE the `/categories/**` path => shows the categories WITHOUT initial selection:
     return (
-        <CategoryExplorerInternal
+        <CategoryExplorerInternal<TElement>
             // other props:
             {...props}
+            
+            
+            
+            // appearances:
+            showRootSection={false} // TODO: detect desktop|mobile breakpoint
         />
     );
 };
@@ -170,9 +175,9 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
     
     // stores:
     const { data: categoryDetail } = useGetCategoryDetail(initialCategories);
-    const [{initialSelectedCategories, initialRestoreIndex}] = useState<{ initialSelectedCategories: CategoryParentInfo[]|null, initialRestoreIndex: number|undefined }>(() => {
+    const [{initialHasSubcategories, initialSelectedCategories, initialRestoreIndex}] = useState<{ initialHasSubcategories: boolean, initialSelectedCategories: CategoryParentInfo[]|null, initialRestoreIndex: number|undefined }>(() => {
         // conditions:
-        if (!categoryDetail) return { initialSelectedCategories: null, initialRestoreIndex: 0 }; // the data is not ready => ignore
+        if (!categoryDetail) return { initialHasSubcategories: false, initialSelectedCategories: null, initialRestoreIndex: 0 }; // the data is not ready => ignore
         
         
         
@@ -182,6 +187,7 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
             index,
         } = categoryDetail;
         return {
+            initialHasSubcategories   : categoryDetail.hasSubcategories,
             initialSelectedCategories : (
                 (ancestorToRootParents.length === 0)
                 
@@ -215,9 +221,14 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
     // the data is LOADING|ERROR => shows the categories WITHOUT initial selection:
     if (!initialSelectedCategories) {
         return (
-            <CategoryExplorerInternal
+            <CategoryExplorerInternal<TElement>
                 // other props:
                 {...props}
+                
+                
+                
+                // appearances:
+                showRootSection={false} // unknown data => assumes not having subCategories => displays only subSection
             />
         );
     } // if
@@ -233,6 +244,11 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
             // data:
             initialSelectedCategories={initialSelectedCategories}
             initialRestoreIndex={initialRestoreIndex}
+            
+            
+            
+            // appearances:
+            showRootSection={initialHasSubcategories} // displays rootSection if having subCategories -or- displays only subSection if only having rootCategories
         />
     );
 };
