@@ -164,6 +164,10 @@ export const categoryPreviewSelect = {
     
     images         : true,
     subcategories  : {
+        where      : {
+            // browsable visibility:
+            visibility : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+        },
         select     : {
             id     : true,
         },
@@ -217,6 +221,10 @@ export const categoryDetailSelect = (pathname: string[]) => ({
     images        : true,
     
     subcategories : {
+        where      : {
+            // browsable visibility:
+            visibility : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+        },
         select    : {
             id    : true,
         },
