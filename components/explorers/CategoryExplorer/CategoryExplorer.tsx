@@ -108,68 +108,17 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
 const CategoryExplorer = <TElement extends Element = HTMLElement>(props: CategoryExplorerProps<TElement>): JSX.Element|null => {
     // states:
     const pathname = usePathname();
-    const [initialCategories] = useState<string[]|undefined>(() => {
+    const [initialCategories] = useState<string[]>(() => {
+        // conditions:
+        if (!(/^\/categories($|\/)/i).test(pathname)) return []; // OUTSIDE the `/categories/**` path => no selected category
+        
+        
+        
         let tailPathname = pathname.slice('/categories'.length);
         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
-        const categories = !tailPathname ? undefined : tailPathname.split('/');
+        const categories = !tailPathname ? [] : tailPathname.split('/'); // INSIDE the `/categories/**` path => USE current pathname to restore the last selected category
         return categories;
     });
-    
-    
-    
-    // jsx:
-    // INSIDE the `/categories/**` path => TRY to show the categories WITH initial selection:
-    if (initialCategories) return (
-        <CategoryExplorerWithInitial<TElement>
-            // other props:
-            {...props}
-            
-            
-            
-            // data:
-            initialCategories={initialCategories}
-        />
-    );
-    
-    // OUTSIDE the `/categories/**` path => shows the categories WITHOUT initial selection:
-    return (
-        <CategoryExplorerInternal<TElement>
-            // other props:
-            {...props}
-            
-            
-            
-            // appearances:
-            showRootSection={false} // TODO: detect desktop|mobile breakpoint
-        />
-    );
-};
-export {
-    CategoryExplorer,
-    CategoryExplorer as default,
-}
-
-
-
-export interface CategoryExplorerWithInitialProps<TElement extends Element = HTMLElement>
-    extends
-        // bases:
-        CategoryExplorerProps<TElement>
-{
-    // data:
-    initialCategories: string[]
-}
-const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(props: CategoryExplorerWithInitialProps<TElement>): JSX.Element|null => {
-    // props:
-    const {
-        // data:
-        initialCategories,
-        
-        
-        
-        // other props:
-        ...restCategoryExplorerProps
-    } = props;
     
     
     
@@ -237,7 +186,7 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
     return (
         <CategoryExplorerInternal<TElement>
             // other props:
-            {...restCategoryExplorerProps}
+            {...props}
             
             
             
@@ -252,6 +201,10 @@ const CategoryExplorerWithInitial = <TElement extends Element = HTMLElement>(pro
         />
     );
 };
+export {
+    CategoryExplorer,
+    CategoryExplorer as default,
+}
 
 
 
