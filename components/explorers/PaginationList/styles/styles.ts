@@ -74,7 +74,14 @@ const usesGalleryBodyWrapperLayout = () => {
             
             // children:
             ...children('*>[role="dialog"]', {
+                // accessibilities:
                 pointerEvents : 'auto', // block the interaction behind the <Backdrop> but still make the <Backdrop> interactive for touch & scrolling
+                
+                
+                
+                // spacings:
+                [paddingVars.paddingInline] : '0px', // remove the padding to minimize the minInlineSize requirement
+                [paddingVars.paddingBlock ] : '0px', // remove the padding to minimize the minBlockSize  requirement
             }),
         }),
     });
