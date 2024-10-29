@@ -122,6 +122,10 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
             
             // data:
             rootCategory={directParent?.category ?? null}
+            
+            
+            
+            // states:
             initialPage={
                 (parentCategories.length >= minDepth)
                 
@@ -160,6 +164,10 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
     const {
         // data:
         rootCategory,
+        
+        
+        
+        // states:
         initialPage,
         
         
@@ -233,7 +241,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Eleme
     const handleBack = useEvent<React.MouseEventHandler<HTMLButtonElement>>(() => {
         setParentCategories((draft): void => {
             // conditions:
-            if ((draft.length - 1) < minDepth) return; // PREVENTS the_parents_deep BELOW the minDepth
+            if ((draft.length - 1 /* back to one_step */) < minDepth) return; // PREVENTS the_parents_deep BELOW the minDepth
             
             
             
@@ -269,7 +277,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Eleme
     return (
         <>
             <div className={styleSheet.nav}>
-                {((parentCategories.length - 1) >= minDepth) /* PREVENTS the_parents_deep BELOW the minDepth */ && <ButtonIcon
+                {((parentCategories.length - 1 /* back to one_step */) >= minDepth) /* PREVENTS the_parents_deep BELOW the minDepth */ && <ButtonIcon
                     // appearances:
                     icon='arrow_back'
                     
