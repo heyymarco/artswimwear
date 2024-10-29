@@ -165,7 +165,7 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                         // appearances:
                         alt={name}
                         src={resolveMediaUrl(image)}
-                        sizes='207px' // (255*2) - ((4*16) * 1.5) = 414 => 414/2 = 207
+                        sizes='267px' // max galleryImage size = ((255*2) + (16 * 1.5)) / 2 = 534 / 2 = 267
                         
                         
                         
