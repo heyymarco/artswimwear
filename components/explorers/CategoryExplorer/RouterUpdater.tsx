@@ -51,7 +51,7 @@ const RouterUpdater = (): JSX.Element|null => {
     // sync the pathname to the path of selected category:
     const pathname                = usePathname();
     const router                  = useRouter();
-    const prevParentCategoriesRef = useRef<CategoryParentInfo[]>(parentCategories);
+    const prevParentCategoriesRef = useRef<CategoryParentInfo[]|undefined>(undefined /* initially unsynced */);
     useEffect(() => {
         // conditions:
         if (prevParentCategoriesRef.current === parentCategories) return; // already the same => ignore
@@ -62,14 +62,14 @@ const RouterUpdater = (): JSX.Element|null => {
         
         
         // actions:
-        const oldPathname = `${categoriesPath}/${prevParentCategories.map(({category: {path}}) => path).join('/')}`;
+        const oldPathname = !prevParentCategories ? undefined : `${categoriesPath}/${prevParentCategories.map(({category: {path}}) => path).join('/')}`;
         const newPathname = `${categoriesPath}/${parentCategories.map(({category: {path}}) => path).join('/')}`;
-        if (newPathname.toLowerCase() !== pathname) {
-            if ((prevParentCategories.length === (parentCategories.length + 1)) && ((): boolean => { // if a back action detected
+        if (newPathname.toLowerCase() !== pathname.toLowerCase()) {
+            if ((prevParentCategories?.length === (parentCategories.length + 1)) && ((): boolean => { // if a back action detected
                 for (let index = 0, maxIndex = parentCategories.length - 1; index <= maxIndex; index++) {
                     if (parentCategories[index] !== prevParentCategories[index]) return false;
                 } // for
-                return (pathname.toLowerCase() === oldPathname.toLowerCase());
+                return (pathname.toLowerCase() === oldPathname?.toLowerCase());
             })()) {
                 router.back();
             }
