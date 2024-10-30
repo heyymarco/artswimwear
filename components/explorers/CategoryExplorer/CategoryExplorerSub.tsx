@@ -247,6 +247,10 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Eleme
             
             // actions:
             const prevCategoryInfo = draft.pop();
+            
+            
+            
+            // a side effect (maybe called twice but it's ok):
             setRestoreIndex(prevCategoryInfo?.index ?? 0); // restore the pagination index of child categories
         });
     });
@@ -267,6 +271,10 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Eleme
                     return itemIndex;
                 })()
             });
+            
+            
+            
+            // a side effect (maybe called twice but it's ok):
             setRestoreIndex(0); // reset the pagination index of child categories
         });
     });
