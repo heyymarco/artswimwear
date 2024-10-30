@@ -159,6 +159,19 @@ const usesRootMergeSubLayout = () => {
     return style({
         // positions:
         gridArea: 'root / root / sub / sub',
+        
+        
+        
+        // children:
+        ...children('*', { // <CategoryExplorerSub>
+            ...children('*', { // <GalleryBodyWrapper>
+                // children:
+                ...children(':is(ul, [role="list"])', { // <GalleryBody>
+                    // layouts:
+                    alignContent : 'center', // an appearance adjusment when the <CategoryExplorerSubItem>(s) are too few => place the extra spacing at the top and bottom
+                }),
+            }),
+        }),
     });
 };
 
@@ -242,11 +255,6 @@ const usesSubGalleryLayout = () => {
         ...children('*', { // <GalleryBodyWrapper>
             // children:
             ...children(':is(ul, [role="list"])', { // <GalleryBody>
-                // layouts:
-                alignContent : 'center', // an appearance adjusment when the <CategoryExplorerSubItem>(s) are too few => place the extra spacing at the top and bottom
-                
-                
-                
                 // children:
                 ...children('[role="presentation"]', {
                     // layouts:
