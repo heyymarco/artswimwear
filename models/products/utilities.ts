@@ -252,7 +252,7 @@ export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailDa
         parentIds.push(currentParent.id);
         grandparentIds.add((currentParent as any).parent?.id ?? null);
     } // for
-    const [parentsData, sortedParentSiblings, has2ndLevelCategories] = await Promise.all([
+    const [parentsData, sortedParentSiblings] = await Promise.all([
         prismaTransaction.category.findMany({
             where  : {
                 // accessible visibility:
@@ -291,23 +291,6 @@ export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailDa
                 name     : 'asc', // shows the alphabetical Category for pagination_view
             },
         }),
-        
-        prismaTransaction.category.findFirst({
-            where  : {
-                // browsable visibility:
-                visibility    : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
-                parentId      : null, // select root_categories
-                subcategories : {
-                    some      : { // having a/some subcategories
-                        // browsable visibility:
-                        visibility    : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
-                    },
-                },
-            },
-            select : {
-                id : true,
-            },
-        }),
     ]);
     const categoryParentInfos : CategoryParentInfo[] = (
         parentIds.map((parentId): CategoryParentInfo => {
@@ -325,7 +308,6 @@ export const convertCategoryDetailDataToCategoryDetail = async (categoryDetailDa
     const parentSiblings = sortedParentSiblings.filter(({parentId: searchParentId}) => (searchParentId === parentId));
     return {
         ...restCategory,
-        has2ndLevelCategories : !!has2ndLevelCategories,
         hasSubcategories      : !!subcategories?.length,
         parents               : categoryParentInfos,
         index                 : parentSiblings.findIndex(({id: searchId}) => (searchId === restCategory.id)),

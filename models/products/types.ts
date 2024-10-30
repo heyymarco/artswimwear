@@ -10,6 +10,7 @@ import {
     type Category,
 }                           from '@prisma/client'
 import {
+    type Pagination,
     type PaginationArgs,
 }                           from '../commons'
 
@@ -137,10 +138,9 @@ export interface CategoryDetail
             |'images'
         >
 {
-    has2ndLevelCategories : boolean
-    hasSubcategories      : boolean
-    parents               : CategoryParentInfo[]
-    index                 : number
+    hasSubcategories : boolean
+    parents          : CategoryParentInfo[]
+    index            : number
 }
 
 
@@ -150,4 +150,11 @@ export interface CategoryPageRequest
         PaginationArgs
 {
     parent : Category['parentId']
+}
+
+export interface CategoryPreviewPagination
+    extends
+        Pagination<CategoryPreview>
+{
+    has2ndLevelCategories ?: boolean
 }

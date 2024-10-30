@@ -38,6 +38,7 @@ import {
 
 // internal components:
 import {
+    usePaginationState,
     PaginationStateProvider,
 }                           from '@/components/explorers/Pagination'
 
@@ -57,6 +58,7 @@ import {
     // types:
     type CategoryPreview,
     type CategoryParentInfo,
+    type CategoryPreviewPagination,
 }                           from '@/models'
 
 // internals:
@@ -104,6 +106,8 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
             |'onNavigate'
         >
 {
+    // appearances:
+    showRootSection ?: boolean
 }
 const CategoryExplorer = <TElement extends Element = HTMLElement>(props: CategoryExplorerProps<TElement>): JSX.Element|null => {
     // states:
@@ -129,11 +133,6 @@ const CategoryExplorer = <TElement extends Element = HTMLElement>(props: Categor
             <CategoryExplorerInternal<TElement>
                 // other props:
                 {...props}
-                
-                
-                
-                // appearances:
-                showRootSection={false} // unknown data => assumes not having subCategories => displays only subSection
             />
         );
     } // if
@@ -182,22 +181,20 @@ const CategoryExplorerConditional = <TElement extends Element = HTMLElement>(pro
     
     // stores:
     const { data: categoryDetail } = useGetCategoryDetail(initialCategories);
-    const [{initialHasSubcategories, initialSelectedCategories, initialRestoreIndex}] = useState<{ initialHasSubcategories: boolean, initialSelectedCategories: CategoryParentInfo[]|null, initialRestoreIndex: number|undefined }>(() => {
+    const [{initialSelectedCategories, initialRestoreIndex}] = useState<{ initialSelectedCategories: CategoryParentInfo[]|null, initialRestoreIndex: number|undefined }>(() => {
         // conditions:
-        if (!categoryDetail) return { initialHasSubcategories: false, initialSelectedCategories: null, initialRestoreIndex: 0 }; // the data is not ready => ignore
+        if (!categoryDetail) return { initialSelectedCategories: null, initialRestoreIndex: 0 }; // the data is not ready => ignore
         
         
         
         // computes:
         const {
-            has2ndLevelCategories,
             parents : ancestorToRootParents,
             index,
         } = categoryDetail;
         return {
-            initialHasSubcategories   : has2ndLevelCategories,
             initialSelectedCategories : (
-                ((ancestorToRootParents.length === 0) && has2ndLevelCategories)
+                (ancestorToRootParents.length === 0)
                 
                 // if the categoryDetail is a root category => select itself to preserve the current_selected_root_category:
                 ? [{
@@ -233,11 +230,6 @@ const CategoryExplorerConditional = <TElement extends Element = HTMLElement>(pro
             <CategoryExplorerInternal<TElement>
                 // other props:
                 {...restCategoryExplorerProps}
-                
-                
-                
-                // appearances:
-                showRootSection={false} // unknown data => assumes not having subCategories => displays only subSection
             />
         );
     } // if
@@ -253,11 +245,6 @@ const CategoryExplorerConditional = <TElement extends Element = HTMLElement>(pro
             // data:
             initialSelectedCategories={initialSelectedCategories}
             initialRestoreIndex={initialRestoreIndex}
-            
-            
-            
-            // appearances:
-            showRootSection={initialHasSubcategories} // displays rootSection if having subCategories -or- displays only subSection if only having rootCategories
         />
     );
 };
@@ -272,11 +259,6 @@ interface CategoryExplorerInternalProps<TElement extends Element = HTMLElement>
     // data:
     initialSelectedCategories ?: CategoryParentInfo[]
     initialRestoreIndex       ?: number
-    
-    
-    
-    // appearances:
-    showRootSection           ?: boolean
 }
 const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props: CategoryExplorerInternalProps<TElement>): JSX.Element|null => {
     // props:
@@ -287,25 +269,93 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
         
         
         
-        // appearances:
-        showRootSection           = false,
+        // handlers:
+        onNavigate,
         
         
         
         // other props:
-        ...restCategoryExplorerProps
+        ...restCategoryExplorerInternal2Props
     } = props;
-    
-    
-    
-    // styles:
-    const styleSheet = useCategoryExplorerStyleSheet();
     
     
     
     // states:
     const [parentCategories, setParentCategories] = useImmer<CategoryParentInfo[]>(initialSelectedCategories);
     const [restoreIndex    , setRestoreIndex    ] = useState<number>(initialRestoreIndex);
+    
+    
+    
+    // jsx:
+    return (
+        <CategoryExplorerStateProvider
+            // states:
+            parentCategories={parentCategories}
+            setParentCategories={setParentCategories}
+            
+            restoreIndex={restoreIndex}
+            setRestoreIndex={setRestoreIndex}
+            
+            
+            
+            // handlers:
+            onNavigate={onNavigate}
+        >
+            <PaginationStateProvider<CategoryPreview>
+                // states:
+                initialPage={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
+                initialPerPage={rootPerPage}
+                
+                
+                
+                // data:
+                useGetModelPage={useGetRootCategoryPage}
+            >
+                <CategoryExplorerInternal2
+                    // other props:
+                    {...restCategoryExplorerInternal2Props}
+                />
+            </PaginationStateProvider>
+        </CategoryExplorerStateProvider>
+    );
+};
+
+
+
+interface CategoryExplorerInternal2Props<TElement extends Element = HTMLElement>
+    extends
+        // bases:
+        Omit<CategoryExplorerProps<TElement>,
+            // handlers:
+            |'onNavigate'
+        >
+{
+}
+const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props: CategoryExplorerInternal2Props<TElement>): JSX.Element|null => {
+    // states:
+    const { data: categoryPreviewPaginationRaw } = usePaginationState<CategoryPreview>();
+    const categoryPreviewPagination = categoryPreviewPaginationRaw as CategoryPreviewPagination|undefined;
+    const {
+        has2ndLevelCategories = false,
+    } = categoryPreviewPagination ?? {};
+    
+    
+    
+    // props:
+    const {
+        // appearances:
+        showRootSection = has2ndLevelCategories,
+        
+        
+        
+        // other props:
+        ...restCategoryExplorerInternal2Props
+    } = props;
+    
+    
+    
+    // styles:
+    const styleSheet = useCategoryExplorerStyleSheet();
     
     
     
@@ -321,14 +371,9 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
         
         
         
-        // handlers:
-        onNavigate,
-        
-        
-        
         // other props:
         ...restGenericProps
-    } = restCategoryExplorerProps;
+    } = restCategoryExplorerInternal2Props;
     
     
     
@@ -349,52 +394,23 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
             // classes:
             mainClass={mainClass}
         >
-            <CategoryExplorerStateProvider
-                // states:
-                parentCategories={parentCategories}
-                setParentCategories={setParentCategories}
-                
-                restoreIndex={restoreIndex}
-                setRestoreIndex={setRestoreIndex}
-                
-                
-                
-                // handlers:
-                onNavigate={onNavigate}
-            >
-                <RouterUpdater />
-                
-                
-                
-                {/*
-                    Place the <PaginationStateProvider> for root data here,
-                    so it can be accessed by both <CategoryExplorerRoot> and <CategoryExplorerSub>
-                */}
-                <PaginationStateProvider<CategoryPreview>
-                    // states:
-                    initialPage={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
-                    initialPerPage={rootPerPage}
-                    
-                    
-                    
-                    // data:
-                    useGetModelPage={useGetRootCategoryPage}
-                >
-                    {showRootSection && <Container className={styleSheet.root} theme='primaryAlt'>
-                        <CategoryExplorerRoot />
-                    </Container>}
-                    <Container className={`${styleSheet.sub} ${showRootSection ? '' : styleSheet.rootMergeSub}`} theme='primaryAlt' mild={false}>
-                        <CategoryExplorerSub
-                            // configs:
-                            minDepth={
-                                showRootSection
-                                ? 1 // when navigate `back`, do not reaches `root` category
-                                : 0
-                            }
-                        />
-                    </Container>
-                </PaginationStateProvider>
-            </CategoryExplorerStateProvider>
+            <RouterUpdater />
+            
+            
+            
+            {showRootSection && <Container className={styleSheet.root} theme='primaryAlt'>
+                <CategoryExplorerRoot />
+            </Container>}
+            <Container className={`${styleSheet.sub} ${showRootSection ? '' : styleSheet.rootMergeSub}`} theme='primaryAlt' mild={false}>
+                <CategoryExplorerSub
+                    // configs:
+                    minDepth={
+                        showRootSection
+                        ? 1 // when navigate `back`, do not reaches `root` category
+                        : 0
+                    }
+                />
+            </Container>
         </Generic>
     );
-};
+}

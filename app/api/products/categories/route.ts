@@ -20,6 +20,7 @@ import {
     type Pagination,
     type CategoryPreview,
     type CategoryDetail,
+    type CategoryPreviewPagination,
     
     
     
@@ -163,7 +164,7 @@ router
     
     
     //#region query result
-    const [total, paged] = await prisma.$transaction([
+    const [total, paged, has2ndLevelCategories] = await prisma.$transaction([
         prisma.category.count({
             where  : {
                 // browsable visibility:
@@ -184,11 +185,30 @@ router
             skip    : page * perPage, // note: not scaleable but works in small commerce app -- will be fixed in the future
             take    : perPage,
         }),
+        
+        // when querying rootCategories (parent === null), add additional `has2ndLevelCategories` prop, otherwise undefined:
+        ...((parent !== null) ? [] : [prisma.category.findFirst({
+            where  : {
+                // browsable visibility:
+                visibility    : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                parentId      : null, // select root_categories
+                subcategories : {
+                    some      : { // having a/some subcategories
+                        // browsable visibility:
+                        visibility    : 'PUBLISHED', // allows access to Category with visibility: 'PUBLISHED' but NOT 'HIDDEN'|'DRAFT'
+                    },
+                },
+            },
+            select : {
+                id : true,
+            },
+        })]),
     ]);
-    const paginationOrderDetail : Pagination<CategoryPreview> = {
-        total    : total,
-        entities : paged.map(convertCategoryPreviewDataToCategoryPreview),
+    const categoryPreviewPagination : CategoryPreviewPagination = {
+        total                 : total,
+        entities              : paged.map(convertCategoryPreviewDataToCategoryPreview),
+        has2ndLevelCategories : !!has2ndLevelCategories,
     };
-    return Response.json(paginationOrderDetail); // handled with success
+    return Response.json(categoryPreviewPagination); // handled with success
     //#endregion query result
 });
