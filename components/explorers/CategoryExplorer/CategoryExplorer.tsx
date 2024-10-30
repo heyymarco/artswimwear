@@ -108,17 +108,75 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
 const CategoryExplorer = <TElement extends Element = HTMLElement>(props: CategoryExplorerProps<TElement>): JSX.Element|null => {
     // states:
     const pathname = usePathname();
-    const [initialCategories] = useState<string[]>(() => {
+    const [initialCategories] = useState<string[]|null>(() => {
         // conditions:
-        if (!(/^\/categories($|\/)/i).test(pathname)) return []; // OUTSIDE the `/categories/**` path => no selected category
+        if (!(/^\/categories($|\/)/i).test(pathname)) return null; // OUTSIDE the `/categories/**` path => no selected category
         
         
         
         let tailPathname = pathname.slice('/categories'.length);
         if (tailPathname[0] === '/') tailPathname = tailPathname.slice(1);
-        const categories = !tailPathname ? [] : tailPathname.split('/'); // INSIDE the `/categories/**` path => USE current pathname to restore the last selected category
+        const categories = !tailPathname ? null : tailPathname.split('/'); // INSIDE the `/categories/**` path => USE current pathname to restore the last selected category
         return categories;
     });
+    
+    
+    
+    // jsx:
+    if (!initialCategories?.length) {
+        // shows the categories WITHOUT initial selection:
+        return (
+            <CategoryExplorerInternal<TElement>
+                // other props:
+                {...props}
+                
+                
+                
+                // appearances:
+                showRootSection={false} // unknown data => assumes not having subCategories => displays only subSection
+            />
+        );
+    } // if
+    
+    // shows the categories WITH|WITHOUT initial selection:
+    return (
+        <CategoryExplorerConditional<TElement>
+            // other props:
+            {...props}
+            
+            
+            
+            // data:
+            initialCategories={initialCategories}
+        />
+    );
+};
+export {
+    CategoryExplorer,
+    CategoryExplorer as default,
+}
+
+
+
+interface CategoryExplorerConditionalProps<TElement extends Element = HTMLElement>
+    extends
+        // bases:
+        CategoryExplorerProps<TElement>
+{
+    // data:
+    initialCategories : string[]
+}
+const CategoryExplorerConditional = <TElement extends Element = HTMLElement>(props: CategoryExplorerConditionalProps<TElement>): JSX.Element|null => {
+    // props:
+    const {
+        // data:
+        initialCategories,
+        
+        
+        
+        // other props:
+        ...restCategoryExplorerProps
+    } = props;
     
     
     
@@ -170,10 +228,11 @@ const CategoryExplorer = <TElement extends Element = HTMLElement>(props: Categor
     // jsx:
     // the data is LOADING|ERROR => shows the categories WITHOUT initial selection:
     if (!initialSelectedCategories) {
+        // shows the categories WITHOUT initial selection:
         return (
             <CategoryExplorerInternal<TElement>
                 // other props:
-                {...props}
+                {...restCategoryExplorerProps}
                 
                 
                 
@@ -187,7 +246,7 @@ const CategoryExplorer = <TElement extends Element = HTMLElement>(props: Categor
     return (
         <CategoryExplorerInternal<TElement>
             // other props:
-            {...props}
+            {...restCategoryExplorerProps}
             
             
             
@@ -202,10 +261,6 @@ const CategoryExplorer = <TElement extends Element = HTMLElement>(props: Categor
         />
     );
 };
-export {
-    CategoryExplorer,
-    CategoryExplorer as default,
-}
 
 
 
