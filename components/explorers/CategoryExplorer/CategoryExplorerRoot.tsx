@@ -138,7 +138,10 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
     
     // jsx:
     return (
-        <CategoryExplorerStateProvider parentCategories={rootParentCategories}>
+        <CategoryExplorerStateProvider
+            // states:
+            parentCategories={rootParentCategories}
+        >
             <CategoryExplorerList
                 // classes:
                 className={styleSheet.listGallery}

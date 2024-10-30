@@ -34,6 +34,7 @@ import {
 
 // utilities:
 export const rootParentCategories : CategoryParentInfo[] = [];
+export const noopCallback = () => {};
 
 
 
@@ -52,7 +53,6 @@ export interface CategoryExplorerState {
     onNavigate          : ((url: string) => void) | null|undefined
 }
 
-const noopCallback = () => {};
 const defaultCategoryExplorerStateContext : CategoryExplorerState = {
     // states:
     parentCategories    : rootParentCategories,
