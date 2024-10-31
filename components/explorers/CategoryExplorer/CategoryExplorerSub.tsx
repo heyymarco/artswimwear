@@ -26,11 +26,6 @@ import {
     
     // simple-components:
     ButtonIcon,
-    
-    
-    
-    // layout-components:
-    List,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // internal components:
@@ -121,7 +116,7 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
             
             
             // data:
-            rootCategory={directParent?.category ?? null}
+            parentCategory={directParent?.category ?? null}
             
             
             
@@ -157,13 +152,13 @@ interface CategoryExplorerSubConditionalProps
         >
 {
     // data:
-    rootCategory: CategoryPreview|null
+    parentCategory: CategoryPreview|null
 }
 const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalProps): JSX.Element|null => {
     // props:
     const {
         // data:
-        rootCategory,
+        parentCategory,
         
         
         
@@ -179,7 +174,7 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
     
     
     // hooks:
-    const _useGetSubCategoryPage = useUseGetSubCategoryPage(rootCategory?.id ?? null);
+    const _useGetSubCategoryPage = useUseGetSubCategoryPage(parentCategory?.id ?? null);
     
     
     
@@ -198,13 +193,37 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
             <CategoryExplorerSubInternal
                 // other props:
                 {...restCategoryExplorerSubProps}
+                
+                
+                
+                // data:
+                parentCategory={parentCategory}
             />
         </PaginationStateProvider>
     );
 };
-const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Element|null => {
+
+
+
+interface CategoryExplorerSubInternalProps
+    extends
+        // bases:
+        CategoryExplorerSubProps,
+        
+        // data:
+        Pick<CategoryExplorerSubConditionalProps,
+            |'parentCategory'
+        >
+{
+}
+const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): JSX.Element|null => {
     // props:
     const {
+        // data:
+        parentCategory,
+        
+        
+        
         // configs:
         minDepth = 0,
     } = props;
@@ -317,6 +336,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubProps): JSX.Eleme
                 modelPreviewComponent={
                     <CategoryCard
                         // data:
+                        parentCategory={parentCategory}
                         model={undefined as any}
                         
                         

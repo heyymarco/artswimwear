@@ -9,7 +9,6 @@ import {
     
     // hooks:
     useRef,
-    useEffect,
 }                           from 'react'
 
 // next-js:
@@ -60,16 +59,18 @@ import {
     useCategoryExplorerState,
 }                           from '@/components/explorers/CategoryExplorer/states/categoryExplorerState'
 
+// private components:
+import {
+    PrefetchCategoryPage,
+}                           from './PrefetchCategoryPage'
+import {
+    PrefetchCategoryDetail,
+}                           from './PrefetchCategoryDetail'
+
 // models:
 import {
     type CategoryPreview,
 }                           from '@/models'
-
-// stores:
-import {
-    // hooks:
-    usePrefetchCategoryDetail,
-}                           from '@/store/features/api/apiSlice'
 
 
 
@@ -81,9 +82,14 @@ const minImageWidth = 44;  // 44px === (50px + (2* paddingBlock)) * aspectRatio 
 
 // react components:
 export interface CategoryCardProps extends ModelPreviewProps<CategoryPreview> {
+    // data:
+    parentCategory  : CategoryPreview|null
+    
+    
+    
     // values:
-    selectedModel ?: CategoryPreview|null
-    onModelSelect ?: EditorChangeEventHandler<CategoryPreview>
+    selectedModel  ?: CategoryPreview|null
+    onModelSelect  ?: EditorChangeEventHandler<CategoryPreview>
 }
 const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     // styles:
@@ -94,6 +100,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     // props:
     const {
         // data:
+        parentCategory,
         model,
         
         
@@ -247,9 +254,19 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             { hasSubcategories && <Icon icon='dropright' size='xl' theme='primary' mild={active} className='arrow' />}
         </ListItem>
         
+        { hasSubcategories && <PrefetchCategoryPage
+            // refs:
+            subjectRef={articleRef}
+            
+            
+            
+            // data:
+            parentCategory={parentCategory}
+        />}
+        
         {!hasSubcategories && <PrefetchCategoryDetail
             // refs:
-            articleRef={articleRef}
+            subjectRef={articleRef}
             
             
             
@@ -262,71 +279,3 @@ export {
     CategoryCard,
     CategoryCard as default,
 }
-
-
-
-interface PrefetchCategoryDetailProps {
-    // refs:
-    articleRef : React.RefObject<HTMLDivElement|null>
-    
-    
-    
-    // data:
-    path       : string
-}
-const PrefetchCategoryDetail = (props: PrefetchCategoryDetailProps): JSX.Element|null => {
-    // props:
-    const {
-        // refs:
-        articleRef,
-        
-        
-        
-        // data:
-        path,
-    } = props;
-    
-    
-    
-    // apis:
-    const prefetchCategoryDetail = usePrefetchCategoryDetail();
-    
-    
-    
-    // dom effects:
-    useEffect(() => {
-        // conditions:
-        const articleElm = articleRef.current;
-        if (!articleElm) return;
-        
-        
-        
-        // setups:
-        const observer = new IntersectionObserver((entries) => {
-            // conditions:
-            if (!entries[0]?.isIntersecting) return;
-            
-            
-            
-            // actions:
-            observer.disconnect(); // the observer is no longer needed anymore
-            prefetchCategoryDetail(path.split('/'));
-        }, {
-            root      : null, // defaults to the browser viewport
-            threshold : 0.5,
-        });
-        observer.observe(articleElm);
-        
-        
-        
-        // cleanups:
-        return () => {
-            observer.disconnect();
-        };
-    }, [path]);
-    
-    
-    
-    // jsx:
-    return null;
-};
