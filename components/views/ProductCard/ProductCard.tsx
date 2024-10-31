@@ -9,7 +9,6 @@ import {
     
     // hooks:
     useRef,
-    useEffect,
 }                           from 'react'
 
 // styles:
@@ -47,16 +46,15 @@ import {
     ButtonWish,
 }                           from '@/components/buttons/ButtonWish'
 
+// private components:
+import {
+    PrefetchProductDetail,
+}                           from './PrefetchProductDetail'
+
 // models:
 import {
     type ProductPreview,
 }                           from '@/models'
-
-// stores:
-import {
-    // hooks:
-    usePrefetchProductDetail,
-}                           from '@/store/features/api/apiSlice'
 
 // utilities:
 import {
@@ -210,7 +208,7 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
         
         <PrefetchProductDetail
             // refs:
-            articleRef={articleRef}
+            subjectRef={articleRef}
             
             
             
@@ -223,71 +221,3 @@ export {
     ProductCard,            // named export for readibility
     ProductCard as default, // default export to support React.lazy
 }
-
-
-
-interface PrefetchProductDetailProps {
-    // refs:
-    articleRef : React.RefObject<HTMLDivElement|null>
-    
-    
-    
-    // data:
-    path       : string
-}
-const PrefetchProductDetail = (props: PrefetchProductDetailProps): JSX.Element|null => {
-    // props:
-    const {
-        // refs:
-        articleRef,
-        
-        
-        
-        // data:
-        path,
-    } = props;
-    
-    
-    
-    // apis:
-    const prefetchProductDetail = usePrefetchProductDetail();
-    
-    
-    
-    // dom effects:
-    useEffect(() => {
-        // conditions:
-        const articleElm = articleRef.current;
-        if (!articleElm) return;
-        
-        
-        
-        // setups:
-        const observer = new IntersectionObserver((entries) => {
-            // conditions:
-            if (!entries[0]?.isIntersecting) return;
-            
-            
-            
-            // actions:
-            observer.disconnect(); // the observer is no longer needed anymore
-            prefetchProductDetail(path);
-        }, {
-            root      : null, // defaults to the browser viewport
-            threshold : 0.5,
-        });
-        observer.observe(articleElm);
-        
-        
-        
-        // cleanups:
-        return () => {
-            observer.disconnect();
-        };
-    }, [path]);
-    
-    
-    
-    // jsx:
-    return null;
-};
