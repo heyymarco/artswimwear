@@ -9,6 +9,7 @@ import {
     
     // hooks:
     useRef,
+    useMemo,
 }                           from 'react'
 
 // next-js:
@@ -140,11 +141,14 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     
     // navigations:
     const router                    = useRouter();
-    const hierarchyPaths : string[] = [
+    const hierarchyPathsUnstable : string[] = [
         ...parentCategories.map(({category: {path}}) => path),
         path,
     ];
-    const categoryBasePath          = hierarchyPaths.join('/');
+    const categoryBasePath          = hierarchyPathsUnstable.join('/');
+    const hierarchyPaths            = useMemo<string[]>(() =>
+        hierarchyPathsUnstable
+    , [categoryBasePath]);
     const categoryInterceptedPath   =   `/categories/${categoryBasePath}`;
     const categoryUninterceptedPath = `/_/categories/${categoryBasePath}`;
     
@@ -278,7 +282,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
                 
                 
                 // data:
-                path={hierarchyPaths.join('/')}
+                categoryPath={hierarchyPaths}
             />
             
             <PrefetchProductPage

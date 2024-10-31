@@ -34,13 +34,13 @@ export interface PrefetchCategoryDetailProps
         ImplementedPrefetchProps
 {
     // data:
-    path : string
+    categoryPath : string[]
 }
 const PrefetchCategoryDetail = (props: PrefetchCategoryDetailProps): JSX.Element|null => {
     // props:
     const {
         // data:
-        path,
+        categoryPath,
         
         
         
@@ -57,7 +57,7 @@ const PrefetchCategoryDetail = (props: PrefetchCategoryDetailProps): JSX.Element
     
     // handlers:
     const handlePrefetch = useEvent<EventHandler<void>>(() => {
-        prefetchCategoryDetail(path.split('/'));
+        prefetchCategoryDetail(categoryPath);
     });
     
     
