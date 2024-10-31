@@ -4,6 +4,7 @@
 import {
     // types:
     type PaginationArgs,
+    type CategoryPreview,
 }                           from '@/models'
 
 // stores:
@@ -37,11 +38,11 @@ export const useUseGetSubCategoryPage = (parentCategory: string|null) => {
     };
 };
 
-export const useGetHasCategories = (): boolean|undefined => {
+export const useGetHasCategories = (): [boolean|undefined, CategoryPreview|null|undefined] => {
     const { data: categoryPreviewPagination } = useGetRootCategoryPage({
         page    : 0,
         perPage : rootPerPage,
     });
-    if (!categoryPreviewPagination) return undefined;
-    return !!categoryPreviewPagination.total;
+    if (!categoryPreviewPagination) return [undefined, undefined];
+    return [!!categoryPreviewPagination.total, categoryPreviewPagination.entities[0] ?? null];
 };

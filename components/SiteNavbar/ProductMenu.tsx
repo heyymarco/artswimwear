@@ -42,6 +42,9 @@ import {
 import {
     useGetHasCategories,
 }                           from '@/components/explorers/CategoryExplorer/hooks'
+import {
+    PrefetchCategoryPage,
+}                           from '@/components/prefetches/PrefetchCategoryPage'
 
 // states:
 import {
@@ -69,7 +72,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
         toggleList,
     } = useNavbarState();
     
-    const hasCategories = useGetHasCategories();
+    const [hasCategories, firstSubcategory] = useGetHasCategories();
     
     
     
@@ -154,27 +157,44 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     
     // jsx:
     return (
-        <NavItem
-            // other props:
-            {...props}
+        <>
+            <NavItem
+                // other props:
+                {...props}
+                
+                
+                
+                // refs:
+                elmRef={menuRef}
+                
+                
+                
+                // states:
+                active={shownMenu ? true : undefined} // force as active if the menu is shown
+                
+                
+                
+                // handlers:
+                onClick={handleClick}
+            >
+                {children}
+            </NavItem>
             
-            
-            
-            // refs:
-            elmRef={menuRef}
-            
-            
-            
-            // states:
-            active={shownMenu ? true : undefined} // force as active if the menu is shown
-            
-            
-            
-            // handlers:
-            onClick={handleClick}
-        >
-            {children}
-        </NavItem>
+            { !!firstSubcategory && <PrefetchCategoryPage
+                // refs:
+                subjectRef={null} // always prefetch
+                
+                
+                
+                // data:
+                model={firstSubcategory}
+                
+                
+                
+                // states:
+                initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
+            />}
+        </>
     );
 };
 export {
