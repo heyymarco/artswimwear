@@ -806,6 +806,7 @@ export const {
 
 export const usePrefetchProductDetail  = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductDetail' , options);
 export const usePrefetchCategoryDetail = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCategoryDetail', options);
+export const usePrefetchProductPage    = (options?: PrefetchOptions) => apiSlice.usePrefetch('getProductPage'   , options);
 export const usePrefetchCategoryPage   = (options?: PrefetchOptions) => apiSlice.usePrefetch('getCategoryPage'  , options);
 
 

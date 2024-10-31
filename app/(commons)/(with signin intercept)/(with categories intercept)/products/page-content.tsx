@@ -56,6 +56,11 @@ import {
 import {
     // types:
     type ProductPreview,
+    
+    
+    
+    // defaults:
+    defaultProductPerPage,
 }                           from '@/models'
 
 // stores:
@@ -73,6 +78,11 @@ export function ProductPageContent(): JSX.Element|null {
         <PaginationStateProvider<ProductPreview>
             // data:
             useGetModelPage={useGetProductPage}
+            
+            
+            
+            // states:
+            initialPerPage={defaultProductPerPage}
         >
             <ProductPageContentInternal />
         </PaginationStateProvider>
