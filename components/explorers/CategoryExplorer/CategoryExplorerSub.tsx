@@ -121,10 +121,10 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
             
             
             // states:
-            initialPage={
+            initialPageNum={
                 (parentCategories.length >= minDepth)
                 
-                // restores the initialPage if the_parents_deep SATISFIES minDepth:
+                // restores the initialPageNum if the_parents_deep SATISFIES minDepth:
                 ? Math.floor(restoreIndex / subPerPage)
                 
                 // otherwise not defined:
@@ -148,7 +148,7 @@ interface CategoryExplorerSubConditionalProps
         // states:
         Pick<PaginationStateProps<CategoryPreview>,
             // states:
-            |'initialPage'
+            |'initialPageNum'
         >
 {
     // data:
@@ -163,7 +163,7 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
         
         
         // states:
-        initialPage,
+        initialPageNum,
         
         
         
@@ -182,7 +182,7 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
     return (
         <PaginationStateProvider<CategoryPreview>
             // states:
-            initialPage={initialPage}
+            initialPageNum={initialPageNum}
             initialPerPage={subPerPage}
             
             

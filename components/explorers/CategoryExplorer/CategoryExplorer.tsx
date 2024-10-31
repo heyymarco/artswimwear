@@ -309,7 +309,7 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
         >
             <PaginationStateProvider<CategoryPreview>
                 // states:
-                initialPage={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
+                initialPageNum={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
                 initialPerPage={rootPerPage}
                 
                 

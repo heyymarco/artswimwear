@@ -95,7 +95,7 @@ export const usePaginationState = <TModel extends Model>(): PaginationState<TMod
 // react components:
 export interface PaginationStateProps<TModel extends Model> {
     // states:
-    initialPage     ?: number
+    initialPageNum  ?: number
     initialPerPage  ?: number
     
     
@@ -107,7 +107,7 @@ const PaginationStateProvider = <TModel extends Model>(props: React.PropsWithChi
     // props:
     const {
         // states:
-        initialPage    = 0,
+        initialPageNum = 0,
         initialPerPage = 20,
         
         
@@ -124,7 +124,7 @@ const PaginationStateProvider = <TModel extends Model>(props: React.PropsWithChi
     
     
     // states:
-    const [page   , setPage   ] = useState<number>(initialPage);
+    const [page   , setPage   ] = useState<number>(initialPageNum);
     const [perPage, setPerPage] = useState<number>(initialPerPage);
     
     const {
