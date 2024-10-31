@@ -22,14 +22,106 @@ import {
 // react components:
 export interface PrefetchProps {
     // refs:
-    subjectRef : React.RefObject<HTMLDivElement|null>
+    subjectRef      ?: React.RefObject<HTMLDivElement|null>|null
+    
+    
+    
+    // behaviors:
+    prefetchOnView  ?: boolean
+    prefetchOnHover ?: boolean
     
     
     
     // handlers:
-    onPrefetch : EventHandler<void>
+    onPrefetch       : EventHandler<void>
 }
 const Prefetch = (props: PrefetchProps): JSX.Element|null => {
+    // props:
+    const {
+        // refs:
+        subjectRef      = null,
+        
+        
+        
+        // behaviors:
+        prefetchOnView  = true,
+        prefetchOnHover = false,
+        
+        
+        
+        // data:
+        onPrefetch,
+    } = props;
+    
+    
+    
+    // jsx:
+    if (!subjectRef) return <PrefetchConditionalOnAlways {...props} />;
+    
+    return (
+        <>
+            {prefetchOnView  && <PrefetchConditionalOnView  {...props} subjectRef={subjectRef} />}
+            {prefetchOnHover && <PrefetchConditionalOnHover {...props} subjectRef={subjectRef} />}
+        </>
+    );
+};
+export {
+    Prefetch,
+    Prefetch as default,
+}
+
+
+
+interface PrefetchConditionalOnAlwaysProps
+    extends
+        // bases:
+        Omit<PrefetchProps,
+            // refs:
+            |'subjectRef'
+            
+            // behaviors:
+            |'prefetchOnView'
+            |'prefetchOnHover'
+        >
+{
+}
+const PrefetchConditionalOnAlways = (props: PrefetchConditionalOnAlwaysProps): JSX.Element|null => {
+    // props:
+    const {
+        // data:
+        onPrefetch,
+    } = props;
+    
+    
+    
+    // effects:
+    useEffect(() => {
+        onPrefetch();
+    }, []);
+    
+    
+    
+    // props:
+    return null;
+};
+
+
+
+interface PrefetchConditionalOnViewProps
+    extends
+        // bases:
+        Omit<PrefetchProps,
+            // refs:
+            |'subjectRef'
+            
+            // behaviors:
+            |'prefetchOnView'
+            |'prefetchOnHover'
+        >
+{
+    subjectRef : Exclude<PrefetchProps['subjectRef'], null|undefined>
+}
+const PrefetchConditionalOnView = (props: PrefetchConditionalOnViewProps): JSX.Element|null => {
     // props:
     const {
         // refs:
@@ -43,11 +135,11 @@ const Prefetch = (props: PrefetchProps): JSX.Element|null => {
     
     
     
-    // dom effects:
+    // effects:
     useEffect(() => {
         // conditions:
-        const articleElm = subjectRef.current;
-        if (!articleElm) return;
+        const subjectElm = subjectRef.current;
+        if (!subjectElm) return;
         
         
         
@@ -65,7 +157,7 @@ const Prefetch = (props: PrefetchProps): JSX.Element|null => {
             root      : null, // defaults to the browser viewport
             threshold : 0.5,
         });
-        observer.observe(articleElm);
+        observer.observe(subjectElm);
         
         
         
@@ -80,10 +172,67 @@ const Prefetch = (props: PrefetchProps): JSX.Element|null => {
     // jsx:
     return null;
 };
-export {
-    Prefetch,
-    Prefetch as default,
+
+
+
+interface PrefetchConditionalOnHoverProps
+    extends
+        // bases:
+        Omit<PrefetchProps,
+            // refs:
+            |'subjectRef'
+            
+            // behaviors:
+            |'prefetchOnView'
+            |'prefetchOnHover'
+        >
+{
+    subjectRef : Exclude<PrefetchProps['subjectRef'], null|undefined>
 }
+const PrefetchConditionalOnHover = (props: PrefetchConditionalOnHoverProps): JSX.Element|null => {
+    // props:
+    const {
+        // refs:
+        subjectRef,
+        
+        
+        
+        // data:
+        onPrefetch,
+    } = props;
+    
+    
+    
+    // effects:
+    useEffect(() => {
+        // conditions:
+        const subjectElm = subjectRef.current;
+        if (!subjectElm) return;
+        
+        
+        // handlers:
+        const handleHover = () => {
+            onPrefetch();
+        };
+        
+        
+        
+        // setups:
+        subjectElm.addEventListener('mouseover', handleHover, { once: true });
+        
+        
+        
+        // cleanups:
+        return () => {
+            subjectElm.removeEventListener('mouseover', handleHover);
+        };
+    }, [onPrefetch]);
+    
+    
+    
+    // jsx:
+    return null;
+};
 
 
 
