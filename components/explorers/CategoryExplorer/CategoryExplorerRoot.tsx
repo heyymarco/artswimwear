@@ -153,7 +153,6 @@ const CategoryExplorerRoot = (): JSX.Element|null => {
                 modelPreviewComponent={
                     <CategoryCard
                         // data:
-                        parentCategory={null}
                         model={undefined as any}
                         
                         

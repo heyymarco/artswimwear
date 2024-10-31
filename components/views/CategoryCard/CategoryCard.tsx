@@ -82,11 +82,6 @@ const minImageWidth = 44;  // 44px === (50px + (2* paddingBlock)) * aspectRatio 
 
 // react components:
 export interface CategoryCardProps extends ModelPreviewProps<CategoryPreview> {
-    // data:
-    parentCategory  : CategoryPreview|null
-    
-    
-    
     // values:
     selectedModel  ?: CategoryPreview|null
     onModelSelect  ?: EditorChangeEventHandler<CategoryPreview>
@@ -100,7 +95,6 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     // props:
     const {
         // data:
-        parentCategory,
         model,
         
         
@@ -261,7 +255,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             
             
             // data:
-            parentCategory={parentCategory}
+            model={model}
         />}
         
         {!hasSubcategories && <PrefetchCategoryDetail

@@ -44,13 +44,13 @@ export interface PrefetchCategoryPageProps
         ImplementedPrefetchProps
 {
     // data:
-    parentCategory  : CategoryPreview|null
+    model : CategoryPreview|null
 }
 const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|null => {
     // props:
     const {
         // data:
-        parentCategory,
+        model,
         
         
         
@@ -70,7 +70,7 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
         prefetchCategoryPage({
             page    : 0,
             perPage : subPerPage,
-            parent  : parentCategory?.id ?? null,
+            parent  : model?.id ?? null,
         });
     });
     

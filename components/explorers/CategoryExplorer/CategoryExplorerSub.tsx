@@ -193,11 +193,6 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
             <CategoryExplorerSubInternal
                 // other props:
                 {...restCategoryExplorerSubProps}
-                
-                
-                
-                // data:
-                parentCategory={parentCategory}
             />
         </PaginationStateProvider>
     );
@@ -208,22 +203,12 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
 interface CategoryExplorerSubInternalProps
     extends
         // bases:
-        CategoryExplorerSubProps,
-        
-        // data:
-        Pick<CategoryExplorerSubConditionalProps,
-            |'parentCategory'
-        >
+        CategoryExplorerSubProps
 {
 }
 const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): JSX.Element|null => {
     // props:
     const {
-        // data:
-        parentCategory,
-        
-        
-        
         // configs:
         minDepth = 0,
     } = props;
@@ -336,7 +321,6 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
                 modelPreviewComponent={
                     <CategoryCard
                         // data:
-                        parentCategory={parentCategory}
                         model={undefined as any}
                         
                         
