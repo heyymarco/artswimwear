@@ -17,30 +17,40 @@ import {
 import {
     type ImplementedPrefetchProps,
     Prefetch,
-}                           from '@/components/Prefetch'
+}                           from '@/components/prefetches/Prefetch'
+
+// models:
+import {
+    type CategoryPreview,
+}                           from '@/models'
 
 // stores:
 import {
     // hooks:
-    usePrefetchProductDetail,
+    usePrefetchCategoryPage,
 }                           from '@/store/features/api/apiSlice'
+
+// configs:
+import {
+    subPerPage,
+}                           from '@/components/explorers/CategoryExplorer/configs'
 
 
 
 // react components:
-export interface PrefetchProductDetailProps
+export interface PrefetchCategoryPageProps
     extends
         // bases:
         ImplementedPrefetchProps
 {
     // data:
-    path : string
+    model : CategoryPreview|null
 }
-const PrefetchProductDetail = (props: PrefetchProductDetailProps): JSX.Element|null => {
+const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|null => {
     // props:
     const {
         // data:
-        path,
+        model,
         
         
         
@@ -51,13 +61,17 @@ const PrefetchProductDetail = (props: PrefetchProductDetailProps): JSX.Element|n
     
     
     // apis:
-    const prefetchProductDetail = usePrefetchProductDetail();
+    const prefetchCategoryPage = usePrefetchCategoryPage();
     
     
     
     // handlers:
     const handlePrefetch = useEvent<EventHandler<void>>(() => {
-        prefetchProductDetail(path);
+        prefetchCategoryPage({
+            page    : 0,
+            perPage : subPerPage,
+            parent  : model?.id ?? null,
+        });
     });
     
     
@@ -76,6 +90,6 @@ const PrefetchProductDetail = (props: PrefetchProductDetailProps): JSX.Element|n
     )
 };
 export {
-    PrefetchProductDetail,
-    PrefetchProductDetail as default,
+    PrefetchCategoryPage,
+    PrefetchCategoryPage as default,
 }

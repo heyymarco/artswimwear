@@ -58,14 +58,12 @@ import {
     // states:
     useCategoryExplorerState,
 }                           from '@/components/explorers/CategoryExplorer/states/categoryExplorerState'
-
-// private components:
 import {
     PrefetchCategoryPage,
-}                           from './PrefetchCategoryPage'
+}                           from '@/components/prefetches/PrefetchCategoryPage'
 import {
     PrefetchCategoryDetail,
-}                           from './PrefetchCategoryDetail'
+}                           from '@/components/prefetches/PrefetchCategoryDetail'
 
 // models:
 import {

@@ -45,11 +45,9 @@ import {
     type ButtonWishProps,
     ButtonWish,
 }                           from '@/components/buttons/ButtonWish'
-
-// private components:
 import {
     PrefetchProductDetail,
-}                           from './PrefetchProductDetail'
+}                           from '@/components/prefetches/PrefetchProductDetail'
 
 // models:
 import {
