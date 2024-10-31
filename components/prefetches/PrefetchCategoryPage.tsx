@@ -18,9 +18,13 @@ import {
     type ImplementedPrefetchProps,
     Prefetch,
 }                           from '@/components/prefetches/Prefetch'
+import {
+    type PaginationStateProps,
+}                           from '@/components/explorers/Pagination'
 
 // models:
 import {
+    type Model,
     type CategoryPreview,
 }                           from '@/models'
 
@@ -41,7 +45,13 @@ import {
 export interface PrefetchCategoryPageProps
     extends
         // bases:
-        ImplementedPrefetchProps
+        ImplementedPrefetchProps,
+        
+        // states:
+        Pick<PaginationStateProps<Model>,
+            // states:
+            |'initialPageNum'
+        >
 {
     // data:
     model : CategoryPreview|null
@@ -51,6 +61,11 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
     const {
         // data:
         model,
+        
+        
+        
+        // states:
+        initialPageNum = 0,
         
         
         
@@ -68,7 +83,7 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
     // handlers:
     const handlePrefetch = useEvent<EventHandler<void>>(() => {
         prefetchCategoryPage({
-            page    : 0,
+            page    : initialPageNum,
             perPage : subPerPage,
             parent  : model?.id ?? null,
         });

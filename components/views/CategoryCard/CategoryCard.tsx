@@ -254,6 +254,11 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             
             // data:
             model={model}
+            
+            
+            
+            // states:
+            initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
         />}
         
         {!hasSubcategories && <PrefetchCategoryDetail

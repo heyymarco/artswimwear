@@ -41,6 +41,9 @@ import {
     usePaginationState,
     PaginationStateProvider,
 }                           from '@/components/explorers/Pagination'
+import {
+    PrefetchCategoryPage,
+}                           from '@/components/prefetches/PrefetchCategoryPage'
 
 // private components:
 import {
@@ -88,6 +91,7 @@ import {
 // configs:
 import {
     rootPerPage,
+    subPerPage,
 }                           from './configs'
 
 
@@ -294,35 +298,59 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
     
     // jsx:
     return (
-        <CategoryExplorerStateProvider
-            // states:
-            parentCategories    = {parentCategories   }
-            setParentCategories = {setParentCategories}
-            
-            restoreIndex        = {restoreIndex   }
-            setRestoreIndex     = {setRestoreIndex}
-            
-            
-            
-            // handlers:
-            onNavigate={onNavigate}
-        >
-            <PaginationStateProvider<CategoryPreview>
-                // states:
-                initialPageNum={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
-                initialPerPage={rootPerPage}
-                
-                
-                
-                // data:
-                useGetModelPage={useGetRootCategoryPage}
-            >
-                <CategoryExplorerInternal2
-                    // other props:
-                    {...restCategoryExplorerInternal2Props}
+        <>
+            {parentCategories.slice(1).map(({ category: subcategory, index: restoreIndex }, index) =>
+                <PrefetchCategoryPage
+                    // identifiers:
+                    key={subcategory.id ?? index}
+                    
+                    
+                    
+                    // refs:
+                    subjectRef={null} // always prefetch
+                    
+                    
+                    
+                    // data:
+                    model={subcategory}
+                    
+                    
+                    
+                    // states:
+                    initialPageNum={Math.floor(restoreIndex / subPerPage)}
                 />
-            </PaginationStateProvider>
-        </CategoryExplorerStateProvider>
+            )}
+            
+            <CategoryExplorerStateProvider
+                // states:
+                parentCategories    = {parentCategories   }
+                setParentCategories = {setParentCategories}
+                
+                restoreIndex        = {restoreIndex   }
+                setRestoreIndex     = {setRestoreIndex}
+                
+                
+                
+                // handlers:
+                onNavigate={onNavigate}
+            >
+                <PaginationStateProvider<CategoryPreview>
+                    // states:
+                    initialPageNum={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
+                    initialPerPage={rootPerPage}
+                    
+                    
+                    
+                    // data:
+                    useGetModelPage={useGetRootCategoryPage}
+                >
+                    <CategoryExplorerInternal2
+                        // other props:
+                        {...restCategoryExplorerInternal2Props}
+                    />
+                </PaginationStateProvider>
+            </CategoryExplorerStateProvider>
+        </>
     );
 };
 
