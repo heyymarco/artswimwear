@@ -12,11 +12,6 @@ import {
     useRef,
 }                           from 'react'
 
-// next-js:
-import {
-    useRouter,
-}                           from 'next/navigation'
-
 // reusable-ui core:
 import {
     // react helper hooks:
@@ -44,16 +39,14 @@ import {
 import {
     CategoryExplorerDropdown,
 }                           from '@/components/explorers/CategoryExplorer'
+import {
+    useGetHasCategories,
+}                           from '@/components/explorers/CategoryExplorer/hooks'
 
 // states:
 import {
     usePageInterceptState,
 }                           from '@/states/pageInterceptState'
-
-
-
-// configs:
-const categoriesPath = '/categories';
 
 
 
@@ -76,6 +69,8 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
         toggleList,
     } = useNavbarState();
     
+    const hasCategories = useGetHasCategories();
+    
     
     
     // dialogs:
@@ -90,8 +85,8 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     const {
         startIntercept,
     } = usePageInterceptState();
-    const router = useRouter();
     const handleClick = useEvent<React.MouseEventHandler<HTMLElement>>((event) => {
+        if (!hasCategories) return; // not having categories => ignore => just displaying products page
         event.preventDefault();  // prevent the `href='/signin'` to HARD|SOFT navigate
         event.stopPropagation(); // prevents the <Navbar> from auto collapsing, we'll collapse the <Navbar> manually
         
