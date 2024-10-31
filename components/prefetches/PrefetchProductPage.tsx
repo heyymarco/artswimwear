@@ -75,13 +75,13 @@ const PrefetchProductPage = (props: PrefetchProductPageProps): JSX.Element|null 
     
     
     // apis:
-    const prefetchCategoryPage = usePrefetchProductPage();
+    const prefetchProductPage = usePrefetchProductPage();
     
     
     
     // handlers:
     const handlePrefetch = useEvent<EventHandler<void>>(() => {
-        prefetchCategoryPage({
+        prefetchProductPage({
             page         : initialPageNum,
             perPage      : initialPerPage,
             categoryPath : categoryPath ?? undefined,
