@@ -52,6 +52,11 @@ import {
     // types:
     type CategoryPreview,
     type CategoryParentInfo,
+    
+    
+    
+    // defaults:
+    defaultSubCategoryPerPage,
 }                           from '@/models'
 
 // internals:
@@ -64,11 +69,6 @@ import {
 import {
     useUseGetSubCategoryPage,
 }                           from './hooks'
-
-// configs:
-import {
-    subPerPage,
-}                           from './configs'
 
 
 
@@ -125,7 +125,7 @@ const CategoryExplorerSub = (props: CategoryExplorerSubProps): JSX.Element|null 
                 (parentCategories.length >= minDepth)
                 
                 // restores the initialPageNum if the_parents_deep SATISFIES minDepth:
-                ? Math.floor(restoreIndex / subPerPage)
+                ? Math.floor(restoreIndex / defaultSubCategoryPerPage)
                 
                 // otherwise not defined:
                 : undefined
@@ -183,7 +183,7 @@ const CategoryExplorerSubConditional = (props: CategoryExplorerSubConditionalPro
         <PaginationStateProvider<CategoryPreview>
             // states:
             initialPageNum={initialPageNum}
-            initialPerPage={subPerPage}
+            initialPerPage={defaultSubCategoryPerPage}
             
             
             

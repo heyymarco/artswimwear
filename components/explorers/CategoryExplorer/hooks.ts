@@ -5,6 +5,11 @@ import {
     // types:
     type PaginationArgs,
     type CategoryPreview,
+    
+    
+    
+    // defaults:
+    defaultRootCategoryPerPage,
 }                           from '@/models'
 
 // stores:
@@ -13,11 +18,6 @@ import {
     useGetCategoryPage,
     useGetCategoryPage as _useGetCategoryPage,
 }                           from '@/store/features/api/apiSlice'
-
-// configs:
-import {
-    rootPerPage,
-}                           from './configs'
 
 
 
@@ -41,7 +41,7 @@ export const useUseGetSubCategoryPage = (parentCategory: string|null) => {
 export const useGetHasCategories = (): [boolean|undefined, CategoryPreview|null|undefined] => {
     const { data: categoryPreviewPagination } = useGetRootCategoryPage({
         page    : 0,
-        perPage : rootPerPage,
+        perPage : defaultRootCategoryPerPage,
     });
     if (!categoryPreviewPagination) return [undefined, undefined];
     return [!!categoryPreviewPagination.total, categoryPreviewPagination.entities[0] ?? null];

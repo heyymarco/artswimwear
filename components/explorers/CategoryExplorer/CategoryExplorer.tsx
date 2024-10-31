@@ -62,6 +62,12 @@ import {
     type CategoryPreview,
     type CategoryParentInfo,
     type CategoryPreviewPagination,
+    
+    
+    
+    // defaults:
+    defaultRootCategoryPerPage,
+    defaultSubCategoryPerPage,
 }                           from '@/models'
 
 // internals:
@@ -87,12 +93,6 @@ import {
     // hooks:
     useGetCategoryDetail,
 }                           from '@/store/features/api/apiSlice'
-
-// configs:
-import {
-    rootPerPage,
-    subPerPage,
-}                           from './configs'
 
 
 
@@ -317,7 +317,7 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
                     
                     
                     // states:
-                    initialPageNum={Math.floor(restoreIndex / subPerPage)}
+                    initialPageNum={Math.floor(restoreIndex / defaultSubCategoryPerPage)}
                 />
             )}
             
@@ -336,8 +336,8 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
             >
                 <PaginationStateProvider<CategoryPreview>
                     // states:
-                    initialPageNum={parentCategories.length ? Math.floor(parentCategories[0].index / rootPerPage) : undefined}
-                    initialPerPage={rootPerPage}
+                    initialPageNum={parentCategories.length ? Math.floor(parentCategories[0].index / defaultRootCategoryPerPage) : undefined}
+                    initialPerPage={defaultRootCategoryPerPage}
                     
                     
                     

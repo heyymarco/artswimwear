@@ -26,6 +26,11 @@ import {
 import {
     type Model,
     type CategoryPreview,
+    
+    
+    
+    // defaults:
+    defaultSubCategoryPerPage,
 }                           from '@/models'
 
 // stores:
@@ -33,11 +38,6 @@ import {
     // hooks:
     usePrefetchCategoryPage,
 }                           from '@/store/features/api/apiSlice'
-
-// configs:
-import {
-    subPerPage,
-}                           from '@/components/explorers/CategoryExplorer/configs'
 
 
 
@@ -84,7 +84,7 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
     const handlePrefetch = useEvent<EventHandler<void>>(() => {
         prefetchCategoryPage({
             page    : initialPageNum,
-            perPage : subPerPage,
+            perPage : defaultSubCategoryPerPage,
             parent  : model?.id ?? null,
         });
     });
