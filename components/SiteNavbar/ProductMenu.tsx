@@ -86,7 +86,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     const {
         showDialog,
     } = useDialogMessage();
-    const [shownMenu, setShownMenu] = useState<PromiseDialog<any>|null>(null);
+    const [shownDropdown, setShownDropdown] = useState<PromiseDialog<any>|null>(null);
     
     
     
@@ -101,14 +101,18 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
         
         
         
-        if (shownMenu) {
-            shownMenu.closeDialog(undefined);
+        if (shownDropdown) {
+            shownDropdown.closeDialog(undefined);
         }
         else {
             //#region a fix for categories page interceptor
             // intercepts all_pages/** => show <CategoryExplorerDropdown>:
             startIntercept(async (backPathname): Promise<boolean> => {
-                const newShownMenu = showDialog<true>(
+                toggleList(false); // collapse the <Navbar> manually
+                
+                
+                
+                const shownDropdownPromise = showDialog<true>(
                     <CategoryExplorerDropdown
                         // variants:
                         // theme='primary'
@@ -125,16 +129,13 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                         restoreFocusOn={menuRef}
                     />
                 );
-                setShownMenu(newShownMenu);
-                newShownMenu.collapseStartEvent().then(() => {
-                    setShownMenu(null);
-                });
-                const data = await newShownMenu;
+                setShownDropdown(shownDropdownPromise);
                 
                 
                 
-                // on fully closed:
-                toggleList(false); // collapse the <Navbar> manually
+                // on collapsing (start to close):
+                const { data } = await shownDropdownPromise.collapseStartEvent();
+                setShownDropdown(null);
                 // when the dropdown closed without the user clicking the menu item => restore the url, otherwise keeps the changed url
                 return (data !== true);
             });
@@ -184,7 +185,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 
                 
                 // states:
-                active={shownMenu ? true : undefined} // force as active if the menu is shown
+                active={shownDropdown ? true : undefined} // force as active if the menu is shown
                 
                 
                 

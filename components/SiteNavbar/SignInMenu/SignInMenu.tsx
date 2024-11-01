@@ -184,7 +184,7 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                     
                     
                     
-                    await showDialog<false|Session>(
+                    const shownDialogPromise = showDialog<false|Session>(
                         <SignInDialog
                             // components:
                             signInComponent={
@@ -198,7 +198,8 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
                     
                     
                     
-                    // on fully closed:
+                    // on collapsing (start to close):
+                    await shownDialogPromise.collapseStartEvent();
                     // restore the url:
                     return true;
                 });

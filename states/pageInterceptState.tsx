@@ -120,7 +120,7 @@ const PageInterceptStateProvider = (props: React.PropsWithChildren<PageIntercept
         
         await Promise.race([
             routerUpdatedPromise,
-            setTimeoutAsync(1000),
+            setTimeoutAsync(100),
         ]);
     });
     
