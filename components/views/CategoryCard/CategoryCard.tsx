@@ -235,7 +235,11 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
                 
                 
                 // behaviors:
-                prefetch={true} // force to DEEP prefetch of category PAGE
+                /*
+                    next-js BUG:
+                    Assigning `prefetch={true}` causes the homepage shown when navigating intercepted `/categories`
+                */
+                // prefetch={true} // force to DEEP prefetch of category PAGE
             >
                 <h3 className='name'>
                     {name}
