@@ -71,6 +71,9 @@ import {
 import {
     PrefetchCategoryDetail,
 }                           from '@/components/prefetches/PrefetchCategoryDetail'
+import {
+    PrefetchRouter,
+}                           from '@/components/prefetches/PrefetchRouter'
 
 // models:
 import {
@@ -323,6 +326,28 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
                 // states:
                 initialPageNum={0} // the products in productPage is always having PAGINATION with initial page num = 0
                 initialPerPage={defaultProductPerPage}
+            />
+            
+            {/* PREFETCH for displaying intercepted category PAGE: */}
+            <PrefetchRouter
+                // refs:
+                subjectRef={articleRef}
+                
+                
+                
+                // data:
+                href={categoryInterceptedPath}
+            />
+            
+            {/* PREFETCH for displaying unintercepted category PAGE: */}
+            <PrefetchRouter
+                // refs:
+                subjectRef={articleRef}
+                
+                
+                
+                // data:
+                href={categoryUninterceptedPath}
             />
         </>}
     </>);
