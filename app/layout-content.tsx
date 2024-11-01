@@ -1,5 +1,17 @@
 'use client'
 
+// styles:
+import {
+    StylesCSR,
+}                           from './StylesCSR'                  // client_side_rendering CSS (required)
+import {
+    StylesSSR,
+}                           from './StylesSSR'                  // server_side_rendering CSS (optional)
+import {
+    // style sheets:
+    dynamicStyleSheets,
+}                           from '@cssfn/cssfn-react'           // writes css in react hook
+
 // themes:
 import '@/theme.config'
 import './layout-styles.scss'
@@ -22,18 +34,6 @@ import {
 import {
     NextAuthSessionProvider,
 }                           from './NextAuthSessionProvider'
-
-// cssfn:
-import {
-    // style sheets:
-    dynamicStyleSheets,
-}                           from '@cssfn/cssfn-react'           // writes css in react hook
-import {
-    StylesCSR,
-}                           from './StylesCSR'                  // client_side_rendering CSS (required)
-import {
-    StylesSSR,
-}                           from './StylesSSR'                  // server_side_rendering CSS (optional)
 
 // reusable-ui components:
 import {

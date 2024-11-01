@@ -23,7 +23,7 @@ const nextConfig = {
   
   experimental: {
     // appDir: true,
-    esmExternals: 'loose',
+    // esmExternals: 'loose',
   },
   
   // reactStrictMode: true,
