@@ -16,11 +16,6 @@ import {
     useProductCardStyleSheet,
 }                           from './styles/loader'
 
-// reusable-ui core:
-import {
-    Link,
-}                           from '@reusable-ui/next-compat-link'
-
 // reusable-ui components:
 import {
     // simple-components:
@@ -31,6 +26,9 @@ import {
     // menu-components:
     type DropdownListButtonProps,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // heymarco components:
 import {
@@ -129,6 +127,11 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
             <Link
                 // data:
                 href={`/products/${path}`}
+                
+                
+                
+                // behaviors:
+                prefetch={true} // force to DEEP prefetch of product PAGE
             />
             <Image
                 // appearances:
