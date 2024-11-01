@@ -187,7 +187,10 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
-                    <NavItem active={!parentsAndSelf.length}>
+                    <NavItem active={!parentsAndSelf.length} onClick={(event) => {
+                        router.push('/_/categories');
+                        event.preventDefault(); // handled
+                    }}>
                         <Link href='/categories' prefetch={true}>
                             All products
                         </Link>
