@@ -22,7 +22,7 @@ import {
 // react components:
 export interface PrefetchProps {
     // refs:
-    subjectRef      ?: React.RefObject<HTMLDivElement|null>|null
+    subjectRef      ?: React.RefObject<Element|null>|null
     
     
     
@@ -46,11 +46,6 @@ const Prefetch = (props: PrefetchProps): JSX.Element|null => {
         // behaviors:
         prefetchOnView  = true,
         prefetchOnHover = false,
-        
-        
-        
-        // data:
-        onPrefetch,
     } = props;
     
     
