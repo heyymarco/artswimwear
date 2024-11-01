@@ -194,6 +194,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 {children}
             </NavItem>
             
+            {/* PREFETCH for displaying the FIRST sub category: */}
             { !!firstSubcategory && <PrefetchCategoryPage
                 // refs:
                 subjectRef={null} // always prefetch

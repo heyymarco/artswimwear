@@ -273,23 +273,27 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             </Link>
         </ListItem>
         
-        { hasSubcategories && <PrefetchCategoryPage
-            // refs:
-            subjectRef={articleRef}
-            
-            
-            
-            // data:
-            model={model}
-            
-            
-            
-            // states:
-            initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
-            initialPerPage={defaultSubCategoryPerPage}
-        />}
+        { hasSubcategories && <>
+            {/* PREFETCH for displaying the NEXT sub category: */}
+            <PrefetchCategoryPage
+                // refs:
+                subjectRef={articleRef}
+                
+                
+                
+                // data:
+                model={model}
+                
+                
+                
+                // states:
+                initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
+                initialPerPage={defaultSubCategoryPerPage}
+            />
+        </>}
         
         {!hasSubcategories && <>
+            {/* PREFETCH for displaying category PAGE: */}
             <PrefetchCategoryDetail
                 // refs:
                 subjectRef={articleRef}
@@ -300,6 +304,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
                 categoryPath={hierarchyPaths}
             />
             
+            {/* PREFETCH for displaying related PRODUCTS in category page: */}
             <PrefetchProductPage
                 // refs:
                 subjectRef={articleRef}

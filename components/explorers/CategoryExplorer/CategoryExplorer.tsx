@@ -401,6 +401,7 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
     return (
         <>
             {parentCategories.slice(showRootSection ? 1 : 0).map(({ category: subcategory, index: restoreIndex }, index) =>
+                // PREFETCH for preserving the sub category CACHES:
                 <PrefetchCategoryPage
                     // identifiers:
                     key={subcategory.id ?? index}

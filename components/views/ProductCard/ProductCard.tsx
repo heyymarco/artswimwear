@@ -207,6 +207,7 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
             </header>
         </article>
         
+        {/* PREFETCH for displaying product PAGE: */}
         <PrefetchProductDetail
             // refs:
             subjectRef={articleRef}
