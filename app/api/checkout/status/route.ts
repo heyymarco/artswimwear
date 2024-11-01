@@ -64,7 +64,7 @@ const checkPayment = async (paymentId: string): Promise<PaymentDetail|false|null
 
 
 
-export async function GET(req: NextRequest, res: Response) {
+export async function GET(req: NextRequest) {
     const rawPaymentId = req.nextUrl.searchParams.get('paymentId');
     if ((typeof(rawPaymentId) !== 'string') || !rawPaymentId) {
         return NextResponse.json({

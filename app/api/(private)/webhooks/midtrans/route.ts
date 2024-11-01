@@ -57,7 +57,7 @@ export const maxDuration = 60; // this function can run for a maximum of 60 seco
 
 
 
-export async function POST(req: Request, res: Response): Promise<Response> {
+export async function POST(req: Request): Promise<Response> {
     const midtransPaymentData = await req.json();
     const {
         // records:
