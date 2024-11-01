@@ -15,16 +15,13 @@ import {
 
 // internal components:
 import {
-    type ImplementedPrefetchProps,
-    Prefetch,
-}                           from '@/components/prefetches/Prefetch'
-import {
-    type PaginationStateProps,
-}                           from '@/components/explorers/Pagination'
+    type ImplementedPrefetchModelPageProps,
+    PrefetchModelPage,
+}                           from '@/components/prefetches/PrefetchModelPage'
 
 // models:
 import {
-    type Model,
+    type PaginationArgs,
     type CategoryPreview,
 }                           from '@/models'
 
@@ -40,17 +37,7 @@ import {
 export interface PrefetchCategoryPageProps
     extends
         // bases:
-        ImplementedPrefetchProps,
-        
-        // states:
-        Pick<PaginationStateProps<Model>,
-            // states:
-            |'initialPageNum'
-        >,
-        Required<Pick<PaginationStateProps<Model>,
-            // states:
-            |'initialPerPage'
-        >>
+        ImplementedPrefetchModelPageProps
 {
     // data:
     model : CategoryPreview|null
@@ -63,14 +50,8 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
         
         
         
-        // states:
-        initialPageNum = 0,
-        initialPerPage,
-        
-        
-        
         // other props:
-        ...restPrefetchProps
+        ...restPrefetchModelPageProps
     } = props;
     
     
@@ -81,10 +62,9 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
     
     
     // handlers:
-    const handlePrefetch = useEvent<EventHandler<void>>(() => {
+    const handlePrefetch = useEvent<EventHandler<PaginationArgs>>((paginationArgs) => {
         prefetchCategoryPage({
-            page    : initialPageNum,
-            perPage : initialPerPage,
+            ...paginationArgs,
             parent  : model?.id ?? null,
         });
     });
@@ -93,9 +73,9 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
     
     // jsx:
     return (
-        <Prefetch
+        <PrefetchModelPage
             // other props:
-            {...restPrefetchProps}
+            {...restPrefetchModelPageProps}
             
             
             

@@ -15,16 +15,13 @@ import {
 
 // internal components:
 import {
-    type ImplementedPrefetchProps,
-    Prefetch,
-}                           from '@/components/prefetches/Prefetch'
-import {
-    type PaginationStateProps,
-}                           from '@/components/explorers/Pagination'
+    type ImplementedPrefetchModelPageProps,
+    PrefetchModelPage,
+}                           from '@/components/prefetches/PrefetchModelPage'
 
 // models:
 import {
-    type Model,
+    type PaginationArgs,
 }                           from '@/models'
 
 // stores:
@@ -39,17 +36,7 @@ import {
 export interface PrefetchProductPageProps
     extends
         // bases:
-        ImplementedPrefetchProps,
-        
-        // states:
-        Pick<PaginationStateProps<Model>,
-            // states:
-            |'initialPageNum'
-        >,
-        Required<Pick<PaginationStateProps<Model>,
-            // states:
-            |'initialPerPage'
-        >>
+        ImplementedPrefetchModelPageProps
 {
     // data:
     categoryPath ?: string[]|null
@@ -58,18 +45,12 @@ const PrefetchProductPage = (props: PrefetchProductPageProps): JSX.Element|null 
     // props:
     const {
         // data:
-        categoryPath   = null,
-        
-        
-        
-        // states:
-        initialPageNum = 0,
-        initialPerPage,
+        categoryPath = null,
         
         
         
         // other props:
-        ...restPrefetchProps
+        ...restPrefetchModelPageProps
     } = props;
     
     
@@ -80,10 +61,9 @@ const PrefetchProductPage = (props: PrefetchProductPageProps): JSX.Element|null 
     
     
     // handlers:
-    const handlePrefetch = useEvent<EventHandler<void>>(() => {
+    const handlePrefetch = useEvent<EventHandler<PaginationArgs>>((paginationArgs) => {
         prefetchProductPage({
-            page         : initialPageNum,
-            perPage      : initialPerPage,
+            ...paginationArgs,
             categoryPath : categoryPath ?? undefined,
         });
     });
@@ -92,9 +72,9 @@ const PrefetchProductPage = (props: PrefetchProductPageProps): JSX.Element|null 
     
     // jsx:
     return (
-        <Prefetch
+        <PrefetchModelPage
             // other props:
-            {...restPrefetchProps}
+            {...restPrefetchModelPageProps}
             
             
             
