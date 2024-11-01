@@ -72,6 +72,10 @@ import {
     type Session,
     SignIn,
 }                           from '@/components/SignIn'
+import {
+    PrefetchKind,
+    PrefetchRouter,
+}                           from '@/components/prefetches/PrefetchRouter'
 
 // internals:
 import {
@@ -263,106 +267,115 @@ const SignInMenu = (props: SignInMenuProps): JSX.Element|null => {
     
     // jsx:
     return (
-        <NavItem
-            // other props:
-            {...props}
-            
-            
-            
-            // refs:
-            elmRef={menuRef}
-            
-            
-            
-            // classes:
-            className={!navbarExpanded ? 'navbarCollapsed' : undefined}
-            
-            
-            
-            // behaviors:
-            actionCtrl={props.actionCtrl ?? (isSignedOut || isSignedIn)}
-            href={isSignedOut ? '/signin' : undefined}
-            
-            
-            
-            // states:
-            active={(isBusy || pathname?.startsWith(signInPath) || !!shownMenu) ? true : undefined}
-            
-            
-            
-            // handlers:
-            onClick={handleClick}
-        >
-            <Tab
+        <>
+            <NavItem
+                // other props:
+                {...props}
+                
+                
+                
+                // refs:
+                elmRef={menuRef}
+                
+                
+                
                 // classes:
-                className={styleSheet.signInWrapper}
+                className={!navbarExpanded ? 'navbarCollapsed' : undefined}
+                
+                
+                
+                // behaviors:
+                actionCtrl={props.actionCtrl ?? (isSignedOut || isSignedIn)}
+                href={isSignedOut ? '/signin' : undefined}
                 
                 
                 
                 // states:
-                expandedTabIndex={
-                    isSignedOut
-                    ? 0
-                    :   isSignedIn
-                        ? 2
-                        : 1
-                }
+                active={(isBusy || pathname?.startsWith(signInPath) || !!shownMenu) ? true : undefined}
                 
                 
                 
-                // components:
-                bodyComponent={
-                    <Basic
-                        // variants:
-                        nude={true}
-                    />}
-                headerComponent={null} // headless <Tab>
+                // handlers:
+                onClick={handleClick}
             >
-                <TabPanel
+                <Tab
                     // classes:
-                    className={styleSheet.signInMenu}
+                    className={styleSheet.signInWrapper}
+                    
+                    
+                    
+                    // states:
+                    expandedTabIndex={
+                        isSignedOut
+                        ? 0
+                        :   isSignedIn
+                            ? 2
+                            : 1
+                    }
+                    
+                    
+                    
+                    // components:
+                    bodyComponent={
+                        <Basic
+                            // variants:
+                            nude={true}
+                        />}
+                    headerComponent={null} // headless <Tab>
                 >
-                    <Icon
-                        // appearances:
-                        icon='login'
-                        
-                        
-                        
-                        // variants:
-                        size='lg'
-                    />
-                    <span>
-                        Sign in
-                    </span>
-                </TabPanel>
-                <TabPanel className={styleSheet.signInMenu}>
-                    <Icon icon='busy' size='lg' />
-                    <span>
-                        Loading...
-                    </span>
-                </TabPanel>
-                <TabPanel className={styleSheet.signInMenu}>
-                    <ProfileImage
-                        // appearances:
-                        src={resolveMediaUrl(customerImage ?? undefined)}
-                        
-                        
-                        
-                        // variants:
-                        profileImageStyle='circle'
-                    />
-                    <span className={styleSheet.signInName}>
+                    <TabPanel
+                        // classes:
+                        className={styleSheet.signInMenu}
+                    >
+                        <Icon
+                            // appearances:
+                            icon='login'
+                            
+                            
+                            
+                            // variants:
+                            size='lg'
+                        />
                         <span>
-                            {customerFirstName}
+                            Sign in
                         </span>
-                        {customerShortRestName ? ' ' : ''}
+                    </TabPanel>
+                    <TabPanel className={styleSheet.signInMenu}>
+                        <Icon icon='busy' size='lg' />
                         <span>
-                            {customerShortRestName}
+                            Loading...
                         </span>
-                    </span>
-                </TabPanel>
-            </Tab>
-        </NavItem>
+                    </TabPanel>
+                    <TabPanel className={styleSheet.signInMenu}>
+                        <ProfileImage
+                            // appearances:
+                            src={resolveMediaUrl(customerImage ?? undefined)}
+                            
+                            
+                            
+                            // variants:
+                            profileImageStyle='circle'
+                        />
+                        <span className={styleSheet.signInName}>
+                            <span>
+                                {customerFirstName}
+                            </span>
+                            {customerShortRestName ? ' ' : ''}
+                            <span>
+                                {customerShortRestName}
+                            </span>
+                        </span>
+                    </TabPanel>
+                </Tab>
+            </NavItem>
+            
+            {/* PREFETCH for displaying the signin PAGE */}
+            <PrefetchRouter
+                // data:
+                href='/signin'
+                prefetchKind={PrefetchKind.FULL}
+            />
+        </>
     );
 };
 export {

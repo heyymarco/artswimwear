@@ -45,6 +45,10 @@ import {
 import {
     PrefetchCategoryPage,
 }                           from '@/components/prefetches/PrefetchCategoryPage'
+import {
+    PrefetchKind,
+    PrefetchRouter,
+}                           from '@/components/prefetches/PrefetchRouter'
 
 // models:
 import {
@@ -194,6 +198,13 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
             >
                 {children}
             </NavItem>
+            
+            {/* PREFETCH for displaying the category PAGE, if having_categories: */}
+            {hasCategories && <PrefetchRouter
+                // data:
+                href='/categories'
+                prefetchKind={PrefetchKind.FULL}
+            />}
             
             {/* PREFETCH for displaying the FIRST sub category: */}
             { !!firstSubcategory && <PrefetchCategoryPage
