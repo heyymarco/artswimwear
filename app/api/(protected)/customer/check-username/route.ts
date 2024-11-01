@@ -1,7 +1,6 @@
 // next-js:
 import {
-    NextRequest,
-    NextResponse,
+    type NextRequest,
 }                           from 'next/server'
 
 // next-auth:
@@ -58,7 +57,7 @@ router
 .use(async (req, ctx, next) => {
     // conditions:
     const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+    if (!session) return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
     
     
     
@@ -91,22 +90,22 @@ router
         username,
     } = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
     if ((typeof(username) !== 'string') || !username) {
-        return NextResponse.json({
+        return Response.json({
             error: 'The required username is not provided.',
         }, { status: 400 }); // handled with error
     } // if
     if ((typeof(usernameMinLength) === 'number') && Number.isFinite(usernameMinLength) && (username.length < usernameMinLength)) {
-        return NextResponse.json({
+        return Response.json({
             error: `The username is too short. Minimum is ${usernameMinLength} characters.`,
         }, { status: 400 }); // handled with error
     } // if
     if ((typeof(usernameMaxLength) === 'number') && Number.isFinite(usernameMaxLength) && (username.length > usernameMaxLength)) {
-        return NextResponse.json({
+        return Response.json({
             error: `The username is too long. Maximum is ${usernameMaxLength} characters.`,
         }, { status: 400 }); // handled with error
     } // if
     if (!username.match(usernameFormat)) {
-        return NextResponse.json({
+        return Response.json({
             error: `The username is not well formatted.`,
         }, { status: 400 }); // handled with error
     } // if
@@ -124,21 +123,21 @@ router
             },
         });
         if (result) {
-            return NextResponse.json({
+            return Response.json({
                 error: `The username "${username}" is already taken.`,
             }, { status: 409 }); // handled with error
         } // if
         
         
         
-        return NextResponse.json({
+        return Response.json({
             ok       : true,
             message  : `The username "${username}" can be used.`,
         }); // handled with success
     }
     catch (error: any) {
         console.log('ERROR: ', error);
-        return NextResponse.json({ error: error }, { status: 500 }); // handled with error
+        return Response.json({ error: error }, { status: 500 }); // handled with error
     } // try
     //#endregion query result
 })
@@ -169,22 +168,22 @@ router
         username,
     } = Object.fromEntries(new URL(req.url, 'https://localhost/').searchParams.entries());
     if ((typeof(username) !== 'string') || !username) {
-        return NextResponse.json({
+        return Response.json({
             error: 'The required username is not provided.',
         }, { status: 400 }); // handled with error
     } // if
     if ((typeof(usernameMinLength) === 'number') && Number.isFinite(usernameMinLength) && (username.length < usernameMinLength)) {
-        return NextResponse.json({
+        return Response.json({
             error: `The username is too short. Minimum is ${usernameMinLength} characters.`,
         }, { status: 400 }); // handled with error
     } // if
     if ((typeof(usernameMaxLength) === 'number') && Number.isFinite(usernameMaxLength) && (username.length > usernameMaxLength)) {
-        return NextResponse.json({
+        return Response.json({
             error: `The username is too long. Maximum is ${usernameMaxLength} characters.`,
         }, { status: 400 }); // handled with error
     } // if
     if (!username.match(usernameFormat)) {
-        return NextResponse.json({
+        return Response.json({
             error: `The username is not well formatted.`,
         }, { status: 400 }); // handled with error
     } // if
@@ -203,14 +202,14 @@ router
         
         return false; // all checks passed, no prohibited word was found
     })()) {
-        return NextResponse.json({
+        return Response.json({
             error: `The username "${username}" is prohibited.`,
         }, { status: 409 }); // handled with error
     } // if
     
     
     
-    return NextResponse.json({
+    return Response.json({
         ok       : true,
         message  : `The username "${username}" can be used.`,
     }); // handled with success

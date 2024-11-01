@@ -1,7 +1,6 @@
 // next-js:
 import {
-    NextRequest,
-    NextResponse,
+    type NextRequest,
 }                           from 'next/server'
 
 // next-auth:
@@ -75,7 +74,7 @@ router
 .use(async (req, ctx, next) => {
     // conditions:
     const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+    if (!session) return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
     (req as any).session = session;
     
     
@@ -89,12 +88,12 @@ router
     const file = data.get('image');
     // const file : Express.Multer.File = (req as any).file;
     if (!file || !(file instanceof Object)) {
-        return NextResponse.json({
+        return Response.json({
             error: 'No file uploaded.',
         }, { status: 400 }); // handled with error
     } // if
     if (file.size > (4 * 1024 * 1024)) { // limits to max 4MB
-        return NextResponse.json({
+        return Response.json({
             error: 'The file is too big. The limit is 4MB.',
         }, { status: 400 }); // handled with error
     } // if
@@ -165,11 +164,11 @@ router
         
         
         
-        return NextResponse.json(fileId); // handled with success
+        return Response.json(fileId); // handled with success
     }
     catch (error: any) {
         console.log('ERROR: ', error);
-        return NextResponse.json({ error: 'Unable to process your image.\n\nPlease choose another image.' }, { status: 500 }); // handled with error
+        return Response.json({ error: 'Unable to process your image.\n\nPlease choose another image.' }, { status: 500 }); // handled with error
     } // try
 })
 .patch(async (req) => {
@@ -178,7 +177,7 @@ router
     } = await req.json();
     
     if (!Array.isArray(imageIds) || !imageIds.length || !imageIds.every((imageId) => (typeof(imageId) === 'string'))) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid parameter(s).',
         }, { status: 400 }); // handled with error
     } // if
@@ -189,12 +188,12 @@ router
         await Promise.all(imageIds.map((imageId) => deleteMedia(imageId)));
         
         
-        return NextResponse.json(imageIds); // deleted => success
+        return Response.json(imageIds); // deleted => success
     }
     catch (error: any) {
         if (error?.code === 404) { // not found => treat as success
-            return NextResponse.json(imageIds); // deleted => success
+            return Response.json(imageIds); // deleted => success
         } // if
-        return NextResponse.json({ error: error?.message ?? `${error}` }, { status: 500 }); // handled with error
+        return Response.json({ error: error?.message ?? `${error}` }, { status: 500 }); // handled with error
     } // try
 });

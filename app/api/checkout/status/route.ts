@@ -1,7 +1,6 @@
 // next-js:
 import {
-    NextRequest,
-    NextResponse,
+    type NextRequest,
 }                           from 'next/server'
 
 // models:
@@ -67,20 +66,20 @@ const checkPayment = async (paymentId: string): Promise<PaymentDetail|false|null
 export async function GET(req: NextRequest) {
     const rawPaymentId = req.nextUrl.searchParams.get('paymentId');
     if ((typeof(rawPaymentId) !== 'string') || !rawPaymentId) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     };
     
     if (!rawPaymentId.startsWith('#MIDTRANS_')) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     }
     
     const paymentId = rawPaymentId.slice(10); // remove prefix #MIDTRANS_
     if (!paymentId.length) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if

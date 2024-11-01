@@ -1,7 +1,6 @@
 // next-js:
 import {
-    NextRequest,
-    NextResponse,
+    type NextRequest,
 }                           from 'next/server'
 
 // next-auth:
@@ -67,7 +66,7 @@ router
 .use(async (req, ctx, next) => {
     // conditions:
     const session = await getServerSession(authOptions);
-    if (!session) return NextResponse.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+    if (!session) return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
     (req as any).session = session;
     
     
@@ -85,8 +84,8 @@ router
     } // if
     
     // throw '';
-    // return NextResponse.json({ message: 'not found'    }, { status: 400 }); // handled with error
-    // return NextResponse.json({ message: 'server error' }, { status: 500 }); // handled with error
+    // return Response.json({ message: 'not found'    }, { status: 400 }); // handled with error
+    // return Response.json({ message: 'server error' }, { status: 500 }); // handled with error
     
     //#region parsing request
     const {
@@ -115,7 +114,7 @@ router
         
         // TODO: validating data type & constraints
     ) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
@@ -127,7 +126,7 @@ router
     const session = (req as any).session as Session;
     const customerId = session.user?.id;
     if (!customerId) {
-        return NextResponse.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
+        return Response.json({ error: 'Please sign in.' }, { status: 401 }); // handled with error: unauthorized
     } // if
     //#endregion validating privileges
     
@@ -164,12 +163,12 @@ router
             ...restCustomer,
             username : credentials?.username ?? null,
         };
-        return NextResponse.json(customerDetail); // handled with success
+        return Response.json(customerDetail); // handled with success
     }
     catch (error: any) {
         console.log('ERROR: ', error);
-        // if (error instanceof RecordNotFound) return NextResponse.json({ error: 'invalid ID' }, { status: 400 }); // handled with error
-        return NextResponse.json({ error: error }, { status: 500 }); // handled with error
+        // if (error instanceof RecordNotFound) return Response.json({ error: 'invalid ID' }, { status: 400 }); // handled with error
+        return Response.json({ error: error }, { status: 500 }); // handled with error
     } // try
     //#endregion save changes
 });

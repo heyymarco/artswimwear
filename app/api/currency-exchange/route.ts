@@ -1,7 +1,6 @@
 // next-js:
 import {
-    NextRequest,
-    NextResponse,
+    type NextRequest,
 }                           from 'next/server'
 
 // next-connect:
@@ -87,5 +86,5 @@ router
     
     
     
-    return NextResponse.json(Object.fromEntries(currencyExchange.rates)); // handled with success
+    return Response.json(Object.fromEntries(currencyExchange.rates)); // handled with success
 });

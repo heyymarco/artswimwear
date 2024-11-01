@@ -5,8 +5,7 @@ import {
 
 // next-js:
 import {
-    NextRequest,
-    NextResponse,
+    type NextRequest,
 }                           from 'next/server'
 
 // next-auth:
@@ -210,7 +209,7 @@ router
  */
 .get(async (req) => {
     const paymentSession : CheckoutPaymentSessionDetail = await paypalCreatePaymentSession();
-    return NextResponse.json(paymentSession); // handled with success
+    return Response.json(paymentSession); // handled with success
 })
 
 /**
@@ -219,7 +218,7 @@ router
 .post(async (req) => {
     const placeOrderData = await req.json();
     if (typeof(placeOrderData) !== 'object') {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
@@ -233,19 +232,19 @@ router
         simulateOrder = false,
     } = placeOrderData;
     if ((typeof(currencyRaw) !== 'string') || !checkoutConfigServer.payment.currencyOptions.includes(currencyRaw)) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
     const currency : string = currencyRaw;
     
     if ((paymentSource !== undefined) && ((typeof(paymentSource) !== 'string') || !paymentSource)) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
     if ((simulateOrder !== undefined) && (typeof(simulateOrder) !== 'boolean')) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
@@ -257,17 +256,17 @@ router
     const useMidtransGateway = !simulateOrder &&  ['midtransCard', 'midtransQris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'].includes(paymentSource);
     
     if (usePaypalGateway && (!checkoutConfigServer.payment.processors.paypal.enabled || !checkoutConfigServer.payment.processors.paypal.supportedCurrencies.includes(currency))) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
     if (useStripeGateway && (!checkoutConfigServer.payment.processors.stripe.enabled || !checkoutConfigServer.payment.processors.stripe.supportedCurrencies.includes(currency))) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
     if (useMidtransGateway && (!checkoutConfigServer.payment.processors.midtrans.enabled || !checkoutConfigServer.payment.processors.midtrans.supportedCurrencies.includes(currency))) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
@@ -282,7 +281,7 @@ router
         
         if ((paymentSource === 'stripeCard') || (paymentSource === 'stripeExpress')) {
             if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
-                return NextResponse.json({
+                return Response.json({
                     error: 'Invalid data.',
                 }, { status: 400 }); // handled with error
             } // if
@@ -296,7 +295,7 @@ router
         
         if (paymentSource === 'midtransCard') {
             if ((typeof(cardTokenRaw) !== 'string') || !cardTokenRaw) {
-                return NextResponse.json({
+                return Response.json({
                     error: 'Invalid data.',
                 }, { status: 400 }); // handled with error
             } // if
@@ -357,7 +356,7 @@ router
     if (['manual', 'indomaret', 'alfamart'].includes(paymentSource)) {
         const captcha = placeOrderData.captcha;
         if (!captcha || (typeof(captcha) !== 'string') || !captcha) {
-            return NextResponse.json({
+            return Response.json({
                 error: 'Invalid captcha.',
             }, { status: 400 }); // handled with error
         } // if
@@ -370,7 +369,7 @@ router
                 `https://www.google.com/recaptcha/api/siteverify?secret=${process.env.GOOGLE_RECAPTCHA_SECRET}&response=${captcha}`
             );
             if (!response.ok) {
-                return NextResponse.json({
+                return Response.json({
                     error: 'Invalid captcha.',
                 }, { status: 400 }); // handled with error
             } // if
@@ -384,13 +383,13 @@ router
                 { success: true, challenge_ts: '2024-01-01T04:24:34Z', hostname: 'localhost' }
             */
             if (!json.success) {
-                return NextResponse.json({
+                return Response.json({
                     error: 'Invalid captcha.',
                 }, { status: 400 }); // handled with error
             } // if
         }
         catch {
-            return NextResponse.json({
+            return Response.json({
                 error: 'Invalid captcha.',
             }, { status: 400 }); // handled with error
         } // if
@@ -421,7 +420,7 @@ router
             
             || !shippingProviderId  || (typeof(shippingProviderId) !== 'string') // todo validate shipping provider
         ) {
-            return NextResponse.json({
+            return Response.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
@@ -449,7 +448,7 @@ router
             || !billingAddress.phone     || (typeof(billingAddress.phone) !== 'string')
             
         ) {
-            return NextResponse.json({
+            return Response.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
@@ -464,7 +463,7 @@ router
         items,
     } = placeOrderData;
     if (!items || !Array.isArray(items) || !items.length) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
@@ -1449,7 +1448,7 @@ router
         */
         
         if (error instanceof OutOfStockError) {
-            return NextResponse.json({
+            return Response.json({
                 error             : 'OUT_OF_STOCK',
                 limitedStockItems : error.limitedStockItems,
             }, { status: 409 }); // handled with error conflict
@@ -1462,14 +1461,14 @@ router
             // case 'INSUFFICIENT_PRODUCT_STOCK' :
             {
                 console.log('ERROR: ', error);
-                return NextResponse.json({
+                return Response.json({
                     error: error,
                 }, { status: 400 }); // handled with error
             } break;
             
             default                           : {
                 console.log('ERROR: ', error);
-                return NextResponse.json({
+                return Response.json({
                     error: 'internal server error',
                 }, { status: 500 }); // handled with error
             } break;
@@ -1560,7 +1559,7 @@ router
     const paymentData = await req.json();
     console.log('paymentData: ', paymentData);
     if (typeof(paymentData) !== 'object') {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
@@ -1569,7 +1568,7 @@ router
     
     const rawOrderId = paymentData.orderId;
     if (typeof(rawOrderId) !== 'string') {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
@@ -1584,7 +1583,7 @@ router
     if (rawOrderId.startsWith('#PAYPAL_')) {
         paymentId = rawOrderId.slice(8); // remove prefix #PAYPAL_
         if (!paymentId.length) {
-            return NextResponse.json({
+            return Response.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
@@ -1593,7 +1592,7 @@ router
     else if (rawOrderId.startsWith('#STRIPE_')) {
         paymentId = rawOrderId.slice(8); // remove prefix #STRIPE_
         if (!paymentId.length) {
-            return NextResponse.json({
+            return Response.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
@@ -1602,7 +1601,7 @@ router
     else if (rawOrderId.startsWith('#MIDTRANS_')) {
         paymentId = rawOrderId.slice(10); // remove prefix #MIDTRANS_
         if (!paymentId.length) {
-            return NextResponse.json({
+            return Response.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
@@ -1619,7 +1618,7 @@ router
         cancelOrder,
     } = paymentData;
     if ((cancelOrder !== undefined) && (cancelOrder !== true)) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
@@ -1668,7 +1667,7 @@ router
         
         
         
-        return NextResponse.json({
+        return Response.json({
             canceled: orderDeletedFromDatabase, // false => canceled -or- true => too late, the order already APPROVED
         });
     };
@@ -1694,7 +1693,7 @@ router
             || !billingAddress.lastName  || (typeof(billingAddress.lastName) !== 'string')
             || !billingAddress.phone     || (typeof(billingAddress.phone) !== 'string')
         ) {
-            return NextResponse.json({
+            return Response.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
@@ -1865,14 +1864,14 @@ router
         switch (error) {
             case 'DRAFT_ORDER_NOT_FOUND' :
             case 'DRAFT_ORDER_EXPIRED'   : {
-                return NextResponse.json({
+                return Response.json({
                     error: error,
                 }, { status: 400 }); // handled with error
             } break;
             
             default                      : {
                 console.log('UNKNOWN ERROR: ',  error)
-                return NextResponse.json({
+                return Response.json({
                     error: 'internal server error',
                 }, { status: 500 }); // handled with error
             } break;
@@ -1898,14 +1897,14 @@ router
 .put(async (req) => {
     const rawOrderId = req.nextUrl.searchParams.get('orderId');
     if ((typeof(rawOrderId) !== 'string') || !rawOrderId) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     };
     
     const orderId = rawOrderId;
     if (!orderId.length) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Invalid data.',
         }, { status: 400 }); // handled with error
     } // if
@@ -2061,7 +2060,7 @@ router
         },
     });
     if (!order) {
-        return NextResponse.json({
+        return Response.json({
             error: 'Order not found.',
         }, { status: 404 }); // handled with error
     } // if
@@ -2185,5 +2184,5 @@ router
         
         isShippingAddressRequired : items.some(({quantity, product}) => (quantity > 0) && product && (product.shippingWeight !== null)),
     };
-    return NextResponse.json(finishedOrderState); // handled with success
+    return Response.json(finishedOrderState); // handled with success
 })
