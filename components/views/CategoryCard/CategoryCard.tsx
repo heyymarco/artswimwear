@@ -72,6 +72,7 @@ import {
     PrefetchCategoryDetail,
 }                           from '@/components/prefetches/PrefetchCategoryDetail'
 import {
+    PrefetchKind,
     PrefetchRouter,
 }                           from '@/components/prefetches/PrefetchRouter'
 
@@ -337,6 +338,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
                 
                 // data:
                 href={categoryInterceptedPath}
+                prefetchKind={PrefetchKind.FULL}
             />
             
             {/* PREFETCH for displaying unintercepted category PAGE: */}
@@ -348,6 +350,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
                 
                 // data:
                 href={categoryUninterceptedPath}
+                prefetchKind={PrefetchKind.FULL}
             />
         </>}
     </>);
