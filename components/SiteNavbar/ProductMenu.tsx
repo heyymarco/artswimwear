@@ -147,7 +147,15 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     const {
         // children:
         children = (
-            <Link href='/products'>
+            <Link
+                // data:
+                href='/products'
+                
+                
+                
+                // behaviors:
+                prefetch={!hasCategories} // if not_having_categories => force to DEEP prefetch of product PAGE, otherwise NEVER prefetch because the product page is NEVER reached
+            >
                 Products
             </Link>
         ),

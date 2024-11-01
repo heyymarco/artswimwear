@@ -170,7 +170,7 @@ const SiteNavbarMenu = ({
                     listStyle='flat'
                     orientation={navbarExpanded ? 'inline' : 'block'}
                 >
-                    <NavItem><Link href='/'>Home</Link></NavItem>
+                    <NavItem><Link href='/' prefetch={true}>Home</Link></NavItem>
                     <ProductMenu />
                     <NavItem><Link href='/about'>About</Link></NavItem>
                     <NavItem><Link href='/contact'>Contact Us</Link></NavItem>
