@@ -44,6 +44,9 @@ import {
     // layout-components:
     ListItem,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
+import {
+    Link,
+}                           from '@reusable-ui/next-compat-link'
 
 // internal components:
 import {
@@ -221,42 +224,52 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             
             
             // handlers:
-            href    = {categoryInterceptedPath} // shows the physical_link as (normal) intercepted category path for presentation reason
+            // href    = {categoryInterceptedPath} // shows the physical_link as (normal) intercepted category path for presentation reason
             onClick = {handleNavigate}          // but when clicked => navigate to subcategory -or- goto unintercepted category page
         >
-            <h3 className='name'>
-                {name}
-            </h3>
-            
-            {/* image (single image) -or- carousel (multi images) */}
-            <Basic
-                // variants:
-                mild={true}
+            <Link
+                // data:
+                href={categoryInterceptedPath}  // shows the physical_link as (normal) intercepted category path for presentation reason
                 
                 
                 
-                // classes:
-                className='preview'
+                // behaviors:
+                prefetch={true} // force to DEEP prefetch of category PAGE
             >
-                <ModelImage
-                    // appearances:
-                    alt={name}
-                    src={image}
-                    sizes={`${minImageWidth}px`}
-                    
-                    
-                    
-                    // behaviors:
-                    priority={false}
+                <h3 className='name'>
+                    {name}
+                </h3>
+                
+                {/* image (single image) -or- carousel (multi images) */}
+                <Basic
+                    // variants:
+                    mild={true}
                     
                     
                     
                     // classes:
-                    className='image'
-                />
-            </Basic>
-            
-            { hasSubcategories && <Icon icon='dropright' size='xl' theme='primary' mild={active} className='arrow' />}
+                    className='preview'
+                >
+                    <ModelImage
+                        // appearances:
+                        alt={name}
+                        src={image}
+                        sizes={`${minImageWidth}px`}
+                        
+                        
+                        
+                        // behaviors:
+                        priority={false}
+                        
+                        
+                        
+                        // classes:
+                        className='image'
+                    />
+                </Basic>
+                
+                { hasSubcategories && <Icon icon='dropright' size='xl' theme='primary' mild={active} className='arrow' />}
+            </Link>
         </ListItem>
         
         { hasSubcategories && <PrefetchCategoryPage
