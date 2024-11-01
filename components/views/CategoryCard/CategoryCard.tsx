@@ -81,6 +81,7 @@ import {
     
     // defaults:
     defaultProductPerPage,
+    defaultSubCategoryPerPage,
 }                           from '@/models'
 
 
@@ -285,6 +286,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             
             // states:
             initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
+            initialPerPage={defaultSubCategoryPerPage}
         />}
         
         {!hasSubcategories && <>

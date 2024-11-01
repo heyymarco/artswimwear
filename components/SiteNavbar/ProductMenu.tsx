@@ -46,6 +46,12 @@ import {
     PrefetchCategoryPage,
 }                           from '@/components/prefetches/PrefetchCategoryPage'
 
+// models:
+import {
+    // defaults:
+    defaultSubCategoryPerPage,
+}                           from '@/models'
+
 // states:
 import {
     usePageInterceptState,
@@ -201,6 +207,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 
                 // states:
                 initialPageNum={0} // the NEXT subcategories is always having PAGINATION with initial page num = 0, because it NEVER visited before
+                initialPerPage={defaultSubCategoryPerPage}
             />}
         </>
     );

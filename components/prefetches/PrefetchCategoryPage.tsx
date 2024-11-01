@@ -26,11 +26,6 @@ import {
 import {
     type Model,
     type CategoryPreview,
-    
-    
-    
-    // defaults:
-    defaultSubCategoryPerPage,
 }                           from '@/models'
 
 // stores:
@@ -51,7 +46,11 @@ export interface PrefetchCategoryPageProps
         Pick<PaginationStateProps<Model>,
             // states:
             |'initialPageNum'
-        >
+        >,
+        Required<Pick<PaginationStateProps<Model>,
+            // states:
+            |'initialPerPage'
+        >>
 {
     // data:
     model : CategoryPreview|null
@@ -66,6 +65,7 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
         
         // states:
         initialPageNum = 0,
+        initialPerPage,
         
         
         
@@ -84,7 +84,7 @@ const PrefetchCategoryPage = (props: PrefetchCategoryPageProps): JSX.Element|nul
     const handlePrefetch = useEvent<EventHandler<void>>(() => {
         prefetchCategoryPage({
             page    : initialPageNum,
-            perPage : defaultSubCategoryPerPage,
+            perPage : initialPerPage,
             parent  : model?.id ?? null,
         });
     });

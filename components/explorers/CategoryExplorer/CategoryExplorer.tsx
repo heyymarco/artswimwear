@@ -78,6 +78,11 @@ import {
     
     
     
+    // states:
+    useCategoryExplorerState,
+    
+    
+    
     // react components:
     type CategoryExplorerStateProps,
     CategoryExplorerStateProvider,
@@ -298,59 +303,35 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
     
     // jsx:
     return (
-        <>
-            {parentCategories.slice(1).map(({ category: subcategory, index: restoreIndex }, index) =>
-                <PrefetchCategoryPage
-                    // identifiers:
-                    key={subcategory.id ?? index}
-                    
-                    
-                    
-                    // refs:
-                    subjectRef={null} // always prefetch
-                    
-                    
-                    
-                    // data:
-                    model={subcategory}
-                    
-                    
-                    
-                    // states:
-                    initialPageNum={Math.floor(restoreIndex / defaultSubCategoryPerPage)}
-                />
-            )}
+        <CategoryExplorerStateProvider
+            // states:
+            parentCategories    = {parentCategories   }
+            setParentCategories = {setParentCategories}
             
-            <CategoryExplorerStateProvider
+            restoreIndex        = {restoreIndex   }
+            setRestoreIndex     = {setRestoreIndex}
+            
+            
+            
+            // handlers:
+            onNavigate={onNavigate}
+        >
+            <PaginationStateProvider<CategoryPreview>
                 // states:
-                parentCategories    = {parentCategories   }
-                setParentCategories = {setParentCategories}
-                
-                restoreIndex        = {restoreIndex   }
-                setRestoreIndex     = {setRestoreIndex}
+                initialPageNum={parentCategories.length ? Math.floor(parentCategories[0].index / defaultRootCategoryPerPage) : undefined}
+                initialPerPage={defaultRootCategoryPerPage}
                 
                 
                 
-                // handlers:
-                onNavigate={onNavigate}
+                // data:
+                useGetModelPage={useGetRootCategoryPage}
             >
-                <PaginationStateProvider<CategoryPreview>
-                    // states:
-                    initialPageNum={parentCategories.length ? Math.floor(parentCategories[0].index / defaultRootCategoryPerPage) : undefined}
-                    initialPerPage={defaultRootCategoryPerPage}
-                    
-                    
-                    
-                    // data:
-                    useGetModelPage={useGetRootCategoryPage}
-                >
-                    <CategoryExplorerInternal2
-                        // other props:
-                        {...restCategoryExplorerInternal2Props}
-                    />
-                </PaginationStateProvider>
-            </CategoryExplorerStateProvider>
-        </>
+                <CategoryExplorerInternal2
+                    // other props:
+                    {...restCategoryExplorerInternal2Props}
+                />
+            </PaginationStateProvider>
+        </CategoryExplorerStateProvider>
     );
 };
 
@@ -367,6 +348,11 @@ interface CategoryExplorerInternal2Props<TElement extends Element = HTMLElement>
 }
 const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props: CategoryExplorerInternal2Props<TElement>): JSX.Element|null => {
     // states:
+    const {
+        // states:
+        parentCategories,
+    } = useCategoryExplorerState();
+    
     const { data: categoryPreviewPaginationRaw } = usePaginationState<CategoryPreview>();
     const categoryPreviewPagination = categoryPreviewPaginationRaw as CategoryPreviewPagination|undefined;
     const {
@@ -413,46 +399,71 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
     
     // jsx:
     return (
-        <CategoryExplorerStateProvider
-            // states:
-            // when no 2nd_level_categories => force to always having EMPTY `parentCategories` and IGNORE `setParentCategories`
-            // otherwise keeps both `parentCategories` and `setParentCategories` unchanged
-            parentCategories    = {!has2ndLevelCategories ? rootParentCategories : undefined}
-            setParentCategories = {!has2ndLevelCategories ? noopCallback         : undefined}
-        >
-            <Generic<TElement>
-                // other props:
-                {...restGenericProps}
-                
-                
-                
-                // accessibilities:
-                // @ts-ignore
-                tabIndex={tabIndex}
-                
-                
-                
-                // classes:
-                mainClass={mainClass}
+        <>
+            {parentCategories.slice(showRootSection ? 1 : 0).map(({ category: subcategory, index: restoreIndex }, index) =>
+                <PrefetchCategoryPage
+                    // identifiers:
+                    key={subcategory.id ?? index}
+                    
+                    
+                    
+                    // refs:
+                    subjectRef={null} // always prefetch
+                    
+                    
+                    
+                    // data:
+                    model={subcategory}
+                    
+                    
+                    
+                    // states:
+                    initialPageNum={Math.floor(restoreIndex / defaultSubCategoryPerPage)}
+                    initialPerPage={defaultSubCategoryPerPage}
+                />
+            )}
+            
+            <CategoryExplorerStateProvider
+                // states:
+                // when no 2nd_level_categories => force to always having EMPTY `parentCategories` and IGNORE `setParentCategories`
+                // otherwise keeps both `parentCategories` and `setParentCategories` unchanged
+                parentCategories    = {!has2ndLevelCategories ? rootParentCategories : undefined}
+                setParentCategories = {!has2ndLevelCategories ? noopCallback         : undefined}
             >
-                <RouterUpdater />
-                
-                
-                
-                {showRootSection && <Container className={styleSheet.root} theme='primaryAlt'>
-                    <CategoryExplorerRoot />
-                </Container>}
-                <Container className={`${styleSheet.sub} ${showRootSection ? '' : styleSheet.rootMergeSub}`} theme='primaryAlt' mild={false}>
-                    <CategoryExplorerSub
-                        // configs:
-                        minDepth={
-                            showRootSection
-                            ? 1 // when navigate `back`, do not reaches `root` category
-                            : 0
-                        }
-                    />
-                </Container>
-            </Generic>
-        </CategoryExplorerStateProvider>
+                <Generic<TElement>
+                    // other props:
+                    {...restGenericProps}
+                    
+                    
+                    
+                    // accessibilities:
+                    // @ts-ignore
+                    tabIndex={tabIndex}
+                    
+                    
+                    
+                    // classes:
+                    mainClass={mainClass}
+                >
+                    <RouterUpdater />
+                    
+                    
+                    
+                    {showRootSection && <Container className={styleSheet.root} theme='primaryAlt'>
+                        <CategoryExplorerRoot />
+                    </Container>}
+                    <Container className={`${styleSheet.sub} ${showRootSection ? '' : styleSheet.rootMergeSub}`} theme='primaryAlt' mild={false}>
+                        <CategoryExplorerSub
+                            // configs:
+                            minDepth={
+                                showRootSection
+                                ? 1 // when navigate `back`, do not reaches `root` category
+                                : 0
+                            }
+                        />
+                    </Container>
+                </Generic>
+            </CategoryExplorerStateProvider>
+        </>
     );
 }
