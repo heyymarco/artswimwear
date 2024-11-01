@@ -177,19 +177,18 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
     if (isLoadingAndNoData) return <PageLoading />;
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
-        <WideGalleryPage>
+        <WideGalleryPage theme='primary'>
             <Section
                 // classes:
                 className={styleSheet.nav}
             >
                 <Nav
                     // variants:
-                    theme='primary'
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
                     <NavItem active={!parentsAndSelf.length}>
-                        <Link href='/categories'>
+                        <Link href='/categories' prefetch={true}>
                             All products
                         </Link>
                     </NavItem>
@@ -214,7 +213,7 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                                     event.preventDefault(); // handled
                                 }}
                             >
-                                <Link href={categoryHref}>
+                                <Link href={categoryHref} prefetch={true}>
                                     {name}
                                 </Link>
                             </NavItem>
@@ -224,11 +223,6 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
             </Section>
             
             <Section
-                // variants:
-                theme='primary'
-                
-                
-                
                 // classes:
                 className={styleSheet.gallery}
             >

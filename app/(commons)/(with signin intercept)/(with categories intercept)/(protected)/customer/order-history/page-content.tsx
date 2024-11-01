@@ -73,8 +73,8 @@ function OrderHistoryPageContentInternal(): JSX.Element|null {
     if (isLoadingAndNoData) return <PageLoading />;
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
-        <SimpleMainPage>
-            <Section theme='primary'>
+        <SimpleMainPage theme='primary'>
+            <Section>
                 <PaginationList<PublicOrderDetail>
                     // components:
                     modelPreviewComponent={

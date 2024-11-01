@@ -142,25 +142,24 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
     
     // jsx:
     return (
-        <WideGalleryPage>
+        <WideGalleryPage theme='primary'>
             <Section
                 // classes:
                 className={styleSheet.nav}
             >
                 <Nav
                     // variants:
-                    theme='primary'
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
                     <NavItem active={false}>
-                        <Link href='/customer/wishes'>
+                        <Link href='/customer/wishes' prefetch={true}>
                             Wishlist
                         </Link>
                     </NavItem>
                     
                     <NavItem active={true}>
-                        <Link href={`/customer/wishes/${encodeURIComponent(wishGroupId)}`} >
+                        <Link href={`/customer/wishes/${encodeURIComponent(wishGroupId)}`} prefetch={true}>
                             {wishGroupName}
                         </Link>
                     </NavItem>
@@ -168,11 +167,6 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
             </Section>
             
             <Section
-                // variants:
-                theme='primary'
-                
-                
-                
                 // classes:
                 className={styleSheet.gallery}
             >

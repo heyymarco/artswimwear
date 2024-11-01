@@ -109,25 +109,24 @@ function ProductPageContentInternal(): JSX.Element|null {
     if (isLoadingAndNoData) return <PageLoading />;
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
     return (
-        <WideGalleryPage>
+        <WideGalleryPage theme='primary'>
             <Section
                 // classes:
                 className={styleSheet.nav}
             >
                 <Nav
                     // variants:
-                    theme='primary'
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
                     <NavItem active={false}>
-                        <Link href='/'>
+                        <Link href='/' prefetch={true}>
                             Home
                         </Link>
                     </NavItem>
                     
                     <NavItem active={true}>
-                        <Link href='/products'>
+                        <Link href='/products' prefetch={true}>
                             Products
                         </Link>
                     </NavItem>
@@ -135,11 +134,6 @@ function ProductPageContentInternal(): JSX.Element|null {
             </Section>
             
             <Section
-                // variants:
-                theme='primary'
-                
-                
-                
                 // classes:
                 className={styleSheet.gallery}
             >

@@ -92,19 +92,18 @@ function WishPageContentInternal(): JSX.Element|null {
     
     // jsx:
     return (
-        <WideGalleryPage>
+        <WideGalleryPage theme='primary'>
             <Section
                 // classes:
                 className={styleSheet.nav}
             >
                 <Nav
                     // variants:
-                    theme='primary'
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
                     <NavItem active={true}>
-                        <Link href='/customer/wishes'>
+                        <Link href='/customer/wishes' prefetch={true}>
                             Wishlist
                         </Link>
                     </NavItem>
@@ -112,11 +111,6 @@ function WishPageContentInternal(): JSX.Element|null {
             </Section>
             
             <Section
-                // variants:
-                theme='primary'
-                
-                
-                
                 // classes:
                 className={styleSheet.gallery}
             >
