@@ -24,7 +24,7 @@ import {
 
 // configs:
 export const fetchCache = 'force-cache';
-export const revalidate = 1 * 24 * 3600;
+export const revalidate = false; // never expired
 
 
 
