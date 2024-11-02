@@ -104,7 +104,7 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
     
     
     // refs:
-    const articleRef = useRef<HTMLDivElement|null>(null);
+    const viewRef = useRef<HTMLDivElement|null>(null);
     
     
     
@@ -117,7 +117,7 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
             
             
             // refs:
-            ref={articleRef}
+            ref={viewRef}
             
             
             
@@ -210,7 +210,7 @@ const ProductCard = (props: ProductCardProps): JSX.Element|null => {
         {/* PREFETCH for displaying product PAGE: */}
         <PrefetchProductDetail
             // refs:
-            subjectRef={articleRef}
+            subjectRef={viewRef}
             
             
             

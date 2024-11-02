@@ -163,7 +163,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
     
     
     // refs:
-    const articleRef = useRef<HTMLDivElement|null>(null);
+    const viewRef = useRef<HTMLDivElement|null>(null);
     
     
     
@@ -209,7 +209,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             
             
             // refs:
-            elmRef={articleRef}
+            elmRef={viewRef}
             
             
             
@@ -285,7 +285,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             {/* PREFETCH for displaying the NEXT sub category: */}
             <PrefetchCategoryPage
                 // refs:
-                subjectRef={articleRef}
+                subjectRef={viewRef}
                 
                 
                 
@@ -304,7 +304,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             {/* PREFETCH for displaying category PAGE: */}
             <PrefetchCategoryDetail
                 // refs:
-                subjectRef={articleRef}
+                subjectRef={viewRef}
                 
                 
                 
@@ -315,7 +315,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             {/* PREFETCH for displaying related PRODUCTS in category page: */}
             <PrefetchProductPage
                 // refs:
-                subjectRef={articleRef}
+                subjectRef={viewRef}
                 
                 
                 
@@ -332,7 +332,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             {/* PREFETCH for displaying intercepted category PAGE: */}
             <PrefetchRouter
                 // refs:
-                subjectRef={articleRef}
+                subjectRef={viewRef}
                 
                 
                 
@@ -344,7 +344,7 @@ const CategoryCard = (props: CategoryCardProps): JSX.Element|null => {
             {/* PREFETCH for displaying unintercepted category PAGE: */}
             <PrefetchRouter
                 // refs:
-                subjectRef={articleRef}
+                subjectRef={viewRef}
                 
                 
                 
