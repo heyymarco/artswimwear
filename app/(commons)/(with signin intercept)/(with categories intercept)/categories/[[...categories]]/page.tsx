@@ -22,6 +22,12 @@ import {
 
 
 
+// configs:
+export const fetchCache = 'force-cache';
+export const revalidate = 1 * 24 * 3600;
+
+
+
 export const metadata: Metadata = {
     title       : PAGE_CATEGORIES_TITLE,
     description : PAGE_CATEGORIES_DESCRIPTION,

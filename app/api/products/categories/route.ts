@@ -3,22 +3,8 @@ import {
     createEdgeRouter,
 }                           from 'next-connect'
 
-// next-auth:
-import {
-    getServerSession,
-}                           from 'next-auth'
-
-// internal auth:
-import {
-    authOptions,
-}                           from '@/libs/auth.server'
-
 // models:
 import {
-    type Prisma,
-    
-    type Pagination,
-    type CategoryPreview,
     type CategoryDetail,
     type CategoryPreviewPagination,
     
@@ -46,6 +32,13 @@ import {
 
 
 
+// configs:
+export const dynamic    = 'force-dynamic';
+export const fetchCache = 'force-cache';
+export const revalidate = 1 * 24 * 3600;
+
+
+
 // routers:
 interface RequestContext {
     params: {
@@ -64,16 +57,6 @@ export {
 }
 
 router
-.use(async (req, ctx, next) => {
-    // conditions:
-    const session = await getServerSession(authOptions);
-    if (session) (req as any).session = session;
-    
-    
-    
-    // not_authenticated|authenticated => next:
-    return await next();
-})
 .get(async (req) => {
     //#region parsing and validating request
     const requestData = await (async () => {

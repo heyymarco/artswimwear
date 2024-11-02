@@ -31,6 +31,12 @@ import {
 
 
 
+// configs:
+export const fetchCache = 'force-cache';
+export const revalidate = 1 * 24 * 3600;
+
+
+
 interface MetadataProps {
     params : { productPath: string }
 }

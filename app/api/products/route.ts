@@ -47,6 +47,13 @@ import {
 
 
 
+// configs:
+export const dynamic    = 'force-dynamic';
+export const fetchCache = 'force-cache';
+export const revalidate = 1 * 24 * 3600;
+
+
+
 // routers:
 interface RequestContext {
     params: {
