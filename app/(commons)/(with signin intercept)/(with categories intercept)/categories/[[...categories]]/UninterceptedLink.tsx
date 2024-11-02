@@ -26,6 +26,11 @@ import {
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
 // reusable-ui components:
+// reusable-ui components:
+import {
+    // base-components:
+    type GenericProps,
+}                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 import {
     type LinkProps,
     Link,
@@ -79,9 +84,14 @@ const UninterceptedLink = React.forwardRef<HTMLAnchorElement, UninterceptedLinkP
     
     
     // refs:
-    const refInternal = useRef<HTMLAnchorElement|null>(null);
-    const mergedRef   = useMergeRefs<HTMLAnchorElement>(
-        // preserves the original `ref`:
+    const refInternal    = useRef<Element|null>(null);
+    const mergedChildRef = useMergeRefs<Element>(
+        // preserves the original `outerRef` from `child`:
+        !React.isValidElement<Pick<GenericProps<Element>, 'outerRef'>>(child) ? null : child.props.outerRef,
+        
+        
+        
+        // preserves the original `ref` from `props`:
         ref,
         
         
@@ -127,16 +137,11 @@ const UninterceptedLink = React.forwardRef<HTMLAnchorElement, UninterceptedLinkP
                 
                 
                 
-                // refs:
-                ref={mergedRef}
-                
-                
-                
                 // routes:
                 href={href}
             >
-                {React.isValidElement<Pick<React.HTMLAttributes<Element>, 'onClick'>>(child)
-                    ? React.cloneElement<Pick<React.HTMLAttributes<Element>, 'onClick'>>(child,
+                {React.isValidElement<Pick<React.HTMLAttributes<Element>, 'onClick'> & Pick<GenericProps<Element>, 'outerRef'>>(child)
+                    ? React.cloneElement<Pick<React.HTMLAttributes<Element>, 'onClick'> & Pick<GenericProps<Element>, 'outerRef'>>(child,
                         // props:
                         {
                             // other props:
@@ -144,8 +149,13 @@ const UninterceptedLink = React.forwardRef<HTMLAnchorElement, UninterceptedLinkP
                             
                             
                             
+                            // refs:
+                            outerRef : mergedChildRef,   // pass the mergedChildRef   here instead of on <Link ref={...}>     in order to the ref     to be set    correctly
+                            
+                            
+                            
                             // handlers:
-                            onClick : childHandleClick, // pass the handleClick here instead of on <Link onClick={...}> in order to the handler to be called correctly
+                            onClick  : childHandleClick, // pass the childHandleClick here instead of on <Link onClick={...}> in order to the handler to be called correctly
                         },
                     )
                     : child
