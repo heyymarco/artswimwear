@@ -44,6 +44,7 @@ import {
 }                           from '@/components/explorers/PaginationGallery'
 import {
     ProductCard,
+    EmptyProductCard,
 }                           from '@/components/views/ProductCard'
 
 // private components:
@@ -185,6 +186,12 @@ function WishAllPageContentInternal({ wishGroupId }: { wishGroupId: string }): J
                     // components:
                     bodyComponent={
                         <Basic nude={true} />
+                    }
+                    modelEmptyComponent={
+                        <EmptyProductCard
+                            // accessibilities:
+                            emptyText='There are no products on this collection.'
+                        />
                     }
                     modelPreviewComponent={
                         <ProductCard

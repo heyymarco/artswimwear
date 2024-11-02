@@ -70,12 +70,17 @@ const usesProductCardLayout = () => {
             
             
             
+            // spacings:
+            padding: 0,
+            
+            
+            
             // animations:
             transition : [
                 ['box-shadow', '300ms'],
             ],
             boxShadow  : '0px 0px 1rem rgba(0, 0, 0, 0.1)',
-            ...rule(':hover', {
+            ...rule(':hover:not(.empty)', {
                 boxShadow : '0px 0px 1rem rgba(0, 0, 0, 0.7)',
             }),
             
@@ -86,7 +91,7 @@ const usesProductCardLayout = () => {
                     ],
                 }),
             }),
-            ...rule(':hover', {
+            ...rule(':hover:not(.empty)', {
                 ...children('.prodImg', {
                     ...children(['img', '.status'], {
                         scale: '105%',
@@ -207,6 +212,11 @@ const usesProductCardLayout = () => {
                     
                     
                     
+                    // sizes:
+                    minBlockSize: '1.03lh',
+                    
+                    
+                    
                     // spacings:
                     margin: 0,
                     
@@ -280,6 +290,11 @@ const usesProductCardLayout = () => {
 };
 const usesEmptyProductCardLayout = () => {
     return style({
+        // borders:
+        border: 'none',
+        
+        
+        
         // children:
         ...children('.prodImg', {
             // appearances:
@@ -288,6 +303,13 @@ const usesEmptyProductCardLayout = () => {
         ...children('.emptyMessage', {
             // positions:
             gridArea: '1 / 1 / -1 / -1',
+            
+            
+            
+            // layouts:
+            display: 'grid',
+            justifyContent: 'center',
+            alignContent: 'center',
             
             
             
@@ -308,9 +330,9 @@ export default () => [
     scope('main', {
         // layouts:
         ...usesProductCardLayout(),
-    }),
+    }, { specificityWeight: 2 }),
     scope('empty', {
         // layouts:
         ...usesEmptyProductCardLayout(),
-    }),
+    }, { specificityWeight: 2 }),
 ];

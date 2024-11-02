@@ -50,6 +50,7 @@ import {
 }                           from '@/components/explorers/PaginationGallery'
 import {
     ProductCard,
+    EmptyProductCard,
 }                           from '@/components/views/ProductCard'
 
 // models:
@@ -151,6 +152,9 @@ function ProductPageContentInternal(): JSX.Element|null {
                     // components:
                     bodyComponent={
                         <Basic nude={true} />
+                    }
+                    modelEmptyComponent={
+                        <EmptyProductCard />
                     }
                     modelPreviewComponent={
                         <ProductCard

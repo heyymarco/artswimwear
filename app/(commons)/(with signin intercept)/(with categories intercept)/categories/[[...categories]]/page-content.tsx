@@ -47,6 +47,7 @@ import {
 }                           from '@/components/explorers/PaginationGallery'
 import {
     ProductCard,
+    EmptyProductCard,
 }                           from '@/components/views/ProductCard'
 
 // private components:
@@ -232,6 +233,12 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                     // components:
                     bodyComponent={
                         <Basic nude={true} />
+                    }
+                    modelEmptyComponent={
+                        <EmptyProductCard
+                            // accessibilities:
+                            emptyText='There are no products on this category.'
+                        />
                     }
                     modelPreviewComponent={
                         <ProductCard
