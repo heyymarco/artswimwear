@@ -53,6 +53,9 @@ import {
 import {
     UninterceptedLink,
 }                           from './UninterceptedLink'
+import {
+    NavItemWithPrefetch,
+}                           from './NavItemWithPrefetch'
 
 // models:
 import {
@@ -179,18 +182,23 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
-                    <NavItem active={!parentsAndSelf.length}>
+                    <NavItemWithPrefetch categoryPath={null} active={!parentsAndSelf.length}>
                         <UninterceptedLink href='/categories' uninterceptedHref='/_/categories' prefetch={true}>
                             All products
                         </UninterceptedLink>
-                    </NavItem>
+                    </NavItemWithPrefetch>
                     
                     {parentsAndSelf.map(({ name }, index, array) => {
                         const categoryHref = `/categories/${array.slice(0, index + 1).map(({path}) => path).join('/')}`;
                         return (
-                            <NavItem
+                            <NavItemWithPrefetch
                                 // identifiers:
                                 key={index}
+                                
+                                
+                                
+                                // data:
+                                categoryPath={array.slice(0, index + 1).map(({path}) => path)}
                                 
                                 
                                 
@@ -200,7 +208,7 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                                 <UninterceptedLink href={categoryHref} uninterceptedHref={`/_${categoryHref}`} prefetch={true}>
                                     {name}
                                 </UninterceptedLink>
-                            </NavItem>
+                            </NavItemWithPrefetch>
                         );
                     })}
                 </Nav>
