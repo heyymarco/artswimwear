@@ -155,6 +155,12 @@ const usesGalleryBodyGridLayout = () => {
         gap: spacers.lg,
     });
 };
+const usesGalleryBodyItemLayout = () => {
+    return style({
+        // layouts:
+        display: 'grid',
+    });
+};
 
 const usesCreateModelLayout = () => { // the <GalleryItem> of model add_new
     return style({
@@ -272,6 +278,10 @@ export default () => [
     }),
     scope('galleryBodyGrid', { // the <GalleryBody> of model
         ...usesGalleryBodyGridLayout(),
+    }),
+    scope('galleryBodyItem', {
+        // layouts:
+        ...usesGalleryBodyItemLayout(),
     }),
     scope('createModel', { // the <GalleryItem> of model add_new
         ...usesCreateModelLayout(),
