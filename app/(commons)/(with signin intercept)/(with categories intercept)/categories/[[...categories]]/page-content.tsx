@@ -6,11 +6,6 @@ import {
     default as React,
 }                           from 'react'
 
-// next-js:
-import {
-    useRouter,
-}                           from 'next/navigation'
-
 // styles:
 import {
     useCategoryListPageStyleSheet,
@@ -27,9 +22,6 @@ import {
     NavItem,
     Nav,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
-import {
-    Link,
-}                           from '@reusable-ui/next-compat-link'
 
 // heymarco components:
 import {
@@ -56,6 +48,11 @@ import {
 import {
     ProductCard,
 }                           from '@/components/views/ProductCard'
+
+// private components:
+import {
+    UninterceptedLink,
+}                           from './UninterceptedLink'
 
 // models:
 import {
@@ -168,11 +165,6 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
     
     
     
-    // routes:
-    const router = useRouter();
-    
-    
-    
     // jsx:
     if (isLoadingAndNoData) return <PageLoading />;
     if (isErrorAndNoData  ) return <PageError onRetry={refetch} />;
@@ -187,13 +179,10 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                     listStyle='breadcrumb'
                     orientation='inline'
                 >
-                    <NavItem active={!parentsAndSelf.length} onClick={(event) => {
-                        router.push('/_/categories');
-                        event.preventDefault(); // handled
-                    }}>
-                        <Link href='/categories' prefetch={true}>
+                    <NavItem active={!parentsAndSelf.length}>
+                        <UninterceptedLink href='/categories' uninterceptedHref='/_/categories' prefetch={true}>
                             All products
-                        </Link>
+                        </UninterceptedLink>
                     </NavItem>
                     
                     {parentsAndSelf.map(({ name }, index, array) => {
@@ -207,18 +196,10 @@ function CategoryPageContentInternal({ parentsAndSelf = [] }: { parentsAndSelf?:
                                 
                                 // states:
                                 active={index === (array.length - 1)}
-                                
-                                
-                                
-                                // handlers:
-                                onClick={(event) => {
-                                    router.push(`/_${categoryHref}`);
-                                    event.preventDefault(); // handled
-                                }}
                             >
-                                <Link href={categoryHref} prefetch={true}>
+                                <UninterceptedLink href={categoryHref} uninterceptedHref={`/_${categoryHref}`} prefetch={true}>
                                     {name}
-                                </Link>
+                                </UninterceptedLink>
                             </NavItem>
                         );
                     })}
