@@ -37,6 +37,7 @@ import {
     Generic,
     BasicProps,
     Basic,
+    IndicatorProps,
     
     
     
@@ -86,14 +87,14 @@ import {
 
 // react components:
 
-/* <ModelCreateOuter> */
-export interface ModelCreateOuterProps<TModel extends Model>
+export interface ModelAddProps<TModel extends Model, TElement extends Element = HTMLElement>
     extends
         // bases:
-        ButtonProps,
-        
-        // components:
-        ButtonComponentProps
+        GenericProps<TElement>,
+        Pick<IndicatorProps,
+            // states:
+            |'enabled'
+        >
 {
     // accessibilities:
     createItemText       ?: React.ReactNode
@@ -101,12 +102,24 @@ export interface ModelCreateOuterProps<TModel extends Model>
     
     
     // components:
-    modelCreateComponent  : React.ReactComponentElement<any, ModelCreateProps> | (() => TModel|Promise<TModel>) | false
+    modelCreateComponent ?: React.ReactComponentElement<any, ModelCreateProps> | (() => TModel|Promise<TModel>) | false
     
     
     
     // handlers:
     onModelCreate        ?: CreateHandler<TModel>
+}
+
+/* <ModelCreateOuter> */
+export interface ModelCreateOuterProps<TModel extends Model>
+    extends
+        // bases:
+        ModelAddProps<TModel, HTMLButtonElement>,
+        ButtonProps,
+        
+        // components:
+        ButtonComponentProps
+{
 }
 export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterProps<TModel>) => {
     // styles:
@@ -153,7 +166,7 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
     // handlers:
     const handleShowDialog = useEvent(async (): Promise<void> => {
         // conditions:
-        if (modelCreateComponent === false) return;
+        if (!modelCreateComponent) return;
         
         
         
@@ -370,6 +383,7 @@ export interface PaginationGalleryProps<TModel extends Model, TElement extends E
     modelEmptyComponent   ?: React.ReactComponentElement<any, GenericProps<Element>>
     modelVoidComponent    ?: React.ReactComponentElement<any, GenericProps<Element>>
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
+    modelAddComponent     ?: React.ReactComponentElement<any, ModelAddProps<TModel, Element>> | null
     
     galleryComponent      ?: React.ReactComponentElement<any, GenericProps<Element>>
     galleryGridComponent  ?: React.ReactComponentElement<any, GenericProps<Element>>
@@ -405,6 +419,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
         modelEmptyComponent    = (<ModelEmpty textEmpty={textEmpty} /> as React.ReactComponentElement<any, GenericProps<Element>>),
         modelVoidComponent,
         modelCreateComponent,
+        modelAddComponent      = !modelCreateComponent ? null : (<ModelCreateOuter /> as React.ReactComponentElement<any, ModelAddProps<TModel, Element>>),
         modelPreviewComponent,
         
         galleryComponent       = (<Generic<Element> /> as React.ReactComponentElement<any, GenericProps<Element>>),
@@ -517,30 +532,28 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                 )}
                 
                 {/* <ModelCreate> */}
-                {!!modelCreateComponent  && <ModelCreateOuter<TModel>
-                    // accessibilities:
-                    createItemText={createItemText}
-                    
-                    
-                    
-                    // classes:
-                    className='solid'
-                    
-                    
-                    
-                    // states:
-                    enabled={data !== undefined /* data is fully loaded even if empty data */}
-                    
-                    
-                    
-                    // components:
-                    modelCreateComponent={modelCreateComponent}
-                    
-                    
-                    
-                    // handlers:
-                    onModelCreate={onModelCreate}
-                />}
+                {!!modelAddComponent && !!modelCreateComponent  && React.cloneElement<ModelAddProps<TModel, Element>>(modelAddComponent,
+                    // props:
+                    {
+                        // accessibilities:
+                        createItemText       : createItemText,
+                        
+                        
+                        
+                        // states:
+                        enabled              : data !== undefined, /* data is fully loaded even if empty data */
+                        
+                        
+                        
+                        // components:
+                        modelCreateComponent : modelCreateComponent,
+                        
+                        
+                        
+                        // handlers:
+                        onModelCreate        : onModelCreate,
+                    },
+                )}
                 
                 {/* <VoidGalleryItem> */}
                 {!!modelVoidComponent && ((pagedItems?.length ?? 0) < perPage) && (new Array<null>(perPage - (pagedItems?.length ?? 0)).fill(null).map((_, index) =>
