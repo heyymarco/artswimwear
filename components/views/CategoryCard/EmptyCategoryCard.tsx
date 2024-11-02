@@ -22,8 +22,23 @@ import {
 
 // react components:
 export interface EmptyCategoryCardProps extends ListItemProps {
+    // accessibilities:
+    emptyText ?: string
 }
 const EmptyCategoryCard = (props: EmptyCategoryCardProps): JSX.Element|null => {
+    // props:
+    const {
+        // accessibilities:
+        emptyText = 'There are no more subcategories.',
+        
+        
+        
+        // other props:
+        ...restEmptyCategoryCardProps
+    } = props;
+    
+    
+    
     // styles:
     const styleSheet = useCategoryCardStyleSheet();
     
@@ -89,7 +104,7 @@ const EmptyCategoryCard = (props: EmptyCategoryCardProps): JSX.Element|null => {
             {/* #endregion just for preserving the consistent size to regular <CategoryCard> */}
             
             <p className='emptyMessage txt-sec'>
-                There are no more subcategories.
+                {emptyText}
             </p>
         </ListItem>
     );
