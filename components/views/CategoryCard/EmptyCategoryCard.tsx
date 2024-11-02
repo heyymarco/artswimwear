@@ -21,11 +21,20 @@ import {
 
 
 // react components:
-export interface VoidCategoryCardProps extends ListItemProps {
+export interface EmptyCategoryCardProps extends ListItemProps {
 }
-const VoidCategoryCard = (props: VoidCategoryCardProps): JSX.Element|null => {
+const EmptyCategoryCard = (props: EmptyCategoryCardProps): JSX.Element|null => {
     // styles:
     const styleSheet = useCategoryCardStyleSheet();
+    
+    
+    
+    // default props:
+    const {
+        // variants:
+        theme = 'secondary',
+        mild  = false,
+    } = props;
     
     
     
@@ -37,13 +46,19 @@ const VoidCategoryCard = (props: VoidCategoryCardProps): JSX.Element|null => {
             
             
             
+            // variants:
+            theme={theme}
+            mild={mild}
+            
+            
+            
             // behaviors:
             actionCtrl={false}
             
             
             
             // classes:
-            className={`${styleSheet.main} ${styleSheet.void}`}
+            className={`${styleSheet.main} ${styleSheet.empty}`}
         >
             {/* #region just for preserving the consistent size to regular <CategoryCard> */}
             {/* image (single image) -or- carousel (multi images) */}
@@ -57,10 +72,14 @@ const VoidCategoryCard = (props: VoidCategoryCardProps): JSX.Element|null => {
                 />
             </div>
             {/* #endregion just for preserving the consistent size to regular <CategoryCard> */}
+            
+            <p className='emptyMessage txt-sec'>
+                There are no more subcategories.
+            </p>
         </ListItem>
     );
 };
 export {
-    VoidCategoryCard,
-    VoidCategoryCard as default,
+    EmptyCategoryCard,
+    EmptyCategoryCard as default,
 }

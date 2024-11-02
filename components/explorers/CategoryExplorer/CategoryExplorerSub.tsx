@@ -40,6 +40,7 @@ import {
 import {
     CategoryCard,
     // VoidCategoryCard,
+    EmptyCategoryCard,
 }                           from '@/components/views/CategoryCard'
 
 // private components:
@@ -318,6 +319,7 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
                 // components:
                 galleryComponent={<Generic className='flat' />}
                 // modelVoidComponent={<VoidCategoryCard />}
+                modelEmptyComponent={<EmptyCategoryCard />}
                 modelPreviewComponent={
                     <CategoryCard
                         // data:

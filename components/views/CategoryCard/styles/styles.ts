@@ -262,6 +262,35 @@ const usesCategoryCardLayout = () => { // the <ListItem> of category list
         ...paddingRule(), // must be placed at the last
     });
 };
+const usesVoidCategoryCardLayout = () => {
+    return style({
+        // appearances:
+        visibility: 'hidden',
+    });
+};
+const usesEmptyCategoryCardLayout = () => {
+    return style({
+        // children:
+        ...children('.preview', {
+            // appearances:
+            visibility: 'hidden',
+        }),
+        ...children('.emptyMessage', {
+            // positions:
+            gridArea: '1 / 1 / -1 / -1',
+            
+            
+            
+            // spacings:
+            margin: 0,
+            
+            
+            
+            // typos:
+            textAlign: 'center',
+        }),
+    });
+};
 
 export default () => [
     scope('main', {
@@ -270,8 +299,10 @@ export default () => [
     }, { specificityWeight: 2 }),
     scope('void', {
         // layouts:
-        ...style({
-            visibility: 'hidden',
-        }),
+        ...usesVoidCategoryCardLayout(),
+    }),
+    scope('empty', {
+        // layouts:
+        ...usesEmptyCategoryCardLayout(),
     }),
 ];
