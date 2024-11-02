@@ -146,7 +146,7 @@ const usesCategoryCardLayout = () => { // the <ListItem> of category list
                     :is(.flat, .joined) >   *  > .wh287.wh287 > .preview
                         <ul>     <li>   &&&&&&&&&&&&&&&&&&&&&&&
                 */
-                ...rule(':is(.flat, .joined)>*>&', {
+                ...rule([':is(.flat, .joined)>:is(li, [role="listitem"])>&', ':is(.flat, .joined)>[role="presentation"]>:is(li, [role="listitem"])>&'], {
                     borderInlineEndWidth: '0px',
                 }),
                 
