@@ -151,6 +151,8 @@ const WishGroupImage = (props: WishGroupImageProps): JSX.Element|null => {
                 // data:
                 href={`/customer/wishes/${!id ? 'all' : encodeURIComponent(id)}`}
             />
+            
+            {/* image (single image) -or- images (multi images) */}
             {(!previews || !previews.length)   && <div className='images noImage'>
                 <Icon icon='collections' size='xl' />
             </div>}

@@ -44,6 +44,7 @@ import {
 }                           from '@/components/explorers/PaginationGallery'
 import {
     WishGroupImage,
+    AddWishGroupImage,
 }                           from '@/components/views/WishGroupImage'
 import {
     EditWishGroupDialog,
@@ -129,6 +130,9 @@ function WishPageContentInternal(): JSX.Element|null {
                     // components:
                     bodyComponent={
                         <Basic nude={true} />
+                    }
+                    modelAddComponent={
+                        <AddWishGroupImage />
                     }
                     modelPreviewComponent={
                         <WishGroupImage

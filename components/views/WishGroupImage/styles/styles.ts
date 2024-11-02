@@ -70,13 +70,20 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
             
             
             
+            // spacings:
+            padding: 0,
+            
+            
+            
             // animations:
-            transition : [
-                ['box-shadow', '300ms'],
-            ],
-            boxShadow  : '0px 0px 1rem rgba(0, 0, 0, 0.1)',
-            ...rule(':hover', {
-                boxShadow : '0px 0px 1rem rgba(0, 0, 0, 0.7)',
+            ...rule(':not(.add)', {
+                transition : [
+                    ['box-shadow', '300ms'],
+                ],
+                boxShadow  : '0px 0px 1rem rgba(0, 0, 0, 0.1)',
+                ...rule(':hover', {
+                    boxShadow : '0px 0px 1rem rgba(0, 0, 0, 0.7)',
+                }),
             }),
             
             ...children('.images', {
@@ -272,6 +279,10 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
                 
                 
                 // children:
+                ...children(['.name', '.count'], {
+                    // sizes:
+                    minBlockSize: '1.03lh',
+                }),
                 ...children('.name', { // handles long text
                     // layouts:
                     display: 'grid',
@@ -340,10 +351,39 @@ const usesWishGroupImageLayout = () => { // the <ListItem> of order list
         ...borderRule(), // must be placed at the last
     });
 };
+const usesAddWishGroupImageLayout = () => {
+    return style({
+        // borders:
+        borderStyle: 'dashed',
+        
+        
+        
+        // children:
+        ...children('.addMessage', {
+            // positions:
+            gridArea: '1 / 1 / -1 / -1',
+            
+            
+            
+            // layouts:
+            display: 'grid',
+            justifyItems : 'center',
+            
+            
+            
+            // spacings:
+            gap : spacers.sm,
+        }),
+    });
+};
 
 export default () => [
     scope('main', {
         // layouts:
         ...usesWishGroupImageLayout(),
+    }, { specificityWeight: 2 }),
+    scope('add', {
+        // layouts:
+        ...usesAddWishGroupImageLayout(),
     }, { specificityWeight: 2 }),
 ];
