@@ -32,8 +32,23 @@ const EmptyCategoryCard = (props: EmptyCategoryCardProps): JSX.Element|null => {
     // default props:
     const {
         // variants:
-        theme = 'secondary',
-        mild  = false,
+        theme      = 'secondary',
+        mild       = false,
+        
+        
+        
+        // classes:
+        className  = '',
+        
+        
+        
+        // behaviors:
+        actionCtrl = false,
+        
+        
+        
+        // other props:
+        ...restListItemProps
     } = props;
     
     
@@ -42,7 +57,7 @@ const EmptyCategoryCard = (props: EmptyCategoryCardProps): JSX.Element|null => {
     return (
         <ListItem
             // other props:
-            {...props}
+            {...restListItemProps}
             
             
             
@@ -52,13 +67,13 @@ const EmptyCategoryCard = (props: EmptyCategoryCardProps): JSX.Element|null => {
             
             
             
-            // behaviors:
-            actionCtrl={false}
-            
-            
-            
             // classes:
-            className={`${styleSheet.main} ${styleSheet.empty}`}
+            className={`${styleSheet.main} ${styleSheet.empty} ${className}`}
+            
+            
+            
+            // behaviors:
+            actionCtrl={actionCtrl}
         >
             {/* #region just for preserving the consistent size to regular <CategoryCard> */}
             {/* image (single image) -or- carousel (multi images) */}

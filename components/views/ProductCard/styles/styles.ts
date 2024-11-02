@@ -278,6 +278,29 @@ const usesProductCardLayout = () => {
         ...borderRule(), // must be placed at the last
     });
 };
+const usesEmptyProductCardLayout = () => {
+    return style({
+        // children:
+        ...children('.prodImg', {
+            // appearances:
+            visibility: 'hidden',
+        }),
+        ...children('.emptyMessage', {
+            // positions:
+            gridArea: '1 / 1 / -1 / -1',
+            
+            
+            
+            // spacings:
+            margin: 0,
+            
+            
+            
+            // typos:
+            textAlign: 'center',
+        }),
+    });
+};
 
 
 
@@ -285,5 +308,9 @@ export default () => [
     scope('main', {
         // layouts:
         ...usesProductCardLayout(),
+    }),
+    scope('empty', {
+        // layouts:
+        ...usesEmptyProductCardLayout(),
     }),
 ];
