@@ -10,6 +10,7 @@ import {
     // hooks:
     useState,
     useRef,
+    useEffect,
 }                           from 'react'
 
 // reusable-ui core:
@@ -73,8 +74,14 @@ export interface ProductMenuProps
 const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     // states:
     const {
+        // refs:
+        navbarRef,
+        
+        
+        
         // states:
         navbarExpanded,
+        listExpanded,
         
         
         
@@ -83,6 +90,11 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     } = useNavbarState();
     
     const [hasCategories, firstSubcategory] = useGetHasCategories();
+    
+    
+    
+    // refs:
+    const menuRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -112,7 +124,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
             //#region a fix for categories page interceptor
             // intercepts all_pages/** => show <CategoryExplorerDropdown>:
             startIntercept(async (backPathname): Promise<boolean> => {
-                toggleList(false); // collapse the <Navbar> manually
+                if (!listExpanded) toggleList(false); // collapse the <Navbar> manually
                 
                 
                 
@@ -124,13 +136,30 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                         
                         
                         // floatable:
-                        floatingOn={menuRef}
-                        floatingPlacement='bottom-end'
+                        floatingOn={
+                            navbarExpanded
+                            ? menuRef         // on desktop: shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
+                            : navbarRef       // on mobile : shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
+                        }
+                        floatingPlacement={
+                            navbarExpanded
+                            ? 'bottom-end'    // on desktop: shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
+                            : 'bottom-start'  // on mobile : shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
+                        }
+                        orientation={
+                            navbarExpanded
+                            ? 'block'         // on desktop: vertically   (top  to bottom) shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
+                            : 'inline'        // on mobile : horizontally (left to  right) shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
+                        }
                         
                         
                         
                         // auto focusable:
-                        restoreFocusOn={menuRef}
+                        restoreFocusOn={
+                            navbarExpanded
+                            ? menuRef         // on desktop: restores focus to <ProductMenu>
+                            : navbarRef       // on mobile: restores focus to <Navbar>
+                        }
                     />
                 );
                 setShownDropdown(shownDropdownPromise);
@@ -149,8 +178,33 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     
     
     
-    // refs:
-    const menuRef = useRef<HTMLElement|null>(null);
+    // effects:
+    // closes the shown <CategoryExplorerDropdown> when on transition between desktop <==> mobile:
+    const prevNavbarExpandedRef = useRef<boolean>(navbarExpanded);
+    useEffect(() => {
+        // conditions:
+        if (prevNavbarExpandedRef.current === navbarExpanded) return; // no diff => ignore
+        prevNavbarExpandedRef.current = navbarExpanded; // sync
+        
+        
+        
+        // actions:
+        shownDropdown?.closeDialog(undefined);
+    }, [navbarExpanded]);
+    
+    // closes the shown <CategoryExplorerDropdown> when <Navbar>'s list collapsed:
+    const prevListExpandedRef = useRef<boolean>(listExpanded);
+    useEffect(() => {
+        // conditions:
+        if (prevListExpandedRef.current === listExpanded) return; // no diff => ignore
+        prevListExpandedRef.current = listExpanded; // sync
+        if (listExpanded) return; // only interested on collapsed event
+        
+        
+        
+        // actions:
+        shownDropdown?.closeDialog(undefined);
+    }, [listExpanded]);
     
     
     
