@@ -54,6 +54,7 @@
     "@reusable-ui/invalidable": "^6.6.0",
     "@reusable-ui/modal-card": "^6.6.4",
     "@reusable-ui/modal-side": "^6.6.2",
+    "@reusable-ui/navbar": "^6.7.0",
     "@reusable-ui/navscroll": "^6.5.1",
     "@reusable-ui/next-compat-link": "^7.0.1",
     "@reusable-ui/visually-hidden": "^6.5.1",
