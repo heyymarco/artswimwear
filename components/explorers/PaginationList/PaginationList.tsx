@@ -96,14 +96,10 @@ import {
 
 // react components:
 
-/* <ModelCreateOuter> */
-export interface ModelCreateOuterProps<TModel extends Model>
+export interface ModelAddProps<TModel extends Model, TElement extends Element = HTMLElement>
     extends
         // bases:
-        ListItemProps,
-        
-        // components:
-        ListItemComponentProps<Element>
+        ListItemProps<TElement>
 {
     // accessibilities:
     createItemText       ?: React.ReactNode
@@ -111,16 +107,27 @@ export interface ModelCreateOuterProps<TModel extends Model>
     
     
     // components:
-    modelCreateComponent  : React.ReactComponentElement<any, ModelCreateProps> | (() => TModel|Promise<TModel>) | false
-    /**
-     * An additional button such as `<DropdownMoreButton>`.
-     */
-    moreButtonComponent  ?: React.ReactComponentElement<any, DropdownListButtonProps>
+    modelCreateComponent ?: React.ReactComponentElement<any, ModelCreateProps> | (() => TModel|Promise<TModel>) | false
     
     
     
     // handlers:
     onModelCreate        ?: CreateHandler<TModel>
+}
+
+/* <ModelCreateOuter> */
+export interface ModelCreateOuterProps<TModel extends Model>
+    extends
+        // bases:
+        ModelAddProps<TModel, HTMLElement>,
+        
+        // components:
+        ListItemComponentProps<Element>
+{
+    /**
+     * An additional button such as `<DropdownMoreButton>`.
+     */
+    moreButtonComponent  ?: React.ReactComponentElement<any, DropdownListButtonProps>
 }
 export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterProps<TModel>) => {
     // styles:
@@ -163,7 +170,7 @@ export const ModelCreateOuter = <TModel extends Model>(props: ModelCreateOuterPr
     // handlers:
     const handleShowDialog = useEvent(async (): Promise<void> => {
         // conditions:
-        if (modelCreateComponent === false) return;
+        if (!modelCreateComponent) return;
         
         
         
@@ -373,6 +380,7 @@ export interface PaginationListProps<TModel extends Model, TElement extends Elem
     modelEmptyComponent   ?: React.ReactComponentElement<any, GenericProps<Element>>
     modelVoidComponent    ?: React.ReactComponentElement<any, GenericProps<Element>>
     modelPreviewComponent  : React.ReactComponentElement<any, ModelPreviewProps<TModel, Element>>
+    modelAddComponent     ?: React.ReactComponentElement<any, ModelAddProps<TModel, Element>> | null
     
     
     
@@ -384,9 +392,9 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
     // props:
     const {
         // appearances:
-        showPaginationTop    = true,
-        showPaginationBottom = true,
-        autoHidePagination   = false,
+        showPaginationTop      = true,
+        showPaginationBottom   = true,
+        autoHidePagination     = false,
         
         
         
@@ -399,14 +407,15 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         // components:
         
         // we use <Basic> for the <GalleryBodyWrapper>, because the <GalleryBody> is ALREADY has nice styling:
-        bodyComponent         = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
+        bodyComponent          = (<Basic<Element> /> as React.ReactComponentElement<any, BasicProps<Element>>),
         
-        modelEmptyComponent   = (<ModelEmpty className='fluid' /* fluid: fills the entire <PaginationList> height */ textEmpty={textEmpty} /> as React.ReactComponentElement<any, GenericProps<Element>>),
+        modelEmptyComponent    = (<ModelEmpty className='fluid' /* fluid: fills the entire <PaginationList> height */ textEmpty={textEmpty} /> as React.ReactComponentElement<any, GenericProps<Element>>),
         modelVoidComponent,
         modelCreateComponent,
+        modelAddComponent      = !modelCreateComponent ? null : (<ModelCreateOuter /> as React.ReactComponentElement<any, ModelAddProps<TModel, Element>>),
         modelPreviewComponent,
         
-        listComponent         = (<List<Element> /> as React.ReactComponentElement<any, ListProps<Element>>),
+        listComponent          = (<List<Element> /> as React.ReactComponentElement<any, ListProps<Element>>),
         
         
         
@@ -519,30 +528,33 @@ const PaginationList         = <TModel extends Model, TElement extends Element =
         // children:
         children  : listComponentChildren = <>
             {/* <ModelCreate> */}
-            {!!modelCreateComponent  && <ModelCreateOuter<TModel>
-                // accessibilities:
-                createItemText={createItemText}
-                
-                
-                
-                // classes:
-                className='solid'
-                
-                
-                
-                // states:
-                enabled={data !== undefined /* data is fully loaded even if empty data */}
-                
-                
-                
-                // components:
-                modelCreateComponent={modelCreateComponent}
-                
-                
-                
-                // handlers:
-                onModelCreate={onModelCreate}
-            />}
+            {!!modelAddComponent && !!modelCreateComponent  && React.cloneElement<ModelAddProps<TModel, Element>>(modelAddComponent,
+                // props:
+                {
+                    // accessibilities:
+                    createItemText       : createItemText,
+                    
+                    
+                    
+                    // classes:
+                    className            : 'solid',
+                    
+                    
+                    
+                    // states:
+                    enabled              : data !== undefined, /* data is fully loaded even if empty data */
+                    
+                    
+                    
+                    // components:
+                    modelCreateComponent : modelCreateComponent,
+                    
+                    
+                    
+                    // handlers:
+                    onModelCreate        : onModelCreate,
+                },
+            )}
             
             {/* <ModelEmpty> */}
             {isModelEmpty && modelEmptyComponent}
