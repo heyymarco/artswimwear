@@ -43,6 +43,7 @@ export interface CategoryExplorerBaseProps
             // components:
             |'modelCreateComponent'
             |'modelPreviewComponent'
+            |'modelAddComponent'
             |'moreButtonComponent'
             
             // handlers:
