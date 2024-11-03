@@ -35,7 +35,7 @@ import {
     // composite-components:
     NavItem,
     Nav,
-    NavbarParams,
+    useNavbarState,
     navbars,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 import {
@@ -70,13 +70,24 @@ import {
 
 
 // react components:
-const SiteNavbarMenu = ({
+const SiteNavbarMenu = () => {
+    // states:
+    const {
+        // variants:
         basicVariantProps,
+        
+        
+        
+        // states:
         navbarExpanded,
         listExpanded,
+        
+        
+        
+        // handlers:
         handleClickToToggleList,
-    } : NavbarParams) => {
-    // contexts:
+    } = useNavbarState();
+    
     const {
         // states:
         isCartEmpty,
