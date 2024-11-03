@@ -130,6 +130,11 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 
                 const shownDropdownPromise = showDialog<true>(
                     <CategoryExplorerDropdown
+                        // appearances:
+                        mobileLayout={!navbarExpanded}
+                        
+                        
+                        
                         // variants:
                         // theme='primary'
                         

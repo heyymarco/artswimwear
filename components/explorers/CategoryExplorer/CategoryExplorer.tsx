@@ -122,6 +122,7 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
         >
 {
     // appearances:
+    mobileLayout    ?: boolean
     showRootSection ?: boolean
 }
 const CategoryExplorer = <TElement extends Element = HTMLElement>(props: CategoryExplorerProps<TElement>): JSX.Element|null => {
@@ -364,7 +365,8 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
     // props:
     const {
         // appearances:
-        showRootSection = has2ndLevelCategories,
+        mobileLayout    = false,
+        showRootSection = !mobileLayout && has2ndLevelCategories,
         
         
         
@@ -387,7 +389,7 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
         
         
         // classes:
-        mainClass = styleSheet.main,
+        mainClass = `${styleSheet.main} ${mobileLayout ? 'mobile' : ''}`,
         
         
         

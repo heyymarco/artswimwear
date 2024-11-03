@@ -1,6 +1,8 @@
 // cssfn:
 import {
     // writes css in javascript:
+    rule,
+    fallback,
     children,
     style,
     scope,
@@ -61,6 +63,21 @@ const usesMainLayout = () => {
             '/',
             '1fr 3fr',
         ]],
+        
+        
+        
+        // sizes:
+        ...rule('.mobile', {
+            inlineSize: '100svw',
+            ...fallback({
+                inlineSize: '100vw',
+            }),
+            
+            blockSize: '100svh',
+            ...fallback({
+                blockSize: '100vh',
+            }),
+        }),
     });
 };
 
@@ -136,6 +153,7 @@ const usesSubLayout = () => {
             '/',
             `${containers.paddingInline} 1fr`,
         ]],
+        alignContent: 'start', // place the excess space on the bottom
         
         
         

@@ -26,6 +26,7 @@ import {
 
 // private components:
 import {
+    type CategoryExplorerProps,
     CategoryExplorer,
 }                           from './CategoryExplorer'
 
@@ -38,20 +39,31 @@ export interface CategoryExplorerDropdownProps<TElement extends Element = HTMLEl
         Omit<DropdownProps<TElement>,
             // children:
             |'children' // already defined internally
+        >,
+        
+        // components:
+        Pick<CategoryExplorerProps,
+            // appearances:
+            |'mobileLayout'
         >
 {
 }
 const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Element|null => {
+    // props:
+    const {
+        // appearances:
+        mobileLayout = false,
+        
+        
+        
+        // other props:
+        ...restCategoryExplorerDropdownProps
+    } = props;
+    
+    
+    
     // styles:
     const styleSheet = useCategoryExplorerStyleSheet();
-    
-    
-    
-    // default props:
-    const {
-        // other props:
-        ...restDropdownProps
-    } = props;
     
     
     
@@ -67,6 +79,14 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
     
     
     
+    // default props:
+    const {
+        // other props:
+        ...restDropdownProps
+    } = restCategoryExplorerDropdownProps;
+    
+    
+    
     // jsx:
     return (
         <Dropdown
@@ -76,9 +96,14 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
             
             
             // classes:
-            className={`${styleSheet.dropdown} ${props.className}`}
+            className={`${mobileLayout ? '' : styleSheet.dropdown} ${props.className}`}
         >
             <CategoryExplorer
+                // appearances:
+                mobileLayout={mobileLayout}
+                
+                
+                
                 // handlers:
                 onNavigate={handleNavigate}
             />
