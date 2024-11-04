@@ -142,7 +142,7 @@ const usesGalleryBodyLayout = () => { // the <GalleryBody> of model
         // }),
     });
 };
-const usesGalleryBodyGridLayout = () => {
+const usesGalleryGridLayout = () => {
     return style({
         // layouts:
         display             : 'grid', // use css block grid for layouting, the core of our <PaginationGallery> layout
@@ -276,8 +276,8 @@ export default () => [
     scope('galleryBody', { // the <GalleryBody> of model
         ...usesGalleryBodyLayout(),
     }),
-    scope('galleryBodyGrid', { // the <GalleryBody> of model
-        ...usesGalleryBodyGridLayout(),
+    scope('galleryGrid', { // the <GalleryBody> of model
+        ...usesGalleryGridLayout(),
     }),
     scope('galleryBodyItem', {
         // layouts:
