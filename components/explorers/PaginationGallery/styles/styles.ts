@@ -155,7 +155,7 @@ const usesGalleryGridLayout = () => {
         gap: spacers.lg,
     });
 };
-const usesGalleryBodyItemLayout = () => {
+const usesGalleryItemLayout = () => {
     return style({
         // layouts:
         display: 'grid',
@@ -279,9 +279,9 @@ export default () => [
     scope('galleryGrid', { // the <GalleryBody> of model
         ...usesGalleryGridLayout(),
     }),
-    scope('galleryBodyItem', {
+    scope('galleryItem', {
         // layouts:
-        ...usesGalleryBodyItemLayout(),
+        ...usesGalleryItemLayout(),
     }),
     scope('createModel', { // the <GalleryItem> of model add_new
         ...usesCreateModelLayout(),

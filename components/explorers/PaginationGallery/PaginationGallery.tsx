@@ -620,7 +620,7 @@ const PaginationGallery         = <TModel extends Model, TElement extends Elemen
                     
                     
                     // classes:
-                    className : `${styleSheets.galleryBodyItem} ${galleryItemComponentClassName ?? ''}`,
+                    className : `${styleSheets.galleryItem} ${galleryItemComponentClassName ?? ''}`,
                 },
                 
                 
