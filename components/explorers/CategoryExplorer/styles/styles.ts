@@ -72,7 +72,7 @@ const usesMainLayout = () => {
             '/',
             '1fr 3fr',
         ]],
-        overflow: 'auto', // shows a scrollbar when a lot of menuItems are flooded the limited <Dropdown>'s height
+        overflowY: 'scroll', // shows a scrollbar when a lot of menuItems are flooded the limited <Dropdown>'s height
     });
 };
 
@@ -166,9 +166,25 @@ const usesSubLayout = () => {
         paddingInline: '0px',
         [paddingVars.paddingBlock]: `calc((${spacers.sm} * 2) + 1lh)`, // already reserved to nav
         paddingBlockStart: '0px', // already reserved to nav
+        
+        
+        
+        // children:
+        ...rule('.mobile', {
+            ...children('*', { // <CategoryExplorerSub>
+                ...children('*', { // <GalleryBodyWrapper>
+                    // children:
+                    ...children(':is(ul, [role="list"])', { // <GalleryBody>
+                        ...children('[role="presentation"]', { // <GalleryGrid>
+                            gridTemplateColumns : '1fr', // force to always SINGLE_COLUMN when on mobile layout
+                        }),
+                    }),
+                }),
+            }),
+        }),
     });
 };
-const usesRootMergeSubLayout = () => {
+const usesRootMergeSubLayout = () => { // no <CategoryExplorerRoot>, just a <CategoryExplorerSub> takes over the <CategoryExplorerRoot>
     return style({
         // positions:
         gridArea: 'root / root / sub / sub',
@@ -176,12 +192,14 @@ const usesRootMergeSubLayout = () => {
         
         
         // children:
-        ...children('*', { // <CategoryExplorerSub>
-            ...children('*', { // <GalleryBodyWrapper>
-                // children:
-                ...children(':is(ul, [role="list"])', { // <GalleryBody>
-                    // layouts:
-                    alignContent : 'center', // an appearance adjusment when the <CategoryExplorerSubItem>(s) are too few => place the extra spacing at the top and bottom
+        ...rule(':not(.mobile)', {
+            ...children('*', { // <CategoryExplorerSub>
+                ...children('*', { // <GalleryBodyWrapper>
+                    // children:
+                    ...children(':is(ul, [role="list"])', { // <GalleryBody>
+                        // layouts:
+                        alignContent : 'center', // an appearance adjusment when the <CategoryExplorerSubItem>(s) are too few => place the extra spacing at the top and bottom
+                    }),
                 }),
             }),
         }),
