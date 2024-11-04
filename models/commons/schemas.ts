@@ -12,6 +12,9 @@ import {
     
     type MutationArgs,
     type PaginationArgs,
+    
+    type Literal,
+    type Json,
 }                           from './types'
 
 
@@ -51,7 +54,21 @@ export const NonNegativeCurrencyAmountSchema = CurrencyAmountSchema.nonnegative(
 export const WeightSchema                    = z.number().finite();
 export const NonNegativeWeightSchema         = WeightSchema.nonnegative();
 export const QuantitySchema                  = z.number().int().finite().nonnegative();
-export const JsonSchema                      = z.string().trim().nullable().refine((value) => {
+
+export const LiteralSchema                   = z.union([
+    z.null(),
+    z.string(),
+    z.number(),
+    z.boolean(),
+]) satisfies z.Schema<Literal>;
+export const JsonSchema                      : z.ZodType<Json> = z.lazy(() =>
+    z.union([
+        LiteralSchema,
+        z.array(JsonSchema),
+        z.record(JsonSchema),
+    ])
+) satisfies z.Schema<Json>;
+export const JsonSchemaString                = z.string().trim().nullable().refine((value) => {
     try {
         if (value === null) return true;
         JSON.parse(value);

@@ -22,3 +22,15 @@ export interface PaginationArgs {
     page     : number
     perPage  : number
 }
+
+
+
+export type Literal =
+    |null
+    |string
+    |number
+    |boolean
+export type Json =
+    |Literal
+    |Array<Json>
+    |{ [key: string]: Json }
