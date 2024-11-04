@@ -412,7 +412,7 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
         
         
         // classes:
-        mainClass = styleSheet.main,
+        mainClass = `${styleSheet.main} ${mobileLayout ? 'mobile' : ''}`,
         
         
         

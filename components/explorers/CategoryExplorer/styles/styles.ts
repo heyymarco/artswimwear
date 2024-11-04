@@ -72,7 +72,14 @@ const usesMainLayout = () => {
             '/',
             '1fr 3fr',
         ]],
-        overflowY: 'scroll', // shows a scrollbar when a lot of menuItems are flooded the limited <Dropdown>'s height
+        ...rule(':not(.mobile)', {       // desktop mode
+            overflowY      : 'auto',     // shows a scrollbar when a lot of menuItems are flooded the limited <Dropdown>'s height (unstable width)
+            scrollbarWidth : 'thin',     // if having scrollbar => show the minimal version
+        }),
+        ...rule('.mobile', {             // mobile mode
+            overflowY      : 'scroll',   // shows a scrollbar when a lot of menuItems are flooded the limited <Dropdown>'s height (stable width)
+            scrollbarWidth : 'none',     // no scrollbar if possible
+        }),
     });
 };
 
