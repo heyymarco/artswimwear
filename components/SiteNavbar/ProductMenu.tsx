@@ -141,21 +141,21 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                         
                         
                         // floatable:
-                        floatingStrategy='fixed' // do not influences with browser's scrollbar
+                        floatingStrategy='fixed' // prevents the influence by browser's scrollbar
                         floatingOn={
                             isDesktopLayout
-                            ? menuRef         // on desktop: shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
-                            : navbarRef       // on mobile : shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
+                            ? menuRef            // on desktop: shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
+                            : navbarRef          // on mobile : shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
                         }
                         floatingPlacement={
                             isDesktopLayout
-                            ? 'bottom-end'    // on desktop: shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
-                            : 'bottom-start'  // on mobile : shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
+                            ? 'bottom-end'       // on desktop: shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
+                            : 'bottom-start'     // on mobile : shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
                         }
                         orientation={
                             isDesktopLayout
-                            ? 'block'         // on desktop: vertically   (top  to bottom) shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
-                            : 'inline'        // on mobile : horizontally (left to  right) shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
+                            ? 'block'            // on desktop: vertically   (top  to bottom) shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
+                            : 'inline'           // on mobile : horizontally (left to  right) shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
                         }
                         
                         
@@ -163,8 +163,8 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                         // auto focusable:
                         restoreFocusOn={
                             isDesktopLayout
-                            ? menuRef         // on desktop: restores focus to <ProductMenu>
-                            : navbarRef       // on mobile: restores focus to <Navbar>
+                            ? menuRef            // on desktop: restores focus to <ProductMenu>
+                            : navbarRef          // on mobile: restores focus to <Navbar>
                         }
                     />
                 );

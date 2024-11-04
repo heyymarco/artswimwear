@@ -49,14 +49,16 @@ const minImageSize   = 255; // 255px
 // styles:
 const usesDropdownLayout = () => {
     return style({
-        // width:
-        inlineSize        : 'auto',
-        insetInlineEnd    : 0, // fill the entire screen width
+        // width (both desktop and mobile):
+        inlineSize           : 'auto', // overwrites <Dropdown>'s `inlineSize: 'fit-content'`
+        // insetInlineEnd    : 0,      // fill the entire screen width (do not use logical mode)
+        right                : 0,      // fill the entire screen width (instead, use physical mode, since the `left` prop is already handled by `useFloatable()`)
         
-        // height:
+        // height (mobile only):
         ...rule('.mobile', {
-            blockSize     : 'auto',
-            insetBlockEnd : 0, // fill the entire screen height, excluding the <Navbar>'s height
+            blockSize        : 'auto', // overwrites <Dropdown>'s `blockSize: 'fit-content'` (if the <Dropdown> upgraded in the future)
+            // insetBlockEnd : 0,      // fill the entire screen height, excluding the <Navbar>'s height (do not use logical mode)
+            bottom           : 0,      // fill the entire screen height, excluding the <Navbar>'s height (instead, use physical mode, since the `top` prop is already handled by `useFloatable()`)
         }),
     });
 };
@@ -70,7 +72,7 @@ const usesMainLayout = () => {
             '/',
             '1fr 3fr',
         ]],
-        overflow: 'auto', // shows a scrollbar when the available screen space is less than the minimum required layout
+        overflow: 'auto', // shows a scrollbar when a lot of menuItems are flooded the limited <Dropdown>'s height
     });
 };
 
@@ -296,12 +298,12 @@ export default () => [
     scope('dropdown', {
         // layouts:
         ...usesDropdownLayout(),
-    }, { specificityWeight: 2 }),
+    }, { specificityWeight: 2 }), // overwrite <Dropdown>'s styles
     
     scope('main', {
         // layouts:
         ...usesMainLayout(),
-    }, { specificityWeight: 2 }),
+    }),
     
     scope('root', {
         // layouts:
