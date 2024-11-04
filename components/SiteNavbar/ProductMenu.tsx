@@ -141,6 +141,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                         
                         
                         // floatable:
+                        floatingStrategy='fixed' // do not influences with browser's scrollbar
                         floatingOn={
                             isDesktopLayout
                             ? menuRef         // on desktop: shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>

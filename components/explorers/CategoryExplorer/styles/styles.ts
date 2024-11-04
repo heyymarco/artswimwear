@@ -2,7 +2,6 @@
 import {
     // writes css in javascript:
     rule,
-    fallback,
     children,
     style,
     scope,
@@ -50,7 +49,15 @@ const minImageSize   = 255; // 255px
 // styles:
 const usesDropdownLayout = () => {
     return style({
-        inlineSize : '100%',
+        // width:
+        inlineSize        : 'auto',
+        insetInlineEnd    : 0, // fill the entire screen width
+        
+        // height:
+        ...rule('.mobile', {
+            blockSize     : 'auto',
+            insetBlockEnd : 0, // fill the entire screen height, excluding the <Navbar>'s height
+        }),
     });
 };
 
@@ -63,21 +70,7 @@ const usesMainLayout = () => {
             '/',
             '1fr 3fr',
         ]],
-        
-        
-        
-        // sizes:
-        ...rule('.mobile', {
-            inlineSize: '100svw',
-            ...fallback({
-                inlineSize: '100vw',
-            }),
-            
-            blockSize: '100svh',
-            ...fallback({
-                blockSize: '100vh',
-            }),
-        }),
+        overflow: 'auto', // shows a scrollbar when the available screen space is less than the minimum required layout
     });
 };
 
@@ -303,7 +296,7 @@ export default () => [
     scope('dropdown', {
         // layouts:
         ...usesDropdownLayout(),
-    }),
+    }, { specificityWeight: 2 }),
     
     scope('main', {
         // layouts:

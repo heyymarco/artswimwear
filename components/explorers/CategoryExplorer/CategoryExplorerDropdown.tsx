@@ -105,7 +105,7 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
             
             
             // classes:
-            className={`${mobileLayout ? '' : styleSheet.dropdown} ${props.className}`}
+            className={`${styleSheet.dropdown} ${mobileLayout ? 'mobile' : ''} ${props.className}`}
         >
             <CategoryExplorer
                 // appearances:
