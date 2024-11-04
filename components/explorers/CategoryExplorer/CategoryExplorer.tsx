@@ -116,14 +116,17 @@ export interface CategoryExplorerProps<TElement extends Element = HTMLElement>
             |'role' // we redefined [role] in <Generic>
         >,
         
-        // handlers:
+        // states:
         Pick<CategoryExplorerStateProps,
+            // appearances:
+            |'mobileLayout'
+            |'showRootSection'
+            
+            // handlers:
             |'onNavigate'
+            |'onClose'
         >
 {
-    // appearances:
-    mobileLayout    ?: boolean
-    showRootSection ?: boolean
 }
 const CategoryExplorer = <TElement extends Element = HTMLElement>(props: CategoryExplorerProps<TElement>): JSX.Element|null => {
     // states:
@@ -285,8 +288,15 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
         
         
         
+        // appearances:
+        mobileLayout,
+        showRootSection,
+        
+        
+        
         // handlers:
         onNavigate,
+        onClose,
         
         
         
@@ -314,8 +324,15 @@ const CategoryExplorerInternal = <TElement extends Element = HTMLElement>(props:
             
             
             
+            // appearances:
+            mobileLayout={mobileLayout}
+            showRootSection={showRootSection}
+            
+            
+            
             // handlers:
             onNavigate={onNavigate}
+            onClose={onClose}
         >
             <PaginationStateProvider<CategoryPreview>
                 // states:
@@ -342,14 +359,25 @@ interface CategoryExplorerInternal2Props<TElement extends Element = HTMLElement>
     extends
         // bases:
         Omit<CategoryExplorerProps<TElement>,
+            // appearances:
+            |'mobileLayout'
+            |'showRootSection'
+            
             // handlers:
             |'onNavigate'
+            |'onClose'
         >
 {
 }
 const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props: CategoryExplorerInternal2Props<TElement>): JSX.Element|null => {
     // states:
     const {
+        // appearances:
+        mobileLayout,
+        showRootSection : showRootSectionIfPossible,
+        
+        
+        
         // states:
         parentCategories,
     } = useCategoryExplorerState();
@@ -359,17 +387,12 @@ const CategoryExplorerInternal2 = <TElement extends Element = HTMLElement>(props
     const {
         has2ndLevelCategories = false,
     } = categoryPreviewPagination ?? {};
+    const showRootSection = showRootSectionIfPossible && !mobileLayout && has2ndLevelCategories;
     
     
     
     // props:
     const {
-        // appearances:
-        mobileLayout    = false,
-        showRootSection = !mobileLayout && has2ndLevelCategories,
-        
-        
-        
         // other props:
         ...restCategoryExplorerInternal2Props
     } = props;

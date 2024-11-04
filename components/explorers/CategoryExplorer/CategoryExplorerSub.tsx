@@ -26,6 +26,7 @@ import {
     
     // simple-components:
     ButtonIcon,
+    CloseButton,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
 // internal components:
@@ -223,10 +224,20 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
     
     // states:
     const {
+        // appearances:
+        mobileLayout,
+        
+        
+        
         // states:
         parentCategories,
         setParentCategories,
         setRestoreIndex,
+        
+        
+        
+        // handlers:
+        onClose,
     } = useCategoryExplorerState();
     
     const {
@@ -287,10 +298,11 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
     
     
     // jsx:
+    const canBack = ((parentCategories.length - 1 /* back to one_step */) >= minDepth); // PREVENTS the_parents_deep BELOW the minDepth
     return (
         <>
             <div className={styleSheet.nav}>
-                {((parentCategories.length - 1 /* back to one_step */) >= minDepth) /* PREVENTS the_parents_deep BELOW the minDepth */ && <ButtonIcon
+                {(canBack || mobileLayout) && <ButtonIcon
                     // appearances:
                     icon='arrow_back'
                     
@@ -303,11 +315,32 @@ const CategoryExplorerSubInternal = (props: CategoryExplorerSubInternalProps): J
                     
                     
                     
+                    // classes:
+                    className='back'
+                    
+                    
+                    
                     // handlers:
-                    onClick={handleBack}
+                    onClick={canBack ? handleBack : (onClose ?? undefined)}
                 >
                     Back
                 </ButtonIcon>}
+                
+                {!mobileLayout && <CloseButton
+                    // variants:
+                    theme='primary'
+                    mild={true}
+                    
+                    
+                    
+                    // classes:
+                    className='close'
+                    
+                    
+                    
+                    // handlers:
+                    onClick={onClose ?? undefined}
+                />}
             </div>
             
             <CategoryExplorerGallery

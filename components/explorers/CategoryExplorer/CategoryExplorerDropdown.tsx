@@ -20,7 +20,8 @@ import {
 // reusable-ui components:
 import {
     // menu-components:
-    DropdownProps,
+    type DropdownExpandedChangeEvent,
+    type DropdownProps,
     Dropdown,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
@@ -36,7 +37,7 @@ import {
 export interface CategoryExplorerDropdownProps<TElement extends Element = HTMLElement>
     extends
         // bases:
-        Omit<DropdownProps<TElement>,
+        Omit<DropdownProps<TElement, DropdownExpandedChangeEvent<boolean>>,
             // children:
             |'children' // already defined internally
         >,
@@ -76,6 +77,14 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
             data       : true,
         });
     });
+    const handleClose = useEvent(() => {
+        // actions:
+        props.onExpandedChange?.({
+            expanded   : false,
+            actionType : 'ui',
+            data       : false,
+        });
+    });
     
     
     
@@ -106,6 +115,7 @@ const CategoryExplorerDropdown = (props: CategoryExplorerDropdownProps): JSX.Ele
                 
                 // handlers:
                 onNavigate={handleNavigate}
+                onClose={handleClose}
             />
         </Dropdown>
     );

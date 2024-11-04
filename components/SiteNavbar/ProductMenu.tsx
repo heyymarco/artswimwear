@@ -80,7 +80,7 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
         
         
         // states:
-        navbarExpanded,
+        navbarExpanded : isDesktopLayout,
         listExpanded,
         
         
@@ -128,10 +128,10 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                 
                 
                 
-                const shownDropdownPromise = showDialog<true>(
+                const shownDropdownPromise = showDialog<boolean>(
                     <CategoryExplorerDropdown
                         // appearances:
-                        mobileLayout={!navbarExpanded}
+                        mobileLayout={!isDesktopLayout}
                         
                         
                         
@@ -142,17 +142,17 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                         
                         // floatable:
                         floatingOn={
-                            navbarExpanded
+                            isDesktopLayout
                             ? menuRef         // on desktop: shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
                             : navbarRef       // on mobile : shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
                         }
                         floatingPlacement={
-                            navbarExpanded
+                            isDesktopLayout
                             ? 'bottom-end'    // on desktop: shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
                             : 'bottom-start'  // on mobile : shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
                         }
                         orientation={
-                            navbarExpanded
+                            isDesktopLayout
                             ? 'block'         // on desktop: vertically   (top  to bottom) shows the <CategoryExplorerDropdown> on the bottom of <ProductMenu>
                             : 'inline'        // on mobile : horizontally (left to  right) shows the <CategoryExplorerDropdown> on the bottom of <Navbar>
                         }
@@ -161,13 +161,20 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
                         
                         // auto focusable:
                         restoreFocusOn={
-                            navbarExpanded
+                            isDesktopLayout
                             ? menuRef         // on desktop: restores focus to <ProductMenu>
                             : navbarRef       // on mobile: restores focus to <Navbar>
                         }
                     />
                 );
                 setShownDropdown(shownDropdownPromise);
+                
+                // on collapsed (has been closed):
+                if (!isDesktopLayout) {
+                    shownDropdownPromise.collapseEndEvent().then(() => {
+                        toggleList(false); // collapse the <Navbar> manually
+                    });
+                } // if
                 
                 
                 
@@ -185,17 +192,17 @@ const ProductMenu = (props: ProductMenuProps): JSX.Element|null => {
     
     // effects:
     // closes the shown <CategoryExplorerDropdown> when on transition between desktop <==> mobile:
-    const prevNavbarExpandedRef = useRef<boolean>(navbarExpanded);
+    const prevIsDesktopLayoutRef = useRef<boolean>(isDesktopLayout);
     useEffect(() => {
         // conditions:
-        if (prevNavbarExpandedRef.current === navbarExpanded) return; // no diff => ignore
-        prevNavbarExpandedRef.current = navbarExpanded; // sync
+        if (prevIsDesktopLayoutRef.current === isDesktopLayout) return; // no diff => ignore
+        prevIsDesktopLayoutRef.current = isDesktopLayout; // sync
         
         
         
         // actions:
         shownDropdown?.closeDialog(undefined);
-    }, [navbarExpanded]);
+    }, [isDesktopLayout]);
     
     // closes the shown <CategoryExplorerDropdown> when <Navbar>'s list collapsed:
     const prevListExpandedRef = useRef<boolean>(listExpanded);

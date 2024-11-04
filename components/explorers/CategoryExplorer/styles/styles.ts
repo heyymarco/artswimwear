@@ -103,7 +103,7 @@ const usesRootLayout = () => {
         
         // spacings:
         paddingInlineEnd: '0px',
-        [paddingVars.paddingBlock]: `calc((${spacers.sm} * 2) + 1lh)`, // already reserved to nav
+        [paddingVars.paddingBlock]: `calc(${spacers.md} + 1lh + ${spacers.sm})`, // already reserved to nav
         
         
         
@@ -146,12 +146,12 @@ const usesSubLayout = () => {
         // layouts:
         display: 'grid',
         gridTemplate: [[
-            `"... ......." ${spacers.sm}`,
-            '"nav     nav" 1lh',
-            `"... ......." ${spacers.sm}`,
-            '"... gallery" auto',
+            `"... ....... ..." ${spacers.md}`,
+            '"nav     nav nav" 1lh',
+            `"... ....... ..." ${spacers.sm}`,
+            '"... gallery ..." auto',
             '/',
-            `${containers.paddingInline} 1fr`,
+            `${containers.paddingInline} 1fr ${containers.paddingInline}`,
         ]],
         alignContent: 'start', // place the excess space on the bottom
         
@@ -168,7 +168,7 @@ const usesSubLayout = () => {
         
         
         // spacings:
-        paddingInlineStart: '0px',
+        paddingInline: '0px',
         [paddingVars.paddingBlock]: `calc((${spacers.sm} * 2) + 1lh)`, // already reserved to nav
         paddingBlockStart: '0px', // already reserved to nav
     });
@@ -202,18 +202,32 @@ const usesNavLayout = () => {
         
         // layouts:
         display: 'grid',
-        justifyItems: 'start',
+        gridTemplate: [[
+            '"back ... close" auto',
+            '/',
+            'max-content 1fr max-content',
+        ]],
         alignItems : 'center',
         
         
         
         // spacings:
-        paddingInlineStart : spacers.sm, // already reserved to nav
+        paddingInline : spacers.md, // already reserved to nav
         
         
         
         // typos:
         fontSize: buttonIcons.fontSizeMd,
+        
+        
+        
+        // children:
+        ...children('.back', {
+            gridArea: 'back',
+        }),
+        ...children('.close', {
+            gridArea: 'close',
+        }),
     });
 };
 const usesListGalleryLayout = () => {

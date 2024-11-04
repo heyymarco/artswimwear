@@ -40,6 +40,12 @@ export const noopCallback = () => {};
 
 // contexts:
 export interface CategoryExplorerState {
+    // appearances:
+    mobileLayout        : boolean
+    showRootSection     : boolean
+    
+    
+    
     // states:
     parentCategories    : CategoryParentInfo[]
     setParentCategories : Updater<CategoryParentInfo[]>
@@ -51,9 +57,16 @@ export interface CategoryExplorerState {
     
     // handlers:
     onNavigate          : ((url: string) => void) | null|undefined
+    onClose             : (() => void)            | null|undefined
 }
 
 const defaultCategoryExplorerStateContext : CategoryExplorerState = {
+    // appearances:
+    mobileLayout        : false,
+    showRootSection     : true,
+    
+    
+    
     // states:
     parentCategories    : rootParentCategories,
     setParentCategories : noopCallback,
@@ -65,6 +78,7 @@ const defaultCategoryExplorerStateContext : CategoryExplorerState = {
     
     // handlers:
     onNavigate          : undefined,
+    onClose             : undefined,
 }
 const CategoryExplorerStateContext = createContext<CategoryExplorerState>(defaultCategoryExplorerStateContext);
 CategoryExplorerStateContext.displayName  = 'CategoryExplorerState';
@@ -83,6 +97,12 @@ export interface CategoryExplorerStateProps
 }
 const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryExplorerStateProps>): JSX.Element|null => {
     const {
+        // appearances:
+        mobileLayout        : defaultMobileLayout,
+        showRootSection     : defaultShowRootSection,
+        
+        
+        
         // states:
         parentCategories    : defaultParentCategories,
         setParentCategories : defaultSetParentCategories,
@@ -94,12 +114,19 @@ const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryEx
         
         // handlers:
         onNavigate          : defaultOnNavigate,
+        onClose             : defaultOnClose,
     } = useCategoryExplorerState();
     
     
     
     // props:
     const {
+        // appearances:
+        mobileLayout        = defaultMobileLayout,
+        showRootSection     = defaultShowRootSection,
+        
+        
+        
         // states:
         parentCategories    = defaultParentCategories,
         setParentCategories = defaultSetParentCategories,
@@ -111,13 +138,20 @@ const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryEx
         
         // handlers:
         onNavigate          = defaultOnNavigate,
+        onClose             = defaultOnClose,
     } = props;
     
     
     
     // states:
     const categoryExplorerState = useMemo<CategoryExplorerState>(() => ({
-        // states:,
+        // appearances:
+        mobileLayout,
+        showRootSection,
+        
+        
+        
+        // states:
         parentCategories,
         setParentCategories,
         
@@ -128,7 +162,14 @@ const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryEx
         
         // handlers:
         onNavigate,
+        onClose,
     }), [
+        // appearances:
+        mobileLayout,
+        showRootSection,
+        
+        
+        
         // states:,
         parentCategories,
         setParentCategories,
@@ -140,6 +181,7 @@ const CategoryExplorerStateProvider = (props: React.PropsWithChildren<CategoryEx
         
         // handlers:
         onNavigate,
+        onClose,
     ]);
     
     
