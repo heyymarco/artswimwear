@@ -1,5 +1,8 @@
 [high prior] protect payment confirmation page using captcha
 
+[med prior ] refactor the generic template of any component that directly/indirectly inherit from @heymarco/number-editor
+[med prior ] replace @heymarco/quantity-editor with @heymarco/number-updown-editor
+
 [med prior ] remove useGetCountryList hook, replaced with a specific url get for a specific country
 [med prior ] the last created WishGroup -or- the last added WishGroup should be the first item in pagination
 
