@@ -37,6 +37,11 @@ import {
     
     // simple-components:
     buttonIcons,
+    
+    
+    
+    // menu-components:
+    usesCollapse,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 
@@ -48,17 +53,24 @@ const minImageSize   = 255; // 255px
 
 // styles:
 const usesDropdownLayout = () => {
+    // dependencies:
+    
+    // features:
+    const {collapseVars} = usesCollapse();
+    
+    
+    
     return style({
         // width (both desktop and mobile):
-        inlineSize           : 'auto', // overwrites <Dropdown>'s `inlineSize: 'fit-content'`
-        // insetInlineEnd    : 0,      // fill the entire screen width (do not use logical mode)
-        right                : 0,      // fill the entire screen width (instead, use physical mode, since the `left` prop is already handled by `useFloatable()`)
+        [collapseVars.inlineSize]     : '100%', // overwrites <Dropdown>'s `inlineSize: 'fit-content'`
+        // insetInlineEnd             : 0,      // fill the entire screen width (do not use logical mode)
+        right                         : 0,      // fill the entire screen width (instead, use physical mode, since the `left` prop is already handled by `useFloatable()`)
         
         // height (mobile only):
         ...rule('.mobile', {
-            blockSize        : 'auto', // overwrites <Dropdown>'s `blockSize: 'fit-content'` (if the <Dropdown> upgraded in the future)
-            // insetBlockEnd : 0,      // fill the entire screen height, excluding the <Navbar>'s height (do not use logical mode)
-            bottom           : 0,      // fill the entire screen height, excluding the <Navbar>'s height (instead, use physical mode, since the `top` prop is already handled by `useFloatable()`)
+            [collapseVars.blockSize ] : 'auto', // overwrites <Dropdown>'s `blockSize: 'fit-content'` (if the <Dropdown> upgraded in the future)
+            // insetBlockEnd          : 0,      // fill the entire screen height, excluding the <Navbar>'s height (do not use logical mode)
+            bottom                    : 0,      // fill the entire screen height, excluding the <Navbar>'s height (instead, use physical mode, since the `top` prop is already handled by `useFloatable()`)
         }),
     });
 };
@@ -74,7 +86,7 @@ const usesMainLayout = () => {
         ]],
         ...rule(':not(.mobile)', {       // desktop mode
             overflowY      : 'auto',     // shows a scrollbar when a lot of menuItems are flooded the limited <Dropdown>'s height (unstable width)
-            scrollbarWidth : 'thin',     // if having scrollbar => show the minimal version
+            scrollbarWidth : 'none',     // no scrollbar if possible, the vertical scrollbar causing the dropdown animation seems ugly
         }),
         ...rule('.mobile', {             // mobile mode
             overflowY      : 'scroll',   // shows a scrollbar when a lot of menuItems are flooded the limited <Dropdown>'s height (stable width)
