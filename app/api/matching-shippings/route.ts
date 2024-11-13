@@ -217,7 +217,7 @@ const handleResponse = async (req: Request, includingInternalShippings = true): 
                 }, 5000);
             }),
         ]);
-    });
+    })();
     
     const internalShippingRatesPromise = (async (): Promise<MatchingShipping[]> => {
         if (!includingInternalShippings) return [];
