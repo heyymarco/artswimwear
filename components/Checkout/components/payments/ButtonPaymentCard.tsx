@@ -146,9 +146,9 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
     
     
     // handlers:
-    const hostedFields      = usePayPalHostedFields();
+    const hostedFields        = usePayPalHostedFields();
     
-    const proxyDoPlaceOrder = useEvent(async (): Promise<PlaceOrderDetail> => {
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail> => {
         const paymentCardSectionElm = paymentCardSectionRef?.current;
         const paypalDoPlaceOrder    = hostedFields.cardFields?.submit;
         if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
@@ -199,6 +199,9 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
             redirectData : undefined,
         } satisfies PlaceOrderDetail;
     });
+    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
+        return AuthenticatedResult.AUTHORIZED;
+    });
     
     
     
@@ -207,6 +210,7 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
         <ButtonPaymentCardGeneral
             // handlers:
             doPlaceOrder={proxyDoPlaceOrder}
+            doAuthenticate={proxyDoAuthenticate}
         />
     );
 };
@@ -237,7 +241,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
     const stripe   = useStripe();
     const elements = useElements();
     
-    const proxyDoPlaceOrder      = useEvent(async (): Promise<PlaceOrderDetail|true> => {
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|true> => {
         if (!stripe)            throw Error('Oops, an error occured!');
         if (!elements)          throw Error('Oops, an error occured!');
         const cardNumberElement = elements.getElement('cardNumber');
@@ -283,7 +287,7 @@ const ButtonPaymentCardForStripe = (): JSX.Element|null => {
             cardToken      : paymentMethod.id,
         });
     });
-    const proxyDoAuthenticate    = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
+    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
         if (!stripe)   throw Error('Oops, an error occured!');
         if (!elements) throw Error('Oops, an error occured!');
         

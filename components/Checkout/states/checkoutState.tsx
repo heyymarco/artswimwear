@@ -241,7 +241,7 @@ export const enum AuthenticatedResult {
 export interface StartTransactionArg {
     // handlers:
     doPlaceOrder          : () => Promise<PlaceOrderDetail|true>
-    doAuthenticate       ?: (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult>
+    doAuthenticate        : (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult>
     
     
     
@@ -1803,7 +1803,6 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
                 // createOrder:
                 const placeOrderDetail = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
                 if (placeOrderDetail === true) return; // immediately paid => no need further action
-                if (!doAuthenticate) return; // the nextAction callback is not defined => no need further action
                 
                 
                 

@@ -38,7 +38,8 @@
     "@heymarco/text-editor": "^6.10.0",
     "@lexical/headless": "^0.12.4",
     "@lexical/react": "^0.12.4",
-    "@paypal/react-paypal-js": "^7.8.3",
+    "@paypal/paypal-js": "^8.1.2",
+    "@paypal/react-paypal-js": "^8.7.0",
     "@prisma/client": "^5.16.1",
     "@reduxjs/toolkit": "^1.9.3",
     "@reusable-ui/accordion": "^6.5.1",
@@ -99,7 +100,6 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@paypal/paypal-js": "^5.1.6",
     "@types/mime-types": "^2.1.4",
     "@types/qrcode": "^1.5.5",
     "@types/react-google-recaptcha": "^2.1.8",

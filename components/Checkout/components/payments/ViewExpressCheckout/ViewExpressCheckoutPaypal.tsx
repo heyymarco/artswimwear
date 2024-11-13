@@ -10,6 +10,7 @@ import {
     // hooks:
     useRef,
     useState,
+    useMemo,
 }                           from 'react'
 
 // reusable-ui core:
@@ -52,14 +53,14 @@ import {
 
 // paypal:
 import type {
-    CreateOrderData as PaypalCreateOrderData,
-    CreateOrderActions,
-    OnCancelledActions,
-    OnApproveActions,
-    OnApproveData,
-    OnShippingChangeActions,
-    OnShippingChangeData,
     PayPalButtonsComponentOptions,
+    PayPalButtonOnInit,
+    PayPalButtonOnError,
+    PayPalButtonCreateOrder,
+    PayPalButtonOnCancel,
+    PayPalButtonOnApprove,
+    PayPalButtonOnShippingAddressChange,
+    PayPalButtonOnShippingOptionsChange,
 }                           from '@paypal/paypal-js'
 import {
     PayPalButtons,
@@ -120,6 +121,9 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     }
     const [isLoaded  , setIsLoaded  ] = useState<LoadedState>(LoadedState.Loading);
     const [generation, setGeneration] = useState<number>(1);
+    const forceReRender = useMemo(() => [
+        generation,
+    ], [generation]);
     
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     
@@ -131,10 +135,10 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     
     
     // handlers:
-    const handleLoaded  = useEvent((): void => {
+    const handleLoaded  = useEvent<PayPalButtonOnInit>((data, actions): void => {
         setIsLoaded(LoadedState.FullyLoaded);
     });
-    const handleErrored = useEvent((): void => {
+    const handleErrored = useEvent<PayPalButtonOnError>((error): void => {
         /*
             Unable to delegate rendering. Possibly the component is not loaded in the target window.
             
@@ -151,7 +155,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     });
     
     const signalAuthenticatedRef         = useRef<((authenticatedResult: AuthenticatedResult) => void)|undefined>(undefined);
-    const handlePaymentInterfaceStart    = useEvent(async (data: PaypalCreateOrderData, actions: CreateOrderActions): Promise<string> => {
+    const handlePaymentInterfaceStart    = useEvent<PayPalButtonCreateOrder>(async (data, actions): Promise<string> => {
         const {promise: promisePaypalOrderId, resolve: resolvePaypalOrderId, reject: rejectPaypalOrderId} = ((): ReturnType<typeof Promise.withResolvers<string>> => { // Promise.withResolvers<string>();
             let resolve : ReturnType<typeof Promise.withResolvers<string>>['resolve'];
             let reject  : ReturnType<typeof Promise.withResolvers<string>>['reject' ];
@@ -255,28 +259,33 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             setIsProcessing(false);
         });
         
-        return promisePaypalOrderId;
+        const paypalOrderId = await promisePaypalOrderId;
+        // console.log({paypalOrderId});
+        return paypalOrderId;
     });
-    const handlePaymentInterfaceAbort    = useEvent((data: Record<string, unknown>, actions: OnCancelledActions) => {
+    const handlePaymentInterfaceAbort    = useEvent<PayPalButtonOnCancel>((data, actions): void => {
         signalAuthenticatedRef.current?.(AuthenticatedResult.CANCELED);
     });
-    const handlePaymentInterfaceApproved = useEvent(async (paypalAuthentication: OnApproveData, actions: OnApproveActions): Promise<void> => {
+    const handlePaymentInterfaceApproved = useEvent<PayPalButtonOnApprove>(async (paypalAuthentication, actions): Promise<void> => {
         setIsProcessing(true);
         
         
         
         signalAuthenticatedRef.current?.(AuthenticatedResult.AUTHORIZED);
     });
-    const handleShippingChange           = useEvent(async (data: OnShippingChangeData, actions: OnShippingChangeActions): Promise<void> => {
+    const handleShippingAddressChange    = useEvent<PayPalButtonOnShippingAddressChange>(async (data, actions): Promise<void> => {
         // prevents the shipping_address DIFFERENT than previously inputed shipping_address:
-        const shipping_address = data.shipping_address;
-        if (shipping_address) {
+        const shippingAddress = data.shippingAddress;
+        if (shippingAddress) {
+            // console.log('all fields', shippingAddress);
             const shippingFieldMap = new Map<string, keyof Exclude<typeof checkoutState.shippingAddress, null> | undefined>([
+                ['countryCode'   , 'country'],
                 ['country_code'  , 'country'],
                 ['state'         , 'state'  ],
                 ['admin_area_1'  , 'state'  ],
                 ['city'          , 'city'   ],
                 ['admin_area_2'  , 'city'   ],
+                ['postalCode'    , 'zip'    ],
                 ['postal_code'   , 'zip'    ],
                 ['address_line_1', 'address'],
                 ['address_line_2', undefined],
@@ -284,14 +293,14 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
             
             
             
-            for (const [shippingField, shippingValue] of Object.entries(shipping_address)) {
+            for (const [shippingField, shippingValue] of Object.entries(shippingAddress)) {
                 if (shippingField === undefined) continue;
                 
                 
                 
                 const mappedShippingField = shippingFieldMap.get(shippingField);
                 if (mappedShippingField === undefined) {
-                    // console.log('unknown shipping field: ', shippingField);
+                    // console.log('REJECT: unknown shipping field: ', shippingField);
                     return actions.reject();
                 } // if
                 
@@ -299,15 +308,19 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                 
                 const originShippingValue = checkoutState.shippingAddress?.[mappedShippingField];
                 if (originShippingValue !== shippingValue) {
-                    // console.log(`DIFF: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
+                    // console.log(`REJECT: ${shippingField} = ${shippingValue} <==> ${mappedShippingField} = ${originShippingValue}`)
                     return actions.reject();
                 } // if
             } // for
             
             
             
-            return actions.resolve();
+            // return actions.resolve();
+            // actions.buildOrderPatchPayload({}); // nothing to build or patch, we preventing any changes
         } // if
+    });
+    const handleShippingOptionsChange    = useEvent<PayPalButtonOnShippingOptionsChange>(async (data, actions): Promise<void> => {
+        if (data.selectedShippingOption?.type === 'PICKUP') actions.reject();
     });
     
     
@@ -348,6 +361,7 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                         <PayPalButtons
                             // identifiers:
                             key={generation}
+                            forceReRender={forceReRender}
                             
                             
                             
@@ -364,7 +378,8 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                             createOrder={handlePaymentInterfaceStart}
                             onCancel={handlePaymentInterfaceAbort}
                             onApprove={handlePaymentInterfaceApproved}
-                            onShippingChange={handleShippingChange}
+                            onShippingAddressChange={handleShippingAddressChange}
+                            onShippingOptionsChange={handleShippingOptionsChange}
                         />
                     </Indicator>
                 </div>

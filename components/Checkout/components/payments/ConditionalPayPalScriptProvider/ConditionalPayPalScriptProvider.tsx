@@ -120,11 +120,14 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
     
     // options:
     const paypalOptions = useMemo<PayPalScriptOptions>(() => ({
-        'client-id'         : clientId,
-        'data-client-token' : paymentSession.paypalSession,
-        currency            :  currency.toUpperCase(),
-        intent              : 'capture',
-        components          : 'hosted-fields,buttons',
+        clientId         : clientId,
+        dataClientToken  : paymentSession.paypalSession,
+        currency         :  currency.toUpperCase(),
+        intent           : 'capture',
+        components       : 'hosted-fields,buttons',
+        // commit           : true,
+        // vault            : false,
+        // 'data-page-type' : 'product-details',
     }), [clientId, paymentSession, currency]);
     
     
