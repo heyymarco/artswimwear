@@ -262,6 +262,7 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
     } = usePayPalCardFields();
     useIsomorphicLayoutEffect(() => {
         // conditions:
+        console.log({cardFieldsForm});
         if (!cardFieldsForm) return;
         
         
@@ -269,6 +270,13 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
         // setups:
         let isMounted = true;
         cardFieldsForm.getState().then((data) => {
+            console.log('initial state: ', {
+                isMounted,
+                isFocused: data.fields[type].isFocused,
+                isValid: data.fields[type].isValid,
+                isEmpty: data.fields[type].isEmpty,
+                isValidCombi: data.fields[type].isValid && !data.fields[type].isEmpty,
+            })
             if (!isMounted) return;
             setIsFocused(data.fields[type].isFocused);
             setIsValid(data.fields[type].isValid && !data.fields[type].isEmpty);
