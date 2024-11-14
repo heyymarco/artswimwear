@@ -4,11 +4,6 @@
 import {
     // react:
     default as React,
-    
-    
-    
-    // hooks:
-    useState,
 }                           from 'react'
 
 // reusable-ui core:
@@ -42,6 +37,7 @@ import {
 
 // internals:
 import {
+    usePayPalCardFieldsState,
     PayPalCardFieldsStateProvider,
 }                           from './states/payPalCardFieldsState'
 import {
@@ -68,9 +64,11 @@ const ConditionalPayPalCardFieldsProvider = ({children}: React.PropsWithChildren
     
     // jsx:
     return (
-        <ImplementedPayPalCardFieldsProvider>
-            {children}
-        </ImplementedPayPalCardFieldsProvider>
+        <PayPalCardFieldsStateProvider>
+            <ImplementedPayPalCardFieldsProvider>
+                {children}
+            </ImplementedPayPalCardFieldsProvider>
+        </PayPalCardFieldsStateProvider>
     );
 }
 interface ImplementedPayPalCardFieldsProviderProps {
@@ -92,7 +90,9 @@ const ImplementedPayPalCardFieldsProvider = (props: ImplementedPayPalCardFieldsP
         doPlaceOrder,
     } = useCheckoutState();
     
-    const [approvedOrderId, setApprovedOrderId] = useState<string|undefined>();
+    const {
+        signalApprovedOrderIdRef,
+    } = usePayPalCardFieldsState();
     
     
     
@@ -105,10 +105,9 @@ const ImplementedPayPalCardFieldsProvider = (props: ImplementedPayPalCardFieldsP
     
     // handlers:
     const handlePaymentInterfaceErrored  = useEvent((error: Record<string, unknown>) => {
-        setApprovedOrderId(undefined);
+        signalApprovedOrderIdRef.current?.(null);
     });
     const handlePaymentInterfaceStart    = useEvent(async (): Promise<string> => {
-        setApprovedOrderId(undefined);
         try {
             const draftOrderDetail = await doPlaceOrder();
             if (draftOrderDetail === true) throw Error('Oops, an error occured!'); // immediately paid => no need further action, that should NOT be happened
@@ -124,13 +123,14 @@ const ImplementedPayPalCardFieldsProvider = (props: ImplementedPayPalCardFieldsP
             return orderId;
         }
         catch (fetchError: any) {
+            signalApprovedOrderIdRef.current?.(null);
+            
             if (!fetchError?.data?.limitedStockItems) showMessageFetchError({ fetchError, context: 'order' });
             throw fetchError;
         } // try
     });
     const handlePaymentInterfaceApproved = useEvent((data: CardFieldsOnApproveData): void => {
-        const orderId = data.orderID;
-        setApprovedOrderId(orderId);
+        signalApprovedOrderIdRef.current?.(data.orderID);
     });
     
     
@@ -148,9 +148,7 @@ const ImplementedPayPalCardFieldsProvider = (props: ImplementedPayPalCardFieldsP
             createOrder={handlePaymentInterfaceStart}
             onApprove={handlePaymentInterfaceApproved}
         >
-            <PayPalCardFieldsStateProvider approvedOrderId={approvedOrderId}>
-                {children}
-            </PayPalCardFieldsStateProvider>
+            {children}
         </PayPalCardFieldsProvider>
     );
 };

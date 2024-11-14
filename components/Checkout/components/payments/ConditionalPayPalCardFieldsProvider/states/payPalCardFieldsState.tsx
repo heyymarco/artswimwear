@@ -13,6 +13,7 @@ import {
     // hooks:
     useContext,
     useMemo,
+    useRef,
 }                           from 'react'
 
 
@@ -26,12 +27,12 @@ import {
 // contexts:
 export interface PayPalCardFieldsState {
     // data:
-    approvedOrderId : string|undefined
+    signalApprovedOrderIdRef : React.MutableRefObject<((approvedOrderId: string|null) => void) | null>
 }
 
 const defaultPayPalCardFieldsStateContext : PayPalCardFieldsState = {
     // data:
-    approvedOrderId : undefined,
+    signalApprovedOrderIdRef : { current: null },
 }
 const PayPalCardFieldsStateContext = createContext<PayPalCardFieldsState>(defaultPayPalCardFieldsStateContext);
 PayPalCardFieldsStateContext.displayName  = 'PayPalCardFieldsState';
@@ -43,28 +44,15 @@ export const usePayPalCardFieldsState = (): PayPalCardFieldsState => {
 
 
 // react components:
-export interface PayPalCardFieldsStateProps
-    extends
-        PayPalCardFieldsState
-{
+export interface PayPalCardFieldsStateProps {
 }
 const PayPalCardFieldsStateProvider = (props: React.PropsWithChildren<PayPalCardFieldsStateProps>): JSX.Element|null => {
-    // props:
-    const {
-        // data:
-        approvedOrderId,
-    } = props;
-    
-    
-    
     // states:
+    const signalApprovedOrderIdRef = useRef<((approvedOrderId: string|null) => void) | null>(null);
     const payPalCardFieldsState = useMemo<PayPalCardFieldsState>(() => ({
         // data:
-        approvedOrderId,
-    }), [
-        // data:
-        approvedOrderId,
-    ]);
+        signalApprovedOrderIdRef,
+    }), [ ]);
     
     
     

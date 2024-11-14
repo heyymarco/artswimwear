@@ -238,7 +238,7 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
     } = useCheckoutState();
     
     const {
-        approvedOrderId,
+        signalApprovedOrderIdRef,
     } = usePayPalCardFieldsState();
     
     const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
@@ -307,15 +307,21 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
         
         
         // submit card data to PayPal_API to get authentication:
+        const { promise: approvedOrderIdPromise, resolve: signalApprovedOrderId } = Promise.withResolvers<string|null>();
+        signalApprovedOrderIdRef.current = signalApprovedOrderId;
         try {
             await paypalDoPlaceOrder(); // triggers <PayPalCardFieldsProvider> => proxyDoPlaceOrder() => doPlaceOrder()
         }
         catch {
+            signalApprovedOrderIdRef.current = null;
             return false;
         } // try
         
-        const rawOrderId = approvedOrderId;
-        if (rawOrderId === undefined) return false;
+        
+        
+        const rawOrderId = await approvedOrderIdPromise;
+        signalApprovedOrderIdRef.current = null;
+        if (rawOrderId === null) return false; // if was error => abort
         const orderId = (
             rawOrderId.startsWith('#PAYPAL_')
             ? rawOrderId              // already prefixed => no need to modify

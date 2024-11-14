@@ -25,6 +25,7 @@ import {
     
     
     // react helper hooks:
+    useIsomorphicLayoutEffect,
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
@@ -43,11 +44,11 @@ import {
 // paypal:
 import type {
     PayPalCardFieldsStyleOptions,
-    PayPalCardFieldsInputEvents,
     PayPalCardFieldsStateObject,
 }                           from '@paypal/paypal-js'
 import {
     PayPalCardFieldsIndividualFieldOptions,
+    usePayPalCardFields,
 }                           from '@paypal/react-paypal-js'
 
 
@@ -196,6 +197,11 @@ export interface PayPalCardFieldWrapperProps
             |'placeholder'
         >
 {
+    // formats:
+    type                     : keyof Awaited<PayPalCardFieldsStateObject>['fields']
+    
+    
+    
     // components:
     payPalCardFieldComponent : React.ReactElement<PayPalCardFieldsIndividualFieldOptions>
 }
@@ -209,6 +215,11 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
         
         // accessibilities:
         placeholder,
+        
+        
+        
+        // formats:
+        type,
         
         
         
@@ -240,8 +251,36 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
     });
     const handleValidInvalid = useEvent((data: PayPalCardFieldsStateObject): void => {
         // actions:
-        setIsValid(!data.errors.length);
+        setIsValid(!data.fields[type].isValid);
     });
+    
+    
+    
+    // effects:
+    const {
+        cardFieldsForm,
+    } = usePayPalCardFields();
+    useIsomorphicLayoutEffect(() => {
+        // conditions:
+        if (!cardFieldsForm) return;
+        
+        
+        
+        // setups:
+        let isMounted = false;
+        cardFieldsForm.getState().then(({fields}) => {
+            if (!isMounted) return;
+            setIsFocused(fields[type].isFocused);
+            setIsValid(fields[type].isValid);
+        });
+        
+        
+        
+        // cleanups:
+        return () => {
+            isMounted = false;
+        };
+    }, [cardFieldsForm]);
     
     
     

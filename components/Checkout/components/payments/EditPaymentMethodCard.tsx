@@ -114,21 +114,25 @@ import {
 const cardNumberOptions      : PayPalCardFieldWrapperProps = {
     // selector              : '#cardNumber',
     placeholder              : '1111-2222-3333-4444',
+    type                     : 'cardNumberField',
     payPalCardFieldComponent : <PayPalNumberField />,
 };
 const cardNameOptions      : PayPalCardFieldWrapperProps = {
     // selector              : '#cardName',
     placeholder              : 'John Doe',
+    type                     : 'cardNameField',
     payPalCardFieldComponent : <PayPalNameField />,
 };
 const cardExpiryOptions      : PayPalCardFieldWrapperProps = {
     // selector              : '#cardExpiry',
     placeholder              : '11/2020',
+    type                     : 'cardExpiryField',
     payPalCardFieldComponent : <PayPalExpiryField />,
 };
 const cardCvvOptions         : PayPalCardFieldWrapperProps = {
     // selector              : '#cardCvv',
     placeholder              : '123',
+    type                     : 'cardCvvField',
     payPalCardFieldComponent : <PayPalCVVField />,
 };
 
