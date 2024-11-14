@@ -279,9 +279,9 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
             const invalidFields = (
                 [
                     (!cardNumberField.isValid ? <strong>card number</strong> : null),
-                    (!cardNameField.isValid   ? <strong>card number</strong> : null),
-                    (!cardExpiryField.isValid ? <strong>card number</strong> : null),
-                    (!cardCvvField.isValid    ? <strong>card number</strong> : null),
+                    (!cardNameField.isValid   ? <strong>cardholder name</strong> : null),
+                    (!cardExpiryField.isValid ? <strong>card expiry</strong> : null),
+                    (!cardCvvField.isValid    ? <strong>card CSC/CVV</strong> : null),
                 ]
                 .filter((invalidField): invalidField is Exclude<typeof invalidField, null> => (invalidField !== null))
             );
@@ -293,7 +293,7 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
                     </p>}
                     {invalidFields.map((invalidField, index) =>
                         <p key={index}>
-                            The ${invalidField} is invalid.
+                            The {invalidField} is invalid.
                         </p>
                     )}
                     <p>
