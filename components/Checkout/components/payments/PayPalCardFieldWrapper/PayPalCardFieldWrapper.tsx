@@ -251,7 +251,7 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
     });
     const handleValidInvalid = useEvent((data: PayPalCardFieldsStateObject): void => {
         // actions:
-        setIsValid(data.fields[type].isValid);
+        setIsValid(data.fields[type].isValid && !data.fields[type].isEmpty);
     });
     
     
@@ -268,10 +268,10 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
         
         // setups:
         let isMounted = true;
-        cardFieldsForm.getState().then(({fields}) => {
+        cardFieldsForm.getState().then((data) => {
             if (!isMounted) return;
-            setIsFocused(fields[type].isFocused);
-            setIsValid(fields[type].isValid);
+            setIsFocused(data.fields[type].isFocused);
+            setIsValid(data.fields[type].isValid && !data.fields[type].isEmpty);
         });
         
         
