@@ -329,10 +329,9 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
         
         
         // handlers:
-        handleFocus,        // stable ref
-        handleBlur,         // stable ref
-        handleValidInvalid, // stable ref
-        handleValidInvalid, // stable ref
+        // handleFocus,        // stable ref
+        // handleBlur,         // stable ref
+        // handleValidInvalid, // stable ref
     ]);
     
     
