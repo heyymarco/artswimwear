@@ -267,7 +267,7 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
         
         
         // setups:
-        let isMounted = false;
+        let isMounted = true;
         cardFieldsForm.getState().then(({fields}) => {
             if (!isMounted) return;
             setIsFocused(fields[type].isFocused);
