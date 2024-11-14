@@ -235,8 +235,8 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
     
     
     // states:
-    const [isFocused, setIsFocused] = useState<boolean|undefined>(false);
-    const [isValid  , setIsValid  ] = useState<boolean|undefined>(true);
+    const [isFocused, setIsFocused] = useState<boolean>(false);
+    const [isValid  , setIsValid  ] = useState<boolean>(true);
     
     
     
@@ -345,8 +345,8 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
         
         
         // states:
-        focused      : editableFocused   = isFocused ?? false,
-        isValid      : editableIsValid   = isValid   ?? null,
+        focused      : editableFocused   = isFocused,
+        isValid      : editableIsValid   = isValid,
         
         
         // other props:
