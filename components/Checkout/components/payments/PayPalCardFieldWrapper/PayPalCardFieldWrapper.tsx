@@ -251,7 +251,7 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
     });
     const handleValidInvalid = useEvent((data: PayPalCardFieldsStateObject): void => {
         // actions:
-        setIsValid(!data.fields[type].isValid);
+        setIsValid(data.fields[type].isValid);
     });
     
     
