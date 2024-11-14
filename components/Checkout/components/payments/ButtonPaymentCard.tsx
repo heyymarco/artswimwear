@@ -278,10 +278,10 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
             } = formState.fields;
             const invalidFields = (
                 [
-                    (!cardNumberField.isValid ? <strong>card number</strong> : null),
-                    (!cardNameField.isValid   ? <strong>cardholder name</strong> : null),
-                    (!cardExpiryField.isValid ? <strong>card expiry</strong> : null),
-                    (!cardCvvField.isValid    ? <strong>card CSC/CVV</strong> : null),
+                    ((!cardNumberField.isValid || cardNumberField.isEmpty) ? <strong>card number</strong>     : null),
+                    ((!cardNameField.isValid   || cardNameField.isEmpty  ) ? <strong>cardholder name</strong> : null),
+                    ((!cardExpiryField.isValid || cardExpiryField.isEmpty) ? <strong>card expiry</strong>     : null),
+                    ((!cardCvvField.isValid    || cardCvvField.isEmpty   ) ? <strong>card CSC/CVV</strong>    : null),
                 ]
                 .filter((invalidField): invalidField is Exclude<typeof invalidField, null> => (invalidField !== null))
             );
