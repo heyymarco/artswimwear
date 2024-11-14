@@ -135,10 +135,10 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
     
     
     // handlers:
-    const handleLoaded  = useEvent<PayPalButtonOnInit>((data, actions): void => {
+    const handlePaymentInterfaceLoaded  = useEvent<PayPalButtonOnInit>((data, actions): void => {
         setIsLoaded(LoadedState.FullyLoaded);
     });
-    const handleErrored = useEvent<PayPalButtonOnError>((error): void => {
+    const handlePaymentInterfaceErrored = useEvent<PayPalButtonOnError>((error): void => {
         /*
             Unable to delegate rendering. Possibly the component is not loaded in the target window.
             
@@ -190,12 +190,12 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                     
                     
                     const rawOrderId = draftOrderDetail.orderId; // get the DraftOrder's id
-                    const paypalOrderId = (
+                    const orderId = (
                         rawOrderId.startsWith('#PAYPAL_')
                         ? rawOrderId.slice(8) // remove prefix #PAYPAL_
                         : rawOrderId
                     );
-                    resolvePaypalOrderId(paypalOrderId);
+                    resolvePaypalOrderId(orderId);
                     
                     
                     
@@ -372,8 +372,8 @@ const ViewExpressCheckoutPaypal = (): JSX.Element|null => {
                             
                             
                             // handlers:
-                            onInit={handleLoaded}
-                            onError={handleErrored}
+                            onInit={handlePaymentInterfaceLoaded}
+                            onError={handlePaymentInterfaceErrored}
                             
                             createOrder={handlePaymentInterfaceStart}
                             onCancel={handlePaymentInterfaceAbort}

@@ -45,8 +45,8 @@ import {
     CreditCardNumberEditor,
 }                           from '@/components/editors/CreditCardNumberEditor'
 import {
-    CreditCardExpiresEditor,
-}                           from '@/components/editors/CreditCardExpiresEditor'
+    CreditCardExpiryEditor,
+}                           from '@/components/editors/CreditCardExpiryEditor'
 import {
     CreditCardCvvEditor,
 }                           from '@/components/editors/CreditCardCvvEditor'
@@ -59,17 +59,23 @@ import {
 
 // paypal:
 import {
+    PayPalNumberField,
+    PayPalNameField,
+    PayPalExpiryField,
+    PayPalCVVField,
+}                           from '@paypal/react-paypal-js'
+import {
     useIsInPayPalScriptProvider,
     IfInPayPalScriptProvider,
 }                           from './ConditionalPayPalScriptProvider'
 import {
-    ConditionalPayPalHostedFieldsProvider,
-}                           from './ConditionalPayPalHostedFieldsProvider'
+    ConditionalPayPalCardFieldsProvider,
+}                           from './ConditionalPayPalCardFieldsProvider'
 import {
     // react components:
-    PayPalHostedFieldWrapperProps,
-    PayPalHostedFieldWrapper,
-}                           from '../payments/PayPalHostedFieldWrapper'
+    PayPalCardFieldWrapperProps,
+    PayPalCardFieldWrapper,
+}                           from '../payments/PayPalCardFieldWrapper'
 
 // stripe:
 import {
@@ -105,17 +111,25 @@ import {
 
 
 // utilities:
-const cardNumberOptions  : PayPalHostedFieldWrapperProps['options'] = {
-    selector    : '#cardNumber',
-    placeholder : '1111-2222-3333-4444',
+const cardNumberOptions      : PayPalCardFieldWrapperProps = {
+    // selector              : '#cardNumber',
+    placeholder              : '1111-2222-3333-4444',
+    payPalCardFieldComponent : <PayPalNumberField />,
 };
-const cardExpiresOptions : PayPalHostedFieldWrapperProps['options'] = {
-    selector    : '#cardExpires',
-    placeholder : '11/2020',
+const cardNameOptions      : PayPalCardFieldWrapperProps = {
+    // selector              : '#cardName',
+    placeholder              : 'John Doe',
+    payPalCardFieldComponent : <PayPalNameField />,
 };
-const cardCvvOptions     : PayPalHostedFieldWrapperProps['options'] = {
-    selector    : '#cardCvv',
-    placeholder : '123',
+const cardExpiryOptions      : PayPalCardFieldWrapperProps = {
+    // selector              : '#cardExpiry',
+    placeholder              : '11/2020',
+    payPalCardFieldComponent : <PayPalExpiryField />,
+};
+const cardCvvOptions         : PayPalCardFieldWrapperProps = {
+    // selector              : '#cardCvv',
+    placeholder              : '123',
+    payPalCardFieldComponent : <PayPalCVVField />,
 };
 
 
@@ -124,9 +138,9 @@ const cardCvvOptions     : PayPalHostedFieldWrapperProps['options'] = {
 const EditPaymentMethodCard = (): JSX.Element|null => {
     // jsx:
     return (
-        <ConditionalPayPalHostedFieldsProvider>
+        <ConditionalPayPalCardFieldsProvider>
             <EditPaymentMethodCardInternal />
-        </ConditionalPayPalHostedFieldsProvider>
+        </ConditionalPayPalCardFieldsProvider>
     );
 };
 const EditPaymentMethodCardInternal = (): JSX.Element|null => {
@@ -411,9 +425,9 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <PayPalHostedFieldWrapper
-                            // identifiers:
-                            id='cardNumber'
+                        <PayPalCardFieldWrapper
+                            // options:
+                            {...cardNumberOptions}
                             
                             
                             
@@ -423,22 +437,12 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                             
                             
                             // classes:
-                            className='hostedField'
+                            className='cardField'
                             
                             
                             
                             // validations:
                             enableValidation={isPayUsingPaypalPriority ? undefined : false}
-                            
-                            
-                            
-                            // formats:
-                            hostedFieldType='number'
-                            
-                            
-                            
-                            // options:
-                            options={cardNumberOptions}
                         />
                     }
                     
@@ -476,30 +480,103 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 />}
             </IfInMidtransScriptProvider>
             
-            <InputWithLabel
-                // appearances:
-                icon='person'
-                
-                
-                
-                // classes:
-                className='name'
-                
-                
-                
-                // components:
-                inputComponent={
-                    <CreditCardNameEditor
-                        // forms:
-                        name='cardHolder'
-                    />
-                }
-                
-                
-                
-                // children:
-                childrenAfter={labelCardName}
-            />
+            <IfInStripeElementsProvider>
+                {/* conditional re-render */}
+                {isPayUsingStripePriority && <InputWithLabel
+                    // appearances:
+                    icon='person'
+                    
+                    
+                    
+                    // classes:
+                    className='name'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <CreditCardNameEditor
+                            // forms:
+                            name='cardHolder'
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardName}
+                />}
+            </IfInStripeElementsProvider>
+            <IfInPayPalScriptProvider>
+                {/* conditional visibility via css */}
+                <InputWithLabel
+                    // appearances:
+                    icon='credit_card'
+                    
+                    
+                    
+                    // classes:
+                    className={'name' + (isPayUsingPaypalPriority ? '' : ' hidden')}
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <PayPalCardFieldWrapper
+                            // options:
+                            {...cardNameOptions}
+                            
+                            
+                            
+                            // accessibilities:
+                            aria-label='Cardholder Name'
+                            
+                            
+                            
+                            // classes:
+                            className='cardField'
+                            
+                            
+                            
+                            // validations:
+                            enableValidation={isPayUsingPaypalPriority ? undefined : false}
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardName}
+                />
+            </IfInPayPalScriptProvider>
+            <IfInMidtransScriptProvider>
+                {/* conditional re-render */}
+                {isPayUsingMidtransPriority && <InputWithLabel
+                    // appearances:
+                    icon='person'
+                    
+                    
+                    
+                    // classes:
+                    className='name'
+                    
+                    
+                    
+                    // components:
+                    inputComponent={
+                        <CreditCardNameEditor
+                            // forms:
+                            name='cardHolder'
+                        />
+                    }
+                    
+                    
+                    
+                    // children:
+                    childrenAfter={labelCardName}
+                />}
+            </IfInMidtransScriptProvider>
+            
             
             <IfInStripeElementsProvider>
                 {/* conditional re-render */}
@@ -518,7 +595,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     inputComponent={
                         <StripeHostedFieldWrapper
                             // accessibilities:
-                            aria-label='Card Expires'
+                            aria-label='Card Expiry'
                             
                             
                             
@@ -555,34 +632,24 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <PayPalHostedFieldWrapper
-                            // identifiers:
-                            id='cardExpires'
+                        <PayPalCardFieldWrapper
+                            // options:
+                            {...cardExpiryOptions}
                             
                             
                             
                             // accessibilities:
-                            aria-label='Card Expires'
+                            aria-label='Card Expiry'
                             
                             
                             
                             // classes:
-                            className='hostedField'
+                            className='cardField'
                             
                             
                             
                             // validations:
                             enableValidation={isPayUsingPaypalPriority ? undefined : false}
-                            
-                            
-                            
-                            // formats:
-                            hostedFieldType='expirationDate'
-                            
-                            
-                            
-                            // options:
-                            options={cardExpiresOptions}
                         />
                     }
                     
@@ -607,9 +674,9 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <CreditCardExpiresEditor
+                        <CreditCardExpiryEditor
                             // forms:
-                            name='cardExpires'
+                            name='cardExpiry'
                         />
                     }
                     
@@ -674,9 +741,9 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <PayPalHostedFieldWrapper
-                            // identifiers:
-                            id='cardCvv'
+                        <PayPalCardFieldWrapper
+                            // options:
+                            {...cardCvvOptions}
                             
                             
                             
@@ -686,22 +753,12 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                             
                             
                             // classes:
-                            className='hostedField'
+                            className='cardField'
                             
                             
                             
                             // validations:
                             enableValidation={isPayUsingPaypalPriority ? undefined : false}
-                            
-                            
-                            
-                            // formats:
-                            hostedFieldType='cvv'
-                            
-                            
-                            
-                            // options:
-                            options={cardCvvOptions}
                         />
                     }
                     

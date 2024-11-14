@@ -124,7 +124,7 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
         dataClientToken  : paymentSession.paypalSession,
         currency         :  currency.toUpperCase(),
         intent           : 'capture',
-        components       : 'hosted-fields,buttons',
+        components       : 'card-fields,buttons',
         // commit           : true,
         // vault            : false,
         // 'data-page-type' : 'product-details',

@@ -50,6 +50,7 @@ import {
 // paypal:
 import {
     usePayPalHostedFields,
+    usePayPalCardFields,
 }                           from '@paypal/react-paypal-js'
 import {
     useIsInPayPalScriptProvider,
@@ -75,6 +76,9 @@ import {
 }                           from '@/errors'
 
 // internals:
+import {
+    usePayPalCardFieldsState,
+}                           from '../payments/ConditionalPayPalCardFieldsProvider/states/payPalCardFieldsState'
 import {
     AuthenticatedResult,
     type StartTransactionArg,
@@ -121,8 +125,8 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     if (isPayUsingStripePriority  ) return <ButtonPaymentCardForStripe />;
     if (isPayUsingMidtransPriority) return <ButtonPaymentCardForMidtrans />;
     return null;
-}
-const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
+};
+const ButtonPaymentCardForPayPalLegacy = (): JSX.Element|null => {
     // states:
     const {
         // shipping data:
@@ -189,6 +193,129 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
             }
         */
         const rawOrderId = paypalAuthentication.orderId;
+        const orderId = (
+            rawOrderId.startsWith('#PAYPAL_')
+            ? rawOrderId              // already prefixed => no need to modify
+            : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
+        );
+        return {
+            orderId      : orderId,
+            redirectData : undefined,
+        } satisfies PlaceOrderDetail;
+    });
+    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
+        return AuthenticatedResult.AUTHORIZED;
+    });
+    
+    
+    
+    // jsx:
+    return (
+        <ButtonPaymentCardGeneral
+            // handlers:
+            doPlaceOrder={proxyDoPlaceOrder}
+            doAuthenticate={proxyDoAuthenticate}
+        />
+    );
+};
+const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
+    // states:
+    const {
+        // shipping data:
+        shippingAddress,
+        
+        
+        
+        // billing data:
+        billingAsShipping,
+        
+        billingAddress,
+        
+        
+        
+        // sections:
+        paymentCardSectionRef,
+    } = useCheckoutState();
+    
+    const {
+        approvedOrderId,
+    } = usePayPalCardFieldsState();
+    
+    const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
+    
+    
+    
+    // dialogs:
+    const {
+        showMessageError,
+    } = useDialogMessage();
+    
+    
+    
+    // handlers:
+    const {
+        cardFieldsForm,
+    } = usePayPalCardFields();
+    
+    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail|false> => {
+        // conditions:
+        if (!cardFieldsForm)        throw Error('Oops, an error occured!');
+        const paymentCardSectionElm = paymentCardSectionRef?.current;
+        const paypalDoPlaceOrder    = cardFieldsForm.submit;
+        if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
+        if (!paypalDoPlaceOrder)    throw Error('Oops, an error occured!');
+        
+        
+        
+        // validations:
+        const formState = await cardFieldsForm.getState();
+        if (!formState.isFormValid) {
+            const {
+                cardNumberField,
+                cardNameField,
+                cardExpiryField,
+                cardCvvField,
+            } = formState.fields;
+            const invalidFields = (
+                [
+                    (!cardNumberField.isValid ? <strong>card number</strong> : null),
+                    (!cardNameField.isValid   ? <strong>card number</strong> : null),
+                    (!cardExpiryField.isValid ? <strong>card number</strong> : null),
+                    (!cardCvvField.isValid    ? <strong>card number</strong> : null),
+                ]
+                .filter((invalidField): invalidField is Exclude<typeof invalidField, null> => (invalidField !== null))
+            );
+            showMessageError({
+                title : <h1>Invalid Payment Form</h1>,
+                error : <>
+                    {!invalidFields.length && <p>
+                        The payment form is invalid.
+                    </p>}
+                    {invalidFields.map((invalidField, index) =>
+                        <p key={index}>
+                            The ${invalidField} is invalid.
+                        </p>
+                    )}
+                    <p>
+                        Please fix the error and then try again.
+                    </p>
+                </>,
+            });
+            return false;
+        } // if
+        
+        
+        
+        // submit card data to PayPal_API to get authentication:
+        try {
+            await paypalDoPlaceOrder(); // triggers <PayPalCardFieldsProvider> => proxyDoPlaceOrder() => doPlaceOrder()
+        }
+        catch {
+            return false;
+        } // try
+        
+        const rawOrderId = approvedOrderId;
+        if (rawOrderId === undefined) return false;
         const orderId = (
             rawOrderId.startsWith('#PAYPAL_')
             ? rawOrderId              // already prefixed => no need to modify

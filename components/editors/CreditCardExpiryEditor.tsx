@@ -83,12 +83,12 @@ const regexpPatternPartial = /^(0[1-9]?|1[0-2]?)?(\/(2((0[0-9]{0,2})?|[1-9]?))?)
 
 
 // react components:
-export interface CreditCardExpiresEditorProps<TElement extends Element = HTMLSpanElement>
+export interface CreditCardExpiryEditorProps<TElement extends Element = HTMLSpanElement>
     extends
         MaskedEditorProps<TElement>
 {
 }
-const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(props: CreditCardExpiresEditorProps<TElement>) => {
+const CreditCardExpiryEditor = <TElement extends Element = HTMLSpanElement>(props: CreditCardExpiryEditorProps<TElement>) => {
     // props:
     const {
         // handlers:
@@ -309,6 +309,6 @@ const CreditCardExpiresEditor = <TElement extends Element = HTMLSpanElement>(pro
     );
 };
 export {
-    CreditCardExpiresEditor,            // named export for readibility
-    CreditCardExpiresEditor as default, // default export to support React.lazy
+    CreditCardExpiryEditor,            // named export for readibility
+    CreditCardExpiryEditor as default, // default export to support React.lazy
 };

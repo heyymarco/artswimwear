@@ -240,7 +240,7 @@ export const enum AuthenticatedResult {
 }
 export interface StartTransactionArg {
     // handlers:
-    doPlaceOrder          : () => Promise<PlaceOrderDetail|true>
+    doPlaceOrder          : () => Promise<PlaceOrderDetail|true|false>
     doAuthenticate        : (placeOrderDetail: PlaceOrderDetail) => Promise<AuthenticatedResult>
     
     
@@ -1802,7 +1802,8 @@ const CheckoutStateProvider = (props: React.PropsWithChildren<CheckoutStateProps
             try {
                 // createOrder:
                 const placeOrderDetail = await doPlaceOrder(); // if returns `PlaceOrderDetail` => assumes a DraftOrder has been created
-                if (placeOrderDetail === true) return; // immediately paid => no need further action
+                if (placeOrderDetail === false) return; // aborted (maybe due to validation error) => no need further action
+                if (placeOrderDetail === true ) return; // immediately paid => no need further action
                 
                 
                 

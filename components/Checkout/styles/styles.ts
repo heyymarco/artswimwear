@@ -664,17 +664,14 @@ export default () => {
                 ...children('.payButton', {
                     gridArea: 'payButton',
                 }),
-                ...descendants('.hostedField', {
+                ...descendants('.cardField', {
                     // layouts:
-                    display        : 'flex',
-                    flexDirection  : 'row',
-                    justifyContent : 'stretch',
-                    alignItems     : 'stretch',
-                    flexWrap       : 'nowrap',
+                    display       : 'grid',
                     
                     ...children(':only-child', {
-                        blockSize  : `calc(1em * ${switchOf(basics.lineHeight, typos.lineHeight)})`,
-                        flex           : [[1, 1, '100%']], // growable, shrinkable, initial 100% parent's width
+                        ...children(['&', '*'], {
+                            blockSize : `calc(1em * ${switchOf(basics.lineHeight, typos.lineHeight)})`,
+                        }),
                     }),
                 })
             }),

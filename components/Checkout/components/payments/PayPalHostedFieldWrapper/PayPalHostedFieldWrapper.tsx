@@ -41,11 +41,6 @@ import {
     inputValues,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// // styles:
-// import {
-//     usePayPalHostedFieldStyleSheet,
-// }                           from './styles/loader'
-
 // paypal:
 import type {
     HostedFieldsEvent,
@@ -135,12 +130,12 @@ const PayPalHostedFieldWrapper = (props: PayPalHostedFieldWrapperProps) => {
         // formats:
         hostedFieldType,
         options,
-    ...restPayPalHostedFieldWrapperProps} = props;
-    
-    
-    
-    // // styles:
-    // const styleSheet = usePayPalHostedFieldStyleSheet();
+        
+        
+        
+        // other props:
+        ...restPayPalHostedFieldWrapperProps
+    } = props;
     
     
     
