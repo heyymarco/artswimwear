@@ -262,7 +262,7 @@ const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
         
         // validations:
         const formState = await cardFieldsForm.getState();
-        if (!formState.isFormValid) return false;
+        if (!formState.isFormValid) return false; // no need to show invalid fields, already handled by `checkoutState::doTransaction()`
         
         
         
