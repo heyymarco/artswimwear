@@ -335,17 +335,19 @@ router
     const session = (req as any).session as Session|undefined;
     const customerId = session?.user?.id;
     if (customerId) {
-        if (guest !== undefined) {
+        if (guest !== undefined) { // BOTH customers and guests exist => ambiguous => invalid
             return Response.json({
                 error: 'Invalid data.',
             }, { status: 400 }); // handled with error
         } // if
     }
     else {
-        if (guest) {
-            return Response.json({
-                error: 'Invalid data.',
-            }, { status: 400 }); // handled with error
+        if (guest === undefined) { // both customers and guests NOT exist => MAYBE invalid
+            if (!simulateOrder) {  // invalid EXCEPT when ON simulateOrder
+                return Response.json({
+                    error: 'Invalid data.',
+                }, { status: 400 }); // handled with error
+            } // if
         } // if
     } // if
     //#endregion authenticating
