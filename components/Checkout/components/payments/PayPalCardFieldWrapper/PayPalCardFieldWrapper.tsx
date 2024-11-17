@@ -25,7 +25,6 @@ import {
     
     
     // react helper hooks:
-    useIsomorphicLayoutEffect,
     useEvent,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
@@ -48,7 +47,6 @@ import type {
 }                           from '@paypal/paypal-js'
 import {
     PayPalCardFieldsIndividualFieldOptions,
-    usePayPalCardFields,
 }                           from '@paypal/react-paypal-js'
 
 
@@ -235,8 +233,8 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
     
     
     // states:
-    const [isFocused, setIsFocused] = useState<boolean>(false);
-    const [isValid  , setIsValid  ] = useState<boolean>(true);
+    const [isFocused, setIsFocused] = useState<boolean>(false); // the fields are intitially untouched, so initially blur
+    const [isValid  , setIsValid  ] = useState<boolean>(false); // the fields are initially blank (but required), so initially invalid
     
     
     
@@ -253,42 +251,6 @@ const PayPalCardFieldWrapper = (props: PayPalCardFieldWrapperProps) => {
         // actions:
         setIsValid(data.fields[type].isValid && !data.fields[type].isEmpty);
     });
-    
-    
-    
-    // effects:
-    const {
-        cardFieldsForm,
-    } = usePayPalCardFields();
-    useIsomorphicLayoutEffect(() => {
-        // conditions:
-        console.log({cardFieldsForm});
-        if (!cardFieldsForm) return;
-        
-        
-        
-        // setups:
-        let isMounted = true;
-        cardFieldsForm.getState().then((data) => {
-            console.log('initial state: ', {
-                isMounted,
-                isFocused: data.fields[type].isFocused,
-                isValid: data.fields[type].isValid,
-                isEmpty: data.fields[type].isEmpty,
-                isValidCombi: data.fields[type].isValid && !data.fields[type].isEmpty,
-            })
-            if (!isMounted) return;
-            setIsFocused(data.fields[type].isFocused);
-            setIsValid(data.fields[type].isValid && !data.fields[type].isEmpty);
-        });
-        
-        
-        
-        // cleanups:
-        return () => {
-            isMounted = false;
-        };
-    }, [cardFieldsForm]);
     
     
     
