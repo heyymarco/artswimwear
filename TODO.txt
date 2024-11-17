@@ -1,4 +1,5 @@
 [high prior] protect payment confirmation page using captcha
+[high prior] verify 3DS implementation of paypal_card_payment
 
 [med prior ] refactor the generic template of any component that directly/indirectly inherit from @heymarco/number-editor
 [med prior ] replace @heymarco/quantity-editor with @heymarco/number-updown-editor
