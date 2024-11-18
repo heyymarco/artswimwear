@@ -568,6 +568,9 @@ export const stripeCreateOrder = async (cardToken: string, orderId: string, opti
                 allow_redirects : 'never',
             },
             
+            // payment_method_types      : ['card_present'],
+            // setup_future_usage        : 'off_session',
+            
             expand                    : [
                 'latest_charge.balance_transaction',
                 'payment_method',
