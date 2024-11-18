@@ -60,7 +60,6 @@ import {
     PayPalCVVField,
 }                           from '@paypal/react-paypal-js'
 import {
-    useIsInPayPalScriptProvider,
     IfInPayPalScriptProvider,
 }                           from './ConditionalPayPalScriptProvider'
 import {
@@ -79,7 +78,6 @@ import {
     CardCvcElement,
 }                           from '@stripe/react-stripe-js'
 import {
-    useIsInStripeElementsProvider,
     IfInStripeElementsProvider,
 }                           from './ConditionalStripeElementsProvider'
 import {
@@ -89,7 +87,6 @@ import {
 
 // midtrans:
 import {
-    useIsInMidtransScriptProvider,
     IfInMidtransScriptProvider,
 }                           from './ConditionalMidtransScriptProvider'
 
@@ -97,11 +94,9 @@ import {
 import {
     useCheckoutState,
 }                           from '../../states/checkoutState'
-
-// configs:
 import {
-    type checkoutConfigClient,
-}                           from '@/checkout.config.client'
+    usePaymentProcessorPriority,
+}                           from './hooks'
 
 
 
@@ -164,21 +159,13 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
     
     
     
-    const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
-    const isInStripeElementsProvider = useIsInStripeElementsProvider();
-    const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
-    const supportedCardProcessors    : string[] = (
-        ([
-            !isInPayPalScriptProvider   ? undefined : 'paypal',
-            !isInStripeElementsProvider ? undefined : 'stripe',
-            !isInMidtransScriptProvider ? undefined : 'midtrans',
-        ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
-        .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))
-    );
-    const priorityPaymentProcessor   = appropriatePaymentProcessors.find((processor) => supportedCardProcessors.includes(processor)); // find the highest priority payment processor that supports card payment
-    const isPayUsingPaypalPriority   = (priorityPaymentProcessor === 'paypal');
-    const isPayUsingStripePriority   = (priorityPaymentProcessor === 'stripe');
-    const isPayUsingMidtransPriority = (priorityPaymentProcessor === 'midtrans');
+    const {
+        isPaymentPriorityPaypal,
+        isPaymentPriorityStripe,
+        isPaymentPriorityMidtrans,
+    } = usePaymentProcessorPriority({
+        appropriatePaymentProcessors,
+    });
     
     
     
@@ -367,7 +354,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             
             <IfInStripeElementsProvider>
                 {/* conditional re-render */}
-                {isPayUsingStripePriority && <InputWithLabel
+                {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
                     icon='credit_card'
                     
@@ -387,7 +374,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingStripePriority ? undefined : false}
+                            enableValidation={isPaymentPriorityStripe ? undefined : false}
                             
                             
                             
@@ -413,7 +400,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'number' + (isPayUsingPaypalPriority ? '' : ' hidden')}
+                    className={'number' + (isPaymentPriorityPaypal ? '' : ' hidden')}
                     
                     
                     
@@ -436,7 +423,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingPaypalPriority ? undefined : false}
+                            enableValidation={isPaymentPriorityPaypal ? undefined : false}
                         />
                     }
                     
@@ -448,7 +435,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             </IfInPayPalScriptProvider>
             <IfInMidtransScriptProvider>
                 {/* conditional re-render */}
-                {isPayUsingMidtransPriority && <InputWithLabel
+                {isPaymentPriorityMidtrans && <InputWithLabel
                     // appearances:
                     icon='credit_card'
                     
@@ -476,7 +463,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             
             <IfInStripeElementsProvider>
                 {/* conditional re-render */}
-                {isPayUsingStripePriority && <InputWithLabel
+                {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
                     icon='person'
                     
@@ -510,7 +497,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'name' + (isPayUsingPaypalPriority ? '' : ' hidden')}
+                    className={'name' + (isPaymentPriorityPaypal ? '' : ' hidden')}
                     
                     
                     
@@ -533,7 +520,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingPaypalPriority ? undefined : false}
+                            enableValidation={isPaymentPriorityPaypal ? undefined : false}
                         />
                     }
                     
@@ -545,7 +532,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             </IfInPayPalScriptProvider>
             <IfInMidtransScriptProvider>
                 {/* conditional re-render */}
-                {isPayUsingMidtransPriority && <InputWithLabel
+                {isPaymentPriorityMidtrans && <InputWithLabel
                     // appearances:
                     icon='person'
                     
@@ -574,7 +561,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             
             <IfInStripeElementsProvider>
                 {/* conditional re-render */}
-                {isPayUsingStripePriority && <InputWithLabel
+                {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
                     icon='date_range'
                     
@@ -594,7 +581,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingStripePriority ? undefined : false}
+                            enableValidation={isPaymentPriorityStripe ? undefined : false}
                             
                             
                             
@@ -620,7 +607,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'expiry' + (isPayUsingPaypalPriority ? '' : ' hidden')}
+                    className={'expiry' + (isPaymentPriorityPaypal ? '' : ' hidden')}
                     
                     
                     
@@ -643,7 +630,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingPaypalPriority ? undefined : false}
+                            enableValidation={isPaymentPriorityPaypal ? undefined : false}
                         />
                     }
                     
@@ -655,7 +642,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             </IfInPayPalScriptProvider>
             <IfInMidtransScriptProvider>
                 {/* conditional re-render */}
-                {isPayUsingMidtransPriority && <InputWithLabel
+                {isPaymentPriorityMidtrans && <InputWithLabel
                     // appearances:
                     icon='date_range'
                     
@@ -683,7 +670,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             
             <IfInStripeElementsProvider>
                 {/* conditional re-render */}
-                {isPayUsingStripePriority && <InputWithLabel
+                {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
                     icon='edit'
                     
@@ -703,7 +690,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingStripePriority ? undefined : false}
+                            enableValidation={isPaymentPriorityStripe ? undefined : false}
                             
                             
                             
@@ -729,7 +716,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     
                     // classes:
-                    className={'csc' + (isPayUsingPaypalPriority ? '' : ' hidden')}
+                    className={'csc' + (isPaymentPriorityPaypal ? '' : ' hidden')}
                     
                     
                     
@@ -752,7 +739,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                             
                             
                             // validations:
-                            enableValidation={isPayUsingPaypalPriority ? undefined : false}
+                            enableValidation={isPaymentPriorityPaypal ? undefined : false}
                         />
                     }
                     
@@ -764,7 +751,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             </IfInPayPalScriptProvider>
             <IfInMidtransScriptProvider>
                 {/* conditional re-render */}
-                {isPayUsingMidtransPriority && <InputWithLabel
+                {isPaymentPriorityMidtrans && <InputWithLabel
                     // appearances:
                     icon='edit'
                     
