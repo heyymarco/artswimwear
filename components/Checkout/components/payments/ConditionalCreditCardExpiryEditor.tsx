@@ -99,7 +99,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
     
     
     // refs:
-    const dateSignRef = useRef<HTMLElement|null>(null);
+    const labelRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -107,7 +107,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
     const labelCardExpiry = (
         <Label
             // refs:
-            elmRef={dateSignRef}
+            elmRef={labelRef}
             
             
             
@@ -136,7 +136,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                 
                 
                 // floatable:
-                floatingOn={dateSignRef}
+                floatingOn={labelRef}
             >
                 <p>
                     The expiration date as printed on front card.

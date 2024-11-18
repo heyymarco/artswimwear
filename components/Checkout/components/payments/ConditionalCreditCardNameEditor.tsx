@@ -92,7 +92,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
     
     
     // refs:
-    const nameSignRef = useRef<HTMLElement|null>(null);
+    const labelRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -100,7 +100,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
     const labelCardName   = (
         <Label
             // refs:
-            elmRef={nameSignRef}
+            elmRef={labelRef}
             
             
             
@@ -129,7 +129,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                 
                 
                 // floatable:
-                floatingOn={nameSignRef}
+                floatingOn={labelRef}
             >
                 <p>
                     The owner name as printed on front card.

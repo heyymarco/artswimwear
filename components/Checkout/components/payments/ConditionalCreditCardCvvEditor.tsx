@@ -99,7 +99,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
     
     
     // refs:
-    const cscSignRef = useRef<HTMLElement|null>(null);
+    const labelRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -107,7 +107,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
     const labelCardCvv    = (
         <Label
             // refs:
-            elmRef={cscSignRef}
+            elmRef={labelRef}
             
             
             
@@ -136,7 +136,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                 
                 
                 // floatable:
-                floatingOn={cscSignRef}
+                floatingOn={labelRef}
             >
                 <p>
                     3-digit security code usually found on the back of your card.

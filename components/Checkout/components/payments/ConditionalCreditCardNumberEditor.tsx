@@ -99,7 +99,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
     
     
     // refs:
-    const safeSignRef = useRef<HTMLElement|null>(null);
+    const labelRef = useRef<HTMLElement|null>(null);
     
     
     
@@ -107,7 +107,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
     const labelCardNumber = (
         <Label
             // refs:
-            elmRef={safeSignRef}
+            elmRef={labelRef}
             
             
             
@@ -137,7 +137,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                 
                 
                 // floatable:
-                floatingOn={safeSignRef}
+                floatingOn={labelRef}
             >
                 <p>
                     All transactions are secure and encrypted.
