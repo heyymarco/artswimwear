@@ -148,7 +148,7 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     
     
     // caches:
-    const cachedCardElement = useMemo(() => {
+    const cachedCardField = useMemo(() => {
         // jsx:
         return React.cloneElement<CardBaseElementProps>(cardElementComponent,
             // props:
@@ -211,7 +211,7 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
             focused    = {editableFocused}
             isValid    = {editableIsValid}
         >
-            {cachedCardElement}
+            {cachedCardField}
         </EditableTextControl>
     );
 };
