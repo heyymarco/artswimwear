@@ -312,8 +312,14 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                 soft_descriptor           : undefined,
             }],
             
+            
+            
             payment_source: {
                 card : {
+                    // billing_address : undefined, // TODO provide billingAddress passed from checkoutState::doPlaceOrder()
+                    
+                    
+                    
                     attributes : {
                         verification : {
                             // UNCOMMENT to test 3DS scenario:
@@ -321,11 +327,20 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                             
                             method : 'SCA_WHEN_REQUIRED', // triggers 3D Secure contingency when it is a mandate in the region where you operate
                         },
+                        
+                        
+                        
+                        // TODO: save payment method during purchase:
+                        // customer : isExistingCustomer ? {
+                        //     id : 'PayPal-generated customer id',
+                        // } : undefined,
                         // vault : {
                         //     store_in_vault : 'ON_SUCCESS',
                         // },
                     },
                 },
+                
+                
                 
                 // paypal : {
                 //     experience_context : {
@@ -335,6 +350,8 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                 //     },
                 // },
             },
+            
+            
             
             application_context : {
                 brand_name          : checkoutConfigServer.business.name || undefined,
