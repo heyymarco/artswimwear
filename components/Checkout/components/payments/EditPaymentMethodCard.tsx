@@ -810,9 +810,9 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     Enter the address that matches your card&apos;s billing address.
                 </p>
                 <EditBillingAddress />
-                
-                <hr className='horz2' />
             </section>
+            
+            <hr className='horz2' />
             
             <div className='verify'>
                 <p>

@@ -608,6 +608,7 @@ export default () => {
                     '"csc      " auto',
                     '"horz1    " auto',
                     '"billing  " auto',
+                    '"horz2    " auto',
                     '"verify   " auto',
                     '"payButton" auto',
                     '/',
@@ -621,6 +622,7 @@ export default () => {
                         '"expiry          csc" auto',
                         '"horz1         horz1" auto',
                         '"billing     billing" auto',
+                        '"horz2         horz2" auto',
                         '"verify       verify" auto',
                         '"payButton payButton" auto',
                         '/',
@@ -653,10 +655,10 @@ export default () => {
                 }),
                 ...children('.billing', {
                     gridArea: 'billing',
-                    ...children('.horz2', {
-                        marginBlockStart: '1rem',
-                        marginBlockEnd  : 0,
-                    }),
+                }),
+                ...children('.horz2', {
+                    gridArea: 'horz2',
+                    marginBlock: 0,
                 }),
                 ...children('.verify', {
                     gridArea: 'verify',
