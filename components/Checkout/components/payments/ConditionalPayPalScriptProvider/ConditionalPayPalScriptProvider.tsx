@@ -128,6 +128,9 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
         // commit           : true,
         // vault            : false,
         // 'data-page-type' : 'product-details',
+        
+        // UNCOMMENT to test 3DS scenario:
+        // buyerCountry     : 'US',
     }), [clientId, paymentSession, currency]);
     
     

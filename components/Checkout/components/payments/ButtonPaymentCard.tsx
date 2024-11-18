@@ -739,7 +739,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     Your card was declined.
                 </p>}
                 {!!errorMessage && <p>
-                    {errorMessage}
+                    {errorMessage}{errorMessage?.endsWith('.') ? '' : '.'}
                 </p>}
                 <p>
                     Please try using <strong>another card</strong>.
@@ -753,7 +753,7 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
                     Your card was declined.
                 </p>}
                 {!!errorMessage && <p>
-                    {errorMessage}
+                    {errorMessage}{errorMessage?.endsWith('.') ? '' : '.'}
                 </p>}
                 <p>
                     Please <strong>try again</strong> in a few minutes.

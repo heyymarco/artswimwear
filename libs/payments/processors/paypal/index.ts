@@ -312,19 +312,36 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                 soft_descriptor           : undefined,
             }],
             
-            // doesn't work:
-            // payment_source: {
-            //     paypal : {
-            //         experience_context : {
-            //             shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
-            //         },
-            //     },
-            // },
+            payment_source: {
+                card : {
+                    attributes : {
+                        verification : {
+                            // UNCOMMENT to test 3DS scenario:
+                            // method: 'SCA_ALWAYS', // triggers 3D Secure for every transaction, regardless of SCA requirements.
+                            
+                            method : 'SCA_WHEN_REQUIRED', // triggers 3D Secure contingency when it is a mandate in the region where you operate
+                        },
+                        // vault : {
+                        //     store_in_vault : 'ON_SUCCESS',
+                        // },
+                    },
+                },
+                
+                // paypal : {
+                //     experience_context : {
+                //         // doesn't work:
+                //         // shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
+                //         shipping_preference : 'NO_SHIPPING', // if has shipping adress => the shipping address is editable in app only
+                //     },
+                // },
+            },
             
-            // works:
             application_context : {
                 brand_name          : checkoutConfigServer.business.name || undefined,
-                shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
+                
+                // doesn't work too:
+                // shipping_preference : hasShippingAddress ? 'SET_PROVIDED_ADDRESS' : 'NO_SHIPPING',
+                shipping_preference : 'NO_SHIPPING', // if has shipping adress => the shipping address is editable in app only
             },
         }),
     });
@@ -370,6 +387,19 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
         console.log('unexpected response: ', paypalOrderData);
         throw Error('unexpected API response');
     } // if
+    
+    
+    
+    /*
+        The merchant needs to redirect the payer back to PayPal to complete 3D Secure authentication.
+        
+        To trigger the authentication:
+        1. Redirect the buyer to the "rel": "payer-action" HATEOAS link returned as part of the response before authorizing or capturing the order.
+        2. Append "redirect_uri" to the payer-action URL so that PayPal returns the payer to the merchant's checkout page after they complete 3D Secure authentication.
+        
+        Sample URL:
+        https://example.com/webapp/myshop?action=verify&flow=3ds&cart_id=ORDER-ID&redirect_uri=MERCHANT-LANDING-PAGE
+    */
     
     
     
