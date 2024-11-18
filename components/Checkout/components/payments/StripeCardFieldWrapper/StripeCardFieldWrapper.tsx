@@ -42,7 +42,7 @@ import {
 
 // styles:
 import {
-    useStripeHostedFieldStyleSheet,
+    useStripeCardFieldStyleSheet,
 }                           from './styles/loader'
 
 // stripe:
@@ -107,24 +107,24 @@ export type CardBaseElementProps =
     |CardNumberElementProps
     |CardExpiryElementProps
     |CardCvcElementProps
-export interface StripeHostedFieldWrapperProps
+export interface StripeCardFieldWrapperProps
     extends
         EditableTextControlProps
 {
     // components:
     cardElementComponent : React.ReactElement<CardBaseElementProps>
 }
-const StripeHostedFieldWrapper = (props: StripeHostedFieldWrapperProps) => {
+const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
     // rest props:
     const {
         // components:
         cardElementComponent,
-    ...restStripeHostedFieldWrapperProps} = props;
+    ...restStripeCardFieldWrapperProps} = props;
     
     
     
     // styles:
-    const styleSheet = useStripeHostedFieldStyleSheet();
+    const styleSheet = useStripeCardFieldStyleSheet();
     
     
     
@@ -148,7 +148,7 @@ const StripeHostedFieldWrapper = (props: StripeHostedFieldWrapperProps) => {
     
     
     // caches:
-    const cachedHostedElement = useMemo(() => {
+    const cachedCardElement = useMemo(() => {
         // jsx:
         return React.cloneElement<CardBaseElementProps>(cardElementComponent,
             // props:
@@ -189,7 +189,7 @@ const StripeHostedFieldWrapper = (props: StripeHostedFieldWrapperProps) => {
         
         
         ...restEditableTextControlProps
-    } = restStripeHostedFieldWrapperProps;
+    } = restStripeCardFieldWrapperProps;
     
     
     
@@ -211,11 +211,11 @@ const StripeHostedFieldWrapper = (props: StripeHostedFieldWrapperProps) => {
             focused    = {editableFocused}
             isValid    = {editableIsValid}
         >
-            {cachedHostedElement}
+            {cachedCardElement}
         </EditableTextControl>
     );
 };
 export {
-    StripeHostedFieldWrapper,
-    StripeHostedFieldWrapper as default,
+    StripeCardFieldWrapper,
+    StripeCardFieldWrapper as default,
 };

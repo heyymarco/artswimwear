@@ -84,8 +84,8 @@ import {
 }                           from './ConditionalStripeElementsProvider'
 import {
     // react components:
-    StripeHostedFieldWrapper,
-}                           from '../payments/StripeHostedFieldWrapper'
+    StripeCardFieldWrapper,
+}                           from '../payments/StripeCardFieldWrapper'
 
 // midtrans:
 import {
@@ -380,7 +380,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <StripeHostedFieldWrapper
+                        <StripeCardFieldWrapper
                             // accessibilities:
                             aria-label='Card Number'
                             
@@ -587,7 +587,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <StripeHostedFieldWrapper
+                        <StripeCardFieldWrapper
                             // accessibilities:
                             aria-label='Card Expiry'
                             
@@ -696,7 +696,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     
                     // components:
                     inputComponent={
-                        <StripeHostedFieldWrapper
+                        <StripeCardFieldWrapper
                             // accessibilities:
                             aria-label='Card CSC/CVV'
                             

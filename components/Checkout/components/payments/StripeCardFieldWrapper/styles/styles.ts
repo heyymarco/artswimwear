@@ -13,7 +13,7 @@ import {
 
 
 // styles:
-export const usesStripeHostedFieldLayout = () => {
+export const usesStripeCardFieldLayout = () => {
     // dependencies:
     
     // features:
@@ -35,5 +35,5 @@ export const usesStripeHostedFieldLayout = () => {
 
 export default () => style({
     // layouts:
-    ...usesStripeHostedFieldLayout(),
+    ...usesStripeCardFieldLayout(),
 });
