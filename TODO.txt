@@ -19,3 +19,25 @@ move checkoutState to local if guess mode
 [low  prior] update DateTimeEditor to have polyfill dropdown calendar
 [low  prior] prefer to use Request|Response instead of NextRequest|NextResponse
 [low  prior] standardize coding style of // compound_like relation // array_like relation => similar to (artswimwear) app/api/(protected)/cart/route.ts
+
+
+-----------------------------------------
+
+Add saved card:
+
+[v] Save my card for future use
+
+model Customer {
+    paypalCustomerId
+    stripeCustomerId
+}
+
+model Card {
+    provider : CardProvider
+    token    : string (vaultId)
+}
+enum CardProvider {
+    PAYPAL
+    STRIPE
+    MIDTRANS
+}
