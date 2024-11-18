@@ -27,11 +27,6 @@ import {
     
     // notification-components:
     Tooltip,
-    
-    
-    
-    // menu-components:
-    Collapse,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
 // internal components:
