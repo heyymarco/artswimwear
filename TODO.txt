@@ -25,6 +25,9 @@ move checkoutState to local if guess mode
 
 Add saved card:
 
+
+Add checkbox for payers to save card
+Add a checkbox element grouped with your card collection fields to give payers the option to save their card:
 [v] Save my card for future use
 
 model Customer {
@@ -34,7 +37,7 @@ model Customer {
 
 model Card {
     provider : CardProvider
-    token    : string (vaultId)
+    cardId   : string (vaultId)
 }
 enum CardProvider {
     PAYPAL
