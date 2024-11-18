@@ -149,11 +149,6 @@ const EditPaymentMethodCard = (): JSX.Element|null => {
 };
 const EditPaymentMethodCardInternal = (): JSX.Element|null => {
     const {
-        // billing data:
-        isBillingAddressRequired,
-        
-        
-        
         // payment data:
         appropriatePaymentProcessors,
         paymentValidation,
@@ -802,29 +797,14 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
             
             <hr className='horz1' />
             
-            <Collapse
+            <section
                 // refs:
-                elmRef={billingAddressSectionRef}
-                
-                
-                
-                // semantics:
-                tag='section'
+                ref={billingAddressSectionRef}
                 
                 
                 
                 // classes:
                 className='billing'
-                
-                
-                
-                // behaviors:
-                // lazy={true} // causes collapsing animation error
-                
-                
-                
-                // states:
-                expanded={isBillingAddressRequired}
             >
                 <p>
                     Enter the address that matches your card&apos;s billing address.
@@ -832,7 +812,7 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                 <EditBillingAddress />
                 
                 <hr className='horz2' />
-            </Collapse>
+            </section>
             
             <div className='verify'>
                 <p>
