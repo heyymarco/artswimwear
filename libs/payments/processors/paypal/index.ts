@@ -447,7 +447,37 @@ export const paypalCaptureFund = async (paymentId: string): Promise<PaymentDetai
                     "last_digits": "8431",
                     "brand": "AMEX",
                     "type": "CREDIT"
-                }
+                },
+                
+                // TODO: if exists and `payment_source.card.attributes.vault.status === 'VAULTED'`, store `payment_source.card.attributes.vault.id` and `payment_source.card.attributes.vault.customer.id` to the database
+                // OTHERWISE, when `payment_source.card.attributes.vault.status === 'APPROVED'`, neither the `payment_source.card.attributes.vault.id` nor `payment_source.card.attributes.vault.customer.id` is not received immediately
+                // The `VAULT.PAYMENT-TOKEN.CREATED` will be sent to webhook
+                attributes : {
+                    vault : {
+                        id : 'nkq2y9g',
+                        customer : {
+                            id: '695922590',
+                        },
+                        status : 'VAULTED',
+                        links : [
+                            {
+                                "href": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/nkq2y9g",
+                                "rel": "self",
+                                "method": "GET"
+                            },
+                            {
+                                "href": "https://api-m.sandbox.paypal.com/v3/vault/payment-tokens/nkq2y9g",
+                                "rel": "delete",
+                                "method": "DELETE"
+                            },
+                            {
+                                "href": "https://api-m.sandbox.paypal.com/v2/checkout/orders/5O190127TN364715T",
+                                "rel": "up",
+                                "method": "GET"
+                            },
+                        ],
+                    },
+                },
             },
             "purchase_units": [
                 {

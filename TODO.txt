@@ -36,8 +36,9 @@ model Customer {
 }
 
 model Card {
-    provider : CardProvider
-    cardId   : string (vaultId)
+    provider  : CardProvider
+    cardId    : string (vaultId)
+    expiresAt : DateTime?
 }
 enum CardProvider {
     PAYPAL
