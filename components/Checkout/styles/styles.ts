@@ -598,7 +598,7 @@ export default () => {
                 [paddingVars.paddingInline] : '0px',
                 [paddingVars.paddingBlock ] : '0px',
             }),
-            ...children('article>*', { // added * because <PayPalHostedFieldsProvider> render as <div>
+            ...children('article>*', { // added * because <PayPalCardFieldsProvider> render as <div>
                 display: 'grid',
                 gridTemplate: [[
                     '"instruct " auto',

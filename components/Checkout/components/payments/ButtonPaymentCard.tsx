@@ -49,7 +49,6 @@ import {
 
 // paypal:
 import {
-    usePayPalHostedFields,
     usePayPalCardFields,
 }                           from '@paypal/react-paypal-js'
 import {
@@ -125,98 +124,6 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     if (isPayUsingStripePriority  ) return <ButtonPaymentCardForStripe />;
     if (isPayUsingMidtransPriority) return <ButtonPaymentCardForMidtrans />;
     return null;
-};
-const ButtonPaymentCardForPayPalLegacy = (): JSX.Element|null => {
-    // states:
-    const {
-        // shipping data:
-        shippingAddress,
-        
-        
-        
-        // billing data:
-        billingAsShipping,
-        
-        billingAddress,
-        
-        
-        
-        // sections:
-        paymentCardSectionRef,
-    } = useCheckoutState();
-    
-    const finalBillingAddress = billingAsShipping ? shippingAddress : billingAddress;
-    
-    
-    
-    // handlers:
-    const hostedFields        = usePayPalHostedFields();
-    
-    const proxyDoPlaceOrder   = useEvent(async (): Promise<PlaceOrderDetail> => {
-        const paymentCardSectionElm = paymentCardSectionRef?.current;
-        const paypalDoPlaceOrder    = hostedFields.cardFields?.submit;
-        if (!paymentCardSectionElm) throw Error('Oops, an error occured!');
-        if (!paypalDoPlaceOrder)    throw Error('Oops, an error occured!');
-        
-        
-        
-        // submit card data to PayPal_API to get authentication:
-        const formData = new FormData(paymentCardSectionElm);
-        const paypalAuthentication = await paypalDoPlaceOrder({ // triggers <PayPalHostedFieldsProvider> => proxyDoPlaceOrder() => doPlaceOrder()
-            // trigger 3D Secure authentication:
-            contingencies  : ['SCA_WHEN_REQUIRED'],
-            
-            cardholderName        : formData.get('cardHolder')?.toString()?.trim(), // cardholder's first and last name
-            billingAddress : {
-                countryCodeAlpha2 : finalBillingAddress?.country, // country Code
-                region            : finalBillingAddress?.state,   // state
-                locality          : finalBillingAddress?.city,    // city
-                postalCode        : finalBillingAddress?.zip,     // postal Code
-                streetAddress     : finalBillingAddress?.address, // street address, line 1
-             // extendedAddress   : undefined,                    // street address, line 2 (Ex: Unit, Apartment, etc.)
-            },
-        });
-        /*
-            example:
-            {
-                authenticationReason: undefined
-                authenticationStatus: "APPROVED",
-                card: {
-                    brand: "VISA",
-                    card_type: "VISA",
-                    last_digits: "7704",
-                    type: "CREDIT",
-                },
-                liabilityShift: undefined
-                liabilityShifted: undefined
-                orderId: "1N785713SG267310M"
-            }
-        */
-        const rawOrderId = paypalAuthentication.orderId;
-        const orderId = (
-            rawOrderId.startsWith('#PAYPAL_')
-            ? rawOrderId              // already prefixed => no need to modify
-            : `#PAYPAL_${rawOrderId}` // not     prefixed => modify with prefix #PAYPAL_
-        );
-        return {
-            orderId      : orderId,
-            redirectData : undefined,
-        } satisfies PlaceOrderDetail;
-    });
-    const proxyDoAuthenticate = useEvent(async (placeOrderDetail: PlaceOrderDetail): Promise<AuthenticatedResult> => {
-        return AuthenticatedResult.AUTHORIZED;
-    });
-    
-    
-    
-    // jsx:
-    return (
-        <ButtonPaymentCardGeneral
-            // handlers:
-            doPlaceOrder={proxyDoPlaceOrder}
-            doAuthenticate={proxyDoAuthenticate}
-        />
-    );
 };
 const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
     // // states:

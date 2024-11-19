@@ -109,7 +109,7 @@ const EditPaymentMethod = (): JSX.Element|null => {
         The <ConditionalStripeElementsProvider> must be on top of <ConditionalPayPalScriptProvider>
         to avoid re-render error from <ConditionalStripeElementsProvider>
         Error:
-        Error: Failed to render <PayPalHostedFieldsProvider /> component. BraintreeError: Element already contains a Braintree iframe.
+        Error: Failed to render <PayPalCardFieldsProvider /> component. BraintreeError: Element already contains a Braintree iframe.
     */
     return (
         <ConditionalStripeElementsProvider>
