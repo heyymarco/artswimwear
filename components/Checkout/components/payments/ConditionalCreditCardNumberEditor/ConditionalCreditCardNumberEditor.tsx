@@ -28,44 +28,44 @@ import {
     InputWithLabel,
 }                           from '@/components/InputWithLabel'
 import {
-    CreditCardCvvEditor,
-}                           from '@/components/editors/CreditCardCvvEditor'
+    CreditCardNumberEditor,
+}                           from '@/components/editors/CreditCardNumberEditor'
 
 // paypal:
 import {
     IfInPayPalScriptProvider,
-}                           from './ConditionalPayPalScriptProvider'
+}                           from '../ConditionalPayPalScriptProvider'
 import {
     // options:
-    paypalCardCvvOptions,
+    paypalCardNumberOptions,
     
     
     
     // react components:
     PayPalCardFieldWrapper,
-}                           from '../payments/PayPalCardFieldWrapper'
+}                           from '../PayPalCardFieldWrapper'
 
 // stripe:
 import {
-    CardCvcElement,
+    CardNumberElement,
 }                           from '@stripe/react-stripe-js'
 import {
     IfInStripeElementsProvider,
-}                           from './ConditionalStripeElementsProvider'
+}                           from '../ConditionalStripeElementsProvider'
 import {
     // react components:
     StripeCardFieldWrapper,
-}                           from '../payments/StripeCardFieldWrapper'
+}                           from '../StripeCardFieldWrapper'
 
 // midtrans:
 import {
     IfInMidtransScriptProvider,
-}                           from './ConditionalMidtransScriptProvider'
+}                           from '../ConditionalMidtransScriptProvider'
 
 // internals:
 import {
     usePaymentProcessorPriority,
-}                           from './hooks'
+}                           from '../hooks'
 
 // configs:
 import {
@@ -75,11 +75,11 @@ import {
 
 
 // react components:
-export interface ConditionalCreditCardCvvEditorProps {
+export interface ConditionalCreditCardNumberEditorProps {
     // payment data:
     appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
 }
-const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorProps): JSX.Element|null => {
+const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEditorProps): JSX.Element|null => {
     // props:
     const {
         // payment data:
@@ -104,7 +104,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
     
     
     // jsx:
-    const labelCardCvv    = (
+    const labelCardNumber = (
         <Label
             // refs:
             elmRef={labelRef}
@@ -122,8 +122,9 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
         >
             <Icon
                 // appearances:
-                icon='help'
+                icon='lock'
             />
+            
             <Tooltip
                 // variants:
                 theme='warning'
@@ -139,10 +140,14 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                 floatingOn={labelRef}
             >
                 <p>
-                    3-digit security code usually found on the back of your card.
+                    All transactions are secure and encrypted.
                 </p>
                 <p>
-                    American Express cards have a 4-digit code located on the front.
+                    Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
+                </p>
+                <p>
+                    The card data will be forwarded to our payment gateway (PayPal).<br />
+                    We won&apos;t store your card data into our database.
                 </p>
             </Tooltip>
         </Label>
@@ -153,12 +158,12 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                 {/* conditional re-render */}
                 {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
-                    icon='edit'
+                    icon='credit_card'
                     
                     
                     
                     // classes:
-                    className='csc'
+                    className='number'
                     
                     
                     
@@ -166,7 +171,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     inputComponent={
                         <StripeCardFieldWrapper
                             // accessibilities:
-                            aria-label='Card CSC/CVV'
+                            aria-label='Card Number'
                             
                             
                             
@@ -177,7 +182,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                             
                             // components:
                             cardElementComponent={
-                                <CardCvcElement />
+                                <CardNumberElement />
                             }
                         />
                     }
@@ -185,19 +190,19 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     
                     
                     // children:
-                    childrenAfter={labelCardCvv}
+                    childrenAfter={labelCardNumber}
                 />}
             </IfInStripeElementsProvider>
             <IfInPayPalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
                     // appearances:
-                    icon='edit'
+                    icon='credit_card'
                     
                     
                     
                     // classes:
-                    className={'csc' + (isPaymentPriorityPaypal ? '' : ' hidden')}
+                    className={'number' + (isPaymentPriorityPaypal ? '' : ' hidden')}
                     
                     
                     
@@ -205,12 +210,12 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     inputComponent={
                         <PayPalCardFieldWrapper
                             // options:
-                            {...paypalCardCvvOptions}
+                            {...paypalCardNumberOptions}
                             
                             
                             
                             // accessibilities:
-                            aria-label='Card CSC/CVV'
+                            aria-label='Card Number'
                             
                             
                             
@@ -227,40 +232,40 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     
                     
                     // children:
-                    childrenAfter={labelCardCvv}
+                    childrenAfter={labelCardNumber}
                 />
             </IfInPayPalScriptProvider>
             <IfInMidtransScriptProvider>
                 {/* conditional re-render */}
                 {isPaymentPriorityMidtrans && <InputWithLabel
                     // appearances:
-                    icon='edit'
+                    icon='credit_card'
                     
                     
                     
                     // classes:
-                    className='csc'
+                    className='number'
                     
                     
                     
                     // components:
                     inputComponent={
-                        <CreditCardCvvEditor
+                        <CreditCardNumberEditor
                             // forms:
-                            name='cardCvv'
+                            name='cardNumber'
                         />
                     }
                     
                     
                     
                     // children:
-                    childrenAfter={labelCardCvv}
+                    childrenAfter={labelCardNumber}
                 />}
             </IfInMidtransScriptProvider>
         </>
     );
 };
 export {
-    ConditionalCreditCardCvvEditor,
-    ConditionalCreditCardCvvEditor as default,
+    ConditionalCreditCardNumberEditor,
+    ConditionalCreditCardNumberEditor as default,
 };
