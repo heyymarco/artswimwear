@@ -46,12 +46,7 @@ import {
     ModalCard,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// internal components:
-import {
-    MessageError,
-}                           from '@/components/MessageError'
-
-// paypal:
+// payment components:
 import type {
     PayPalButtonsComponentOptions,
     PayPalButtonOnInit,
@@ -65,6 +60,11 @@ import type {
 import {
     PayPalButtons,
 }                           from '@paypal/react-paypal-js'
+
+// internal components:
+import {
+    MessageError,
+}                           from '@/components/MessageError'
 
 // internals:
 import {

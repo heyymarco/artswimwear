@@ -1,5 +1,10 @@
 'use client'
 
+// styles:
+import {
+    useStripeCardFieldStyleSheet,
+}                           from './styles/loader'
+
 // react:
 import {
     // react:
@@ -25,17 +30,11 @@ import {
     EditableTextControl,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// styles:
-import {
-    useStripeCardFieldStyleSheet,
-}                           from './styles/loader'
-
-// stripe:
+// payment components:
 import {
     type StripeCardNumberElementChangeEvent,
     type StripeCardExpiryElementChangeEvent,
     type StripeCardCvcElementChangeEvent,
-    type StripeElementStyle,
 }                           from '@stripe/stripe-js'
 import {
     type CardNumberElementProps,

@@ -12,28 +12,33 @@ import {
     ValidationProvider,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
+// payment components:
+import {
+    ConditionalPayPalCardFieldsProvider,
+}                           from '@/components/payments/ConditionalPayPalCardFieldsProvider'
+import {
+    ConditionalCreditCardNumberEditor,
+}                           from '@/components/payments/ConditionalCreditCardNumberEditor'
+import {
+    ConditionalCreditCardNameEditor,
+}                           from '@/components/payments/ConditionalCreditCardNameEditor'
+import {
+    ConditionalCreditCardExpiryEditor,
+}                           from '@/components/payments/ConditionalCreditCardExpiryEditor'
+import {
+    ConditionalCreditCardCvvEditor,
+}                           from '@/components/payments/ConditionalCreditCardCvvEditor'
+import {
+    ButtonPaymentCard,
+}                           from '@/components/payments/ButtonPaymentCard'
+
 // internal components:
+import {
+    ButtonWithBusy,
+}                           from '../ButtonWithBusy'
 import {
     EditBillingAddress,
 }                           from './EditBillingAddress'
-import {
-    ButtonPaymentCard,
-}                           from './ButtonPaymentCard'
-import {
-    ConditionalPayPalCardFieldsProvider,
-}                           from './ConditionalPayPalCardFieldsProvider'
-import {
-    ConditionalCreditCardNumberEditor,
-}                           from './ConditionalCreditCardNumberEditor'
-import {
-    ConditionalCreditCardNameEditor,
-}                           from './ConditionalCreditCardNameEditor'
-import {
-    ConditionalCreditCardExpiryEditor,
-}                           from './ConditionalCreditCardExpiryEditor'
-import {
-    ConditionalCreditCardCvvEditor,
-}                           from './ConditionalCreditCardCvvEditor'
 
 // internals:
 import {
@@ -106,7 +111,12 @@ const EditPaymentMethodCardInternal = (): JSX.Element|null => {
                     Make sure the information above is correct. Click <strong>Pay Now</strong> button below to process the payment:
                 </p>
             </div>
-            <ButtonPaymentCard />
+            <ButtonWithBusy
+                // components:
+                buttonComponent={
+                    <ButtonPaymentCard />
+                }
+            />
         </ValidationProvider>
     );
 };

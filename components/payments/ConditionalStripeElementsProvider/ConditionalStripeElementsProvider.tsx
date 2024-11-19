@@ -19,7 +19,7 @@ import {
     useMountedFlag,
 }                           from '@reusable-ui/core'            // a set of reusable-ui packages which are responsible for building any component
 
-// stripe:
+// payment components:
 import {
     type Stripe,
     type StripeElementsOptions,
@@ -29,23 +29,22 @@ import {
 import {
     Elements,
 }                           from '@stripe/react-stripe-js'
+
+// cart components:
 import {
-    IsInStripeElementsProviderContextProvider,
-}                           from './states/isInStripeElementsProvider'
+    // states:
+    useCartState,
+}                           from '@/components/Cart'
+
+// checkout components:
+import {
+    useCheckoutState,
+}                           from '@/components/Checkout/states/checkoutState'
 
 // models:
 import {
     type ProductPricePart,
 }                           from '@/models'
-
-// internals:
-import {
-    // states:
-    useCartState,
-}                           from '@/components/Cart'
-import {
-    useCheckoutState,
-}                           from '../../../states/checkoutState'
 
 // utilities:
 import {
@@ -54,6 +53,11 @@ import {
 import {
     convertCurrencyToStripeNominal,
 }                           from '@/libs/currencyExchanges-stripe'
+
+// internals:
+import {
+    IsInStripeElementsProviderContextProvider,
+}                           from './states/isInStripeElementsProvider'
 
 // configs:
 import {

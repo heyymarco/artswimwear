@@ -1,4 +1,4 @@
-// paypal:
+// payment components:
 import {
     PayPalNumberField,
     PayPalNameField,

@@ -23,49 +23,46 @@ import {
     Tooltip,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// internal components:
+// payment components:
 import {
-    InputWithLabel,
-}                           from '@/components/InputWithLabel'
-import {
-    CreditCardCvvEditor,
-}                           from '@/components/editors/CreditCardCvvEditor'
+    usePaymentProcessorPriority,
+}                           from '@/components/payments/hooks'
 
-// paypal:
 import {
     IfInPayPalScriptProvider,
-}                           from '../ConditionalPayPalScriptProvider'
+}                           from '@/components/payments/ConditionalPayPalScriptProvider'
 import {
     // options:
-    paypalCardCvvOptions,
+    paypalCardExpiryOptions,
     
     
     
     // react components:
     PayPalCardFieldWrapper,
-}                           from '../PayPalCardFieldWrapper'
+}                           from '@/components/payments/PayPalCardFieldWrapper'
 
-// stripe:
 import {
-    CardCvcElement,
+    CardExpiryElement,
 }                           from '@stripe/react-stripe-js'
 import {
     IfInStripeElementsProvider,
-}                           from '../ConditionalStripeElementsProvider'
+}                           from '@/components/payments/ConditionalStripeElementsProvider'
 import {
     // react components:
     StripeCardFieldWrapper,
-}                           from '../StripeCardFieldWrapper'
+}                           from '@/components/payments/StripeCardFieldWrapper'
 
-// midtrans:
 import {
     IfInMidtransScriptProvider,
-}                           from '../ConditionalMidtransScriptProvider'
+}                           from '@/components/payments/ConditionalMidtransScriptProvider'
 
-// internals:
+// internal components:
 import {
-    usePaymentProcessorPriority,
-}                           from '../hooks'
+    InputWithLabel,
+}                           from '@/components/InputWithLabel'
+import {
+    CreditCardExpiryEditor,
+}                           from '@/components/editors/CreditCardExpiryEditor'
 
 // configs:
 import {
@@ -75,11 +72,11 @@ import {
 
 
 // react components:
-export interface ConditionalCreditCardCvvEditorProps {
+export interface ConditionalCreditCardExpiryEditorProps {
     // payment data:
     appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
 }
-const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorProps): JSX.Element|null => {
+const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEditorProps): JSX.Element|null => {
     // props:
     const {
         // payment data:
@@ -104,7 +101,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
     
     
     // jsx:
-    const labelCardCvv    = (
+    const labelCardExpiry = (
         <Label
             // refs:
             elmRef={labelRef}
@@ -139,10 +136,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                 floatingOn={labelRef}
             >
                 <p>
-                    3-digit security code usually found on the back of your card.
-                </p>
-                <p>
-                    American Express cards have a 4-digit code located on the front.
+                    The expiration date as printed on front card.
                 </p>
             </Tooltip>
         </Label>
@@ -153,12 +147,12 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                 {/* conditional re-render */}
                 {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
-                    icon='edit'
+                    icon='date_range'
                     
                     
                     
                     // classes:
-                    className='csc'
+                    className='expiry'
                     
                     
                     
@@ -166,7 +160,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     inputComponent={
                         <StripeCardFieldWrapper
                             // accessibilities:
-                            aria-label='Card CSC/CVV'
+                            aria-label='Card Expiry'
                             
                             
                             
@@ -177,7 +171,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                             
                             // components:
                             cardElementComponent={
-                                <CardCvcElement />
+                                <CardExpiryElement />
                             }
                         />
                     }
@@ -185,19 +179,19 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     
                     
                     // children:
-                    childrenAfter={labelCardCvv}
+                    childrenAfter={labelCardExpiry}
                 />}
             </IfInStripeElementsProvider>
             <IfInPayPalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
                     // appearances:
-                    icon='edit'
+                    icon='date_range'
                     
                     
                     
                     // classes:
-                    className={'csc' + (isPaymentPriorityPaypal ? '' : ' hidden')}
+                    className={'expiry' + (isPaymentPriorityPaypal ? '' : ' hidden')}
                     
                     
                     
@@ -205,12 +199,12 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     inputComponent={
                         <PayPalCardFieldWrapper
                             // options:
-                            {...paypalCardCvvOptions}
+                            {...paypalCardExpiryOptions}
                             
                             
                             
                             // accessibilities:
-                            aria-label='Card CSC/CVV'
+                            aria-label='Card Expiry'
                             
                             
                             
@@ -227,40 +221,40 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     
                     
                     // children:
-                    childrenAfter={labelCardCvv}
+                    childrenAfter={labelCardExpiry}
                 />
             </IfInPayPalScriptProvider>
             <IfInMidtransScriptProvider>
                 {/* conditional re-render */}
                 {isPaymentPriorityMidtrans && <InputWithLabel
                     // appearances:
-                    icon='edit'
+                    icon='date_range'
                     
                     
                     
                     // classes:
-                    className='csc'
+                    className='expiry'
                     
                     
                     
                     // components:
                     inputComponent={
-                        <CreditCardCvvEditor
+                        <CreditCardExpiryEditor
                             // forms:
-                            name='cardCvv'
+                            name='cardExpiry'
                         />
                     }
                     
                     
                     
                     // children:
-                    childrenAfter={labelCardCvv}
+                    childrenAfter={labelCardExpiry}
                 />}
             </IfInMidtransScriptProvider>
         </>
     );
 };
 export {
-    ConditionalCreditCardCvvEditor,
-    ConditionalCreditCardCvvEditor as default,
+    ConditionalCreditCardExpiryEditor,
+    ConditionalCreditCardExpiryEditor as default,
 };

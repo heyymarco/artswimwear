@@ -23,42 +23,46 @@ import {
     Tooltip,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// internal components:
+// payment components:
 import {
-    InputWithLabel,
-}                           from '@/components/InputWithLabel'
-import {
-    CreditCardNameEditor,
-}                           from '@/components/editors/CreditCardNameEditor'
+    usePaymentProcessorPriority,
+}                           from '@/components/payments/hooks'
 
-// paypal:
 import {
     IfInPayPalScriptProvider,
-}                           from '../ConditionalPayPalScriptProvider'
+}                           from '@/components/payments/ConditionalPayPalScriptProvider'
 import {
     // options:
-    paypalCardNameOptions,
+    paypalCardNumberOptions,
     
     
     
     // react components:
     PayPalCardFieldWrapper,
-}                           from '../PayPalCardFieldWrapper'
+}                           from '@/components/payments/PayPalCardFieldWrapper'
 
-// stripe:
+import {
+    CardNumberElement,
+}                           from '@stripe/react-stripe-js'
 import {
     IfInStripeElementsProvider,
-}                           from '../ConditionalStripeElementsProvider'
+}                           from '@/components/payments/ConditionalStripeElementsProvider'
+import {
+    // react components:
+    StripeCardFieldWrapper,
+}                           from '@/components/payments/StripeCardFieldWrapper'
 
-// midtrans:
 import {
     IfInMidtransScriptProvider,
-}                           from '../ConditionalMidtransScriptProvider'
+}                           from '@/components/payments/ConditionalMidtransScriptProvider'
 
-// internals:
+// internal components:
 import {
-    usePaymentProcessorPriority,
-}                           from '../hooks'
+    InputWithLabel,
+}                           from '@/components/InputWithLabel'
+import {
+    CreditCardNumberEditor,
+}                           from '@/components/editors/CreditCardNumberEditor'
 
 // configs:
 import {
@@ -68,11 +72,11 @@ import {
 
 
 // react components:
-export interface ConditionalCreditCardNameEditorProps {
+export interface ConditionalCreditCardNumberEditorProps {
     // payment data:
     appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
 }
-const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorProps): JSX.Element|null => {
+const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEditorProps): JSX.Element|null => {
     // props:
     const {
         // payment data:
@@ -97,7 +101,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
     
     
     // jsx:
-    const labelCardName   = (
+    const labelCardNumber = (
         <Label
             // refs:
             elmRef={labelRef}
@@ -115,8 +119,9 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
         >
             <Icon
                 // appearances:
-                icon='help'
+                icon='lock'
             />
+            
             <Tooltip
                 // variants:
                 theme='warning'
@@ -132,7 +137,14 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                 floatingOn={labelRef}
             >
                 <p>
-                    The owner name as printed on front card.
+                    All transactions are secure and encrypted.
+                </p>
+                <p>
+                    Once the payment is processed, the credit card data <strong>no longer stored</strong> in application memory.
+                </p>
+                <p>
+                    The card data will be forwarded to our payment gateway (PayPal).<br />
+                    We won&apos;t store your card data into our database.
                 </p>
             </Tooltip>
         </Label>
@@ -143,27 +155,39 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                 {/* conditional re-render */}
                 {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
-                    icon='person'
+                    icon='credit_card'
                     
                     
                     
                     // classes:
-                    className='name'
+                    className='number'
                     
                     
                     
                     // components:
                     inputComponent={
-                        <CreditCardNameEditor
-                            // forms:
-                            name='cardHolder'
+                        <StripeCardFieldWrapper
+                            // accessibilities:
+                            aria-label='Card Number'
+                            
+                            
+                            
+                            // validations:
+                            enableValidation={isPaymentPriorityStripe ? undefined : false}
+                            
+                            
+                            
+                            // components:
+                            cardElementComponent={
+                                <CardNumberElement />
+                            }
                         />
                     }
                     
                     
                     
                     // children:
-                    childrenAfter={labelCardName}
+                    childrenAfter={labelCardNumber}
                 />}
             </IfInStripeElementsProvider>
             <IfInPayPalScriptProvider>
@@ -175,7 +199,7 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                     
                     
                     // classes:
-                    className={'name' + (isPaymentPriorityPaypal ? '' : ' hidden')}
+                    className={'number' + (isPaymentPriorityPaypal ? '' : ' hidden')}
                     
                     
                     
@@ -183,12 +207,12 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                     inputComponent={
                         <PayPalCardFieldWrapper
                             // options:
-                            {...paypalCardNameOptions}
+                            {...paypalCardNumberOptions}
                             
                             
                             
                             // accessibilities:
-                            aria-label='Cardholder Name'
+                            aria-label='Card Number'
                             
                             
                             
@@ -205,40 +229,40 @@ const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorP
                     
                     
                     // children:
-                    childrenAfter={labelCardName}
+                    childrenAfter={labelCardNumber}
                 />
             </IfInPayPalScriptProvider>
             <IfInMidtransScriptProvider>
                 {/* conditional re-render */}
                 {isPaymentPriorityMidtrans && <InputWithLabel
                     // appearances:
-                    icon='person'
+                    icon='credit_card'
                     
                     
                     
                     // classes:
-                    className='name'
+                    className='number'
                     
                     
                     
                     // components:
                     inputComponent={
-                        <CreditCardNameEditor
+                        <CreditCardNumberEditor
                             // forms:
-                            name='cardHolder'
+                            name='cardNumber'
                         />
                     }
                     
                     
                     
                     // children:
-                    childrenAfter={labelCardName}
+                    childrenAfter={labelCardNumber}
                 />}
             </IfInMidtransScriptProvider>
         </>
     );
 };
 export {
-    ConditionalCreditCardNameEditor,
-    ConditionalCreditCardNameEditor as default,
+    ConditionalCreditCardNumberEditor,
+    ConditionalCreditCardNumberEditor as default,
 };

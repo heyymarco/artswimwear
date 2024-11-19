@@ -28,44 +28,34 @@ import {
     InputWithLabel,
 }                           from '@/components/InputWithLabel'
 import {
-    CreditCardExpiryEditor,
-}                           from '@/components/editors/CreditCardExpiryEditor'
+    CreditCardNameEditor,
+}                           from '@/components/editors/CreditCardNameEditor'
 
-// paypal:
+// payment components:
+import {
+    usePaymentProcessorPriority,
+}                           from '@/components/payments/hooks'
+
 import {
     IfInPayPalScriptProvider,
-}                           from '../ConditionalPayPalScriptProvider'
+}                           from '@/components/payments/ConditionalPayPalScriptProvider'
 import {
     // options:
-    paypalCardExpiryOptions,
+    paypalCardNameOptions,
     
     
     
     // react components:
     PayPalCardFieldWrapper,
-}                           from '../PayPalCardFieldWrapper'
+}                           from '@/components/payments/PayPalCardFieldWrapper'
 
-// stripe:
-import {
-    CardExpiryElement,
-}                           from '@stripe/react-stripe-js'
 import {
     IfInStripeElementsProvider,
-}                           from '../ConditionalStripeElementsProvider'
-import {
-    // react components:
-    StripeCardFieldWrapper,
-}                           from '../StripeCardFieldWrapper'
+}                           from '@/components/payments/ConditionalStripeElementsProvider'
 
-// midtrans:
 import {
     IfInMidtransScriptProvider,
-}                           from '../ConditionalMidtransScriptProvider'
-
-// internals:
-import {
-    usePaymentProcessorPriority,
-}                           from '../hooks'
+}                           from '@/components/payments/ConditionalMidtransScriptProvider'
 
 // configs:
 import {
@@ -75,11 +65,11 @@ import {
 
 
 // react components:
-export interface ConditionalCreditCardExpiryEditorProps {
+export interface ConditionalCreditCardNameEditorProps {
     // payment data:
     appropriatePaymentProcessors : (typeof checkoutConfigClient.payment.preferredProcessors)
 }
-const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEditorProps): JSX.Element|null => {
+const ConditionalCreditCardNameEditor = (props: ConditionalCreditCardNameEditorProps): JSX.Element|null => {
     // props:
     const {
         // payment data:
@@ -104,7 +94,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
     
     
     // jsx:
-    const labelCardExpiry = (
+    const labelCardName   = (
         <Label
             // refs:
             elmRef={labelRef}
@@ -139,7 +129,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                 floatingOn={labelRef}
             >
                 <p>
-                    The expiration date as printed on front card.
+                    The owner name as printed on front card.
                 </p>
             </Tooltip>
         </Label>
@@ -150,51 +140,39 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                 {/* conditional re-render */}
                 {isPaymentPriorityStripe && <InputWithLabel
                     // appearances:
-                    icon='date_range'
+                    icon='person'
                     
                     
                     
                     // classes:
-                    className='expiry'
+                    className='name'
                     
                     
                     
                     // components:
                     inputComponent={
-                        <StripeCardFieldWrapper
-                            // accessibilities:
-                            aria-label='Card Expiry'
-                            
-                            
-                            
-                            // validations:
-                            enableValidation={isPaymentPriorityStripe ? undefined : false}
-                            
-                            
-                            
-                            // components:
-                            cardElementComponent={
-                                <CardExpiryElement />
-                            }
+                        <CreditCardNameEditor
+                            // forms:
+                            name='cardHolder'
                         />
                     }
                     
                     
                     
                     // children:
-                    childrenAfter={labelCardExpiry}
+                    childrenAfter={labelCardName}
                 />}
             </IfInStripeElementsProvider>
             <IfInPayPalScriptProvider>
                 {/* conditional visibility via css */}
                 <InputWithLabel
                     // appearances:
-                    icon='date_range'
+                    icon='credit_card'
                     
                     
                     
                     // classes:
-                    className={'expiry' + (isPaymentPriorityPaypal ? '' : ' hidden')}
+                    className={'name' + (isPaymentPriorityPaypal ? '' : ' hidden')}
                     
                     
                     
@@ -202,12 +180,12 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                     inputComponent={
                         <PayPalCardFieldWrapper
                             // options:
-                            {...paypalCardExpiryOptions}
+                            {...paypalCardNameOptions}
                             
                             
                             
                             // accessibilities:
-                            aria-label='Card Expiry'
+                            aria-label='Cardholder Name'
                             
                             
                             
@@ -224,40 +202,40 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                     
                     
                     // children:
-                    childrenAfter={labelCardExpiry}
+                    childrenAfter={labelCardName}
                 />
             </IfInPayPalScriptProvider>
             <IfInMidtransScriptProvider>
                 {/* conditional re-render */}
                 {isPaymentPriorityMidtrans && <InputWithLabel
                     // appearances:
-                    icon='date_range'
+                    icon='person'
                     
                     
                     
                     // classes:
-                    className='expiry'
+                    className='name'
                     
                     
                     
                     // components:
                     inputComponent={
-                        <CreditCardExpiryEditor
+                        <CreditCardNameEditor
                             // forms:
-                            name='cardExpiry'
+                            name='cardHolder'
                         />
                     }
                     
                     
                     
                     // children:
-                    childrenAfter={labelCardExpiry}
+                    childrenAfter={labelCardName}
                 />}
             </IfInMidtransScriptProvider>
         </>
     );
 };
 export {
-    ConditionalCreditCardExpiryEditor,
-    ConditionalCreditCardExpiryEditor as default,
+    ConditionalCreditCardNameEditor,
+    ConditionalCreditCardNameEditor as default,
 };

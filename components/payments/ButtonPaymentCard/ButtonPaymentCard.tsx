@@ -20,6 +20,7 @@ import {
 // reusable-ui components:
 import {
     // simple-components:
+    type ButtonIconProps,
     ButtonIcon,
     
     
@@ -35,11 +36,30 @@ import {
 
 // internal components:
 import {
-    ButtonWithBusy,
-}                           from '../ButtonWithBusy'
-import {
     IframeDialog,
 }                           from '@/components/dialogs/IframeDialog'
+
+// payment components:
+import {
+    usePaymentProcessorPriority,
+}                           from '@/components/payments/hooks'
+import {
+    usePayPalCardFieldsState,
+}                           from '@/components/payments/ConditionalPayPalCardFieldsProvider/states/payPalCardFieldsState'
+import {
+    usePayPalCardFields,
+}                           from '@paypal/react-paypal-js'
+import {
+    useStripe,
+    useElements,
+}                           from '@stripe/react-stripe-js'
+
+// checkout components:
+import {
+    AuthenticatedResult,
+    type StartTransactionArg,
+    useCheckoutState,
+}                           from '@/components/Checkout/states/checkoutState'
 
 // models:
 import {
@@ -47,34 +67,10 @@ import {
     type PlaceOrderDetail,
 }                           from '@/models'
 
-// paypal:
-import {
-    usePayPalCardFields,
-}                           from '@paypal/react-paypal-js'
-
-// stripe:
-import {
-    useStripe,
-    useElements,
-}                           from '@stripe/react-stripe-js'
-
 // errors:
 import {
     ErrorDeclined,
 }                           from '@/errors'
-
-// internals:
-import {
-    usePayPalCardFieldsState,
-}                           from '../payments/ConditionalPayPalCardFieldsProvider/states/payPalCardFieldsState'
-import {
-    AuthenticatedResult,
-    type StartTransactionArg,
-    useCheckoutState,
-}                           from '../../states/checkoutState'
-import {
-    usePaymentProcessorPriority,
-}                           from './hooks'
 
 
 
@@ -577,6 +573,9 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
 
 interface ButtonPaymentGeneralProps
     extends
+        // bases:
+        ButtonIconProps,
+        
         // handlers:
         Pick<StartTransactionArg,
             // handlers:
@@ -590,6 +589,11 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
     const {
         doPlaceOrder,
         doAuthenticate,
+        
+        
+        
+        // other props:
+        ...restButtonPaymentGeneralProps
     } = props;
     
     
@@ -660,38 +664,72 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
     
     
     
+    // default props:
+    const {
+        // appearances:
+        icon      = 'shopping_bag',
+        
+        
+        
+        // variants:
+        gradient  = true,
+        
+        
+        
+        // classes:
+        className = '',
+        
+        
+        
+        // states:
+        enabled   = (totalShippingCostStatus !== 'ready') ? false : undefined,
+        
+        
+        // children:
+        children  = <>
+            Pay Now
+        </>,
+        
+        
+        
+        // other props:
+        ...restButtonIconProps
+    } = restButtonPaymentGeneralProps;
+    
+    
+    
     // jsx:
     return (
-        <ButtonWithBusy
-            // components:
-            buttonComponent={
-                <ButtonIcon
-                    // appearances:
-                    icon='shopping_bag'
-                    
-                    
-                    
-                    // variants:
-                    gradient={true}
-                    
-                    
-                    
-                    // classes:
-                    className='payButton'
-                    
-                    
-                    
-                    // states:
-                    enabled={(totalShippingCostStatus !== 'ready') ? false : undefined}
-                    
-                    
-                    
-                    // handlers:
-                    onClick={handlePayButtonClick}
-                >
-                    Pay Now
-                </ButtonIcon>
-            }
-        />
+        <ButtonIcon
+            // other props:
+            {...restButtonIconProps}
+            
+            
+            
+            // appearances:
+            icon={icon}
+            
+            
+            
+            // variants:
+            gradient={gradient}
+            
+            
+            
+            // classes:
+            className={`payButton ${className}`}
+            
+            
+            
+            // states:
+            enabled={enabled}
+            
+            
+            
+            // handlers:
+            onClick={handlePayButtonClick}
+        >
+            {children}
+        </ButtonIcon>
     );
 };

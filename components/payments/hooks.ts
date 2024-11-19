@@ -1,14 +1,10 @@
-// paypal:
+// payment components:
 import {
     useIsInPayPalScriptProvider,
 }                           from './ConditionalPayPalScriptProvider'
-
-// stripe:
 import {
     useIsInStripeElementsProvider,
 }                           from './ConditionalStripeElementsProvider'
-
-// midtrans:
 import {
     useIsInMidtransScriptProvider,
 }                           from './ConditionalMidtransScriptProvider'

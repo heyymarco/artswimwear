@@ -11,16 +11,25 @@ import {
     useMemo,
 }                           from 'react'
 
-// paypal:
+// payment components:
 import {
     type PayPalScriptOptions,
 }                           from '@paypal/paypal-js'
 import {
     PayPalScriptProvider,
 }                           from '@paypal/react-paypal-js'
+
+// cart components:
 import {
-    IsInPayPalScriptProviderContextProvider,
-}                           from './states/isInPayPalScriptProvider'
+    // states:
+    useCartState,
+}                           from '@/components/Cart'
+
+// checkout components:
+import {
+    // states:
+    useCheckoutState,
+}                           from '@/components/Checkout/states/checkoutState'
 
 // models:
 import {
@@ -29,13 +38,8 @@ import {
 
 // internals:
 import {
-    // states:
-    useCartState,
-}                           from '@/components/Cart'
-import {
-    // states:
-    useCheckoutState,
-}                           from '../../../states/checkoutState'
+    IsInPayPalScriptProviderContextProvider,
+}                           from './states/isInPayPalScriptProvider'
 
 // configs:
 import {

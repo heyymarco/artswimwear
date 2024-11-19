@@ -46,18 +46,7 @@ import {
     ModalCard,
 }                           from '@reusable-ui/components'          // a set of official Reusable-UI components
 
-// internal components:
-import {
-    MessageError,
-}                           from '@/components/MessageError'
-
-// models:
-import {
-    // types:
-    type PlaceOrderDetail,
-}                           from '@/models'
-
-// stripe:
+// payment components:
 import {
     type StripeExpressCheckoutElementOptions,
     type StripeExpressCheckoutElementReadyEvent,
@@ -72,6 +61,17 @@ import {
     
     ExpressCheckoutElement,
 }                           from '@stripe/react-stripe-js'
+
+// internal components:
+import {
+    MessageError,
+}                           from '@/components/MessageError'
+
+// models:
+import {
+    // types:
+    type PlaceOrderDetail,
+}                           from '@/models'
 
 // contexts:
 import {

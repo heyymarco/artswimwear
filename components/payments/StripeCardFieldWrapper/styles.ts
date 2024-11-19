@@ -15,7 +15,7 @@ import {
     inputValues,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// stripe:
+// payment components:
 import {
     type StripeElementStyle,
 }                           from '@stripe/stripe-js'

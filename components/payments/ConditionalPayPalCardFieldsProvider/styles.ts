@@ -15,7 +15,7 @@ import {
     inputValues,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// paypal:
+// payment components:
 import {
     type PayPalCardFieldsStyleOptions,
 }                           from '@paypal/paypal-js'

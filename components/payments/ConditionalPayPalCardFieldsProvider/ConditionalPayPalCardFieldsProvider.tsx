@@ -18,7 +18,7 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// paypal:
+// payment components:
 import {
     CardFieldsOnApproveData,
 }                           from '@paypal/paypal-js'
@@ -27,7 +27,13 @@ import {
 }                           from '@paypal/react-paypal-js'
 import {
     useIsInPayPalScriptProvider,
-}                           from '../ConditionalPayPalScriptProvider'
+}                           from '@/components/payments/ConditionalPayPalScriptProvider'
+
+// checkout components:
+import {
+    // states:
+    useCheckoutState,
+}                           from '@/components/Checkout/states/checkoutState'
 
 // internals:
 import {
@@ -37,10 +43,6 @@ import {
     usePayPalCardFieldsState,
     PayPalCardFieldsStateProvider,
 }                           from './states/payPalCardFieldsState'
-import {
-    // states:
-    useCheckoutState,
-}                           from '../../../states/checkoutState'
 
 
 

@@ -25,12 +25,12 @@ import {
     EditableTextControl,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// paypal:
+// payment components:
 import {
     type PayPalCardFieldsStateObject,
 }                           from '@paypal/paypal-js'
 import {
-    PayPalCardFieldsIndividualFieldOptions,
+    type PayPalCardFieldsIndividualFieldOptions,
 }                           from '@paypal/react-paypal-js'
 
 

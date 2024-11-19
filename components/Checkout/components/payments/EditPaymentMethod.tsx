@@ -19,11 +19,6 @@ import {
 
 // reusable-ui components:
 import {
-    // layout-components:
-    ListItem,
-    
-    
-    
     // composite-components:
     AccordionItem,
     ExclusiveExpandedChangeEvent,
@@ -38,7 +33,25 @@ import {
     RadioDecorator,
 }                           from '@heymarco/radio-decorator'
 
+// payment components:
+import {
+    useIsInPayPalScriptProvider,
+    ConditionalPayPalScriptProvider,
+}                           from '@/components/payments/ConditionalPayPalScriptProvider'
+import {
+    useIsInStripeElementsProvider,
+    ConditionalStripeElementsProvider,
+}                           from '@/components/payments/ConditionalStripeElementsProvider'
+import {
+    useIsInMidtransScriptProvider,
+    ConditionalMidtransScriptProvider,
+}                           from '@/components/payments/ConditionalMidtransScriptProvider'
+
 // internal components:
+import {
+    ViewExpressCheckout,
+    ViewExpressCheckoutPaypal,
+}                           from './ViewExpressCheckout'
 import {
     EditPaymentMethodCard,
 }                           from '../payments/EditPaymentMethodCard'
@@ -54,28 +67,6 @@ import {
 import {
     ViewPaymentMethodManual,
 }                           from '../payments/ViewPaymentMethodManual'
-
-// paypal:
-import {
-    useIsInPayPalScriptProvider,
-    ConditionalPayPalScriptProvider,
-}                           from './ConditionalPayPalScriptProvider'
-
-// stripe:
-import {
-    useIsInStripeElementsProvider,
-    ConditionalStripeElementsProvider,
-}                           from './ConditionalStripeElementsProvider'
-import {
-    ViewExpressCheckout,
-    ViewExpressCheckoutPaypal,
-}                           from './ViewExpressCheckout'
-
-// midtrans:
-import {
-    useIsInMidtransScriptProvider,
-    ConditionalMidtransScriptProvider,
-}                           from './ConditionalMidtransScriptProvider'
 
 // models:
 import type {
@@ -150,9 +141,9 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
     const isInStripeElementsProvider = useIsInStripeElementsProvider();
     const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
-    const isPayUsingPaypal           = isInPayPalScriptProvider   && appropriatePaymentProcessors.includes('paypal');
-    const isPayUsingStripe           = isInStripeElementsProvider && appropriatePaymentProcessors.includes('stripe');
-    const isPayUsingMidtrans         = isInMidtransScriptProvider && appropriatePaymentProcessors.includes('midtrans');
+    const canPayUsingPaypal          = isInPayPalScriptProvider   && appropriatePaymentProcessors.includes('paypal');
+    const canPayUsingStripe          = isInStripeElementsProvider && appropriatePaymentProcessors.includes('stripe');
+    const canPayUsingMidtrans        = isInMidtransScriptProvider && appropriatePaymentProcessors.includes('midtrans');
     const canPayUsingBank            = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency);
     
     
@@ -160,11 +151,11 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     // payment method options:
     const paymentMethodList : PaymentMethod[] = Array.from(
         new Set([ // remove duplicate(s)
-            ...((isPayUsingPaypal || isPayUsingStripe || isPayUsingMidtrans) ? ['card'] satisfies PaymentMethod[] : []),
-            ...(isPayUsingPaypal   ? (['paypal'] satisfies PaymentMethod[]) : []),
-            ...(isPayUsingStripe   ? (['googlePay', 'applePay', 'amazonPay', 'link'] satisfies PaymentMethod[]) : []),
-            ...(isPayUsingMidtrans ? (['qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
-            ...(canPayUsingBank    ? (['manual'] satisfies PaymentMethod[]) : []),
+            ...((canPayUsingPaypal || canPayUsingStripe || canPayUsingMidtrans) ? ['card'] satisfies PaymentMethod[] : []),
+            ...(canPayUsingPaypal   ? (['paypal'] satisfies PaymentMethod[]) : []),
+            ...(canPayUsingStripe   ? (['googlePay', 'applePay', 'amazonPay', 'link'] satisfies PaymentMethod[]) : []),
+            ...(canPayUsingMidtrans ? (['qris', 'gopay', 'shopeepay', 'indomaret', 'alfamart'] satisfies PaymentMethod[]) : []),
+            ...(canPayUsingBank     ? (['manual'] satisfies PaymentMethod[]) : []),
         ])
     );
     
@@ -206,7 +197,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                 // handlers:
                 onExpandedChange={handlePaymentMethodExpandedChange}
             >
-                {(isPayUsingPaypal || isPayUsingStripe || isPayUsingMidtrans) && <AccordionItem
+                {(canPayUsingPaypal || canPayUsingStripe || canPayUsingMidtrans) && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -244,7 +235,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     <EditPaymentMethodCard />
                 </AccordionItem>}
                 
-                {isPayUsingPaypal && <AccordionItem
+                {canPayUsingPaypal && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -272,7 +263,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     <ViewExpressCheckoutPaypal />
                 </AccordionItem>}
                 
-                {isPayUsingStripe && <AccordionItem
+                {canPayUsingStripe && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -300,7 +291,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     {(paymentMethod === 'googlePay') && <ViewExpressCheckout type='googlePay' walletName='Google Pay' websiteName='Google' />}
                 </AccordionItem>}
                 
-                {isPayUsingStripe && <AccordionItem
+                {canPayUsingStripe && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -328,7 +319,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     {(paymentMethod === 'applePay') && <ViewExpressCheckout type='applePay' walletName='Apple Pay' websiteName='Apple' />}
                 </AccordionItem>}
                 
-                {isPayUsingStripe && <AccordionItem
+                {canPayUsingStripe && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -356,7 +347,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     {(paymentMethod === 'amazonPay') && <ViewExpressCheckout type='amazonPay' walletName='Amazon Pay' websiteName='Amazon' />}
                 </AccordionItem>}
                 
-                {isPayUsingStripe && <AccordionItem
+                {canPayUsingStripe && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -384,7 +375,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     {(paymentMethod === 'link') && <ViewExpressCheckout type='link' walletName='Link' websiteName='Link' />}
                 </AccordionItem>}
                 
-                {isPayUsingMidtrans && <AccordionItem
+                {canPayUsingMidtrans && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -412,7 +403,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     <ViewPaymentMethodQris />
                 </AccordionItem>}
                 
-                {isPayUsingMidtrans && <AccordionItem
+                {canPayUsingMidtrans && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -443,7 +434,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     />
                 </AccordionItem>}
                 
-                {isPayUsingMidtrans && <AccordionItem
+                {canPayUsingMidtrans && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -474,7 +465,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     />
                 </AccordionItem>}
                 
-                {isPayUsingMidtrans && <AccordionItem
+                {canPayUsingMidtrans && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />
@@ -505,7 +496,7 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
                     />
                 </AccordionItem>}
                 
-                {isPayUsingMidtrans && <AccordionItem
+                {canPayUsingMidtrans && <AccordionItem
                     // accessibilities:
                     label={<>
                         <RadioDecorator />

@@ -11,11 +11,13 @@ import {
     useMemo,
 }                           from 'react'
 
-// midtrans:
+// payment components:
 import {
     type MidtransScriptOptions,
     MidtransScriptProvider,
-}                           from '../MidtransScriptProvider'
+}                           from '@/components/payments/MidtransScriptProvider'
+
+// internals:
 import {
     IsInMidtransScriptProviderContextProvider,
 }                           from './states/isInMidtransScriptProvider'
