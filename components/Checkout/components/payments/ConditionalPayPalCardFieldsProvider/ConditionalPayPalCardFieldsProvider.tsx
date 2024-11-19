@@ -18,12 +18,6 @@ import {
     useDialogMessage,
 }                           from '@reusable-ui/components'      // a set of official Reusable-UI components
 
-// internal components:
-import {
-    // styles:
-    cardFieldsStyle,
-}                           from '../../payments/PayPalCardFieldWrapper'
-
 // paypal:
 import {
     CardFieldsOnApproveData,
@@ -36,6 +30,9 @@ import {
 }                           from '../ConditionalPayPalScriptProvider'
 
 // internals:
+import {
+    paypalCardFieldsStyle,
+}                           from './styles'
 import {
     usePayPalCardFieldsState,
     PayPalCardFieldsStateProvider,
@@ -139,7 +136,7 @@ const ImplementedPayPalCardFieldsProvider = (props: ImplementedPayPalCardFieldsP
     return (
         <PayPalCardFieldsProvider
             // styles:
-            style={cardFieldsStyle}
+            style={paypalCardFieldsStyle}
             
             
             
