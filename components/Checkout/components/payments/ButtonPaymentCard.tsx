@@ -51,23 +51,12 @@ import {
 import {
     usePayPalCardFields,
 }                           from '@paypal/react-paypal-js'
-import {
-    useIsInPayPalScriptProvider,
-}                           from './ConditionalPayPalScriptProvider'
 
 // stripe:
 import {
     useStripe,
     useElements,
 }                           from '@stripe/react-stripe-js'
-import {
-    useIsInStripeElementsProvider,
-}                           from './ConditionalStripeElementsProvider'
-
-// midtrans:
-import {
-    useIsInMidtransScriptProvider,
-}                           from './ConditionalMidtransScriptProvider'
 
 // errors:
 import {
@@ -83,11 +72,9 @@ import {
     type StartTransactionArg,
     useCheckoutState,
 }                           from '../../states/checkoutState'
-
-// configs:
 import {
-    type checkoutConfigClient,
-}                           from '@/checkout.config.client'
+    usePaymentProcessorPriority,
+}                           from './hooks'
 
 
 
@@ -101,30 +88,29 @@ const ButtonPaymentCard = (): JSX.Element|null => {
     
     
     
-    const isInPayPalScriptProvider   = useIsInPayPalScriptProvider();
-    const isInStripeElementsProvider = useIsInStripeElementsProvider();
-    const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
-    const supportedCardProcessors    : string[] = (
-        ([
-            !isInPayPalScriptProvider   ? undefined : 'paypal',
-            !isInStripeElementsProvider ? undefined : 'stripe',
-            !isInMidtransScriptProvider ? undefined : 'midtrans',
-        ] satisfies ((typeof checkoutConfigClient.payment.preferredProcessors[number])|undefined)[])
-        .filter((item): item is Exclude<typeof item, undefined> => (item !== undefined))
-    );
-    const priorityPaymentProcessor   = appropriatePaymentProcessors.find((processor) => supportedCardProcessors.includes(processor)); // find the highest priority payment processor that supports card payment
-    const isPayUsingPaypalPriority   = (priorityPaymentProcessor === 'paypal');
-    const isPayUsingStripePriority   = (priorityPaymentProcessor === 'stripe');
-    const isPayUsingMidtransPriority = (priorityPaymentProcessor === 'midtrans');
+    const {
+        isPaymentPriorityPaypal,
+        isPaymentPriorityStripe,
+        isPaymentPriorityMidtrans,
+    } = usePaymentProcessorPriority({
+        appropriatePaymentProcessors,
+    });
     
     
     
     // jsx:
-    if (isPayUsingPaypalPriority  ) return <ButtonPaymentCardForPayPal />;
-    if (isPayUsingStripePriority  ) return <ButtonPaymentCardForStripe />;
-    if (isPayUsingMidtransPriority) return <ButtonPaymentCardForMidtrans />;
+    if (isPaymentPriorityPaypal  ) return <ButtonPaymentCardForPayPal />;
+    if (isPaymentPriorityStripe  ) return <ButtonPaymentCardForStripe />;
+    if (isPaymentPriorityMidtrans) return <ButtonPaymentCardForMidtrans />;
     return null;
 };
+export {
+    ButtonPaymentCard,
+    ButtonPaymentCard as default,
+};
+
+
+
 const ButtonPaymentCardForPayPal = (): JSX.Element|null => {
     // // states:
     // const {
@@ -586,6 +572,9 @@ const ButtonPaymentCardForMidtrans = (): JSX.Element|null => {
         />
     );
 };
+
+
+
 interface ButtonPaymentGeneralProps
     extends
         // handlers:
@@ -705,8 +694,4 @@ const ButtonPaymentCardGeneral = (props: ButtonPaymentGeneralProps): JSX.Element
             }
         />
     );
-};
-export {
-    ButtonPaymentCard,
-    ButtonPaymentCard as default,
 };
