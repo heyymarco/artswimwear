@@ -1444,7 +1444,7 @@ router
             Possible server errors:
             * Network error.
             * Unable to generate `paypalGenerateAccessToken()` (invalid `NEXT_PUBLIC_PAYPAL_ID` and/or invalid `PAYPAL_SECRET`).
-            * Configured currency is not supported by PayPal.
+            * Configured currency is not supported by Paypal.
             * Invalid API_request body JSON (programming bug).
             * unexpected API response (programming bug).
         */

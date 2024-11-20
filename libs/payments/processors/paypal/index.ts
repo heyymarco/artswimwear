@@ -189,7 +189,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                 invoice_id                : undefined,
                 
                 // custom_id string|undefined
-                // The API caller-provided external ID. Used to reconcile client transactions with PayPal transactions. Appears in transaction and settlement reports but is not visible to the payer.
+                // The API caller-provided external ID. Used to reconcile client transactions with Paypal transactions. Appears in transaction and settlement reports but is not visible to the payer.
                 custom_id                 : undefined,
                 
                 // description string|undefined
@@ -248,7 +248,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                     email_address         : undefined,
                     
                     // merchant_id string
-                    // The encrypted PayPal account ID of the merchant.
+                    // The encrypted Paypal account ID of the merchant.
                     merchant_id           : undefined,
                 },
                 
@@ -308,7 +308,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                 
                 // soft_descriptor string|undefined
                 // The soft descriptor is the dynamic text used to construct the statement descriptor that appears on a payer's card statement.
-                // If an Order is paid using the "PayPal Wallet", the statement descriptor will appear in following format on the payer's card statement: PAYPAL_prefix+(space)+merchant_descriptor+(space)+ soft_descriptor
+                // If an Order is paid using the "Paypal Wallet", the statement descriptor will appear in following format on the payer's card statement: PAYPAL_prefix+(space)+merchant_descriptor+(space)+ soft_descriptor
                 soft_descriptor           : undefined,
             }],
             
@@ -332,7 +332,7 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
                         
                         // TODO: save payment method during purchase:
                         // customer : isExistingCustomer ? {
-                        //     id : 'PayPal-generated customer id',
+                        //     id : 'Paypal-generated customer id',
                         // } : undefined,
                         // vault : {
                         //     store_in_vault : 'ON_SUCCESS',
@@ -408,11 +408,11 @@ export const paypalCreateOrder = async (options: CreateOrderOptions): Promise<Au
     
     
     /*
-        The merchant needs to redirect the payer back to PayPal to complete 3D Secure authentication.
+        The merchant needs to redirect the payer back to Paypal to complete 3D Secure authentication.
         
         To trigger the authentication:
         1. Redirect the buyer to the "rel": "payer-action" HATEOAS link returned as part of the response before authorizing or capturing the order.
-        2. Append "redirect_uri" to the payer-action URL so that PayPal returns the payer to the merchant's checkout page after they complete 3D Secure authentication.
+        2. Append "redirect_uri" to the payer-action URL so that Paypal returns the payer to the merchant's checkout page after they complete 3D Secure authentication.
         
         Sample URL:
         https://example.com/webapp/myshop?action=verify&flow=3ds&cart_id=ORDER-ID&redirect_uri=MERCHANT-LANDING-PAGE

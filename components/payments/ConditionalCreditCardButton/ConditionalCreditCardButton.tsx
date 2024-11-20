@@ -155,7 +155,7 @@ const CreditCardButtonPaypal   = (): JSX.Element|null => {
         
         
         
-        // submit card data to PayPal_API to get authentication:
+        // submit card data to Paypal_API to get authentication:
         const { promise: approvedOrderIdPromise, resolve: signalApprovedOrderId } = Promise.withResolvers<string|null>();
         signalApprovedOrderIdRef.current = signalApprovedOrderId;
         try {

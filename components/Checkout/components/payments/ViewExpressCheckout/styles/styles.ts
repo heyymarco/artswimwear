@@ -229,7 +229,7 @@ export const usesButtonIndicatorLayout = () => {
         ...rule('.paypal', {
             maxInlineSize: '750px',
         }),
-        blockSize: 'fit-content', // fix PayPal Button bottom spacing
+        blockSize: 'fit-content', // fix Paypal Button bottom spacing
         
         
         
@@ -280,7 +280,7 @@ export const usesPaypalButtonLayout = () => {
         
         
         // sizes:
-        blockSize: 'fit-content', // fix PayPal Button bottom spacing
+        blockSize: 'fit-content', // fix Paypal Button bottom spacing
     });
 };
 
