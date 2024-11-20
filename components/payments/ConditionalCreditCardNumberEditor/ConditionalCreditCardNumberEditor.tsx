@@ -180,7 +180,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                             
                             
                             // classes:
-                            className='cardField'
+                            className='cardFieldWrapper'
                         />
                     }
                     
@@ -217,7 +217,7 @@ const ConditionalCreditCardNumberEditor = (props: ConditionalCreditCardNumberEdi
                             
                             
                             // classes:
-                            className='cardField'
+                            className='cardFieldWrapper'
                             
                             
                             

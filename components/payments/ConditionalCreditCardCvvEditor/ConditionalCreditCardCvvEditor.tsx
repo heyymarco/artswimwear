@@ -175,7 +175,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                             
                             
                             // classes:
-                            className='cardField'
+                            className='cardFieldWrapper'
                         />
                     }
                     
@@ -212,7 +212,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                             
                             
                             // classes:
-                            className='cardField'
+                            className='cardFieldWrapper'
                             
                             
                             

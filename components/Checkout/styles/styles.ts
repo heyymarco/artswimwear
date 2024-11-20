@@ -661,7 +661,7 @@ export default () => {
                 ...children('.payButton', {
                     gridArea: 'payButton',
                 }),
-                ...descendants('.cardField', {
+                ...descendants('.cardFieldWrapper', {
                     // layouts:
                     display : 'grid',
                     

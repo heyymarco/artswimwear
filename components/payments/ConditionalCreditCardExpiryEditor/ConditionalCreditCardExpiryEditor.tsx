@@ -172,7 +172,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                             
                             
                             // classes:
-                            className='cardField'
+                            className='cardFieldWrapper'
                         />
                     }
                     
@@ -209,7 +209,7 @@ const ConditionalCreditCardExpiryEditor = (props: ConditionalCreditCardExpiryEdi
                             
                             
                             // classes:
-                            className='cardField'
+                            className='cardFieldWrapper'
                             
                             
                             
