@@ -38,8 +38,8 @@ import {
     
     
     // react components:
-    PayPalCardFieldWrapper,
-}                           from '@/components/payments/PayPalCardFieldWrapper'
+    Pay_PalCardFieldWrapper,
+}                           from '@/components/payments/Pay_PalCardFieldWrapper'
 
 import {
     CardCvcElement,
@@ -200,7 +200,7 @@ const ConditionalCreditCardCvvEditor = (props: ConditionalCreditCardCvvEditorPro
                     
                     // components:
                     inputComponent={
-                        <PayPalCardFieldWrapper
+                        <Pay_PalCardFieldWrapper
                             // options:
                             {...paypalCardCvvOptions}
                             
