@@ -23,7 +23,7 @@ import {
 
 
 // styles:
-export const stripeCardFieldsStyle : StripeElementStyle = {
+export const stripeCardFieldStyle : StripeElementStyle = {
     base : {
         fontSize            : typoValues.fontSizeMd?.toString(),
         fontFamily          : typoValues.fontFamilySansSerief?.toString(),

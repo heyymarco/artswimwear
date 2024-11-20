@@ -44,7 +44,7 @@ import {
 
 // internals:
 import {
-    stripeCardFieldsStyle,
+    stripeCardFieldStyle,
 }                           from './styles'
 
 
@@ -102,7 +102,7 @@ const StripeCardFieldWrapper = (props: StripeCardFieldWrapperProps) => {
             {
                 // options:
                 options : {
-                    style : stripeCardFieldsStyle,
+                    style : stripeCardFieldStyle,
                 },
                 
                 
