@@ -64,17 +64,17 @@ const ConditionalPaypalCardFieldsProvider = ({children}: React.PropsWithChildren
     // jsx:
     return (
         <PaypalCardFieldsStateProvider>
-            <ImplementedPayPalCardFieldsProvider>
+            <ImplementedPaypalCardFieldsProvider>
                 {children}
-            </ImplementedPayPalCardFieldsProvider>
+            </ImplementedPaypalCardFieldsProvider>
         </PaypalCardFieldsStateProvider>
     );
 }
-interface ImplementedPayPalCardFieldsProviderProps {
+interface ImplementedPaypalCardFieldsProviderProps {
     // children:
     children : React.ReactNode
 }
-const ImplementedPayPalCardFieldsProvider = (props: ImplementedPayPalCardFieldsProviderProps) => {
+const ImplementedPaypalCardFieldsProvider = (props: ImplementedPaypalCardFieldsProviderProps) => {
     // props:
     const {
         // children:
