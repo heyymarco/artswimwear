@@ -25,8 +25,8 @@ export const useIsInPayPalScriptProvider = (): boolean => {
 };
 export const IfInPayPalScriptProvider = ({children} : React.PropsWithChildren): JSX.Element|null => {
     // conditions:
-    const isInPay_PalScriptProvider = useIsInPayPalScriptProvider();
-    if (!isInPay_PalScriptProvider) return null;
+    const isInPaypalScriptProvider = useIsInPayPalScriptProvider();
+    if (!isInPaypalScriptProvider) return null;
     
     
     

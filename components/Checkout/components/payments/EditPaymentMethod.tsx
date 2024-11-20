@@ -36,8 +36,8 @@ import {
 // payment components:
 import {
     useIsInPayPalScriptProvider,
-    ConditionalPay_PalScriptProvider,
-}                           from '@/components/payments/ConditionalPay_PalScriptProvider'
+    ConditionalPaypalScriptProvider,
+}                           from '@/components/payments/ConditionalPaypalScriptProvider'
 import {
     useIsInStripeElementsProvider,
     ConditionalStripeElementsProvider,
@@ -97,18 +97,18 @@ import {
 const EditPaymentMethod = (): JSX.Element|null => {
     // jsx:
     /*
-        The <ConditionalStripeElementsProvider> must be on top of <ConditionalPay_PalScriptProvider>
+        The <ConditionalStripeElementsProvider> must be on top of <ConditionalPaypalScriptProvider>
         to avoid re-render error from <ConditionalStripeElementsProvider>
         Error:
         Error: Failed to render <PayPalCardFieldsProvider /> component. BraintreeError: Element already contains a Braintree iframe.
     */
     return (
         <ConditionalStripeElementsProvider>
-            <ConditionalPay_PalScriptProvider>
+            <ConditionalPaypalScriptProvider>
                 <ConditionalMidtransScriptProvider>
                     <EditPaymentMethodInternal />
                 </ConditionalMidtransScriptProvider>
-            </ConditionalPay_PalScriptProvider>
+            </ConditionalPaypalScriptProvider>
         </ConditionalStripeElementsProvider>
     );
 };
@@ -138,10 +138,10 @@ const EditPaymentMethodInternal = (): JSX.Element|null => {
     
     
     
-    const isInPay_PalScriptProvider   = useIsInPayPalScriptProvider();
+    const isInPaypalScriptProvider   = useIsInPayPalScriptProvider();
     const isInStripeElementsProvider = useIsInStripeElementsProvider();
     const isInMidtransScriptProvider = useIsInMidtransScriptProvider();
-    const canPayUsingPaypal          = isInPay_PalScriptProvider   && appropriatePaymentProcessors.includes('paypal');
+    const canPayUsingPaypal          = isInPaypalScriptProvider   && appropriatePaymentProcessors.includes('paypal');
     const canPayUsingStripe          = isInStripeElementsProvider && appropriatePaymentProcessors.includes('stripe');
     const canPayUsingMidtrans        = isInMidtransScriptProvider && appropriatePaymentProcessors.includes('midtrans');
     const canPayUsingBank            = !!checkoutConfigClient.payment.processors.bank.enabled && checkoutConfigClient.payment.processors.bank.supportedCurrencies.includes(currency);

@@ -38,7 +38,7 @@ import {
 
 import {
     IfInPayPalScriptProvider,
-}                           from '@/components/payments/ConditionalPay_PalScriptProvider'
+}                           from '@/components/payments/ConditionalPaypalScriptProvider'
 import {
     // options:
     paypalCardNameOptions,

@@ -39,7 +39,7 @@ import {
 // internals:
 import {
     IsInPayPalScriptProviderContextProvider,
-}                           from './states/isInPay_PalScriptProvider'
+}                           from './states/isInPaypalScriptProvider'
 
 // configs:
 import {
@@ -48,7 +48,7 @@ import {
 
 
 
-const ConditionalPay_PalScriptProvider = ({children}: React.PropsWithChildren) => {
+const ConditionalPaypalScriptProvider = ({children}: React.PropsWithChildren) => {
     // states:
     const {
         // accessibilities:
@@ -151,6 +151,6 @@ const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderP
     );
 };
 export {
-    ConditionalPay_PalScriptProvider,            // named export for readibility
-    ConditionalPay_PalScriptProvider as default, // default export to support React.lazy
+    ConditionalPaypalScriptProvider,            // named export for readibility
+    ConditionalPaypalScriptProvider as default, // default export to support React.lazy
 };
