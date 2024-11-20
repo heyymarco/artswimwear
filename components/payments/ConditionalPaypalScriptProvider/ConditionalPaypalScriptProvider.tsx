@@ -85,17 +85,17 @@ const ConditionalPaypalScriptProvider = ({children}: React.PropsWithChildren) =>
     
     // jsx:
     return (
-        <ImplementedPayPalScriptProvider
+        <ImplementedPaypalScriptProvider
             // options:
             clientId={clientId}
             paymentSession={paymentSession}
             currency={currency}
         >
             {children}
-        </ImplementedPayPalScriptProvider>
+        </ImplementedPaypalScriptProvider>
     );
 }
-interface ImplementedPayPalScriptProviderProps {
+interface ImplementedPaypalScriptProviderProps {
     // options:
     clientId       : string
     paymentSession : CheckoutPaymentSessionDetail
@@ -106,7 +106,7 @@ interface ImplementedPayPalScriptProviderProps {
     // children:
     children       : React.ReactNode
 }
-const ImplementedPayPalScriptProvider = (props: ImplementedPayPalScriptProviderProps) => {
+const ImplementedPaypalScriptProvider = (props: ImplementedPaypalScriptProviderProps) => {
     // props:
     const {
         // options:
